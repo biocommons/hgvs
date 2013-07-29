@@ -1,0 +1,61 @@
+# TODO: type edits e.g., { 'type': 'sub', 'from': 'A', 'to': } or { type del, n: 5 }
+
+############################################################################
+# x_variant: lax parser with minimal syntactic validation
+x_variant = x_ac:ac ':' x_type:type '.' x_pos:pos x_edit:edit -> {'ac':ac,'type':type,'pos':pos,'edit':edit}
+x_ac = <( ~':' anything )+>
+x_type = :x ?(x in 'cgmpr') -> x
+x_pos = <pos_range | pos>
+x_edit = <anything+>
+
+############################################################################
+# c_variant:
+# pos may not be 0
+# pos may be < 0 for cds (without offset)
+# pos may be '*'num for cds (without offset)
+
+c_variant = c_ac:ac ':' c_type:type '.' c_pos:pos c_edit:edit -> {'ac':ac,'type':type,'pos':pos,'edit':edit}
+c_ac = <'NM_' digit+ '.' digit+>
+c_type = 'c'
+c_pos = cds_range | cds_pos
+c_edit = nt_subst | nt_ins | nt_del | nt_delins
+
+############################################################################
+# g_variant: genomic variant
+g_variant = g_ac:ac ':' g_type:type '.' g_pos:pos g_edit:edit -> (ac,type,pos,edit)
+g_ac = <'NC_' digit+ '.' digit+>
+g_type = 'g'
+g_pos = <pos_range | pos>
+g_edit = nt_subst | nt_ins | nt_del | nt_delins
+
+############################################################################
+# m_variant:
+
+############################################################################
+# r_variant:
+
+############################################################################
+# p_variant:
+
+
+
+############################################################################
+## Basic types
+
+nt_subst = <nt:from '>' nt:to>
+nt_ins = <'ins' nt_seq>
+nt_del = <'del' nt_seq | 'del' num>
+
+pos = num:pos -> pos
+range = pos:start '_' pos:end -> {'start': start, 'end': end}
+cds_pos = num:i (snum | -> '0'):o -> {'i':i, 'o':o}
+cds_range = cds_pos:start '_' cds_pos:end -> {'start': start, 'end': end}
+
+nt_seq = <nt+>
+nt = :x ?(x in 'ACGT') -> x
+aa1 = :x ?(x in 'ACDEFGHIKLMNPQRSTVWY') -> x
+aa3 = :x ?(x in ['Ala','Cys','Asp','Glu','Phe','Gly','His','Iso','Lys','Met','Asn','Pro','Gln','Arg','Ser','Thr','Val','Trp','Tyr']) -> x
+
+snum = <pm num>:x -> int(x)
+num = <digit+>:x -> int(x)
+pm = :x ?(x in '-+') -> x
