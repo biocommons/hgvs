@@ -2,10 +2,10 @@
 
 ############################################################################
 # x_variant: lax parser with minimal syntactic validation
-x_variant = x_ac:ac ':' x_type:type '.' x_pos:pos x_edit:edit -> {'ac':ac,'type':type,'pos':pos,'edit':edit}
+x_variant = x_ac:ac ':' x_type:type '.' x_interval:interval x_edit:edit -> {'ac':ac,'type':type,'interval':interval,'edit':edit}
 x_ac = <( ~':' anything )+>
 x_type = :x ?(x in 'cgmpr') -> x
-x_pos = <pos_range | pos>
+x_interval = <pos_interval | pos>
 x_edit = <anything+>
 
 ############################################################################
@@ -14,10 +14,10 @@ x_edit = <anything+>
 # pos may be < 0 for cds (without offset)
 # pos may be '*'num for cds (without offset)
 
-c_variant = c_ac:ac ':' c_type:type '.' c_pos:pos c_edit:edit -> {'ac':ac,'type':type,'pos':pos,'edit':edit}
+c_variant = c_ac:ac ':' c_type:type '.' c_interval:interval c_edit:edit -> {'ac':ac,'type':type,'interval':interval,'edit':edit}
 c_ac = <'NM_' digit+ '.' digit+>
 c_type = 'c'
-c_pos = cds_range | cds_pos
+cds_interval = interval
 c_edit = nt_subst | nt_ins | nt_del | nt_delins
 
 ############################################################################
@@ -25,7 +25,7 @@ c_edit = nt_subst | nt_ins | nt_del | nt_delins
 g_variant = g_ac:ac ':' g_type:type '.' g_pos:pos g_edit:edit -> (ac,type,pos,edit)
 g_ac = <'NC_' digit+ '.' digit+>
 g_type = 'g'
-g_pos = <pos_range | pos>
+g_pos = <pos_interval | pos>
 g_edit = nt_subst | nt_ins | nt_del | nt_delins
 
 ############################################################################
@@ -39,23 +39,38 @@ g_edit = nt_subst | nt_ins | nt_del | nt_delins
 
 
 
+
+############################################################################
+## Edits
+
+dna_subst = <nt:pre '>' dna:post> -> (pre,post)
+dna_ins = <'ins' dna_seq>
+dna_del = <'del' dna_seq | 'del' num>
+
+
 ############################################################################
 ## Basic types
 
-nt_subst = <nt:from '>' nt:to>
-nt_ins = <'ins' nt_seq>
-nt_del = <'del' nt_seq | 'del' num>
+dna_seq = <dna+>
+dna = :x ?(x in 'ACGT') -> x
 
-pos = num:pos -> pos
-range = pos:start '_' pos:end -> {'start': start, 'end': end}
-cds_pos = ('*' num | snum):i (snum | -> '0'):o -> {'i':i, 'o':o}
-cds_range = cds_pos:start '_' cds_pos:end -> {'start': start, 'end': end}
+rna_seq = <rna+>
+rna = :x ?(x in 'ACGU') -> x
 
-nt_seq = <nt+>
-nt = :x ?(x in 'ACGT') -> x
+aa1_seq = <aa1+>
 aa1 = :x ?(x in 'ACDEFGHIKLMNPQRSTVWY') -> x
+
+aa3_seq = <aa3+>
 aa3 = :x ?(x in ['Ala','Cys','Asp','Glu','Phe','Gly','His','Iso','Lys','Met','Asn','Pro','Gln','Arg','Ser','Thr','Val','Trp','Tyr']) -> x
 
-snum = <pm num>:x -> int(x)
+cds_interval = (cds_pos:start '_' cds_pos:end -> Interval(start,end)) | (cds_pos:start -> Interval(start,start))
+cds_pos = ('*' num:x -> CDSPosition(0,x)) 
+		| ('-' num:x -> CDSPosition(0,-x))
+		| (num:b (snum | -> 0):o -> CDSPosition(b,o))
+
+interval = (pos:start '_' pos:end -> Interval(start,end)) | (pos:start -> Interval(start,start))
+pos = num:pos -> Position(pos)
+
+snum = <pm? num>:x -> int(x)
 num = <digit+>:x -> int(x)
 pm = :x ?(x in '-+') -> x

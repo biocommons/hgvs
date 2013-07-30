@@ -35,8 +35,8 @@ class Test_Position(unittest.TestCase):
         self.assertEqual( str(cdsp), '*7' )
 
 
-    def test_Range(self):
-        cdsr = hgvs.location.Range( hgvs.location.CDSPosition(base=12,offset=+34),
+    def test_Interval(self):
+        cdsr = hgvs.location.Interval( hgvs.location.CDSPosition(base=12,offset=+34),
                                     hgvs.location.CDSPosition(base=56,offset=-78) )
         self.assertEqual( cdsr.start.base, 12 )
         self.assertEqual( cdsr.start.offset, 34 )

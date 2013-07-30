@@ -53,15 +53,20 @@ class CDSPosition( recordtype.recordtype(
         raise RuntimeError('Fell through to unexpected <base,offset> case')
 
 
-class Range( recordtype.recordtype(
-        'Range', field_names = [ 'start', 'end' ] ) ):
+class Interval( recordtype.recordtype(
+        'Interval', field_names = [ 'start', 'end' ] ) ):
     def __init__(self,start,end):
-        super(Range,self).__init__(start,end)
-        if end is not None:
-            assert self.end.base >= self.start.base, 'end must be >= than start'
-            assert not (self.start.base == self.end.base and self.start.offset >= self.end.offset), 'end offset must be >= than start offset'
+        super(Interval,self).__init__(start,end)
 
     def __str__(self):
         if self.end is None or self.start == self.end:
             return str(self.start)
         return str(self.start) + '_' + str(self.end)
+
+class CDSInterval( Interval ):
+    def __init__(self,start,end):
+        super(CDSInterval,self).__init__(start,end)
+        if end is not None:
+            assert self.end.base >= self.start.base, 'end must be >= than start'
+            assert not (self.start.base == self.end.base and self.start.offset >= self.end.offset), 'end offset must be >= than start offset'
+    
