@@ -9,9 +9,11 @@ class Position(int):
 class CDSPosition( recordtype.recordtype(
         'CDSPosition', field_names = [ 'base', 'offset' ] ) ):
     """
-    Class for dealing with CDS coordinates in transcript variants.  Positions and offsets are 1-based, per the HGVS recommendations.
+    Class for dealing with CDS coordinates in transcript variants.  Positions and
+    offsets are 1-based, per the HGVS recommendations.
 
-    This class models CDS positions using a `base' coordinate and an `offset' with the following interpretations:
+    This class models CDS positions using a `base' coordinate and an `offset' with
+    the following interpretations:
 
     position   base     offset     meaning
     c.55        55         0       cds position 55
@@ -56,8 +58,8 @@ class Range( recordtype.recordtype(
     def __init__(self,start,end):
         super(Range,self).__init__(start,end)
         if end is not None:
-            assert self.end.base >= self.start.base, 'end must be greater than start'
-            assert not (self.start.base == self.end.base and self.start.offset > self.end.offset), 'end offset must be great than start offset'
+            assert self.end.base >= self.start.base, 'end must be >= than start'
+            assert not (self.start.base == self.end.base and self.start.offset >= self.end.offset), 'end offset must be >= than start offset'
 
     def __str__(self):
         if self.end is None or self.start == self.end:

@@ -10,7 +10,7 @@ Two cases:
    doesn't have a .hg directory somewhere along the path to __file__.
 """
 
-from utils.hgid import HgId
+from hgvs.utils.hgid import HgId
 
 try:
     

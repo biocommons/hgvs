@@ -48,7 +48,7 @@ nt_del = <'del' nt_seq | 'del' num>
 
 pos = num:pos -> pos
 range = pos:start '_' pos:end -> {'start': start, 'end': end}
-cds_pos = num:i (snum | -> '0'):o -> {'i':i, 'o':o}
+cds_pos = ('*' num | snum):i (snum | -> '0'):o -> {'i':i, 'o':o}
 cds_range = cds_pos:start '_' cds_pos:end -> {'start': start, 'end': end}
 
 nt_seq = <nt+>
