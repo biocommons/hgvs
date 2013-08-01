@@ -18,7 +18,7 @@ c_variant = c_ac:ac ':' c_type:type '.' c_interval:interval c_edit:edit -> Varia
 c_ac = <'NM_' digit+ '.' digit+>
 c_type = 'c'
 c_interval = interval
-c_edit = dna_subst | dna_delins | dna_ins | dna_del
+c_edit = dna_subst | dna_delins | dna_ins | dna_del | dna_dup
 
 
 ############################################################################
@@ -27,7 +27,7 @@ g_variant = g_ac:ac ':' g_type:type '.' g_interval:interval g_edit:edit -> Varia
 g_ac = <'NC_' digit+ '.' digit+>
 g_type = 'g'
 g_interval = interval
-g_edit = dna_subst | dna_delins | dna_ins | dna_del
+g_edit = dna_subst | dna_delins | dna_ins | dna_del | dna_dup
 
 
 ############################################################################
@@ -48,6 +48,7 @@ dna_subst = dna:pre '>' dna:post -> DelIns(pre=pre,post=post)
 dna_ins = 'ins' <dna+>:post -> DelIns(pre=None,post=post)
 dna_del = 'del' (<num>|<dna*>):pre -> DelIns(pre=pre,post=None)
 dna_delins = 'del' (<num>|<dna*>):pre 'ins' <dna+>:post  -> DelIns(pre=pre,post=post)
+dna_dup = 'dup' <dna*>:seq -> Dup(seq=seq)
 
 
 ############################################################################

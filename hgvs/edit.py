@@ -1,11 +1,14 @@
 import recordtype
 
+from hgvs.exceptions import HGVSError
+
 class Edit(object):
     pass
 
 class DelIns( Edit, recordtype.recordtype('DelIns', ['pre','post'], default=None) ):
     def __str__(self):
-        assert self.pre or self.post, 'DelIns: pre and post sequences are both empty'
+        if self.pre is None and self.post is None:
+            raise HGVSError('DelIns: pre and post sequences are both empty')
         if self.pre is not None and self.post is not None:
             if self.pre == self.post:
                 return '='
@@ -23,5 +26,6 @@ class Dup( Edit, recordtype.recordtype('Dup', ['seq'], default=None) ):
 
 class Repeat( Edit, recordtype.recordtype('Repeat', ['seq','min','max'], default=None) ):
     def __str__(self):
-        assert self.min <= self.max, 'Repeat min count must be less than or equal to max count'
+        if self.min > self.max:
+            raise HGVSError('Repeat min count must be less than or equal to max count')
         return '{self.seq}({self.min}_{self.max})'.format(self=self)

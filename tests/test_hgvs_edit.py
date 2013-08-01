@@ -1,10 +1,11 @@
 import unittest
 
-import hgvs.location
+import hgvs.edit
+from hgvs.exceptions import HGVSError
 
 class Test_Position(unittest.TestCase):
     def test_DelIns_exceptions(self):
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(HGVSError):
             edit = str(hgvs.edit.DelIns(None,None))
 
     def test_DelIns(self):
@@ -23,7 +24,7 @@ class Test_Position(unittest.TestCase):
         self.assertEqual( str(hgvs.edit.Repeat('CAG',12,34)), 'CAG(12_34)' )
 
     def test_Repeat_exceptions(self):
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(HGVSError):
             edit = str(hgvs.edit.Repeat('CAG',34,12))
 
 if __name__ == '__main__':

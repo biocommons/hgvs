@@ -2,7 +2,7 @@ import unittest
 
 import hgvs.location
 
-class Test_Position(unittest.TestCase):
+class Test_Location(unittest.TestCase):
     def test_Position(self):
         self.assertEqual( hgvs.location.Position(5), 5 )
         with self.assertRaises(AssertionError):
@@ -37,7 +37,7 @@ class Test_Position(unittest.TestCase):
 
     def test_Interval(self):
         cdsr = hgvs.location.Interval( hgvs.location.CDSPosition(base=12,offset=+34),
-                                    hgvs.location.CDSPosition(base=56,offset=-78) )
+                                       hgvs.location.CDSPosition(base=56,offset=-78) )
         self.assertEqual( cdsr.start.base, 12 )
         self.assertEqual( cdsr.start.offset, 34 )
         self.assertEqual( cdsr.end.base, 56 )

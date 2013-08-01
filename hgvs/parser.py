@@ -3,6 +3,7 @@ import os
 import parsley
 
 import hgvs.edit
+from hgvs.exceptions import *
 import hgvs.location
 import hgvs.variant
 
@@ -26,3 +27,7 @@ class Parser(object):
         
     def parse(self,variant):
         return self._grammar(variant).hgvs_variant()
+        #try:
+        #except Exception as e:
+        #    raise HGVSParseError('{variant}: parsing raised {type} ({e.message})'.format(
+        #        variant = variant, type = type(e), e = e))
