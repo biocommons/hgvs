@@ -6,7 +6,7 @@ import hgvs.edit
 import hgvs.location
 import hgvs.variant
 
-class HGVSParser(object):
+class Parser(object):
     default_grammar_fn = os.path.join(os.path.dirname(__file__),'grammar.txt')
 
     def __init__(self,grammar_fn=default_grammar_fn):

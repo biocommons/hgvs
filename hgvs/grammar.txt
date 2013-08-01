@@ -8,7 +8,7 @@ hgvs_variant = ( c_variant | x_variant ):v -> v
 x_variant = x_ac:ac ':' x_type:type '.' x_interval:interval x_edit:edit -> Variant(ac,type,interval,edit)
 x_ac = <( ~':' anything )+>
 x_type = :x ?(x in 'cgmpr') -> x
-x_interval = <pos_interval | pos>
+x_interval = <interval | pos>
 x_edit = <anything+>
 
 
@@ -41,6 +41,7 @@ c_edit = dna_subst | dna_ins | dna_del | dna_delins
 dna_subst = dna_seq:pre '>' dna_seq:post -> DelIns(pre=pre,post=post)
 dna_ins = 'ins' dna_seq:post -> DelIns(pre=None,post=post)
 dna_del = 'del' (dna_seq|num):pre -> DelIns(pre=pre,post=None)
+dna_delins = 'del' (dna_seq|num):pre 'ins' dna_seq:post  -> DelIns(pre=pre,post=post)
 
 
 ############################################################################
