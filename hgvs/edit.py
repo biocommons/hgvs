@@ -6,15 +6,15 @@ class Edit(object):
 class DelIns( Edit, recordtype.recordtype('DelIns', ['pre','post'], default=None) ):
     def __str__(self):
         assert self.pre or self.post, 'DelIns: pre and post sequences are both empty'
-        if self.pre and self.post:
+        if self.pre is not None and self.post is not None:
             if self.pre == self.post:
                 return '='
             if len(self.pre) == 1 and len(self.post) == 1:
                 return '{self.pre}>{self.post}'.format(self=self)
             return 'del{self.pre}ins{self.post}'.format(self=self)
-        if self.pre and not self.post:
+        if self.pre is not None and self.post is None:
             return 'del{self.pre}'.format(self=self)
-        if not self.pre and self.post:
+        if self.pre is None and self.post is not None:
             return 'ins{self.post}'.format(self=self)
 
 class Dup( Edit, recordtype.recordtype('Dup', ['seq'], default=None) ):

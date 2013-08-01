@@ -1,6 +1,6 @@
 # TODO: type edits e.g., { 'type': 'sub', 'from': 'A', 'to': } or { type del, n: 5 }
 
-hgvs_variant = ( c_variant | x_variant ):v -> v
+hgvs_variant = (c_variant|g_variant):v -> v
 
 
 ############################################################################
@@ -18,11 +18,17 @@ c_variant = c_ac:ac ':' c_type:type '.' c_interval:interval c_edit:edit -> Varia
 c_ac = <'NM_' digit+ '.' digit+>
 c_type = 'c'
 c_interval = interval
-c_edit = dna_subst | dna_ins | dna_del | dna_delins
+c_edit = dna_subst | dna_delins | dna_ins | dna_del
 
 
 ############################################################################
 # g_variant: genomic variant
+g_variant = g_ac:ac ':' g_type:type '.' g_interval:interval g_edit:edit -> Variant(ac,type,interval,edit)
+g_ac = <'NC_' digit+ '.' digit+>
+g_type = 'g'
+g_interval = interval
+g_edit = dna_subst | dna_delins | dna_ins | dna_del
+
 
 ############################################################################
 # m_variant:
@@ -38,10 +44,10 @@ c_edit = dna_subst | dna_ins | dna_del | dna_delins
 ############################################################################
 ## Edits
 
-dna_subst = dna_seq:pre '>' dna_seq:post -> DelIns(pre=pre,post=post)
-dna_ins = 'ins' dna_seq:post -> DelIns(pre=None,post=post)
-dna_del = 'del' (dna_seq|num):pre -> DelIns(pre=pre,post=None)
-dna_delins = 'del' (dna_seq|num):pre 'ins' dna_seq:post  -> DelIns(pre=pre,post=post)
+dna_subst = dna:pre '>' dna:post -> DelIns(pre=pre,post=post)
+dna_ins = 'ins' <dna+>:post -> DelIns(pre=None,post=post)
+dna_del = 'del' (<num>|<dna*>):pre -> DelIns(pre=pre,post=None)
+dna_delins = 'del' (<num>|<dna*>):pre 'ins' <dna+>:post  -> DelIns(pre=pre,post=post)
 
 
 ############################################################################
