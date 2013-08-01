@@ -1,32 +1,28 @@
 # TODO: type edits e.g., { 'type': 'sub', 'from': 'A', 'to': } or { type del, n: 5 }
 
+hgvs_variant = ( c_variant | x_variant ):v -> v
+
+
 ############################################################################
 # x_variant: lax parser with minimal syntactic validation
-x_variant = x_ac:ac ':' x_type:type '.' x_interval:interval x_edit:edit -> {'ac':ac,'type':type,'interval':interval,'edit':edit}
+x_variant = x_ac:ac ':' x_type:type '.' x_interval:interval x_edit:edit -> Variant(ac,type,interval,edit)
 x_ac = <( ~':' anything )+>
 x_type = :x ?(x in 'cgmpr') -> x
 x_interval = <pos_interval | pos>
 x_edit = <anything+>
 
+
 ############################################################################
 # c_variant:
-# pos may not be 0
-# pos may be < 0 for cds (without offset)
-# pos may be '*'num for cds (without offset)
-
-c_variant = c_ac:ac ':' c_type:type '.' c_interval:interval c_edit:edit -> {'ac':ac,'type':type,'interval':interval,'edit':edit}
+c_variant = c_ac:ac ':' c_type:type '.' c_interval:interval c_edit:edit -> Variant(ac,type,interval,edit)
 c_ac = <'NM_' digit+ '.' digit+>
 c_type = 'c'
-cds_interval = interval
-c_edit = nt_subst | nt_ins | nt_del | nt_delins
+c_interval = interval
+c_edit = dna_subst | dna_ins | dna_del | dna_delins
+
 
 ############################################################################
 # g_variant: genomic variant
-g_variant = g_ac:ac ':' g_type:type '.' g_pos:pos g_edit:edit -> (ac,type,pos,edit)
-g_ac = <'NC_' digit+ '.' digit+>
-g_type = 'g'
-g_pos = <pos_interval | pos>
-g_edit = nt_subst | nt_ins | nt_del | nt_delins
 
 ############################################################################
 # m_variant:
@@ -39,13 +35,12 @@ g_edit = nt_subst | nt_ins | nt_del | nt_delins
 
 
 
-
 ############################################################################
 ## Edits
 
-dna_subst = <nt:pre '>' dna:post> -> (pre,post)
-dna_ins = <'ins' dna_seq>
-dna_del = <'del' dna_seq | 'del' num>
+dna_subst = dna_seq:pre '>' dna_seq:post -> DelIns(pre=pre,post=post)
+dna_ins = 'ins' dna_seq:post -> DelIns(pre=None,post=post)
+dna_del = 'del' (dna_seq|num):pre -> DelIns(pre=pre,post=None)
 
 
 ############################################################################
@@ -63,8 +58,8 @@ aa1 = :x ?(x in 'ACDEFGHIKLMNPQRSTVWY') -> x
 aa3_seq = <aa3+>
 aa3 = :x ?(x in ['Ala','Cys','Asp','Glu','Phe','Gly','His','Iso','Lys','Met','Asn','Pro','Gln','Arg','Ser','Thr','Val','Trp','Tyr']) -> x
 
-cds_interval = (cds_pos:start '_' cds_pos:end -> Interval(start,end)) | (cds_pos:start -> Interval(start,start))
-cds_pos = ('*' num:x -> CDSPosition(0,x)) 
+c_interval = (c_pos:start '_' c_pos:end -> Interval(start,end)) | (c_pos:start -> Interval(start,start))
+c_pos = ('*' num:x -> CDSPosition(0,x)) 
 		| ('-' num:x -> CDSPosition(0,-x))
 		| (num:b (snum | -> 0):o -> CDSPosition(b,o))
 
