@@ -1,6 +1,3 @@
-# UTA -- Universal Transcript Archive Makefile
-# https://bitbucket.org/invitae/uta
-
 .SUFFIXES :
 .PRECIOUS :
 .PHONY : FORCE
@@ -10,10 +7,6 @@ SHELL:=/bin/bash -o pipefail
 SELF:=$(firstword $(MAKEFILE_LIST))
 export PYTHONPATH=lib/python
 
-# make config in etc/uta.conf available within the Makefile
--include .uta.conf.mk
-.uta.conf.mk: etc/uta.conf
-	./sbin/conf-to-vars $< >$@
 
 ############################################################################
 #= BASIC USAGE
@@ -29,7 +22,7 @@ help:
 #=> setup -- prepare python and perl environment for prequisites
 #=>> This is optional; the only requirement is that packages are discoverable
 #=>> in PYTHONPATH and PERL5LIB
-setup: setup-python setup-perl
+setup: setup-python
 
 #=> setup-python: create a virtualenv with base packages
 # NOTE: setup-python only makes the virtualenv. You must actvate it
@@ -40,11 +33,6 @@ ve: virtualenv.py
 	python $< --distribute ve
 virtualenv.py:
 	curl https://raw.github.com/pypa/virtualenv/master/virtualenv.py >$@
-
-#=> setup-perl: install perl packages
-# TODO: consider perl brew instead
-setup-perl:
-	./sbin/perl-module-install --install-base ve   Log::Log4perl
 
 
 ############################################################################
@@ -61,7 +49,7 @@ test:
 docs: build_sphinx
 
 #=> develop, build_sphinx, sdist, upload_sphinx
-develop build_sphinx sdist upload_sphinx: %:
+develop build_sphinx install sdist upload_sphinx: %:
 	python setup.py $*
 
 #=> upload-<tag>
@@ -80,7 +68,7 @@ clean:
 #=> cleaner: above, and remove generated files
 cleaner: clean
 	find . -name \*.pyc -print0 | xargs -0r /bin/rm -f
-	/bin/rm -fr distribute-* *.egg *.egg-info .uta.conf.mk
+	/bin/rm -fr distribute-* *.egg *.egg-info
 	make -C doc clean
 #=> cleanest: above, and remove the virtualenv, .orig, and .bak files
 cleanest: cleaner
