@@ -1,11 +1,24 @@
-# TODO: type edits e.g., { 'type': 'sub', 'from': 'A', 'to': } or { type del, n: 5 }
+hgvs_variant = c_variant | g_variant
 
-hgvs_variant = (c_variant|g_variant):v -> v
+############################################################################
+# c.
+c_variant = c_accn:ac ':' c_type:type '.' c_interval:interval c_edit:edit -> Variant(ac,type,interval,edit)
+c_accn = accn
+c_type = 'c'
+c_interval = interval
+c_edit = dna_subst | dna_delins | dna_ins | dna_del | dna_dup
 
+############################################################################
+# g.
+g_variant = g_accn:ac ':' g_type:type '.' g_interval:interval g_edit:edit -> Variant(ac,type,interval,edit)
+g_accn = accn
+g_type = :x ?(x in 'gm') -> x
+g_interval = interval
+g_edit = dna_subst | dna_delins | dna_ins | dna_del | dna_dup
 
 ############################################################################
 # x_variant: lax parser with minimal syntactic validation
-x_variant = x_ac:ac ':' x_type:type '.' x_interval:interval x_edit:edit -> Variant(ac,type,interval,edit)
+x_variant = accn:ac ':' x_type:type '.' x_interval:interval x_edit:edit -> Variant(ac,type,interval,edit)
 x_ac = <( ~':' anything )+>
 x_type = :x ?(x in 'cgmpr') -> x
 x_interval = <interval | pos>
@@ -13,42 +26,13 @@ x_edit = <anything+>
 
 
 ############################################################################
-# c_variant:
-c_variant = c_ac:ac ':' c_type:type '.' c_interval:interval c_edit:edit -> Variant(ac,type,interval,edit)
-c_ac = <'NM_' digit+ '.' digit+>
-c_type = 'c'
-c_interval = interval
-c_edit = dna_subst | dna_delins | dna_ins | dna_del | dna_dup
-
-
-############################################################################
-# g_variant: genomic variant
-g_variant = g_ac:ac ':' g_type:type '.' g_interval:interval g_edit:edit -> Variant(ac,type,interval,edit)
-g_ac = <'NC_' digit+ '.' digit+>
-g_type = 'g'
-g_interval = interval
-g_edit = dna_subst | dna_delins | dna_ins | dna_del | dna_dup
-
-
-############################################################################
-# m_variant:
-
-############################################################################
-# r_variant:
-
-############################################################################
-# p_variant:
-
-
-
-############################################################################
 ## Edits
 
-dna_subst = dna:pre '>' dna:post -> DelIns(pre=pre,post=post)
-dna_ins = 'ins' <dna+>:post -> DelIns(pre=None,post=post)
 dna_del = 'del' (<num>|<dna*>):pre -> DelIns(pre=pre,post=None)
 dna_delins = 'del' (<num>|<dna*>):pre 'ins' <dna+>:post  -> DelIns(pre=pre,post=post)
 dna_dup = 'dup' <dna*>:seq -> Dup(seq=seq)
+dna_ins = 'ins' <dna+>:post -> DelIns(pre=None,post=post)
+dna_subst = dna:pre '>' dna:post -> DelIns(pre=pre,post=post)
 
 
 ############################################################################
@@ -73,6 +57,8 @@ c_pos = ('*' num:x -> CDSPosition(0,x))
 
 interval = (pos:start '_' pos:end -> Interval(start,end)) | (pos:start -> Interval(start,start))
 pos = num:pos -> Position(pos)
+
+accn = <letter letterOrDigit+ ('_' letterOrDigit+)? ('.' digit+)>
 
 snum = <pm? num>:x -> int(x)
 num = <digit+>:x -> int(x)

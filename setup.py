@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 with open('hgvs/version.py') as f:
     exec(f.read())
@@ -10,16 +10,17 @@ setup(
     name = "hgvs",
     version = __version__,
     packages = ['hgvs', 'hgvs.utils'],
+    package_data={'hgvs': ['grammar.txt']},
 
     url = 'https://bitbucket.org/invitae/hgvs',
     description = """HGVS Parser and Formatter""",
     long_description = long_description,
 
     author = 'InVitae Keyboard Monkeys',
-    author_email='reece.hart@invitae.com',
+    author_email='reece+hgvs@invitae.com',
     license = 'MIT',
 
-    zip_safe = True,
+    #zip_safe = True,
 
     install_requires = [
         'nose',
