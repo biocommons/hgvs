@@ -1,2 +1,15 @@
-* finalize location/position/interval/base+offset names
+* positions: finalize location/position/interval/base+offset names
 
+* hgvs.util NC 2 chr & vv
+
+* hgvs validator
+
+* hgvs mapper
+
+* hgvs formatter
+
+* ac parser
+
+* sub parser (c.76A>T)
+
+* pos parser NM_123.4:c.76

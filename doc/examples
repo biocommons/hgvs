@@ -1,0 +1,47 @@
+# Examples from http://www.hgvs.org/mutnomen/
+c.76A>C
+c.-14G>C
+c.88+1G>T
+c.89-2A>C
+c.*46T>A
+c.76_77delinsTT
+c.[76A>T;77G>T]
+c.76_78del
+c.76_78delACT
+c.88-?_923+?del
+g.5dupT
+g.5dup
+g.7_8dup
+g.7_8dupTG
+c.77_79dup
+c.77_79dupCTG
+c.1032-?_1357+?(3)
+c.1032-?_1357+?[3]
+c.76_77insT
+c.112_117delinsTG
+c.113delinsTACTAGC
+c.114_115delinsA
+c.203_506inv
+g.123_678conNG_012232.1:g.9456_10011
+ t(X;4)(p21.2;q35)(c.857+101_857+102)
+c.[76A>C];[76A>C]
+c.[76A>C];[(76A>C)]
+c.[76A>C];[?]
+c.[76A>C];[=]
+c.[76A>C];[0]
+c.[76A>C;83G>C]
+c.[=/83G>C]
+c.[=//83G>C]
+c.[76A>C(;)283G>C]
+g.123_124[4]
+g.123TG[4]
+c.1210-12T(5_9)
+c.1210-12T[5] 
+c.123+74TG(3_6)
+g.1209_4523(12_45)
+c.123_678conNM_004006.1:c.123_678
+
+
+# lax
+c.76_78del3
+c.76_78copy3
