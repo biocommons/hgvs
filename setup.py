@@ -13,14 +13,14 @@ setup(
     package_data={'hgvs': ['grammar.txt']},
 
     url = 'https://bitbucket.org/invitae/hgvs',
-    description = """HGVS Parser and Formatter""",
+    description = """HGVS Parser""",
     long_description = long_description,
 
     author = 'InVitae Keyboard Monkeys',
-    author_email='reece+hgvs@invitae.com',
+    author_email = 'reece+hgvs@invitae.com',
     license = 'MIT',
 
-    #zip_safe = True,
+    zip_safe = True,
 
     install_requires = [
         'nose',
