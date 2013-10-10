@@ -3,7 +3,7 @@ import unittest
 import hgvs.edit
 from hgvs.exceptions import HGVSError
 
-class Test_Position(unittest.TestCase):
+class Test_Edit(unittest.TestCase):
     def test_DelIns_exceptions(self):
         with self.assertRaises(HGVSError):
             edit = str(hgvs.edit.DelIns(None,None))
