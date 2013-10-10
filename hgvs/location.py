@@ -92,11 +92,3 @@ class Interval( recordtype.recordtype(
         if self.end is None or self.start == self.end:
             return str(self.start)
         return str(self.start) + '_' + str(self.end)
-
-class CDSInterval( Interval ):
-    def __init__(self,start,end):
-        super(CDSInterval,self).__init__(start,end)
-        if end is not None:
-            assert self.end.base >= self.start.base, 'end must be >= than start'
-            assert not (self.start.base == self.end.base and self.start.offset >= self.end.offset), 'end offset must be >= than start offset'
-    
