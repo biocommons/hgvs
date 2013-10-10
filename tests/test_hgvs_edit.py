@@ -9,19 +9,19 @@ class Test_Edit(unittest.TestCase):
             edit = str(hgvs.edit.DelIns(None,None))
 
     def test_DelIns(self):
-        self.assertEqual( str(hgvs.edit.DelIns('A','A')), '=' )
-        self.assertEqual( str(hgvs.edit.DelIns('A','T')), 'A>T' )
-        self.assertEqual( str(hgvs.edit.DelIns('AA',None)), 'delAA' )
-        self.assertEqual( str(hgvs.edit.DelIns(None,'TT')), 'insTT' )
-        self.assertEqual( str(hgvs.edit.DelIns('AA','T')), 'delAAinsT' )
-        self.assertEqual( str(hgvs.edit.DelIns('A','TT')), 'delAinsTT' )
+        self.assertEqual( str(hgvs.edit.DelIns('A','A'))	, '=' 			)
+        self.assertEqual( str(hgvs.edit.DelIns('A','T'))	, 'A>T' 		)
+        self.assertEqual( str(hgvs.edit.DelIns('AA',None))	, 'delAA' 		)
+        self.assertEqual( str(hgvs.edit.DelIns(None,'TT'))	, 'insTT' 		)
+        self.assertEqual( str(hgvs.edit.DelIns('AA','T'))	, 'delAAinsT' 	)
+        self.assertEqual( str(hgvs.edit.DelIns('A','TT'))	, 'delAinsTT' 	)
 
     def test_Dup(self):
-        self.assertEqual( str(hgvs.edit.Dup()), 'dup' )
-        self.assertEqual( str(hgvs.edit.Dup('T')), 'dupT' )
+        self.assertEqual( str(hgvs.edit.Dup())				, 'dup' 		)
+        self.assertEqual( str(hgvs.edit.Dup('T'))			, 'dupT' 		)
         
     def test_Repeat(self):
-        self.assertEqual( str(hgvs.edit.Repeat('CAG',12,34)), 'CAG(12_34)' )
+        self.assertEqual( str(hgvs.edit.Repeat('CAG',12,34)), 'CAG(12_34)' 	)
 
     def test_Repeat_exceptions(self):
         with self.assertRaises(HGVSError):
