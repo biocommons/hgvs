@@ -1,3 +1,27 @@
+# -*- encoding: utf-8 -*-
+__doc__ = """
+hgvs.location -- classes for dealing with the locations of HGVS variants
+
+This module provides for Representing the location of variants in HGVS nomenclature, including:
+
+  * integers and integer intervals (e.g., NC_012345.6:g.3403243_3403248A>C)
+  * CDS positions and intervals (e.g., NM_01234.5:c.56+12_56+14delAC)
+  * CDS stop coordinates (e.g., NM_01234.5:c.*13A>C)  
+
+Classes:
+
+  * Position -- a simple integer
+  * CDSPosition -- a position with base and offset (à la complex numbers)
+  * Interval -- an interval of Positions
+  * CDSInterval -- an interval of CDSPositions
+
+NOTE: Position and CDSPosition are unrelated. Position is a subclass
+of integer; CDSPosition is a class that has two instance variables, base and offset.
+Both support representation 
+
+
+"""
+
 import recordtype
 
 
@@ -5,6 +29,8 @@ class Position(int):
     def __init__(self,position):
         super(Position,self).__init__()
         assert position>=1, self.__class__.__name__ + ': position must be >= 1'
+    def __str__(self):
+        return str(self)
 
 class CDSPosition( recordtype.recordtype(
         'CDSPosition', field_names = [ 'base', 'offset' ] ) ):
