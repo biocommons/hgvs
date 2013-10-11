@@ -88,6 +88,11 @@ gmn_posedit = interval:pos dna_edit:edit -> PosEdit(pos=pos,edit=edit)
 
 
 ############################################################################
+## HGVS Position ("HGVS Lite")
+hgvs_position = accn:ac ':' any_type:type '.' c_interval:pos -> HGVSPosition(ac, type, pos)
+
+
+############################################################################
 ## Edits
 
 dna_edit = dna_subst | dna_delins | dna_ins | dna_del | dna_dup
