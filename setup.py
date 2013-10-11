@@ -1,4 +1,9 @@
+import os
+import sys
 from setuptools import setup
+
+root_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(root_dir)
 
 with open('doc/description.rst') as f:
     long_description = f.read()
