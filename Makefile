@@ -16,30 +16,12 @@ default: help
 help:
 	@sbin/extract-makefile-documentation "${SELF}"
 
-############################################################################
-#= INSTALLATION/SETUP
-
-#=> setup -- prepare python and perl environment for prequisites
-#=>> This is optional; the only requirement is that packages are discoverable
-#=>> in PYTHONPATH and PERL5LIB
-setup: setup-python
-
-#=> setup-python: create a virtualenv with base packages
-# NOTE: setup-python only makes the virtualenv. You must actvate it
-# yourself (source ve/bin/activate)
-setup-python: ve
-	source ve/bin/activate; python setup.py develop
-ve: virtualenv.py
-	python $< --distribute ve
-virtualenv.py:
-	curl https://raw.github.com/pypa/virtualenv/master/virtualenv.py >$@
-
 
 ############################################################################
 #= UTILITY FUNCTIONS
 
 #=> lint -- run lint
-
+# TBD
 
 #=> test -- run tests
 test:
@@ -49,7 +31,7 @@ test:
 docs: build_sphinx
 
 #=> develop, build_sphinx, sdist, upload_sphinx
-develop build_sphinx install sdist upload_sphinx: %:
+develop build build_sphinx install sdist upload_sphinx: %:
 	python setup.py $*
 
 #=> upload-<tag>
@@ -57,6 +39,9 @@ upload-%:
 	hg up -r $*
 	python setup.py sdist upload
 
+invitae-upload-%:
+	hg up -r $*
+	python setup.py sdist upload -r invitae
 
 
 ############################################################################
@@ -73,7 +58,7 @@ cleaner: clean
 #=> cleanest: above, and remove the virtualenv, .orig, and .bak files
 cleanest: cleaner
 	find . \( -name \*.orig -o -name \*.bak \) -print0 | xargs -0r /bin/rm -v
-	/bin/rm -fr ve dist bdist
+	/bin/rm -fr build ve dist bdist
 #=> pristine: above, and delete anything unknown to mercurial
 pristine: cleanest
 	hg st -un0 | xargs -0r echo /bin/rm -fv
