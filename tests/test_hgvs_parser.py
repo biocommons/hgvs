@@ -41,6 +41,14 @@ NM_001005741.2:c.512_513dup2
             with self.assertRaises(Exception, msg=t):
                 p.parse(t)
 
+    def test_parser_hgvs_gauntlet(self):
+        fn = os.path.join( os.path.dirname(__file__), 'data', 'hgvs-gauntlet' )
+        for var in open(fn,'r'):
+            var = var.strip()
+            v = self.grammar(var).hgvs_variant()
+            import IPython; IPython.embed()
+
+            self.assertEqual( str(v), var )
 
 if __name__ == '__main__':
     unittest.main()

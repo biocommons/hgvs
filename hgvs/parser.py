@@ -3,9 +3,11 @@ import os
 import parsley
 
 import hgvs.edit
-from hgvs.exceptions import *
 import hgvs.location
+import hgvs.posedit
 import hgvs.variant
+
+from hgvs.exceptions import *
 
 class Parser(object):
     default_grammar_fn = os.path.join(os.path.dirname(__file__),'grammar.txt')
@@ -13,7 +15,6 @@ class Parser(object):
     def __init__(self,grammar_fn=default_grammar_fn):
         self._grammar_fn = grammar_fn
         self._grammar = parsley.makeGrammar(open(grammar_fn,'r').read(),{
-            'CDSInterval': hgvs.location.CDSInterval,
             'CDSPosition': hgvs.location.CDSPosition,
             'Interval': hgvs.location.Interval,
             'Position': hgvs.location.Position,
@@ -22,6 +23,8 @@ class Parser(object):
             'Dup': hgvs.edit.Dup,
             'Repeat': hgvs.edit.Repeat,
             
+            'PosEdit': hgvs.posedit.PosEdit,
+
             'Variant': hgvs.variant.Variant,
             })
         

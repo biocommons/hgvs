@@ -1,3 +1,5 @@
+* rename DelIns to RefAlt
+
 * investigate/use hgtools
 
 * positions: finalize location/position/interval/base+offset names

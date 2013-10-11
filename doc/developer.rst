@@ -10,15 +10,13 @@ This package consists of two components:
 
 * a grammar for HGVS, based on `Parsley`_, wrapped in a simple HGVSParser
   class
-* simple classes that model elements of HGVS concepts and provides
-  formatting
+* classes that model elements of HGVS concepts
 
-The current version of the parser requires all components.
-
-Gene names are not accepted, either in lieu of or in addition to the
-sequence name (the Recommendations permit both). The recommendation uses
-parenthesis to express uncertainty in position, edit, and other details;
-this is not supported.
+We have made an intentional choice to not implement components of HGVS
+that are error prone or ambiguous.  Omitted features include gene names as
+a sequence reference (versioned accessions are the only unambiguous
+reference) and the use of parentheses to express uncertainty in position,
+edit, and other details.
 
 
 Background
@@ -35,7 +33,8 @@ Classes
 
 * hgvs.parser.HGVSParser
 
-* hgvs.edit.DelIns
+* hgvs.edit
+** hgvs.edit.DelIns
 
 * hgvs.location.Interval
 

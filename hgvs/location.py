@@ -29,8 +29,6 @@ class Position(int):
     def __init__(self,position):
         super(Position,self).__init__()
         assert position>=1, self.__class__.__name__ + ': position must be >= 1'
-    def __str__(self):
-        return str(self)
 
 class CDSPosition( recordtype.recordtype(
         'CDSPosition', field_names = [ 'base', 'offset' ] ) ):
