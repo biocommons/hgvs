@@ -1,6 +1,6 @@
 import recordtype
 
-class Variant( recordtype.recordtype('Variant', ['seqref','type','posedits']) ):
+class Variant( recordtype.recordtype('Variant', ['seqref','type','posedit']) ):
     """
     represents a basic HGVS variant.  The only requirement is that each
     component can be stringified; for example, passing pos as either a string
@@ -8,4 +8,4 @@ class Variant( recordtype.recordtype('Variant', ['seqref','type','posedits']) ):
     """
     
     def __str__(self):
-        return '{self.seqref}:{self.type}.{self.posedits}'.format(self=self)
+        return '{self.seqref}:{self.type}.{self.posedit}'.format(self=self)
