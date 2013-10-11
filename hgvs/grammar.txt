@@ -1,0 +1,144 @@
+# HGVS Grammar
+# 2013-09-16 10:25 Reece Hart <reecehart@gmail.com>
+
+# For the purposes of this grammar, an HGVS variant is limited to the subset
+# of the Mutnomen document [3] that defines variant positions reasonably
+# precisely.
+#
+# The basic structure of an HGVS variant is:
+#    <ac>:<type>.<posedit>
+# where <ac> is a sequence accession, <type> determines the sequence type
+# and coordinate system ([cgmnpr]), and <posedit> is a string/list/object of
+# positions and edit operations.
+# 
+# The easiest way to describe this grammar is by way of example. For the
+# variant
+#     NM_01234.5:c.[12A>C;34-56_78+90G>T]
+# we parse it into these components:
+#     NM_01234.5 : c . [ 12 A>C ; 34 -56 _ 78 +90 del ]
+#     -----------------------------------------------    hgvs_variant (sp. c_variant)
+#     ----------   -     ----------------------------    ac, type, posedits (a list)
+#                        ------   -------------------    two posedit instances
+#                        -- ---   --------------- ---    posedit = interval,edit
+#                        -- - -   ------   ------ ---    int = <start,end>; edit = <ref,alt>
+#                        --       -- ---   -- ---        pos = <base,offset>
+# In this diagram, contiguous dashes indicate both a node in the grammar
+# and a python class instance. Subsequent lines of the diagram indicate
+# object instance nesting.
+# 
+# In addition to the above, this grammar also supports "HGVS-lite"
+# notations for position used at InVitae, like 'NM_01234.5:c.56'.  The
+# hgvs_lite rule consists of a ref sequence, type, and position, and is
+# parsed into corresponding objects.
+#
+# References:
+# 1. http://www.hgvs.org/mutnomen/
+# 2. Describing structural changes by extending HGVS sequence variation nomenclature.
+#    http://www.ncbi.nlm.nih.gov/pubmed/21309030
+# 3. A formalized description of the standard human variant nomenclature...
+#    http://www.ncbi.nlm.nih.gov/pubmed/21992071
+
+#
+# QUESTIONS
+# * grammar versions: 1, 2, lax, strict, etc
+# * validation: strict
+# * position singletons: cds_start_Position, cds_end_Position, 
+#
+# UNIMPLEMENTED -- TBD
+# * inversion
+# * IVS#, EX#
+# * eq/unk effect (=, ?)
+# * complex variants (c.[];[] or c.[;])
+#
+# UNIMPLEMENTED -- PURPOSEFULLY EXCLUDED FOR NOW
+# Many symbols suggested in Laros et al have been purposefully excluded.  They are
+# listed below with brief rationale:
+# * d, u (downstream, upstream) -- By definition, these refer to positions
+# outside the transcript, which necessarily means that the identity of the
+# position depends on external data. 
+# * gene symbols (and gene symbol suffixes, _i and _v) -- these do not
+# refer to a sequence precisely. 
+# * other uncertainty (e.g., '(;)')
+# * non-measurements (e.g., 'p.0')
+# * uncertain positions (?)
+
+
+
+############################################################################
+## Top-level parser
+# Each of these right-hand productions is expected to return a Variant
+# instance
+
+# any_variant: lax syntactic parser
+any_variant = accn:ac ':' any_type:type '.' any_posedit:posedit -> Variant(ac,type,posedit)
+any_type = :x ?(x in 'cgmnpr') -> x
+any_posedit = <anything+>
+
+hgvs_variant = c_variant | r_variant | gmn_variant
+
+c_variant = accn:ac ':' 'c':type '.' c_posedit:posedit -> Variant(ac,type,posedit)
+c_posedit = c_interval:pos dna_edit:edit -> PosEdit(pos=pos,edit=edit)
+
+r_variant = accn:ac ':' 'r':type '.' r_posedit:posedit -> Variant(ac,type,posedit)
+r_posedit = interval:pos rna_edit:edit -> PosEdit(pos=pos,edit=edit)
+
+gmn_variant = accn:ac ':' gmn_type:type '.' gmn_posedit:posedit -> Variant(ac,type,posedit)
+gmn_type = :x ?(x in 'gmn') -> x
+gmn_posedit = interval:pos dna_edit:edit -> PosEdit(pos=pos,edit=edit)
+
+
+############################################################################
+## HGVS Position ("HGVS Lite")
+hgvs_position = accn:ac ':' any_type:type '.' c_interval:pos -> HGVSPosition(ac, type, pos)
+
+
+############################################################################
+## Edits
+
+dna_edit = dna_subst | dna_delins | dna_ins | dna_del | dna_dup
+dna_del = 'del' (<num>|<dna*>):ref -> DelIns(ref=ref,alt=None)
+dna_delins = 'del' (<num>|<dna*>):ref 'ins' <dna+>:alt  -> DelIns(ref=ref,alt=alt)
+dna_dup = 'dup' <dna*>:seq -> Dup(seq=seq)
+dna_ins = 'ins' <dna+>:alt -> DelIns(ref=None,alt=alt)
+dna_subst = dna:ref '>' dna:alt -> DelIns(ref=ref,alt=alt)
+
+rna_edit = rna_subst | rna_delins | rna_ins | rna_del | rna_dup
+rna_del = 'del' (<num>|<rna*>):ref -> DelIns(ref=ref,alt=None)
+rna_delins = 'del' (<num>|<rna*>):ref 'ins' <rna+>:alt  -> DelIns(ref=ref,alt=alt)
+rna_dup = 'dup' <rna*>:seq -> Dup(seq=seq)
+rna_ins = 'ins' <rna+>:alt -> DelIns(ref=None,alt=alt)
+rna_subst = rna:ref '>' rna:alt -> DelIns(ref=ref,alt=alt)
+
+
+############################################################################
+## Basic types
+
+dna_seq = <dna+>
+dna = :x ?(x in 'ACGTacgt') -> x
+
+rna_seq = <rna+>
+rna = :x ?(x in 'ACGUacgu') -> x
+
+aa1_seq = <aa1+>
+aa1 = :x ?(x in 'ACDEFGHIKLMNPQRSTVWY') -> x
+
+aa3_seq = <aa3+>
+aa3 = :x ?(x in ['Ala','Cys','Asp','Glu','Phe','Gly','His','Iso','Lys','Leu',
+				 'Met','Asn','Pro','Gln','Arg','Ser','Thr','Val','Trp','Tyr']) -> x
+
+interval = (pos:start '_' pos:end -> Interval(start,end)) | (pos:start -> Interval(start,start))
+c_interval = (c_pos:start '_' c_pos:end -> Interval(start,end)) | (c_pos:start -> Interval(start,start))
+
+pos = num:pos -> Position(pos)
+c_pos = ('*' num:x -> CDSPosition(0, x)) 
+		| snum:b (snum | -> 0):o -> CDSPosition(b,o)
+
+
+# Accessions, possibly versioned. Should accept, e.g., NM_01234.5, LRG_01234_1p1
+accn = <letter letterOrDigit+ ('_' letterOrDigit+)? ('.' digit+)?>
+
+snum = <pm? num>:x -> int(x)
+num = <digit+>:x -> int(x)
+pm = :x ?(x in '-+') -> x
+
+Not_Yet_Implemented = 'NOT YET IMPLEMENTED'
