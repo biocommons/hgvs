@@ -1,15 +1,14 @@
 from setuptools import setup
 
-with open('hgvs/version.py') as f:
-    exec(f.read())
-
 with open('doc/description.rst') as f:
     long_description = f.read()
 
+
 setup(
     name = "hgvs",
-    version = __version__,
-    packages = ['hgvs', 'hgvs.utils'],
+    use_hg_version = True,
+
+    packages = ['hgvs'],
     package_data={'hgvs': ['grammar.txt']},
 
     url = 'https://bitbucket.org/invitae/hgvs',
@@ -28,5 +27,9 @@ setup(
         'recordtype',
         'sphinx',
         'sphinx-pypi-upload',
-        ],    
+        ],
+
+    setup_requires = [
+        'hgtools',
+        ]
 )
