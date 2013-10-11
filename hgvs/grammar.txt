@@ -6,9 +6,9 @@
 # precisely.
 #
 # The basic structure of an HGVS variant is:
-#    <ac>:<type>.<posedits>
+#    <ac>:<type>.<posedit>
 # where <ac> is a sequence accession, <type> determines the sequence type
-# and coordinate system ([cgmnpr]), and <posedits> is a string or list of
+# and coordinate system ([cgmnpr]), and <posedit> is a string/list/object of
 # positions and edit operations.
 # 
 # The easiest way to describe this grammar is by way of example. For the
@@ -70,24 +70,21 @@
 # instance
 
 # any_variant: lax syntactic parser
-any_variant = accn:ac ':' any_type:type '.' any_posedits:posedits -> Variant(ac,type,posedits)
+any_variant = accn:ac ':' any_type:type '.' any_posedit:posedit -> Variant(ac,type,posedit)
 any_type = :x ?(x in 'cgmnpr') -> x
-any_posedits = <anything+>
+any_posedit = <anything+>
 
 hgvs_variant = c_variant | r_variant | gmn_variant
 
-c_variant = accn:ac ':' 'c':type '.' c_posedits:posedits -> Variant(ac,type,posedits)
-c_posedits = c_posedit:posedit -> [posedit]
-c_posedit = c_pos:pos dna_edit:edit -> PosEdit(pos=pos,edit=edit)
+c_variant = accn:ac ':' 'c':type '.' c_posedit:posedit -> Variant(ac,type,posedit)
+c_posedit = c_interval:pos dna_edit:edit -> PosEdit(pos=pos,edit=edit)
 
-r_variant = accn:ac ':' 'r':type '.' r_posedits:posedits -> Variant(ac,type,posedits)
-r_posedits = r_posedit:posedit -> [posedit]
-r_posedit = r_pos:pos rna_edit:edit -> PosEdit(pos=pos,edit=edit)
+r_variant = accn:ac ':' 'r':type '.' r_posedit:posedit -> Variant(ac,type,posedit)
+r_posedit = interval:pos rna_edit:edit -> PosEdit(pos=pos,edit=edit)
 
-gmn_variant = accn:ac ':' gmn_type:type '.' gmn_posedits:posedits -> Variant(ac,type,posedits)
+gmn_variant = accn:ac ':' gmn_type:type '.' gmn_posedit:posedit -> Variant(ac,type,posedit)
 gmn_type = :x ?(x in 'gmn') -> x
-gmn_posedits = gmn_posedit:posedit -> [posedit]
-gmn_posedit = gmn_pos:pos dna_edit:edit -> PosEdit(pos=pos,edit=edit)
+gmn_posedit = interval:pos dna_edit:edit -> PosEdit(pos=pos,edit=edit)
 
 
 ############################################################################
@@ -127,8 +124,7 @@ aa3 = :x ?(x in ['Ala','Cys','Asp','Glu','Phe','Gly','His','Iso','Lys','Leu',
 interval = (pos:start '_' pos:end -> Interval(start,end)) | (pos:start -> Interval(start,start))
 c_interval = (c_pos:start '_' c_pos:end -> Interval(start,end)) | (c_pos:start -> Interval(start,start))
 
-gmn_pos = num:pos -> Position(pos)
-r_pos = num:pos -> Position(pos)
+pos = num:pos -> Position(pos)
 c_pos =   ('*' num:x -> CDSPosition(0, x)) 
 		| ('-' num:x -> CDSPosition(0,-x))
 		| (num:b (snum | -> 0):o -> CDSPosition(b,o))

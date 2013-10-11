@@ -1,3 +1,4 @@
+import os
 import unittest
 
 from parsley import ParseError
@@ -5,6 +6,9 @@ import hgvs.parser
 
 class Test_Position(unittest.TestCase):
     longMessage = True
+    
+    def setUp(self):
+        self.parser = hgvs.parser.Parser()
 
     def test_Parser_roundtrip(self):
         pos_tests = """
@@ -26,9 +30,8 @@ NM_021960.4:c.984_987delinsTTGCAAA
 NM_024944.2:c.389+1G>A
 NM_144588.6:c.805-15_805-11del5
 """.strip().split('\n')
-        p = hgvs.parser.Parser()
         for t in pos_tests:
-            self.assertEqual( t, str(p.parse(t)) )
+            self.assertEqual( t, str(self.parser.parse(t)) )
 
 
     def test_Parser_reject(self):
@@ -36,18 +39,15 @@ NM_144588.6:c.805-15_805-11del5
 NC_000001.10:g.155208383_155208384dup2
 NM_001005741.2:c.512_513dup2
 """.strip().split('\n')
-        p = hgvs.parser.Parser()
         for t in neg_tests:
             with self.assertRaises(Exception, msg=t):
-                p.parse(t)
+                self.parser.parse(t)
 
     def test_parser_hgvs_gauntlet(self):
         fn = os.path.join( os.path.dirname(__file__), 'data', 'hgvs-gauntlet' )
         for var in open(fn,'r'):
             var = var.strip()
-            v = self.grammar(var).hgvs_variant()
-            import IPython; IPython.embed()
-
+            v = self.parser._grammar(var).hgvs_variant()
             self.assertEqual( str(v), var )
 
 if __name__ == '__main__':

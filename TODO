@@ -1,19 +1,18 @@
 * rename DelIns to RefAlt
 
-* investigate/use hgtools
-
 * positions: finalize location/position/interval/base+offset names
 
 * hgvs.util NC 2 chr & vv
+
+* ac parser
+
+* sub parser (c.76A>T)
+
+* pos parser NM_123.4:c.76 ("hgvs lite")
+
 
 * hgvs validator
 
 * hgvs mapper
 
 * hgvs formatter
-
-* ac parser
-
-* sub parser (c.76A>T)
-
-* pos parser NM_123.4:c.76
