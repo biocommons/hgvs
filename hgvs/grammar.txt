@@ -130,9 +130,8 @@ interval = (pos:start '_' pos:end -> Interval(start,end)) | (pos:start -> Interv
 c_interval = (c_pos:start '_' c_pos:end -> Interval(start,end)) | (c_pos:start -> Interval(start,start))
 
 pos = num:pos -> Position(pos)
-c_pos =   ('*' num:x -> CDSPosition(0, x)) 
-		| ('-' num:x -> CDSPosition(0,-x))
-		| (num:b (snum | -> 0):o -> CDSPosition(b,o))
+c_pos = ('*' num:x -> CDSPosition(0, x)) 
+		| snum:b (snum | -> 0):o -> CDSPosition(b,o)
 
 
 # Accessions, possibly versioned. Should accept, e.g., NM_01234.5, LRG_01234_1p1

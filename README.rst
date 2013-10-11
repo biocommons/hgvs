@@ -39,6 +39,14 @@ Simple stuff::
   In [16]: pos
   Out[16]: Interval(start=12-34, end=56+78)
 
+  # 5' and 3' UTR positions are supported
+  In [4]: pos = parser.c_interval('-12-34_*78')
+  
+  In [5]: pos
+  Out[5]: Interval(start=-12-34, end=*78)
+  
+  In [6]: pos.end
+  Out[6]: CDSPosition(base=0, offset=78)
 
 HGVS Variants::
 
