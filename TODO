@@ -16,3 +16,5 @@
 * hgvs mapper
 
 * hgvs formatter
+
+* AndyMC: extract parser test cases from (test_hgvs_parser.py) into standard set of test cases for HGVS dependent modules. 
