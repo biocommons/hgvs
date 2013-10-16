@@ -19,7 +19,7 @@ setup(
     author_email = 'reece+hgvs@invitae.com',
     license = 'MIT',
 
-    zip_safe = True,
+    zip_safe = False, # grammar.txt not zip safe
 
     install_requires = [
         'nose',
