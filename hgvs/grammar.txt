@@ -74,7 +74,7 @@ any_variant = accn:ac ':' any_type:type '.' any_posedit:posedit -> Variant(ac,ty
 any_type = :x ?(x in 'cgmnpr') -> x
 any_posedit = <anything+>
 
-hgvs_variant = c_variant | r_variant | gmn_variant
+hgvs_variant = c_variant | r_variant | gmn_variant # | p_variant
 
 c_variant = accn:ac ':' 'c':type '.' c_posedit:posedit -> Variant(ac,type,posedit)
 c_posedit = c_interval:pos dna_edit:edit -> PosEdit(pos=pos,edit=edit)
@@ -85,6 +85,8 @@ r_posedit = interval:pos rna_edit:edit -> PosEdit(pos=pos,edit=edit)
 gmn_variant = accn:ac ':' gmn_type:type '.' gmn_posedit:posedit -> Variant(ac,type,posedit)
 gmn_type = :x ?(x in 'gmn') -> x
 gmn_posedit = interval:pos dna_edit:edit -> PosEdit(pos=pos,edit=edit)
+
+#p_variant = accn:ac 
 
 
 ############################################################################
@@ -130,8 +132,8 @@ interval = (pos:start '_' pos:end -> Interval(start,end)) | (pos:start -> Interv
 c_interval = (c_pos:start '_' c_pos:end -> Interval(start,end)) | (c_pos:start -> Interval(start,start))
 
 pos = num:pos -> Position(pos)
-c_pos = ('*' num:x -> CDSPosition(0, x)) 
-		| snum:b (snum | -> 0):o -> CDSPosition(b,o)
+c_pos = snum:b (snum | -> 0):o -> CDSPosition(b,o)
+		| '*' num:b (snum | -> 0):o -> CDSPosition(b,o,datum=hgvs.location.CDS_END)
 
 
 # Accessions, possibly versioned. Should accept, e.g., NM_01234.5, LRG_01234_1p1

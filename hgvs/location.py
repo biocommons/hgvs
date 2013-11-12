@@ -9,21 +9,16 @@ This module provides for Representing the location of variants in HGVS nomenclat
   * CDS stop coordinates (e.g., NM_01234.5:c.*13A>C)  
 
 Classes:
-
   * Position -- a simple integer
-  * CDSPosition -- a position with base and offset (à la complex numbers)
+  * CDSPosition -- a position with datum, base, and offset
   * Interval -- an interval of Positions
   * CDSInterval -- an interval of CDSPositions
-
-NOTE: Position and CDSPosition are unrelated. Position is a subclass
-of integer; CDSPosition is a class that has two instance variables, base and offset.
-Both support representation 
-
-
 """
 
 import recordtype
 
+CDS_START = 0
+CDS_END = 1
 
 class Position(int):
     def __init__(self,position):
@@ -31,54 +26,60 @@ class Position(int):
         assert position>=1, self.__class__.__name__ + ': position must be >= 1'
 
 class CDSPosition( recordtype.recordtype(
-        'CDSPosition', field_names = [ 'base', 'offset' ] ) ):
+        'CDSPosition', field_names = [ 'base', 'offset', 'datum' ] ) ):
     """
-    Class for dealing with CDS coordinates in transcript variants.  Positions and
-    offsets are 1-based, with no 0, per the HGVS recommendations.  (If you're using this with UTA, 
-    be aware that UTA uses interbase coordinates.)
+    Class for dealing with CDS coordinates in transcript variants.
 
-    This class models CDS positions using a `base' coordinate and an `offset' with
-    the following interpretations:
+    This class models CDS positions using a `base' coordinate, which is
+    measured relative to a specified `datum' (CDS_START or CDS_END), and
+    an `offset', which is 0 for exonic positions and non-zero for intronic
+    positions.  Positions and offsets are 1-based, with no 0, per the HGVS
+    recommendations.  (If you're using this with UTA, be aware that UTA
+    uses interbase coordinates.)
 
-    position   base     offset     meaning
-    c.55        55         0       cds position 55
-    c.55+1      55         1       intronic variant +1 from boundary
-    c.-55        0       -55       5' UTR variant, 55 nt upstream of ATG
-    c.*55        0        55       3' UTR variant, 55 nt after STOP
-    c.1          1         0	   start codon
-    c.1234    1234         0       stop codon (assuming CDS length is 1234)
-    c.*1         0         1       STOP + 1
-
-    In other words:
-    - offset == 0 for coding positions, and offset != 0 for non-coding positions.
-    - base == 0 for UTR, with offset<0 for 5' and offset>0 for 3'
+    hgvs     datum      base  offset  meaning
+    c.55     CDS_START    55       0  cds position 55
+    c.55+1   CDS_START    55       1  intronic variant +1 from boundary
+    c.-55    CDS_START   -55       0  5' UTR variant, 55 nt upstream of ATG
+    c.1      CDS_START     1       0    start codon
+    c.1234   CDS_START  1234       0  stop codon (assuming CDS length is 1233)
+    c.*1     CDS_END       0       1  STOP + 1
+    c.*55    CDS_END       0      55  3' UTR variant, 55 nt after STOP
     """
     
-    def __init__(self,base,offset=0):
-        super(CDSPosition,self).__init__(base=base,offset=offset)
+    def __init__(self,base,offset=0,datum=CDS_START):
+        assert base != 0, 'CDSPosition base may not be 0'
+        super(CDSPosition,self).__init__(base=base,offset=offset,datum=datum)
 
     @property
     def is_coding(self):
-        return self.offset == 0
+        return (self.is_exonic
+                and (self.datum == CDS_START and self.base > 0) )
 
     @property
     def is_utr(self):
-        return self.base == 0
+        return (self.is_exonic
+                and ((self.datum == CDS_START and self.base < 0)
+                     or (self.datum == CDS_END and self.base > 0)))
 
     @property
+    def is_exonic(self):
+        """returns True if position is within an exon (but possibly UTR).
+        This function is unaware of the exon structure; base coordinates
+        that are outside the exon boundaries will still be considered
+        exonic."""
+        return self.offset == 0
+    
+    @property
     def is_intronic(self):
-        return self.base != 0 and self.offset != 0
+        """returns True if position is not within an exon. See is_exonic()"""
+        return not self.is_exonic
 
     def __str__(self):
-        if self.offset == 0:              # coding
-            return str(self.base)
-        elif self.base != 0:              # intronic
-            return '%d%+d' % (self.base, self.offset)
-        elif self.offset < 0:             # 5' UTR
-            return str(self.offset)
-        elif self.offset > 0:             # 3' UTR
-            return '*' + str(self.offset)
-        raise RuntimeError('Fell through to unexpected <base,offset> case')
+        base_str = str(self.base) if self.datum == CDS_START else '*' + str(self.base)
+        offset_str = '' if self.offset == 0 else '%+d' % self.offset
+        return base_str + offset_str
+
 
 
 class Interval( recordtype.recordtype(

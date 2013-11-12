@@ -10,35 +10,71 @@ class Test_Location(unittest.TestCase):
             self.assertEqual( hgvs.location.Position(-1) )
 
     def test_CDSPosition(self):
+        # c.5
         cdsp = hgvs.location.CDSPosition(5)
+        self.assertEqual( cdsp.datum, hgvs.location.CDS_START )
         self.assertEqual( cdsp.base, 5 )
         self.assertEqual( cdsp.offset, 0 )
         self.assertEqual( str(cdsp), '5' )
+        self.assertTrue( cdsp.is_coding )
+        self.assertTrue( cdsp.is_exonic )
+        self.assertFalse( cdsp.is_intronic )
+        self.assertFalse( cdsp.is_utr )
 
+        # c.5+6
         cdsp = hgvs.location.CDSPosition(5,6)
+        self.assertEqual( cdsp.datum, hgvs.location.CDS_START )
         self.assertEqual( cdsp.base, 5 )
         self.assertEqual( cdsp.offset, 6 )
         self.assertEqual( str(cdsp), '5+6' )
+        self.assertFalse( cdsp.is_coding )
+        self.assertFalse( cdsp.is_exonic )
+        self.assertTrue( cdsp.is_intronic )
+        self.assertFalse( cdsp.is_utr )
 
+        # c.5-7
         cdsp = hgvs.location.CDSPosition(5,-7)
+        self.assertEqual( cdsp.datum, hgvs.location.CDS_START )
         self.assertEqual( cdsp.base, 5 )
         self.assertEqual( cdsp.offset, -7 )
         self.assertEqual( str(cdsp), '5-7' )
+        self.assertFalse( cdsp.is_coding )
+        self.assertFalse( cdsp.is_exonic )
+        self.assertTrue( cdsp.is_intronic )
+        self.assertFalse( cdsp.is_utr )
 
+        # c.-5+7
         cdsp = hgvs.location.CDSPosition(-5,7)
+        self.assertEqual( cdsp.datum, hgvs.location.CDS_START )
         self.assertEqual( cdsp.base, -5 )
         self.assertEqual( cdsp.offset, 7 )
         self.assertEqual( str(cdsp), '-5+7' )
+        self.assertFalse( cdsp.is_coding )
+        self.assertFalse( cdsp.is_exonic )
+        self.assertTrue( cdsp.is_intronic )
+        self.assertFalse( cdsp.is_utr )
 
-        cdsp = hgvs.location.CDSPosition(0,-7)
-        self.assertEqual( cdsp.base, 0 )
-        self.assertEqual( cdsp.offset, -7 )
-        self.assertEqual( str(cdsp), '-7' )
+        # c.*5
+        cdsp = hgvs.location.CDSPosition(5,datum=hgvs.location.CDS_END)
+        self.assertEqual( cdsp.datum, hgvs.location.CDS_END )
+        self.assertEqual( cdsp.base, 5 )
+        self.assertEqual( cdsp.offset, 0 )
+        self.assertEqual( str(cdsp), '*5' )
+        self.assertFalse( cdsp.is_coding )
+        self.assertTrue( cdsp.is_exonic )
+        self.assertFalse( cdsp.is_intronic )
+        self.assertTrue( cdsp.is_utr )
 
-        cdsp = hgvs.location.CDSPosition(0,+7)
-        self.assertEqual( cdsp.base, 0 )
-        self.assertEqual( cdsp.offset, +7 )
-        self.assertEqual( str(cdsp), '*7' )
+        # c.*5+7
+        cdsp = hgvs.location.CDSPosition(5,7,datum=hgvs.location.CDS_END)
+        self.assertEqual( cdsp.datum, hgvs.location.CDS_END )
+        self.assertEqual( cdsp.base, 5 )
+        self.assertEqual( cdsp.offset, 7 )
+        self.assertEqual( str(cdsp), '*5+7' )
+        self.assertFalse( cdsp.is_coding )
+        self.assertFalse( cdsp.is_exonic )
+        self.assertTrue( cdsp.is_intronic )
+        self.assertFalse( cdsp.is_utr )
 
 
     def test_CDSInterval(self):
