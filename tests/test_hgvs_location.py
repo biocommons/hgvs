@@ -77,6 +77,12 @@ class Test_Location(unittest.TestCase):
         self.assertFalse( cdsp.is_utr )
 
 
+    def Test_AAPosition(self):
+        ap = hgvs.location.AAPosition( 15, 'Ser' )
+        self.assertEqual( ap.pos, 15 )
+        self.assertEqual( ap.aa, 'Ser' )
+        self.assertEqual( str(ap), 'Ser15' )
+        
     def test_CDSInterval(self):
         cdsr = hgvs.location.Interval( hgvs.location.CDSPosition(base=12,offset=+34),
                                        hgvs.location.CDSPosition(base=56,offset=-78) )

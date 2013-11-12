@@ -74,7 +74,7 @@ any_variant = accn:ac ':' any_type:type '.' any_posedit:posedit -> Variant(ac,ty
 any_type = :x ?(x in 'cgmnpr') -> x
 any_posedit = <anything+>
 
-hgvs_variant = c_variant | r_variant | gmn_variant # | p_variant
+hgvs_variant = c_variant | r_variant | gmn_variant | p_variant
 
 c_variant = accn:ac ':' 'c':type '.' c_posedit:posedit -> Variant(ac,type,posedit)
 c_posedit = c_interval:pos dna_edit:edit -> PosEdit(pos=pos,edit=edit)
@@ -86,7 +86,8 @@ gmn_variant = accn:ac ':' gmn_type:type '.' gmn_posedit:posedit -> Variant(ac,ty
 gmn_type = :x ?(x in 'gmn') -> x
 gmn_posedit = interval:pos dna_edit:edit -> PosEdit(pos=pos,edit=edit)
 
-#p_variant = accn:ac 
+p_variant = accn:ac ':' 'p':type '.' p_posedit:posedit -> Variant(ac,type,posedit)
+p_posedit = p_interval:pos aa_edit:edit -> PosEdit(pos=pos,edit=edit)
 
 
 ############################################################################
@@ -111,6 +112,13 @@ rna_dup = 'dup' <rna*>:seq -> Dup(seq=seq)
 rna_ins = 'ins' <rna+>:alt -> DelIns(ref=None,alt=alt)
 rna_subst = rna:ref '>' rna:alt -> DelIns(ref=ref,alt=alt)
 
+aa_edit = aa_subst | aa_delins | aa_ins | aa_del | aa_dup
+aa_del = 'del' (<num>|<aa3*>):ref -> DelIns(ref=ref,alt=None)
+aa_delins = 'del' (<num>|<aa3*>):ref 'ins' <aa3+>:alt  -> DelIns(ref=ref,alt=alt)
+aa_dup = 'dup' <aa3*>:seq -> Dup(seq=seq)
+aa_ins = 'ins' <aa3+>:alt -> DelIns(ref=None,alt=alt)
+aa_subst = <aa3+>:alt -> DelIns(ref=None,alt=alt)
+
 
 ############################################################################
 ## Basic types
@@ -122,18 +130,21 @@ rna_seq = <rna+>
 rna = :x ?(x in 'ACGUacgu') -> x
 
 aa1_seq = <aa1+>
-aa1 = :x ?(x in 'ACDEFGHIKLMNPQRSTVWY') -> x
+aa1 = :x ?(x in 'ACDEFGHIKLMNPQRSTVWY*') -> x
 
 aa3_seq = <aa3+>
-aa3 = :x ?(x in ['Ala','Cys','Asp','Glu','Phe','Gly','His','Iso','Lys','Leu',
-				 'Met','Asn','Pro','Gln','Arg','Ser','Thr','Val','Trp','Tyr']) -> x
+aa3 = <letter{3}>:x ?(x in ['Ala','Cys','Asp','Glu','Phe','Gly','His','Iso','Lys','Leu',
+                          'Met','Asn','Pro','Gln','Arg','Ser','Thr','Val','Trp','Tyr',
+                          'Ter']) -> x
 
 interval = (pos:start '_' pos:end -> Interval(start,end)) | (pos:start -> Interval(start,start))
 c_interval = (c_pos:start '_' c_pos:end -> Interval(start,end)) | (c_pos:start -> Interval(start,start))
+p_interval = (p_pos:start '_' p_pos:end -> Interval(start,end)) | (p_pos:start -> Interval(start,start))
 
 pos = num:pos -> Position(pos)
 c_pos = snum:b (snum | -> 0):o -> CDSPosition(b,o)
 		| '*' num:b (snum | -> 0):o -> CDSPosition(b,o,datum=hgvs.location.CDS_END)
+p_pos = aa3:aa num:pos -> hgvs.location.AAPosition(pos,aa)
 
 
 # Accessions, possibly versioned. Should accept, e.g., NM_01234.5, LRG_01234_1p1

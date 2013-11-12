@@ -81,6 +81,14 @@ class CDSPosition( recordtype.recordtype(
         return base_str + offset_str
 
 
+class AAPosition( recordtype.recordtype(
+        'AAPosition', field_names = [ 'pos', 'aa' ] ) ):
+    def __init__(self,pos,aa):
+        super(AAPosition,self).__init__(pos,aa)
+
+    def __str__(self):
+        return self.aa + str(self.pos)
+
 
 class Interval( recordtype.recordtype(
         'Interval', field_names = [ 'start', 'end' ] ) ):

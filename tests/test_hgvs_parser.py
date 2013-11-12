@@ -29,6 +29,18 @@ NM_002764.3:c.793_794insAA
 NM_021960.4:c.984_987delinsTTGCAAA
 NM_024944.2:c.389+1G>A
 NM_144588.6:c.805-15_805-11del5
+NP_003768.2:p.Ala4518_Ala5423delinsGln
+NP_003768.2:p.Ile4452Asnfs*4
+NP_003768.2:p.Leu1511Serfs*10
+NP_003768.2:p.Leu4363del
+NP_003768.2:p.Lys3045Thrfs*14
+NP_003768.2:p.Arg4412Alafs*2
+NP_003768.2:p.Thr4509Argfs*15
+NP_003768.2:p.Leu2490_Thr2496del
+NP_003768.2:p.Val4487Cysfs*3
+NP_003768.2:p.Ser2176*
+NP_003768.2:p.Arg2852*
+NP_003768.2:p.Arg2907*
 """.strip().split('\n')
         for t in pos_tests:
             self.assertEqual( t, str(self.parser.parse(t)) )
