@@ -1,3 +1,7 @@
+-*-outline-*-
+
+* INCOMING
+
 * rename DelIns to RefAlt
 
 * positions: finalize location/position/interval/base+offset names
@@ -16,3 +20,19 @@
 * hgvs mapper
 
 * hgvs formatter
+
+
+* SOON
+
+
+
+
+
+
+* DEFERRED
+
+** build a __version__ that doesn't lie
+getting __version__ via pkg_resources lies when using a local package
+(e.g., PYTHONPATH=. python -c 'import hgvs') AND there's an installed
+version elsewhere. (you'll get the version of the installed package)
+
