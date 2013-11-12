@@ -28,6 +28,8 @@ class Parser(object):
 
             'HGVSPosition': hgvs.hgvsposition.HGVSPosition,
             'Variant': hgvs.variant.Variant,
+
+            'hgvs': hgvs,
             })
 
         self.rules = [ m.replace('rule_','')
