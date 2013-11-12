@@ -7,6 +7,7 @@ SHELL:=/bin/bash -o pipefail
 SELF:=$(firstword $(MAKEFILE_LIST))
 export PYTHONPATH=lib/python
 
+PYPI_SERVICE:=-r invitae
 
 ############################################################################
 #= BASIC USAGE
@@ -36,12 +37,8 @@ develop build build_sphinx install sdist upload_sphinx: %:
 
 #=> upload-<tag>
 upload-%:
-	hg up -r $*
-	python setup.py sdist upload
-
-invitae-upload-%:
-	hg up -r $*
-	python setup.py sdist upload -r invitae
+	[ -z "$$(hg st -admnr)" ] || { echo "Directory contains changes; aborting." 1>&2; hg st -admr; exit 1; }
+	R=$$(hg id -t); hg up -r $*; python setup.py sdist upload ${PYPI_SERVICE}; hg up -r $$R
 
 
 ############################################################################
@@ -53,7 +50,7 @@ clean:
 #=> cleaner: above, and remove generated files
 cleaner: clean
 	find . -name \*.pyc -print0 | xargs -0r /bin/rm -f
-	/bin/rm -fr distribute-* *.egg *.egg-info
+	/bin/rm -fr distribute-* *.egg *.egg-info nosetests.xml
 	make -C doc clean
 #=> cleanest: above, and remove the virtualenv, .orig, and .bak files
 cleanest: cleaner
