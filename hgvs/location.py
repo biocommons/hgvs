@@ -9,24 +9,31 @@ This module provides for Representing the location of variants in HGVS nomenclat
   * CDS stop coordinates (e.g., NM_01234.5:c.*13A>C)  
 
 Classes:
-  * Position -- a simple integer
-  * CDSPosition -- a position with datum, base, and offset
+  * SimplePosition -- a simple integer
+  * BaseOffsetPosition -- a position with datum, base, and offset for c. and r. coordinates
+  * AAPosition -- an amino acid position (with AA)
   * Interval -- an interval of Positions
-  * CDSInterval -- an interval of CDSPositions
 """
 
 import recordtype
 
-CDS_START = 0
-CDS_END = 1
+SEQ_START = 0
+CDS_START = 1
+CDS_END = 2
 
-class Position(int):
+class SimplePosition(int):
     def __init__(self,position):
-        super(Position,self).__init__()
+        super(SimplePosition,self).__init__()
         assert position>=1, self.__class__.__name__ + ': position must be >= 1'
 
-class CDSPosition( recordtype.recordtype(
-        'CDSPosition', field_names = [ 'base', 'offset', 'datum' ] ) ):
+    @property
+    def base(self):
+        """convenience property for similarity with BaseOffsetPosition"""
+        return self
+
+
+class BaseOffsetPosition( recordtype.recordtype(
+        'BaseOffsetPosition', field_names = [ 'base', 'offset', 'datum' ] ) ):
     """
     Class for dealing with CDS coordinates in transcript variants.
 
@@ -38,7 +45,9 @@ class CDSPosition( recordtype.recordtype(
     uses interbase coordinates.)
 
     hgvs     datum      base  offset  meaning
-    c.55     CDS_START    55       0  cds position 55
+    r.55     SEQ_START    55       0  RNA position 55
+    c.55     CDS_START    55       0  CDS position 55
+    c.55     CDS_START    55       0  CDS position 55
     c.55+1   CDS_START    55       1  intronic variant +1 from boundary
     c.-55    CDS_START   -55       0  5' UTR variant, 55 nt upstream of ATG
     c.1      CDS_START     1       0    start codon
@@ -47,36 +56,13 @@ class CDSPosition( recordtype.recordtype(
     c.*55    CDS_END       0      55  3' UTR variant, 55 nt after STOP
     """
     
-    def __init__(self,base,offset=0,datum=CDS_START):
-        assert base != 0, 'CDSPosition base may not be 0'
-        super(CDSPosition,self).__init__(base=base,offset=offset,datum=datum)
-
-    @property
-    def is_coding(self):
-        return (self.is_exonic
-                and (self.datum == CDS_START and self.base > 0) )
-
-    @property
-    def is_utr(self):
-        return (self.is_exonic
-                and ((self.datum == CDS_START and self.base < 0)
-                     or (self.datum == CDS_END and self.base > 0)))
-
-    @property
-    def is_exonic(self):
-        """returns True if position is within an exon (but possibly UTR).
-        This function is unaware of the exon structure; base coordinates
-        that are outside the exon boundaries will still be considered
-        exonic."""
-        return self.offset == 0
-    
-    @property
-    def is_intronic(self):
-        """returns True if position is not within an exon. See is_exonic()"""
-        return not self.is_exonic
+    def __init__(self,base,offset=0,datum=SEQ_START):
+        assert base != 0, 'BaseOffsetPosition base may not be 0'
+        assert datum == CDS_START or base >= 1, 'BaseOffsetPosition base must be >=1 for datum = SEQ_START or CDS_END'
+        super(BaseOffsetPosition,self).__init__(base=base,offset=offset,datum=datum)
 
     def __str__(self):
-        base_str = str(self.base) if self.datum == CDS_START else '*' + str(self.base)
+        base_str = '*' + str(self.base) if self.datum == CDS_END else str(self.base)
         offset_str = '' if self.offset == 0 else '%+d' % self.offset
         return base_str + offset_str
 
