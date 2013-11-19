@@ -1,0 +1,53 @@
+-*-outline-*-
+
+* IMMEDIATE
+
+** positions: finalize location/position/interval/base+offset names
+
+** gauntlet
+cat doc/examples  >> tests/data/hgvs-gauntlet
+hg mv tests/data/hgvs-gauntlet tests/data/gauntlet
+use current content
+
+
+* SOON
+
+** Variant -> SequenceVariant (i.e., not generic HGVS variant)
+and seqref -> ac
+
+** () PosEdit class
+complex and compound posedits
+uncertainty
+
+** rename DelIns to RefAlt
+
+** fix versioning
+hgtools or no?
+getting __version__ via pkg_resources lies when using a local package
+(e.g., PYTHONPATH=. python -c 'import hgvs') AND there's an installed
+version elsewhere. (you'll get the version of the installed package)
+
+** sub parser (c.76A>T)
+verify
+
+** pos parser NM_123.4:c.76 ("hgvs lite")
+verify
+
+
+
+* LATER
+
+** hgvs.util NC 2 chr & vv
+
+** 1 letter protein support
+- hgvs.util.aa1to3() and v.v. to support 1 letter AA
+
+** hgvs mapper
+
+** hgvs formatter
+
+** hgvs validator
+
+
+* DEFERRED
+

@@ -1,0 +1,11 @@
+#!/usr/bin/env perl
+# extract-makefile-documentation -- extract doc from a makefile
+# This script prints the header, up to the first empty line AND prints
+# line starting with #=, and indented by an optional number of >.
+my $print = 1;
+while (<>) {
+  next if ($. == 1 and m/^\#!/);
+  print if ($print or s/^\#=([>]*)\s+/'  ' x length($1)/e);
+  $print = 0 if m/^$/;
+}
+
