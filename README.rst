@@ -46,7 +46,7 @@ Simple stuff::
   Out[5]: Interval(start=-12-34, end=*78)
   
   In [6]: pos.end
-  Out[6]: CDSPosition(base=0, offset=78)
+  Out[6]: BaseOffsetPosition(base=0, offset=78)
 
 HGVS Variants::
 
