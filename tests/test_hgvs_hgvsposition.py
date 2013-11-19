@@ -7,8 +7,8 @@ class Test_HGVSPosition(unittest.TestCase):
         var = hgvs.hgvsposition.HGVSPosition(
             seqref='NM_01234.5',
             type='c',
-            pos=hgvs.location.Interval( hgvs.location.CDSPosition(base=12,offset=+34),
-                                        hgvs.location.CDSPosition(base=56,offset=-78) ) )
+            pos=hgvs.location.Interval( hgvs.location.BaseOffsetPosition(base=12,offset=+34),
+                                        hgvs.location.BaseOffsetPosition(base=56,offset=-78) ) )
 
         self.assertEqual( str(var) , 'NM_01234.5:c.12+34_56-78' )
 

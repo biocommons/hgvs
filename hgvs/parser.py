@@ -17,9 +17,9 @@ class Parser(object):
     def __init__(self,grammar_fn=default_grammar_fn):
         self._grammar_fn = grammar_fn
         self._grammar = parsley.makeGrammar(open(grammar_fn,'r').read(),{
-            'CDSPosition': hgvs.location.CDSPosition,
+            'BaseOffsetPosition': hgvs.location.BaseOffsetPosition,
+            'SimplePosition': hgvs.location.SimplePosition,
             'Interval': hgvs.location.Interval,
-            'Position': hgvs.location.Position,
 
             'DelIns': hgvs.edit.DelIns,
             'Dup': hgvs.edit.Dup,
@@ -27,8 +27,9 @@ class Parser(object):
 
             'PosEdit': hgvs.posedit.PosEdit,
 
-            'HGVSPosition': hgvs.hgvsposition.HGVSPosition,
             'Variant': hgvs.variant.Variant,
+
+            'HGVSPosition': hgvs.hgvsposition.HGVSPosition,
 
             'hgvs': hgvs,
             })
