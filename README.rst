@@ -59,7 +59,7 @@ HGVS Variants::
   Out[9]: Interval(start=23, end=23)
   
   In [12]: var.posedit.edit
-  Out[12]: DelIns(ref=A, alt=T)
+  Out[12]: RefAlt(ref=A, alt=T)
   
   In [13]: var.posedit.edit.ref
   Out[13]: 'A'

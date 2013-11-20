@@ -4,17 +4,17 @@ import hgvs.edit
 from hgvs.exceptions import HGVSError
 
 class Test_Edit(unittest.TestCase):
-    def test_DelIns_exceptions(self):
+    def test_RefAlt_exceptions(self):
         with self.assertRaises(HGVSError):
-            edit = str(hgvs.edit.DelIns(None,None))
+            edit = str(hgvs.edit.RefAlt(None,None))
 
-    def test_DelIns(self):
-        self.assertEqual( str(hgvs.edit.DelIns('A','A'))	, '=' 			)
-        self.assertEqual( str(hgvs.edit.DelIns('A','T'))	, 'A>T' 		)
-        self.assertEqual( str(hgvs.edit.DelIns('AA',None))	, 'delAA' 		)
-        self.assertEqual( str(hgvs.edit.DelIns(None,'TT'))	, 'insTT' 		)
-        self.assertEqual( str(hgvs.edit.DelIns('AA','T'))	, 'delAAinsT' 	)
-        self.assertEqual( str(hgvs.edit.DelIns('A','TT'))	, 'delAinsTT' 	)
+    def test_RefAlt(self):
+        self.assertEqual( str(hgvs.edit.RefAlt('A','A'))	, '=' 			)
+        self.assertEqual( str(hgvs.edit.RefAlt('A','T'))	, 'A>T' 		)
+        self.assertEqual( str(hgvs.edit.RefAlt('AA',None))	, 'delAA' 		)
+        self.assertEqual( str(hgvs.edit.RefAlt(None,'TT'))	, 'insTT' 		)
+        self.assertEqual( str(hgvs.edit.RefAlt('AA','T'))	, 'delAAinsT' 	)
+        self.assertEqual( str(hgvs.edit.RefAlt('A','TT'))	, 'delAinsTT' 	)
 
     def test_Dup(self):
         self.assertEqual( str(hgvs.edit.Dup())				, 'dup' 		)

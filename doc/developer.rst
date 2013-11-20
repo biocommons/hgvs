@@ -34,7 +34,7 @@ Classes
 * hgvs.parser.HGVSParser
 
 * hgvs.edit
-** hgvs.edit.DelIns
+** hgvs.edit.RefAlt
 
 * hgvs.location.Interval
 

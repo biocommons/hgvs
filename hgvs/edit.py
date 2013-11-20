@@ -10,9 +10,9 @@ from hgvs.exceptions import HGVSError
 class Edit(object):
     pass
 
-class DelIns( Edit, recordtype.recordtype('DelIns', ['ref','alt'], default=None) ):
+class RefAlt( Edit, recordtype.recordtype('RefAlt', ['ref','alt'], default=None) ):
     """
-    DelIns is an abstraction of several major variant types.  They are distinguished by 
+    RefAlt is an abstraction of several major variant types.  They are distinguished by 
     whether the ref and alt elements of the structure.
 
     TYPE                                        REF             ALT
@@ -23,7 +23,7 @@ class DelIns( Edit, recordtype.recordtype('DelIns', ['ref','alt'], default=None)
     """
     def __str__(self):
         if self.ref is None and self.alt is None:
-            raise HGVSError('DelIns: ref and alt sequences are both empty')
+            raise HGVSError('RefAlt: ref and alt sequences are both empty')
         if self.ref is not None and self.alt is not None:
             if self.ref == self.alt:
                 return '='
