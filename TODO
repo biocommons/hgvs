@@ -8,20 +8,16 @@
 complex and compound posedits
 uncertainty
 
-** rename DelIns to RefAlt
-
 ** fix versioning
 hgtools or no?
 getting __version__ via pkg_resources lies when using a local package
 (e.g., PYTHONPATH=. python -c 'import hgvs') AND there's an installed
 version elsewhere. (you'll get the version of the installed package)
 
-** sub parser (c.76A>T)
-verify
+** hgvs_invitae
 
-** pos parser NM_123.4:c.76 ("hgvs lite")
-verify
-
+** position uncertainty
+?, ()
 
 
 * LATER
