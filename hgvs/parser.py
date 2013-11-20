@@ -21,7 +21,7 @@ class Parser(object):
             'SimplePosition': hgvs.location.SimplePosition,
             'Interval': hgvs.location.Interval,
 
-            'DelIns': hgvs.edit.DelIns,
+            'RefAlt': hgvs.edit.RefAlt,
             'Dup': hgvs.edit.Dup,
             'Repeat': hgvs.edit.Repeat,
 

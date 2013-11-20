@@ -82,25 +82,25 @@ p_posedit = p_interval:pos p_edit:edit -> PosEdit(pos=pos,edit=edit)
 ## Edits
 
 dna_edit = dna_subst | dna_delins | dna_ins | dna_del | dna_dup
-dna_del = 'del' (<num>|<dna*>):ref -> DelIns(ref=ref,alt=None)
-dna_delins = 'del' (<num>|<dna*>):ref 'ins' <dna+>:alt  -> DelIns(ref=ref,alt=alt)
+dna_del = 'del' (<num>|<dna*>):ref -> RefAlt(ref=ref,alt=None)
+dna_delins = 'del' (<num>|<dna*>):ref 'ins' <dna+>:alt  -> RefAlt(ref=ref,alt=alt)
 dna_dup = 'dup' <dna*>:seq -> Dup(seq=seq)
-dna_ins = 'ins' <dna+>:alt -> DelIns(ref=None,alt=alt)
-dna_subst = dna:ref '>' dna:alt -> DelIns(ref=ref,alt=alt)
+dna_ins = 'ins' <dna+>:alt -> RefAlt(ref=None,alt=alt)
+dna_subst = dna:ref '>' dna:alt -> RefAlt(ref=ref,alt=alt)
 
 rna_edit = rna_subst | rna_delins | rna_ins | rna_del | rna_dup
-rna_del = 'del' (<num>|<rna*>):ref -> DelIns(ref=ref,alt=None)
-rna_delins = 'del' (<num>|<rna*>):ref 'ins' <rna+>:alt  -> DelIns(ref=ref,alt=alt)
+rna_del = 'del' (<num>|<rna*>):ref -> RefAlt(ref=ref,alt=None)
+rna_delins = 'del' (<num>|<rna*>):ref 'ins' <rna+>:alt  -> RefAlt(ref=ref,alt=alt)
 rna_dup = 'dup' <rna*>:seq -> Dup(seq=seq)
-rna_ins = 'ins' <rna+>:alt -> DelIns(ref=None,alt=alt)
-rna_subst = rna:ref '>' rna:alt -> DelIns(ref=ref,alt=alt)
+rna_ins = 'ins' <rna+>:alt -> RefAlt(ref=None,alt=alt)
+rna_subst = rna:ref '>' rna:alt -> RefAlt(ref=ref,alt=alt)
 
 p_edit = p_subst | p_delins | p_ins | p_del | p_dup
-p_del = 'del' (<num>|<aa3*>):ref -> DelIns(ref=ref,alt=None)
-p_delins = 'del' (<num>|<aa3*>):ref 'ins' <aa3+>:alt  -> DelIns(ref=ref,alt=alt)
+p_del = 'del' (<num>|<aa3*>):ref -> RefAlt(ref=ref,alt=None)
+p_delins = 'del' (<num>|<aa3*>):ref 'ins' <aa3+>:alt  -> RefAlt(ref=ref,alt=alt)
 p_dup = 'dup' <aa3*>:seq -> Dup(seq=seq)
-p_ins = 'ins' <aa3+>:alt -> DelIns(ref=None,alt=alt)
-p_subst = <aa3+ p_fs?>:alt -> DelIns(ref=None,alt=alt)
+p_ins = 'ins' <aa3+>:alt -> RefAlt(ref=None,alt=alt)
+p_subst = <aa3+ p_fs?>:alt -> RefAlt(ref=None,alt=alt)
 p_fs = 'fs' ('Ter'|'*') num?
 
 ############################################################################
