@@ -12,11 +12,10 @@
 # positions and edit operations.
 # 
 # The easiest way to describe this grammar is by way of example. For the
-# variant
-#     NM_01234.5:c.[12A>C;34-56_78+90G>T]
-# we parse it into these components:
+# variant NM_01234.5:c.[12A>C;34-56_78+90G>T] parses as follows:
+#
 #     NM_01234.5 : c . [ 12 A>C ; 34 -56 _ 78 +90 del ]
-#     -----------------------------------------------    hgvs_variant (sp. c_variant)
+#     -----------------------------------------------    hgvs_variant
 #     ----------   -     ----------------------------    ac, type, posedits (a list)
 #                        ------   -------------------    two posedit instances
 #                        -- ---   --------------- ---    posedit = interval,edit
@@ -37,38 +36,16 @@
 #    http://www.ncbi.nlm.nih.gov/pubmed/21309030
 # 3. A formalized description of the standard human variant nomenclature...
 #    http://www.ncbi.nlm.nih.gov/pubmed/21992071
-
 #
-# QUESTIONS
-# * grammar versions: 1, 2, lax, strict, etc
-# * validation: strict
-# * position singletons: cds_start_Position, cds_end_Position, 
-#
-# UNIMPLEMENTED -- TBD
-# * inversion
-# * IVS#, EX#
-#
-# UNIMPLEMENTED -- PURPOSEFULLY EXCLUDED FOR NOW
-# Many symbols suggested in Laros et al have been purposefully excluded.  They are
-# listed below with brief rationale:
-# * d, u (downstream, upstream) -- By definition, these refer to positions
-# outside the transcript, which necessarily means that the identity of the
-# position depends on external data. 
-# * gene symbols (and gene symbol suffixes, _i and _v) -- these do not
-# refer to a sequence precisely. 
-# * other uncertainty (e.g., '(;)')
-# * non-measurements (e.g., 'p.0')
-# * uncertain positions (?)
-
 
 
 ############################################################################
 ## Top-level parser
-# Each of these right-hand productions is expected to return a Variant
+# Each of these right-hand productions is expected to return a SequenceVariant
 # instance
 
 # GOAL: hgvs_variant = hgvs_strict | hgvs_invitae | hgvs_lax | hgvs_position | hgvs_posedit 
-hgvs_variant = hgvs_strict | hgvs_position
+hgvs_variant = hgvs_strict
 
 # valid HGVS subset
 hgvs_strict = c_variant | r_variant | gmn_variant # | p_variant
@@ -78,27 +55,26 @@ hgvs_strict = c_variant | r_variant | gmn_variant # | p_variant
 # hgvs_invitae_additions = (copyN, delN)
 
 # any_variant: lax syntactic parser
-any_variant = accn:ac ':' any_type:type '.' any_posedit:posedit -> Variant(ac,type,posedit)
+any_variant = accn:ac ':' any_type:type '.' any_posedit:posedit -> SequenceVariant(ac,type,posedit)
 any_type = letter
 any_posedit = <anything+>
 
-## HGVS Position ("HGVS Lite")
+## HGVS Position -- e.g., NM_01234.5:c.22+6 (without an edit)
 hgvs_position = accn:ac ':' any_type:type '.' c_interval:pos -> HGVSPosition(ac, type, pos)
 
 
-c_variant = accn:ac ':' 'c':type '.' c_posedit:posedit -> Variant(ac,type,posedit)
+c_variant = accn:ac ':' 'c':type '.' c_posedit:posedit -> SequenceVariant(ac,type,posedit)
 c_posedit = c_interval:pos dna_edit:edit -> PosEdit(pos=pos,edit=edit)
 
-r_variant = accn:ac ':' 'r':type '.' r_posedit:posedit -> Variant(ac,type,posedit)
+r_variant = accn:ac ':' 'r':type '.' r_posedit:posedit -> SequenceVariant(ac,type,posedit)
 r_posedit = r_interval:pos rna_edit:edit -> PosEdit(pos=pos,edit=edit)
 
-gmn_variant = accn:ac ':' gmn_type:type '.' gmn_posedit:posedit -> Variant(ac,type,posedit)
+gmn_variant = accn:ac ':' gmn_type:type '.' gmn_posedit:posedit -> SequenceVariant(ac,type,posedit)
 gmn_type = :x ?(x in 'gmn') -> x
 gmn_posedit = interval:pos dna_edit:edit -> PosEdit(pos=pos,edit=edit)
 
-p_variant = accn:ac ':' 'p':type '.' p_posedit:posedit -> Variant(ac,type,posedit)
+p_variant = accn:ac ':' 'p':type '.' p_posedit:posedit -> SequenceVariant(ac,type,posedit)
 p_posedit = p_interval:pos p_edit:edit -> PosEdit(pos=pos,edit=edit)
-
 
 
 

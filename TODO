@@ -2,18 +2,7 @@
 
 * IMMEDIATE
 
-** positions: finalize location/position/interval/base+offset names
-
-** gauntlet
-cat doc/examples  >> tests/data/hgvs-gauntlet
-hg mv tests/data/hgvs-gauntlet tests/data/gauntlet
-use current content
-
-
 * SOON
-
-** Variant -> SequenceVariant (i.e., not generic HGVS variant)
-and seqref -> ac
 
 ** () PosEdit class
 complex and compound posedits

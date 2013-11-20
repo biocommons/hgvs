@@ -27,7 +27,7 @@ class Parser(object):
 
             'PosEdit': hgvs.posedit.PosEdit,
 
-            'Variant': hgvs.variant.Variant,
+            'SequenceVariant': hgvs.variant.SequenceVariant,
 
             'HGVSPosition': hgvs.hgvsposition.HGVSPosition,
 
