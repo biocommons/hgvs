@@ -43,24 +43,13 @@
 
 ############################################################################
 ## Top-level parser
+variant = hgvs_variant | invitae_variant | lax_variant
 
-# GOAL: hgvs_variant = hgvs_strict | hgvs_invitae | hgvs_lax | hgvs_position | hgvs_posedit 
-hgvs_variant = hgvs_strict
 
-# valid HGVS subset
-hgvs_strict = c_variant | r_variant | gmn_variant # | p_variant
+############################################################################
+## HGVS subset strictly
 
-# invitae /additions/ to hgvs_strict
-# i.e., this will NOT parse valid HGVS
-# hgvs_invitae_additions = (copyN, delN)
-
-# any_variant: lax syntactic parser
-any_variant = accn:ac ':' any_type:type '.' any_posedit:posedit -> SequenceVariant(ac,type,posedit)
-any_type = letter
-any_posedit = <anything+>
-
-## HGVS Position -- e.g., NM_01234.5:c.22+6 (without an edit)
-hgvs_position = accn:ac ':' any_type:type '.' c_interval:pos -> HGVSPosition(ac, type, pos)
+hgvs_variant = c_variant | r_variant | gmn_variant # | p_variant
 
 gmn_edit = 'g':type '.' gmn_posedit:posedit -> SequenceVariant(None,type,posedit)
 c_edit = 'c':type '.'   c_posedit:posedit -> SequenceVariant(None,type,posedit)
@@ -79,6 +68,28 @@ gmn_posedit = interval:pos dna_edit:edit -> PosEdit(pos=pos,edit=edit)
 
 p_variant = accn:ac ':' 'p':type '.' p_posedit:posedit -> SequenceVariant(ac,type,posedit)
 p_posedit = p_interval:pos p_edit:edit -> PosEdit(pos=pos,edit=edit)
+
+
+############################################################################
+## invitae /additions/ to hgvs_strict
+# i.e., this will NOT parse valid HGVS
+# invitae_variant = (copyN, delN)
+
+
+############################################################################
+## any_variant: lax syntactic parse of : and . delimited components *as strings*
+any_variant = accn:ac ':' any_type:type '.' any_posedit:posedit -> SequenceVariant(ac,type,posedit)
+any_type = letter
+any_posedit = <anything+>
+
+
+############################################################################
+## HGVS Position -- e.g., NM_01234.5:c.22+6 (without an edit)
+hgvs_position = gmn_hgvs_position | r_hgvs_position | c_hgvs_position | p_hgvs_position
+gmn_hgvs_position = accn:ac ':' gmn_type:type '.' gmn_interval:pos -> HGVSPosition(ac, type, pos)
+r_hgvs_position   = accn:ac ':' 'r':type      '.'   r_interval:pos -> HGVSPosition(ac, type, pos)
+c_hgvs_position   = accn:ac ':' 'c':type      '.'   c_interval:pos -> HGVSPosition(ac, type, pos)
+p_hgvs_position   = accn:ac ':' 'p':type      '.'   p_interval:pos -> HGVSPosition(ac, type, pos)
 
 
 
