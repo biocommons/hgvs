@@ -16,11 +16,13 @@
 #
 #     NM_01234.5 : c . [ 12 A>C ; 34 -56 _ 78 +90 del ]
 #     -----------------------------------------------    hgvs_variant
-#     ----------   -     ----------------------------    ac, type, posedits (a list)
-#                        ------   -------------------    two posedit instances
+#     ----------   ----------------------------------    variant = ac, edit
+#                  -     ----------------------------    edit = type, posedits
+#                        ------   -------------------    posedits = two posedit instances
 #                        -- ---   --------------- ---    posedit = interval,edit
 #                        -- - -   ------   ------ ---    int = <start,end>; edit = <ref,alt>
 #                        --       -- ---   -- ---        pos = <base,offset>
+#
 # In this diagram, contiguous dashes indicate both a node in the grammar
 # and a python class instance. Subsequent lines of the diagram indicate
 # object instance nesting.
@@ -41,8 +43,6 @@
 
 ############################################################################
 ## Top-level parser
-# Each of these right-hand productions is expected to return a SequenceVariant
-# instance
 
 # GOAL: hgvs_variant = hgvs_strict | hgvs_invitae | hgvs_lax | hgvs_position | hgvs_posedit 
 hgvs_variant = hgvs_strict
@@ -62,6 +62,10 @@ any_posedit = <anything+>
 ## HGVS Position -- e.g., NM_01234.5:c.22+6 (without an edit)
 hgvs_position = accn:ac ':' any_type:type '.' c_interval:pos -> HGVSPosition(ac, type, pos)
 
+gmn_edit = 'g':type '.' gmn_posedit:posedit -> SequenceVariant(None,type,posedit)
+c_edit = 'c':type '.'   c_posedit:posedit -> SequenceVariant(None,type,posedit)
+r_edit = 'r':type '.'   r_posedit:posedit -> SequenceVariant(None,type,posedit)
+p_edit = 'p':type '.'   p_posedit:posedit -> SequenceVariant(None,type,posedit)
 
 c_variant = accn:ac ':' 'c':type '.' c_posedit:posedit -> SequenceVariant(ac,type,posedit)
 c_posedit = c_interval:pos dna_edit:edit -> PosEdit(pos=pos,edit=edit)

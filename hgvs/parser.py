@@ -42,6 +42,9 @@ class Parser(object):
         # http://docs.python.org/2/reference/datamodel.html#object.__getattr__
         """
         attempt to call name as a grammar rule
+        For example:
+          var = hgvs_parser.hgvs_variant('NM_01234.5:c.76A>T')
+        where hgvs_variant is a rule in the grammar.
 
         This is challenging because the call structure is self._grammar(s).name(),
         where s is the string to parse, which isn't provided to __getattr__.
