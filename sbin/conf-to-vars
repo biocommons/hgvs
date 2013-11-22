@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+from __future__ import print_function;
+__doc__="""
+ Print conf file as variable assignments.
+
+ The output format is
+ <section>_<option>=<value>
+
+ If multiple files are specified, the result is a
+ set of options merged by sections.  In the case of option name
+ conflicts, the last definition wins.
+""" 
+
+import argparse,ConfigParser,os,sys
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser( description=__doc__ )
+    parser.add_argument( 'conf_files', nargs='+', help="Configuration files to read in" )
+    args = parser.parse_args()
+
+    cp = ConfigParser.SafeConfigParser()
+    for cf in args.conf_files:
+        cp.readfp( open(cf) )
+
+    for s in cp.sections():
+        for o in cp.options(s):
+            print( '{s}_{k}={v}'.format(
+                s = s.replace('-','_'),
+                k = o.replace('-','_'),
+                v = cp.get(s,o)))
