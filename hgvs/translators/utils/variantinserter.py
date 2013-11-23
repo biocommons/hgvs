@@ -97,10 +97,7 @@ class VariantInserter(object):
         ref_length = end - start
 
         if DBG:
-            print start
-            print end
-            print ref
-            print alt
+            print "start: {} end:{} ref:{} alt{}".format(start, end, ref, alt)
 
         if ref is not None and alt is not None: # delins (or snp)
             seq[start:end] = list(alt)
