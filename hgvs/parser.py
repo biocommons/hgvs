@@ -8,6 +8,7 @@ import hgvs.hgvsposition
 import hgvs.location
 import hgvs.posedit
 import hgvs.variant
+import hgvs.utils
 
 from hgvs.exceptions import *
 
@@ -21,7 +22,9 @@ class Parser(object):
             'SimplePosition': hgvs.location.SimplePosition,
             'Interval': hgvs.location.Interval,
 
-            'RefAlt': hgvs.edit.RefAlt,
+            'NARefAlt': hgvs.edit.NARefAlt,
+            'AARefAlt': hgvs.edit.AARefAlt,
+
             'Dup': hgvs.edit.Dup,
             'Repeat': hgvs.edit.Repeat,
 

@@ -4,17 +4,26 @@ import hgvs.edit
 from hgvs.exceptions import HGVSError
 
 class Test_Edit(unittest.TestCase):
-    def test_RefAlt_exceptions(self):
+    def test_NARefAlt_exceptions(self):
         with self.assertRaises(HGVSError):
-            edit = str(hgvs.edit.RefAlt(None,None))
+            edit = str(hgvs.edit.NARefAlt(None,None))
 
-    def test_RefAlt(self):
-        self.assertEqual( str(hgvs.edit.RefAlt('A','A'))	, '=' 			)
-        self.assertEqual( str(hgvs.edit.RefAlt('A','T'))	, 'A>T' 		)
-        self.assertEqual( str(hgvs.edit.RefAlt('AA',None))	, 'delAA' 		)
-        self.assertEqual( str(hgvs.edit.RefAlt(None,'TT'))	, 'insTT' 		)
-        self.assertEqual( str(hgvs.edit.RefAlt('AA','T'))	, 'delAAinsT' 	)
-        self.assertEqual( str(hgvs.edit.RefAlt('A','TT'))	, 'delAinsTT' 	)
+    def test_NARefAlt(self):
+        self.assertEqual( str(hgvs.edit.NARefAlt('A','A'  ))  , '='             )
+        self.assertEqual( str(hgvs.edit.NARefAlt('A','T'  ))  , 'A>T'           )
+        self.assertEqual( str(hgvs.edit.NARefAlt('AA',None))  , 'delAA'         )
+        self.assertEqual( str(hgvs.edit.NARefAlt(None,'TT'))  , 'insTT'         )
+        self.assertEqual( str(hgvs.edit.NARefAlt('AA','T' ))  , 'delAAinsT'     )
+        self.assertEqual( str(hgvs.edit.NARefAlt('A','TT' ))  , 'delAinsTT'     )
+
+
+    def test_AARefAlt(self):
+        self.assertEqual( str(hgvs.edit.AARefAlt('A','A'  ))  , '='             )
+        self.assertEqual( str(hgvs.edit.AARefAlt('A','T'  ))  , 'Thr'           )
+        self.assertEqual( str(hgvs.edit.AARefAlt('AA',None))  , 'del'           )
+        self.assertEqual( str(hgvs.edit.AARefAlt(None,'TT'))  , 'insThrThr'     )
+        self.assertEqual( str(hgvs.edit.AARefAlt('AA','T' ))  , 'delinsThr'     )
+        self.assertEqual( str(hgvs.edit.AARefAlt('A','TT' ))  , 'delinsThrThr'  )
 
     def test_Dup(self):
         self.assertEqual( str(hgvs.edit.Dup())				, 'dup' 		)
