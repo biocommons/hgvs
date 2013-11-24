@@ -56,8 +56,14 @@ class Test_Location(unittest.TestCase):
     def Test_AAPosition(self):
         ap = hgvs.location.AAPosition( 15, 'Ser' )
         self.assertEqual( ap.pos, 15 )
-        self.assertEqual( ap.aa, 'Ser' )
+        self.assertEqual( ap.aa, 'S' )
         self.assertEqual( str(ap), 'Ser15' )
+
+        ap = hgvs.location.AAPosition( 15, 'S' )
+        self.assertEqual( ap.pos, 15 )
+        self.assertEqual( ap.aa, 'S' )
+        self.assertEqual( str(ap), 'Ser15' )
+
         
     def test_Interval(self):
         ival = hgvs.location.Interval( hgvs.location.BaseOffsetPosition(base=12,offset=+34),
