@@ -23,12 +23,15 @@ def aa1_to_aa3(s):
 
 def aa_to_aa1(s):
     "coerce string of 1- or 3-letter amino acids to 1-letter"
-    if s[1] in lowercase:
-        return aa3_to_aa1(s)
-    return s
+    return aa3_to_aa1(s) if __looks_like_aa3_p(s) else s
 
 def aa_to_aa3(s):
     "coerce string of 1- or 3-letter amino acids to 3-letter"
-    if s[1] in lowercase:
-        return s
-    return aa1_to_aa3(s)
+    return aa1_to_aa3(s) if not __looks_like_aa3_p(s) else s
+
+def __looks_like_aa3_p(s):
+    "string looks like a 3-letter AA string"
+    return (
+        (len(s) % 3 == 0)
+        and (len(s) == 0 or s[1] in lowercase)
+        )
