@@ -11,6 +11,7 @@ DBG = True
 
 # TODO - convert the inputs/outputs to whatever the canonical data representation of sequences is
 
+
 class VariantInserter(object):
 
     def __init__(self, variant, transcript_data):
@@ -24,7 +25,6 @@ class VariantInserter(object):
         """
         self._variant = variant
         self._transcript_data = transcript_data
-
 
     def insert_variant(self):
         """given a variant and a sequence, incorporate the variant and return the new sequence
@@ -80,69 +80,52 @@ class VariantInserter(object):
         # TODO - implement
         return "exon"
 
-
     def _incorporate_delins(self):
         """Incorporate delins
         """
-        seq = list(self._transcript_data['transcript_sequence'])
+        seq, cds_start, cds_stop, start, end = self._setup_incorporate()
 
-        # get initial start/end points; will modify these based on the variant length
-        cds_start = self._transcript_data['cds_start']
-        cds_stop = self._transcript_data['cds_stop']
-
-        start = (cds_start - 1) + self._variant.posedit.pos.start.base - 1   # list is zero-based; seq pos is 1-based
-        end = (cds_start - 1) + self._variant.posedit.pos.end.base
         ref = self._variant.posedit.edit.ref
         alt = self._variant.posedit.edit.alt
-        ref_length = end - start
+        ref_length = end - start if ref is not None else 0  # can't just get from ref since ref isn't always known
+        alt_length = len(self._variant.posedit.edit.alt) if self._variant.posedit.edit.alt is not None else 0
 
         if DBG:
-            print "start: {} end:{} ref:{} alt{}".format(start, end, ref, alt)
+            print "start: {} end:{} ref:{} alt:{}".format(start, end, ref, alt)
+            print "ref_length:{} alt_length:{}".format(ref_length, alt_length)
 
-        if ref is not None and alt is not None: # delins (or snp)
+        if ref is not None and alt is not None:     # delins or SNP
             seq[start:end] = list(alt)
-            if len(alt) != len(ref):
-                cds_stop += (len(alt) - (end - start))
-            net_base_change = len(alt) - ref_length
-        elif ref is not None:       # deletion
+        elif ref is not None:                       # deletion
             del seq[start:end]
-            cds_stop -= end - start
-            net_base_change = -ref_length
-        else:           # insertion (only alt)
+        else:                                       # insertion
             seq[start + 1:start + 1] = list(alt)    # insertion in list before python list index
-            cds_stop += len(alt)
-            net_base_change = len(alt)
+
+        net_base_change = alt_length - ref_length
+        cds_stop += net_base_change
 
         if DBG:
             print "Net base change: {}".format(net_base_change)
-        is_frameshift = net_base_change % 3 != 0
-        AA_start = int(math.ceil((self._variant.posedit.pos.start.base + 1) / 3.0))
 
-        variant_data = self._create_AA_variant_output(seq, cds_start, cds_stop, is_frameshift, AA_start,
+        is_frameshift = net_base_change % 3 != 0
+        variant_start_aa = int(math.ceil((self._variant.posedit.pos.start.base + 1) / 3.0))
+
+        variant_data = self._create_AA_variant_output(seq, cds_start, cds_stop, is_frameshift, variant_start_aa,
                                                       self._transcript_data['protein_accession'])
         return variant_data
-
 
     def _incorporate_dup(self):
         """Incorporate dup into sequence
         """
-        seq = list(self._transcript_data['transcript_sequence'])
-
-        # get initial start/end points; will modify these based on the variant length
-        cds_start = self._transcript_data['cds_start']
-        cds_stop = self._transcript_data['cds_stop']
-
-        start = (cds_start - 1) + self._variant.posedit.pos.start.base - 1   # list is zero-based; seq pos is 1-based
-        end = (cds_start - 1) + self._variant.posedit.pos.end.base
+        seq, cds_start, cds_stop, start, end = self._setup_incorporate()
 
         dup_seq = seq[start:end]
-
         seq[end:end] = dup_seq
-
+        
         is_frameshift = len(dup_seq) % 3 != 0
-        AA_start = int(math.ceil((self._variant.posedit.pos.end.base + 1) / 3.0))
+        variant_start_aa = int(math.ceil((self._variant.posedit.pos.end.base + 1) / 3.0))
 
-        variant_data = self._create_AA_variant_output(seq, cds_start, cds_stop, is_frameshift, AA_start,
+        variant_data = self._create_AA_variant_output(seq, cds_start, cds_stop, is_frameshift, variant_start_aa,
                                                       self._transcript_data['protein_accession'])
         return variant_data
 
@@ -152,6 +135,22 @@ class VariantInserter(object):
         # TODO - implement
         return self._transcript_data
 
+    def _setup_incorporate(self):
+        """Helper to setup incorporate functions
+        :return (transcript sequence, cds start [1-based], cds stop [1-based],
+        cds start index in seq [inc, 0-based], cds end index in seq [excl, 0-based])
+        :type (str, int, int, int, int)
+        """
+        seq = list(self._transcript_data['transcript_sequence'])
+
+        # get initial start/end points; will modify these based on the variant length
+        cds_start = self._transcript_data['cds_start']
+        cds_stop = self._transcript_data['cds_stop']
+
+        start = (cds_start - 1) + self._variant.posedit.pos.start.base - 1   # list is zero-based; seq pos is 1-based
+        end = (cds_start - 1) + self._variant.posedit.pos.end.base
+
+        return seq, cds_start, cds_stop, start, end
 
     def _get_frameshift_start(self, variant_data):
         """Get starting position (AA ref index) of the last frameshift
@@ -163,14 +162,13 @@ class VariantInserter(object):
         # TODO - implement for 2+ variants
 
         if variant_data['is_frameshift']:
-            frameshift_start = variant_data['AA_start']
+            frameshift_start = variant_data['variant_start_aa']
         else:
             frameshift_start = -1
         variant_data['frameshift_start'] = frameshift_start
         return variant_data
 
-
-    def _create_AA_variant_output(self, seq, cds_start, cds_stop, is_frameshift, AA_start, accession):
+    def _create_AA_variant_output(self, seq, cds_start, cds_stop, is_frameshift, variant_start_aa, accession):
         """Common code for creating a variant sequence in the proper format once the sequence has been modified
         :param seq: DNA sequence wiith variant incorporated
         :type str
@@ -180,7 +178,7 @@ class VariantInserter(object):
         :type int
         :param is_frameshift: is this variant a frameshift
         :type bool
-        :param AA_start: AA start index (1-based) for this variant
+        :param variant_start_aa: AA start index (1-based) for this variant
         :type int
         :param accession: protein accession, e.g. NP_999999.2
         :type str
@@ -206,11 +204,12 @@ class VariantInserter(object):
             'cds_start': cds_start,
             'cds_stop': cds_stop,
             'is_frameshift': is_frameshift,
-            'AA_start': AA_start,
+            'variant_start_aa': variant_start_aa,
             'protein_accession': accession
         }
 
         return variant_data
+
 
 def main():
     pass
