@@ -61,13 +61,6 @@ class HgvsCToP(object):
                                            variant_data[0]['protein_accession'])
 
         if DBG:
-            try:
-                p_var = self._parser.p_variant(hgvsp)
-                print p_var
-            except:
-                print "cannot parse {}".format(hgvsp)
-
-        if DBG:
             print "END DEBUG"
 
         return hgvsp

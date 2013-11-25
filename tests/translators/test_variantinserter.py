@@ -85,6 +85,12 @@ class TestVariantInserter(unittest.TestCase):
         expected_sequence = "AAAATCAAAATGAAAGCGAAAGCGTTTCGCGCGAAATACCCCGGG"
         self._run_comparison(hgvsc, expected_sequence)
 
+    def test_dup(self):
+        hgvsc = "NM_999999.1:c.16_24dup"
+        expected_sequence = "AAAATCAAAATGAAAGCGAAAGCGTTTCGCGCGTTTCGCGCGAAATAGGGG"
+        self._run_comparison(hgvsc, expected_sequence)
+
+
     # def test_2_substitutions(self):
     #     pass
     #
