@@ -1,11 +1,17 @@
-import hgvs.edti.interface
+from hgvs.edti.interface import Interface
 
-class UTA0(hgvs.edti.interface.Interface):
+class UTA0(Interface):
     def __init__(self,uta_conn):
         self.uta_conn = uta_conn
 
     def fetch_gene_info(self,gene):
-        pass
+        # Cheat: UTA doesn't have a fetch_gene_info method yet, so just
+        # fetch transcripts and filter the result.
+        gts = self.fetch_gene_transcripts(gene)
+        if len(gts) == 0:
+            return None
+        gt = gts[0]
+        return { k: gt[k] for k in ['gene','descr','summary','chr','strand'] }
 
     def fetch_gene_transcripts(self,gene):
         return self.uta_conn.get_tx_for_gene(gene)
