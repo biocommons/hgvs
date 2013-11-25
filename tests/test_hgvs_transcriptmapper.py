@@ -14,6 +14,7 @@ class Test_transcriptmapper(unittest.TestCase):
         self.assertRaises(HGVSError, TranscriptMapper, self.db, ref=self.ref, ac='bogus')
         self.assertRaises(HGVSError, TranscriptMapper, self.db, ref='bogus', ac='NM_033089.6')
 
+
     # reece=> select * from uta.tx_info where ac='NM_033089.6';
     #   gene  | strand |     ac      | cds_start_i | cds_end_i |                 descr                 | summary
     # --------+--------+-------------+-------------+-----------+---------------------------------------+---------
@@ -30,31 +31,16 @@ class Test_transcriptmapper(unittest.TestCase):
         tm = TranscriptMapper(self.db, ac, self.ref)
         # test cases: type indicates the type of conversation the test will work.  Some are only for g -> r or r -> g
         # due to intronic regions
-        # r and c offsets can be the same (I think...)
+        # gs, ge = genomic start/end; rs,re = rna start/end; cs, ce = cdna start/end; so, eo = start offset/end offset
         test_cases = [
-            {'type': 'grc', 'gs': 278203, 'ge': 278203, 'rs': 1, 're': 1, 'rso': 0, 'reo': 0, 'd': 0, 'cs': -23, 'ce': -23},
-            {'type': 'grc', 'gs': 278213, 'ge': 278213, 'rs': 11, 're': 11, 'rso': 0, 'reo': 0, 'd': 0, 'cs': -13, 'ce': -13},
-            {'type': 'grc', 'gs': 280965, 'ge': 280965, 'rs': 2760, 're': 2760, 'rso': 0, 'reo': 0, 'd': 0, 'cs': 2736, 'ce': 2736},
-            {'type': 'grc', 'gs': 278203, 'ge': 278213, 'rs': 1, 're': 11, 'rso': 0, 'reo': 0, 'd': 0, 'cs': -23, 'ce': -13},
+            {'type': 'grc', 'gs': 278203, 'ge': 278203, 'rs': 1, 're': 1, 'so': 0, 'eo': 0, 'd': 0, 'cs': -23, 'ce': -23},
+            {'type': 'grc', 'gs': 278213, 'ge': 278213, 'rs': 11, 're': 11, 'so': 0, 'eo': 0, 'd': 0, 'cs': -13, 'ce': -13},
+            {'type': 'grc', 'gs': 280965, 'ge': 280965, 'rs': 2760, 're': 2760, 'so': 0, 'eo': 0, 'd': 0, 'cs': 2736, 'ce': 2736},
+            {'type': 'grc', 'gs': 278203, 'ge': 278213, 'rs': 1, 're': 11, 'so': 0, 'eo': 0, 'd': 0, 'cs': -23, 'ce': -13},
+            {'type': 'grc', 'gs': 278227, 'ge': 278227, 'rs': 25, 're': 25, 'so': 0, 'eo': 0, 'd': 0, 'cs': 1, 'ce': 1},
         ]
-        for test_case in test_cases:
-            g = hgvs.location.Interval(start=test_case['gs'], end=test_case['ge'])
-            r = hgvs.location.Interval(
-                    start=hgvs.location.BaseOffsetPosition(base=test_case['rs'], offset=test_case['rso'], datum=test_case['d']),
-                    end=hgvs.location.BaseOffsetPosition(base=test_case['re'], offset=test_case['reo'], datum=test_case['d']))
-            c = hgvs.location.Interval(
-                    start=hgvs.location.BaseOffsetPosition(base=test_case['cs'], offset=test_case['rso'], datum=test_case['d'] + 1),
-                    end=hgvs.location.BaseOffsetPosition(base=test_case['ce'], offset=test_case['reo'], datum=test_case['d'] + 1))
-            try:
-                if test_case['type'] == 'g' or test_case['type'] == 'grc':
-                    self.assertEquals(tm.hgvsg_to_hgvsr(g), r)
-                if test_case['type'] == 'grc' or test_case['type'] == 'r':
-                    self.assertEquals(tm.hgvsr_to_hgvsg(r), g)
-                if test_case['type'] == 'grc' or test_case['type'] == 'c':
-                    self.assertEquals(tm.hgvsr_to_hgvsc(r), c)
-            except Exception, msg:
-                print 'FAIL: test case: %s' % test_case
-                print msg
+        self.run_test_cases(tm, test_cases)
+
     #
     #    # http://tinyurl.com/mattx8u
     #    self.assertEquals(tm.hgvsg_to_hgvsr(278203), (1, 1, 0 , 0))
@@ -116,30 +102,18 @@ class Test_transcriptmapper(unittest.TestCase):
         # test cases: type indicates the type of conversation the test will work.  Some are only for g -> r or r -> g
         # due to intronic regions
         test_cases = [
-            {'type': 'gr', 'gs': 150552214, 'ge': 150552214, 'rs': 1, 're': 1, 'rso': 0, 'reo': 0, 'd': 0},
-            {'type': 'gr', 'gs': 150552213, 'ge': 150552213, 'rs': 2, 're': 2, 'rso': 0, 'reo': 0, 'd': 0},
-            {'type': 'g', 'gs': 150551318, 'ge': 150551318, 'rs': 897, 're': 897, 'rso': 0, 'reo': 0, 'd': 0},
-            {'type': 'g', 'gs': 150549967, 'ge': 150549967, 'rs': 897, 're': 897, 'rso': 0, 'reo': 0, 'd': 0},
-            {'type': 'gr', 'gs': 150549967, 'ge': 150551318, 'rs': 897, 're': 897, 'rso': 0, 'reo': 0, 'd': 0},
-            {'type': 'gr', 'gs': 150551317, 'ge': 150551317, 'rs': 897, 're': 897, 'rso': 1, 'reo': 1, 'd': 0},
-            {'type': 'gr', 'gs': 150551317, 'ge': 150551318, 'rs': 897, 're': 897, 'rso': 1, 'reo': 0, 'd': 0},
-            {'type': 'gr', 'gs': 150551316, 'ge': 150551317, 'rs': 897, 're': 897, 'rso': 2, 'reo': 1, 'd': 0},
-            {'type': 'gr', 'gs': 150549967, 'ge': 150549968, 'rs': 897, 're': 897, 'rso': 0, 'reo': -1, 'd': 0},
-            {'type': 'gr', 'gs': 150549968, 'ge': 150549969, 'rs': 897, 're': 897, 'rso': -1, 'reo': -2, 'd': 0},
+            {'type': 'grc', 'gs': 150552214, 'ge': 150552214, 'rs': 1, 're': 1, 'so': 0, 'eo': 0, 'd': 0, 'cs': -207, 'ce': -207},
+            {'type': 'grc', 'gs': 150552213, 'ge': 150552213, 'rs': 2, 're': 2, 'so': 0, 'eo': 0, 'd': 0, 'cs': -206, 'ce': -206},
+            {'type': 'g', 'gs': 150551318, 'ge': 150551318, 'rs': 897, 're': 897, 'so': 0, 'eo': 0, 'd': 0, 'cs': 897-208, 'ce': 897-208},
+            {'type': 'g', 'gs': 150549967, 'ge': 150549967, 'rs': 897, 're': 897, 'so': 0, 'eo': 0, 'd': 0, 'cs': 897-208, 'ce': 897-208},
+            {'type': 'grc', 'gs': 150549967, 'ge': 150551318, 'rs': 897, 're': 897, 'so': 0, 'eo': 0, 'd': 0, 'cs': 897-208, 'ce': 897-208},
+            {'type': 'grc', 'gs': 150551317, 'ge': 150551317, 'rs': 897, 're': 897, 'so': 1, 'eo': 1, 'd': 0, 'cs': 897-208, 'ce': 897-208},
+            {'type': 'grc', 'gs': 150551317, 'ge': 150551318, 'rs': 897, 're': 897, 'so': 1, 'eo': 0, 'd': 0, 'cs': 897-208, 'ce': 897-208},
+            {'type': 'grc', 'gs': 150551316, 'ge': 150551317, 'rs': 897, 're': 897, 'so': 2, 'eo': 1, 'd': 0, 'cs': 897-208, 'ce': 897-208},
+            {'type': 'grc', 'gs': 150549967, 'ge': 150549968, 'rs': 897, 're': 897, 'so': 0, 'eo': -1, 'd': 0, 'cs': 897-208, 'ce': 897-208},
+            {'type': 'grc', 'gs': 150549968, 'ge': 150549969, 'rs': 897, 're': 897, 'so': -1, 'eo': -2, 'd': 0, 'cs': 897-208, 'ce': 897-208},
         ]
-        for test_case in test_cases:
-            g = hgvs.location.Interval(start=test_case['gs'], end=test_case['ge'])
-            r = hgvs.location.Interval(
-                    start=hgvs.location.BaseOffsetPosition(base=test_case['rs'], offset=test_case['rso'], datum=test_case['d']),
-                    end=hgvs.location.BaseOffsetPosition(base=test_case['re'], offset=test_case['reo'], datum=test_case['d']))
-            try:
-                if test_case['type'] == 'g' or test_case['type'] == 'gr':
-                    self.assertEquals(tm.hgvsg_to_hgvsr(g), r)
-                if test_case['type'] == 'gr' or test_case['type'] == 'r':
-                    self.assertEquals(tm.hgvsr_to_hgvsg(r), g)
-            except Exception, msg:
-                print 'FAIL: test case: %s' % test_case
-                print msg
+        self.run_test_cases(tm, test_cases)
 
         #self.assertEquals(tm.hgvsg_to_hgvsr(150552214), (1, 1, 0, 0))
         #self.assertEquals(tm.hgvsg_to_hgvsr(150547026), (3842, 3842, 0, 0))
@@ -296,7 +270,27 @@ class Test_transcriptmapper(unittest.TestCase):
     ###     tm = TranscriptMapper(self.db,ac,self.ref)
     ###     pass
 
-
+    def run_test_cases(self, tm, test_cases):
+        for test_case in test_cases:
+            g = hgvs.location.Interval(start=test_case['gs'], end=test_case['ge'])
+            r = hgvs.location.Interval(
+                    start=hgvs.location.BaseOffsetPosition(base=test_case['rs'], offset=test_case['so'], datum=test_case['d']),
+                    end=hgvs.location.BaseOffsetPosition(base=test_case['re'], offset=test_case['eo'], datum=test_case['d']))
+            c = hgvs.location.Interval(
+                    start=hgvs.location.BaseOffsetPosition(base=test_case['cs'], offset=test_case['so'], datum=test_case['d'] + 1),
+                    end=hgvs.location.BaseOffsetPosition(base=test_case['ce'], offset=test_case['eo'], datum=test_case['d'] + 1))
+            try:
+                if test_case['type'] == 'g' or test_case['type'] == 'grc':
+                    self.assertEquals(tm.hgvsg_to_hgvsr(g), r)
+                if test_case['type'] == 'grc':
+                    self.assertEquals(tm.hgvsr_to_hgvsg(r), g)
+                    self.assertEquals(tm.hgvsr_to_hgvsc(r), c)
+                    self.assertEquals(tm.hgvsc_to_hgvsr(c), r)
+                    self.assertEquals(tm.hgvsg_to_hgvsc(g), c)
+                    self.assertEquals(tm.hgvsc_to_hgvsg(c), g)
+            except Exception, msg:
+                print 'FAIL: test case: %s' % test_case
+                print msg
 
 
 if __name__ == '__main__':
