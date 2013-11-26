@@ -37,26 +37,25 @@ class Test_transcriptmapper(unittest.TestCase):
         #      484
 
         ### Add one to g., r., and c. because we are returning hgvs coordinates ###
-
         ac = 'NM_033089.6'
         tm = TranscriptMapper(self.db, ac, self.ref)
         # test cases: type indicates the type of conversation the test will work.  Some are only for g -> r
         # due to intronic regions
         # gs, ge = genomic start/end; rs,re = rna start/end; cs, ce = cdna start/end; so, eo = start offset/end offset
         test_cases = [
-            {'type': 'grc', 'gs': 278204, 'ge': 278204, 'rs': 1, 're': 1, 'so': 0, 'eo': 0, 'd': 0, 'cs': 1-24, 'ce': 1-24},
-            {'type': 'grc', 'gs': 278214, 'ge': 278214, 'rs': 11, 're': 11, 'so': 0, 'eo': 0, 'd': 0, 'cs': 11-24, 'ce': 11-24},
-            {'type': 'grc', 'gs': 280966, 'ge': 280966, 'rs': 2760, 're': 2760, 'so': 0, 'eo': 0, 'd': 0, 'cs': 2760-24, 'ce': 2760-24},
-            {'type': 'grc', 'gs': 278204, 'ge': 278214, 'rs': 1, 're': 11, 'so': 0, 'eo': 0, 'd': 0, 'cs': 1-24, 'ce': 11-24},
-            {'type': 'grc', 'gs': 278228, 'ge': 278228, 'rs': 25, 're': 25, 'so': 0, 'eo': 0, 'd': 0, 'cs': 25-24, 'ce': 25-24},
-            {'type': 'grc', 'gs': 278687, 'ge': 278687, 'rs': 484, 're': 484, 'so': 0, 'eo': 0, 'd': 0, 'cs': 484-24, 'ce': 484-24},
-            {'type': 'grc', 'gs': 278687, 'ge': 278688, 'rs': 484, 're': 485, 'so': 0, 'eo': 0, 'd': 0, 'cs': 484-24, 'ce': 485-24},
-            {'type': 'grc', 'gs': 278688, 'ge':278691, 'rs': 485, 're': 485, 'so': 0, 'eo': 0, 'd': 0, 'cs': 485-24, 'ce': 485-24},
+            {'type': 'grc', 'gs': 278204, 'ge': 278204, 'rs': 1, 're': 1, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START , 'cs': 1-24, 'ce': 1-24},
+            {'type': 'grc', 'gs': 278214, 'ge': 278214, 'rs': 11, 're': 11, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START , 'cs': 11-24, 'ce': 11-24},
+            {'type': 'grc', 'gs': 280966, 'ge': 280966, 'rs': 2760, 're': 2760, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START , 'cs': 2760-24, 'ce': 2760-24},
+            {'type': 'grc', 'gs': 278204, 'ge': 278214, 'rs': 1, 're': 11, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START , 'cs': 1-24, 'ce': 11-24},
+            {'type': 'grc', 'gs': 278228, 'ge': 278228, 'rs': 25, 're': 25, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START , 'cs': 25-24, 'ce': 25-24},
+            {'type': 'grc', 'gs': 278687, 'ge': 278687, 'rs': 484, 're': 484, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START , 'cs': 484-24, 'ce': 484-24},
+            {'type': 'grc', 'gs': 278687, 'ge': 278688, 'rs': 484, 're': 485, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START , 'cs': 484-24, 'ce': 485-24},
+            {'type': 'grc', 'gs': 278688, 'ge':278691, 'rs': 485, 're': 485, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START , 'cs': 485-24, 'ce': 485-24},
 
             # around cds_start (24) and cds_end (1236), mindful of *coding* del (3D)
-            {'type': 'grc', 'gs': 278204+24, 'ge': 278204+1236, 'rs': 25, 're': 1237-3, 'so': 0, 'eo': 0, 'd': 0, 'cs': 25-24, 'ce': 1237-24-3},
+            {'type': 'grc', 'gs': 278204+24, 'ge': 278204+1236, 'rs': 25, 're': 1237-3, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START , 'cs': 25-24, 'ce': 1237-24-3},
 
-            {'type': 'grc', 'gs': 280956, 'ge': 280966, 'rs': 2750, 're': 2760, 'so': 0, 'eo': 0, 'd': 0, 'cs': 2750-24, 'ce': 2760-24},
+            {'type': 'grc', 'gs': 280956, 'ge': 280966, 'rs': 2750, 're': 2760, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START , 'cs': 2750-24, 'ce': 2760-24},
         ]
         self.run_cases(tm, test_cases)
 
@@ -81,24 +80,24 @@ class Test_transcriptmapper(unittest.TestCase):
         # test cases: type indicates the type of conversation the test will work.  Some are only for g -> r
         # due to intronic regions
         test_cases = [
-            {'type': 'grc', 'gs': 150552215, 'ge': 150552215, 'rs': 1, 're': 1, 'so': 0, 'eo': 0, 'd': 0, 'cs': 1-208, 'ce': 1-208},
-            {'type': 'grc', 'gs': 150552214, 'ge': 150552214, 'rs': 2, 're': 2, 'so': 0, 'eo': 0, 'd': 0, 'cs': 2-208, 'ce': 2-208},
-            {'type': 'g', 'gs': 150551319, 'ge': 150551319, 'rs': 897, 're': 897, 'so': 0, 'eo': 0, 'd': 0, 'cs': 897-208, 'ce': 897-208},
-            {'type': 'g', 'gs': 150549968, 'ge': 150549968, 'rs': 897, 're': 897, 'so': 0, 'eo': 0, 'd': 0, 'cs': 897-208, 'ce': 897-208},
-            {'type': 'grc', 'gs': 150549968, 'ge': 150551319, 'rs': 897, 're': 897, 'so': 0, 'eo': 0, 'd': 0, 'cs': 897-208, 'ce': 897-208},
-            {'type': 'grc', 'gs': 150551318, 'ge': 150551318, 'rs': 897, 're': 897, 'so': 1, 'eo': 1, 'd': 0, 'cs': 897-208, 'ce': 897-208},
-            {'type': 'grc', 'gs': 150551318, 'ge': 150551319, 'rs': 897, 're': 897, 'so': 1, 'eo': 0, 'd': 0, 'cs': 897-208, 'ce': 897-208},
-            {'type': 'grc', 'gs': 150551317, 'ge': 150551318, 'rs': 897, 're': 897, 'so': 2, 'eo': 1, 'd': 0, 'cs': 897-208, 'ce': 897-208},
-            {'type': 'grc', 'gs': 150549968, 'ge': 150549969, 'rs': 897, 're': 897, 'so': 0, 'eo': -1, 'd': 0, 'cs': 897-208, 'ce': 897-208},
-            {'type': 'grc', 'gs': 150549969, 'ge': 150549970, 'rs': 897, 're': 897, 'so': -1, 'eo': -2, 'd': 0, 'cs': 897-208, 'ce': 897-208},
+            {'type': 'grc', 'gs': 150552215, 'ge': 150552215, 'rs': 1, 're': 1, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START , 'cs': 1-208, 'ce': 1-208},
+            {'type': 'grc', 'gs': 150552214, 'ge': 150552214, 'rs': 2, 're': 2, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START , 'cs': 2-208, 'ce': 2-208},
+            {'type': 'g', 'gs': 150551319, 'ge': 150551319, 'rs': 897, 're': 897, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START , 'cs': 897-208, 'ce': 897-208},
+            {'type': 'g', 'gs': 150549968, 'ge': 150549968, 'rs': 897, 're': 897, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START , 'cs': 897-208, 'ce': 897-208},
+            {'type': 'grc', 'gs': 150549968, 'ge': 150551319, 'rs': 897, 're': 897, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START , 'cs': 897-208, 'ce': 897-208},
+            {'type': 'grc', 'gs': 150551318, 'ge': 150551318, 'rs': 897, 're': 897, 'so': 1, 'eo': 1, 'd': hgvs.location.SEQ_START , 'cs': 897-208, 'ce': 897-208},
+            {'type': 'grc', 'gs': 150551318, 'ge': 150551319, 'rs': 897, 're': 897, 'so': 1, 'eo': 0, 'd': hgvs.location.SEQ_START , 'cs': 897-208, 'ce': 897-208},
+            {'type': 'grc', 'gs': 150551317, 'ge': 150551318, 'rs': 897, 're': 897, 'so': 2, 'eo': 1, 'd': hgvs.location.SEQ_START , 'cs': 897-208, 'ce': 897-208},
+            {'type': 'grc', 'gs': 150549968, 'ge': 150549969, 'rs': 897, 're': 897, 'so': 0, 'eo': -1, 'd': hgvs.location.SEQ_START , 'cs': 897-208, 'ce': 897-208},
+            {'type': 'grc', 'gs': 150549969, 'ge': 150549970, 'rs': 897, 're': 897, 'so': -1, 'eo': -2, 'd': hgvs.location.SEQ_START , 'cs': 897-208, 'ce': 897-208},
 
             # exon 2, 4nt insertion ~ r.2760
             # See http://tinyurl.com/mwegybw
             # The coords of this indel via NW alignment differ from those at NCBI, but are the same canonicalized
             # variant.  Nothing to do about that short of running Splign ourselves.  Test a few examples.
-            {'type': 'grc', 'gs': 150548892, 'ge': 150548892, 'rs': 1973, 're': 1973, 'so': 0, 'eo':0, 'd': 0, 'cs': 1973-208, 'ce': 1973-208},
-            #? {'type': 'grc', 'gs': 150548891, 'ge': 150548892, 'rs': 1972, 're': 1973, 'so': 0, 'eo':0, 'd': 0, 'cs': 1972-208, 'ce': 1973-208},
-            {'type': 'grc', 'gs': 150548890, 'ge': 150548892, 'rs': 1973, 're': 1979, 'so': 0, 'eo':0, 'd': 0, 'cs': 1973-208, 'ce': 1979-208},
+            {'type': 'grc', 'gs': 150548892, 'ge': 150548892, 'rs': 1973, 're': 1973, 'so': 0, 'eo':0, 'd': hgvs.location.SEQ_START , 'cs': 1973-208, 'ce': 1973-208},
+            #? {'type': 'grc', 'gs': 150548891, 'ge': 150548892, 'rs': 1972, 're': 1973, 'so': 0, 'eo':0, 'd': hgvs.location.SEQ_START , 'cs': 1972-208, 'ce': 1973-208},
+            {'type': 'grc', 'gs': 150548890, 'ge': 150548892, 'rs': 1973, 're': 1979, 'so': 0, 'eo':0, 'd': hgvs.location.SEQ_START , 'cs': 1973-208, 'ce': 1979-208},
         ]
         self.run_cases(tm, test_cases)
 
@@ -156,13 +155,13 @@ class Test_transcriptmapper(unittest.TestCase):
         # test cases: type indicates the type of conversation the test will work.  Some are only for g -> r
         # due to intronic regions
         test_cases = [
-            {'type': 'grc', 'gs': 94547639, 'ge': 94547639, 'rs': 1, 're': 1, 'so': 0, 'eo': 0, 'd': 0, 'cs': 1-254, 'ce': 1-254},
-            {'type': 'g', 'gs': 94547796, 'ge': 94547796, 'rs': 158, 're': 158, 'so': 0, 'eo': 0, 'd': 0, 'cs': 158-254, 'ce': 158-254},
-            {'type': 'grc', 'gs': 94563185, 'ge': 94563185, 'rs': 158, 're': 158, 'so': -2, 'eo': -2, 'd': 0, 'cs': 158-254, 'ce': 158-254},
-            {'type': 'grc', 'gs': 94567118, 'ge': 94567120, 'rs': 316, 're': 316, 'so': 0, 'eo': 2, 'd': 0, 'cs': 316-254, 'ce': 316-254},
+            {'type': 'grc', 'gs': 94547639, 'ge': 94547639, 'rs': 1, 're': 1, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START , 'cs': 1-254, 'ce': 1-254},
+            {'type': 'g', 'gs': 94547796, 'ge': 94547796, 'rs': 158, 're': 158, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START , 'cs': 158-254, 'ce': 158-254},
+            {'type': 'grc', 'gs': 94563185, 'ge': 94563185, 'rs': 158, 're': 158, 'so': -2, 'eo': -2, 'd': hgvs.location.SEQ_START , 'cs': 158-254, 'ce': 158-254},
+            {'type': 'grc', 'gs': 94567118, 'ge': 94567120, 'rs': 316, 're': 316, 'so': 0, 'eo': 2, 'd': hgvs.location.SEQ_START , 'cs': 316-254, 'ce': 316-254},
 
             # intron in the middle between exon 1 and 2
-            {'type': 'grc', 'gs': 94555481, 'ge': 94555501, 'rs': 158, 're': 158, 'so': 7685, 'eo': -7686, 'd': 0, 'cs': 158-254, 'ce': 158-254},
+            {'type': 'grc', 'gs': 94555481, 'ge': 94555501, 'rs': 158, 're': 158, 'so': 7685, 'eo': -7686, 'd': hgvs.location.SEQ_START , 'cs': 158-254, 'ce': 158-254},
         ]
         self.run_cases(tm, test_cases)
 
