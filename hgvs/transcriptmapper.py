@@ -41,7 +41,8 @@ class TranscriptMapper(object):
 
     def hgvsg_to_hgvsr(self, g_interval):
         # frs, fre = (f)orward (r)na (s)tart & (e)nd; forward w.r.t. genome
-        frs, fre = self.im.map_ref_to_tgt(g_interval.start - self.gc_offset, g_interval.end - self.gc_offset, max_extent=False)
+        frs, fre = self.im.map_ref_to_tgt(hgvs_coord_to_ci(g_interval.start) - self.gc_offset,
+                                          hgvs_coord_to_ci(g_interval.end) - self.gc_offset, max_extent=False)
         if self.strand == 1:
             pass
         elif self.strand == -1:
@@ -56,8 +57,8 @@ class TranscriptMapper(object):
             elif self.strand == 1:
                 grs, gre = self.im.map_tgt_to_ref(frs, fre, max_extent=False)
             grs, gre = grs + self.gc_offset, gre + self.gc_offset
-            start_offset = hgvs_offset(g_interval.start, grs, gre)
-            end_offset = hgvs_offset(g_interval.end, grs, gre)
+            start_offset = hgvs_offset(hgvs_coord_to_ci(g_interval.start), grs, gre)
+            end_offset = hgvs_offset(hgvs_coord_to_ci(g_interval.end), grs, gre)
         else:
             start_offset = 0
             end_offset = 0
@@ -83,7 +84,7 @@ class TranscriptMapper(object):
         grs, gre = grs + self.gc_offset, gre + self.gc_offset
         gs = grs + start_offset if start_offset >= 0 else gre + start_offset
         ge = grs + end_offset if end_offset > 0 else gre + end_offset   # note: > 0 accounts for 0-based offsets
-        return hgvs.location.Interval(start=gs, end=ge)
+        return hgvs.location.Interval(start=ci_to_hgvs_coord(gs), end=ci_to_hgvs_coord(ge))
 
     def hgvsr_to_hgvsc(self, r_interval):
         c_interval = hgvs.location.Interval(
