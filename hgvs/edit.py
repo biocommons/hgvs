@@ -11,26 +11,24 @@ from hgvs.utils import aa_to_aa1,aa1_to_aa3
 class Edit(object):
     pass
 
-class RefAlt( Edit, recordtype.recordtype('RefAlt', ['ref','alt'], default=None) ):
-    """
-    RefAlt is an abstraction of several major variant types.  They are
-    distinguished by whether the ref and alt elements of the structure.
-    The HGVS grammar for NA and AA are subtly different (e.g., the ref AA
-    in a protein substitution is part of the location).
 
+##    NARefAlt and AARefAlt are abstractions of several major variant
+##    types.  They are distinguished by whether the ref and alt elements
+##    of the structure.  The HGVS grammar for NA and AA are subtly
+##    different (e.g., the ref AA in a protein substitution is part of the
+##    location).
+##
+##
+##    TYPE      NA              AA          REF/ALT representation (NA; AA)
+##    subst     A>T             T           A/T           ''/T
+##    delins    del(AA)insTT    delinsTT    (AA|'')/TT    same
+##    del       del(AA)         del(AA)     (AA|'')/None  same
+##    ins       insTT           insTT       None/TT       same
+##
+##    patterns of seq/seq, seq/None, None/seq determine basic variant type
+##    '' means missing optional sequence
 
-    TYPE      NA              AA          REF/ALT representation (NA; AA)
-    subst     A>T             T           A/T           ''/T
-    delins    del(AA)insTT    delinsTT    (AA|'')/TT    same
-    del       del(AA)         del(AA)     (AA|'')/None  same
-    ins       insTT           insTT       None/TT       same
-
-    patterns of seq/seq, seq/None, None/seq determine basic variant type
-    '' means missing optional sequence
-    """
-
-
-class NARefAlt( Edit, recordtype.recordtype('RefAlt', ['ref','alt'], default=None) ):
+class NARefAlt( Edit, recordtype.recordtype('NARefAlt', ['ref','alt'], default=None) ):
     def __str__(self):
         if self.ref is None and self.alt is None:
             raise HGVSError('RefAlt: ref and alt sequences are both undefined')
@@ -53,9 +51,9 @@ class NARefAlt( Edit, recordtype.recordtype('RefAlt', ['ref','alt'], default=Non
 
         assert False, "Should not be here"
 
-class AARefAlt( RefAlt ):
-    def __init__(self,ref,alt):
-        super(RefAlt,self).__init__(aa_to_aa1(ref),aa_to_aa1(alt))
+class AARefAlt( Edit, recordtype.recordtype('AARefAlt', ['ref','alt','fs'], default=None) ):
+    def __init__(self,ref,alt,fs=None):
+        super(AARefAlt,self).__init__(ref=aa_to_aa1(ref),alt=aa_to_aa1(alt),fs=fs)
 
     def __str__(self):
         if self.ref is None and self.alt is None:
@@ -66,9 +64,10 @@ class AARefAlt( RefAlt ):
             if self.ref == self.alt:
                 return '='
             if ( (len(self.ref) == 1 or self.ref == '') and len(self.alt) == 1 ):
-                return aa1_to_aa3(self.alt)
-            return 'delins{alt}'.format(
+                return aa1_to_aa3(self.alt) + (self.fs or '')
+            return 'delins{alt}{fs}'.format(
                 alt = aa1_to_aa3(self.alt),
+                fs = self.fs or '',
                 )
 
         # del case
@@ -77,7 +76,10 @@ class AARefAlt( RefAlt ):
 
         # ins case
         if self.ref is None and self.alt is not None:
-            return 'ins{alt}'.format(alt=aa1_to_aa3(self.alt))
+            return 'ins{alt}{fs}'.format(
+                alt=aa1_to_aa3(self.alt),
+                fs = self.fs or '',
+                )
 
         assert False, "Should not be here"
     
