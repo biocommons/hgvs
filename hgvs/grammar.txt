@@ -1,38 +1,46 @@
 # HGVS Grammar
 # 2013-09-16 10:25 Reece Hart <reecehart@gmail.com>
 
-# For the purposes of this grammar, an HGVS variant is limited to the subset
-# of the Mutnomen document [3] that defines variant positions reasonably
-# precisely.
-#
-# The basic structure of an HGVS variant is:
+# This file describes an OMeta grammar for a subset of the HGVS variant
+# specification.  The subset is limited to is limited to those rules
+# that define sequence variants precisely.  It does not current cover
+# rules for translocations or conversions.
+ 
+# * HGVS Sequence Variants -- fully-specified variants 
+# The basic structure of a HGVS sequence variant is:
 #    <ac>:<type>.<posedit>
 # where <ac> is a sequence accession, <type> determines the sequence type
 # and coordinate system ([cgmnpr]), and <posedit> is a string/list/object of
 # positions and edit operations.
 # 
-# The easiest way to describe this grammar is by way of example. For the
-# variant NM_01234.5:c.[12A>C;34-56_78+90G>T] parses as follows:
-#
+# For example, consider the variant NM_01234.5:c.[12A>C;34-56_78+90G>T]:
+# 
 #     NM_01234.5 : c . [ 12 A>C ; 34 -56 _ 78 +90 del ]
 #     -----------------------------------------------    hgvs_variant
-#     ----------   ----------------------------------    variant = ac, edit
 #                  -     ----------------------------    edit = type, posedits
 #                        ------   -------------------    posedits = two posedit instances
-#                        -- ---   --------------- ---    posedit = interval,edit
+#                        -- ---   --------------- ---    2 x posedit = interval,edit
 #                        -- - -   ------   ------ ---    int = <start,end>; edit = <ref,alt>
-#                        --       -- ---   -- ---        pos = <base,offset>
+#                        --       -- ---   -- ---        pos = <base,offset,datum>
 #
-# In this diagram, contiguous dashes indicate both a node in the grammar
-# and a python class instance. Subsequent lines of the diagram indicate
-# object instance nesting.
-# 
-# In addition to the above, this grammar also supports "HGVS-lite"
-# notations for position used at InVitae, like 'NM_01234.5:c.56'.  The
-# hgvs_lite rule consists of a ref sequence, type, and position, and is
-# parsed into corresponding objects.
+#     In this diagram, contiguous dashes indicate both a node in the grammar
+#     and a python class instance. Subsequent lines of the diagram indicate
+#     object instance nesting.
+
+# * HGVS Edit -- variants with reference to a sequence
+#                  c . [ 12 A>C ; 34 -56 _ 78 +90 del ]
+#                  ------------------------------------  edit
 #
-# References:
+ 
+# * HGVS Location -- sequence intervals
+# This grammar also supports "HGVS-lite" notations for position used at
+# InVitae, like 'NM_01234.5:c.56'.  The hgvs_lite rule consists of a ref
+# sequence, type, and position, and is parsed into corresponding objects.
+#      NM_01234.5 : c . 34 -56 _ 78 +90
+#      --------------------------------  hgvs_position
+#      ----------   -   ---------------  ac, type, position
+
+# * References:
 # 1. http://www.hgvs.org/mutnomen/
 # 2. Describing structural changes by extending HGVS sequence variation nomenclature.
 #    http://www.ncbi.nlm.nih.gov/pubmed/21309030
@@ -40,102 +48,122 @@
 #    http://www.ncbi.nlm.nih.gov/pubmed/21992071
 #
 
+## MISSING FEATURES
+# * TODO: posedits structure for chimeric, mosaic, compound variants, multiallelic variants, and uncertainty
+# * TODO: uncertain positions ? and ()
+# * TODO: p.?,p.=,p.0
+# * LATER: no-stop change (p.Ter110GlnextTer17)
+# * LATER: Met1 extensions
+# * LATER: gene name
+# * WONTFIX: translocations: intentionally omitted
+# * WONTFIX: conversions: intentionally omitted
+# * WONTFIX: insertions not specified by a sequence (e.g., ins22 isn't specific)
+
 
 ############################################################################
 ## Top-level parser
-variant = hgvs_variant | invitae_variant | lax_variant
+sequence_variant = hgvs_variant | invitae_sequence_variant | any_sequence_variant
 
 
 ############################################################################
-## HGVS subset strictly
+## HGVS Sequence Variant
 
-hgvs_variant = c_variant | r_variant | gmn_variant # | p_variant
-
-gmn_edit = 'g':type '.' gmn_posedit:posedit -> SequenceVariant(None,type,posedit)
-c_edit = 'c':type '.'   c_posedit:posedit -> SequenceVariant(None,type,posedit)
-r_edit = 'r':type '.'   r_posedit:posedit -> SequenceVariant(None,type,posedit)
-p_edit = 'p':type '.'   p_posedit:posedit -> SequenceVariant(None,type,posedit)
-
-c_variant = accn:ac ':' 'c':type '.' c_posedit:posedit -> SequenceVariant(ac,type,posedit)
-c_posedit = c_interval:pos dna_edit:edit -> PosEdit(pos=pos,edit=edit)
-
-r_variant = accn:ac ':' 'r':type '.' r_posedit:posedit -> SequenceVariant(ac,type,posedit)
-r_posedit = r_interval:pos rna_edit:edit -> PosEdit(pos=pos,edit=edit)
-
+hgvs_variant = c_variant | r_variant | gmn_variant | p_variant
+c_variant   = accn:ac ':'      'c':type '.'   c_posedit:posedit -> SequenceVariant(ac,type,posedit)
+p_variant   = accn:ac ':'      'p':type '.'   p_posedit:posedit -> SequenceVariant(ac,type,posedit)
+r_variant   = accn:ac ':'      'r':type '.'   r_posedit:posedit -> SequenceVariant(ac,type,posedit)
 gmn_variant = accn:ac ':' gmn_type:type '.' gmn_posedit:posedit -> SequenceVariant(ac,type,posedit)
-gmn_type = :x ?(x in 'gmn') -> x
-gmn_posedit = interval:pos dna_edit:edit -> PosEdit(pos=pos,edit=edit)
 
-p_variant = accn:ac ':' 'p':type '.' p_posedit:posedit -> SequenceVariant(ac,type,posedit)
-p_posedit = p_interval:pos p_edit:edit -> PosEdit(pos=pos,edit=edit)
+# any_variant is a syntactic parse around ':' and '.' only
+any_variant = accn:ac ':' letter:type '.' <anything+>:posedit -> SequenceVariant(ac,type,posedit)
 
 
 ############################################################################
-## invitae /additions/ to hgvs_strict
-# i.e., this will NOT parse valid HGVS
-# invitae_variant = (copyN, delN)
+## HGVS Edit (without accession); e.g., c.76+3A>T
 
-
-############################################################################
-## any_variant: lax syntactic parse of : and . delimited components *as strings*
-any_variant = accn:ac ':' any_type:type '.' any_posedit:posedit -> SequenceVariant(ac,type,posedit)
-any_type = letter
-any_posedit = <anything+>
+c_edit   = 'c':type '.'   c_posedit:posedit -> SequenceVariant(None,type,posedit)
+p_edit   = 'p':type '.'   p_posedit:posedit -> SequenceVariant(None,type,posedit)
+r_edit   = 'r':type '.'   r_posedit:posedit -> SequenceVariant(None,type,posedit)
+gmn_edit = 'g':type '.' gmn_posedit:posedit -> SequenceVariant(None,type,posedit)
 
 
 ############################################################################
 ## HGVS Position -- e.g., NM_01234.5:c.22+6 (without an edit)
-hgvs_position = gmn_hgvs_position | r_hgvs_position | c_hgvs_position | p_hgvs_position
-gmn_hgvs_position = accn:ac ':' gmn_type:type '.' gmn_interval:pos -> HGVSPosition(ac, type, pos)
-r_hgvs_position   = accn:ac ':' 'r':type      '.'   r_interval:pos -> HGVSPosition(ac, type, pos)
+
+hgvs_position     = gmn_hgvs_position | r_hgvs_position | c_hgvs_position | p_hgvs_position
 c_hgvs_position   = accn:ac ':' 'c':type      '.'   c_interval:pos -> HGVSPosition(ac, type, pos)
 p_hgvs_position   = accn:ac ':' 'p':type      '.'   p_interval:pos -> HGVSPosition(ac, type, pos)
-
+r_hgvs_position   = accn:ac ':' 'r':type      '.'   r_interval:pos -> HGVSPosition(ac, type, pos)
+gmn_hgvs_position = accn:ac ':' gmn_type:type '.' gmn_interval:pos -> HGVSPosition(ac, type, pos)
 
 
 ############################################################################
-## Edits
+## PosEdits -- position + edit objects
 
-dna_edit = dna_subst | dna_delins | dna_ins | dna_del | dna_dup
-dna_del = 'del' (<num>|<dna*>):ref -> RefAlt(ref=ref,alt=None)
-dna_delins = 'del' (<num>|<dna*>):ref 'ins' <dna+>:alt  -> RefAlt(ref=ref,alt=alt)
-dna_dup = 'dup' <dna*>:seq -> Dup(seq=seq)
-dna_ins = 'ins' <dna+>:alt -> RefAlt(ref=None,alt=alt)
-dna_subst = dna:ref '>' dna:alt -> RefAlt(ref=ref,alt=alt)
+c_posedit   = c_interval:pos dna_edit:edit -> PosEdit(pos=pos,edit=edit)
+p_posedit   = p_interval:pos pro_edit:edit -> PosEdit(pos=pos,edit=edit)
+r_posedit   = r_interval:pos rna_edit:edit -> PosEdit(pos=pos,edit=edit)
+gmn_posedit =   interval:pos dna_edit:edit -> PosEdit(pos=pos,edit=edit)
 
-rna_edit = rna_subst | rna_delins | rna_ins | rna_del | rna_dup
-rna_del = 'del' (<num>|<rna*>):ref -> RefAlt(ref=ref,alt=None)
-rna_delins = 'del' (<num>|<rna*>):ref 'ins' <rna+>:alt  -> RefAlt(ref=ref,alt=alt)
-rna_dup = 'dup' <rna*>:seq -> Dup(seq=seq)
-rna_ins = 'ins' <rna+>:alt -> RefAlt(ref=None,alt=alt)
-rna_subst = rna:ref '>' rna:alt -> RefAlt(ref=ref,alt=alt)
 
-p_edit = p_subst | p_delins | p_ins | p_del | p_dup
-p_del = 'del' (<num>|<aa3*>):ref -> RefAlt(ref=ref,alt=None)
-p_delins = 'del' (<num>|<aa3*>):ref 'ins' <aa3+>:alt  -> RefAlt(ref=ref,alt=alt)
-p_dup = 'dup' <aa3*>:seq -> Dup(seq=seq)
-p_ins = 'ins' <aa3+>:alt -> RefAlt(ref=None,alt=alt)
-p_subst = <aa3+ p_fs?>:alt -> RefAlt(ref=None,alt=alt)
-p_fs = 'fs' ('Ter'|'*') num?
+############################################################################
+## Edits -- sequence-specific operations at a position
+## subst, delins, del, and ins are represented using two classes, NARefAlt
+## and AARefAlt.  See edit.py for the meaning of the ref and alt instance
+## variables.
+
+dna_edit   = dna_subst | dna_delins | dna_ins | dna_del | dna_dup
+dna_subst  = dna:ref '>' dna:alt      -> NARefAlt(ref=ref,alt=alt)
+dna_delins = 'del' (<num>|<dna*>):ref 'ins' <dna+>:alt  -> NARefAlt(ref=ref,alt=alt)
+dna_del    = 'del' (<num>|<dna*>):ref -> NARefAlt(ref=ref,alt=None)
+dna_ins    = 'ins' <dna+>:alt         -> NARefAlt(ref=None,alt=alt)
+dna_dup    = 'dup' <dna*>:seq         -> Dup(seq=seq)
+
+rna_edit   = rna_subst | rna_delins | rna_ins | rna_del | rna_dup
+rna_subst  = rna:ref '>' rna:alt      -> NARefAlt(ref=ref,alt=alt)
+rna_delins = 'del' (<num>|<rna*>):ref 'ins' <rna+>:alt  -> NARefAlt(ref=ref,alt=alt)
+rna_del    = 'del' (<num>|<rna*>):ref -> NARefAlt(ref=ref,alt=None)
+rna_ins    = 'ins' <rna+>:alt         -> NARefAlt(ref=None,alt=alt)
+rna_dup    = 'dup' <rna*>:seq         -> Dup(seq=seq)
+
+pro_edit   = pro_subst | pro_delins | pro_ins | pro_del | pro_dup
+pro_subst  = aa_seq:alt pro_fs?:fs          -> AARefAlt(ref='',alt=hgvs.utils.aa_to_aa1(alt),fs=fs)
+pro_delins = 'delins' aa_seq:alt pro_fs?:fs -> AARefAlt(ref='',alt=aa_to_aa1(alt),fs=fs)
+pro_del    = 'del'                          -> AARefAlt(ref='',alt=None)
+pro_ins    = 'ins' aa_seq:alt pro_fs?:fs    -> AARefAlt(ref=None,alt=aa_to_aa1(alt),fs=fs)
+pro_dup    = 'dup'                          -> Dup(seq=seq)
+pro_fs     = <'fs' (aa_term (num|'?')?)?>
+
 
 ############################################################################
 ## Basic types
 
+gmn_type = :x ?(x in 'gmn') -> x
+
+# sequences of NA/AA
 dna_seq = <dna+>
-dna = :x ?(x in 'ACGTacgt') -> x
-
 rna_seq = <rna+>
-rna = :x ?(x in 'ACGUacgu') -> x
-
+aa_seq = aa3_seq | aa1_seq
+aa1t_seq = <aa1_seq aa1_term?>
+aa3t_seq = <aa3_seq aa3_term?>
 aa1_seq = <aa1+>
-aa1 = :x ?(x in 'ACDEFGHIKLMNPQRSTVWY*') -> x
-
 aa3_seq = <aa3+>
-aa3 = <letter{3}>:x ?(x in ['Ala','Cys','Asp','Glu','Phe','Gly','His','Ile','Lys','Leu',
-                          'Met','Asn','Pro','Gln','Arg','Ser','Thr','Val','Trp','Tyr',
-                          'Ter']) -> x
 
-interval = (pos:start '_' pos:end -> Interval(start,end)) | (pos:start -> Interval(start,start))
+# single NA/AA
+dna = :x ?(x in 'ACGTacgt') -> x
+rna = :x ?(x in 'ACGUacgu') -> x
+aa = aa3 | aa1
+aa_term = aa3_term | aa1_term
+aa1 = :x ?(x in 'ACDEFGHIKLMNPQRSTVWY') -> x
+aa3 = <letter{3}>:xxx ?(xxx in ['Ala','Cys','Asp','Glu','Phe','Gly','His','Ile','Lys','Leu',
+                                'Met','Asn','Pro','Gln','Arg','Ser','Thr','Val','Trp','Tyr']) -> xxx
+
+
+aa1_term = :x ?(x in 'X*') -> x
+aa3_term = 'Ter'
+
+
+interval   = (  pos:start '_'   pos:end -> Interval(start,end)) | (  pos:start -> Interval(start,start))
 r_interval = (r_pos:start '_' r_pos:end -> Interval(start,end)) | (r_pos:start -> Interval(start,start))
 c_interval = (c_pos:start '_' c_pos:end -> Interval(start,end)) | (c_pos:start -> Interval(start,start))
 p_interval = (p_pos:start '_' p_pos:end -> Interval(start,end)) | (p_pos:start -> Interval(start,start))
@@ -144,8 +172,7 @@ pos = num:pos -> SimplePosition(pos)
 r_pos = snum:b (snum | -> 0):o -> BaseOffsetPosition(b,o,datum=hgvs.location.SEQ_START)
 c_pos = snum:b (snum | -> 0):o -> BaseOffsetPosition(b,o,datum=hgvs.location.CDS_START)
 		| '*' num:b (snum | -> 0):o -> BaseOffsetPosition(b,o,datum=hgvs.location.CDS_END)
-p_pos = aa3:aa num:pos -> hgvs.location.AAPosition(pos,aa)
-
+p_pos = aa:aa num:pos -> hgvs.location.AAPosition(pos,hgvs.utils.aa_to_aa1(aa))
 
 # Accessions, possibly versioned. Should accept, e.g., NM_01234.5, LRG_01234_1p1
 accn = <letter letterOrDigit+ ('_' letterOrDigit+)? ('.' digit+)?>

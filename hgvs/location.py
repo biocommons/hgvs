@@ -17,6 +17,8 @@ Classes:
 
 import recordtype
 
+from hgvs.utils import aa1_to_aa3,aa_to_aa1
+
 SEQ_START = 0
 CDS_START = 1
 CDS_END = 2
@@ -70,10 +72,10 @@ class BaseOffsetPosition( recordtype.recordtype(
 class AAPosition( recordtype.recordtype(
         'AAPosition', field_names = [ 'pos', 'aa' ] ) ):
     def __init__(self,pos,aa):
-        super(AAPosition,self).__init__(pos,aa)
+        super(AAPosition,self).__init__(pos,aa_to_aa1(aa))
 
     def __str__(self):
-        return self.aa + str(self.pos)
+        return aa1_to_aa3(self.aa) + str(self.pos)
 
 
 class Interval( recordtype.recordtype(

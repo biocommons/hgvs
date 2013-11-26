@@ -4,34 +4,50 @@
 
 * SOON
 
-** () PosEdit class
-complex and compound posedits
+** protein support
+- hgvs.util.aa1to3() and v.v. to support 1 letter AA
+
+** EDTI
+- version interface?
+
+** match string from parsley?
+
+** PosEdit class
+complex, compound, mosaic, chimeric posedits
 uncertainty
-
-** fix versioning
-hgtools or no?
-getting __version__ via pkg_resources lies when using a local package
-(e.g., PYTHONPATH=. python -c 'import hgvs') AND there's an installed
-version elsewhere. (you'll get the version of the installed package)
-
-** hgvs_invitae
 
 ** position uncertainty
 ?, ()
 
+** hgvs_invitae
+- copyN, etc
+- relo to data
+
+** grammar introspection on startup
+- make parser attributes directly
+
+** standardize rule names
+- prefix or postfix types
+- type names (pcgmnr) and/or generalization (dna,rna,pro,aa,na)
+
+** grammar tests
+...for each rule
+
 
 * LATER
 
+** valideer on hgvs classes
+
 ** docs
+take new pass at docs
 
 ** hgvs.util NC 2 chr & vv
-
-** 1 letter protein support
-- hgvs.util.aa1to3() and v.v. to support 1 letter AA
 
 ** hgvs mapper
 
 ** hgvs formatter
+use in lieu of __str__ currently
+support options, incl. aa1 or aa3
 
 ** hgvs validator
 
