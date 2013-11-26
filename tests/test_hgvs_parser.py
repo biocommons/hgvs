@@ -32,7 +32,7 @@ class Test_Position(unittest.TestCase):
             if var.startswith('#') or var == '':
                 continue
             with self.assertRaises(ParseError):
-                self.parser.parse(var)
+                self.parser.parse_hgvs_variant(var)
                 self.assertTrue(False, msg='expected HGVSParseError: %s (%s)' % (var,msg))
 
 
