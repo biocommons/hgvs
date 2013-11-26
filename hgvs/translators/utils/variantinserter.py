@@ -89,23 +89,21 @@ class VariantInserter(object):
         alt = self._variant.posedit.edit.alt
         ref_length = end - start if ref is not None else 0  # can't just get from ref since ref isn't always known
         alt_length = len(self._variant.posedit.edit.alt) if self._variant.posedit.edit.alt is not None else 0
+        net_base_change = alt_length - ref_length
+        cds_stop += net_base_change
 
         if DBG:
             print "start: {} end:{} ref:{} alt:{}".format(start, end, ref, alt)
             print "ref_length:{} alt_length:{}".format(ref_length, alt_length)
+            print "Net base change: {}".format(net_base_change)
 
+        # incorporate the variant into the sequence (depending on the type)
         if ref is not None and alt is not None:     # delins or SNP
             seq[start:end] = list(alt)
         elif ref is not None:                       # deletion
             del seq[start:end]
         else:                                       # insertion
             seq[start + 1:start + 1] = list(alt)    # insertion in list before python list index
-
-        net_base_change = alt_length - ref_length
-        cds_stop += net_base_change
-
-        if DBG:
-            print "Net base change: {}".format(net_base_change)
 
         is_frameshift = net_base_change % 3 != 0
         variant_start_aa = int(math.ceil((self._variant.posedit.pos.start.base + 1) / 3.0))
