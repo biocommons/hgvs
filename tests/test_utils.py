@@ -5,20 +5,22 @@ import hgvs.utils
 from hgvs.exceptions import HGVSError
 
 class Test_Utils(unittest.TestCase):
-    all_aa1 = 'ACDEFGHIKLMNPQRSTVWY'
-    all_aa3 = 'AlaArgAsnAspCysGlnGluGlyHisIleLeuLysMetPheProSerThrTrpTyrVal'
+    # set of aa1 and aa3 -- must be in alpha order
+    all_aa1 = '*ACDEFGHIKLMNPQRSTUVWXY'
+    all_aa3 = 'AlaArgAsnAspCysGlnGluGlyHisIleLeuLysMetPheProSecSerTerThrTrpTyrValXaa'
 
-    aa1_seq = 'YWVTSRQPNMLKIHGFEDCA'
-    aa3_seq = 'TyrTrpValThrSerArgGlnProAsnMetLeuLysIleHisGlyPheGluAspCysAla'
+    # sequence of aa1 and aa3 in corresponding order
+    aa1_seq = 'YWVTSRQPNMLKIHGFEDCAXU*'
+    aa3_seq = 'TyrTrpValThrSerArgGlnProAsnMetLeuLysIleHisGlyPheGluAspCysAlaXaaSecTer'
 
 
     def test_aa1_lut(self):
-        self.assertEqual( len(hgvs.utils.aa1_to_aa3_lut), 20 )
+        self.assertEqual( len(hgvs.utils.aa1_to_aa3_lut), 23 )
         self.assertEqual( ''.join(sorted(hgvs.utils.aa1_to_aa3_lut.keys())),   self.all_aa1 )
         self.assertEqual( ''.join(sorted(hgvs.utils.aa1_to_aa3_lut.values())), self.all_aa3 )
 
     def test_aa3_lut(self):
-        self.assertEqual( len(hgvs.utils.aa3_to_aa1_lut), 20 )
+        self.assertEqual( len(hgvs.utils.aa3_to_aa1_lut), 23 )
         self.assertEqual( ''.join(sorted(hgvs.utils.aa3_to_aa1_lut.values())), self.all_aa1 )
         self.assertEqual( ''.join(sorted(hgvs.utils.aa3_to_aa1_lut.keys())),   self.all_aa3 )
 

@@ -3,7 +3,8 @@ aa3_to_aa1_lut = {
     'Cys': 'C',    'Gln': 'Q',    'Glu': 'E',    'Gly': 'G',
     'His': 'H',    'Ile': 'I',    'Leu': 'L',    'Lys': 'K',
     'Met': 'M',    'Phe': 'F',    'Pro': 'P',    'Ser': 'S',
-    'Thr': 'T',    'Trp': 'W',    'Tyr': 'Y',    'Val': 'V'
+    'Thr': 'T',    'Trp': 'W',    'Tyr': 'Y',    'Val': 'V',
+    'Xaa': 'X',    'Ter': '*',    'Sec': 'U',
     }
 
 aa1_to_aa3_lut = { v: k for k,v in aa3_to_aa1_lut.iteritems() }
