@@ -82,7 +82,7 @@ class TranscriptMapper(object):
         grs, gre = self.im.map_tgt_to_ref(frs, fre, max_extent=False)
         grs, gre = grs + self.gc_offset, gre + self.gc_offset
         gs = grs + start_offset if start_offset >= 0 else gre + start_offset
-        ge = grs + end_offset if end_offset > 0 else gre + end_offset   # note > 0 accounts for 0-based offsets
+        ge = grs + end_offset if end_offset > 0 else gre + end_offset   # note: > 0 accounts for 0-based offsets
         return hgvs.location.Interval(start=gs, end=ge)
 
     def hgvsr_to_hgvsc(self, r_interval):

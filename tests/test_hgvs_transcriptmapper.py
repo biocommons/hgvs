@@ -40,7 +40,7 @@ class Test_transcriptmapper(unittest.TestCase):
 
         ac = 'NM_033089.6'
         tm = TranscriptMapper(self.db, ac, self.ref)
-        # test cases: type indicates the type of conversation the test will work.  Some are only for g -> r or r -> g
+        # test cases: type indicates the type of conversation the test will work.  Some are only for g -> r
         # due to intronic regions
         # gs, ge = genomic start/end; rs,re = rna start/end; cs, ce = cdna start/end; so, eo = start offset/end offset
         test_cases = [
@@ -78,7 +78,7 @@ class Test_transcriptmapper(unittest.TestCase):
 
         ac = 'NM_182763.2'
         tm = TranscriptMapper(self.db, ac, self.ref)
-        # test cases: type indicates the type of conversation the test will work.  Some are only for g -> r or r -> g
+        # test cases: type indicates the type of conversation the test will work.  Some are only for g -> r
         # due to intronic regions
         test_cases = [
             {'type': 'grc', 'gs': 150552214, 'ge': 150552214, 'rs': 1, 're': 1, 'so': 0, 'eo': 0, 'd': 0, 'cs': 1-208, 'ce': 1-208},
@@ -153,7 +153,7 @@ class Test_transcriptmapper(unittest.TestCase):
         ac = 'NM_145249.2'
         tm = TranscriptMapper(self.db, ac, self.ref)
 
-        # test cases: type indicates the type of conversation the test will work.  Some are only for g -> r or r -> g
+        # test cases: type indicates the type of conversation the test will work.  Some are only for g -> r
         # due to intronic regions
         test_cases = [
             {'type': 'grc', 'gs': 94547638, 'ge': 94547638, 'rs': 1, 're': 1, 'so': 0, 'eo': 0, 'd': 0, 'cs': 1-254, 'ce': 1-254},
@@ -165,23 +165,6 @@ class Test_transcriptmapper(unittest.TestCase):
             {'type': 'grc', 'gs': 94555480, 'ge': 94555500, 'rs': 158, 're': 158, 'so': 7685, 'eo': -7686, 'd': 0, 'cs': 158-254, 'ce': 158-254},
         ]
         self.run_test_cases(tm, test_cases)
-
-    ### ANOTHER POSSIBLE TEST CASE ###
-    # reece=> select * from uta.tx_info where ac = 'NM_145171.3';
-    #  gene  | strand |     ac      | cds_start_i | cds_end_i |            descr            | summary
-    # -------+--------+-------------+-------------+-----------+-----------------------------+-----------------------------------
-    #  GPHB5 |     -1 | NM_145171.3 |          57 |       450 | glycoprotein hormone beta 5 | GPHB5 is a cystine knot-forming...
-    #
-    # reece=> select * from uta.tx_exons where ac = 'NM_145171.3' order by g_start_i;
-    #      ac      | ord | name | t_start_i | t_end_i |    ref     | g_start_i | g_end_i  |   cigar   | g_seq_a
-    # -------------+-----+------+-----------+---------+------------+-----------+----------+-----------+-------------------------
-    #  NM_145171.3 |   3 | 3    |       261 |     543 | GRCh37.p10 |  63779548 | 63779830 | 282M      |
-    #  NM_145171.3 |   2 | 2    |        56 |     261 | GRCh37.p10 |  63784360 | 63784564 | 156M1I48M | CATGAAGCTGGCATTCCTCTT...
-    #  NM_145171.3 |   1 | 1    |         0 |      56 | GRCh37.p10 |  63785537 | 63785593 | 56M       |
-    # def test_transcriptmapper_TranscriptMapper_GPHB5(self):
-    #     ac = 'NM_145171.3'
-    #     tm = TranscriptMapper(self.db,ac,self.ref)
-    #     pass
 
     def run_test_cases(self, tm, test_cases):
         for test_case in test_cases:
@@ -202,5 +185,23 @@ class Test_transcriptmapper(unittest.TestCase):
                 self.assertEquals(tm.hgvsc_to_hgvsg(c), g)
 
 
+### ANOTHER POSSIBLE TEST CASE ###
+# reece=> select * from uta.tx_info where ac = 'NM_145171.3';
+#  gene  | strand |     ac      | cds_start_i | cds_end_i |            descr            | summary
+# -------+--------+-------------+-------------+-----------+-----------------------------+-----------------------------------
+#  GPHB5 |     -1 | NM_145171.3 |          57 |       450 | glycoprotein hormone beta 5 | GPHB5 is a cystine knot-forming...
+#
+# reece=> select * from uta.tx_exons where ac = 'NM_145171.3' order by g_start_i;
+#      ac      | ord | name | t_start_i | t_end_i |    ref     | g_start_i | g_end_i  |   cigar   | g_seq_a
+# -------------+-----+------+-----------+---------+------------+-----------+----------+-----------+-------------------------
+#  NM_145171.3 |   3 | 3    |       261 |     543 | GRCh37.p10 |  63779548 | 63779830 | 282M      |
+#  NM_145171.3 |   2 | 2    |        56 |     261 | GRCh37.p10 |  63784360 | 63784564 | 156M1I48M | CATGAAGCTGGCATTCCTCTT...
+#  NM_145171.3 |   1 | 1    |         0 |      56 | GRCh37.p10 |  63785537 | 63785593 | 56M       |
+# def test_transcriptmapper_TranscriptMapper_GPHB5(self):
+#     ac = 'NM_145171.3'
+#     tm = TranscriptMapper(self.db,ac,self.ref)
+#     pass
+
 if __name__ == '__main__':
     unittest.main()
+
