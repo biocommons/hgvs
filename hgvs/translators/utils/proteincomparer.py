@@ -50,9 +50,9 @@ class ProteinComparer(object):
         diff_list = difflib.Differ().compare(self._ref_seq, self._alt_seq)
 
         # initial check for frameshift
-        ref_stop = len(self._ref_seq) - 1
-        alt_stop = self._alt_seq.find("*")
-        has_frameshift = alt_stop != -1 and alt_stop != ref_stop
+        # ref_stop = len(self._ref_seq) - 1
+        # alt_stop = self._alt_seq.find("*")
+        # has_frameshift = alt_stop != -1 and alt_stop != ref_stop
 
 
         # walk through the difflib string list and summarize variants as they are encountered
