@@ -40,10 +40,6 @@ class TranscriptMapper(object):
                 else '?')
 
     def hgvsg_to_hgvsr(self, g_interval):
-        """ Convert hgvsg interval into an hgvsr interval
-        Input: g_interval
-        Output: r_interval
-        """
         # frs, fre = (f)orward (r)na (s)tart & (e)nd; forward w.r.t. genome
         frs, fre = self.im.map_ref_to_tgt(g_interval.start - self.gc_offset, g_interval.end - self.gc_offset, max_extent=False)
         if self.strand == 1:
