@@ -126,13 +126,14 @@ rna_del    = 'del' (<num>|<rna*>):ref -> NARefAlt(ref=ref,alt=None)
 rna_ins    = 'ins' <rna+>:alt         -> NARefAlt(ref=None,alt=alt)
 rna_dup    = 'dup' <rna*>:seq         -> Dup(seq=seq)
 
-pro_edit   = pro_subst | pro_delins | pro_ins | pro_del | pro_dup
+pro_edit   = pro_subst | pro_delins | pro_ins | pro_del | pro_dup | pro_eq
 pro_subst  = aa_seq:alt pro_fs?:fs          -> AARefAlt(ref='',alt=hgvs.utils.aa_to_aa1(alt),fs=fs)
 pro_delins = 'delins' aa_seq:alt pro_fs?:fs -> AARefAlt(ref='',alt=aa_to_aa1(alt),fs=fs)
 pro_del    = 'del'                          -> AARefAlt(ref='',alt=None)
 pro_ins    = 'ins' aa_seq:alt pro_fs?:fs    -> AARefAlt(ref=None,alt=aa_to_aa1(alt),fs=fs)
 pro_dup    = 'dup'                          -> Dup(seq=seq)
 pro_fs     = <'fs' (aa_term (num|'?')?)?>
+pro_eq     = '='                            -> AARefAlt(ref='',alt='')
 
 
 ############################################################################
