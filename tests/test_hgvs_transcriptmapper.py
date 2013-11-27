@@ -14,6 +14,37 @@ class Test_transcriptmapper(unittest.TestCase):
         self.assertRaises(HGVSError, TranscriptMapper, self.db, ref=self.ref, ac='bogus')
         self.assertRaises(HGVSError, TranscriptMapper, self.db, ref='bogus', ac='NM_033089.6')
 
+    def test_transcriptmapper_TranscriptMapper_LCE3C(self):
+        ### Add one to g., r., and c. because we are returning hgvs coordinates ###
+        ac = 'NM_178434.2'
+        tm = TranscriptMapper(self.db, ac, self.ref)
+        cds = 70 + 1 # hgvs
+        # gs, ge = genomic start/end; rs,re = rna start/end; cs, ce = cdna start/end; so, eo = start offset/end offset
+        test_cases = [
+            {'gs': 152573138, 'ge': 152573138, 'rs': 1, 're': 1, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 1-cds, 'ce': 1-cds},
+            {'gs': 152573138+2, 'ge': 152573138+2, 'rs': 3, 're': 3, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 3-cds, 'ce': 3-cds},
+            # beyond cds add 1 due to hgvs
+            {'gs': 152573563, 'ge': 152573563, 'rs': 426, 're': 426, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 426-cds+1, 'ce': 426-cds+1},
+            {'gs': 152573563-2, 'ge': 152573563-2, 'rs': 424, 're': 424, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 424-cds+1, 'ce': 424-cds+1},
+        ]
+        self.run_cases(tm, test_cases)
+
+    def test_transcriptmapper_TranscriptMapper_HIST3H2A(self):
+        # strand = -1
+        ### Add one to g., r., and c. because we are returning hgvs coordinates ###
+        ac = 'NM_033445.2'
+        tm = TranscriptMapper(self.db, ac, self.ref)
+        cds = 42 + 1 # hgvs
+        # gs, ge = genomic start/end; rs,re = rna start/end; cs, ce = cdna start/end; so, eo = start offset/end offset
+        test_cases = [
+            {'gs': 228645561, 'ge': 228645561, 'rs': 1, 're': 1, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 1-cds, 'ce': 1-cds},
+            {'gs': 228645561-2, 'ge': 228645561-2, 'rs': 3, 're': 3, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 3-cds, 'ce': 3-cds},
+            # beyond cds add 1 due to hgvs
+            {'gs': 228645065, 'ge': 228645065, 'rs': 497, 're': 497, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 497-cds+1, 'ce': 497-cds+1},
+            {'gs': 228645065+2, 'ge': 228645065+2, 'rs': 495, 're': 495, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 495-cds+1, 'ce': 495-cds+1},
+        ]
+        self.run_cases(tm, test_cases)
+
     def test_transcriptmapper_TranscriptMapper_1_ZCCHC3(self):
         """
         reece=> select * from uta.tx_info where ac='NM_033089.6';
@@ -40,8 +71,6 @@ class Test_transcriptmapper(unittest.TestCase):
         ac = 'NM_033089.6'
         tm = TranscriptMapper(self.db, ac, self.ref)
         cds = 24 + 1 # hgvs
-        # test cases: type indicates the type of conversation the test will work.  Some are only for g -> r
-        # due to intronic regions
         # gs, ge = genomic start/end; rs,re = rna start/end; cs, ce = cdna start/end; so, eo = start offset/end offset
         test_cases = [
             {'gs': 278204, 'ge': 278204, 'rs': 1, 're': 1, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 1-cds, 'ce': 1-cds},
@@ -84,8 +113,6 @@ class Test_transcriptmapper(unittest.TestCase):
         ac = 'NM_182763.2'
         tm = TranscriptMapper(self.db, ac, self.ref)
         cds = 208 + 1 # hgvs
-        # test cases: type indicates the type of conversation the test will work.  Some are only for g -> r
-        # due to intronic regions
         test_cases = [
             {'gs': 150552215, 'ge': 150552215, 'rs': 1, 're': 1, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START , 'cs': 1-cds, 'ce': 1-cds},
             {'gs': 150552214, 'ge': 150552214, 'rs': 2, 're': 2, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START , 'cs': 2-cds, 'ce': 2-cds},
@@ -162,8 +189,6 @@ class Test_transcriptmapper(unittest.TestCase):
         ac = 'NM_145249.2'
         tm = TranscriptMapper(self.db, ac, self.ref)
         cds = 254 + 1 # hgvs
-        # test cases: type indicates the type of conversation the test will work.  Some are only for g -> r
-        # due to intronic regions
         test_cases = [
             #{'gs': 94547639, 'ge': 94547639, 'rs': 1, 're': 1, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 1-cds, 'ce': 1-cds},
             #{'gs': 94547796, 'ge': 94547796, 'rs': 158, 're': 158, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 158-cds, 'ce': 158-cds},
