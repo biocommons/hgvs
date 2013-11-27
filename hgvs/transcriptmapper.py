@@ -59,12 +59,13 @@ class TranscriptMapper(object):
             grs, gre = grs + self.gc_offset, gre + self.gc_offset
             start_offset = hgvs_offset(hgvs_coord_to_ci(g_interval.start), grs, gre)
             end_offset = hgvs_offset(hgvs_coord_to_ci(g_interval.end), grs, gre)
+            if self.strand == -1:
+                start_offset, end_offset = self.strand * start_offset, self.strand * end_offset
+            #frs = frs + 1 if start_offset < 0 else frs
+            #fre = fre + 1 if end_offset < 0 else fre
         else:
             start_offset = 0
             end_offset = 0
-        if self.strand == -1:
-            start_offset = self.strand * start_offset
-            end_offset = self.strand * end_offset
         return hgvs.location.Interval(
                     start=hgvs.location.BaseOffsetPosition(base=ci_to_hgvs_coord(frs), offset=start_offset),
                     end=hgvs.location.BaseOffsetPosition(base=ci_to_hgvs_coord(fre), offset=end_offset))
@@ -87,23 +88,28 @@ class TranscriptMapper(object):
         return hgvs.location.Interval(start=ci_to_hgvs_coord(gs), end=ci_to_hgvs_coord(ge))
 
     def hgvsr_to_hgvsc(self, r_interval):
+        # converting coordinates to ci to do calculations consistent with intervalmapper and then convert back hgvs
         c_interval = hgvs.location.Interval(
-                        start=hgvs.location.BaseOffsetPosition(base=r_interval.start.base - self.cds_start_i,
-                                                               offset=r_interval.start.offset,
-                                                               datum=hgvs.location.CDS_START),
-                        end=hgvs.location.BaseOffsetPosition(base=r_interval.end.base - self.cds_start_i,
-                                                             offset=r_interval.end.offset,
-                                                             datum=hgvs.location.CDS_START))
+                                start=hgvs.location.BaseOffsetPosition(
+                                    base=ci_to_hgvs_coord(hgvs_coord_to_ci(r_interval.start.base) - self.cds_start_i),
+                                    offset=r_interval.start.offset,
+                                    datum=hgvs.location.CDS_START),
+                                end=hgvs.location.BaseOffsetPosition(
+                                    base=ci_to_hgvs_coord(hgvs_coord_to_ci(r_interval.end.base) - self.cds_start_i),
+                                    offset=r_interval.end.offset,
+                                    datum=hgvs.location.CDS_START))
         return c_interval
 
     def hgvsc_to_hgvsr(self, c_interval):
         r_interval = hgvs.location.Interval(
-                        start=hgvs.location.BaseOffsetPosition(base=c_interval.start.base + self.cds_start_i,
-                                                               offset=c_interval.start.offset,
-                                                               datum=hgvs.location.SEQ_START),
-                        end=hgvs.location.BaseOffsetPosition(base=c_interval.end.base + self.cds_start_i,
-                                                             offset=c_interval.end.offset,
-                                                             datum=hgvs.location.SEQ_START))
+                        start=hgvs.location.BaseOffsetPosition(
+                            base=ci_to_hgvs_coord(hgvs_coord_to_ci(c_interval.start.base) + self.cds_start_i),
+                            offset=c_interval.start.offset,
+                            datum=hgvs.location.SEQ_START),
+                        end=hgvs.location.BaseOffsetPosition(
+                            base=ci_to_hgvs_coord(hgvs_coord_to_ci(c_interval.end.base) + self.cds_start_i),
+                            offset=c_interval.end.offset,
+                            datum=hgvs.location.SEQ_START))
         return r_interval
 
     def hgvsg_to_hgvsc(self, g_interval):
