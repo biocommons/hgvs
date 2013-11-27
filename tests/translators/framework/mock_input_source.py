@@ -4,12 +4,24 @@
 from __future__ import with_statement
 import csv
 
-import hgvs.translators.framework.base_input_source as base_input_source
+import hgvs.edti.interface as interface
 
-class MockInputSource(base_input_source.BaseInputSource):
+class MockInputSource():
 
     def __init__(self, in_file):
         self._mock_data = self._read_input(in_file)
+
+    def fetch_gene_info(self,ac):
+        pass
+
+    def fetch_gene_transcripts(self,ac):
+        pass
+
+    def fetch_transcript_exons(self,ac):
+        return self._mock_data[ac]
+
+    def fetch_transcript_info(self,ac):
+        pass
 
 
     def get_sequence(self, accession):
@@ -17,8 +29,9 @@ class MockInputSource(base_input_source.BaseInputSource):
         """
         return self._mock_data.get(accession)
 
-    def get_chromosome(self):
-        return ""
+    #
+    # internal methods
+    #
 
     def _read_input(self, in_file):
         """Dummy file of inputs

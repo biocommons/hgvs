@@ -2,6 +2,7 @@
 # Utility to insert an hgvs variant into a DNA sequence
 #
 import math
+import recordtype
 
 from Bio.Seq import Seq
 
@@ -11,6 +12,10 @@ DBG = True
 
 # TODO - convert the inputs/outputs to whatever the canonical data representation of sequences is
 
+class VariantData(recordtype.recordtype('VariantData', [
+        'transcript_sequence', 'aa_sequence', 'cds_start', 'cds_stop', 'is_frameshift', 'variant_start_aa',
+        'protein_accession', ('frameshift_start', None)])):
+    pass
 
 class VariantInserter(object):
 
@@ -37,7 +42,7 @@ class VariantInserter(object):
         :type list of dictionaries
         """
 
-        type_map = {hgvs.edit.RefAlt: self._incorporate_delins,
+        type_map = {hgvs.edit.NARefAlt: self._incorporate_delins,
                     hgvs.edit.Dup: self._incorporate_dup,
                     hgvs.edit.Repeat: self._incorporate_repeat}
 
@@ -159,11 +164,8 @@ class VariantInserter(object):
         """
         # TODO - implement for 2+ variants
 
-        if variant_data['is_frameshift']:
-            frameshift_start = variant_data['variant_start_aa']
-        else:
-            frameshift_start = -1
-        variant_data['frameshift_start'] = frameshift_start
+        if variant_data.is_frameshift:
+            variant_data.frameshift_start = variant_data.variant_start_aa
         return variant_data
 
     def _create_AA_variant_output(self, seq, cds_start, cds_stop, is_frameshift, variant_start_aa, accession):
@@ -191,20 +193,12 @@ class VariantInserter(object):
         seq = ''.join(seq)
 
         seq_cds = Seq(seq[cds_start - 1:])
-        seq_AA = str(seq_cds.translate())
-        stop_pos = seq_AA.find("*")
+        seq_aa = str(seq_cds.translate())
+        stop_pos = seq_aa.find("*")
         if stop_pos != -1:
-            seq_AA = seq_AA[:stop_pos + 1]
+            seq_aa = seq_aa[:stop_pos + 1]
 
-        variant_data = {
-            'transcript_sequence': seq,
-            'AA_sequence': seq_AA,
-            'cds_start': cds_start,
-            'cds_stop': cds_stop,
-            'is_frameshift': is_frameshift,
-            'variant_start_aa': variant_start_aa,
-            'protein_accession': accession
-        }
+        variant_data = VariantData(seq, seq_aa, cds_start, cds_stop, is_frameshift, variant_start_aa, accession)
 
         return variant_data
 

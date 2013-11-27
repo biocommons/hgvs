@@ -101,7 +101,7 @@ class TestVariantInserter(unittest.TestCase):
     #     pass
 
     def _run_comparison(self, hgvsc, expected_sequence):
-        var = self._parser.hgvs_variant(hgvsc)
+        var = self._parser.parse_hgvs_variant(hgvsc)
         transcript_data = self._datasource.get_sequence(var.seqref)
         inserter = variantinserter.VariantInserter(var, transcript_data)
         insert_result = inserter.insert_variant()
