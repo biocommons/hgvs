@@ -157,7 +157,7 @@ class ProteinComparer(object):
         is_dup = False  # assume not dup
         fs = None
 
-        if is_frameshift:                                               # frameshift
+        if is_frameshift:                                               # --- frameshift ---
             aa_start = aa_end = hgvs.location.AAPosition(pos=start, aa=deletion[0])
             ref = ''
 
@@ -166,14 +166,14 @@ class ProteinComparer(object):
             except ValueError:
                 new_stop = "?"
 
-            if new_stop != "1":
+            if new_stop != "1":                                         # normal frameshift
                 alt = insertion[0]
                 fs = 'fs*{}'.format(new_stop)
 
-            else:   # frameshift introduced stop codon at variant position
+            else:                                                       # frameshift introduced stop codon at var pos
                 alt = '*'
 
-        else:                                                           # no frameshift
+        else:                                                           # --- no frameshift ---
             if len(insertion) == len(deletion) == 1:                    # substitution
                 aa_start = aa_end = hgvs.location.AAPosition(pos=start, aa=deletion)
                 ref = ''

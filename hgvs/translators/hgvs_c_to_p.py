@@ -38,12 +38,8 @@ class HgvsCToP(object):
             print "START DEBUG"
             print hgvsc
 
-        # get transcript from datasource & convert to AA
-        transcript_data = self._setup_transcript_data(var.seqref)
-
-        transcript_dna_cds = \
-            Seq(transcript_data['transcript_sequence'][transcript_data['cds_start'] - 1:transcript_data['cds_stop']])
-        transcript_data["AA_sequence"] = str(transcript_dna_cds.translate())
+        # get transcript sequence from datasource & convert to AA
+        transcript_data = self._setup_transcript_data(var)
 
         # incorporate DNA change into sequence(s) and translate
         inserter = variantinserter.VariantInserter(var, transcript_data)
@@ -69,16 +65,39 @@ class HgvsCToP(object):
     # internal methods
     #
 
-    def _setup_transcript_data(self, ac):
+    def _setup_transcript_data(self, var):
         """wrapper to convert transcript data from external source into common form
-        :param ac accession #
-        :type str
+        :param var variant
+        :type SequenceVariant
         :return transcript info
         :type dict
         """
         # TODO - take whatever form you get the input from & convert to a uniform format
         # TODO - handle what UTA returns & convert test inputs to mimic that
-        transcript_data = self.datasource.fetch_transcript_exons(ac)
+        transcript_data_by_exons = self.datasource.fetch_transcript_exons(var.seqref)
+
+        transcript_data = None
+        for exon in transcript_data_by_exons:
+            if exon['exon_start'] <= var.posedit.pos.start.base <= exon['exon_stop']:
+                transcript_data = exon
+        if transcript_data is None:
+            raise ValueError("failed to find exon for {}".format(var.seqref))
+
+        # get the range of the nucleic acid sequense to translate
+        if transcript_data['exon_start'] >= transcript_data['cds_start']:
+            na_start = 0
+        else:
+            na_start = transcript_data['cds_start'] - transcript_data['exon_start']
+
+        if transcript_data['exon_stop'] <= transcript_data['cds_stop']:
+            na_end = transcript_data['exon_stop'] - transcript_data['exon_start'] + 1
+        else:
+            na_end = transcript_data['cds_stop'] - transcript_data['exon_start'] + 1
+
+        transcript_dna_cds = \
+            Seq(transcript_data['transcript_sequence'][na_start:na_end])
+        transcript_data["AA_sequence"] = str(transcript_dna_cds.translate())
+
         return transcript_data
 
     def _add_accession(self, hgvsps, acc):
