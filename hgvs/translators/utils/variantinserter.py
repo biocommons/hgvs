@@ -56,7 +56,7 @@ class VariantInserter(object):
 
         variant_location = self._get_variant_location()
 
-        # TODO - implement handling non-exons
+        # TODO - implement handling non-exons using the Interval information; return None or []?
         if variant_location == "exon":
             edit_type = type(self._variant.posedit.edit)
             this_variant_data = type_map[edit_type]()
@@ -67,7 +67,7 @@ class VariantInserter(object):
         elif variant_location == "five_utr":
             has_5utr_variant = True
         else:   # should never get here
-            raise ValueError("value_location = {}".format(variant_location))
+            raise ValueError("variant\\\\_location = {}".format(variant_location))
 
 
         # get the start of the "terminal" frameshift (i.e. one never "cancelled out")
@@ -114,7 +114,8 @@ class VariantInserter(object):
         variant_start_aa = int(math.ceil((self._variant.posedit.pos.start.base + 1) / 3.0))
 
         variant_data = self._create_AA_variant_output(seq, cds_start, cds_stop, is_frameshift, variant_start_aa,
-                                                      self._transcript_data['protein_accession'])
+                                                      self._transcript_data['protein_accession'],
+                                                      self._transcript_data['exon_start'])
         return variant_data
 
     def _incorporate_dup(self):
@@ -129,7 +130,8 @@ class VariantInserter(object):
         variant_start_aa = int(math.ceil((self._variant.posedit.pos.end.base + 1) / 3.0))
 
         variant_data = self._create_AA_variant_output(seq, cds_start, cds_stop, is_frameshift, variant_start_aa,
-                                                      self._transcript_data['protein_accession'])
+                                                      self._transcript_data['protein_accession'],
+                                                      self._transcript_data['exon_start'])
         return variant_data
 
     def _incorporate_repeat(self):
@@ -149,9 +151,14 @@ class VariantInserter(object):
         # get initial start/end points; will modify these based on the variant length
         cds_start = self._transcript_data['cds_start']
         cds_stop = self._transcript_data['cds_stop']
+        exon_start = self._transcript_data['exon_start']
+        exon_stop = self._transcript_data['exon_stop']
 
-        start = (cds_start - 1) + self._variant.posedit.pos.start.base - 1   # list is zero-based; seq pos is 1-based
-        end = (cds_start - 1) + self._variant.posedit.pos.end.base
+        # TODO - account for exon
+        offset = cds_start - exon_start
+        #offset = cds_start - 1
+        start = offset + self._variant.posedit.pos.start.base - 1
+        end = offset + self._variant.posedit.pos.end.base
 
         return seq, cds_start, cds_stop, start, end
 
@@ -168,7 +175,7 @@ class VariantInserter(object):
             variant_data.frameshift_start = variant_data.variant_start_aa
         return variant_data
 
-    def _create_AA_variant_output(self, seq, cds_start, cds_stop, is_frameshift, variant_start_aa, accession):
+    def _create_AA_variant_output(self, seq, cds_start, cds_stop, is_frameshift, variant_start_aa, accession, exon_start):
         """Common code for creating a variant sequence in the proper format once the sequence has been modified
         :param seq: DNA sequence wiith variant incorporated
         :type str
@@ -192,7 +199,11 @@ class VariantInserter(object):
 
         seq = ''.join(seq)
 
-        seq_cds = Seq(seq[cds_start - 1:])
+        if exon_start >= cds_start:
+            na_start = 0
+        else:
+            na_start = cds_start - exon_start
+        seq_cds = Seq(seq[na_start:])
         seq_aa = str(seq_cds.translate())
         stop_pos = seq_aa.find("*")
         if stop_pos != -1:

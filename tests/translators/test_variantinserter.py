@@ -102,10 +102,10 @@ class TestVariantInserter(unittest.TestCase):
 
     def _run_comparison(self, hgvsc, expected_sequence):
         var = self._parser.parse_hgvs_variant(hgvsc)
-        transcript_data = self._datasource.get_sequence(var.seqref)
+        transcript_data = self._datasource.get_sequence(var.seqref)[0]
         inserter = variantinserter.VariantInserter(var, transcript_data)
         insert_result = inserter.insert_variant()
-        actual_sequence = insert_result[0]['transcript_sequence']
+        actual_sequence = insert_result[0].transcript_sequence
         msg = "expected: {}\nactual  : {}".format(expected_sequence, actual_sequence)
         self.assertEqual(expected_sequence, actual_sequence, msg)
 
