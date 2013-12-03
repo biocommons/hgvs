@@ -108,6 +108,21 @@ class TestHgvsCToP(unittest.TestCase):
         expected_hgvsp = "NP_999999.1:p.Ala5Glufs*?"
         self._run_conversion(hgvsc, expected_hgvsp)
 
+    def test_intron(self):
+        hgvsc = "NM_999999.1:c.12+1G>A"
+        expected_hgvsp = "NP_999999.1:p.="
+        self._run_conversion(hgvsc, expected_hgvsp)
+
+    def test_five_prime_utr(self):
+        hgvsc = "NM_999999.1:c.-2A>G"
+        expected_hgvsp = "NP_999999.1:p.="
+        self._run_conversion(hgvsc, expected_hgvsp)
+
+    def test_three_prime_utr(self):
+        hgvsc = "NM_999999.1:c.*3G>A"
+        expected_hgvsp = "NP_999999.1:p.="
+        self._run_conversion(hgvsc, expected_hgvsp)
+
     # The following are unsupported
     #
     # def test_repeats(self):
