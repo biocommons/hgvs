@@ -40,76 +40,83 @@ class TranscriptMapper(object):
                 else '?')
 
     def hgvsg_to_hgvsr(self, g_interval):
+        g_ci = hgvs_coord_to_ci(g_interval.start, g_interval.end)
         # frs, fre = (f)orward (r)na (s)tart & (e)nd; forward w.r.t. genome
-        frs, fre = self.im.map_ref_to_tgt(hgvs_coord_to_ci(g_interval.start) - self.gc_offset,
-                                          hgvs_coord_to_ci(g_interval.end) - self.gc_offset, max_extent=False)
+        frs, fre = self.im.map_ref_to_tgt(g_ci[0] - self.gc_offset, g_ci[1] - self.gc_offset, max_extent=False)
         if self.strand == 1:
             pass
         elif self.strand == -1:
             frs, fre = self.im.tgt_len - fre, self.im.tgt_len - frs
         else:
             raise HGVSError('Code fell through strand check (g_to_r); should never get here.')
-        # frs & fre will be equal except for cases with an insert in the transcript relative to the genome
+        # get BaseOffsetPosition information for r.
+        if self.strand == 1:
+            grs, gre = self.im.map_tgt_to_ref(frs, fre, max_extent=False)
+        elif self.strand == -1:
+            grs, gre = self.im.map_tgt_to_ref((self.im.tgt_len - fre), (self.im.tgt_len - frs), max_extent=False)
+        grs, gre = grs + self.gc_offset, gre + self.gc_offset
+        # 0-width interval indicates an intron.  Need to calculate offsets but we're are in ci coordinates
+        # requires adding 1 strategically to get the HGVS position (shift coordinates to 3' end of the ref nucleotide)
+        # TODO: check strand
         if frs == fre:
-            # get BaseOffsetPosition information for r.
-            if self.strand == -1:
-                grs, gre = self.im.map_tgt_to_ref((self.im.tgt_len - fre), (self.im.tgt_len - frs), max_extent=False)
-            elif self.strand == 1:
-                grs, gre = self.im.map_tgt_to_ref(frs, fre, max_extent=False)
-            grs, gre = grs + self.gc_offset, gre + self.gc_offset
-            start_offset = hgvs_offset(hgvs_coord_to_ci(g_interval.start), grs, gre)
-            end_offset = hgvs_offset(hgvs_coord_to_ci(g_interval.end), grs, gre)
-            if self.strand == -1:
-                start_offset, end_offset = self.strand * start_offset, self.strand * end_offset
-            #frs = frs + 1 if start_offset < 0 else frs
-            #fre = fre + 1 if end_offset < 0 else fre
+            start_offset = hgvs_offset(g_ci[0] + 1, grs, gre + 1)
+            end_offset = hgvs_offset(g_ci[1], grs, gre + 1)
         else:
-            start_offset = 0
-            end_offset = 0
+            start_offset = hgvs_offset(g_ci[0], grs, gre)
+            end_offset = hgvs_offset(g_ci[1], grs, gre)
+        if self.strand == -1:
+            start_offset, end_offset = self.strand * end_offset, self.strand * start_offset
+        if start_offset > 0:
+            frs -= 1
+        if end_offset < 0:
+            fre += 1
         return hgvs.location.Interval(
-                    start=hgvs.location.BaseOffsetPosition(base=ci_to_hgvs_coord(frs), offset=start_offset),
-                    end=hgvs.location.BaseOffsetPosition(base=ci_to_hgvs_coord(fre), offset=end_offset))
+                    start=hgvs.location.BaseOffsetPosition(base=ci_to_hgvs_coord(frs, fre)[0], offset=start_offset),
+                    end=hgvs.location.BaseOffsetPosition(base=ci_to_hgvs_coord(frs, fre)[1], offset=end_offset))
 
     def hgvsr_to_hgvsg(self, r_interval):
         if self.strand == 1:
-            frs = hgvs_coord_to_ci(r_interval.start.base)
-            fre = hgvs_coord_to_ci(r_interval.end.base)
+            frs, fre = hgvs_coord_to_ci(r_interval.start.base, r_interval.end.base)
+            start_offset, end_offset = r_interval.start.offset, r_interval.end.offset
         elif self.strand == -1:
-            frs = self.im.tgt_len - hgvs_coord_to_ci(r_interval.end.base)
-            fre = self.im.tgt_len - hgvs_coord_to_ci(r_interval.start.base)
+            frs, fre = hgvs_coord_to_ci(r_interval.start.base, r_interval.end.base)
+            fre, frs = self.im.tgt_len - frs, self.im.tgt_len - fre
+            start_offset, end_offset = self.strand * r_interval.end.offset, self.strand * r_interval.start.offset
         else:
            raise HGVSError('Code fell through strand check (r_to_g); should never get here.')
         # returns the genomic range start (grs) and end (gre)
-        start_offset, end_offset = self.strand * r_interval.start.offset, self.strand * r_interval.end.offset
         grs, gre = self.im.map_tgt_to_ref(frs, fre, max_extent=False)
         grs, gre = grs + self.gc_offset, gre + self.gc_offset
-        gs = grs + start_offset if start_offset >= 0 else gre + start_offset
-        ge = grs + end_offset if end_offset > 0 else gre + end_offset   # note: > 0 accounts for 0-based offsets
-        return hgvs.location.Interval(start=ci_to_hgvs_coord(gs), end=ci_to_hgvs_coord(ge))
+        gs, ge = grs + start_offset, gre + end_offset
+        #gs = grs + start_offset if start_offset >= 0 else gre + start_offset
+        #ge = gre + end_offset if end_offset > 0 else grs + end_offset   # note: > 0 accounts for 0-based offsets
+        return hgvs.location.Interval(start=ci_to_hgvs_coord(gs, ge)[0], end=ci_to_hgvs_coord(gs, ge)[1])
 
     def hgvsr_to_hgvsc(self, r_interval):
         # converting coordinates to ci to do calculations consistent with intervalmapper and then convert back hgvs
+        r_ci = hgvs_coord_to_ci(r_interval.start.base, r_interval.end.base)
         c_interval = hgvs.location.Interval(
                                 start=hgvs.location.BaseOffsetPosition(
-                                    base=ci_to_hgvs_coord(hgvs_coord_to_ci(r_interval.start.base) - self.cds_start_i),
+                                    base=ci_to_hgvs_coord(r_ci[0] - self.cds_start_i, r_ci[1] - self.cds_start_i)[0],
                                     offset=r_interval.start.offset,
                                     datum=hgvs.location.CDS_START),
                                 end=hgvs.location.BaseOffsetPosition(
-                                    base=ci_to_hgvs_coord(hgvs_coord_to_ci(r_interval.end.base) - self.cds_start_i),
+                                    base=ci_to_hgvs_coord(r_ci[0] - self.cds_start_i, r_ci[1] - self.cds_start_i)[1],
                                     offset=r_interval.end.offset,
                                     datum=hgvs.location.CDS_START))
         return c_interval
 
     def hgvsc_to_hgvsr(self, c_interval):
+        c_ci = hgvs_coord_to_ci(c_interval.start.base, c_interval.end.base)
         r_interval = hgvs.location.Interval(
-                        start=hgvs.location.BaseOffsetPosition(
-                            base=ci_to_hgvs_coord(hgvs_coord_to_ci(c_interval.start.base) + self.cds_start_i),
-                            offset=c_interval.start.offset,
-                            datum=hgvs.location.SEQ_START),
-                        end=hgvs.location.BaseOffsetPosition(
-                            base=ci_to_hgvs_coord(hgvs_coord_to_ci(c_interval.end.base) + self.cds_start_i),
-                            offset=c_interval.end.offset,
-                            datum=hgvs.location.SEQ_START))
+                                start=hgvs.location.BaseOffsetPosition(
+                                    base=ci_to_hgvs_coord(c_ci[0] + self.cds_start_i, c_ci[1] + self.cds_start_i)[0],
+                                    offset=c_interval.start.offset,
+                                    datum=hgvs.location.SEQ_START),
+                                end=hgvs.location.BaseOffsetPosition(
+                                    base=ci_to_hgvs_coord(c_ci[0] + self.cds_start_i, c_ci[1] + self.cds_start_i)[1],
+                                    offset=c_interval.end.offset,
+                                    datum=hgvs.location.SEQ_START))
         return r_interval
 
     def hgvsg_to_hgvsc(self, g_interval):
@@ -120,8 +127,9 @@ class TranscriptMapper(object):
 
 
 def hgvs_offset(g_position, grs, gre):
-    """ Calculates the hgvs coordinate offset from a given genomic position
-    """
+    """ Calculates the HGVS coordinate offset from a given genomic position"""
+    if g_position == grs or g_position == gre:
+        return 0
     mid = math.ceil((grs + gre) / 2)
     if g_position < mid:
         offset = g_position - grs
@@ -130,21 +138,22 @@ def hgvs_offset(g_position, grs, gre):
     return offset
 
 
-def ci_to_hgvs_coord(pos):
+def ci_to_hgvs_coord(s, e):
     """ Convert continuous interbase (right-open) coordinates (..,-2,-1,0,1,..) to
     discontinuous HGVS coordinates (..,-2,-1,1,2,..)
     """
-    return pos + 1 if pos >= 0 else pos
+    def _ci_to_hgvs(c):
+        return c + 1 if c >= 0 else c
+    return _ci_to_hgvs(s), None if e is None else _ci_to_hgvs(e) - 1
 
-
-def hgvs_coord_to_ci(pos):
+def hgvs_coord_to_ci(s, e):
     """convert start,end interval in inclusive, discontinuous HGVS coordinates
     (..,-2,-1,1,2,..) to continuous interbase (right-open) coordinates
     (..,-2,-1,0,1,..)"""
-    def _cds_to_ci(c):
+    def _hgvs_to_ci(c):
         assert c != 0, 'received CDS coordinate 0; expected ..,-2,-1,1,1,...'
         return c-1 if c>0 else c
-    return _cds_to_ci(pos)
+    return _hgvs_to_ci(s), None if e is None else _hgvs_to_ci(e) + 1
 
 
 def build_tx_cigar(exons, strand):
