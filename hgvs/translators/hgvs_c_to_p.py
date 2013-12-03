@@ -56,7 +56,9 @@ class HgvsCToP(object):
 
         # perform comparison to get hgvs tag
         comparer = proteincomparer.ProteinComparer(transcript_data.aa_sequence,
-                                                variant_data[0].aa_sequence, variant_data[0].frameshift_start)
+                                                variant_data[0].aa_sequence,
+                                                variant_data[0].frameshift_start,
+                                                variant_data[0].aa_offset)
         hgvsp_no_acc = comparer.compare()
 
         hgvsp = self._add_accession(hgvsp_no_acc, variant_data[0].protein_accession)
@@ -88,7 +90,7 @@ class HgvsCToP(object):
         if exon_matched is None:
             raise ValueError("failed to find exon for {}".format(var.seqref))
 
-        # get the range of the nucleic acid sequense to translate
+        # get the range of the nucleic acid sequence to translate
         if exon_matched['exon_start'] >= exon_matched['cds_start']:
             na_start = 0
         else:
@@ -101,7 +103,6 @@ class HgvsCToP(object):
 
         transcript_dna_cds = \
             Seq(exon_matched['transcript_sequence'][na_start:na_end])
-        #exon_matched["AA_sequence"] = str(transcript_dna_cds.translate())
 
         transcript_data = TranscriptData(exon_matched['transcript_sequence'],
                                          str(transcript_dna_cds.translate()),

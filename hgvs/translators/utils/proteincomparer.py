@@ -16,7 +16,7 @@ DBG = True
 
 class ProteinComparer(object):
 
-    def __init__(self, ref_seq, alt_seq, frameshift_start = None):
+    def __init__(self, ref_seq, alt_seq, frameshift_start = None, aa_offset = 0):
         """Constructor
 
         The normal difflib comparison may identify islands of matches in a frameshift
@@ -28,10 +28,12 @@ class ProteinComparer(object):
         :type str
         :param frameshift_start: index n protein (1-based) where a frameshift should affect all downstream bases
         :type int
+        :param aa_offset: index offset for start position (account for upstream exons)
         """
         self._ref_seq = ref_seq
         self._alt_seq = alt_seq
         self._frameshift_start = frameshift_start
+        self._aa_offset = aa_offset
 
     def compare(self):
         """Compare two amino acid sequences; generate an hgvs tag from the output
@@ -147,7 +149,7 @@ class ProteinComparer(object):
         :type str
         :return hgvs string
         """
-        start = variant['start']
+        start = variant['start'] + self._aa_offset
         insertion = ''.join(variant['ins'])
         deletion = ''.join(variant['del'])
 
