@@ -25,7 +25,7 @@ class VariantInserter(object):
         :param variant representation of hgvs variant
         :type variant
         :param transcript_data representation of transcript
-        :type dictionary
+        :type recordtype
 
         """
         self._variant = variant
@@ -114,8 +114,8 @@ class VariantInserter(object):
         variant_start_aa = int(math.ceil((self._variant.posedit.pos.start.base + 1) / 3.0))
 
         variant_data = self._create_AA_variant_output(seq, cds_start, cds_stop, is_frameshift, variant_start_aa,
-                                                      self._transcript_data['protein_accession'],
-                                                      self._transcript_data['exon_start'])
+                                                      self._transcript_data.protein_accession,
+                                                      self._transcript_data.exon_start)
         return variant_data
 
     def _incorporate_dup(self):
@@ -130,8 +130,8 @@ class VariantInserter(object):
         variant_start_aa = int(math.ceil((self._variant.posedit.pos.end.base + 1) / 3.0))
 
         variant_data = self._create_AA_variant_output(seq, cds_start, cds_stop, is_frameshift, variant_start_aa,
-                                                      self._transcript_data['protein_accession'],
-                                                      self._transcript_data['exon_start'])
+                                                      self._transcript_data.protein_accession,
+                                                      self._transcript_data.exon_start)
         return variant_data
 
     def _incorporate_repeat(self):
@@ -146,13 +146,13 @@ class VariantInserter(object):
         cds start index in seq [inc, 0-based], cds end index in seq [excl, 0-based])
         :type (str, int, int, int, int)
         """
-        seq = list(self._transcript_data['transcript_sequence'])
+        seq = list(self._transcript_data.transcript_sequence)
 
         # get initial start/end points; will modify these based on the variant length
-        cds_start = self._transcript_data['cds_start']
-        cds_stop = self._transcript_data['cds_stop']
-        exon_start = self._transcript_data['exon_start']
-        exon_stop = self._transcript_data['exon_stop']
+        cds_start = self._transcript_data.cds_start
+        cds_stop = self._transcript_data.cds_stop
+        exon_start = self._transcript_data.exon_start
+        exon_stop = self._transcript_data.exon_stop
 
         # TODO - account for exon
         offset = cds_start - exon_start
