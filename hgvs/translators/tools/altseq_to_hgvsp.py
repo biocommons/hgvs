@@ -1,5 +1,5 @@
 #
-# Compares two protein sequences
+# builds an hgvsp SequenceVariant object for a modified transcript sequence based on incorporated variants
 #
 
 import collections
@@ -14,7 +14,7 @@ import hgvs.variant
 
 DBG = True
 
-class ProteinComparer(object):
+class AltSeqToHgvsp(object):
 
     def __init__(self, ref_seq, alt_seq, frameshift_start = None):
         """Constructor
@@ -33,7 +33,7 @@ class ProteinComparer(object):
         self._alt_seq = alt_seq
         self._frameshift_start = frameshift_start
 
-    def compare(self):
+    def build_hgvsp(self):
         """Compare two amino acid sequences; generate an hgvs tag from the output
 
         :return list of variants in sequence order
