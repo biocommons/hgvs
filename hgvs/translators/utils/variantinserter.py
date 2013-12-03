@@ -14,7 +14,7 @@ DBG = True
 
 class VariantData(recordtype.recordtype('VariantData', [
         'transcript_sequence', 'aa_sequence', 'cds_start', 'cds_stop', 'is_frameshift', 'variant_start_aa',
-        'protein_accession', ('frameshift_start', None)])):
+        'protein_accession', 'aa_offset', ('frameshift_start', None)])):
     pass
 
 class VariantInserter(object):
@@ -88,7 +88,7 @@ class VariantInserter(object):
     def _incorporate_delins(self):
         """Incorporate delins
         """
-        seq, cds_start, cds_stop, start, end = self._setup_incorporate()
+        seq, cds_start, cds_stop, start, end, aa_offset = self._setup_incorporate()
 
         ref = self._variant.posedit.edit.ref
         alt = self._variant.posedit.edit.alt
@@ -115,13 +115,14 @@ class VariantInserter(object):
 
         variant_data = self._create_AA_variant_output(seq, cds_start, cds_stop, is_frameshift, variant_start_aa,
                                                       self._transcript_data.protein_accession,
-                                                      self._transcript_data.exon_start)
+                                                      self._transcript_data.exon_start,
+                                                      aa_offset)
         return variant_data
 
     def _incorporate_dup(self):
         """Incorporate dup into sequence
         """
-        seq, cds_start, cds_stop, start, end = self._setup_incorporate()
+        seq, cds_start, cds_stop, start, end, aa_offset = self._setup_incorporate()
 
         dup_seq = seq[start:end]
         seq[end:end] = dup_seq
@@ -131,7 +132,8 @@ class VariantInserter(object):
 
         variant_data = self._create_AA_variant_output(seq, cds_start, cds_stop, is_frameshift, variant_start_aa,
                                                       self._transcript_data.protein_accession,
-                                                      self._transcript_data.exon_start)
+                                                      self._transcript_data.exon_start,
+                                                      aa_offset)
         return variant_data
 
     def _incorporate_repeat(self):
@@ -143,8 +145,9 @@ class VariantInserter(object):
     def _setup_incorporate(self):
         """Helper to setup incorporate functions
         :return (transcript sequence, cds start [1-based], cds stop [1-based],
-        cds start index in seq [inc, 0-based], cds end index in seq [excl, 0-based])
-        :type (str, int, int, int, int)
+        cds start index in seq [inc, 0-based], cds end index in seq [excl, 0-based],
+        AA offset index)
+        :type (str, int, int, int, int, int)
         """
         seq = list(self._transcript_data.transcript_sequence)
 
@@ -152,15 +155,19 @@ class VariantInserter(object):
         cds_start = self._transcript_data.cds_start
         cds_stop = self._transcript_data.cds_stop
         exon_start = self._transcript_data.exon_start
-        exon_stop = self._transcript_data.exon_stop
 
         # TODO - account for exon
         offset = cds_start - exon_start
-        #offset = cds_start - 1
         start = offset + self._variant.posedit.pos.start.base - 1
         end = offset + self._variant.posedit.pos.end.base
 
-        return seq, cds_start, cds_stop, start, end
+        # account for amino acids on upstream exons
+        if exon_start >= cds_start:
+            aa_offset = (exon_start - cds_start) / 3
+        else:
+            aa_offset = 0
+
+        return seq, cds_start, cds_stop, start, end, aa_offset
 
     def _get_frameshift_start(self, variant_data):
         """Get starting position (AA ref index) of the last frameshift
@@ -175,7 +182,8 @@ class VariantInserter(object):
             variant_data.frameshift_start = variant_data.variant_start_aa
         return variant_data
 
-    def _create_AA_variant_output(self, seq, cds_start, cds_stop, is_frameshift, variant_start_aa, accession, exon_start):
+    def _create_AA_variant_output(self, seq, cds_start, cds_stop, is_frameshift, variant_start_aa, accession,
+                                  exon_start, aa_offset):
         """Common code for creating a variant sequence in the proper format once the sequence has been modified
         :param seq: DNA sequence wiith variant incorporated
         :type str
@@ -189,6 +197,8 @@ class VariantInserter(object):
         :type int
         :param accession: protein accession, e.g. NP_999999.2
         :type str
+        :param aa_offset: offset of AA index to account for AAs in upstream exons
+        :type int
         :return variant sequence data
         :type dict
         """
@@ -209,7 +219,8 @@ class VariantInserter(object):
         if stop_pos != -1:
             seq_aa = seq_aa[:stop_pos + 1]
 
-        variant_data = VariantData(seq, seq_aa, cds_start, cds_stop, is_frameshift, variant_start_aa, accession)
+        variant_data = VariantData(seq, seq_aa, cds_start, cds_stop, is_frameshift, variant_start_aa, accession,
+                                   aa_offset)
 
         return variant_data
 
