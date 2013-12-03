@@ -15,7 +15,41 @@ DBG = True
 class VariantData(recordtype.recordtype('VariantData', [
         'transcript_sequence', 'aa_sequence', 'cds_start', 'cds_stop', 'is_frameshift', 'variant_start_aa',
         'protein_accession', ('frameshift_start', None)])):
-    pass
+
+    @classmethod
+    def create_for_variant_inserter(cls, seq, cds_start, cds_stop, is_frameshift, variant_start_aa, accession):
+        """Create a variant sequence using inputs from VariantInserter
+        :param seq: DNA sequence wiith variant incorporated
+        :type str
+        :param cds_start: coding sequence start (1-based)
+        :type int
+        :param cds_stop: coding sequence stop (1-based)
+        :type int
+        :param is_frameshift: is this variant a frameshift
+        :type bool
+        :param variant_start_aa: AA start index (1-based) for this variant
+        :type int
+        :param accession: protein accession, e.g. NP_999999.2
+        :type str
+        :return variant sequence data
+        :type dict
+        """
+
+        # padding list so biopython won't complain during the conversion
+        if len(seq) % 3 != 0:
+            seq.extend(['N']*(3-len(seq) % 3))
+
+        seq = ''.join(seq)
+
+        seq_cds = Seq(seq[cds_start - 1:])
+        seq_aa = str(seq_cds.translate())
+        stop_pos = seq_aa.find("*")
+        if stop_pos != -1:
+            seq_aa = seq_aa[:stop_pos + 1]
+
+        variant_data = VariantData(seq, seq_aa, cds_start, cds_stop, is_frameshift, variant_start_aa, accession)
+
+        return variant_data
 
 class VariantInserter(object):
 
@@ -113,8 +147,9 @@ class VariantInserter(object):
         is_frameshift = net_base_change % 3 != 0
         variant_start_aa = int(math.ceil((self._variant.posedit.pos.start.base + 1) / 3.0))
 
-        variant_data = self._create_AA_variant_output(seq, cds_start, cds_stop, is_frameshift, variant_start_aa,
-                                                      self._transcript_data.protein_accession)
+        variant_data = VariantData.create_for_variant_inserter(seq, cds_start, cds_stop,
+                                                               is_frameshift, variant_start_aa,
+                                                               self._transcript_data.protein_accession)
         return variant_data
 
     def _incorporate_dup(self):
@@ -128,8 +163,9 @@ class VariantInserter(object):
         is_frameshift = len(dup_seq) % 3 != 0
         variant_start_aa = int(math.ceil((self._variant.posedit.pos.end.base + 1) / 3.0))
 
-        variant_data = self._create_AA_variant_output(seq, cds_start, cds_stop, is_frameshift, variant_start_aa,
-                                                      self._transcript_data.protein_accession)
+        variant_data = VariantData.create_for_variant_inserter(seq, cds_start, cds_stop,
+                                                               is_frameshift, variant_start_aa,
+                                                               self._transcript_data.protein_accession)
         return variant_data
 
     def _incorporate_repeat(self):
@@ -166,40 +202,6 @@ class VariantInserter(object):
 
         if variant_data.is_frameshift:
             variant_data.frameshift_start = variant_data.variant_start_aa
-        return variant_data
-
-    def _create_AA_variant_output(self, seq, cds_start, cds_stop, is_frameshift, variant_start_aa, accession):
-        """Common code for creating a variant sequence in the proper format once the sequence has been modified
-        :param seq: DNA sequence wiith variant incorporated
-        :type str
-        :param cds_start: coding sequence start (1-based)
-        :type int
-        :param cds_stop: coding sequence stop (1-based)
-        :type int
-        :param is_frameshift: is this variant a frameshift
-        :type bool
-        :param variant_start_aa: AA start index (1-based) for this variant
-        :type int
-        :param accession: protein accession, e.g. NP_999999.2
-        :type str
-        :return variant sequence data
-        :type dict
-        """
-
-        # padding list so biopython won't complain during the conversion
-        if len(seq) % 3 != 0:
-            seq.extend(['N']*(3-len(seq) % 3))
-
-        seq = ''.join(seq)
-
-        seq_cds = Seq(seq[cds_start - 1:])
-        seq_aa = str(seq_cds.translate())
-        stop_pos = seq_aa.find("*")
-        if stop_pos != -1:
-            seq_aa = seq_aa[:stop_pos + 1]
-
-        variant_data = VariantData(seq, seq_aa, cds_start, cds_stop, is_frameshift, variant_start_aa, accession)
-
         return variant_data
 
 
