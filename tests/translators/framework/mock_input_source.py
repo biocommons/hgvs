@@ -2,7 +2,6 @@
 # Mock test input source
 #
 from __future__ import with_statement
-import collections
 import csv
 
 import hgvs.edti.interface as interface
@@ -39,20 +38,16 @@ class MockInputSource():
 
         :param in_file: path to input file of 2 cols (tab-delim); accession_number, sequence
         :type string
-        :return list of dictionaries of accession_number to sequence tags
+        :return dictionary of accession_number to sequence tags
         """
-        result = collections.defaultdict(list)
+        result = {}
         with open(in_file, 'r') as f:
             reader = csv.DictReader(f, delimiter='\t')
             for row in reader:
-                result[row['accession']].append({'transcript_sequence': row['transcript_sequence'],
+                result[row['accession']] = {'transcript_sequence': row['transcript_sequence'],
                                                    'cds_start': int(row['cds_start']),
                                                    'cds_stop': int(row['cds_stop']),
-                                                   'protein_accession': row['protein_accession'],
-                                                   'exon': int(row['exon']),
-                                                   'exon_start': int(row['exon_start']),
-                                                   'exon_stop': int(row['exon_stop']),
-                                                   })
+                                                   'protein_accession': row['protein_accession']}
 
         return result
 
@@ -63,4 +58,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
