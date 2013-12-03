@@ -7,12 +7,13 @@ import recordtype
 from Bio.Seq import Seq
 
 import hgvs.edit
+from hgvs.location import CDS_END
 
 DBG = True
 
 class AltTranscriptData(recordtype.recordtype('AltTranscriptData', [
         'transcript_sequence', 'aa_sequence', 'cds_start', 'cds_stop', 'protein_accession',
-        'is_frameshift', 'variant_start_aa', ('frameshift_start', None)])):
+        ('is_frameshift', False), ('variant_start_aa', None), ('frameshift_start', None)])):
 
     @classmethod
     def create_for_variant_inserter(cls, seq, cds_start, cds_stop, is_frameshift, variant_start_aa, accession):
@@ -51,6 +52,11 @@ class AltTranscriptData(recordtype.recordtype('AltTranscriptData', [
 
 class AltSeqBuilder(object):
 
+    EXON = "exon"
+    INTRON = "intron"
+    F_UTR = "five utr"
+    T_UTR = "three utr"
+
     def __init__(self, variant, transcript_data):
         """Constructor
 
@@ -73,10 +79,13 @@ class AltSeqBuilder(object):
         :returns variant sequence data
         :type list of dictionaries
         """
+        NO_EDIT = "no_edit"
 
         type_map = {hgvs.edit.NARefAlt: self._incorporate_delins,
                     hgvs.edit.Dup: self._incorporate_dup,
-                    hgvs.edit.Repeat: self._incorporate_repeat}
+                    hgvs.edit.Repeat: self._incorporate_repeat,
+                    NO_EDIT: self._create_alt_eq_ref
+                    }
 
 
         # TODO - loop over each allele rather than assume only 1 variant; return a list for now
@@ -88,23 +97,27 @@ class AltSeqBuilder(object):
 
         variant_location = self._get_variant_location()
 
-        # TODO - implement handling non-exons
-        if variant_location == "exon":
+        if DBG:
+            print variant_location
+
+        if variant_location == self.EXON:
             edit_type = type(self._variant.posedit.edit)
-            this_alt_data = type_map[edit_type]()
-        elif variant_location == "intron":
+        elif variant_location == self.INTRON:
             has_intron_variant = True
-        elif variant_location == "three_utr":
+            edit_type = NO_EDIT
+        elif variant_location == self.T_UTR:
             has_3utr_variant = True
-        elif variant_location == "five_utr":
+            edit_type = NO_EDIT
+        elif variant_location == self.F_UTR:
+            # TODO - handle case where variant introduces a Met (new start)
             has_5utr_variant = True
+            edit_type = NO_EDIT
         else:   # should never get here
             raise ValueError("value_location = {}".format(variant_location))
-
+        this_alt_data = type_map[edit_type]()
 
         # get the start of the "terminal" frameshift (i.e. one never "cancelled out")
         this_alt_data = self._get_frameshift_start(this_alt_data)
-
         alt_data.append(this_alt_data)
 
         return alt_data
@@ -114,8 +127,15 @@ class AltSeqBuilder(object):
         """Categorize variant by location in transcript (5'utr, exon, intron, 3'utr)
         :return "exon", "intron", "five_utr", "three_utr"
         """
-        # TODO - implement
-        return "exon"
+        if CDS_END in [self._variant.posedit.pos.start.datum, self._variant.posedit.pos.end.datum]:
+            result = self.T_UTR
+        elif self._variant.posedit.pos.start.base < 0 or self._variant.posedit.pos.end.base < 0:
+            result = self.F_UTR
+        elif self._variant.posedit.pos.start.offset != 0 or self._variant.posedit.pos.end.offset != 0:
+            result = self.INTRON
+        else:
+            result = self.EXON
+        return result
 
     def _incorporate_delins(self):
         """Incorporate delins
@@ -188,6 +208,16 @@ class AltSeqBuilder(object):
         end = (cds_start - 1) + self._variant.posedit.pos.end.base
 
         return seq, cds_start, cds_stop, start, end
+
+    def _create_alt_eq_ref(self):
+        """Create an alt seq that matches the reference"""
+        alt_data = AltTranscriptData.create_for_variant_inserter(self._transcript_data.transcript_sequence,
+                                                                 self._transcript_data.cds_start,
+                                                                 self._transcript_data.cds_stop,
+                                                                 False,
+                                                                 None,
+                                                                 self._transcript_data.protein_accession)
+        return alt_data
 
     def _get_frameshift_start(self, variant_data):
         """Get starting position (AA ref index) of the last frameshift
