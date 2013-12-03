@@ -9,14 +9,14 @@ import recordtype
 import hgvs.edit
 import hgvs.parser
 import hgvs.utils
-import hgvs.translators.utils.proteincomparer as proteincomparer
-import hgvs.translators.utils.variantinserter as variantinserter
+import hgvs.translators.tools.altseq_to_hgvsp as altseq_to_hgvsp
+import hgvs.translators.tools.altseqbuilder as altseqbuilder
 
 DBG = True  # DEBUG flag
 
-class TranscriptData(recordtype.recordtype('TranscriptData',
-                                           ['transcript_sequence', 'aa_sequence',
-                                            'cds_start', 'cds_stop', 'protein_accession'])):
+class RefTranscriptData(recordtype.recordtype('RefTranscriptData',
+                                              ['transcript_sequence', 'aa_sequence',
+                                               'cds_start', 'cds_stop', 'protein_accession'])):
    pass
 
 class HgvsCToP(object):
@@ -45,22 +45,26 @@ class HgvsCToP(object):
             print hgvsc
 
         # get transcript from datasource & convert to AA
-        transcript_data = self._setup_transcript_data(var.seqref)
+        reference_data = self._setup_transcript_data(var.seqref)
 
         # incorporate DNA change into sequence(s) and translate
-        inserter = variantinserter.VariantInserter(var, transcript_data)
-        variant_data = inserter.insert_variant()
+        builder = altseqbuilder.AltSeqBuilder(var, reference_data)
+        alt_data = builder.build_altseq()
 
         if DBG:
-            pprint.pprint(transcript_data)
-            pprint.pprint(variant_data[0])
+            pprint.pprint(reference_data)
+            pprint.pprint(alt_data)
 
         # perform comparison to get hgvs tag
-        comparer = proteincomparer.ProteinComparer(transcript_data.aa_sequence,
-                                                variant_data[0].aa_sequence, variant_data[0].frameshift_start)
-        hgvsp_no_acc = comparer.compare()
+        hgvsps = []
+        for alt in alt_data:
+            builder = altseq_to_hgvsp.AltSeqToHgvsp(reference_data.aa_sequence,
+                                                    alt.aa_sequence, alt.frameshift_start)
+            hgvsp_no_acc = builder.build_hgvsp()
 
-        hgvsp = self._add_accession(hgvsp_no_acc, variant_data[0].protein_accession)
+            hgvsps.append(self._add_accession(hgvsp_no_acc, alt.protein_accession))
+
+        hgvsp = hgvsps[0]    # TODO - handle case of more than 1 variant
 
         if DBG:
             print "END DEBUG"
@@ -84,11 +88,11 @@ class HgvsCToP(object):
 
         transcript_dna_cds = Seq(td['transcript_sequence'][td['cds_start'] - 1:td['cds_stop']])
 
-        transcript_data = TranscriptData(td['transcript_sequence'],
-                                         str(transcript_dna_cds.translate()),
-                                         td['cds_start'],
-                                         td['cds_stop'],
-                                         td['protein_accession'])
+        transcript_data = RefTranscriptData(td['transcript_sequence'],
+                                            str(transcript_dna_cds.translate()),
+                                            td['cds_start'],
+                                            td['cds_stop'],
+                                            td['protein_accession'])
 
         return transcript_data
 

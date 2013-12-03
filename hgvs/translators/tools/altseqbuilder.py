@@ -10,11 +10,9 @@ import hgvs.edit
 
 DBG = True
 
-# TODO - convert the inputs/outputs to whatever the canonical data representation of sequences is
-
-class VariantData(recordtype.recordtype('VariantData', [
-        'transcript_sequence', 'aa_sequence', 'cds_start', 'cds_stop', 'is_frameshift', 'variant_start_aa',
-        'protein_accession', ('frameshift_start', None)])):
+class AltTranscriptData(recordtype.recordtype('AltTranscriptData', [
+        'transcript_sequence', 'aa_sequence', 'cds_start', 'cds_stop', 'protein_accession',
+        'is_frameshift', 'variant_start_aa', ('frameshift_start', None)])):
 
     @classmethod
     def create_for_variant_inserter(cls, seq, cds_start, cds_stop, is_frameshift, variant_start_aa, accession):
@@ -32,7 +30,7 @@ class VariantData(recordtype.recordtype('VariantData', [
         :param accession: protein accession, e.g. NP_999999.2
         :type str
         :return variant sequence data
-        :type dict
+        :type recordtype
         """
 
         # padding list so biopython won't complain during the conversion
@@ -47,11 +45,11 @@ class VariantData(recordtype.recordtype('VariantData', [
         if stop_pos != -1:
             seq_aa = seq_aa[:stop_pos + 1]
 
-        variant_data = VariantData(seq, seq_aa, cds_start, cds_stop, is_frameshift, variant_start_aa, accession)
+        alt_data = AltTranscriptData(seq, seq_aa, cds_start, cds_stop, accession, is_frameshift, variant_start_aa)
 
-        return variant_data
+        return alt_data
 
-class VariantInserter(object):
+class AltSeqBuilder(object):
 
     def __init__(self, variant, transcript_data):
         """Constructor
@@ -59,13 +57,13 @@ class VariantInserter(object):
         :param variant representation of hgvs variant
         :type variant
         :param transcript_data representation of transcript
-        :type dictionary
+        :type recordtype
 
         """
         self._variant = variant
         self._transcript_data = transcript_data
 
-    def insert_variant(self):
+    def build_altseq(self):
         """given a variant and a sequence, incorporate the variant and return the new sequence
 
         Data structure returned is analogous to the data structure used to return the variant sequence,
@@ -82,7 +80,7 @@ class VariantInserter(object):
 
 
         # TODO - loop over each allele rather than assume only 1 variant; return a list for now
-        variant_data = []
+        alt_data = []
 
         has_5utr_variant = False
         has_3utr_variant = False
@@ -93,7 +91,7 @@ class VariantInserter(object):
         # TODO - implement handling non-exons
         if variant_location == "exon":
             edit_type = type(self._variant.posedit.edit)
-            this_variant_data = type_map[edit_type]()
+            this_alt_data = type_map[edit_type]()
         elif variant_location == "intron":
             has_intron_variant = True
         elif variant_location == "three_utr":
@@ -105,11 +103,11 @@ class VariantInserter(object):
 
 
         # get the start of the "terminal" frameshift (i.e. one never "cancelled out")
-        this_variant_data = self._get_frameshift_start(this_variant_data)
+        this_alt_data = self._get_frameshift_start(this_alt_data)
 
-        variant_data.append(this_variant_data)
+        alt_data.append(this_alt_data)
 
-        return variant_data
+        return alt_data
 
 
     def _get_variant_location(self):
@@ -147,10 +145,10 @@ class VariantInserter(object):
         is_frameshift = net_base_change % 3 != 0
         variant_start_aa = int(math.ceil((self._variant.posedit.pos.start.base + 1) / 3.0))
 
-        variant_data = VariantData.create_for_variant_inserter(seq, cds_start, cds_stop,
+        alt_data = AltTranscriptData.create_for_variant_inserter(seq, cds_start, cds_stop,
                                                                is_frameshift, variant_start_aa,
                                                                self._transcript_data.protein_accession)
-        return variant_data
+        return alt_data
 
     def _incorporate_dup(self):
         """Incorporate dup into sequence
@@ -163,10 +161,10 @@ class VariantInserter(object):
         is_frameshift = len(dup_seq) % 3 != 0
         variant_start_aa = int(math.ceil((self._variant.posedit.pos.end.base + 1) / 3.0))
 
-        variant_data = VariantData.create_for_variant_inserter(seq, cds_start, cds_stop,
+        alt_data = AltTranscriptData.create_for_variant_inserter(seq, cds_start, cds_stop,
                                                                is_frameshift, variant_start_aa,
                                                                self._transcript_data.protein_accession)
-        return variant_data
+        return alt_data
 
     def _incorporate_repeat(self):
         """Incorporate repeat int sequence
