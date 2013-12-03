@@ -16,7 +16,7 @@ DBG = True
 
 class ProteinComparer(object):
 
-    def __init__(self, ref_seq, alt_seq, frameshift_start = None, aa_offset = 0):
+    def __init__(self, ref_seq, alt_seq, frameshift_start = None):
         """Constructor
 
         The normal difflib comparison may identify islands of matches in a frameshift
@@ -28,12 +28,10 @@ class ProteinComparer(object):
         :type str
         :param frameshift_start: index n protein (1-based) where a frameshift should affect all downstream bases
         :type int
-        :param aa_offset: index offset for start position (account for upstream exons)
         """
         self._ref_seq = ref_seq
         self._alt_seq = alt_seq
         self._frameshift_start = frameshift_start
-        self._aa_offset = aa_offset
 
     def compare(self):
         """Compare two amino acid sequences; generate an hgvs tag from the output
@@ -149,7 +147,7 @@ class ProteinComparer(object):
         :type str
         :return hgvs string
         """
-        start = variant['start'] + self._aa_offset
+        start = variant['start']
         insertion = ''.join(variant['ins'])
         deletion = ''.join(variant['del'])
 
@@ -159,7 +157,7 @@ class ProteinComparer(object):
         is_dup = False  # assume not dup
         fs = None
 
-        if is_frameshift:                                               # --- frameshift ---
+        if is_frameshift:                                               # frameshift
             aa_start = aa_end = hgvs.location.AAPosition(pos=start, aa=deletion[0])
             ref = ''
 
@@ -168,14 +166,14 @@ class ProteinComparer(object):
             except ValueError:
                 new_stop = "?"
 
-            if new_stop != "1":                                         # normal frameshift
+            if new_stop != "1":
                 alt = insertion[0]
                 fs = 'fs*{}'.format(new_stop)
 
-            else:                                                       # frameshift introduced stop codon at var pos
+            else:   # frameshift introduced stop codon at variant position
                 alt = '*'
 
-        else:                                                           # --- no frameshift ---
+        else:                                                           # no frameshift
             if len(insertion) == len(deletion) == 1:                    # substitution
                 aa_start = aa_end = hgvs.location.AAPosition(pos=start, aa=deletion)
                 ref = ''
@@ -299,4 +297,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

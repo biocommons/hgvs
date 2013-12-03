@@ -14,9 +14,10 @@ import hgvs.translators.utils.variantinserter as variantinserter
 
 DBG = True  # DEBUG flag
 
-class TranscriptData(recordtype.recordtype('TranscriptData', [
-        'transcript_sequence', 'aa_sequence', 'cds_start', 'cds_stop', 'exon', 'exon_start', 'exon_stop', 'protein_accession'])):
-    pass
+class TranscriptData(recordtype.recordtype('TranscriptData',
+                                           ['transcript_sequence', 'aa_sequence',
+                                            'cds_start', 'cds_stop', 'protein_accession'])):
+   pass
 
 class HgvsCToP(object):
 
@@ -43,8 +44,8 @@ class HgvsCToP(object):
             print "START DEBUG"
             print hgvsc
 
-        # get transcript sequence from datasource & convert to AA
-        transcript_data = self._setup_transcript_data(var)
+        # get transcript from datasource & convert to AA
+        transcript_data = self._setup_transcript_data(var.seqref)
 
         # incorporate DNA change into sequence(s) and translate
         inserter = variantinserter.VariantInserter(var, transcript_data)
@@ -56,9 +57,7 @@ class HgvsCToP(object):
 
         # perform comparison to get hgvs tag
         comparer = proteincomparer.ProteinComparer(transcript_data.aa_sequence,
-                                                variant_data[0].aa_sequence,
-                                                variant_data[0].frameshift_start,
-                                                variant_data[0].aa_offset)
+                                                variant_data[0].aa_sequence, variant_data[0].frameshift_start)
         hgvsp_no_acc = comparer.compare()
 
         hgvsp = self._add_accession(hgvsp_no_acc, variant_data[0].protein_accession)
@@ -72,46 +71,24 @@ class HgvsCToP(object):
     # internal methods
     #
 
-    def _setup_transcript_data(self, var):
+    def _setup_transcript_data(self, ac):
         """wrapper to convert transcript data from external source into common form
-        :param var variant
-        :type SequenceVariant
+        :param ac accession #
+        :type str
         :return transcript info
         :type dict
         """
         # TODO - take whatever form you get the input from & convert to a uniform format
         # TODO - handle what UTA returns & convert test inputs to mimic that
-        transcript_data_by_exons = self.datasource.fetch_transcript_exons(var.seqref)
+        td = self.datasource.fetch_transcript_exons(ac)
 
-        exon_matched = None
-        for exon in transcript_data_by_exons:
-            if exon['exon_start'] <= var.posedit.pos.start.base <= exon['exon_stop']:
-                exon_matched = exon
-        if exon_matched is None:
-            raise ValueError("failed to find exon for {}".format(var.seqref))
+        transcript_dna_cds = Seq(td['transcript_sequence'][td['cds_start'] - 1:td['cds_stop']])
 
-        # get the range of the nucleic acid sequence to translate
-        if exon_matched['exon_start'] >= exon_matched['cds_start']:
-            na_start = 0
-        else:
-            na_start = exon_matched['cds_start'] - exon_matched['exon_start']
-
-        if exon_matched['exon_stop'] <= exon_matched['cds_stop']:
-            na_end = exon_matched['exon_stop'] - exon_matched['exon_start'] + 1
-        else:
-            na_end = exon_matched['cds_stop'] - exon_matched['exon_start'] + 1
-
-        transcript_dna_cds = \
-            Seq(exon_matched['transcript_sequence'][na_start:na_end])
-
-        transcript_data = TranscriptData(exon_matched['transcript_sequence'],
+        transcript_data = TranscriptData(td['transcript_sequence'],
                                          str(transcript_dna_cds.translate()),
-                                         exon_matched['cds_start'],
-                                         exon_matched['cds_stop'],
-                                         exon_matched['exon'],
-                                         exon_matched['exon_start'],
-                                         exon_matched['exon_stop'],
-                                         exon_matched['protein_accession'])
+                                         td['cds_start'],
+                                         td['cds_stop'],
+                                         td['protein_accession'])
 
         return transcript_data
 
@@ -136,4 +113,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

@@ -23,16 +23,6 @@ class TestHgvsCToP(unittest.TestCase):
         expected_hgvsp = "NP_999999.1:p.Lys2Asn"
         self._run_conversion(hgvsc, expected_hgvsp)
 
-    def test_substitution_exon1(self):
-        hgvsc = "NM_999995.1:c.6A>T"
-        expected_hgvsp = "NP_999995.1:p.Lys2Asn"
-        self._run_conversion(hgvsc, expected_hgvsp)
-
-    def test_substitution_exon2(self):
-        hgvsc = "NM_999995.1:c.19A>T"
-        expected_hgvsp = "NP_999995.1:p.Arg7Cys"
-        self._run_conversion(hgvsc, expected_hgvsp)
-
     def test_substitution_introduces_stop_codon(self):
         hgvsc = "NM_999996.1:c.8C>A"
         expected_hgvsp = "NP_999996.1:p.Ser3Ter"
