@@ -1,6 +1,7 @@
 import unittest
 
 import hgvs.parser
+import hgvs.translators.hgvs_c_to_p as hgvs_c_to_p
 import hgvs.translators.utils.variantinserter as variantinserter
 
 import framework.mock_input_source as mock_input_data_source
@@ -102,7 +103,15 @@ class TestVariantInserter(unittest.TestCase):
 
     def _run_comparison(self, hgvsc, expected_sequence):
         var = self._parser.parse_hgvs_variant(hgvsc)
-        transcript_data = self._datasource.get_sequence(var.seqref)[0]
+        td = self._datasource.get_sequence(var.seqref)[0]
+        transcript_data = hgvs_c_to_p.TranscriptData(td['transcript_sequence'],
+                                                     None,
+                                                     td['cds_start'],
+                                                     td['cds_stop'],
+                                                     td['exon'],
+                                                     td['exon_start'],
+                                                     td['exon_stop'],
+                                                     td['protein_accession'])
         inserter = variantinserter.VariantInserter(var, transcript_data)
         insert_result = inserter.insert_variant()
         actual_sequence = insert_result[0].transcript_sequence

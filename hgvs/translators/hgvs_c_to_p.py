@@ -4,6 +4,7 @@
 import pprint
 
 from Bio.Seq import Seq
+import recordtype
 
 import hgvs.edit
 import hgvs.parser
@@ -12,6 +13,10 @@ import hgvs.translators.utils.proteincomparer as proteincomparer
 import hgvs.translators.utils.variantinserter as variantinserter
 
 DBG = True  # DEBUG flag
+
+class TranscriptData(recordtype.recordtype('TranscriptData', [
+        'transcript_sequence', 'aa_sequence', 'cds_start', 'cds_stop', 'exon', 'exon_start', 'exon_stop', 'protein_accession'])):
+    pass
 
 class HgvsCToP(object):
 
@@ -50,7 +55,7 @@ class HgvsCToP(object):
             pprint.pprint(variant_data[0])
 
         # perform comparison to get hgvs tag
-        comparer = proteincomparer.ProteinComparer(transcript_data['AA_sequence'],
+        comparer = proteincomparer.ProteinComparer(transcript_data.aa_sequence,
                                                 variant_data[0].aa_sequence, variant_data[0].frameshift_start)
         hgvsp_no_acc = comparer.compare()
 
@@ -76,27 +81,36 @@ class HgvsCToP(object):
         # TODO - handle what UTA returns & convert test inputs to mimic that
         transcript_data_by_exons = self.datasource.fetch_transcript_exons(var.seqref)
 
-        transcript_data = None
+        exon_matched = None
         for exon in transcript_data_by_exons:
             if exon['exon_start'] <= var.posedit.pos.start.base <= exon['exon_stop']:
-                transcript_data = exon
-        if transcript_data is None:
+                exon_matched = exon
+        if exon_matched is None:
             raise ValueError("failed to find exon for {}".format(var.seqref))
 
         # get the range of the nucleic acid sequense to translate
-        if transcript_data['exon_start'] >= transcript_data['cds_start']:
+        if exon_matched['exon_start'] >= exon_matched['cds_start']:
             na_start = 0
         else:
-            na_start = transcript_data['cds_start'] - transcript_data['exon_start']
+            na_start = exon_matched['cds_start'] - exon_matched['exon_start']
 
-        if transcript_data['exon_stop'] <= transcript_data['cds_stop']:
-            na_end = transcript_data['exon_stop'] - transcript_data['exon_start'] + 1
+        if exon_matched['exon_stop'] <= exon_matched['cds_stop']:
+            na_end = exon_matched['exon_stop'] - exon_matched['exon_start'] + 1
         else:
-            na_end = transcript_data['cds_stop'] - transcript_data['exon_start'] + 1
+            na_end = exon_matched['cds_stop'] - exon_matched['exon_start'] + 1
 
         transcript_dna_cds = \
-            Seq(transcript_data['transcript_sequence'][na_start:na_end])
-        transcript_data["AA_sequence"] = str(transcript_dna_cds.translate())
+            Seq(exon_matched['transcript_sequence'][na_start:na_end])
+        #exon_matched["AA_sequence"] = str(transcript_dna_cds.translate())
+
+        transcript_data = TranscriptData(exon_matched['transcript_sequence'],
+                                         str(transcript_dna_cds.translate()),
+                                         exon_matched['cds_start'],
+                                         exon_matched['cds_stop'],
+                                         exon_matched['exon'],
+                                         exon_matched['exon_start'],
+                                         exon_matched['exon_stop'],
+                                         exon_matched['protein_accession'])
 
         return transcript_data
 
