@@ -87,6 +87,8 @@ class Test_transcriptmapper(unittest.TestCase):
             {'gs': 49925899, 'ge': 49925899, 'rs': 231, 're': 231, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 231-cds+1, 'ce': 231-cds+1},
             {'gs': 49925899+1, 'ge': 49925899+1, 'rs': 231, 're': 231, 'so': -1, 'eo': -1, 'd': hgvs.location.SEQ_START, 'cs': 231-cds+1, 'ce': 231-cds+1},
             {'gs': 49925899-1, 'ge': 49925899+2, 'rs': 231, 're': 232, 'so': -2, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 231-cds+1, 'ce': 232-cds+1},
+            # btw exon 1 and 2
+            {'gs': 49925899+1, 'ge': 49926469-2, 'rs': 230, 're': 231, 'so': 2, 'eo': -1, 'd': hgvs.location.SEQ_START, 'cs': 230-cds+1, 'ce': 231-cds+1},
             # beyond cds add 1 due to hgvs
             {'gs': 49925671, 'ge': 49925671, 'rs': 459, 're': 459, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 459-cds+1, 'ce': 459-cds+1},
             {'gs': 49925671+2, 'ge': 49925671+2, 'rs': 457, 're': 457, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 457-cds+1, 'ce': 457-cds+1},
