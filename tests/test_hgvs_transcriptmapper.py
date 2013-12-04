@@ -18,7 +18,8 @@ class Test_transcriptmapper(unittest.TestCase):
         """NM_178434.2: LCE3C single exon, strand = +1, all coordinate input/output are in HGVS"""
         ac = 'NM_178434.2'
         tm = TranscriptMapper(self.db, ac, self.ref)
-        cds = 70 + 1 # hgvs
+        cds = tm.cds_start_i + 1 # hgvs
+
         # gs, ge = genomic start/end; rs,re = rna start/end; cs, ce = cdna start/end; so, eo = start offset/end offset
         test_cases = [
             {'gs': 152573138, 'ge': 152573138, 'rs': 1, 're': 1, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 1-cds, 'ce': 1-cds},
@@ -35,7 +36,7 @@ class Test_transcriptmapper(unittest.TestCase):
         """NM_033445.2: LCE3C single exon, strand = -1, all coordinate input/output are in HGVS"""
         ac = 'NM_033445.2'
         tm = TranscriptMapper(self.db, ac, self.ref)
-        cds = 42 + 1 # hgvs
+        cds = tm.cds_start_i + 1 # hgvs
         # gs, ge = genomic start/end; rs,re = rna start/end; cs, ce = cdna start/end; so, eo = start offset/end offset
         test_cases = [
             {'gs': 228645560, 'ge': 228645560, 'rs': 1, 're': 1, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 1-cds, 'ce': 1-cds},
@@ -50,7 +51,7 @@ class Test_transcriptmapper(unittest.TestCase):
         """NM_014357.4: LCE2B, two exons, strand = +1, all coordinate input/output are in HGVS"""
         ac = 'NM_014357.4'
         tm = TranscriptMapper(self.db, ac, self.ref)
-        cds = 54 + 1 # hgvs
+        cds = tm.cds_start_i + 1 # hgvs
         # gs, ge = genomic start/end; rs,re = rna start/end; cs, ce = cdna start/end; so, eo = start offset/end offset
         test_cases = [
             {'gs': 152658599, 'ge': 152658599, 'rs': 1, 're': 1, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 1-cds, 'ce': 1-cds},
@@ -73,7 +74,7 @@ class Test_transcriptmapper(unittest.TestCase):
         """NM_178449.3: PTH2, two exons, strand = -1, all coordinate input/output are in HGVS"""
         ac = 'NM_178449.3'
         tm = TranscriptMapper(self.db, ac, self.ref)
-        cds = 102 + 1 # hgvs
+        cds = tm.cds_start_i + 1 # hgvs
         # gs, ge = genomic start/end; rs,re = rna start/end; cs, ce = cdna start/end; so, eo = start offset/end offset
         test_cases = [
             {'gs': 49926698, 'ge': 49926698, 'rs': 1, 're': 1, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 1-cds, 'ce': 1-cds},
@@ -94,6 +95,26 @@ class Test_transcriptmapper(unittest.TestCase):
             {'gs': 49925671+2, 'ge': 49925671+2, 'rs': 457, 're': 457, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 457-cds+1, 'ce': 457-cds+1},
         ]
         self.run_cases(tm, test_cases)
+
+    def run_cases(self, tm, test_cases):
+        for test_case in test_cases:
+            g = hgvs.location.Interval(start=test_case['gs'], end=test_case['ge'])
+            r = hgvs.location.Interval(
+                    start=hgvs.location.BaseOffsetPosition(base=test_case['rs'], offset=test_case['so'], datum=test_case['d']),
+                    end=hgvs.location.BaseOffsetPosition(base=test_case['re'], offset=test_case['eo'], datum=test_case['d']))
+            c = hgvs.location.Interval(
+                    start=hgvs.location.BaseOffsetPosition(base=test_case['cs'], offset=test_case['so'], datum=test_case['d'] + 1),
+                    end=hgvs.location.BaseOffsetPosition(base=test_case['ce'], offset=test_case['eo'], datum=test_case['d'] + 1))
+            self.assertEquals(tm.hgvsg_to_hgvsr(g), r)
+            self.assertEquals(tm.hgvsr_to_hgvsg(r), g)
+            self.assertEquals(tm.hgvsr_to_hgvsc(r), c)
+            self.assertEquals(tm.hgvsc_to_hgvsr(c), r)
+            self.assertEquals(tm.hgvsg_to_hgvsc(g), c)
+            self.assertEquals(tm.hgvsc_to_hgvsg(c), g)
+
+
+if __name__ == '__main__':
+    unittest.main()
 
 
     ### harder tests ###
@@ -256,22 +277,6 @@ class Test_transcriptmapper(unittest.TestCase):
     #    ]
     #    self.run_cases(tm, test_cases)
 
-    def run_cases(self, tm, test_cases):
-        for test_case in test_cases:
-            g = hgvs.location.Interval(start=test_case['gs'], end=test_case['ge'])
-            r = hgvs.location.Interval(
-                    start=hgvs.location.BaseOffsetPosition(base=test_case['rs'], offset=test_case['so'], datum=test_case['d']),
-                    end=hgvs.location.BaseOffsetPosition(base=test_case['re'], offset=test_case['eo'], datum=test_case['d']))
-            c = hgvs.location.Interval(
-                    start=hgvs.location.BaseOffsetPosition(base=test_case['cs'], offset=test_case['so'], datum=test_case['d'] + 1),
-                    end=hgvs.location.BaseOffsetPosition(base=test_case['ce'], offset=test_case['eo'], datum=test_case['d'] + 1))
-            self.assertEquals(tm.hgvsg_to_hgvsr(g), r)
-            self.assertEquals(tm.hgvsr_to_hgvsg(r), g)
-            self.assertEquals(tm.hgvsr_to_hgvsc(r), c)
-            self.assertEquals(tm.hgvsc_to_hgvsr(c), r)
-            self.assertEquals(tm.hgvsg_to_hgvsc(g), c)
-            self.assertEquals(tm.hgvsc_to_hgvsg(c), g)
-
 
 ### ANOTHER POSSIBLE TEST CASE ###
 # reece=> select * from uta.tx_info where ac = 'NM_145171.3';
@@ -289,7 +294,3 @@ class Test_transcriptmapper(unittest.TestCase):
 #     ac = 'NM_145171.3'
 #     tm = TranscriptMapper(self.db,ac,self.ref)
 #     pass
-
-if __name__ == '__main__':
-    unittest.main()
-
