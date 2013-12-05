@@ -118,6 +118,7 @@ class AltSeqToHgvsp(object):
 
     def _convert_to_sequence_variants(self, variant, acc):
         """Convert AA variant to an hgvs representation
+
         :param variant: contains start, del, and ins
         :type dict
         :param acc: protein accession
@@ -219,8 +220,7 @@ class AltSeqToHgvsp(object):
 
 
     def _check_if_ins_is_dup(self, start, insertion, ref_seq):
-        """Helper to identify an insertion as a duplicate
-        """
+        """Helper to identify an insertion as a duplicate"""
         is_dup = False  # assume no
         variant_start = None
 
@@ -253,8 +253,7 @@ class AltSeqToHgvsp(object):
         return is_dup, variant_start
 
     def _create_variant(self, start, end, ref, alt, fs=None, is_dup=False, acc=None):
-        """Creates a SequenceVariant object
-        """
+        """Creates a SequenceVariant object"""
         interval = hgvs.location.Interval(start=start, end=end)
         if is_dup:
             edit = hgvs.edit.Dup()
@@ -264,8 +263,6 @@ class AltSeqToHgvsp(object):
         var = hgvs.variant.SequenceVariant(acc, 'p', posedit)
 
         return var
-
-
 
 
 def main():
