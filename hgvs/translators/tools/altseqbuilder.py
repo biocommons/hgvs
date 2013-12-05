@@ -11,6 +11,7 @@ from hgvs.location import CDS_END
 
 DBG = True
 
+
 class AltTranscriptData(recordtype.recordtype('AltTranscriptData', [
         'transcript_sequence', 'aa_sequence', 'cds_start', 'cds_stop', 'protein_accession',
         ('is_frameshift', False), ('variant_start_aa', None), ('frameshift_start', None)])):
@@ -50,6 +51,7 @@ class AltTranscriptData(recordtype.recordtype('AltTranscriptData', [
 
         return alt_data
 
+
 class AltSeqBuilder(object):
 
     EXON = "exon"
@@ -79,21 +81,16 @@ class AltSeqBuilder(object):
         :returns variant sequence data
         :type list of dictionaries
         """
-        NO_EDIT = "no_edit"
+        NOT_CDS = "not_cds_variant"
 
         type_map = {hgvs.edit.NARefAlt: self._incorporate_delins,
                     hgvs.edit.Dup: self._incorporate_dup,
                     hgvs.edit.Repeat: self._incorporate_repeat,
-                    NO_EDIT: self._create_alt_eq_ref
+                    NOT_CDS: self._create_alt_eq_ref
                     }
-
 
         # TODO - loop over each allele rather than assume only 1 variant; return a list for now
         alt_data = []
-
-        has_5utr_variant = False
-        has_3utr_variant = False
-        has_intron_variant = False
 
         variant_location = self._get_variant_location()
 
@@ -103,15 +100,12 @@ class AltSeqBuilder(object):
         if variant_location == self.EXON:
             edit_type = type(self._variant.posedit.edit)
         elif variant_location == self.INTRON:
-            has_intron_variant = True
-            edit_type = NO_EDIT
+            edit_type = NOT_CDS
         elif variant_location == self.T_UTR:
-            has_3utr_variant = True
-            edit_type = NO_EDIT
+            edit_type = NOT_CDS
         elif variant_location == self.F_UTR:
             # TODO - handle case where variant introduces a Met (new start)
-            has_5utr_variant = True
-            edit_type = NO_EDIT
+            edit_type = NOT_CDS
         else:   # should never get here
             raise ValueError("value_location = {}".format(variant_location))
         this_alt_data = type_map[edit_type]()
@@ -121,7 +115,6 @@ class AltSeqBuilder(object):
         alt_data.append(this_alt_data)
 
         return alt_data
-
 
     def _get_variant_location(self):
         """Categorize variant by location in transcript (5'utr, exon, intron, 3'utr)
@@ -138,8 +131,7 @@ class AltSeqBuilder(object):
         return result
 
     def _incorporate_delins(self):
-        """Incorporate delins
-        """
+        """Incorporate delins"""
         seq, cds_start, cds_stop, start, end = self._setup_incorporate()
 
         ref = self._variant.posedit.edit.ref
@@ -171,8 +163,7 @@ class AltSeqBuilder(object):
         return alt_data
 
     def _incorporate_dup(self):
-        """Incorporate dup into sequence
-        """
+        """Incorporate dup into sequence"""
         seq, cds_start, cds_stop, start, end = self._setup_incorporate()
 
         dup_seq = seq[start:end]
@@ -182,15 +173,14 @@ class AltSeqBuilder(object):
         variant_start_aa = int(math.ceil((self._variant.posedit.pos.end.base + 1) / 3.0))
 
         alt_data = AltTranscriptData.create_for_variant_inserter(seq, cds_start, cds_stop,
-                                                               is_frameshift, variant_start_aa,
-                                                               self._transcript_data.protein_accession)
+                                                                 is_frameshift, variant_start_aa,
+                                                                 self._transcript_data.protein_accession)
         return alt_data
 
     def _incorporate_repeat(self):
-        """Incorporate repeat int sequence
-        """
+        """Incorporate repeat int sequence"""
         # TODO - implement
-        return self._transcript_data
+        raise NotImplementedError("hgvs c to p conversion does not support repeats")
 
     def _setup_incorporate(self):
         """Helper to setup incorporate functions

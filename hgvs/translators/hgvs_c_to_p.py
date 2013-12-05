@@ -81,6 +81,7 @@ class HgvsCToP(object):
 
     def _setup_transcript_data(self, ac):
         """wrapper to convert transcript data from external source into common form
+
         :param ac accession #
         :type str
         :return transcript info
