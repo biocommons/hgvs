@@ -9,8 +9,6 @@ from Bio.Seq import Seq
 import hgvs.edit
 from hgvs.location import CDS_END
 
-DBG = True
-
 
 class AltTranscriptData(recordtype.recordtype('AltTranscriptData', [
         'transcript_sequence', 'aa_sequence', 'cds_start', 'cds_stop', 'protein_accession',
@@ -94,9 +92,6 @@ class AltSeqBuilder(object):
 
         variant_location = self._get_variant_location()
 
-        if DBG:
-            print variant_location
-
         if variant_location == self.EXON:
             edit_type = type(self._variant.posedit.edit)
         elif variant_location == self.INTRON:
@@ -140,11 +135,6 @@ class AltSeqBuilder(object):
         alt_length = len(self._variant.posedit.edit.alt) if self._variant.posedit.edit.alt is not None else 0
         net_base_change = alt_length - ref_length
         cds_stop += net_base_change
-
-        if DBG:
-            print "start: {} end:{} ref:{} alt:{}".format(start, end, ref, alt)
-            print "ref_length:{} alt_length:{}".format(ref_length, alt_length)
-            print "Net base change: {}".format(net_base_change)
 
         # incorporate the variant into the sequence (depending on the type)
         if ref is not None and alt is not None:     # delins or SNP
