@@ -16,7 +16,7 @@ DBG = True
 
 class AltSeqToHgvsp(object):
 
-    def __init__(self, ref_seq, alt_seq, frameshift_start = None):
+    def __init__(self, ref_seq, alt_seq, protein_accession, frameshift_start = None, ):
         """Constructor
 
         The normal difflib comparison may identify islands of matches in a frameshift
@@ -32,6 +32,7 @@ class AltSeqToHgvsp(object):
         self._ref_seq = ref_seq
         self._alt_seq = alt_seq
         self._frameshift_start = frameshift_start
+        self._protein_accession = protein_accession
 
     def build_hgvsp(self):
         """Compare two amino acid sequences; generate an hgvs tag from the output
@@ -114,30 +115,6 @@ class AltSeqToHgvsp(object):
         current_variant['del'] = list(self._ref_seq[ref_index - 1:])
         current_variant['ins'] = list(self._alt_seq[alt_index - 1:])
         return current_variant
-
-
-
-
-    def _convert_all_to_hgvsp(self, variants, ref_seq, accession):
-
-
-        # convert variant to hgvs p. format
-        # p.[(<variant1>, <variant2,...>)]
-        hgvsps = [self._convert_AA_variant_to_hgvs(variant, ref_seq) for variant in variants]
-
-        if len(hgvsps) > 1:
-            result = "{}:p.[({})]".format(accession, ';'.join(hgvsps))
-        elif len(hgvsps) == 1:
-            result = "{}:p.({})".format(accession, hgvsps[0])
-        else:
-            result = "{}:p.(=)".format(accession)
-
-        if DBG:
-            print hgvsps
-            print result
-
-        return result
-
 
     def _convert_to_sequence_variants(self, variant, acc):
         """Convert AA variant to an hgvs representation
@@ -233,7 +210,7 @@ class AltSeqToHgvsp(object):
             else: # should never get here
                 raise ValueError("unexpected variant: {}".format(variant))
 
-        var_seq = self._create_variant(aa_start, aa_end, ref, alt, fs, is_dup)
+        var_seq = self._create_variant(aa_start, aa_end, ref, alt, fs, is_dup, acc)
 
         if DBG:
             print "var_seq: {}".format(var_seq)
@@ -275,7 +252,7 @@ class AltSeqToHgvsp(object):
 
         return is_dup, variant_start
 
-    def _create_variant(self, start, end, ref, alt, fs=None, is_dup=False):
+    def _create_variant(self, start, end, ref, alt, fs=None, is_dup=False, acc=None):
         """Creates a SequenceVariant object
         """
         interval = hgvs.location.Interval(start=start, end=end)
@@ -284,7 +261,7 @@ class AltSeqToHgvsp(object):
         else:
             edit = hgvs.edit.AARefAlt(ref=ref, alt=alt, fs=fs)
         posedit = hgvs.posedit.PosEdit(interval, edit)
-        var = hgvs.variant.SequenceVariant(None, 'p', posedit)
+        var = hgvs.variant.SequenceVariant(acc, 'p', posedit)
 
         return var
 

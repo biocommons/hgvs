@@ -15,112 +15,112 @@ class TestHgvsCToP(unittest.TestCase):
 
     def test_silent(self):
         hgvsc = "NM_999999.1:c.6A>G"
-        expected_hgvsp = "NP_999999.1:p.="
+        expected_hgvsp = "MD5_87c461c4:p.="
         self._run_conversion(hgvsc, expected_hgvsp)
 
     def test_substitution(self):
         hgvsc = "NM_999999.1:c.6A>T"
-        expected_hgvsp = "NP_999999.1:p.Lys2Asn"
+        expected_hgvsp = "MD5_87c461c4:p.Lys2Asn"
         self._run_conversion(hgvsc, expected_hgvsp)
 
     def test_substitution_introduces_stop_codon(self):
         hgvsc = "NM_999996.1:c.8C>A"
-        expected_hgvsp = "NP_999996.1:p.Ser3Ter"
+        expected_hgvsp = "MD5_bab435dd:p.Ser3Ter"
         self._run_conversion(hgvsc, expected_hgvsp)
 
     def test_substitution_removes_stop_codon(self):
         hgvsc = "NM_999998.1:c.30G>T"
-        expected_hgvsp = "NP_999998.1:p.Ter10Argext*3"
+        expected_hgvsp = "MD5_87c461c4:p.Ter10Argext*3"
         self._run_conversion(hgvsc, expected_hgvsp)
 
     def test_insertion_no_frameshift(self):
         hgvsc = "NM_999999.1:c.6_7insGGG"
-        expected_hgvsp = "NP_999999.1:p.Ala3_Lys4insGly"
+        expected_hgvsp = "MD5_87c461c4:p.Ala3_Lys4insGly"
         self._run_conversion(hgvsc, expected_hgvsp)
 
     def test_insertion_frameshift(self):
         hgvsc = "NM_999999.1:c.22_23insT"
-        expected_hgvsp = "NP_999999.1:p.Ala8Valfs*?"
+        expected_hgvsp = "MD5_87c461c4:p.Ala8Valfs*?"
         self._run_conversion(hgvsc, expected_hgvsp)
 
     def test_insertion_adds_stop(self):
         hgvsc = "NM_999999.1:c.8_9insTT"
-        expected_hgvsp = "NP_999999.1:p.Lys4Ter"
+        expected_hgvsp = "MD5_87c461c4:p.Lys4Ter"
         self._run_conversion(hgvsc, expected_hgvsp)
 
     def test_deletion_no_frameshift(self):
         hgvsc = "NM_999999.1:c.10_12del"
-        expected_hgvsp = "NP_999999.1:p.Lys4del"
+        expected_hgvsp = "MD5_87c461c4:p.Lys4del"
         self._run_conversion(hgvsc, expected_hgvsp)
 
     def test_deletion2_no_frameshift(self):
         hgvsc = "NM_999999.1:c.4_15del"
-        expected_hgvsp = "NP_999999.1:p.Lys2_Ala5del"
+        expected_hgvsp = "MD5_87c461c4:p.Lys2_Ala5del"
         self._run_conversion(hgvsc, expected_hgvsp)
 
     def test_deletion_frameshift_nostop(self):
         hgvsc = "NM_999999.1:c.11_12del"
-        expected_hgvsp = "NP_999999.1:p.Lys4Serfs*?"
+        expected_hgvsp = "MD5_87c461c4:p.Lys4Serfs*?"
         self._run_conversion(hgvsc, expected_hgvsp)
 
     def test_deletion_frameshift_adds_stop(self):
         hgvsc = "NM_999997.1:c.7del"
-        expected_hgvsp = "NP_999997.1:p.Ala3Argfs*6"
+        expected_hgvsp = "MD5_c124d888:p.Ala3Argfs*6"
         self._run_conversion(hgvsc, expected_hgvsp)
 
     def test_indel_no_frameshift(self):
         hgvsc = "NM_999999.1:c.11_12delinsTCCCA"
-        expected_hgvsp = "NP_999999.1:p.Lys4delinsIlePro"
+        expected_hgvsp = "MD5_87c461c4:p.Lys4delinsIlePro"
         self._run_conversion(hgvsc, expected_hgvsp)
 
     def test_indel2_no_frameshift(self):
         hgvsc = "NM_999999.1:c.11_18delinsTCCCA"
-        expected_hgvsp = "NP_999999.1:p.Lys4_Phe6delinsIlePro"
+        expected_hgvsp = "MD5_87c461c4:p.Lys4_Phe6delinsIlePro"
         self._run_conversion(hgvsc, expected_hgvsp)
 
     def test_indel_frameshift_nostop(self):
         hgvsc = "NM_999999.1:c.8delinsGG"
-        expected_hgvsp = "NP_999999.1:p.Ala3Glyfs*?"
+        expected_hgvsp = "MD5_87c461c4:p.Ala3Glyfs*?"
         self._run_conversion(hgvsc, expected_hgvsp)
 
     def test_dup_1AA_no_frameshift_2(self):
         hgvsc = "NM_999999.1:c.10_12dup"
-        expected_hgvsp = "NP_999999.1:p.Lys4dup"
+        expected_hgvsp = "MD5_87c461c4:p.Lys4dup"
         self._run_conversion(hgvsc, expected_hgvsp)
 
     def test_dup_1AA_no_frameshift(self):
         hgvsc = "NM_999999.1:c.16_18dup"
-        expected_hgvsp = "NP_999999.1:p.Phe6dup"
+        expected_hgvsp = "MD5_87c461c4:p.Phe6dup"
         self._run_conversion(hgvsc, expected_hgvsp)
 
     def test_dup_2AA_no_frameshift(self):
         hgvsc = "NM_999999.1:c.16_21dup"
-        expected_hgvsp = "NP_999999.1:p.Phe6_Arg7dup"
+        expected_hgvsp = "MD5_87c461c4:p.Phe6_Arg7dup"
         self._run_conversion(hgvsc, expected_hgvsp)
 
     def test_dup_3AA_no_frameshift(self):
         hgvsc = "NM_999999.1:c.16_24dup"
-        expected_hgvsp = "NP_999999.1:p.Phe6_Ala8dup"
+        expected_hgvsp = "MD5_87c461c4:p.Phe6_Ala8dup"
         self._run_conversion(hgvsc, expected_hgvsp)
 
     def test_dup_frameshift(self):
         hgvsc = "NM_999999.1:c.12_13dup"
-        expected_hgvsp = "NP_999999.1:p.Ala5Glufs*?"
+        expected_hgvsp = "MD5_87c461c4:p.Ala5Glufs*?"
         self._run_conversion(hgvsc, expected_hgvsp)
 
     def test_intron(self):
         hgvsc = "NM_999999.1:c.12+1G>A"
-        expected_hgvsp = "NP_999999.1:p.="
+        expected_hgvsp = "MD5_87c461c4:p.="
         self._run_conversion(hgvsc, expected_hgvsp)
 
     def test_five_prime_utr(self):
         hgvsc = "NM_999999.1:c.-2A>G"
-        expected_hgvsp = "NP_999999.1:p.="
+        expected_hgvsp = "MD5_87c461c4:p.="
         self._run_conversion(hgvsc, expected_hgvsp)
 
     def test_three_prime_utr(self):
         hgvsc = "NM_999999.1:c.*3G>A"
-        expected_hgvsp = "NP_999999.1:p.="
+        expected_hgvsp = "MD5_87c461c4:p.="
         self._run_conversion(hgvsc, expected_hgvsp)
 
     # The following are unsupported

@@ -8,19 +8,21 @@ import recordtype
 
 import hgvs.edit
 import hgvs.parser
+import hgvs.stopgap
 import hgvs.utils
 import hgvs.translators.tools.altseq_to_hgvsp as altseq_to_hgvsp
 import hgvs.translators.tools.altseqbuilder as altseqbuilder
 
 DBG = True  # DEBUG flag
 
+
 class RefTranscriptData(recordtype.recordtype('RefTranscriptData',
                                               ['transcript_sequence', 'aa_sequence',
                                                'cds_start', 'cds_stop', 'protein_accession'])):
-   pass
+    pass
+
 
 class HgvsCToP(object):
-
 
     def __init__(self, datasource):
         """Constructor
@@ -59,10 +61,12 @@ class HgvsCToP(object):
         hgvsps = []
         for alt in alt_data:
             builder = altseq_to_hgvsp.AltSeqToHgvsp(reference_data.aa_sequence,
-                                                    alt.aa_sequence, alt.frameshift_start)
-            hgvsp_no_acc = builder.build_hgvsp()
-
-            hgvsps.append(self._add_accession(hgvsp_no_acc, alt.protein_accession))
+                                                    alt.aa_sequence,
+                                                    reference_data.protein_accession,
+                                                    alt.frameshift_start
+                                                    )
+            hgvsp = builder.build_hgvsp()
+            hgvsps.append(hgvsp)
 
         hgvsp = hgvsps[0]    # TODO - handle case of more than 1 variant
 
@@ -82,33 +86,30 @@ class HgvsCToP(object):
         :return transcript info
         :type dict
         """
-        # TODO - take whatever form you get the input from & convert to a uniform format
-        # TODO - handle what UTA returns & convert test inputs to mimic that
-        td = self.datasource.fetch_transcript_exons(ac)
+        ts_exons = self.datasource.fetch_transcript_exons(ac, 'GRCh37.p10')
+        ts_info = self.datasource.fetch_transcript_info(ac)
 
-        transcript_dna_cds = Seq(td['transcript_sequence'][td['cds_start'] - 1:td['cds_stop']])
+        # use 1-based hgvs coords
+        cds_start = ts_info['cds_start_i'] + 1
+        cds_stop = ts_info['cds_stop_i']
 
-        transcript_data = RefTranscriptData(td['transcript_sequence'],
-                                            str(transcript_dna_cds.translate()),
-                                            td['cds_start'],
-                                            td['cds_stop'],
-                                            td['protein_accession'])
+        # concatenate sequences by exon
+        ord_seq = {x['ord']: x['t_seq_a'] for x in ts_exons}
+        ordered_keys = ord_seq.keys()
+        ordered_keys.sort()
+        transcript_sequence = ''.join(ord_seq[x] for x in ordered_keys)
+
+        transcript_dna_cds = Seq(transcript_sequence[cds_start - 1:cds_stop])
+        protein_seq = str(transcript_dna_cds.translate())
+        protein_acc = hgvs.stopgap.pseq_to_ac(protein_seq)
+
+        transcript_data = RefTranscriptData(transcript_sequence,
+                                            protein_seq,
+                                            cds_start,
+                                            cds_stop,
+                                            protein_acc)
 
         return transcript_data
-
-    def _add_accession(self, hgvsps, acc):
-        """Helper to add protein accession to hgvsp
-        """
-        for hgvsp in hgvsps:
-            hgvsp.ac = acc
-
-        if len(hgvsps) > 1:
-            raise NotImplementedError("Can only handle single variants")
-        else:
-            hgvsp = hgvsps[0]
-
-        return hgvsp
-
 
 
 def main():
