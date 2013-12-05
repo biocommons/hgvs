@@ -17,17 +17,25 @@ class MockInputSource():
     def fetch_gene_transcripts(self,ac):
         pass
 
-    def fetch_transcript_exons(self,ac):
-        return self._mock_data[ac]
+    def fetch_transcript_exons(self,ac, assy):
+        result = None
+        data = self._mock_data.get(ac)
+        if data:
+            result = {'ord': 1,
+                      't_start_i': 0,
+                      't_end_i': data['cds_stop_i'] - data['cds_start_i'],
+                      't_seq_a': data['transcript_sequence']
+            }
+
+        return [result]
 
     def fetch_transcript_info(self,ac):
-        pass
-
-
-    def get_sequence(self, accession):
-        """Gets DNA sequence, given an accession; None if tag can't be converted
-        """
-        return self._mock_data.get(accession)
+        result = None
+        data = self._mock_data.get(ac)
+        if data:     # interbase coordinates
+            result = {'cds_start_i': data['cds_start_i'],
+                      'cds_stop_i': data['cds_stop_i']}
+        return result
 
     #
     # internal methods
@@ -45,9 +53,8 @@ class MockInputSource():
             reader = csv.DictReader(f, delimiter='\t')
             for row in reader:
                 result[row['accession']] = {'transcript_sequence': row['transcript_sequence'],
-                                                   'cds_start': int(row['cds_start']),
-                                                   'cds_stop': int(row['cds_stop']),
-                                                   'protein_accession': row['protein_accession']}
+                                                   'cds_start_i': int(row['cds_start_i']),
+                                                   'cds_stop_i': int(row['cds_stop_i'])}
 
         return result
 
