@@ -1,18 +1,14 @@
 #
 # builds an hgvsp SequenceVariant object for a modified transcript sequence based on incorporated variants
 #
-
 import collections
 import difflib
-import pprint
 
 import hgvs.edit
 import hgvs.location
 import hgvs.posedit
 import hgvs.utils
 import hgvs.variant
-
-DBG = True
 
 class AltSeqToHgvsp(object):
 
@@ -50,11 +46,7 @@ class AltSeqToHgvsp(object):
         alt_index = 1
         in_variant = False
         variants = []
-        if DBG:
-            debug_item = []
         for item in diff_list:
-            if DBG:
-                debug_item.append(item)
             change = item[0]
             if change == ' ':       # a match
                 if in_variant:      # process the variant just exited
@@ -84,10 +76,6 @@ class AltSeqToHgvsp(object):
 
         if in_variant:  # implies end of a frameshift; need to add this last variant to the list
             variants.append(current_var)
-
-        if DBG:
-            print(debug_item)
-            pprint.pprint(variants)
 
         if variants:
             sequence_variants = [self._convert_to_sequence_variants(x, self._protein_accession) for x in variants]
@@ -214,9 +202,6 @@ class AltSeqToHgvsp(object):
 
         var_seq = self._create_variant(aa_start, aa_end, ref, alt, fs, is_dup, acc)
 
-        if DBG:
-            print "var_seq: {}".format(var_seq)
-
         return var_seq
 
 
@@ -228,10 +213,6 @@ class AltSeqToHgvsp(object):
         if len(insertion) == 1:  # since difflib may match 1-AA dups before or after, need to check both
             ref_prev = ref_seq[start - 2]
             ref_next = ref_seq[start - 1]
-            if DBG:
-                print start
-                print insertion
-                print ref_prev, ref_next
             if insertion == ref_prev or insertion == ref_next:
                 is_dup = True
                 variant_start = start - 1 if insertion == ref_prev else start
@@ -241,11 +222,6 @@ class AltSeqToHgvsp(object):
             dup_candidate_start = start - len(insertion) - 1
             dup_candidate_end = dup_candidate_start + len(insertion)
             dup_candidate = ref_seq[dup_candidate_start: dup_candidate_end]
-
-            if DBG:
-                print dup_candidate_start, dup_candidate_end
-                pprint.pprint(insertion)
-                pprint.pprint(dup_candidate)
 
             if insertion == dup_candidate:
                 is_dup = True

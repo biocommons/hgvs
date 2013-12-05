@@ -1,8 +1,6 @@
 #
 # Translate hgvsc tag to hgvsp tag
 #
-import pprint
-
 from Bio.Seq import Seq
 import recordtype
 
@@ -12,8 +10,6 @@ import hgvs.stopgap
 import hgvs.utils
 import hgvs.translators.tools.altseq_to_hgvsp as altseq_to_hgvsp
 import hgvs.translators.tools.altseqbuilder as altseqbuilder
-
-DBG = True  # DEBUG flag
 
 
 class RefTranscriptData(recordtype.recordtype('RefTranscriptData',
@@ -42,9 +38,6 @@ class HgvsCToP(object):
 
         # translate hgvsc
         var = self.parser.parse_hgvs_variant(hgvsc)
-        if DBG:
-            print "START DEBUG"
-            print hgvsc
 
         # get transcript from datasource & convert to AA
         reference_data = self._setup_transcript_data(var.seqref)
@@ -52,10 +45,6 @@ class HgvsCToP(object):
         # incorporate DNA change into sequence(s) and translate
         builder = altseqbuilder.AltSeqBuilder(var, reference_data)
         alt_data = builder.build_altseq()
-
-        if DBG:
-            pprint.pprint(reference_data)
-            pprint.pprint(alt_data)
 
         # perform comparison to get hgvs tag
         hgvsps = []
@@ -69,9 +58,6 @@ class HgvsCToP(object):
             hgvsps.append(hgvsp)
 
         hgvsp = hgvsps[0]    # TODO - handle case of more than 1 variant
-
-        if DBG:
-            print "END DEBUG"
 
         return hgvsp
 
