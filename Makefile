@@ -32,7 +32,7 @@ test:
 docs: build_sphinx
 
 #=> develop, build_sphinx, sdist, upload_sphinx
-develop build build_sphinx install sdist upload_sphinx: %:
+develop bdist bdist_egg build build_sphinx install sdist upload_sphinx: %:
 	python setup.py $*
 
 #=> upload-<tag>
