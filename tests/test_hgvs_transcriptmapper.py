@@ -1,5 +1,6 @@
 import unittest
 import hgvs.location
+import hgvs.parser
 from uta.db.transcriptdb import TranscriptDB
 from hgvs.exceptions import *
 from hgvs.transcriptmapper import TranscriptMapper
@@ -18,17 +19,19 @@ class Test_transcriptmapper(unittest.TestCase):
         """NM_178434.2: LCE3C single exon, strand = +1, all coordinate input/output are in HGVS"""
         ac = 'NM_178434.2'
         tm = TranscriptMapper(self.db, ac, self.ref)
-        cds = tm.cds_start_i + 1 # hgvs
-
-        # gs, ge = genomic start/end; rs,re = rna start/end; cs, ce = cdna start/end; so, eo = start offset/end offset
+        parser = hgvs.parser.Parser()
         test_cases = [
-            {'gs': 152573138, 'ge': 152573138, 'rs': 1, 're': 1, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 1-cds, 'ce': 1-cds},
-            {'gs': 152573138+2, 'ge': 152573138+2, 'rs': 3, 're': 3, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 3-cds, 'ce': 3-cds},
+            # 5'
+            {'g': parser.parse_interval('152573138'), 'r': parser.parse_r_interval('1'), 'c': parser.parse_c_interval('-70')},
+            {'g': parser.parse_interval('152573140'), 'r': parser.parse_r_interval('3'), 'c': parser.parse_c_interval('-68')},
             # cds
-            {'gs': 152573138+70, 'ge': 152573138+70, 'rs': 71, 're': 71, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 71-cds+1, 'ce': 71-cds+1},
-            # beyond cds add 1 due to hgvs
-            {'gs': 152573562, 'ge': 152573562, 'rs': 425, 're': 425, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 425-cds+1, 'ce': 425-cds+1},
-            {'gs': 152573562-2, 'ge': 152573562-2, 'rs': 423, 're': 423, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 423-cds+1, 'ce': 423-cds+1},
+            {'g': parser.parse_interval('152573207'), 'r': parser.parse_r_interval('70'), 'c': parser.parse_c_interval('-1')},
+            {'g': parser.parse_interval('152573208'), 'r': parser.parse_r_interval('71'), 'c': parser.parse_c_interval('1')},
+            # 3'
+            {'g': parser.parse_interval('152573492'), 'r': parser.parse_r_interval('355'), 'c': parser.parse_c_interval('285')},
+            {'g': parser.parse_interval('152573493'), 'r': parser.parse_r_interval('356'), 'c': parser.parse_c_interval('*1')},
+            {'g': parser.parse_interval('152573560'), 'r': parser.parse_r_interval('423'), 'c': parser.parse_c_interval('*68')},
+            {'g': parser.parse_interval('152573562'), 'r': parser.parse_r_interval('425'), 'c': parser.parse_c_interval('*70')},
         ]
         self.run_cases(tm, test_cases)
 
@@ -36,14 +39,19 @@ class Test_transcriptmapper(unittest.TestCase):
         """NM_033445.2: LCE3C single exon, strand = -1, all coordinate input/output are in HGVS"""
         ac = 'NM_033445.2'
         tm = TranscriptMapper(self.db, ac, self.ref)
-        cds = tm.cds_start_i + 1 # hgvs
-        # gs, ge = genomic start/end; rs,re = rna start/end; cs, ce = cdna start/end; so, eo = start offset/end offset
+        parser = hgvs.parser.Parser()
         test_cases = [
-            {'gs': 228645560, 'ge': 228645560, 'rs': 1, 're': 1, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 1-cds, 'ce': 1-cds},
-            {'gs': 228645560-2, 'ge': 228645560-2, 'rs': 3, 're': 3, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 3-cds, 'ce': 3-cds},
-            # beyond cds add 1 due to hgvs
-            {'gs': 228645065, 'ge': 228645065, 'rs': 496, 're': 496, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 496-cds+1, 'ce': 496-cds+1},
-            {'gs': 228645065+2, 'ge': 228645065+2, 'rs': 494, 're': 494, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 494-cds+1, 'ce': 494-cds+1},
+            # 3'
+            {'g': parser.parse_interval('228645560'), 'r': parser.parse_r_interval('1'), 'c': parser.parse_c_interval('-42')},
+            {'g': parser.parse_interval('228645558'), 'r': parser.parse_r_interval('3'), 'c': parser.parse_c_interval('-40')},
+            # cds
+            {'g': parser.parse_interval('228645519'), 'r': parser.parse_r_interval('42'), 'c': parser.parse_c_interval('-1')},
+            {'g': parser.parse_interval('228645518'), 'r': parser.parse_r_interval('43'), 'c': parser.parse_c_interval('1')},
+            # 5'
+            {'g': parser.parse_interval('228645126'), 'r': parser.parse_r_interval('435'), 'c': parser.parse_c_interval('393')},
+            {'g': parser.parse_interval('228645125'), 'r': parser.parse_r_interval('436'), 'c': parser.parse_c_interval('*1')},
+            {'g': parser.parse_interval('228645124'), 'r': parser.parse_r_interval('437'), 'c': parser.parse_c_interval('*2')},
+            {'g': parser.parse_interval('228645065'), 'r': parser.parse_r_interval('496'), 'c': parser.parse_c_interval('*61')},
         ]
         self.run_cases(tm, test_cases)
 
@@ -51,22 +59,29 @@ class Test_transcriptmapper(unittest.TestCase):
         """NM_014357.4: LCE2B, two exons, strand = +1, all coordinate input/output are in HGVS"""
         ac = 'NM_014357.4'
         tm = TranscriptMapper(self.db, ac, self.ref)
-        cds = tm.cds_start_i + 1 # hgvs
-        # gs, ge = genomic start/end; rs,re = rna start/end; cs, ce = cdna start/end; so, eo = start offset/end offset
+        parser = hgvs.parser.Parser()
         test_cases = [
-            {'gs': 152658599, 'ge': 152658599, 'rs': 1, 're': 1, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 1-cds, 'ce': 1-cds},
-            {'gs': 152658599+2, 'ge': 152658599+2, 'rs': 3, 're': 3, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 3-cds, 'ce': 3-cds},
+             # 5'
+            {'g': parser.parse_interval('152658599'), 'r': parser.parse_r_interval('1'), 'c': parser.parse_c_interval('-54')},
+            {'g': parser.parse_interval('152658601'), 'r': parser.parse_r_interval('3'), 'c': parser.parse_c_interval('-52')},
+            # cds
+            {'g': parser.parse_interval('152659319'), 'r': parser.parse_r_interval('54'), 'c': parser.parse_c_interval('-1')},
+            {'g': parser.parse_interval('152659320'), 'r': parser.parse_r_interval('55'), 'c': parser.parse_c_interval('1')},
             # around end of exon 1
-            {'gs': 152658632, 'ge': 152658632, 'rs': 34, 're': 34, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 34-cds, 'ce': 34-cds},
-            {'gs': 152658632, 'ge': 152658632+2, 'rs': 34, 're': 34, 'so': 0, 'eo': 2, 'd': hgvs.location.SEQ_START, 'cs': 34-cds, 'ce': 34-cds},
-            {'gs': 152658632+1, 'ge': 152658632+1, 'rs': 34, 're': 34, 'so': 1, 'eo': 1, 'd': hgvs.location.SEQ_START, 'cs': 34-cds, 'ce': 34-cds},
+            {'g': parser.parse_interval('152658632'), 'r': parser.parse_r_interval('34'), 'c': parser.parse_c_interval('-21')},
+            {'g': parser.parse_interval('152658633'), 'r': parser.parse_r_interval('34+1'), 'c': parser.parse_c_interval('-21+1')},
+            # span
+            {'g': parser.parse_interval('152658633_152659299'), 'r': parser.parse_r_interval('34+1_35-1'), 'c': parser.parse_c_interval('-21+1_-20-1')},
             # around beginning of exon 2
-            {'gs': 152659300, 'ge': 152659300, 'rs': 35, 're': 35, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 35-cds, 'ce': 35-cds},
-            {'gs': 152659300-2, 'ge': 152659300-2, 'rs': 35, 're': 35, 'so': -2, 'eo': -2, 'd': hgvs.location.SEQ_START, 'cs': 35-cds, 'ce': 35-cds},
-            {'gs': 152659300-2, 'ge': 152659301, 'rs': 35, 're': 36, 'so': -2, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 35-cds, 'ce': 36-cds},
-            # beyond cds add 1 due to hgvs
-            {'gs': 152659877, 'ge': 152659877, 'rs': 612, 're': 612, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 612-cds+1, 'ce': 612-cds+1},
-            {'gs': 152659877-2, 'ge': 152659877-2, 'rs': 610, 're': 610, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 610-cds+1, 'ce': 610-cds+1},
+            {'g': parser.parse_interval('152659300'), 'r': parser.parse_r_interval('35'), 'c': parser.parse_c_interval('-20')},
+            {'g': parser.parse_interval('152659299'), 'r': parser.parse_r_interval('35-1'), 'c': parser.parse_c_interval('-20-1')},
+            # around end of exon 2
+            {'g': parser.parse_interval('152659652'), 'r': parser.parse_r_interval('387'), 'c': parser.parse_c_interval('333')},
+            {'g': parser.parse_interval('152659653'), 'r': parser.parse_r_interval('388'), 'c': parser.parse_c_interval('*1')},
+            # span
+            {'g': parser.parse_interval('152659651_152659654'), 'r': parser.parse_r_interval('386_389'), 'c': parser.parse_c_interval('332_*2')},
+            # 3'
+            {'g': parser.parse_interval('152659877'), 'r': parser.parse_r_interval('612'), 'c': parser.parse_c_interval('*225')},
         ]
         self.run_cases(tm, test_cases)
 
@@ -74,44 +89,36 @@ class Test_transcriptmapper(unittest.TestCase):
         """NM_178449.3: PTH2, two exons, strand = -1, all coordinate input/output are in HGVS"""
         ac = 'NM_178449.3'
         tm = TranscriptMapper(self.db, ac, self.ref)
-        cds = tm.cds_start_i + 1 # hgvs
-        # gs, ge = genomic start/end; rs,re = rna start/end; cs, ce = cdna start/end; so, eo = start offset/end offset
+        parser = hgvs.parser.Parser()
         test_cases = [
-            {'gs': 49926698, 'ge': 49926698, 'rs': 1, 're': 1, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 1-cds, 'ce': 1-cds},
-            {'gs': 49926698-2, 'ge': 49926698-2, 'rs': 3, 're': 3, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 3-cds, 'ce': 3-cds},
+             # 3'
+            {'g': parser.parse_interval('49926698'), 'r': parser.parse_r_interval('1'), 'c': parser.parse_c_interval('-102')},
+            # cds
+            {'g': parser.parse_interval('49926597'), 'r': parser.parse_r_interval('102'), 'c': parser.parse_c_interval('-1')},
+            {'g': parser.parse_interval('49926596'), 'r': parser.parse_r_interval('103'), 'c': parser.parse_c_interval('1')},
             # around end of exon 1
-            {'gs': 49926469, 'ge': 49926469, 'rs': 230, 're': 230, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 230-cds+1, 'ce': 230-cds+1},
-            {'gs': 49926469-2, 'ge': 49926469-2, 'rs': 230, 're': 230, 'so': 2, 'eo': 2, 'd': hgvs.location.SEQ_START, 'cs': 230-cds+1, 'ce': 230-cds+1},
-            {'gs': 49926470, 'ge': 49926470, 'rs': 229, 're': 229, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 229-cds+1, 'ce': 229-cds+1},
-            {'gs': 49926469-2, 'ge': 49926470, 'rs': 229, 're': 230, 'so': 0, 'eo': 2, 'd': hgvs.location.SEQ_START, 'cs': 229-cds+1, 'ce': 230-cds+1},
+            {'g': parser.parse_interval('49926469'), 'r': parser.parse_r_interval('230'), 'c': parser.parse_c_interval('128')},
+            {'g': parser.parse_interval('49926468'), 'r': parser.parse_r_interval('230+1'), 'c': parser.parse_c_interval('128+1')},
+            # span
+            {'g': parser.parse_interval('49925901_49926467'), 'r': parser.parse_r_interval('230+2_231-2'), 'c': parser.parse_c_interval('128+2_129-2')},
             # around beginning of exon 2
-            {'gs': 49925899, 'ge': 49925899, 'rs': 231, 're': 231, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 231-cds+1, 'ce': 231-cds+1},
-            {'gs': 49925899+1, 'ge': 49925899+1, 'rs': 231, 're': 231, 'so': -1, 'eo': -1, 'd': hgvs.location.SEQ_START, 'cs': 231-cds+1, 'ce': 231-cds+1},
-            {'gs': 49925899-1, 'ge': 49925899+2, 'rs': 231, 're': 232, 'so': -2, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 231-cds+1, 'ce': 232-cds+1},
-            # btw exon 1 and 2
-            {'gs': 49925899+1, 'ge': 49926469-2, 'rs': 230, 're': 231, 'so': 2, 'eo': -1, 'd': hgvs.location.SEQ_START, 'cs': 230-cds+1, 'ce': 231-cds+1},
-            # beyond cds add 1 due to hgvs
-            {'gs': 49925671, 'ge': 49925671, 'rs': 459, 're': 459, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 459-cds+1, 'ce': 459-cds+1},
-            {'gs': 49925671+2, 'ge': 49925671+2, 'rs': 457, 're': 457, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 457-cds+1, 'ce': 457-cds+1},
+            {'g': parser.parse_interval('49925900'), 'r': parser.parse_r_interval('231-1'), 'c': parser.parse_c_interval('129-1')},
+            {'g': parser.parse_interval('49925899'), 'r': parser.parse_r_interval('231'), 'c': parser.parse_c_interval('129')},
+            # around end of exon 2
+            {'g': parser.parse_interval('49925725'), 'r': parser.parse_r_interval('405'), 'c': parser.parse_c_interval('303')},
+            {'g': parser.parse_interval('49925724'), 'r': parser.parse_r_interval('406'), 'c': parser.parse_c_interval('*1')},
+            {'g': parser.parse_interval('49925671'), 'r': parser.parse_r_interval('459'), 'c': parser.parse_c_interval('*54')},
         ]
         self.run_cases(tm, test_cases)
 
     def run_cases(self, tm, test_cases):
         for test_case in test_cases:
-            g = hgvs.location.Interval(start=test_case['gs'], end=test_case['ge'])
-            r = hgvs.location.Interval(
-                    start=hgvs.location.BaseOffsetPosition(base=test_case['rs'], offset=test_case['so'], datum=test_case['d']),
-                    end=hgvs.location.BaseOffsetPosition(base=test_case['re'], offset=test_case['eo'], datum=test_case['d']))
-            c = hgvs.location.Interval(
-                    start=hgvs.location.BaseOffsetPosition(base=test_case['cs'], offset=test_case['so'], datum=test_case['d'] + 1),
-                    end=hgvs.location.BaseOffsetPosition(base=test_case['ce'], offset=test_case['eo'], datum=test_case['d'] + 1))
-            self.assertEquals(tm.hgvsg_to_hgvsr(g), r)
-            self.assertEquals(tm.hgvsr_to_hgvsg(r), g)
-            self.assertEquals(tm.hgvsr_to_hgvsc(r), c)
-            self.assertEquals(tm.hgvsc_to_hgvsr(c), r)
-            self.assertEquals(tm.hgvsg_to_hgvsc(g), c)
-            self.assertEquals(tm.hgvsc_to_hgvsg(c), g)
-
+            self.assertEquals(tm.hgvsg_to_hgvsr(test_case['g']), test_case['r'])
+            self.assertEquals(tm.hgvsr_to_hgvsg(test_case['r']), test_case['g'])
+            self.assertEquals(tm.hgvsr_to_hgvsc(test_case['r']), test_case['c'])
+            self.assertEquals(tm.hgvsc_to_hgvsr(test_case['c']), test_case['r'])
+            self.assertEquals(tm.hgvsg_to_hgvsc(test_case['g']), test_case['c'])
+            self.assertEquals(tm.hgvsc_to_hgvsg(test_case['c']), test_case['g'])
 
 if __name__ == '__main__':
     unittest.main()
