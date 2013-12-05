@@ -4,13 +4,14 @@
 
 * SOON
 
-** protein support
-- hgvs.util.aa1to3() and v.v. to support 1 letter AA
+** match string from parsley?
+- Question here: http://stackoverflow.com/questions/20187065
 
 ** EDTI
 - version interface?
 
-** match string from parsley?
+
+** documentation
 
 ** PosEdit class
 complex, compound, mosaic, chimeric posedits
@@ -21,17 +22,11 @@ uncertainty
 
 ** hgvs_invitae
 - copyN, etc
-- relo to data
-
-** grammar introspection on startup
-- make parser attributes directly
-
-** standardize rule names
-- prefix or postfix types
-- type names (pcgmnr) and/or generalization (dna,rna,pro,aa,na)
 
 ** grammar tests
 ...for each rule
+
+** move tests adjacent to code
 
 
 * LATER

@@ -13,7 +13,7 @@ import hgvs.utils
 from hgvs.exceptions import *
 
 class Parser(object):
-    __default_grammar_fn = resource_filename(__name__, 'grammar.txt')
+    __default_grammar_fn = resource_filename(__name__, 'data/hgvs.ometa')
 
     def __init__(self,grammar_fn=__default_grammar_fn):
         self._grammar_fn = grammar_fn
