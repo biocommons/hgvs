@@ -124,6 +124,7 @@ if __name__ == '__main__':
     unittest.main()
 
 
+    # TODO: Reintegrate older tests, especially those with indels
     ### harder tests ###
     #def test_transcriptmapper_TranscriptMapper_1_ZCCHC3(self):
     #    """
