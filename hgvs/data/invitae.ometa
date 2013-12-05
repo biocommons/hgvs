@@ -1,0 +1,6 @@
+############################################################################
+## invitae /additions/ to hgvs_strict
+# i.e., this will NOT parse valid HGVS
+# invitae_variant = (copyN, delN)
+
+

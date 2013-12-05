@@ -15,7 +15,7 @@ setup(
     license = 'MIT',
     long_description = long_description,
     name = "hgvs",
-    package_data={'hgvs': ['grammar.txt']},
+    package_data={'hgvs': ['data/hgvs.ometa']},
     packages = ['hgvs'],
     url = 'https://bitbucket.org/invitae/hgvs',
     use_hg_version = True,
