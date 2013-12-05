@@ -16,7 +16,7 @@ DBG = True
 
 class AltSeqToHgvsp(object):
 
-    def __init__(self, ref_seq, alt_seq, protein_accession, frameshift_start = None, ):
+    def __init__(self, ref_seq, alt_seq, protein_accession, frameshift_start = None):
         """Constructor
 
         The normal difflib comparison may identify islands of matches in a frameshift
@@ -90,11 +90,12 @@ class AltSeqToHgvsp(object):
             pprint.pprint(variants)
 
         if variants:
-            sequence_variants = [self._convert_to_sequence_variants(x, 'TEST') for x in variants]
+            sequence_variants = [self._convert_to_sequence_variants(x, self._protein_accession) for x in variants]
         else:    # create a "silent" variant
-            sequence_variants = [self._create_variant('', '', '', '')]
+            sequence_variants = [self._create_variant('', '', '', '', acc=self._protein_accession)]
 
-        return sequence_variants
+        # TODO - handle multiple variants
+        return sequence_variants[0]
 
     #
     # internal methods
