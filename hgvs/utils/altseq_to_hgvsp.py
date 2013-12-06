@@ -85,12 +85,12 @@ class AltSeqToHgvsp(object):
             variants.append(current_var)
 
         if variants:
-            sequence_variants = [self._convert_to_sequence_variants(x, self._protein_accession) for x in variants]
+            var_ps = [self._convert_to_sequence_variants(x, self._protein_accession) for x in variants]
         else:    # ref = alt - "silent" hgvs change
-            sequence_variants = [self._create_variant('', '', '', '', acc=self._protein_accession)]
+            var_ps = [self._create_variant('', '', '', '', acc=self._protein_accession)]
 
         # TODO - handle multiple variants
-        return sequence_variants[0]
+        return var_ps[0]
 
     #
     # internal methods
@@ -207,9 +207,9 @@ class AltSeqToHgvsp(object):
             else: # should never get here
                 raise ValueError("unexpected variant: {}".format(variant))
 
-        var_seq = self._create_variant(aa_start, aa_end, ref, alt, fs, is_dup, acc)
+        var_p = self._create_variant(aa_start, aa_end, ref, alt, fs, is_dup, acc)
 
-        return var_seq
+        return var_p
 
 
     def _check_if_ins_is_dup(self, start, insertion, ref_seq):
@@ -244,7 +244,7 @@ class AltSeqToHgvsp(object):
         else:
             edit = hgvs.edit.AARefAlt(ref=ref, alt=alt, fs=fs)
         posedit = hgvs.posedit.PosEdit(interval, edit)
-        var = hgvs.variant.SequenceVariant(acc, 'p', posedit)
+        var_p = hgvs.variant.SequenceVariant(acc, 'p', posedit)
 
-        return var
+        return var_p
 

@@ -60,7 +60,7 @@ class AltSeqBuilder(object):
     F_UTR = "five utr"
     T_UTR = "three utr"
 
-    def __init__(self, variant, transcript_data):
+    def __init__(self, var_c, transcript_data):
         """Constructor
 
         :param variant representation of hgvs variant
@@ -69,7 +69,7 @@ class AltSeqBuilder(object):
         :type recordtype
 
         """
-        self._variant = variant
+        self._var_c = var_c
         self._transcript_data = transcript_data
 
     def build_altseq(self):
@@ -96,7 +96,7 @@ class AltSeqBuilder(object):
         variant_location = self._get_variant_location()
 
         if variant_location == self.EXON:
-            edit_type = type(self._variant.posedit.edit)
+            edit_type = type(self._var_c.posedit.edit)
         elif variant_location == self.INTRON:
             edit_type = NOT_CDS
         elif variant_location == self.T_UTR:
@@ -118,11 +118,11 @@ class AltSeqBuilder(object):
         """Categorize variant by location in transcript (5'utr, exon, intron, 3'utr)
         :return "exon", "intron", "five_utr", "three_utr"
         """
-        if CDS_END in [self._variant.posedit.pos.start.datum, self._variant.posedit.pos.end.datum]:
+        if CDS_END in [self._var_c.posedit.pos.start.datum, self._var_c.posedit.pos.end.datum]:
             result = self.T_UTR
-        elif self._variant.posedit.pos.start.base < 0 or self._variant.posedit.pos.end.base < 0:
+        elif self._var_c.posedit.pos.start.base < 0 or self._var_c.posedit.pos.end.base < 0:
             result = self.F_UTR
-        elif self._variant.posedit.pos.start.offset != 0 or self._variant.posedit.pos.end.offset != 0:
+        elif self._var_c.posedit.pos.start.offset != 0 or self._var_c.posedit.pos.end.offset != 0:
             result = self.INTRON
         else:
             result = self.EXON
@@ -132,10 +132,10 @@ class AltSeqBuilder(object):
         """Incorporate delins"""
         seq, cds_start, cds_stop, start, end = self._setup_incorporate()
 
-        ref = self._variant.posedit.edit.ref
-        alt = self._variant.posedit.edit.alt
+        ref = self._var_c.posedit.edit.ref
+        alt = self._var_c.posedit.edit.alt
         ref_length = end - start if ref is not None else 0  # can't just get from ref since ref isn't always known
-        alt_length = len(self._variant.posedit.edit.alt) if self._variant.posedit.edit.alt is not None else 0
+        alt_length = len(self._var_c.posedit.edit.alt) if self._var_c.posedit.edit.alt is not None else 0
         net_base_change = alt_length - ref_length
         cds_stop += net_base_change
 
@@ -148,7 +148,7 @@ class AltSeqBuilder(object):
             seq[start + 1:start + 1] = list(alt)    # insertion in list before python list index
 
         is_frameshift = net_base_change % 3 != 0
-        variant_start_aa = int(math.ceil((self._variant.posedit.pos.start.base + 1) / 3.0))
+        variant_start_aa = int(math.ceil((self._var_c.posedit.pos.start.base + 1) / 3.0))
 
         alt_data = AltTranscriptData.create_for_variant_inserter(seq, cds_start, cds_stop,
                                                                is_frameshift, variant_start_aa,
@@ -163,7 +163,7 @@ class AltSeqBuilder(object):
         seq[end:end] = dup_seq
         
         is_frameshift = len(dup_seq) % 3 != 0
-        variant_start_aa = int(math.ceil((self._variant.posedit.pos.end.base + 1) / 3.0))
+        variant_start_aa = int(math.ceil((self._var_c.posedit.pos.end.base + 1) / 3.0))
 
         alt_data = AltTranscriptData.create_for_variant_inserter(seq, cds_start, cds_stop,
                                                                  is_frameshift, variant_start_aa,
@@ -187,8 +187,8 @@ class AltSeqBuilder(object):
         cds_start = self._transcript_data.cds_start
         cds_stop = self._transcript_data.cds_stop
 
-        start = (cds_start - 1) + self._variant.posedit.pos.start.base - 1   # list is zero-based; seq pos is 1-based
-        end = (cds_start - 1) + self._variant.posedit.pos.end.base
+        start = (cds_start - 1) + self._var_c.posedit.pos.start.base - 1   # list is zero-based; seq pos is 1-based
+        end = (cds_start - 1) + self._var_c.posedit.pos.end.base
 
         return seq, cds_start, cds_stop, start, end
 
