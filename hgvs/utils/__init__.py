@@ -1,3 +1,5 @@
+import string
+
 aa3_to_aa1_lut = {
     'Ala': 'A',    'Arg': 'R',    'Asn': 'N',    'Asp': 'D',
     'Cys': 'C',    'Gln': 'Q',    'Glu': 'E',    'Gly': 'G',
@@ -29,6 +31,12 @@ def aa_to_aa1(s):
 def aa_to_aa3(s):
     "coerce string of 1- or 3-letter amino acids to 3-letter"
     return aa1_to_aa3(s) if not __looks_like_aa3_p(s) else s
+
+
+complement_transtable = string.maketrans('ACGT','TGCA')
+def reverse_complement(s):
+    return ''.join(reversed(s.translate(complement_transtable)))
+
 
 def __looks_like_aa3_p(s):
     "string looks like a 3-letter AA string"
