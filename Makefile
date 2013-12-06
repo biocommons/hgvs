@@ -9,6 +9,10 @@ export PYTHONPATH=lib/python
 
 PYPI_SERVICE:=-r invitae
 
+ifdef LOCAL_UTA
+export UTA_DB_URL=postgresql://localhost/
+endif
+
 ############################################################################
 #= BASIC USAGE
 default: help
