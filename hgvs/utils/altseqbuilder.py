@@ -1,5 +1,8 @@
 #
-# Utility to insert an hgvs variant into a DNA sequence
+# Utility to insert an hgvs variant into a transcript sequence.
+# Generates a record corresponding to the modified transcript sequence,
+# along with annotations for use in conversion to an hgvsp tag.
+# Used in hgvsc to hgvsp conversion.
 #
 import math
 import recordtype

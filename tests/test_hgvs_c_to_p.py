@@ -1,7 +1,7 @@
 #
 # Tests for conversion of hgvs tags
 #
-
+import os
 import unittest
 
 import hgvs.hgvs_c_to_p as hgvs_c_to_p
@@ -10,8 +10,9 @@ import framework.mock_input_source as mock_input_data_source
 class TestHgvsCToP(unittest.TestCase):
 
 
-    _data_source = mock_input_data_source.MockInputSource('data/hgvsc_to_hgvsp_sanity_data.tsv')
-    _translator = hgvs_c_to_p.HgvsCToP(_data_source)
+    fn = os.path.join( os.path.dirname(__file__), 'data', 'hgvsc_to_hgvsp_sanity_data.tsv' )
+    _datasource = mock_input_data_source.MockInputSource(fn)
+    _translator = hgvs_c_to_p.HgvsCToP(_datasource)
 
     def test_silent(self):
         hgvsc = "NM_999999.1:c.6A>G"

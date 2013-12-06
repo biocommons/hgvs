@@ -1,5 +1,15 @@
 #
-# builds an hgvsp SequenceVariant object for a modified transcript sequence based on incorporated variants
+# Utility class for creating an hgvsp SequenceVariant object,
+# given a transcript with variants applied.
+# Used in hgvsc to hgvsp conversion.
+#
+# The "frameshift_start" param is used to identify to the code
+# where any "terminal" frameshift should occur.
+# Consider the case where there is a single base deletion, but the resulting
+# frameshift leaves an island of amino acids that coincidentally align to the reference.
+# This can lead to splitting a single frameshift call into [indel+match+downstream frameshift]
+# This param forces the comparison code to mark the rest of the sequence as part of a frameshift
+# and terminates the comparison.
 #
 import collections
 import difflib
@@ -14,9 +24,6 @@ class AltSeqToHgvsp(object):
 
     def __init__(self, ref_seq, alt_seq, protein_accession, frameshift_start = None):
         """Constructor
-
-        The normal difflib comparison may identify islands of matches in a frameshift
-        which will end up being reported as multiple variants.
 
         :param ref_seq: protein reference sequence
         :type str
@@ -79,7 +86,7 @@ class AltSeqToHgvsp(object):
 
         if variants:
             sequence_variants = [self._convert_to_sequence_variants(x, self._protein_accession) for x in variants]
-        else:    # create a "silent" variant
+        else:    # ref = alt - "silent" hgvs change
             sequence_variants = [self._create_variant('', '', '', '', acc=self._protein_accession)]
 
         # TODO - handle multiple variants
