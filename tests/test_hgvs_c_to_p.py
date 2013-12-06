@@ -4,7 +4,7 @@
 import os
 import unittest
 
-import hgvs.hgvs_c_to_p as hgvs_c_to_p
+import hgvs.hgvsmapper as hgvsmapper
 import hgvs.parser
 import framework.mock_input_source as mock_input_data_source
 
@@ -13,7 +13,7 @@ class TestHgvsCToP(unittest.TestCase):
 
     fn = os.path.join(os.path.dirname(__file__), 'data', 'hgvsc_to_hgvsp_sanity_data.tsv')
     _datasource = mock_input_data_source.MockInputSource(fn)
-    _translator = hgvs_c_to_p.HgvsCToP(_datasource)
+    _mapper = hgvsmapper.HGVSMapper(_datasource)
     _parser = hgvs.parser.Parser()
 
     def test_silent(self):
@@ -167,7 +167,7 @@ class TestHgvsCToP(unittest.TestCase):
         :param hgvsc tag
         """
         var_c = TestHgvsCToP._parser.parse_hgvs_variant(hgvsc)
-        hgvsp_actual = str(TestHgvsCToP._translator.hgvsc_to_hgvsp(var_c))
+        hgvsp_actual = str(TestHgvsCToP._mapper.hgvsc_to_hgvsp(var_c))
         msg = "hgvsp expected: {} actual: {}".format(hgvsp_expected, hgvsp_actual)
         self.assertEqual(hgvsp_expected, hgvsp_actual, msg)
 
