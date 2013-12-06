@@ -39,6 +39,16 @@ Classes
 * hgvs.location.Interval
 
 
+Variable Conventions
+--------------------
+
+* var, var_g, var_r, var_c, var_p -- hgvs.variant.Variant instances of unknown or specified/expected types
+
+* hgvs, hgvs_g, hgvs_r, hgvs_c, hgvs_p -- HGVS *strings* of unknown or specified/expected type
+
+
+
+
 .. _`Parsley`: https://pypi.python.org/pypi/Parsley
 .. _`HGVS`: http://www.hgvs.org/
 .. _`HGVS Recommendations`: http://hgvs.org/mutnomen/
