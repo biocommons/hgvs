@@ -10,7 +10,7 @@ import hgvs.utils.altseqbuilder as altseqbuilder
 
 import framework.mock_input_source as mock_input_data_source
 
-class TestVariantInserter(unittest.TestCase):
+class TestAltSeqBuilder(unittest.TestCase):
 
 
     # root sequence = ""
