@@ -11,13 +11,13 @@ class MockInputSource():
     def __init__(self, in_file):
         self._mock_data = self._read_input(in_file)
 
-    def fetch_gene_info(self,ac):
+    def fetch_gene_info(self, ac):
         pass
 
-    def fetch_gene_transcripts(self,ac):
+    def fetch_gene_transcripts(self, ac):
         pass
 
-    def fetch_transcript_exons(self,ac, assy):
+    def fetch_transcript_exons(self, ac):
         result = None
         data = self._mock_data.get(ac)
         if data:
@@ -36,6 +36,12 @@ class MockInputSource():
             result = {'cds_start_i': data['cds_start_i'],
                       'cds_stop_i': data['cds_stop_i']}
         return result
+
+    def get_tx_info(self, ac):
+        return self.fetch_transcript_info(ac)
+
+    def get_tx_exons(self, ac):
+        return self.fetch_transcript_exons(ac)
 
     #
     # internal methods

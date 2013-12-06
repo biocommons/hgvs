@@ -1,9 +1,10 @@
 import unittest
 
 from Bio.Seq import Seq
+import recordtype
 
 import hgvs.parser
-import hgvs.hgvs_c_to_p as hgvs_c_to_p
+import hgvs.hgvs_c_to_p
 import hgvs.utils.altseqbuilder as altseqbuilder
 
 import framework.mock_input_source as mock_input_data_source
@@ -12,7 +13,7 @@ class TestVariantInserter(unittest.TestCase):
 
 
     # root sequence = ""
-    _datasource = mock_input_data_source.MockInputSource('data/transcript_data.tsv')
+    _datasource = mock_input_data_source.MockInputSource('data/hgvsc_to_hgvsp_sanity_data.tsv')
     _parser = hgvs.parser.Parser()
 
 
@@ -105,30 +106,40 @@ class TestVariantInserter(unittest.TestCase):
 
     def _run_comparison(self, hgvsc, expected_sequence):
 
+        # test replicates the internal class of hgvsp_to_hgvsc
+        class RefTranscriptData(recordtype.recordtype('RefTranscriptData',
+                                                      ['transcript_sequence', 'aa_sequence',
+                                                       'cds_start', 'cds_stop', 'protein_accession'])):
+
+            @classmethod
+            def setup_transcript_data(cls, ac, db, ref='GRCh37.p10'):
+                """helper for generating RefTranscriptData from for hgvsc_to_hgvsp"""
+                ts_exons = db.get_tx_exons(ac)
+                ts_info = db.get_tx_info(ac)
+
+                # use 1-based hgvs coords
+                cds_start = ts_info['cds_start_i'] + 1
+                cds_stop = ts_info['cds_stop_i']
+
+                # concatenate sequences by exon
+                ord_seq = {x['ord']: x['t_seq_a'] for x in ts_exons}
+                ordered_keys = ord_seq.keys()
+                ordered_keys.sort()
+                transcript_sequence = ''.join(ord_seq[x] for x in ordered_keys)
+
+                transcript_dna_cds = Seq(transcript_sequence[cds_start - 1:cds_stop])
+                protein_seq = str(transcript_dna_cds.translate())
+                protein_acc = hgvs.stopgap.pseq_to_ac(protein_seq)
+
+                transcript_data = RefTranscriptData(transcript_sequence, protein_seq, cds_start,
+                                                    cds_stop, protein_acc)
+
+                return transcript_data
+
+
 
         var = self._parser.parse_hgvs_variant(hgvsc)
-
-        ts_exons = self._datasource.fetch_transcript_exons(var.seqref, '_')
-        ts_info = self._datasource.fetch_transcript_info(var.seqref)
-
-        cds_start = ts_info['cds_start_i'] + 1
-        cds_stop = ts_info['cds_stop_i']
-
-        # concatenate sequences by exon
-        ord_seq = {x['ord']: x['t_seq_a'] for x in ts_exons}
-        ordered_keys = ord_seq.keys()
-        ordered_keys.sort()
-        transcript_sequence = ''.join(ord_seq[x] for x in ordered_keys)
-
-        transcript_dna_cds = Seq(transcript_sequence[cds_start - 1:cds_stop])
-        protein_seq = str(transcript_dna_cds.translate())
-        protein_acc = hgvs.stopgap.pseq_to_ac(protein_seq)
-
-        transcript_data = hgvs_c_to_p.RefTranscriptData(transcript_sequence,
-                                            protein_seq,
-                                            cds_start,
-                                            cds_stop,
-                                            protein_acc)
+        transcript_data = RefTranscriptData.setup_transcript_data(var.seqref, self._datasource)
 
         builder = altseqbuilder.AltSeqBuilder(var, transcript_data)
         insert_result = builder.build_altseq()

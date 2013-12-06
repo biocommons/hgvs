@@ -10,7 +10,7 @@ import framework.mock_input_source as mock_input_data_source
 class TestHgvsCToP(unittest.TestCase):
 
 
-    _data_source = mock_input_data_source.MockInputSource('data/transcript_data.tsv')
+    _data_source = mock_input_data_source.MockInputSource('data/hgvsc_to_hgvsp_sanity_data.tsv')
     _translator = hgvs_c_to_p.HgvsCToP(_data_source)
 
     def test_silent(self):
@@ -163,7 +163,7 @@ class TestHgvsCToP(unittest.TestCase):
         """Helper method to actually run the test
         :param hgvsc tag
         """
-        actual_hgvsp = str(TestHgvsCToP._translator.convert(hgvsc))
+        actual_hgvsp = TestHgvsCToP._translator.hgvsc_to_hgvsp(hgvsc)
         msg = "hgvsp expected: {} actual: {}".format(expected_hgvsp, actual_hgvsp)
         self.assertEqual(expected_hgvsp, actual_hgvsp, msg)
 
