@@ -241,10 +241,3 @@ class AltSeqToHgvsp(object):
 
         return var
 
-
-def main():
-    pass
-
-
-if __name__ == "__main__":
-    main()

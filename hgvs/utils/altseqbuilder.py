@@ -211,11 +211,3 @@ class AltSeqBuilder(object):
         if variant_data.is_frameshift:
             variant_data.frameshift_start = variant_data.variant_start_aa
         return variant_data
-
-
-def main():
-    pass
-
-
-if __name__ == "__main__":
-    main()
