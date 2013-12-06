@@ -4,7 +4,7 @@
 
 import unittest
 
-import hgvs.translators.hgvs_c_to_p as hgvs_c_to_p
+import hgvs.hgvs_c_to_p as hgvs_c_to_p
 import framework.mock_input_source as mock_input_data_source
 
 class TestHgvsCToP(unittest.TestCase):

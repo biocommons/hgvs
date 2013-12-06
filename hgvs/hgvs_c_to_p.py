@@ -8,8 +8,8 @@ import hgvs.edit
 import hgvs.parser
 import hgvs.stopgap
 import hgvs.utils
-import hgvs.translators.tools.altseq_to_hgvsp as altseq_to_hgvsp
-import hgvs.translators.tools.altseqbuilder as altseqbuilder
+import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
+import hgvs.utils.altseqbuilder as altseqbuilder
 
 
 class RefTranscriptData(recordtype.recordtype('RefTranscriptData',
@@ -34,6 +34,8 @@ class HgvsCToP(object):
 
         :param hgvsc: hgvsc tag
         :type str
+        :return hgvsp tag
+        :type SequenceVariant
         """
 
         # translate hgvsc
@@ -71,7 +73,7 @@ class HgvsCToP(object):
         :param ac accession #
         :type str
         :return transcript info
-        :type dict
+        :type recordtype
         """
         ts_exons = self.datasource.fetch_transcript_exons(ac, 'GRCh37.p10')
         ts_info = self.datasource.fetch_transcript_info(ac)
@@ -97,11 +99,3 @@ class HgvsCToP(object):
                                             protein_acc)
 
         return transcript_data
-
-
-def main():
-    pass
-
-
-if __name__ == "__main__":
-    main()

@@ -3,8 +3,8 @@ import unittest
 from Bio.Seq import Seq
 
 import hgvs.parser
-import hgvs.translators.hgvs_c_to_p as hgvs_c_to_p
-import hgvs.translators.tools.altseqbuilder as altseqbuilder
+import hgvs.hgvs_c_to_p as hgvs_c_to_p
+import hgvs.utils.altseqbuilder as altseqbuilder
 
 import framework.mock_input_source as mock_input_data_source
 
