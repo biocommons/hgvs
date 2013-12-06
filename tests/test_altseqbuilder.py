@@ -1,3 +1,4 @@
+import os
 import unittest
 
 from Bio.Seq import Seq
@@ -13,7 +14,8 @@ class TestVariantInserter(unittest.TestCase):
 
 
     # root sequence = ""
-    _datasource = mock_input_data_source.MockInputSource('data/hgvsc_to_hgvsp_sanity_data.tsv')
+    fn = os.path.join( os.path.dirname(__file__), 'data', 'hgvsc_to_hgvsp_sanity_data.tsv' )
+    _datasource = mock_input_data_source.MockInputSource(fn)
     _parser = hgvs.parser.Parser()
 
 
