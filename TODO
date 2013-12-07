@@ -1,0 +1,51 @@
+-*-outline-*-
+
+* IMMEDIATE
+
+* SOON
+
+** match string from parsley?
+- Question here: http://stackoverflow.com/questions/20187065
+
+** EDTI
+- version interface?
+
+
+** documentation
+
+** PosEdit class
+complex, compound, mosaic, chimeric posedits
+uncertainty
+
+** position uncertainty
+?, ()
+
+** hgvs_invitae
+- copyN, etc
+
+** grammar tests
+...for each rule
+
+** move tests adjacent to code
+
+
+* LATER
+
+** valideer on hgvs classes
+
+** docs
+take new pass at docs
+
+** hgvs.util NC 2 chr & vv
+
+** hgvs mapper
+
+** hgvs formatter
+use in lieu of __str__ currently
+support options, incl. aa1 or aa3
+
+** hgvs validator
+
+
+* DEFERRED
+

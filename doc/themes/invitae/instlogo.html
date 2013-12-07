@@ -1,0 +1,18 @@
+{#
+    invitae/instlogo.html
+    ~~~~~~~~~~~~~~~~~~~~~
+
+    display institutional logo in sidebar
+
+    :copyright: Copyright 2007-2013 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+#}
+{%- if theme_inst_logo %}
+<h3></h3>
+  <div class="logo">
+    <a href="{{theme_inst_url}}">
+      <img class="logo" src="{{ pathto('_static/' + theme_inst_logo, 1) }}" alt="Logo"/>
+    </a>
+  {{theme_inst_address}}
+  </div>
+{%- endif %}
