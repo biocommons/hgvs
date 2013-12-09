@@ -67,7 +67,7 @@ class MockInputSource():
             for row in reader:
                 result[row['accession']] = {'transcript_sequence': row['transcript_sequence'],
                                                    'cds_start_i': int(row['cds_start_i']),
-                                                   'cds_stop_i': int(row['cds_stop_i'])}
+                                                   'cds_stop_i': int(row['cds_end_i'])}
 
         return result
 

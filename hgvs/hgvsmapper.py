@@ -89,7 +89,7 @@ class HGVSMapper(object):
                 return transcript_data
 
 
-        reference_data = RefTranscriptData.setup_transcript_data(var_c.seqref, self.db)
+        reference_data = RefTranscriptData.setup_transcript_data(var_c.ac, self.db)
         builder = altseqbuilder.AltSeqBuilder(var_c, reference_data)
 
         # TODO - handle case where you get 2+ alt sequences back; currently get list of 1 element
