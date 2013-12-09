@@ -17,26 +17,7 @@ class Parser(object):
 
     def __init__(self,grammar_fn=__default_grammar_fn):
         self._grammar_fn = grammar_fn
-        self._grammar = parsley.makeGrammar(open(grammar_fn,'r').read(),{
-            'BaseOffsetPosition': hgvs.location.BaseOffsetPosition,
-            'SimplePosition': hgvs.location.SimplePosition,
-            'Interval': hgvs.location.Interval,
-
-            'NARefAlt': hgvs.edit.NARefAlt,
-            'AARefAlt': hgvs.edit.AARefAlt,
-
-            'Dup': hgvs.edit.Dup,
-            'Repeat': hgvs.edit.Repeat,
-
-            'PosEdit': hgvs.posedit.PosEdit,
-
-            'SequenceVariant': hgvs.variant.SequenceVariant,
-
-            'HGVSPosition': hgvs.hgvsposition.HGVSPosition,
-
-            'hgvs': hgvs,
-            })
-
+        self._grammar = parsley.makeGrammar(open(grammar_fn,'r').read(),{'hgvs': hgvs})
 
         # define function attributes for each grammar rule, prefixed with 'parse_'
         # e.g., Parser.parse_c_interval('26+2_57-3') -> Interval(...)
