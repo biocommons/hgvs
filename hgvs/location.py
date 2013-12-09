@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+
 __doc__ = """
 hgvs.location -- classes for dealing with the locations of HGVS variants
 
@@ -15,6 +16,8 @@ Classes:
   * Interval -- an interval of Positions
 """
 
+import sys
+
 import recordtype
 
 from hgvs.utils import aa1_to_aa3,aa_to_aa1
@@ -23,19 +26,37 @@ SEQ_START = 0
 CDS_START = 1
 CDS_END = 2
 
-class SimplePosition(int):
-    def __init__(self,position):
-        super(SimplePosition,self).__init__()
-        assert position>=1, self.__class__.__name__ + ': position must be >= 1'
+class SimplePosition( recordtype.recordtype(
+        'SimplePosition',
+        field_names = [ ('base', None), ('uncertain', False) ]
+        )):
+
+    def validate(self):
+        assert self.base is None or self.base>=1, self.__class__.__name__ + ': base must be >= 1'
+        return True
+
+    def __str__(self):
+        self.validate()
+        s = '?' if self.base is None else str(self.base)
+        return '('+s+')' if self.uncertain else s
 
     @property
-    def base(self):
-        """convenience property for similarity with BaseOffsetPosition"""
+    def is_uncertain(self):
+        return self.uncertain or self.base in None
+
+    def set_uncertain(self):
+        "mark this location as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"
+        self.uncertain = True
         return self
 
 
 class BaseOffsetPosition( recordtype.recordtype(
-        'BaseOffsetPosition', field_names = [ 'base', 'offset', 'datum' ] ) ):
+        'BaseOffsetPosition',
+        field_names = [ ('base',None),
+                        ('offset',0),
+                        ('datum',SEQ_START),
+                        ('uncertain',False) ]
+        )):
     """
     Class for dealing with CDS coordinates in transcript variants.
 
@@ -58,32 +79,78 @@ class BaseOffsetPosition( recordtype.recordtype(
     c.*55    CDS_END       0      55  3' UTR variant, 55 nt after STOP
     """
     
-    def __init__(self,base,offset=0,datum=SEQ_START):
-        assert base != 0, 'BaseOffsetPosition base may not be 0'
-        assert datum == CDS_START or base >= 1, 'BaseOffsetPosition base must be >=1 for datum = SEQ_START or CDS_END'
-        super(BaseOffsetPosition,self).__init__(base=base,offset=offset,datum=datum)
+    def validate(self):
+        assert self.base is None or self.base != 0, 'BaseOffsetPosition base may not be 0'
+        assert self.base is None or self.datum == CDS_START or self.base >= 1, 'BaseOffsetPosition base must be >=1 for datum = SEQ_START or CDS_END'
+        return True
 
     def __str__(self):
-        base_str = '*' + str(self.base) if self.datum == CDS_END else str(self.base)
-        offset_str = '' if self.offset == 0 else '%+d' % self.offset
-        return base_str + offset_str
+        self.validate()
+        base_str = ( '?' if self.base is None
+                     else '*' + str(self.base) if self.datum == CDS_END
+                     else str(self.base) )
+        offset_str = ( '+?' if self.offset is None
+                       else '' if self.offset == 0
+                       else '%+d' % self.offset )
+        pos = base_str + offset_str
+        return '('+pos+')' if self.uncertain else pos
+
+    def set_uncertain(self):
+        "mark this location as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"
+        self.uncertain = True
+        return self
+
+    @property
+    def is_uncertain(self):
+        return self.uncertain or self.base is None or self.offset is None
 
 
 class AAPosition( recordtype.recordtype(
-        'AAPosition', field_names = [ 'pos', 'aa' ] ) ):
-    def __init__(self,pos,aa):
-        super(AAPosition,self).__init__(pos,aa_to_aa1(aa))
+        'AAPosition', field_names = [ ('base',None), ('aa',None), ('uncertain',False) ] ) ):
+
+    def validate(self):
+        assert self.base is None or self.base >= 1, 'AAPosition location must be >=1'
+        assert len(self.aa) == 1, 'More than 1 AA associated with position'
+        return True
 
     def __str__(self):
-        return aa1_to_aa3(self.aa) + str(self.pos)
+        self.validate()
+        pos = '?' if self.base is None else str(self.base)
+        aa = '?' if self.aa is None else aa1_to_aa3(self.aa)
+        s = aa + pos
+        return '('+s+')' if self.uncertain else s
 
+    @property
+    def pos(self):
+        return self.base
+
+    def set_uncertain(self):
+        "mark this location as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"
+        self.uncertain = True
+        return self
+
+    @property
+    def is_uncertain(self):
+        return self.uncertain or self.base is None or self.aa is None
 
 class Interval( recordtype.recordtype(
-        'Interval', field_names = [ 'start', 'end' ] ) ):
-    def __init__(self,start,end):
-        super(Interval,self).__init__(start,end)
+        'Interval', field_names = [ 'start', ('end',None), ('uncertain',False) ] ) ):
+
+    def validate(self):
+        return True
 
     def __str__(self):
+        self.validate()
         if self.end is None or self.start == self.end:
             return str(self.start)
-        return str(self.start) + '_' + str(self.end)
+        iv = str(self.start) + '_' + str(self.end)
+        return '('+iv+')' if self.uncertain else iv
+
+    def set_uncertain(self):
+        "mark this interval as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"
+        self.uncertain = True
+        return self
+
+    @property
+    def is_uncertain(self):
+        return self.uncertain or self.start.is_uncertain or self.end.is_uncertain
