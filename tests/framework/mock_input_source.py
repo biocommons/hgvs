@@ -43,6 +43,13 @@ class MockInputSource():
     def get_tx_exons(self, ac):
         return self.fetch_transcript_exons(ac)
 
+    def get_tx_seq(self, ac):
+        result = None
+        data = self._mock_data.get(ac)
+        if data:
+            result = data['transcript_sequence']
+        return result
+
     #
     # internal methods
     #

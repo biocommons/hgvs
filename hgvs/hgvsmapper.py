@@ -3,14 +3,15 @@ import os,re,sys
 from Bio.Seq import Seq
 import recordtype
 
-import hgvs.variant
-import hgvs.posedit
+import hgvs.exceptions
 import hgvs.location
+import hgvs.posedit
 import hgvs.stopgap
 import hgvs.transcriptmapper
 from hgvs.utils import reverse_complement
 import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
 import hgvs.utils.altseqbuilder as altseqbuilder
+import hgvs.variant
 
 class HGVSMapper(object):
     """
@@ -29,7 +30,7 @@ class HGVSMapper(object):
         """
 
         if not (var_g.type == 'g'):
-            raise InvalidHGVSVariantError('Expected a genomic (g.); got '+var_g)
+            raise hgvs.exception.InvalidHGVSVariantError('Expected a genomic (g.); got '+var_g)
 
         tm = self._fetch_TranscriptMapper(ac=ac,ref=ref)
         
@@ -60,6 +61,10 @@ class HGVSMapper(object):
         :type SequenceVariant
         """
 
+        # TODO - error handling - invalid hgvs tag
+        # TODO - error handling - transcript not found
+        # TODO - error handling - unsupported hgvs tag transformation
+
         class RefTranscriptData(recordtype.recordtype('RefTranscriptData',
                                                       ['transcript_sequence', 'aa_sequence',
                                                        'cds_start', 'cds_stop', 'protein_accession'])):
@@ -67,22 +72,18 @@ class HGVSMapper(object):
             @classmethod
             def setup_transcript_data(cls, ac, db, ref='GRCh37.p10'):
                 """helper for generating RefTranscriptData from for hgvsc_to_hgvsp"""
-                ts_exons = db.get_tx_exons(ac)
-                ts_info = db.get_tx_info(ac)
+                tx_info = db.get_tx_info(ac)
+                tx_seq = db.get_tx_seq(ac)
 
                 # use 1-based hgvs coords
-                cds_start = ts_info['cds_start_i'] + 1
-                cds_stop = ts_info['cds_stop_i']
+                cds_start = tx_info['cds_start_i'] + 1
+                cds_stop = tx_info['cds_stop_i']
 
-                # concatenate sequences by exon
-                ord_seq = {x['ord']: x['t_seq_a'] for x in ts_exons}
-                transcript_sequence = ''.join(ord_seq[x] for x in sorted(ord_seq.keys()))
-
-                transcript_dna_cds = Seq(transcript_sequence[cds_start - 1:cds_stop])
-                protein_seq = str(transcript_dna_cds.translate())
+                tx_seq_cds = Seq(tx_seq[cds_start - 1:cds_stop])
+                protein_seq = str(tx_seq_cds.translate())
                 protein_acc = hgvs.stopgap.pseq_to_ac(protein_seq)
 
-                transcript_data = RefTranscriptData(transcript_sequence, protein_seq, cds_start,
+                transcript_data = RefTranscriptData(tx_seq, protein_seq, cds_start,
                                                     cds_stop, protein_acc)
 
                 return transcript_data
@@ -108,8 +109,6 @@ class HGVSMapper(object):
         var_p = var_ps[0]
 
         return var_p
-
-
 
     ############################################################################
     ## Internal methods
