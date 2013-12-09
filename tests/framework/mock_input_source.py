@@ -23,7 +23,7 @@ class MockInputSource():
         if data:
             result = {'ord': 1,
                       't_start_i': 0,
-                      't_end_i': data['cds_stop_i'] - data['cds_start_i'],
+                      't_end_i': data['cds_end_i'] - data['cds_start_i'],
                       't_seq_a': data['transcript_sequence']
             }
 
@@ -34,7 +34,7 @@ class MockInputSource():
         data = self._mock_data.get(ac)
         if data:     # interbase coordinates
             result = {'cds_start_i': data['cds_start_i'],
-                      'cds_stop_i': data['cds_stop_i']}
+                      'cds_end_i': data['cds_end_i']}
         return result
 
     def get_tx_info(self, ac):
@@ -67,7 +67,7 @@ class MockInputSource():
             for row in reader:
                 result[row['accession']] = {'transcript_sequence': row['transcript_sequence'],
                                                    'cds_start_i': int(row['cds_start_i']),
-                                                   'cds_stop_i': int(row['cds_end_i'])}
+                                                   'cds_end_i': int(row['cds_end_i'])}
 
         return result
 
