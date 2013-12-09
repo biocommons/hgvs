@@ -121,7 +121,7 @@ class TestAltSeqBuilder(unittest.TestCase):
 
                 # use 1-based hgvs coords
                 cds_start = ts_info['cds_start_i'] + 1
-                cds_stop = ts_info['cds_stop_i']
+                cds_stop = ts_info['cds_end_i']
 
                 # concatenate sequences by exon
                 ord_seq = {x['ord']: x['t_seq_a'] for x in ts_exons}

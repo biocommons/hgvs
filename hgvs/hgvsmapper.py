@@ -77,7 +77,7 @@ class HGVSMapper(object):
 
                 # use 1-based hgvs coords
                 cds_start = tx_info['cds_start_i'] + 1
-                cds_stop = tx_info['cds_stop_i']
+                cds_stop = tx_info['cds_end_i']
 
                 tx_seq_cds = Seq(tx_seq[cds_start - 1:cds_stop])
                 protein_seq = str(tx_seq_cds.translate())
