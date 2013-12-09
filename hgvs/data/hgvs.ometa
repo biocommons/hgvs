@@ -68,13 +68,13 @@ hgvs_variant = c_variant | r_variant | gmn_variant | p_variant
 g_variant   = gmn_variant
 m_variant   = gmn_variant
 n_variant   = gmn_variant
-gmn_variant = accn:ac ':' gmn_type:type '.' gmn_posedit:posedit -> SequenceVariant(ac,type,posedit)
-c_variant   = accn:ac ':'      'c':type '.'   c_posedit:posedit -> SequenceVariant(ac,type,posedit)
-p_variant   = accn:ac ':'      'p':type '.'   p_posedit:posedit -> SequenceVariant(ac,type,posedit)
-r_variant   = accn:ac ':'      'r':type '.'   r_posedit:posedit -> SequenceVariant(ac,type,posedit)
+gmn_variant = accn:ac ':' gmn_type:type '.' gmn_posedit:posedit -> hgvs.variant.SequenceVariant(ac,type,posedit)
+c_variant   = accn:ac ':'      'c':type '.'   c_posedit:posedit -> hgvs.variant.SequenceVariant(ac,type,posedit)
+p_variant   = accn:ac ':'      'p':type '.'   p_posedit:posedit -> hgvs.variant.SequenceVariant(ac,type,posedit)
+r_variant   = accn:ac ':'      'r':type '.'   r_posedit:posedit -> hgvs.variant.SequenceVariant(ac,type,posedit)
 
 # any_variant is a syntactic parse around ':' and '.' only
-any_variant = accn:ac ':' letter:type '.' <anything+>:posedit -> SequenceVariant(ac,type,posedit)
+any_variant = accn:ac ':' letter:type '.' <anything+>:posedit -> hgvs.variant.SequenceVariant(ac,type,posedit)
 
 
 ############################################################################
@@ -83,10 +83,10 @@ any_variant = accn:ac ':' letter:type '.' <anything+>:posedit -> SequenceVariant
 g_edit   = gmn_edit
 m_edit   = gmn_edit
 n_edit   = gmn_edit
-gmn_edit = 'g':type '.' gmn_posedit:posedit -> SequenceVariant(None,type,posedit)
-c_edit   = 'c':type '.'   c_posedit:posedit -> SequenceVariant(None,type,posedit)
-p_edit   = 'p':type '.'   p_posedit:posedit -> SequenceVariant(None,type,posedit)
-r_edit   = 'r':type '.'   r_posedit:posedit -> SequenceVariant(None,type,posedit)
+gmn_edit = 'g':type '.' gmn_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
+c_edit   = 'c':type '.'   c_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
+p_edit   = 'p':type '.'   p_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
+r_edit   = 'r':type '.'   r_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
 
 
 ############################################################################
@@ -96,10 +96,10 @@ hgvs_position     = gmn_hgvs_position | r_hgvs_position | c_hgvs_position | p_hg
 g_hgvs_position   = gmn_hgvs_position
 m_hgvs_position   = gmn_hgvs_position
 n_hgvs_position   = gmn_hgvs_position
-gmn_hgvs_position = accn:ac ':' gmn_type:type '.' gmn_interval:pos -> HGVSPosition(ac, type, pos)
-c_hgvs_position   = accn:ac ':' 'c':type      '.'   c_interval:pos -> HGVSPosition(ac, type, pos)
-p_hgvs_position   = accn:ac ':' 'p':type      '.'   p_interval:pos -> HGVSPosition(ac, type, pos)
-r_hgvs_position   = accn:ac ':' 'r':type      '.'   r_interval:pos -> HGVSPosition(ac, type, pos)
+gmn_hgvs_position = accn:ac ':' gmn_type:type '.' gmn_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac, type, pos)
+c_hgvs_position   = accn:ac ':' 'c':type      '.'   c_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac, type, pos)
+p_hgvs_position   = accn:ac ':' 'p':type      '.'   p_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac, type, pos)
+r_hgvs_position   = accn:ac ':' 'r':type      '.'   r_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac, type, pos)
 
 
 ############################################################################
@@ -108,10 +108,10 @@ r_hgvs_position   = accn:ac ':' 'r':type      '.'   r_interval:pos -> HGVSPositi
 g_posedit   = gmn_posedit
 m_posedit   = gmn_posedit
 n_posedit   = gmn_posedit
-gmn_posedit = gmn_interval:pos dna_edit:edit -> PosEdit(pos=pos,edit=edit)
-c_posedit   = c_interval:pos dna_edit:edit -> PosEdit(pos=pos,edit=edit)
-p_posedit   = p_interval:pos pro_edit:edit -> PosEdit(pos=pos,edit=edit)
-r_posedit   = r_interval:pos rna_edit:edit -> PosEdit(pos=pos,edit=edit)
+gmn_posedit = gmn_interval:pos dna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit)
+c_posedit   = c_interval:pos dna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit)
+p_posedit   = p_interval:pos pro_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit)
+r_posedit   = r_interval:pos rna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit)
 
 
 ############################################################################
@@ -124,11 +124,11 @@ r_posedit   = r_interval:pos rna_edit:edit -> PosEdit(pos=pos,edit=edit)
 
 dna_edit_mu = dna_edit | '(' dna_edit:edit ')' -> edit.set_uncertain()
 dna_edit   = dna_subst | dna_delins | dna_ins | dna_del | dna_dup
-dna_subst  = dna:ref '>' dna:alt      -> NARefAlt(ref=ref,alt=alt)
-dna_delins = 'del' (<num>|<dna*>):ref 'ins' <dna+>:alt  -> NARefAlt(ref=ref,alt=alt)
-dna_del    = 'del' (<num>|<dna*>):ref -> NARefAlt(ref=ref,alt=None)
-dna_ins    = 'ins' <dna+>:alt         -> NARefAlt(ref=None,alt=alt)
-dna_dup    = 'dup' <dna*>:seq         -> Dup(seq=seq)
+dna_subst  = dna:ref '>' dna:alt      -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
+dna_delins = 'del' (<num>|<dna*>):ref 'ins' <dna+>:alt  -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
+dna_del    = 'del' (<num>|<dna*>):ref -> hgvs.edit.NARefAlt(ref=ref,alt=None)
+dna_ins    = 'ins' <dna+>:alt         -> hgvs.edit.NARefAlt(ref=None,alt=alt)
+dna_dup    = 'dup' <dna*>:seq         -> hgvs.edit.Dup(seq=seq)
 
 # Hey, self- I caught you! Stick to one feature add at a time!
 # dna_rpt    = '[' num:count ']' -> Repeat(seq=None, min=count, max=count)
@@ -136,20 +136,21 @@ dna_dup    = 'dup' <dna*>:seq         -> Dup(seq=seq)
 
 rna_edit_mu = rna_edit | '(' rna_edit:edit ')' -> edit.set_uncertain()
 rna_edit   = rna_subst | rna_delins | rna_ins | rna_del | rna_dup
-rna_subst  = rna:ref '>' rna:alt      -> NARefAlt(ref=ref,alt=alt)
-rna_delins = 'del' (<num>|<rna*>):ref 'ins' <rna+>:alt  -> NARefAlt(ref=ref,alt=alt)
-rna_del    = 'del' (<num>|<rna*>):ref -> NARefAlt(ref=ref,alt=None)
-rna_ins    = 'ins' <rna+>:alt         -> NARefAlt(ref=None,alt=alt)
-rna_dup    = 'dup' <rna*>:seq         -> Dup(seq=seq)
+rna_subst  = rna:ref '>' rna:alt      -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
+rna_delins = 'del' (<num>|<rna*>):ref 'ins' <rna+>:alt  -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
+rna_del    = 'del' (<num>|<rna*>):ref -> hgvs.edit.NARefAlt(ref=ref,alt=None)
+rna_ins    = 'ins' <rna+>:alt         -> hgvs.edit.NARefAlt(ref=None,alt=alt)
+rna_dup    = 'dup' <rna*>:seq         -> hgvs.edit.Dup(seq=seq)
 
 pro_edit_mu = pro_edit | '(' pro_edit:edit ')' -> edit.set_uncertain()
 pro_edit   = pro_subst | pro_delins | pro_ins | pro_del | pro_dup | pro_eq
-pro_subst  = aa_seq:alt aa_fs?:fs          -> AARefAlt(ref='',alt=hgvs.utils.aa_to_aa1(alt),fs=fs)
-pro_delins = 'delins' aa_seq:alt aa_fs?:fs -> AARefAlt(ref='',alt=aa_to_aa1(alt),fs=fs)
-pro_del    = 'del'                          -> AARefAlt(ref='',alt=None)
-pro_ins    = 'ins' aa_seq:alt aa_fs?:fs    -> AARefAlt(ref=None,alt=aa_to_aa1(alt),fs=fs)
-pro_dup    = 'dup'                          -> Dup(seq=seq)
-pro_eq     = '='                            -> AARefAlt(ref='',alt='')
+pro_subst  = aa_seq:alt aa_fs?:fs          -> hgvs.edit.AARefAlt(ref='',alt=hgvs.utils.aa_to_aa1(alt),fs=fs)
+pro_delins = 'delins' aa_seq:alt aa_fs?:fs -> hgvs.edit.AARefAlt(ref='',alt=aa_to_aa1(alt),fs=fs)
+pro_del    = 'del'                         -> hgvs.edit.AARefAlt(ref='',alt=None)
+pro_ins    = 'ins' aa_seq:alt aa_fs?:fs    -> hgvs.edit.AARefAlt(ref=None,alt=aa_to_aa1(alt),fs=fs)
+pro_dup    = 'dup'                         -> hgvs.edit.Dup(seq=seq)
+pro_special= :x ?(x in '=?0')              -> hgvs.edit.AASpecial(status=x)
+
 
 
 ############################################################################
@@ -198,10 +199,10 @@ p_interval = def_p_interval | '(' def_p_interval:iv ')' -> iv.set_uncertain()
 def_g_interval = def_gmn_interval
 def_m_interval = def_gmn_interval
 def_n_interval = def_gmn_interval
-def_gmn_interval = (  gmn_pos:start '_'   gmn_pos:end -> Interval(start,end)) | (  gmn_pos:start -> Interval(start,start))
-def_r_interval = (r_pos:start '_' r_pos:end -> Interval(start,end)) | (r_pos:start -> Interval(start,start))
-def_c_interval = (c_pos:start '_' c_pos:end -> Interval(start,end)) | (c_pos:start -> Interval(start,start))
-def_p_interval = (p_pos:start '_' p_pos:end -> Interval(start,end)) | (p_pos:start -> Interval(start,start))
+def_gmn_interval = (  gmn_pos:start '_'   gmn_pos:end -> hgvs.location.Interval(start,end)) | (  gmn_pos:start -> hgvs.location.Interval(start,start))
+def_r_interval = (r_pos:start '_' r_pos:end -> hgvs.location.Interval(start,end)) | (r_pos:start -> hgvs.location.Interval(start,start))
+def_c_interval = (c_pos:start '_' c_pos:end -> hgvs.location.Interval(start,end)) | (c_pos:start -> hgvs.location.Interval(start,start))
+def_p_interval = (p_pos:start '_' p_pos:end -> hgvs.location.Interval(start,end)) | (p_pos:start -> hgvs.location.Interval(start,start))
 
 # potentially indefinite/uncertain positions
 g_pos = gmn_pos
@@ -216,10 +217,10 @@ p_pos = def_p_pos #| '(' def_p_pos:pos ')' -> pos.set_uncertain()
 def_g_pos = def_gmn_pos
 def_m_pos = def_gmn_pos
 def_n_pos = def_gmn_pos
-def_gmn_pos = (num|'?'->None):pos -> SimplePosition(pos)
-def_r_pos = base:b offset:o -> BaseOffsetPosition(b,o,datum=hgvs.location.SEQ_START)
-def_c_pos = base:b offset:o -> BaseOffsetPosition(b,o,datum=hgvs.location.CDS_START)
-       | '*' num:b offset:o -> BaseOffsetPosition(b,o,datum=hgvs.location.CDS_END)
+def_gmn_pos = (num|'?'->None):pos -> hgvs.location.SimplePosition(pos)
+def_r_pos = base:b offset:o -> hgvs.location.BaseOffsetPosition(b,o,datum=hgvs.location.SEQ_START)
+def_c_pos = base:b offset:o -> hgvs.location.BaseOffsetPosition(b,o,datum=hgvs.location.CDS_START)
+       | '*' num:b offset:o -> hgvs.location.BaseOffsetPosition(b,o,datum=hgvs.location.CDS_END)
 def_p_pos = aa:aa num:pos -> hgvs.location.AAPosition(pos,hgvs.utils.aa_to_aa1(aa))
 
 # position primitives
