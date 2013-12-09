@@ -2,26 +2,28 @@
 
 * IMMEDIATE
 
-* SOON
-
-** match string from parsley?
-- Question here: http://stackoverflow.com/questions/20187065
-
-** EDTI
-- version interface?
-
-
-** documentation
-
 ** PosEdit class
 complex, compound, mosaic, chimeric posedits
 uncertainty
 
 ** position uncertainty
-?, ()
+p.(=)
+c.(67_70)insG (p.Gly23fs)
+c.(165_253)del11
+c.(1520_1524)del3
+c.(?_-30)_12+?del
+c.(?_-30)_(*220_?)del
 
 ** hgvs_invitae
 - copyN, etc
+
+** split gmn_ in grammar for parity
+- at least make all gmn rules distinct, to match c,r,p
+
+
+* SOON
+
+** documentation
 
 ** grammar tests
 ...for each rule
@@ -45,6 +47,11 @@ use in lieu of __str__ currently
 support options, incl. aa1 or aa3
 
 ** hgvs validator
+
+** get entire match string from parsley?
+Low priority.
+If we can, then attach text to node as a comment to help trace parsing
+- Question here: http://stackoverflow.com/questions/20187065
 
 
 * DEFERRED
