@@ -1,10 +1,12 @@
 import os,re,sys
 
+import hgvs.exceptions
 import hgvs.variant
 import hgvs.posedit
 import hgvs.location
 import hgvs.transcriptmapper
 from hgvs.utils import reverse_complement
+from hgvs.utils import chr_to_nc
 
 class HGVSMapper(object):
     """
@@ -17,13 +19,13 @@ class HGVSMapper(object):
         self.cache_transcripts = cache_transcripts
         self.__tm_cache = {}
 
-    def hgvsg_to_hgvsc(self,var_g,ac,ref='GRCh37.p10'):
+    def hgvsg_to_hgvsc(self,var_g, ac, ref='GRCh37.p10'):
         """Given a genomic (g.) HGVS variant, return a transcript (c.) variant on the specified transcript.
         hgvs must be an HGVS-formatted variant or variant position.
         """
 
         if not (var_g.type == 'g'):
-            raise InvalidHGVSVariantError('Expected a genomic (g.); got '+var_g)
+            raise hgvs.exceptions.InvalidHGVSVariantError('Expected a genomic (g.); got '+var_g)
 
         tm = self._fetch_TranscriptMapper(ac=ac,ref=ref)
         
@@ -45,7 +47,35 @@ class HGVSMapper(object):
                                              posedit=hgvs.posedit.PosEdit( pos_c, edit_c ) )
         return var_c
 
+    def hgvsc_to_hgvsg(self, var_c, ref='GRCh37.p10'):
+        """Given a cdna (c.) HGVS variant on a specified transcript, return a transcript (g.) variant.
+        hgvs must be an HGVS-formatted variant or variant position.
+        """
 
+        if not (var_c.type == 'c'):
+            raise hgvs.exceptions.InvalidHGVSVariantError('Expected a cdna (c.); got ' + var_c)
+
+        tm = self._fetch_TranscriptMapper(ac=var_c.ac, ref=ref)
+
+        pos_g = tm.hgvsc_to_hgvsg(var_c.posedit.pos)
+        if isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt):
+            if tm.strand == 1:
+                edit_g = var_c.posedit.edit
+            else:
+                edit_c = var_c.posedit.edit
+                edit_g = hgvs.edit.NARefAlt(
+                    ref = reverse_complement(edit_c.ref),
+                    alt = reverse_complement(edit_c.alt),
+                )
+        else:
+            raise NotImplemented('Only NARefAlt types are currently implemented')
+
+        # get NC accession
+        g_ac = chr_to_nc(tm.tx_info['chr'])
+        var_g = hgvs.variant.SequenceVariant(ac=g_ac,
+                                             type='g',
+                                             posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
+        return var_g
 
     ############################################################################
     ## Internal methods
