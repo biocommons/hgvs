@@ -19,5 +19,5 @@ class InvalidIntervalError(HGVSError):
 #
 #
 #
-#class InvalidHGVSVariantError(UTAError):
-#    pass
+class InvalidHGVSVariantError(HGVSError):
+   pass

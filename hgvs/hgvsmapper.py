@@ -75,6 +75,9 @@ class HGVSMapper(object):
                 tx_info = db.get_tx_info(ac)
                 tx_seq = db.get_tx_seq(ac)
 
+                if tx_info is None or tx_seq is None:
+                    raise hgvs.exceptions.HGVSError("Missing transcript data for accession: {}".format(ac))
+
                 # use 1-based hgvs coords
                 cds_start = tx_info['cds_start_i'] + 1
                 cds_stop = tx_info['cds_end_i']

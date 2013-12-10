@@ -18,7 +18,8 @@ class AltTranscriptData(recordtype.recordtype('AltTranscriptData', [
         ('is_frameshift', False), ('variant_start_aa', None), ('frameshift_start', None)])):
 
     @classmethod
-    def create_for_variant_inserter(cls, seq, cds_start, cds_stop, is_frameshift, variant_start_aa, accession):
+    def create_for_variant_inserter(cls, seq, cds_start, cds_stop, is_frameshift, variant_start_aa, accession,
+                                    pad_seq = True):
         """Create a variant sequence using inputs from VariantInserter
         :param seq: DNA sequence wiith variant incorporated
         :type str
@@ -32,12 +33,14 @@ class AltTranscriptData(recordtype.recordtype('AltTranscriptData', [
         :type int
         :param accession: protein accession, e.g. NP_999999.2
         :type str
+        :param pad_seq: if true, pad sequence to be divisible by three (default true)
+        :type bool
         :return variant sequence data
         :type recordtype
         """
 
         # padding list so biopython won't complain during the conversion
-        if len(seq) % 3 != 0:
+        if pad_seq and len(seq) % 3 != 0:
             seq.extend(['N']*(3-len(seq) % 3))
 
         seq = ''.join(seq)
@@ -148,7 +151,8 @@ class AltSeqBuilder(object):
             seq[start + 1:start + 1] = list(alt)    # insertion in list before python list index
 
         is_frameshift = net_base_change % 3 != 0
-        variant_start_aa = int(math.ceil((self._var_c.posedit.pos.start.base + 1) / 3.0))
+        #variant_start_aa = int(math.ceil((self._var_c.posedit.pos.start.base + 1) / 3.0))
+        variant_start_aa = int(math.ceil((self._var_c.posedit.pos.start.base) / 3.0))
 
         alt_data = AltTranscriptData.create_for_variant_inserter(seq, cds_start, cds_stop,
                                                                is_frameshift, variant_start_aa,
@@ -199,7 +203,8 @@ class AltSeqBuilder(object):
                                                                  self._transcript_data.cds_stop,
                                                                  False,
                                                                  None,
-                                                                 self._transcript_data.protein_accession)
+                                                                 self._transcript_data.protein_accession,
+                                                                 pad_seq=False)
         return alt_data
 
     def _get_frameshift_start(self, variant_data):
