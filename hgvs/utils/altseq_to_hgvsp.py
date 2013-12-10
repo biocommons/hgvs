@@ -20,6 +20,8 @@ import hgvs.posedit
 import hgvs.utils
 import hgvs.variant
 
+DBG = False
+
 class AltSeqToHgvsp(object):
 
     def __init__(self, ref_seq, alt_seq, protein_accession, frameshift_start = None):
@@ -37,9 +39,10 @@ class AltSeqToHgvsp(object):
         self._frameshift_start = frameshift_start
         self._protein_accession = protein_accession
 
-        # print len(ref_seq), len(alt_seq), frameshift_start, protein_accession
-        # print ref_seq
-        # print alt_seq
+        if DBG:
+            print len(ref_seq), len(alt_seq), frameshift_start, protein_accession
+            print ref_seq
+            print alt_seq
 
     def build_hgvsp(self):
         """Compare two amino acid sequences; generate an hgvs tag from the output
@@ -57,9 +60,11 @@ class AltSeqToHgvsp(object):
         alt_index = 1
         in_variant = False
         variants = []
-        #item_dbg = []
+        if DBG:
+            item_dbg = []
         for item in diff_list:
-            #item_dbg.append(item)
+            if DBG:
+                item_dbg.append(item)
             change = item[0]
             if change == ' ':       # a match
                 if in_variant:      # process the variant just exited
@@ -90,9 +95,9 @@ class AltSeqToHgvsp(object):
         if in_variant:  # implies end of a frameshift; need to add this last variant to the list
             variants.append(current_var)
 
-        # print item_dbg
-        #
-        # print variants
+        if DBG:
+            print item_dbg
+            print variants
 
         if variants:
             var_ps = [self._convert_to_sequence_variants(x, self._protein_accession) for x in variants]

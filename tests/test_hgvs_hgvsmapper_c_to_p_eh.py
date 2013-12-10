@@ -28,52 +28,21 @@ class TestHgvsCToPReal(unittest.TestCase):
     _mapper = hgvsmapper.HGVSMapper(_datasource, cache_transcripts=True)
     _parser = hgvs.parser.Parser()
 
-    # def test_1(self):
-    #     hgvsc = "NM_000314.4:c.68T>A"
-    #     hgvsp_expected = "NP_689487.2:p.Leu23Ter"
-    #     self._run_conversion(hgvsc, hgvsp_expected)
-    #
-    # def test_2(self):
-    #     hgvsc = "NM_000314.4:c.1034T>C"
-    #     hgvsp_expected = "NP_689487.2:p.Leu345Pro"
-    #     self._run_conversion(hgvsc, hgvsp_expected)
-    #
-    # def test_3(self):
-    #     hgvsc = "NM_000314.4:c.177_179delAAA"
-    #     hgvsp_expected = "NP_689487.2:p.Lys60del"
-    #     self._run_conversion(hgvsc, hgvsp_expected)
-    #
-    # def test_4(self):
-    #     hgvsc = "NM_000314.4:c.966_968delAAAinsGA"
-    #     hgvsp_expected = "NP_689487.2:p.Asn323Metfs*21"
-    #     self._run_conversion(hgvsc, hgvsp_expected)
-    #
-    # def test_5(self):
-    #     hgvsc = "NM_000314.4:c.824dupT"
-    #     hgvsp_expected = "NP_000305.3:p.Asn276Lysfs*22"
-    #     self._run_conversion(hgvsc, hgvsp_expected)
-    #
-    # def test_6(self):
-    #     hgvsc = "NM_152274.3:c.21_22insT"
-    #     hgvsp_expected = "NP_689487.2:p.Gly8Trpfs*50"
-    #     self._run_conversion(hgvsc, hgvsp_expected)
-
-    # def test_dbg(self):
-    #     hgvsc = "NM_000314.4:c.987_990delTAAA"
-    #     hgvsp_expected = "NP_000305.3:p.Asn329Lysfs*14"
-    #     self._run_conversion(hgvsc, hgvsp_expected)
+    def test_dbg(self):
+        """For purposes of tesing a single result"""
+        hgvsc = "NM_000314.4:c.800dupA"
+        hgvsp_expected = "NP_000305.3:p.Asp268Glyfs*9"
+        self._run_conversion(hgvsc, hgvsp_expected)
 
 
     def test_eh(self):
         """Run all of Emilys data"""
-        fn = os.path.join(os.path.dirname(__file__), 'data', 'hgvs_c_to_p_eh.tsv')
+        fn = os.path.join(os.path.dirname(__file__), 'data', 'eh_tests.tsv')
         fo = os.path.join(os.path.dirname(__file__), 'data', 'hgvs_c_to_p_eh.out')
         ff = open(fo, 'w')
         with open(fn, 'r') as f:
-            dialect = csv.Sniffer().sniff(f.read(1024))
-            f.seek(0)
-            csvreader = csv.DictReader(f, dialect=dialect)
-            testdata = [(row['NM'], row['NP']) for row in csvreader]
+            csvreader = csv.DictReader(f, delimiter='\t')
+            testdata = [(row['NM coordinates'], row['Protein coordinates']) for row in csvreader]
 
         failed_tests = []
         for x in testdata:
@@ -95,12 +64,14 @@ class TestHgvsCToPReal(unittest.TestCase):
                 hgvsp_actual = "NO_OUTPUT_EXCEPTION"
                 ff.write("{}\t{}\t{}\n".format(hgvsc, hgvsp_expected, hgvsp_actual))
 
-
         ff.close()
         print len(failed_tests)
         print failed_tests
         self.assertTrue(len(failed_tests) == 0)
 
+    #
+    # internal methods
+    #
 
     def _run_conversion(self, hgvsc, hgvsp_expected):
         """Helper method to actually run the test
