@@ -1,10 +1,16 @@
 import os,re,sys
 
+from Bio.Seq import Seq
+import recordtype
+
 import hgvs.exceptions
 import hgvs.variant
 import hgvs.posedit
 import hgvs.location
+import hgvs.stopgap
 import hgvs.transcriptmapper
+import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
+import hgvs.utils.altseqbuilder as altseqbuilder
 from hgvs.utils import reverse_complement
 from hgvs.utils import chr_to_nc
 
@@ -176,6 +182,68 @@ class HGVSMapper(object):
                                              type='c',
                                              posedit=hgvs.posedit.PosEdit( pos_c, edit_c ) )
         return var_c
+
+    def hgvsc_to_hgvsp(self, var_c):
+        """Convert hgvsc tag to hgvsp tag
+
+        :param var_c: hgvsc tag
+        :type SequenceVariant
+        :return hgvsp tag
+        :type SequenceVariant
+        """
+
+        # TODO - error handling - invalid hgvs tag
+        # TODO - error handling - transcript not found
+        # TODO - error handling - unsupported hgvs tag transformation
+
+        class RefTranscriptData(recordtype.recordtype('RefTranscriptData',
+                                                      ['transcript_sequence', 'aa_sequence',
+                                                       'cds_start', 'cds_stop', 'protein_accession'])):
+
+            @classmethod
+            def setup_transcript_data(cls, ac, db, ref='GRCh37.p10'):
+                """helper for generating RefTranscriptData from for hgvsc_to_hgvsp"""
+                tx_info = db.get_tx_info(ac)
+                tx_seq = db.get_tx_seq(ac)
+
+                if tx_info is None or tx_seq is None:
+                    raise hgvs.exceptions.HGVSError("Missing transcript data for accession: {}".format(ac))
+
+                # use 1-based hgvs coords
+                cds_start = tx_info['cds_start_i'] + 1
+                cds_stop = tx_info['cds_end_i']
+
+                tx_seq_cds = Seq(tx_seq[cds_start - 1:cds_stop])
+                protein_seq = str(tx_seq_cds.translate())
+                protein_acc = hgvs.stopgap.pseq_to_ac(protein_seq)
+
+                transcript_data = RefTranscriptData(tx_seq, protein_seq, cds_start,
+                                                    cds_stop, protein_acc)
+
+                return transcript_data
+
+
+        reference_data = RefTranscriptData.setup_transcript_data(var_c.ac, self.db)
+        builder = altseqbuilder.AltSeqBuilder(var_c, reference_data)
+
+        # TODO - handle case where you get 2+ alt sequences back; currently get list of 1 element
+        # loop structure implemented to handle this, but doesn't really do anything currently.
+        alt_data = builder.build_altseq()
+
+        var_ps = []
+        for alt in alt_data:
+            builder = altseq_to_hgvsp.AltSeqToHgvsp(reference_data.aa_sequence,
+                                                    alt.aa_sequence,
+                                                    reference_data.protein_accession,
+                                                    alt.frameshift_start,
+                                                    alt.is_substitution
+                                                    )
+            var_p = builder.build_hgvsp()
+            var_ps.append(var_p)
+
+        var_p = var_ps[0]
+
+        return var_p
 
     ############################################################################
     ## Internal methods

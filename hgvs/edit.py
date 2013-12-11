@@ -62,7 +62,8 @@ class AARefAlt( Edit, recordtype.recordtype('AARefAlt', [('ref',None),('alt',Non
 
     def __str__(self):
         if self.ref is None and self.alt is None:
-            raise HGVSError('RefAlt: ref and alt sequences are both undefined')
+            #raise HGVSError('RefAlt: ref and alt sequences are both undefined')
+            return '='
 
         # subst and delins
         if self.ref is not None and self.alt is not None:
