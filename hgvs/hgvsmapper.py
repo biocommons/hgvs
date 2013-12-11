@@ -4,14 +4,15 @@ from Bio.Seq import Seq
 import recordtype
 
 import hgvs.exceptions
-import hgvs.location
+import hgvs.variant
 import hgvs.posedit
+import hgvs.location
 import hgvs.stopgap
 import hgvs.transcriptmapper
-from hgvs.utils import reverse_complement
 import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
 import hgvs.utils.altseqbuilder as altseqbuilder
-import hgvs.variant
+from hgvs.utils import reverse_complement
+from hgvs.utils import chr_to_nc
 
 class HGVSMapper(object):
     """
@@ -24,18 +25,18 @@ class HGVSMapper(object):
         self.cache_transcripts = cache_transcripts
         self.__tm_cache = {}
 
-    def hgvsg_to_hgvsc(self,var_g,ac,ref='GRCh37.p10'):
+    def hgvsg_to_hgvsc(self,var_g, ac, ref='GRCh37.p10'):
         """Given a genomic (g.) HGVS variant, return a transcript (c.) variant on the specified transcript.
         hgvs must be an HGVS-formatted variant or variant position.
         """
 
         if not (var_g.type == 'g'):
-            raise hgvs.exception.InvalidHGVSVariantError('Expected a genomic (g.); got '+var_g)
+            raise hgvs.exceptions.InvalidHGVSVariantError('Expected a genomic (g.); got '+ str(var_g))
 
         tm = self._fetch_TranscriptMapper(ac=ac,ref=ref)
         
         pos_c = tm.hgvsg_to_hgvsc( var_g.posedit.pos )
-        if isinstance(var_g.posedit.edit,hgvs.edit.NARefAlt):
+        if isinstance(var_g.posedit.edit, hgvs.edit.NARefAlt):
             if tm.strand == 1:
                 edit_c = var_g.posedit.edit
             else:
@@ -48,6 +49,136 @@ class HGVSMapper(object):
             raise NotImplemented('Only NARefAlt types are currently implemented')
 
         var_c = hgvs.variant.SequenceVariant(ac=ac,
+                                             type='c',
+                                             posedit=hgvs.posedit.PosEdit( pos_c, edit_c ) )
+        return var_c
+
+    def hgvsg_to_hgvsr(self,var_g, ac, ref='GRCh37.p10'):
+        """Given a genomic (g.) HGVS variant, return a transcript (r.) variant on the specified transcript.
+        hgvs must be an HGVS-formatted variant or variant position.
+        """
+
+        if not (var_g.type == 'g'):
+            raise hgvs.exceptions.InvalidHGVSVariantError('Expected a genomic (g.); got '+ str(var_g))
+
+        tm = self._fetch_TranscriptMapper(ac=ac,ref=ref)
+
+        pos_r = tm.hgvsg_to_hgvsr( var_g.posedit.pos )
+        if isinstance(var_g.posedit.edit, hgvs.edit.NARefAlt):
+            if tm.strand == 1:
+                edit_r = var_g.posedit.edit
+            else:
+                edit_g = var_g.posedit.edit
+                edit_r = hgvs.edit.NARefAlt(
+                    ref = reverse_complement(edit_g.ref),
+                    alt = reverse_complement(edit_g.alt),
+                    )
+        else:
+            raise NotImplemented('Only NARefAlt types are currently implemented')
+
+        var_r = hgvs.variant.SequenceVariant(ac=ac,
+                                             type='r',
+                                             posedit=hgvs.posedit.PosEdit( pos_r, edit_r ) )
+        return var_r
+
+    def hgvsr_to_hgvsg(self,var_r, ref='GRCh37.p10'):
+        """Given an RNA (r.) HGVS variant, return a genomic (g.) variant from the inferred transcript.
+        hgvs must be an HGVS-formatted variant or variant position.
+        """
+
+        if not (var_r.type == 'r'):
+            raise hgvs.exceptions.InvalidHGVSVariantError('Expected a RNA (r.); got '+ str(var_r))
+
+        tm = self._fetch_TranscriptMapper(ac=var_r.ac,ref=ref)
+
+        pos_g = tm.hgvsr_to_hgvsg( var_r.posedit.pos )
+        if isinstance(var_r.posedit.edit, hgvs.edit.NARefAlt):
+            if tm.strand == 1:
+                edit_r = var_r.posedit.edit
+            else:
+                edit_r = var_r.posedit.edit
+                edit_g = hgvs.edit.NARefAlt(
+                    ref = reverse_complement(edit_r.ref),
+                    alt = reverse_complement(edit_r.alt),
+                    )
+        else:
+            raise NotImplemented('Only NARefAlt types are currently implemented')
+
+        # get NC accession for g.
+        var_g = hgvs.variant.SequenceVariant(ac=chr_to_nc(tm.tx_info['chr']),
+                                             type='g',
+                                             posedit=hgvs.posedit.PosEdit( pos_g, edit_g ) )
+        return var_g
+    
+    def hgvsc_to_hgvsg(self, var_c, ref='GRCh37.p10'):
+        """Given a cDNA (c.) HGVS variant and an inferred transcript, return a genomic (g.) variant.
+        hgvs must be an HGVS-formatted variant or variant position.
+        """
+
+        if not (var_c.type == 'c'):
+            raise hgvs.exceptions.InvalidHGVSVariantError('Expected a cDNA (c.); got ' + str(var_c))
+
+        tm = self._fetch_TranscriptMapper(ac=var_c.ac, ref=ref)
+
+        pos_g = tm.hgvsc_to_hgvsg(var_c.posedit.pos)
+        if isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt):
+            if tm.strand == 1:
+                edit_g = var_c.posedit.edit
+            else:
+                edit_c = var_c.posedit.edit
+                edit_g = hgvs.edit.NARefAlt(
+                    ref = reverse_complement(edit_c.ref),
+                    alt = reverse_complement(edit_c.alt),
+                )
+        else:
+            raise NotImplemented('Only NARefAlt types are currently implemented')
+
+        # get NC accession for g.
+        var_g = hgvs.variant.SequenceVariant(ac=chr_to_nc(tm.tx_info['chr']),
+                                             type='g',
+                                             posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
+        return var_g
+
+    def hgvsc_to_hgvsr(self, var_c, ref='GRCh37.p10'):
+        """Given a cDNA (c.) HGVS variant and an inferred transcript, return an RNA (r.) variant.
+        hgvs must be an HGVS-formatted variant or variant position
+        """
+
+        if not (var_c.type == 'c'):
+            raise hgvs.exceptions.InvalidHGVSVariantError('Expected a cDNA (c.); got ' + str(var_c))
+
+        tm = self._fetch_TranscriptMapper(ac=var_c.ac, ref=ref)
+        pos_r = tm.hgvsc_to_hgvsr(var_c.posedit.pos)
+
+        # not necessary to check strand
+        if isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt):
+            edit_r = var_c.posedit.edit
+        else:
+            raise NotImplemented('Only NARefAlt types are currently implemented')
+
+        var_r = hgvs.variant.SequenceVariant(ac=var_c.ac,
+                                             type='r',
+                                             posedit=hgvs.posedit.PosEdit( pos_r, edit_r ) )
+        return var_r
+
+    def hgvsr_to_hgvsc(self, var_r, ref='CRCh37.p10'):
+        """Given a RNA (r.) HGVS variant and an inferred transcript, return an cDNA (c.) variant.
+        hgvs must be an HGVS-formatted variant or variant position
+        """
+
+        if not (var_r.type == 'r'):
+            raise hgvs.exceptions.InvalidHGVSVariantError('Expected a cDNA (c.); got ' + str(var_c))
+
+        tm = self._fetch_TranscriptMapper(ac=var_r.ac, ref=ref)
+        pos_c = tm.hgvsr_to_hgvsc(var_r.posedit.pos)
+
+        # not necessary to check strand
+        if isinstance(var_r.posedit.edit, hgvs.edit.NARefAlt):
+            edit_c = var_r.posedit.edit
+        else:
+            raise NotImplemented('Only NARefAlt types are currently implemented')
+
+        var_c = hgvs.variant.SequenceVariant(ac=var_r.ac,
                                              type='c',
                                              posedit=hgvs.posedit.PosEdit( pos_c, edit_c ) )
         return var_c

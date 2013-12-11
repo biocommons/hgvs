@@ -50,7 +50,7 @@ upload-%:
 .PHONY: clean cleaner cleanest pristine
 #=> clean: clean up editor backups, etc.
 clean:
-	find . -name \*~ -print0 | xargs -0r /bin/rm
+	find . \( -name \*~ -o -name \*.fai \) -print0 | xargs -0r /bin/rm
 #=> cleaner: above, and remove generated files
 cleaner: clean
 	find . -name \*.pyc -print0 | xargs -0r /bin/rm -f

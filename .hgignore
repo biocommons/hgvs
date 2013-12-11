@@ -33,6 +33,7 @@ parts
 patches
 prd
 sdist
+tests/data/multifastadb/d*/*fai
 tmp
 ve
 virtualenv.py

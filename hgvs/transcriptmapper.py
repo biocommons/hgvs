@@ -40,15 +40,13 @@ class TranscriptMapper(object):
                 else '?')
 
     def hgvsg_to_hgvsr(self, g_interval):
-        g_ci = hgvs_coord_to_ci(g_interval.start, g_interval.end)
+        assert self.strand in [1,-1], 'strand = '+str(self.strand)+'; must be 1 or -1'
+
+        g_ci = hgvs_coord_to_ci(g_interval.start.base, g_interval.end.base)
         # frs, fre = (f)orward (r)na (s)tart & (e)nd; forward w.r.t. genome
         frs, fre = self.im.map_ref_to_tgt(g_ci[0] - self.gc_offset, g_ci[1] - self.gc_offset, max_extent=False)
-        if self.strand == 1:
-            pass
-        elif self.strand == -1:
+        if self.strand == -1:
             frs, fre = self.im.tgt_len - fre, self.im.tgt_len - frs
-        else:
-            raise HGVSError('Code fell through strand check (g_to_r); should never get here.')
         # get BaseOffsetPosition information for r.
         if self.strand == 1:
             grs, gre = self.im.map_tgt_to_ref(frs, fre, max_extent=False)
@@ -71,9 +69,12 @@ class TranscriptMapper(object):
             fre += 1
         return hgvs.location.Interval(
                     start=hgvs.location.BaseOffsetPosition(base=ci_to_hgvs_coord(frs, fre)[0], offset=start_offset),
-                    end=hgvs.location.BaseOffsetPosition(base=ci_to_hgvs_coord(frs, fre)[1], offset=end_offset))
+                    end  =hgvs.location.BaseOffsetPosition(base=ci_to_hgvs_coord(frs, fre)[1], offset=end_offset),
+                    uncertain=g_interval.uncertain)
 
     def hgvsr_to_hgvsg(self, r_interval):
+        assert self.strand in [1,-1], 'strand = '+str(self.strand)+'; must be 1 or -1'
+
         if self.strand == 1:
             frs, fre = hgvs_coord_to_ci(r_interval.start.base, r_interval.end.base)
             start_offset, end_offset = r_interval.start.offset, r_interval.end.offset
@@ -81,13 +82,16 @@ class TranscriptMapper(object):
             frs, fre = hgvs_coord_to_ci(r_interval.start.base, r_interval.end.base)
             fre, frs = self.im.tgt_len - frs, self.im.tgt_len - fre
             start_offset, end_offset = self.strand * r_interval.end.offset, self.strand * r_interval.start.offset
-        else:
-           raise HGVSError('Code fell through strand check (r_to_g); should never get here.')
+
         # returns the genomic range start (grs) and end (gre)
         grs, gre = self.im.map_tgt_to_ref(frs, fre, max_extent=False)
         grs, gre = grs + self.gc_offset, gre + self.gc_offset
         gs, ge = grs + start_offset, gre + end_offset
-        return hgvs.location.Interval(start=ci_to_hgvs_coord(gs, ge)[0], end=ci_to_hgvs_coord(gs, ge)[1])
+        return hgvs.location.Interval(
+            start=hgvs.location.SimplePosition(ci_to_hgvs_coord(gs, ge)[0], uncertain=r_interval.start.uncertain),
+            end  =hgvs.location.SimplePosition(ci_to_hgvs_coord(gs, ge)[1], uncertain=r_interval.end.uncertain),
+            uncertain=r_interval.uncertain
+            )
 
     def hgvsr_to_hgvsc(self, r_interval):
         # start
@@ -111,12 +115,11 @@ class TranscriptMapper(object):
             ce = r_interval.end.base - self.cds_end_i
             ce_datum = hgvs.location.CDS_END
 
-        c_interval = hgvs.location.Interval(start=hgvs.location.BaseOffsetPosition(base=cs,
-                                                                                   offset=r_interval.start.offset,
-                                                                                   datum=cs_datum),
-                                            end=hgvs.location.BaseOffsetPosition(base=ce,
-                                                                                 offset=r_interval.end.offset,
-                                                                                 datum=ce_datum))
+        c_interval = hgvs.location.Interval(
+            start=hgvs.location.BaseOffsetPosition(base=cs, offset=r_interval.start.offset, datum=cs_datum),
+            end  =hgvs.location.BaseOffsetPosition(base=ce, offset=r_interval.end.offset,   datum=ce_datum),
+            uncertain=r_interval.uncertain
+            )
         return c_interval
 
     def hgvsc_to_hgvsr(self, c_interval):
@@ -135,12 +138,11 @@ class TranscriptMapper(object):
         elif c_interval.end.datum == hgvs.location.CDS_END:
             re = c_interval.end.base + self.cds_end_i
 
-        r_interval = hgvs.location.Interval(start=hgvs.location.BaseOffsetPosition(base=rs,
-                                                                                   offset=c_interval.start.offset,
-                                                                                   datum=hgvs.location.SEQ_START),
-                                            end=hgvs.location.BaseOffsetPosition(base=re,
-                                                                                 offset=c_interval.end.offset,
-                                                                                 datum=hgvs.location.SEQ_START))
+        r_interval = hgvs.location.Interval(
+            start=hgvs.location.BaseOffsetPosition(base=rs, offset=c_interval.start.offset, datum=hgvs.location.SEQ_START),
+            end  =hgvs.location.BaseOffsetPosition(base=re, offset=c_interval.end.offset, datum=hgvs.location.SEQ_START),
+            uncertain=c_interval.uncertain
+            )
         return r_interval
 
     def hgvsg_to_hgvsc(self, g_interval):
@@ -168,7 +170,8 @@ def ci_to_hgvs_coord(s, e):
     """
     def _ci_to_hgvs(c):
         return c + 1 if c >= 0 else c
-    return _ci_to_hgvs(s), None if e is None else _ci_to_hgvs(e) - 1
+    return (None if s is None else _ci_to_hgvs(s),
+            None if e is None else _ci_to_hgvs(e) - 1)
 
 def hgvs_coord_to_ci(s, e):
     """convert start,end interval in inclusive, discontinuous HGVS coordinates
@@ -177,7 +180,8 @@ def hgvs_coord_to_ci(s, e):
     def _hgvs_to_ci(c):
         assert c != 0, 'received CDS coordinate 0; expected ..,-2,-1,1,1,...'
         return c-1 if c>0 else c
-    return _hgvs_to_ci(s), None if e is None else _hgvs_to_ci(e) + 1
+    return (None if s is None else _hgvs_to_ci(s),
+            None if e is None else _hgvs_to_ci(e) + 1)
 
 
 def build_tx_cigar(exons, strand):

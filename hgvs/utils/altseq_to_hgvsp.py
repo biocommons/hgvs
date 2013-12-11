@@ -162,7 +162,7 @@ class AltSeqToHgvsp(object):
         fs = None
 
         if is_frameshift:                                               # frameshift
-            aa_start = aa_end = hgvs.location.AAPosition(pos=start, aa=deletion[0])
+            aa_start = aa_end = hgvs.location.AAPosition(base=start, aa=deletion[0])
             ref = ''
 
             try:
@@ -179,29 +179,29 @@ class AltSeqToHgvsp(object):
 
         else:                                                           # no frameshift
             if len(insertion) == len(deletion) == 1:                    # substitution
-                aa_start = aa_end = hgvs.location.AAPosition(pos=start, aa=deletion)
+                aa_start = aa_end = hgvs.location.AAPosition(base=start, aa=deletion)
                 ref = ''
                 alt = insertion
 
             elif len(deletion) > 0:                                     # delins OR deletion
                 ref = ''
-                aa_start = hgvs.location.AAPosition(pos=start, aa=deletion[0])
+                aa_start = hgvs.location.AAPosition(base=start, aa=deletion[0])
 
                 end = start + len(deletion) - 1
                 if len(insertion) > 0:                                  # delins
                     if end > start:
-                        aa_end =  hgvs.location.AAPosition(pos=end, aa=deletion[-1])
+                        aa_end =  hgvs.location.AAPosition(base=end, aa=deletion[-1])
                     else:
                         aa_end = aa_start
                     alt = insertion
 
                 else:                                                   # deletion OR stop codon at variant position
                     if len(deletion) + start == len(self._ref_seq):     # stop codon at variant position
-                        aa_end = hgvs.location.AAPosition(pos=start, aa=deletion[0])
+                        aa_end = hgvs.location.AAPosition(base=start, aa=deletion[0])
                         alt = '*'
                     else:                                               # deletion
                         if end > start:
-                            aa_end =  hgvs.location.AAPosition(pos=end, aa=deletion[-1])
+                            aa_end =  hgvs.location.AAPosition(base=end, aa=deletion[-1])
                         else:
                             aa_end = aa_start
                         alt = None
@@ -212,8 +212,8 @@ class AltSeqToHgvsp(object):
 
                 if is_dup:                                              # duplication
                     dup_end = dup_start + len(insertion) - 1
-                    aa_start = hgvs.location.AAPosition(pos=dup_start, aa=insertion[0])
-                    aa_end =  hgvs.location.AAPosition(pos=dup_end, aa=insertion[-1])
+                    aa_start = hgvs.location.AAPosition(base=dup_start, aa=insertion[0])
+                    aa_end =  hgvs.location.AAPosition(base=dup_end, aa=insertion[-1])
                     ref = alt = None
 
                 else:                                                   # insertion OR extension
@@ -221,7 +221,7 @@ class AltSeqToHgvsp(object):
                         len_ext = len(insertion) # don't include the former stop codon
                         subst_at_stop_codon = insertion[-1]
 
-                        aa_start = aa_end = hgvs.location.AAPosition(pos=start, aa='*')
+                        aa_start = aa_end = hgvs.location.AAPosition(base=start, aa='*')
                         ref = ''
                         alt = subst_at_stop_codon
                         fs ='ext*{}'.format(len_ext)
@@ -229,8 +229,8 @@ class AltSeqToHgvsp(object):
                     else:                                               # insertion
                         end = start + 1
 
-                        aa_start = hgvs.location.AAPosition(pos=start, aa=self._ref_seq[start - 1])
-                        aa_end =  hgvs.location.AAPosition(pos=end, aa=self._ref_seq[end - 1])
+                        aa_start = hgvs.location.AAPosition(base=start, aa=self._ref_seq[start - 1])
+                        aa_end =  hgvs.location.AAPosition(base=end, aa=self._ref_seq[end - 1])
                         ref = None
                         alt = insertion
 

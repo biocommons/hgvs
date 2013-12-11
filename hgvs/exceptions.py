@@ -20,4 +20,4 @@ class InvalidIntervalError(HGVSError):
 #
 #
 class InvalidHGVSVariantError(HGVSError):
-   pass
+    pass

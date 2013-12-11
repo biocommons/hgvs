@@ -14,7 +14,7 @@ class TestAltSeqBuilder(unittest.TestCase):
 
 
     # root sequence = ""
-    fn = os.path.join( os.path.dirname(__file__), 'data', 'hgvsc_to_hgvsp_sanity_data.tsv' )
+    fn = os.path.join( os.path.dirname(__file__), 'data', 'sanity_c_to_p.tsv' )
     _datasource = mock_input_data_source.MockInputSource(fn)
     _parser = hgvs.parser.Parser()
 
