@@ -21,6 +21,8 @@ PROTEIN_ACCESSION_MAP = {
     "MD5_5622254c": "NP_003051.1",
 }
 
+#INFILE = 'eh_tests.tsv'
+INFILE = 'eh_c_to_p.tsv'
 
 class TestHgvsCToPReal(unittest.TestCase):
 
@@ -28,17 +30,17 @@ class TestHgvsCToPReal(unittest.TestCase):
     _mapper = hgvsmapper.HGVSMapper(_datasource, cache_transcripts=True)
     _parser = hgvs.parser.Parser()
 
-    def test_dbg(self):
-        """For purposes of tesing a single result"""
-        hgvsc = "NM_000314.4:c.800dupA"
-        hgvsp_expected = "NP_000305.3:p.Asp268Glyfs*9"
-        self._run_conversion(hgvsc, hgvsp_expected)
+    # def test_dbg(self):
+    #     """For purposes of tesing a single result"""
+    #     hgvsc = "NM_000257.2:c.2011C>T"
+    #     hgvsp_expected = "NP_000248.2:p.Arg671Cys"
+    #     self._run_conversion(hgvsc, hgvsp_expected)
 
 
     def test_eh(self):
         """Run all of Emilys data"""
-        fn = os.path.join(os.path.dirname(__file__), 'data', 'eh_tests.tsv')
-        fo = os.path.join(os.path.dirname(__file__), 'data', 'hgvs_c_to_p_eh.out')
+        fn = os.path.join(os.path.dirname(__file__), 'data', INFILE)
+        fo = os.path.join(os.path.dirname(__file__), 'data', 'eh_c_to_p.out')
         ff = open(fo, 'w')
         with open(fn, 'r') as f:
             csvreader = csv.DictReader(f, delimiter='\t')
@@ -47,22 +49,23 @@ class TestHgvsCToPReal(unittest.TestCase):
         failed_tests = []
         for x in testdata:
             (hgvsc, hgvsp_expected) = x
-            try:
-                hgvsp_actual = self._run_conversion_batch(hgvsc)
-                msg = "hgvsp expected: {} actual: {}".format(hgvsp_expected, hgvsp_actual)
-                if hgvsp_expected != hgvsp_actual:
-                    if hgvsp_expected.endswith("*") \
-                        and hgvsp_actual.endswith("Ter") and hgvsp_expected[:-1] == hgvsp_actual[:-3]:
-                        pass
-                    else:
-                        out = (hgvsc, hgvsp_expected, hgvsp_actual)
-                        failed_tests.append(out)
-                        ff.write("{}\t{}\t{}\n".format(hgvsc, hgvsp_expected, hgvsp_actual))
-            except Exception as e:
-                print e.message
-                print "exception processing {}".format(x)
-                hgvsp_actual = "NO_OUTPUT_EXCEPTION"
-                ff.write("{}\t{}\t{}\n".format(hgvsc, hgvsp_expected, hgvsp_actual))
+            if not hgvsc.startswith("#"):
+                try:
+                    hgvsp_actual = self._run_conversion_batch(hgvsc)
+                    msg = "hgvsp expected: {} actual: {}".format(hgvsp_expected, hgvsp_actual)
+                    if hgvsp_expected != hgvsp_actual:
+                        if hgvsp_expected.endswith("*") \
+                            and hgvsp_actual.endswith("Ter") and hgvsp_expected[:-1] == hgvsp_actual[:-3]:
+                            pass
+                        else:
+                            out = (hgvsc, hgvsp_expected, hgvsp_actual)
+                            failed_tests.append(out)
+                            ff.write("{}\t{}\t{}\n".format(hgvsc, hgvsp_expected, hgvsp_actual))
+                except Exception as e:
+                    print e.message
+                    print "exception processing {}".format(x)
+                    hgvsp_actual = "NO_OUTPUT_EXCEPTION"
+                    ff.write("{}\t{}\t{}\n".format(hgvsc, hgvsp_expected, hgvsp_actual))
 
         ff.close()
         print len(failed_tests)

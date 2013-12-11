@@ -15,11 +15,11 @@ from hgvs.location import CDS_END
 
 class AltTranscriptData(recordtype.recordtype('AltTranscriptData', [
         'transcript_sequence', 'aa_sequence', 'cds_start', 'cds_stop', 'protein_accession',
-        ('is_frameshift', False), ('variant_start_aa', None), ('frameshift_start', None)])):
+        ('is_frameshift', False), ('variant_start_aa', None), ('frameshift_start', None), ('is_substitution', False)])):
 
     @classmethod
     def create_for_variant_inserter(cls, seq, cds_start, cds_stop, is_frameshift, variant_start_aa, accession,
-                                    pad_seq = True):
+                                    pad_seq = True, is_substitution=False):
         """Create a variant sequence using inputs from VariantInserter
         :param seq: DNA sequence wiith variant incorporated
         :type str
@@ -51,7 +51,8 @@ class AltTranscriptData(recordtype.recordtype('AltTranscriptData', [
         if stop_pos != -1:
             seq_aa = seq_aa[:stop_pos + 1]
 
-        alt_data = AltTranscriptData(seq, seq_aa, cds_start, cds_stop, accession, is_frameshift, variant_start_aa)
+        alt_data = AltTranscriptData(seq, seq_aa, cds_start, cds_stop, accession, is_frameshift, variant_start_aa,
+                                     is_substitution=is_substitution)
 
         return alt_data
 
@@ -143,8 +144,11 @@ class AltSeqBuilder(object):
         cds_stop += net_base_change
 
         # incorporate the variant into the sequence (depending on the type)
+        is_substitution = False
         if ref is not None and alt is not None:     # delins or SNP
             seq[start:end] = list(alt)
+            if len(ref) == 1 and len(alt) == 1:
+                is_substitution = True
         elif ref is not None:                       # deletion
             del seq[start:end]
         else:                                       # insertion
@@ -156,7 +160,8 @@ class AltSeqBuilder(object):
 
         alt_data = AltTranscriptData.create_for_variant_inserter(seq, cds_start, cds_stop,
                                                                is_frameshift, variant_start_aa,
-                                                               self._transcript_data.protein_accession)
+                                                               self._transcript_data.protein_accession,
+                                                               is_substitution=is_substitution)
         return alt_data
 
     def _incorporate_dup(self):
