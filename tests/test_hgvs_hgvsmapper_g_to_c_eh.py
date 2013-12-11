@@ -20,7 +20,7 @@ class TestHgvsGToCReal(unittest.TestCase):
     _parser = hgvs.parser.Parser()
 
 
-    def test_eh_g_to_c(self):
+    def notest_eh_g_to_c(self):
         """Run all of Emilys data - g to c"""
         self._run_batch(TestHgvsGToCReal._mapper.hgvsg_to_hgvsc, "NC coordinates", "NM coordinates", "hgvs_g_to_c.out")
 

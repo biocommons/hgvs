@@ -104,7 +104,8 @@ class HGVSMapper(object):
             builder = altseq_to_hgvsp.AltSeqToHgvsp(reference_data.aa_sequence,
                                                     alt.aa_sequence,
                                                     reference_data.protein_accession,
-                                                    alt.frameshift_start
+                                                    alt.frameshift_start,
+                                                    alt.is_substitution
                                                     )
             var_p = builder.build_hgvsp()
             var_ps.append(var_p)
