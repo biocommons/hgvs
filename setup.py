@@ -24,6 +24,7 @@ setup(
     install_requires = [
         'nose',
         'parsley',
+        'pysam',
         'recordtype',
         'sphinx',
         'sphinx-pypi-upload',

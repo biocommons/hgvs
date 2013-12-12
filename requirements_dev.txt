@@ -1,0 +1,3 @@
+# These requirements are for DEVELOPMENT ONLY!
+# They allow you to install the default branch for all internal InVitae packages
+-e hg+ssh://hg@bitbucket.org/locusdevelopment/uta#egg=uta-dev
