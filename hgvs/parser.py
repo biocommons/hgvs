@@ -37,10 +37,3 @@ class Parser(object):
         rule_fxn = lambda s: self._grammar(s).__getattr__(rule_name)()
         rule_fxn.func_doc = "parse string s using `%s' rule" % rule_name
         return rule_fxn
-
-
-    ############################################################################
-    ## Out Back
-    def parse(self,variant):
-        raise NotImplemented('The parse method is obsolete; use parse_hgvs_variant instead')
-

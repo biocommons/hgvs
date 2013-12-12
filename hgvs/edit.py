@@ -92,6 +92,15 @@ class AARefAlt( Edit, recordtype.recordtype('AARefAlt', [('ref',None),('alt',Non
         return self
 
 
+class AASpecial( Edit, recordtype.recordtype('AASpecial', [('status',None),('uncertain',False)]) ):
+    def __str__(self):
+        return '('+self.status+')' if self.uncertain else self.status
+    
+    def set_uncertain(self):
+        self.uncertain = True
+        return self
+
+
 class Dup( Edit, recordtype.recordtype('Dup', [('seq',None),('uncertain',False)]) ):
 
     def __str__(self):
