@@ -271,6 +271,8 @@ class AltSeqToHgvsp(object):
         interval = hgvs.location.Interval(start=start, end=end)
         if is_dup:
             edit = hgvs.edit.Dup()
+        elif ref == alt == '':
+            edit = hgvs.edit.AASpecial(status='=')
         else:
             edit = hgvs.edit.AARefAlt(ref=ref, alt=alt, fs=fs)
         posedit = hgvs.posedit.PosEdit(interval, edit)
