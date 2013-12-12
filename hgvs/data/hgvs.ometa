@@ -49,9 +49,7 @@
 #
 
 ## MISSING FEATURES
-# * TODO: posedits structure for chimeric, mosaic, compound variants, multiallelic variants, and uncertainty
-# * TODO: uncertain positions ? and ()
-# * TODO: p.?,p.=,p.0
+# * LATER: posedits structure for chimeric, mosaic, compound variants, multiallelic variants
 # * LATER: no-stop change (p.Ter110GlnextTer17)
 # * LATER: Met1 extensions
 # * LATER: gene name
@@ -152,7 +150,6 @@ pro_dup    = 'dup'                         -> hgvs.edit.Dup(seq=seq)
 pro_special= :x ?(x in '=?0')              -> hgvs.edit.AASpecial(status=x)
 
 
-
 ############################################################################
 ## Basic types
 
@@ -176,8 +173,6 @@ aa_term = aa3_term | aa1_term
 aa1 = :x ?(x in 'ACDEFGHIKLMNPQRSTVWY') -> x
 aa3 = <letter{3}>:xxx ?(xxx in ['Ala','Cys','Asp','Glu','Phe','Gly','His','Ile','Lys','Leu',
                                 'Met','Asn','Pro','Gln','Arg','Ser','Thr','Val','Trp','Tyr']) -> xxx
-
-
 aa1_term = :x ?(x in 'X*') -> x
 aa3_term = 'Ter'
 
