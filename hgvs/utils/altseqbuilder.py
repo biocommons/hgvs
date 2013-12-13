@@ -12,6 +12,7 @@ from Bio.Seq import Seq
 import hgvs.edit
 from hgvs.location import CDS_END
 
+DBG = False
 
 class AltTranscriptData(recordtype.recordtype('AltTranscriptData', [
         'transcript_sequence', 'aa_sequence', 'cds_start', 'cds_stop', 'protein_accession',
@@ -75,7 +76,8 @@ class AltSeqBuilder(object):
         """
         self._var_c = var_c
         self._transcript_data = transcript_data
-        #print transcript_data.transcript_sequence
+        if DBG:
+            print transcript_data.transcript_sequence
 
     def build_altseq(self):
         """given a variant and a sequence, incorporate the variant and return the new sequence
@@ -120,7 +122,8 @@ class AltSeqBuilder(object):
         # get the start of the "terminal" frameshift (i.e. one never "cancelled out")
         this_alt_data = self._get_frameshift_start(this_alt_data)
         alt_data.append(this_alt_data)
-        #print this_alt_data.transcript_sequence
+        if DBG:
+            print this_alt_data.transcript_sequence
 
         return alt_data
 
