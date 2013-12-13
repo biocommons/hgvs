@@ -22,5 +22,6 @@ class Test_HGVSMapper(unittest.TestCase):
 
         self.assertEqual( str(var_c) , hgvs_c )
 
+
 if __name__ == '__main__':
     unittest.main()
