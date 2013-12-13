@@ -75,6 +75,7 @@ class AltSeqBuilder(object):
         """
         self._var_c = var_c
         self._transcript_data = transcript_data
+        #print transcript_data.transcript_sequence
 
     def build_altseq(self):
         """given a variant and a sequence, incorporate the variant and return the new sequence
@@ -110,11 +111,16 @@ class AltSeqBuilder(object):
             edit_type = NOT_CDS
         else:   # should never get here
             raise ValueError("value_location = {}".format(variant_location))
-        this_alt_data = type_map[edit_type]()
+
+        try:
+            this_alt_data = type_map[edit_type]()
+        except KeyError as e:
+            raise NotImplementedError("c to p translation unsupported for {} type {}".format(self._var_c, edit_type))
 
         # get the start of the "terminal" frameshift (i.e. one never "cancelled out")
         this_alt_data = self._get_frameshift_start(this_alt_data)
         alt_data.append(this_alt_data)
+        #print this_alt_data.transcript_sequence
 
         return alt_data
 
@@ -155,7 +161,6 @@ class AltSeqBuilder(object):
             seq[start + 1:start + 1] = list(alt)    # insertion in list before python list index
 
         is_frameshift = net_base_change % 3 != 0
-        #variant_start_aa = int(math.ceil((self._var_c.posedit.pos.start.base + 1) / 3.0))
         variant_start_aa = int(math.ceil((self._var_c.posedit.pos.start.base) / 3.0))
 
         alt_data = AltTranscriptData.create_for_variant_inserter(seq, cds_start, cds_stop,
@@ -182,7 +187,7 @@ class AltSeqBuilder(object):
     def _incorporate_repeat(self):
         """Incorporate repeat int sequence"""
         # TODO - implement
-        raise NotImplementedError("hgvs c to p conversion does not support repeats")
+        raise NotImplementedError("hgvs c to p conversion does not support {} type: repeats".format(self._var_c))
 
     def _setup_incorporate(self):
         """Helper to setup incorporate functions

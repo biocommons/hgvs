@@ -167,7 +167,7 @@ class HGVSMapper(object):
         """
 
         if not (var_r.type == 'r'):
-            raise hgvs.exceptions.InvalidHGVSVariantError('Expected a cDNA (c.); got ' + str(var_c))
+            raise hgvs.exceptions.InvalidHGVSVariantError('Expected a cDNA (c.); got ' + str(var_r))
 
         tm = self._fetch_TranscriptMapper(ac=var_r.ac, ref=ref)
         pos_c = tm.hgvsr_to_hgvsc(var_r.posedit.pos)
@@ -222,6 +222,8 @@ class HGVSMapper(object):
 
                 return transcript_data
 
+        if not (var_c.type == 'c'):
+            raise hgvs.exceptions.InvalidHGVSVariantError('Expected a cDNA (c.); got ' + str(var_c))
 
         reference_data = RefTranscriptData.setup_transcript_data(var_c.ac, self.db)
         builder = altseqbuilder.AltSeqBuilder(var_c, reference_data)

@@ -15,6 +15,7 @@ import collections
 import difflib
 
 import hgvs.edit
+import hgvs.exceptions
 import hgvs.location
 import hgvs.posedit
 import hgvs.utils
@@ -120,6 +121,9 @@ class AltSeqToHgvsp(object):
             var_ps = [self._create_variant('', '', '', '', acc=self._protein_accession)]
 
         # TODO - handle multiple variants
+
+        if len(var_ps) > 1:
+            raise hgvs.exceptions.HGVSError("Got multiple AA variants - not supported")
         return var_ps[0]
 
     #
@@ -227,6 +231,7 @@ class AltSeqToHgvsp(object):
                         fs ='ext*{}'.format(len_ext)
 
                     else:                                               # insertion
+                        start = start -1
                         end = start + 1
 
                         aa_start = hgvs.location.AAPosition(base=start, aa=self._ref_seq[start - 1])

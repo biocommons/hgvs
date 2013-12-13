@@ -32,8 +32,8 @@ class TestHgvsCToPReal(unittest.TestCase):
 
     # def test_dbg(self):
     #     """For purposes of tesing a single result"""
-    #     hgvsc = "NM_000257.2:c.2011C>T"
-    #     hgvsp_expected = "NP_000248.2:p.Arg671Cys"
+    #     hgvsc = "NM_000314.4:c.72_73insAGA"
+    #     hgvsp_expected = "NP_000305.3:p.Asp24_Leu25insArg"
     #     self._run_conversion(hgvsc, hgvsp_expected)
 
 
