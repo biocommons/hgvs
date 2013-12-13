@@ -25,19 +25,19 @@ help:
 ############################################################################
 #= UTILITY FUNCTIONS
 
-#=> lint -- run lint
-# TBD
-
-#=> test -- run tests
-test:
-	PYTHONPATH=lib/python python setup.py nosetests -v --with-xunit
-
-#=> docs -- make sphinx docs
-docs: build_sphinx
-
 #=> develop, build_sphinx, sdist, upload_sphinx
 develop bdist bdist_egg build build_sphinx install sdist upload_sphinx: %:
 	python setup.py $*
+
+#=> test -- run tests
+test:
+	python setup.py nosetests -v --with-xunit
+
+#=> lint -- run lint, flake, etc
+# TBD
+
+#=> docs -- make sphinx docs
+docs: build_sphinx
 
 #=> upload-<tag>
 upload-%:
