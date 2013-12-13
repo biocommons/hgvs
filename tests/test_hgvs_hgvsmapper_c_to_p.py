@@ -38,7 +38,7 @@ class TestHgvsCToP(unittest.TestCase):
 
     def test_insertion_no_frameshift(self):
         hgvsc = "NM_999999.1:c.6_7insGGG"
-        hgvsp_expected = "MD5_87c461c4:p.Ala3_Lys4insGly"
+        hgvsp_expected = "MD5_87c461c4:p.Lys2_Ala3insGly"
         self._run_conversion(hgvsc, hgvsp_expected)
 
     def test_insertion_frameshift(self):
@@ -168,7 +168,7 @@ class TestHgvsCToP(unittest.TestCase):
         """
         var_c = TestHgvsCToP._parser.parse_hgvs_variant(hgvsc)
         hgvsp_actual = str(TestHgvsCToP._mapper.hgvsc_to_hgvsp(var_c))
-        msg = "hgvsp expected: {} actual: {}".format(hgvsp_expected, hgvsp_actual)
+        msg = "hgvsc: {} hgvsp expected: {} actual: {}".format(hgvsc, hgvsp_expected, hgvsp_actual)
         self.assertEqual(hgvsp_expected, hgvsp_actual, msg)
 
     # TODO - review other classes of hgvs tags (e.g. utr, intronic) - more use cases?
