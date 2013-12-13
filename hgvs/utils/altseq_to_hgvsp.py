@@ -188,7 +188,7 @@ class AltSeqToHgvsp(object):
                 alt = insertion
 
             elif len(deletion) > 0:                                     # delins OR deletion
-                ref = ''
+                ref = deletion
                 aa_start = hgvs.location.AAPosition(base=start, aa=deletion[0])
 
                 end = start + len(deletion) - 1
@@ -202,6 +202,7 @@ class AltSeqToHgvsp(object):
                 else:                                                   # deletion OR stop codon at variant position
                     if len(deletion) + start == len(self._ref_seq):     # stop codon at variant position
                         aa_end = hgvs.location.AAPosition(base=start, aa=deletion[0])
+                        ref = ''
                         alt = '*'
                     else:                                               # deletion
                         if end > start:
