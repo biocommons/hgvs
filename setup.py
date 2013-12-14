@@ -22,6 +22,7 @@ setup(
     zip_safe = True,
 
     install_requires = [
+        'biopython',
         'nose',
         'parsley',
         'recordtype',
