@@ -17,14 +17,8 @@ class Test_HGVSMapper(unittest.TestCase):
         for rec in tests_in:
             if rec['id'].startswith('#'):
                 continue
-            var_g = self.hp.parse_hgvs_variant(rec['HGVSg'])
-            var_c = self.hp.parse_hgvs_variant(rec['HGVSc'])
-            if rec['HGVSp'] == 'x':
-                var_p = self.hp.parse_hgvs_variant(rec['HGVSp'])
-                self._test_gcp_mapping(var_g, var_c, var_p)
-            else:
-                self._test_gcp_mapping(var_g, var_c)
-        print self.failed
+            self._test_gcp_mapping(rec)
+        self.assertEquals(len(self.failed), 0, self.failed)  # without this the test passes
 
     def test_DNAH11_dbSNP(self):
         tests_fn = 'tests/data/DNAH11-dbSNP.tsv'
@@ -32,18 +26,16 @@ class Test_HGVSMapper(unittest.TestCase):
         for rec in tests_in:
             if rec['id'].startswith('#'):
                 continue
+            self._test_gcp_mapping(rec)
+        self.assertEquals(len(self.failed), 0, self.failed)  # without this the test passes
+
+    def _test_gcp_mapping(self, rec):
+        try:
             var_g = self.hp.parse_hgvs_variant(rec['HGVSg'])
             var_c = self.hp.parse_hgvs_variant(rec['HGVSc'])
-            if rec['HGVSp'] == 'x':
+            var_p = None
+            if rec['HGVSp'] != '':
                 var_p = self.hp.parse_hgvs_variant(rec['HGVSp'])
-                self._test_gcp_mapping(var_g, var_c, var_p)
-            else:
-                self._test_gcp_mapping(var_g, var_c)
-        print self.failed
-
-
-    def _test_gcp_mapping(self, var_g, var_c, var_p=None):
-        try:
             # g -> c
             var_c_test = self.hm.hgvsg_to_hgvsc(var_g, var_c.ac)
             self.assertEquals(str(var_c_test), str(var_c))
@@ -54,8 +46,9 @@ class Test_HGVSMapper(unittest.TestCase):
                 # g -> p
                 var_p_test = self.hm.hgvsc_to_hgvsp(self.hm.hgvsg_to_hgvsc(var_g, var_c.ac))
                 self.assertEquals(str(var_p_test), str(var_p))
-        except Exception, e:
-            self.failed.append(e)
+        except Exception as e:
+            error = '{}: {}'.format(rec, e.message)
+            self.failed.append(error)
 
 if __name__ == '__main__':
     unittest.main()
