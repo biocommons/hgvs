@@ -54,6 +54,9 @@ bdist bdist_egg build build_sphinx develop install sdist upload_sphinx: %:
 
 #=> test -- run tests
 test:
+	# NOTE: HGVS is unfortunately dependent on UTA for testing. This will
+	# be remedied later. DO NOT add this to setup.py.
+	pip install hg+ssh://hg@bitbucket.org/locusdevelopment/uta
 	nosetests --with-xunit
 
 #=> lint -- run lint, flake, etc
