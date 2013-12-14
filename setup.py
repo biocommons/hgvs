@@ -30,6 +30,7 @@ setup(
         'biopython',
         'nose',
         'parsley',
+        'pysam',
         'recordtype',
         'sphinx',
         'sphinx-pypi-upload',
