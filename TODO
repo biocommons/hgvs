@@ -20,8 +20,14 @@ c.(?_-30)_(*220_?)del
 ** split gmn_ in grammar for parity
 - at least make all gmn rules distinct, to match c,r,p
 
+** implement dup
+
+** set uncertain p. in hgvsctop
+
 
 * SOON
+
+* rename uta conn s/db/uta_conn/
 
 ** documentation
 

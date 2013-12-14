@@ -37,6 +37,7 @@ tests/data/multifastadb/d*/*fai
 tmp
 ve
 virtualenv.py
+virtualenv-*
 workspace
 
 syntax: regexp
