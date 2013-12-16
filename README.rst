@@ -9,6 +9,25 @@ standards.
 
 .. _HGVS: http://www.hgvs.org/mutnomen/
 
+Whetting your Appetite
+----------------------
+::
+
+  $ ipython
+  In [1]: hgvs_g = 'NC_000007.13:g.36561662C>T'
+  In [2]: import hgvs.parser
+  In [3]: hp = hgvs.parser.Parser()
+  In [4]: var_g = hp.parse_hgvs_variant(hgvs_g)
+  In [5]: var_g
+  Out[5]: Variant(ac=NC_000007.13, type=g, posedit=36561662C>T)
+
+  In [6]: import uta.db.transcriptdb, hgvs.hgvsmapper
+  In [7]: uta_conn = uta.db.transcriptdb.TranscriptDB()
+  In [8]: hm = hgvs.hgvsmapper.HGVSMapper( uta_conn, cache_transcripts=True )
+  In [9]: var_c = hm.hgvsg_to_hgvsc( var_g, 'NM_001637.3' )
+  In [10]: var_c
+  Out[10]: Variant(ac=NM_001637.3, type=c, posedit=1582G>A)
+
 
 Example
 -------

@@ -84,6 +84,11 @@ upload:
 
 
 ############################################################################
+hgvs/data/seguid-acs.json.gz:
+	gzip -cdq human.protein.faa.gz* | ./sbin/fasta-seguid | gzip -cq >$@
+
+
+############################################################################
 #= CLEANUP
 .PHONY: clean cleaner cleanest pristine
 #=> clean: clean up editor backups, etc.
