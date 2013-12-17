@@ -16,14 +16,15 @@ DBG = False
 
 class AltTranscriptData(recordtype.recordtype('AltTranscriptData', [
         'transcript_sequence', 'aa_sequence', 'cds_start', 'cds_stop', 'protein_accession',
-        ('is_frameshift', False), ('variant_start_aa', None), ('frameshift_start', None), ('is_substitution', False)])):
+        ('is_frameshift', False), ('variant_start_aa', None), ('frameshift_start', None), ('is_substitution', False),
+        ('is_ambiguous', False)])):
 
     @classmethod
     def create_for_variant_inserter(cls, seq, cds_start, cds_stop, is_frameshift, variant_start_aa, accession,
-                                    pad_seq = True, is_substitution=False):
+                                    pad_seq = True, is_substitution=False, is_ambiguous=False):
         """Create a variant sequence using inputs from VariantInserter
         :param seq: DNA sequence wiith variant incorporated
-        :type str
+        :type str or list
         :param cds_start: coding sequence start (1-based)
         :type int
         :param cds_stop: coding sequence stop (1-based)
@@ -39,21 +40,19 @@ class AltTranscriptData(recordtype.recordtype('AltTranscriptData', [
         :return variant sequence data
         :type recordtype
         """
-
-        # padding list so biopython won't complain during the conversion
-        if pad_seq and len(seq) % 3 != 0:
-            seq.extend(['N']*(3-len(seq) % 3))
-
-        seq = ''.join(seq)
-
-        seq_cds = Seq(seq[cds_start - 1:])
-        seq_aa = str(seq_cds.translate())
+        if isinstance(seq, basestring):
+            seq = list(seq)
+        seq_cds = seq[cds_start - 1:]
+        if pad_seq and len(seq_cds) % 3 != 0:   # padding so biopython won't complain during the conversion
+            seq_cds.extend(['N']*((3-len(seq_cds) % 3) % 3))
+        seq_cds = ''.join(seq_cds)
+        seq_aa = str(Seq(seq_cds).translate())
         stop_pos = seq_aa.find("*")
         if stop_pos != -1:
             seq_aa = seq_aa[:stop_pos + 1]
 
-        alt_data = AltTranscriptData(seq, seq_aa, cds_start, cds_stop, accession, is_frameshift, variant_start_aa,
-                                     is_substitution=is_substitution)
+        alt_data = AltTranscriptData(''.join(seq), seq_aa, cds_start, cds_stop, accession, is_frameshift, variant_start_aa,
+                                     is_substitution=is_substitution, is_ambiguous=is_ambiguous)
 
         return alt_data
 
@@ -196,7 +195,7 @@ class AltSeqBuilder(object):
         """Helper to setup incorporate functions
         :return (transcript sequence, cds start [1-based], cds stop [1-based],
         cds start index in seq [inc, 0-based], cds end index in seq [excl, 0-based])
-        :type (str, int, int, int, int)
+        :type (list, int, int, int, int)
         """
         seq = list(self._transcript_data.transcript_sequence)
 
@@ -211,13 +210,14 @@ class AltSeqBuilder(object):
 
     def _create_alt_eq_ref(self):
         """Create an alt seq that matches the reference"""
-        alt_data = AltTranscriptData.create_for_variant_inserter(self._transcript_data.transcript_sequence,
+        alt_data = AltTranscriptData.create_for_variant_inserter(list(self._transcript_data.transcript_sequence),
                                                                  self._transcript_data.cds_start,
                                                                  self._transcript_data.cds_stop,
                                                                  False,
                                                                  None,
                                                                  self._transcript_data.protein_accession,
-                                                                 pad_seq=False)
+                                                                 pad_seq=True,
+                                                                 is_ambiguous=True)
         return alt_data
 
     def _get_frameshift_start(self, variant_data):

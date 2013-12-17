@@ -61,6 +61,16 @@ class TestHgvsCToP(unittest.TestCase):
         hgvsp_expected = "SEGUID_5gk7JyE2f0rvKIE7ZhEDDLBpN9s:p.Lys2_Ala5del"
         self._run_conversion(hgvsc, hgvsp_expected)
 
+    def test_deletion3_no_frameshift_c_term(self):
+        hgvsc = "NM_999995.1:c.4_6del"
+        hgvsp_expected = "SEGUID_xtu8rRkrlMg5V8HjwWLJFTvJInM:p.Lys3del"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
+    def test_deletion4_no_frameshift_c_term(self):
+        hgvsc = "NM_999994.1:c.4_9del"
+        hgvsp_expected = "SEGUID_X0heK3jhOwDrvKEBFMlHupn+lc4:p.Lys3_Lys4del"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
     def test_deletion_frameshift_nostop(self):
         hgvsc = "NM_999999.1:c.11_12del"
         hgvsp_expected = "SEGUID_5gk7JyE2f0rvKIE7ZhEDDLBpN9s:p.Lys4Serfs*?"
@@ -101,6 +111,11 @@ class TestHgvsCToP(unittest.TestCase):
         hgvsp_expected = "SEGUID_5gk7JyE2f0rvKIE7ZhEDDLBpN9s:p.Phe6_Arg7dup"
         self._run_conversion(hgvsc, hgvsp_expected)
 
+    def test_dup_2AA2_no_frameshift(self):
+        hgvsc = "NM_999995.1:c.4_6dup"
+        hgvsp_expected = "SEGUID_xtu8rRkrlMg5V8HjwWLJFTvJInM:p.Lys3dup"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
     def test_dup_3AA_no_frameshift(self):
         hgvsc = "NM_999999.1:c.16_24dup"
         hgvsp_expected = "SEGUID_5gk7JyE2f0rvKIE7ZhEDDLBpN9s:p.Phe6_Ala8dup"
@@ -113,17 +128,17 @@ class TestHgvsCToP(unittest.TestCase):
 
     def test_intron(self):
         hgvsc = "NM_999999.1:c.12+1G>A"
-        hgvsp_expected = "SEGUID_5gk7JyE2f0rvKIE7ZhEDDLBpN9s:p.="
+        hgvsp_expected = "SEGUID_5gk7JyE2f0rvKIE7ZhEDDLBpN9s:p.?"
         self._run_conversion(hgvsc, hgvsp_expected)
 
     def test_five_prime_utr(self):
         hgvsc = "NM_999999.1:c.-2A>G"
-        hgvsp_expected = "SEGUID_5gk7JyE2f0rvKIE7ZhEDDLBpN9s:p.="
+        hgvsp_expected = "SEGUID_5gk7JyE2f0rvKIE7ZhEDDLBpN9s:p.?"
         self._run_conversion(hgvsc, hgvsp_expected)
 
     def test_three_prime_utr(self):
         hgvsc = "NM_999999.1:c.*3G>A"
-        hgvsp_expected = "SEGUID_5gk7JyE2f0rvKIE7ZhEDDLBpN9s:p.="
+        hgvsp_expected = "SEGUID_5gk7JyE2f0rvKIE7ZhEDDLBpN9s:p.?"
         self._run_conversion(hgvsc, hgvsp_expected)
 
     # The following are unsupported

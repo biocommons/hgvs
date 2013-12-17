@@ -10,17 +10,6 @@ import hgvs.hgvsmapper as hgvsmapper
 import hgvs.parser
 import uta.db.transcriptdb
 
-# map to handle stopgap
-PROTEIN_ACCESSION_MAP = {
-    "MD5_ef02ef58": "NP_689487.2",
-    "MD5_bdd27960": "NP_079016.2",
-    "MD5_51f440ba": "NP_006149.2",
-    "MD5_6009ae51": "NP_000390.2",
-    "MD5_7e4eaf25": "NP_000248.2",
-    "MD5_ce4981e5": "NP_000305.3",
-    "MD5_5622254c": "NP_003051.1",
-}
-
 #INFILE = 'eh_tests.tsv'
 INFILE = 'eh_c_to_p.tsv'
 
@@ -32,8 +21,8 @@ class TestHgvsCToPReal(unittest.TestCase):
 
     # def test_dbg(self):
     #     """For purposes of tesing a single result"""
-    #     hgvsc = "NM_000314.4:c.597_599delGTT"
-    #     hgvsp_expected = "NP_000305.3:p.Met199_Phe200delinsIle"
+    #     hgvsc = 'NM_152274.3:c.21_22insT'
+    #     hgvsp_expected = 'NP_689487.2:p.Gly8Trpfs*50'
     #     self._run_conversion(hgvsc, hgvsp_expected)
 
 
@@ -48,6 +37,7 @@ class TestHgvsCToPReal(unittest.TestCase):
 
         failed_tests = []
         for x in testdata:
+            print x
             (hgvsc, hgvsp_expected) = x
             if not hgvsc.startswith("#"):
                 try:
@@ -82,7 +72,7 @@ class TestHgvsCToPReal(unittest.TestCase):
         """
         var_c = TestHgvsCToPReal._parser.parse_hgvs_variant(hgvsc)
         var_p = TestHgvsCToPReal._mapper.hgvsc_to_hgvsp(var_c)
-        var_p.ac = PROTEIN_ACCESSION_MAP[var_p.ac]
+        print "acc {}".format(var_p.ac)
         hgvsp_actual = str(var_p)
         msg = "hgvsp expected: {} actual: {}".format(hgvsp_expected, hgvsp_actual)
         self.assertEqual(hgvsp_expected, hgvsp_actual, msg)
@@ -96,7 +86,6 @@ class TestHgvsCToPReal(unittest.TestCase):
         """
         var_c = TestHgvsCToPReal._parser.parse_hgvs_variant(hgvsc)
         var_p = TestHgvsCToPReal._mapper.hgvsc_to_hgvsp(var_c)
-        var_p.ac = PROTEIN_ACCESSION_MAP[var_p.ac]
         return str(var_p)
 
 
