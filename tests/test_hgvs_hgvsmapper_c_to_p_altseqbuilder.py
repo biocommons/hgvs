@@ -47,12 +47,12 @@ class TestAltSeqBuilder(unittest.TestCase):
 
     def test_insertion_middle(self):
         hgvsc = "NM_999999.1:c.22_23insT"
-        expected_sequence = "AAAATCAAAATGAAAGCGAAAGCGTTTCGCGTCGAAATAGGGGNN"
+        expected_sequence = "AAAATCAAAATGAAAGCGAAAGCGTTTCGCGTCGAAATAGGGG"
         self._run_comparison(hgvsc, expected_sequence)
 
     def test_insertion_end(self):
         hgvsc = "NM_999999.1:c.29_30insGG"
-        expected_sequence = "AAAATCAAAATGAAAGCGAAAGCGTTTCGCGCGAAATAGGGGGGN"
+        expected_sequence = "AAAATCAAAATGAAAGCGAAAGCGTTTCGCGCGAAATAGGGGGG"
         self._run_comparison(hgvsc, expected_sequence)
 
     # TODO - build in support when system can handle variants in 3'utr region
@@ -63,7 +63,7 @@ class TestAltSeqBuilder(unittest.TestCase):
 
     def test_deletion_start(self):
         hgvsc = "NM_999999.1:c.1del"
-        expected_sequence = "AAAATCAAATGAAAGCGAAAGCGTTTCGCGCGAAATAGGGGN"
+        expected_sequence = "AAAATCAAATGAAAGCGAAAGCGTTTCGCGCGAAATAGGGG"
         self._run_comparison(hgvsc, expected_sequence)
 
     def test_deletion_middle(self):
@@ -73,7 +73,7 @@ class TestAltSeqBuilder(unittest.TestCase):
 
     def test_deletion_end(self):
         hgvsc = "NM_999999.1:c.30del"
-        expected_sequence = "AAAATCAAAATGAAAGCGAAAGCGTTTCGCGCGAAATAGGGN"
+        expected_sequence = "AAAATCAAAATGAAAGCGAAAGCGTTTCGCGCGAAATAGGG"
         self._run_comparison(hgvsc, expected_sequence)
 
     def test_delins_start(self):

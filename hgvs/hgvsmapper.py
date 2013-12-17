@@ -213,7 +213,13 @@ class HGVSMapper(object):
                 cds_start = tx_info['cds_start_i'] + 1
                 cds_stop = tx_info['cds_end_i']
 
-                tx_seq_cds = Seq(tx_seq[cds_start - 1:cds_stop])
+                # padding list so biopython won't complain during the conversion
+                tx_seq_to_translate = tx_seq[cds_start - 1:cds_stop]
+                if len(tx_seq_to_translate) % 3 != 0:
+                    print "{}: required N-padding".format(ac)
+                    ''.join(list(tx_seq_to_translate).extend(['N']*((3-len(tx_seq_to_translate) % 3) % 3)))
+
+                tx_seq_cds = Seq(tx_seq_to_translate)
                 protein_seq = str(tx_seq_cds.translate())
                 protein_acc = hgvs.stopgap.pseq_to_ac(protein_seq)
 
@@ -238,7 +244,8 @@ class HGVSMapper(object):
                                                     alt.aa_sequence,
                                                     reference_data.protein_accession,
                                                     alt.frameshift_start,
-                                                    alt.is_substitution
+                                                    alt.is_substitution,
+                                                    alt.is_ambiguous
                                                     )
             var_p = builder.build_hgvsp()
             var_ps.append(var_p)
