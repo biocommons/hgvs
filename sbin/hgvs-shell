@@ -1,0 +1,25 @@
+#!/usr/bin/env python
+
+import IPython
+
+import uta.db.transcriptdb
+
+import hgvs.parser
+import hgvs.hgvsmapper
+
+
+hgvs_g = 'NC_000007.13:g.36561662C>T'
+hgvs_c = 'NM_001637.3:c.1582G>A'
+
+uta_conn = uta.db.transcriptdb.TranscriptDB()
+
+hgvsparser = hgvs.parser.Parser()
+hgvsmapper = hgvs.hgvsmapper.HGVSMapper( uta_conn, cache_transcripts = True )
+
+var_g = hgvsparser.parse_hgvs_variant(hgvs_g)
+var_c = hgvsparser.parse_hgvs_variant(hgvs_c)
+
+var_c_from_g = hgvsmapper.hgvsg_to_hgvsc( var_g, var_c.ac )
+var_g_from_c = hgvsmapper.hgvsc_to_hgvsg( var_c, 'NC_000007.13' )
+
+IPython.embed()
