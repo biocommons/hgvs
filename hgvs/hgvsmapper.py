@@ -10,6 +10,8 @@ import hgvs.location
 import hgvs.stopgap
 import hgvs.transcriptmapper
 import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
+import hgvs.utils.altseq_to_hgvsp2 as altseq_to_hgvsp2
+import hgvs.utils.altseq_to_hgvsp3 as altseq_to_hgvsp3
 import hgvs.utils.altseqbuilder as altseqbuilder
 from hgvs.utils import reverse_complement
 from hgvs.utils import chr_to_nc
@@ -191,10 +193,9 @@ class HGVSMapper(object):
         :return hgvsp tag
         :type SequenceVariant
         """
-
-        # TODO - error handling - invalid hgvs tag
-        # TODO - error handling - transcript not found
-        # TODO - error handling - unsupported hgvs tag transformation
+        #ALG = "aligner"
+        #ALG = "difflib"
+        ALG = "local"
 
         class RefTranscriptData(recordtype.recordtype('RefTranscriptData',
                                                       ['transcript_sequence', 'aa_sequence',
@@ -216,7 +217,6 @@ class HGVSMapper(object):
                 # padding list so biopython won't complain during the conversion
                 tx_seq_to_translate = tx_seq[cds_start - 1:cds_stop]
                 if len(tx_seq_to_translate) % 3 != 0:
-                    print "{}: required N-padding".format(ac)
                     ''.join(list(tx_seq_to_translate).extend(['N']*((3-len(tx_seq_to_translate) % 3) % 3)))
 
                 tx_seq_cds = Seq(tx_seq_to_translate)
@@ -236,17 +236,16 @@ class HGVSMapper(object):
 
         # TODO - handle case where you get 2+ alt sequences back; currently get list of 1 element
         # loop structure implemented to handle this, but doesn't really do anything currently.
-        alt_data = builder.build_altseq()
+        all_alt_data = builder.build_altseq()
 
         var_ps = []
-        for alt in alt_data:
-            builder = altseq_to_hgvsp.AltSeqToHgvsp(reference_data.aa_sequence,
-                                                    alt.aa_sequence,
-                                                    reference_data.protein_accession,
-                                                    alt.frameshift_start,
-                                                    alt.is_substitution,
-                                                    alt.is_ambiguous
-                                                    )
+        for alt_data in all_alt_data:
+            if ALG == "difflib":
+                builder = altseq_to_hgvsp.AltSeqToHgvsp(reference_data, alt_data)
+            elif ALG == "aligner":
+                builder = altseq_to_hgvsp2.AltSeqToHgvsp2(reference_data, alt_data)
+            elif ALG == "local":
+                builder = altseq_to_hgvsp3.AltSeqToHgvsp3(reference_data, alt_data)
             var_p = builder.build_hgvsp()
             var_ps.append(var_p)
 

@@ -36,6 +36,11 @@ class TestHgvsCToP(unittest.TestCase):
         hgvsp_expected = "SEGUID_5gk7JyE2f0rvKIE7ZhEDDLBpN9s:p.Ter10Argext*3"
         self._run_conversion(hgvsc, hgvsp_expected)
 
+    def test_substitution_removes_start_codon(self):
+        hgvsc = "NM_999999.1:c.1A>G"
+        hgvsp_expected = "SEGUID_5gk7JyE2f0rvKIE7ZhEDDLBpN9s:p.Met1?"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
     def test_insertion_no_frameshift(self):
         hgvsc = "NM_999999.1:c.6_7insGGG"
         hgvsp_expected = "SEGUID_5gk7JyE2f0rvKIE7ZhEDDLBpN9s:p.Lys2_Ala3insGly"
@@ -69,6 +74,21 @@ class TestHgvsCToP(unittest.TestCase):
     def test_deletion4_no_frameshift_c_term(self):
         hgvsc = "NM_999994.1:c.4_9del"
         hgvsp_expected = "SEGUID_X0heK3jhOwDrvKEBFMlHupn+lc4:p.Lys3_Lys4del"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
+    def test_deletion5_no_frameshift(self):
+        hgvsc = "NM_999994.1:c.20_25del"
+        hgvsp_expected = "SEGUID_X0heK3jhOwDrvKEBFMlHupn+lc4:p.Ala7_Arg9delinsGly"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
+    def test_deletion6_no_frameshift(self):
+        hgvsc = "NM_999999.1:c.5_7del"
+        hgvsp_expected = "SEGUID_5gk7JyE2f0rvKIE7ZhEDDLBpN9s:p.Lys2_Ala3delinsThr"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
+    def test_deletion7_no_frameshift(self):
+        hgvsc = "NM_999993.1:c.13_24del"
+        hgvsp_expected = "SEGUID_b4UTGUQBBXsyHbKd7Jo+G/HBEh8:p.Arg5_Ala8del"
         self._run_conversion(hgvsc, hgvsp_expected)
 
     def test_deletion_frameshift_nostop(self):

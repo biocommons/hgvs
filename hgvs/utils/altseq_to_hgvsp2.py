@@ -3,16 +3,15 @@
 # given a transcript with variants applied.
 # Used in hgvsc to hgvsp conversion.
 #
-# The "frameshift_start" param is used to identify to the code
-# where any "terminal" frameshift should occur.
-# Consider the case where there is a single base deletion, but the resulting
-# frameshift leaves an island of amino acids that coincidentally align to the reference.
-# This can lead to splitting a single frameshift call into [indel+match+downstream frameshift]
-# This param forces the comparison code to mark the rest of the sequence as part of a frameshift
-# and terminates the comparison.
-#
 import collections
 import difflib
+
+import collections
+
+from alignment.sequence import Sequence
+from alignment.vocabulary import Vocabulary
+from alignment.sequencealigner import SimpleScoring, StrictGlobalSequenceAligner
+
 
 import hgvs.edit
 import hgvs.exceptions
@@ -21,9 +20,9 @@ import hgvs.posedit
 import hgvs.utils
 import hgvs.variant
 
-DBG = True
+DBG = False
 
-class AltSeqToHgvsp(object):
+class AltSeqToHgvsp2(object):
 
     def __init__(self, ref_data, alt_data):
         """Constructor
@@ -46,7 +45,6 @@ class AltSeqToHgvsp(object):
             print len(self._ref_seq), len(self._alt_seq), self._frameshift_start, self._protein_accession
             print self._ref_seq
             print self._alt_seq
-            print "aa variant start: {}".format(self._alt_data.variant_start_aa)
 
     def build_hgvsp(self):
         """Compare two amino acid sequences; generate an hgvs tag from the output
@@ -55,72 +53,73 @@ class AltSeqToHgvsp(object):
         :type list of dict
         """
 
-        indel_map = {'+':'ins', '-':'del'}
         variants = []
 
         if not self._is_ambiguous:
-            # for a simple substitution, just do a straight AA-by-AA comparison
-            do_difflib = True   # assume complex case
+            do_align = True
             if self._is_substitution:
                 if len(self._ref_seq) == len(self._alt_seq):
                     diff_pos = [(i, self._ref_seq[i], self._alt_seq[i]) for i in xrange(len(self._ref_seq))
                                 if  self._ref_seq[i] != self._alt_seq[i]]
                     if len(diff_pos) == 1:
                         (start, deletion, insertion) = diff_pos[0]
-                        do_difflib = False
+                        do_align = False
                         variants.append({"start": start + 1, "ins": insertion, "del": deletion})
                 elif self._alt_seq[self._alt_data.variant_start_aa - 1] == "*": # introduced stop codon
                     deletion = self._ref_seq[self._alt_data.variant_start_aa - 1:]
                     variants.append({"start": self._alt_data.variant_start_aa, "ins": "*", "del": deletion})
-                    do_difflib = False
+                    do_align = False
 
+            # simple comparison didn't work or isn't appropriate - resort to aligner
+            if do_align:
 
-            # simple comparison didn't work or isn't appropriate - resort to difflib
-            if do_difflib:
-                diff_list = difflib.Differ().compare(self._ref_seq, self._alt_seq)
+                v = Vocabulary()
+                refEncoded = v.encodeSequence(Sequence(self._ref_seq))
+                altEncoded = v.encodeSequence(Sequence(self._alt_seq))
 
-                # walk through the difflib string list and summarize variants as they are encountered
-                ref_index = 1
-                alt_index = 1
-                in_variant = False
+                # Create a scoring and align the sequences using global aligner.
+                scoring = SimpleScoring(2, 1)
+                aligner = StrictGlobalSequenceAligner(scoring, -2)
+                score, encodeds = aligner.align(refEncoded, altEncoded, backtrace=True)
+                encoded = encodeds[0]
+                alignment = v.decodeSequenceAlignment(encoded)
+                ref_seq = alignment.first
+                alt_seq = alignment.second
+
                 if DBG:
-                    item_dbg = []
-                for item in diff_list:
-                    if DBG:
-                        item_dbg.append(item)
-                    change = item[0]
-                    if change == ' ':       # a match
-                        if in_variant:      # process the variant just exited
-                            in_variant = False
-                            variants.append(current_var)
-                        ref_index += 1
-                        alt_index += 1
-                    else:                   # a mismatch
-                        base = item[-1]
-                        if not in_variant:  # start a new variant
-                            in_variant = True
-                            current_var = collections.defaultdict(list)
-                            current_var['start'] = ref_index
+                    print ref_seq
+                    print alt_seq
 
-                            if self._frameshift_start and current_var['start'] >= self._frameshift_start:
-                                current_var = self._force_variant_to_frameshift(current_var, ref_index, alt_index)
-                                variants.append(current_var)
+                in_variant = False
+                variants = []
+                for i in xrange(len(ref_seq)):
+                    r = ref_seq[i]
+                    a = alt_seq[i]
+                    if a == r:
+                        if in_variant:
+                            in_variant = False
+                            variants.append(cur_variant)
+                    else:
+                        if not in_variant:
+                            in_variant = True
+                            cur_variant = collections.defaultdict(list)
+                            cur_variant['start'] = i + 1
+                            if self._frameshift_start and cur_variant['start'] >= self._frameshift_start:
+                                cur_variant = self._force_variant_to_frameshift(cur_variant, i, ref_seq, alt_seq)
+                                variants.append(cur_variant)
                                 in_variant = False
                                 break
-
-                        current_var[indel_map[change]].append(base)
-                        if change == '-':
-                            ref_index += 1
-                        elif change == '+':
-                            alt_index += 1
-
+                        if a != '-':
+                            cur_variant['ins'].append(a)
+                        if r != '-':
+                            cur_variant['del'].append(r)
 
                 if in_variant:  # implies end of a frameshift; need to add this last variant to the list
-                    variants.append(current_var)
+                    variants.append(cur_variant)
 
-                if DBG:
-                    print item_dbg
-                    print variants
+
+            if DBG:
+                print variants
 
         if self._is_ambiguous:
             var_ps = [self._create_variant('', '', '', '', acc=self._protein_accession,
@@ -140,21 +139,27 @@ class AltSeqToHgvsp(object):
     # internal methods
     #
 
-    def _force_variant_to_frameshift(self, current_variant, ref_index, alt_index):
-        """Make this variant a terminal frameshift
+    # def _force_variant_to_frameshift(self, current_variant, ref_index, alt_index):
+    #     """Make this variant a terminal frameshift
+    #
+    #     :param current_variant: representation of variant to describe as a frameshift
+    #     :type dict
+    #     :param ref_index: reference sequence index (1-based) where frameshift starts
+    #     :type int
+    #     :param alt_index:  alt sequence index (1-based) where frameshift starts
+    #     :type int
+    #     :return updated current_variant
+    #     :type dict
+    #     """
+    #     current_variant['del'] = list(self._ref_seq[ref_index - 1:])
+    #     current_variant['ins'] = list(self._alt_seq[alt_index - 1:])
+    #     return current_variant
 
-        :param current_variant: representation of variant to describe as a frameshift
-        :type dict
-        :param ref_index: reference sequence index (1-based) where frameshift starts
-        :type int
-        :param alt_index:  alt sequence index (1-based) where frameshift starts
-        :type int
-        :return updated current_variant
-        :type dict
-        """
-        current_variant['del'] = list(self._ref_seq[ref_index - 1:])
-        current_variant['ins'] = list(self._alt_seq[alt_index - 1:])
-        return current_variant
+    def _force_variant_to_frameshift(self, cur_variant, index, ref_seq, alt_seq):
+        cur_variant['del'] = [x for x in list(ref_seq[index:]) if x != '-']
+        cur_variant['ins'] = [x for x in list(alt_seq[index:]) if x != '-']
+        return cur_variant
+
 
     def _convert_to_sequence_variants(self, variant, acc):
         """Convert AA variant to an hgvs representation

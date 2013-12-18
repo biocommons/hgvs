@@ -21,7 +21,7 @@ class AltTranscriptData(recordtype.recordtype('AltTranscriptData', [
 
     @classmethod
     def create_for_variant_inserter(cls, seq, cds_start, cds_stop, is_frameshift, variant_start_aa, accession,
-                                    pad_seq = True, is_substitution=False, is_ambiguous=False):
+                                    is_substitution=False, is_ambiguous=False):
         """Create a variant sequence using inputs from VariantInserter
         :param seq: DNA sequence wiith variant incorporated
         :type str or list
@@ -35,15 +35,13 @@ class AltTranscriptData(recordtype.recordtype('AltTranscriptData', [
         :type int
         :param accession: protein accession, e.g. NP_999999.2
         :type str
-        :param pad_seq: if true, pad sequence to be divisible by three (default true)
-        :type bool
         :return variant sequence data
         :type recordtype
         """
         if isinstance(seq, basestring):
             seq = list(seq)
         seq_cds = seq[cds_start - 1:]
-        if pad_seq and len(seq_cds) % 3 != 0:   # padding so biopython won't complain during the conversion
+        if len(seq_cds) % 3 != 0:   # padding so biopython won't complain during the conversion
             seq_cds.extend(['N']*((3-len(seq_cds) % 3) % 3))
         seq_cds = ''.join(seq_cds)
         seq_aa = str(Seq(seq_cds).translate())
@@ -51,7 +49,8 @@ class AltTranscriptData(recordtype.recordtype('AltTranscriptData', [
         if stop_pos != -1:
             seq_aa = seq_aa[:stop_pos + 1]
 
-        alt_data = AltTranscriptData(''.join(seq), seq_aa, cds_start, cds_stop, accession, is_frameshift, variant_start_aa,
+        alt_data = AltTranscriptData(''.join(seq), seq_aa, cds_start, cds_stop, accession,
+                                     is_frameshift=is_frameshift, variant_start_aa=variant_start_aa,
                                      is_substitution=is_substitution, is_ambiguous=is_ambiguous)
 
         return alt_data
@@ -166,9 +165,9 @@ class AltSeqBuilder(object):
         variant_start_aa = int(math.ceil((self._var_c.posedit.pos.start.base) / 3.0))
 
         alt_data = AltTranscriptData.create_for_variant_inserter(seq, cds_start, cds_stop,
-                                                               is_frameshift, variant_start_aa,
-                                                               self._transcript_data.protein_accession,
-                                                               is_substitution=is_substitution)
+                                                                 is_frameshift, variant_start_aa,
+                                                                 self._transcript_data.protein_accession,
+                                                                 is_substitution=is_substitution)
         return alt_data
 
     def _incorporate_dup(self):
@@ -216,7 +215,6 @@ class AltSeqBuilder(object):
                                                                  False,
                                                                  None,
                                                                  self._transcript_data.protein_accession,
-                                                                 pad_seq=True,
                                                                  is_ambiguous=True)
         return alt_data
 
