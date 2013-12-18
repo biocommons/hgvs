@@ -33,7 +33,7 @@ class TestHgvsCToP(unittest.TestCase):
 
     def test_substitution_removes_stop_codon(self):
         hgvsc = "NM_999998.1:c.30G>T"
-        hgvsp_expected = "SEGUID_5gk7JyE2f0rvKIE7ZhEDDLBpN9s:p.Ter10Argext*3"
+        hgvsp_expected = "SEGUID_5gk7JyE2f0rvKIE7ZhEDDLBpN9s:p.Ter10Tyrext*3"
         self._run_conversion(hgvsc, hgvsp_expected)
 
     def test_substitution_removes_start_codon(self):
