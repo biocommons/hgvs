@@ -10,11 +10,13 @@ import hgvs.hgvsmapper as hgvsmapper
 import hgvs.parser
 import uta.db.transcriptdb
 
-INFILE = 'c_to_p_all_cvids_clean.tsv'
+INFILE = 'all_Ter.tsv'
+#INFILE = 'c_to_p_all_cvids_clean.tsv'
 #INFILE = 'all_cvid_c_to_p_no_NONE_Met1Q_dupN.tsv'
 MAPFILE = 'cvid_nm_to_np.tsv'
-OUTFILE = 'all_cvid_c_to_p.out'
+#OUTFILE = 'all_cvid_c_to_p.out'
 #OUTFILE = 'all_cvid_c_to_p_no_NONE_Met1Q_dupN_local.out'
+OUTFILE = 'all_Ter.out'
 
 class TestHgvsCToPReal(unittest.TestCase):
 
@@ -22,11 +24,11 @@ class TestHgvsCToPReal(unittest.TestCase):
     _mapper = hgvsmapper.HGVSMapper(_datasource, cache_transcripts=True)
     _parser = hgvs.parser.Parser()
 
-    def test_dbg(self):
-        """For purposes of tesing a single result"""
-        hgvsc = "NM_000169.2:c.1201dupT"
-        hgvsp_expected = "NP_000160.1:p.Ser401Phefs*37"
-        self._run_conversion(hgvsc, hgvsp_expected)
+    # def test_dbg(self):
+    #     """For purposes of tesing a single result"""
+    #     hgvsc = "NM_000051.3:c.9170_9171delGA"
+    #     hgvsp_expected = "NP_000042.3:p.*3057Pheext*4"
+    #     self._run_conversion(hgvsc, hgvsp_expected)
 
     @classmethod
     def setUpClass(cls):
@@ -36,7 +38,7 @@ class TestHgvsCToPReal(unittest.TestCase):
 
 
 
-    def notest_all_cvids(self):
+    def test_all_cvids(self):
         """Run all of CVID data"""
         fn = os.path.join(os.path.dirname(__file__), 'data', INFILE)
         fo = os.path.join(os.path.dirname(__file__), 'data', OUTFILE)
