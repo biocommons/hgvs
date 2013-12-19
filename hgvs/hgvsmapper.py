@@ -10,8 +10,6 @@ import hgvs.location
 import hgvs.stopgap
 import hgvs.transcriptmapper
 import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
-import hgvs.utils.altseq_to_hgvsp2 as altseq_to_hgvsp2
-import hgvs.utils.altseq_to_hgvsp3 as altseq_to_hgvsp3
 import hgvs.utils.altseqbuilder as altseqbuilder
 from hgvs.utils import reverse_complement
 from hgvs.utils import chr_to_nc
@@ -193,9 +191,6 @@ class HGVSMapper(object):
         :return hgvsp tag
         :type SequenceVariant
         """
-        #ALG = "aligner"
-        #ALG = "difflib"
-        ALG = "local"
 
         class RefTranscriptData(recordtype.recordtype('RefTranscriptData',
                                                       ['transcript_sequence', 'aa_sequence',
@@ -240,12 +235,7 @@ class HGVSMapper(object):
 
         var_ps = []
         for alt_data in all_alt_data:
-            if ALG == "difflib":
-                builder = altseq_to_hgvsp.AltSeqToHgvsp(reference_data, alt_data)
-            elif ALG == "aligner":
-                builder = altseq_to_hgvsp2.AltSeqToHgvsp2(reference_data, alt_data)
-            elif ALG == "local":
-                builder = altseq_to_hgvsp3.AltSeqToHgvsp3(reference_data, alt_data)
+            builder = altseq_to_hgvsp.AltSeqToHgvsp(reference_data, alt_data)
             var_p = builder.build_hgvsp()
             var_ps.append(var_p)
 
