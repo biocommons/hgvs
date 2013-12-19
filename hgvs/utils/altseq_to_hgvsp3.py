@@ -13,7 +13,7 @@ import hgvs.posedit
 import hgvs.utils
 import hgvs.variant
 
-DBG = True
+DBG = False
 
 class AltSeqToHgvsp3(object):
 
@@ -157,37 +157,49 @@ class AltSeqToHgvsp3(object):
         is_dup = False  # assume not dup
         fs = None
 
+
         if is_frameshift:                                               # frameshift
             aa_start = aa_end = hgvs.location.AAPosition(base=start, aa=deletion[0])
             ref = ''
 
-            try:
-                new_stop = str(insertion.index("*") + 1)    # start w/ 1st change; ends w/ * (inclusive)
-            except ValueError:
-                new_stop = "?"
+            if start == 1:
+                ref = ''
+                alt = ''
+                self._is_ambiguous = True   # side-effect
+            elif start == len(self._ref_seq):                           # extension at stop codon
+                len_ext = len(insertion) - len(deletion) # don't include the former stop codon
+                subst_at_stop_codon = insertion[0]
 
-            if new_stop != "1":
-                alt = insertion[0]
-                fs = 'fs*{}'.format(new_stop)
+                aa_start = aa_end = hgvs.location.AAPosition(base=start, aa='*')
+                ref = ''
+                alt = subst_at_stop_codon
+                fs = 'ext*{}'.format(len_ext)
+            else:
+                try:
+                    new_stop = str(insertion.index("*") + 1)    # start w/ 1st change; ends w/ * (inclusive)
+                except ValueError:
+                    new_stop = "?"
 
-            else:   # frameshift introduced stop codon at variant position
-                alt = '*'
+                if new_stop != "1":
+                    alt = insertion[0]
+                    fs = 'fs*{}'.format(new_stop)
+
+                else:   # frameshift introduced stop codon at variant position
+                    alt = '*'
+
         elif start == 1:                                          # initial methionine is modified
                 aa_start = aa_end = hgvs.location.AAPosition(base=start, aa=deletion)
                 ref = ''
                 alt = ''
                 self._is_ambiguous = True   # side-effect
-
         else:                                                           # no frameshift
             if len(insertion) == len(deletion) == 1:                    # substitution
                 aa_start = aa_end = hgvs.location.AAPosition(base=start, aa=deletion)
                 ref = ''
                 alt = insertion
 
-            elif len(deletion) > 0:                                     # delins OR deletion
+            elif len(deletion) > 0:                                     # delins OR deletion OR stop codon at variant position
                 ref = deletion
-
-
                 end = start + len(deletion) - 1
                 if len(insertion) > 0:                                  # delins
                     aa_start = hgvs.location.AAPosition(base=start, aa=deletion[0])
@@ -204,13 +216,9 @@ class AltSeqToHgvsp3(object):
                         ref = ''
                         alt = '*'
                     else:                                               # deletion
-                        # get c-terminal representation
-                        c_term_start = self._get_shift_match(self._ref_seq, start - 1, deletion) + 1
-                        c_term_end = c_term_start + (end - start)
-
-                        aa_start = hgvs.location.AAPosition(base=c_term_start, aa=deletion[0])
+                        aa_start = hgvs.location.AAPosition(base=start, aa=deletion[0])
                         if end > start:
-                            aa_end =  hgvs.location.AAPosition(base=c_term_end, aa=deletion[-1])
+                            aa_end =  hgvs.location.AAPosition(base=end, aa=deletion[-1])
                         else:
                             aa_end = aa_start
                         alt = None
@@ -220,9 +228,6 @@ class AltSeqToHgvsp3(object):
                 is_dup, dup_start = self._check_if_ins_is_dup(start, insertion)
 
                 if is_dup:                                              # duplication
-                    # get c-terminal
-                    dup_start = self._get_shift_match(self._ref_seq, dup_start -1, insertion) + 1
-
                     dup_end = dup_start + len(insertion) - 1
                     aa_start = hgvs.location.AAPosition(base=dup_start, aa=insertion[0])
                     aa_end =  hgvs.location.AAPosition(base=dup_end, aa=insertion[-1])
@@ -236,7 +241,7 @@ class AltSeqToHgvsp3(object):
                         aa_start = aa_end = hgvs.location.AAPosition(base=start, aa='*')
                         ref = ''
                         alt = subst_at_stop_codon
-                        fs ='ext*{}'.format(len_ext)
+                        fs = 'ext*{}'.format(len_ext)
 
                     else:                                               # insertion
                         start = start - 1
@@ -282,24 +287,6 @@ class AltSeqToHgvsp3(object):
             variant_start = dup_candidate_start + 1
 
         return is_dup, variant_start
-
-    def _get_shift_match(self, seq, start, match_seq, is_rev=False):
-        """Helper to identify a terminal match of a string in a sequence"""
-        result = start
-        sign = -1 if is_rev else 1
-        result = self._find_shift(seq, sign*len(match_seq), match_seq, result)
-        result = self._find_shift(seq, sign*1, match_seq, result)
-        return result
-
-    def _find_shift(self, seq, increment, match_seq, init_result):
-        """Helper for _get_shift_match - scans over an interval for the most extreme match"""
-        match_failed = False
-        cur_start = init_result
-        while not match_failed:
-            result = cur_start
-            cur_start += increment
-            match_failed = seq[cur_start:cur_start + len(match_seq)] != match_seq
-        return result
 
     def _create_variant(self, start, end, ref, alt, fs=None, is_dup=False, acc=None, is_ambiguous=False):
         """Creates a SequenceVariant object"""

@@ -171,11 +171,6 @@ class TestHgvsCToP(unittest.TestCase):
     # def test_variable_repeats(self):
     #     pass
     #
-    # def test_extension_new_translation_initiation_site(self):
-    #     hgvsc = "NM_999999.1:c.1A>G"
-    #     hgvsp_expected = ""
-    #     self._run_conversion(hgvsc, hgvsp_expected)
-    #
     # def test_indeterminate_entire_exon_del(self):
     #     pass
     #

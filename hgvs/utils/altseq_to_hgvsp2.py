@@ -254,7 +254,7 @@ class AltSeqToHgvsp2(object):
                 else:                                                   # insertion OR extension
                     if start == len(self._ref_seq):                     # extension
                         len_ext = len(insertion) # don't include the former stop codon
-                        subst_at_stop_codon = insertion[-1]
+                        subst_at_stop_codon = insertion[0]
 
                         aa_start = aa_end = hgvs.location.AAPosition(base=start, aa='*')
                         ref = ''
