@@ -53,11 +53,17 @@ bdist bdist_egg build build_sphinx develop install sdist upload_sphinx: %:
 	python setup.py $*
 
 #=> test -- run tests
-test:
+test-setup:
 	# NOTE: HGVS is unfortunately dependent on UTA for testing. This will
 	# be remedied later. DO NOT add this to setup.py.
 	python -c 'import uta' 1>/dev/null 2>/dev/null || pip install hg+ssh://hg@bitbucket.org/locusdevelopment/uta
+
+test: test-setup
 	nosetests --with-xunit
+
+test-with-coverage: test-setup
+	pip install coverage
+	nosetests --with-xunit --with-coverage --cover-package=hgvs --cover-html
 
 #=> lint -- run lint, flake, etc
 # TBD
@@ -70,7 +76,7 @@ jenkins:
 	make ve \
 	&& source ve/bin/activate \
 	&& make install \
-	&& make test \
+	&& make test-with-coverage \
 	&& make docs
 
 #=> upload-<tag>
