@@ -27,8 +27,8 @@ class TestHgvsCToPReal(unittest.TestCase):
 
     # def test_dbg(self):
     #     """For purposes of tesing a single result"""
-    #     hgvsc = "NM_000203.3:c.1960T>C"
-    #     hgvsp_expected = "NP_000194.2:p.*654Argext*46"
+    #     hgvsc = "NM_000271.4:c.3322_3323insG"
+    #     hgvsp_expected = "NP_000262.2:p.Ala1108Glyfs*13"
     #     self._run_conversion(hgvsc, hgvsp_expected)
 
     @classmethod
@@ -39,7 +39,7 @@ class TestHgvsCToPReal(unittest.TestCase):
 
 
 
-    def test_all_cvids(self):
+    def notest_all_cvids(self):
         """Run all of CVID data"""
         fn = os.path.join(os.path.dirname(__file__), 'data', INFILE)
         fo = os.path.join(os.path.dirname(__file__), 'data', OUTFILE)
