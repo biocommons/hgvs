@@ -4,19 +4,20 @@
 from __future__ import with_statement
 import csv
 import os
+import re
 import unittest
 
 import hgvs.hgvsmapper as hgvsmapper
 import hgvs.parser
 import uta.db.transcriptdb
 
-INFILE = 'all_Ter.tsv'
-#INFILE = 'c_to_p_all_cvids_clean.tsv'
+#INFILE = 'all_dupN.tsv'
+INFILE = 'c_to_p_all_cvids_clean.tsv'
 #INFILE = 'all_cvid_c_to_p_no_NONE_Met1Q_dupN.tsv'
 MAPFILE = 'cvid_nm_to_np.tsv'
-#OUTFILE = 'all_cvid_c_to_p.out'
+OUTFILE = 'all_cvid_c_to_p.out'
 #OUTFILE = 'all_cvid_c_to_p_no_NONE_Met1Q_dupN_local.out'
-OUTFILE = 'all_Ter.out'
+#OUTFILE = 'all_dupN_retry.out'
 
 class TestHgvsCToPReal(unittest.TestCase):
 
@@ -26,8 +27,8 @@ class TestHgvsCToPReal(unittest.TestCase):
 
     # def test_dbg(self):
     #     """For purposes of tesing a single result"""
-    #     hgvsc = "NM_000051.3:c.9170_9171delGA"
-    #     hgvsp_expected = "NP_000042.3:p.*3057Pheext*4"
+    #     hgvsc = "NM_000203.3:c.1960T>C"
+    #     hgvsp_expected = "NP_000194.2:p.*654Argext*46"
     #     self._run_conversion(hgvsc, hgvsp_expected)
 
     @classmethod
@@ -48,10 +49,12 @@ class TestHgvsCToPReal(unittest.TestCase):
             csvreader = csv.DictReader(f, delimiter='\t')
             testdata = [(row['NM coordinates'], row['Protein coordinates']) for row in csvreader]
 
+        regex = re.compile(r'dup[0-9]+$')
         failed_tests = []
         for x in testdata:
             print x
             (hgvsc, hgvsp_expected) = x
+            hgvsc = regex.sub('dup', hgvsc) # cleanup dupN
             if not hgvsc.startswith("#"):
                 try:
                     hgvsp_actual = self._run_conversion_batch(hgvsc)
