@@ -143,9 +143,9 @@ rna_dup    = 'dup' <rna*>:seq         -> hgvs.edit.Dup(seq=seq)
 pro_edit_mu = pro_edit | '(' pro_edit:edit ')' -> edit.set_uncertain()
 pro_edit   = pro_subst | pro_delins | pro_ins | pro_del | pro_dup | pro_special
 pro_subst  = aat13:alt aa13_fs?:fs         -> hgvs.edit.AARefAlt(ref='',alt=hgvs.utils.aa_to_aa1(alt),fs=fs)
-pro_delins = 'delins' aat_seq:alt aa13_fs?:fs -> hgvs.edit.AARefAlt(ref='',alt=aa_to_aa1(alt),fs=fs)
+pro_delins = 'delins' aat_seq:alt aa13_fs?:fs -> hgvs.edit.AARefAlt(ref='',alt=hgvs.utils.aa_to_aa1(alt),fs=fs)
 pro_del    = 'del'                         -> hgvs.edit.AARefAlt(ref='',alt=None)
-pro_ins    = 'ins' aat_seq:alt aa13_fs?:fs -> hgvs.edit.AARefAlt(ref=None,alt=aa_to_aa1(alt),fs=fs)
+pro_ins    = 'ins' aat_seq:alt aa13_fs?:fs -> hgvs.edit.AARefAlt(ref=None,alt=hgvs.utils.aa_to_aa1(alt),fs=fs)
 pro_dup    = 'dup'                         -> hgvs.edit.Dup(seq=seq)
 pro_special= :x ?(x in '=?0')              -> hgvs.edit.AASpecial(status=x)
 
@@ -167,15 +167,16 @@ p_interval = def_p_interval | '(' def_p_interval:iv ')' -> iv.set_uncertain()
 def_g_interval = def_gmn_interval
 def_m_interval = def_gmn_interval
 def_n_interval = def_gmn_interval
-def_gmn_interval = (  gmn_pos:start '_'   gmn_pos:end -> hgvs.location.Interval(start,end)) | (  gmn_pos:start -> hgvs.location.Interval(start,start))
-def_r_interval = (r_pos:start '_' r_pos:end -> hgvs.location.Interval(start,end)) | (r_pos:start -> hgvs.location.Interval(start,start))
-def_c_interval = (c_pos:start '_' c_pos:end -> hgvs.location.Interval(start,end)) | (c_pos:start -> hgvs.location.Interval(start,start))
-def_p_interval = (p_pos:start '_' p_pos:end -> hgvs.location.Interval(start,end)) | (p_pos:start -> hgvs.location.Interval(start,start))
+def_gmn_interval = gmn_pos:start '_' gmn_pos:end -> hgvs.location.Interval(start,end) | gmn_pos:start -> hgvs.location.Interval(start,start)
+def_r_interval = r_pos:start '_' r_pos:end -> hgvs.location.Interval(start,end) | r_pos:start -> hgvs.location.Interval(start,start)
+def_c_interval = c_pos:start '_' c_pos:end -> hgvs.location.Interval(start,end) | c_pos:start -> hgvs.location.Interval(start,start)
+def_p_interval = p_pos:start '_' p_pos:end -> hgvs.location.Interval(start,end) | p_pos:start -> hgvs.location.Interval(start,start)
 
 # potentially indefinite/uncertain positions
 g_pos = gmn_pos
 m_pos = gmn_pos
 n_pos = gmn_pos
+#individual coords may not be uncertain (see interval, which may be)
 gmn_pos = def_gmn_pos #| '(' def_gmn_pos:pos ')' -> pos.set_uncertain()
 r_pos = def_r_pos #| '(' def_r_pos:pos ')' -> pos.set_uncertain()
 c_pos = def_c_pos #| '(' def_c_pos:pos ')' -> pos.set_uncertain()
@@ -216,8 +217,7 @@ rna = :x ?(x in 'ACGUacgu') -> x
 aat13 = aa13_term | aa13
 aa13 = aa3 | aa1
 aa1 = :x ?(x in 'ACDEFGHIKLMNPQRSTVWY') -> x
-aa3 = <letter{3}>:xxx ?(xxx in ['Ala','Cys','Asp','Glu','Phe','Gly','His','Ile','Lys','Leu',
-                                'Met','Asn','Pro','Gln','Arg','Ser','Thr','Val','Trp','Tyr']) -> xxx
+aa3 = 'Ala'|'Cys'|'Asp'|'Glu'|'Phe'|'Gly'|'His'|'Ile'|'Lys'|'Leu'|'Met'|'Asn'|'Pro'|'Gln'|'Arg'|'Ser'|'Thr'|'Val'|'Trp'|'Tyr'
 aa13_term = aa3_term | aa1_term
 aa1_term = :x ?(x in 'X*') -> x
 aa3_term = 'Ter'
