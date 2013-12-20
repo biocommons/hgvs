@@ -22,7 +22,7 @@ setup(
     author_email = 'reece+hgvs@invitae.com',
     description = """HGVS Parser""",
     name = "hgvs",
-    package_data = {'hgvs': ['data/hgvs.ometa']},
+    package_data = {'hgvs': ['data/*']},
     packages = find_packages(),
     url = 'https://bitbucket.org/invitae/hgvs',
 
