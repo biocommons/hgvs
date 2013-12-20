@@ -11,6 +11,7 @@ syntax: glob
 *.pylint
 *.pyo
 *.sqlite3
+*.tar.gz
 *~
 .DS_Store
 .Python

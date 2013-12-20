@@ -27,13 +27,15 @@ setup(
     url = 'https://bitbucket.org/invitae/hgvs',
 
     install_requires = [
-        'biopython',
         'nose',
-        'parsley',
-        'pysam',
-        'recordtype',
         'sphinx',
         'sphinx-pypi-upload',
+        'sphinx_rtd_theme',
+        'sphinxcontrib-httpdomain',
+
+        'biopython',
+        'parsley',
+        'recordtype',
         ],
 
     setup_requires = [
