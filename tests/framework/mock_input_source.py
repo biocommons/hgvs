@@ -4,8 +4,6 @@
 from __future__ import with_statement
 import csv
 
-import hgvs.edti.interface as interface
-
 class MockInputSource():
 
     def __init__(self, in_file):
