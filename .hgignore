@@ -14,12 +14,14 @@ syntax: glob
 *~
 .DS_Store
 .Python
+.coverage
 .idea
 .installed.cfg
 .uta.conf.mk
 archive
 bdist
 build
+cover
 dist
 distribute-*
 doc/build
@@ -34,10 +36,11 @@ patches
 prd
 sdist
 tests/data/multifastadb/d*/*fai
+tests/data/*.out
 tmp
 ve
-virtualenv.py
 virtualenv-*
+virtualenv.py
 workspace
 
 syntax: regexp
