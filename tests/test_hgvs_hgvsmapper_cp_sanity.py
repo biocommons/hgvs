@@ -11,7 +11,7 @@ import framework.mock_input_source as mock_input_data_source
 
 class TestHgvsCToP(unittest.TestCase):
 
-    fn = os.path.join(os.path.dirname(__file__), 'data', 'sanity_c_to_p.tsv')
+    fn = os.path.join(os.path.dirname(__file__), 'data', 'sanity_cp.tsv')
     _datasource = mock_input_data_source.MockInputSource(fn)
     _mapper = hgvsmapper.HGVSMapper(_datasource)
     _parser = hgvs.parser.Parser()
