@@ -84,7 +84,7 @@ jenkins:
 	&& make test-with-coverage \
 	&& make docs
 
-jenkins:
+jenkins-nightly:
 	make ve \
 	&& source ve/bin/activate \
 	&& make install \
