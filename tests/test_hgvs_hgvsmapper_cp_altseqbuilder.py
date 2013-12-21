@@ -114,34 +114,35 @@ class TestAltSeqBuilder(unittest.TestCase):
                                                        'cds_start', 'cds_stop', 'protein_accession'])):
 
             @classmethod
-            def setup_transcript_data(cls, ac, db, ref='GRCh37.p10'):
+            def setup_transcript_data(cls, ac, ac_p, db, ref='GRCh37.p10'):
                 """helper for generating RefTranscriptData from for hgvsc_to_hgvsp"""
-                ts_exons = db.get_tx_exons(ac)
-                ts_info = db.get_tx_info(ac)
+                tx_info = db.get_tx_info(ac)
+                tx_seq = db.get_tx_seq(ac)
+
+                if tx_info is None or tx_seq is None:
+                    raise hgvs.exceptions.HGVSError("Missing transcript data for accession: {}".format(ac))
 
                 # use 1-based hgvs coords
-                cds_start = ts_info['cds_start_i'] + 1
-                cds_stop = ts_info['cds_end_i']
+                cds_start = tx_info['cds_start_i'] + 1
+                cds_stop = tx_info['cds_end_i']
 
-                # concatenate sequences by exon
-                ord_seq = {x['ord']: x['t_seq_a'] for x in ts_exons}
-                ordered_keys = ord_seq.keys()
-                ordered_keys.sort()
-                transcript_sequence = ''.join(ord_seq[x] for x in ordered_keys)
+                # padding list so biopython won't complain during the conversion
+                tx_seq_to_translate = tx_seq[cds_start - 1:cds_stop]
+                if len(tx_seq_to_translate) % 3 != 0:
+                    ''.join(list(tx_seq_to_translate).extend(['N']*((3-len(tx_seq_to_translate) % 3) % 3)))
 
-                transcript_dna_cds = Seq(transcript_sequence[cds_start - 1:cds_stop])
-                protein_seq = str(transcript_dna_cds.translate())
-                protein_acc = hgvs.stopgap.pseq_to_ac(protein_seq)
+                tx_seq_cds = Seq(tx_seq_to_translate)
+                protein_seq = str(tx_seq_cds.translate())
 
-                transcript_data = RefTranscriptData(transcript_sequence, protein_seq, cds_start,
-                                                    cds_stop, protein_acc)
+                transcript_data = RefTranscriptData(tx_seq, protein_seq, cds_start,
+                                                    cds_stop, ac_p)
 
                 return transcript_data
 
 
-
+        ac_p = "DUMMY"
         var = self._parser.parse_hgvs_variant(hgvsc)
-        transcript_data = RefTranscriptData.setup_transcript_data(var.seqref, self._datasource)
+        transcript_data = RefTranscriptData.setup_transcript_data(var.seqref, ac_p, self._datasource)
 
         builder = altseqbuilder.AltSeqBuilder(var, transcript_data)
         insert_result = builder.build_altseq()

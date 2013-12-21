@@ -183,11 +183,13 @@ class HGVSMapper(object):
                                              posedit=hgvs.posedit.PosEdit( pos_c, edit_c ) )
         return var_c
 
-    def hgvsc_to_hgvsp(self, var_c):
+    def hgvsc_to_hgvsp(self, var_c, ac_p):
         """Convert hgvsc tag to hgvsp tag
 
         :param var_c: hgvsc tag
         :type SequenceVariant
+        :param ac_p: protein accession
+        :type string
         :return hgvsp tag
         :type SequenceVariant
         """
@@ -197,7 +199,7 @@ class HGVSMapper(object):
                                                        'cds_start', 'cds_stop', 'protein_accession'])):
 
             @classmethod
-            def setup_transcript_data(cls, ac, db, ref='GRCh37.p10'):
+            def setup_transcript_data(cls, ac, ac_p, db, ref='GRCh37.p10'):
                 """helper for generating RefTranscriptData from for hgvsc_to_hgvsp"""
                 tx_info = db.get_tx_info(ac)
                 tx_seq = db.get_tx_seq(ac)
@@ -216,17 +218,16 @@ class HGVSMapper(object):
 
                 tx_seq_cds = Seq(tx_seq_to_translate)
                 protein_seq = str(tx_seq_cds.translate())
-                protein_acc = hgvs.stopgap.pseq_to_ac(protein_seq)
 
                 transcript_data = RefTranscriptData(tx_seq, protein_seq, cds_start,
-                                                    cds_stop, protein_acc)
+                                                    cds_stop, ac_p)
 
                 return transcript_data
 
         if not (var_c.type == 'c'):
             raise hgvs.exceptions.InvalidHGVSVariantError('Expected a cDNA (c.); got ' + str(var_c))
 
-        reference_data = RefTranscriptData.setup_transcript_data(var_c.ac, self.db)
+        reference_data = RefTranscriptData.setup_transcript_data(var_c.ac, ac_p, self.db)
         builder = altseqbuilder.AltSeqBuilder(var_c, reference_data)
 
         # TODO - handle case where you get 2+ alt sequences back; currently get list of 1 element
