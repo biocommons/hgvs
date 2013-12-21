@@ -31,7 +31,7 @@ class TestHgvsCToPBase(unittest.TestCase):
     #     hgvsc = 'NM_000257.2:c.3300_3311delCGGCAGCCAGCT'
     #     hgvsp_expected = 'NP_000248.2:p.Gly1101_Leu1104del'
     #     var_c = self._hp.parse_hgvs_variant(hgvsc)
-    #     var_p = self._hm.hgvsc_to_hgvsp(var_c)
+    #     var_p = self._hm.hgvsc_to_hgvsp(var_c, hgvsp.split(':')[0])
     #     hgvsp_actual = str(var_p)
     #     msg = "hgvsp expected: {} actual: {}".format(hgvsp_expected, hgvsp_actual)
     #     self.assertEqual(hgvsp_expected, hgvsp_actual, msg)
@@ -58,7 +58,7 @@ class TestHgvsCToPBase(unittest.TestCase):
         if not row_id.startswith("#") and hgvsc and hgvsp_expected:
             try:
                 var_c = self._hp.parse_hgvs_variant(hgvsc)
-                var_p = self._hm.hgvsc_to_hgvsp(var_c)
+                var_p = self._hm.hgvsc_to_hgvsp(var_c,  hgvsp_expected.split(':')[0]) # hack until p.?, p.= etc parse
                 hgvsp_actual = str(var_p)
 
                 if hgvsp_expected != hgvsp_actual:

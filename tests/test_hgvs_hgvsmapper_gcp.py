@@ -51,7 +51,7 @@ class Test_HGVSMapper(unittest.TestCase):
 
         if var_p is not None:
             # c -> p
-            var_p_test = self.hm.hgvsc_to_hgvsp(var_c)
+            var_p_test = self.hm.hgvsc_to_hgvsp(var_c, var_p.ac)
             hgvs_p_test = str(var_p_test)
             self.assertEquals(hgvs_p_test, str(var_p))
 

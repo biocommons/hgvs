@@ -47,7 +47,7 @@ if __name__ == '__main__':
         
         var_c_from_g = hgvsmapper.hgvsg_to_hgvsc( var_g, var_c.ac )
         var_g_from_c = hgvsmapper.hgvsc_to_hgvsg( var_c )
-        var_p_from_c = hgvsmapper.hgvsc_to_hgvsp( var_c )
+        var_p_from_c = hgvsmapper.hgvsc_to_hgvsp( var_c, var_p.ac )
         
         hgvs_c_from_g = str(var_c_from_g)
         hgvs_g_from_c = str(var_g_from_c)
