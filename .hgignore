@@ -30,6 +30,7 @@ hgtools-*
 lib/python/uta/_release.py
 misc/data
 misc/exon-str-cmp
+misc/railroad/*
 misc/tests
 nosetests.xml
 parts
