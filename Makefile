@@ -85,7 +85,8 @@ jenkins:
 	&& make docs
 
 jenkins-nightly:
-	make ve \
+	make cleanest \
+	&& make ve \
 	&& source ve/bin/activate \
 	&& make install \
 	&& make test-all-with-coverage \
