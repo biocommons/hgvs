@@ -58,12 +58,17 @@ test-setup:
 	# be remedied later. DO NOT add this to setup.py.
 	python -c 'import uta' 1>/dev/null 2>/dev/null || pip install hg+ssh://hg@bitbucket.org/locusdevelopment/uta
 
-test: test-setup
-	nosetests --with-xunit
-
-test-with-coverage: test-setup
+test-setup-coverage: 
 	pip install coverage
-	nosetests --with-xunit --with-coverage --cover-package=hgvs --cover-html
+
+test: test-setup
+	nosetests --with-xunit --exclude test_nightly
+
+test-with-coverage: test-setup test-setup-coverage
+	nosetests --with-xunit --with-coverage --cover-erase --cover-package=hgvs --cover-html --exclude test_nightly
+
+test-all-with-coverage: test-setup test-setup-coverage
+	nosetests --with-xunit --with-coverage --cover-erase --cover-package=hgvs --cover-html 
 
 #=> lint -- run lint, flake, etc
 # TBD
@@ -77,6 +82,13 @@ jenkins:
 	&& source ve/bin/activate \
 	&& make install \
 	&& make test-with-coverage \
+	&& make docs
+
+jenkins:
+	make ve \
+	&& source ve/bin/activate \
+	&& make install \
+	&& make test-all-with-coverage \
 	&& make docs
 
 #=> upload-<tag>

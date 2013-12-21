@@ -8,7 +8,7 @@ import test_hgvs_hgvsmapper_cp_base
 
 class TestHgvsCToPSubsetCvidsPlus(test_hgvs_hgvsmapper_cp_base.TestHgvsCToPBase):
 
-    def test__hgvsc_to_hgvsp_cvid_plus_sample(self):
+    def test_hgvsc_to_hgvsp_cvid_subset_plus(self):
         infilename = 'cvid_subset_plus.tsv'
         outfilename = 'cvid_subset_plus.out'
         infile = os.path.join(os.path.dirname(__file__), 'data', infilename)
