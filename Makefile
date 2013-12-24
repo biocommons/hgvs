@@ -76,15 +76,15 @@ test-all-with-coverage: test-setup test-setup-coverage
 #=> docs -- make sphinx docs
 docs: build_sphinx
 
-#=> jenkins -- target for jenkins runs
-jenkins:
+#=> continuous integration tests -- target for jenkins (and now travis, drone, or other providers)
+ci-test jenkins:
 	make ve \
 	&& source ve/bin/activate \
 	&& make install \
 	&& make test-with-coverage \
 	&& make docs
 
-jenkins-nightly:
+ci-test-nightly jenkins-nightly:
 	make cleanest \
 	&& make ve \
 	&& source ve/bin/activate \

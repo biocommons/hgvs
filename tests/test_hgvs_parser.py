@@ -36,5 +36,19 @@ class Test_Position(unittest.TestCase):
                 self.assertTrue(False, msg='expected HGVSParseError: %s (%s)' % (var,msg))
 
 
+    def test_parser_posedit_special(self):
+        # See note in grammar about parsing p.=, p.?, and p.0
+        self.assertEqual( str(self.parser.parse_p_posedit('0')), '0' )
+        self.assertEqual( str(self.parser.parse_p_posedit('0?')), '0?' )
+        self.assertEqual( str(self.parser.parse_p_posedit('(0)')), '0?' )
+
+        self.assertEqual( str(self.parser.parse_p_posedit('?')), '?' )
+        self.assertEqual( str(self.parser.parse_p_posedit('??')), '?' )
+        self.assertEqual( str(self.parser.parse_p_posedit('(?)')), '?' )
+
+        self.assertEqual( str(self.parser.parse_p_posedit('=')), '=' )
+        self.assertEqual( str(self.parser.parse_p_posedit('=?')), '(=)' )
+        self.assertEqual( str(self.parser.parse_p_posedit('(=)')), '(=)' )
+
 if __name__ == '__main__':
     unittest.main()
