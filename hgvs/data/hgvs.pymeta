@@ -71,7 +71,7 @@ c_variant   = accn:ac ':'      'c':type '.'   c_posedit:posedit -> hgvs.variant.
 p_variant   = accn:ac ':'      'p':type '.'   p_posedit:posedit -> hgvs.variant.SequenceVariant(ac,type,posedit)
 r_variant   = accn:ac ':'      'r':type '.'   r_posedit:posedit -> hgvs.variant.SequenceVariant(ac,type,posedit)
 
-# any_variant is a syntactic parse around ':' and '.' only
+# any_variant is intended for lax parsing around ':' and '.' components
 any_variant = accn:ac ':' letter:type '.' <anything+>:posedit -> hgvs.variant.SequenceVariant(ac,type,posedit)
 
 
@@ -108,8 +108,12 @@ m_posedit   = gmn_posedit
 n_posedit   = gmn_posedit
 gmn_posedit = gmn_interval:pos dna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit)
 c_posedit   = c_interval:pos dna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit)
-p_posedit   = p_interval:pos pro_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit)
 r_posedit   = r_interval:pos rna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit)
+p_posedit   = (p_interval:pos pro_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit)) | p_posedit_special_mu
+
+# This grammar currently collapses ? and () uncertainty into a single 
+p_posedit_special_mu = (p_posedit_special:posedit '?' -> posedit.set_uncertain()) | ('(' p_posedit_special:posedit ')' -> posedit.set_uncertain()) | p_posedit_special:posedit
+p_posedit_special = :x ?(x in '=?0') -> hgvs.posedit.PosEdit(pos=None,edit=x)
 
 
 ############################################################################
@@ -141,13 +145,12 @@ rna_ins    = 'ins' <rna+>:alt         -> hgvs.edit.NARefAlt(ref=None,alt=alt)
 rna_dup    = 'dup' <rna*>:seq         -> hgvs.edit.Dup(seq=seq)
 
 pro_edit_mu = pro_edit | '(' pro_edit:edit ')' -> edit.set_uncertain()
-pro_edit   = pro_subst | pro_delins | pro_ins | pro_del | pro_dup | pro_special
+pro_edit   = pro_subst | pro_delins | pro_ins | pro_del | pro_dup
 pro_subst  = aat13:alt aa13_fs?:fs         -> hgvs.edit.AARefAlt(ref='',alt=hgvs.utils.aa_to_aa1(alt),fs=fs)
 pro_delins = 'delins' aat_seq:alt aa13_fs?:fs -> hgvs.edit.AARefAlt(ref='',alt=hgvs.utils.aa_to_aa1(alt),fs=fs)
 pro_del    = 'del'                         -> hgvs.edit.AARefAlt(ref='',alt=None)
 pro_ins    = 'ins' aat_seq:alt aa13_fs?:fs -> hgvs.edit.AARefAlt(ref=None,alt=hgvs.utils.aa_to_aa1(alt),fs=fs)
 pro_dup    = 'dup'                         -> hgvs.edit.Dup(seq=seq)
-pro_special= :x ?(x in '=?0')              -> hgvs.edit.AASpecial(status=x)
 
 
 ############################################################################

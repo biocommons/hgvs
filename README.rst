@@ -29,6 +29,18 @@ Whetting your Appetite
   Out[10]: Variant(ac=NM_001637.3, type=c, posedit=1582G>A)
 
 
+Status
+------
+The HGVS package is under active development (Dec 2013).  Although the
+grammar, mapping, and testing is fairly mature, API-visible changes are
+expected.  We will endeavor to bump the minor version number (in a
+major.minor.patch versioning scheme) when we expect code changes are
+required.
+
+Feedback and bug reports are welcome.
+
+
+
 Example
 -------
 
