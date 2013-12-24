@@ -40,14 +40,14 @@ class Test_Position(unittest.TestCase):
         # See note in grammar about parsing p.=, p.?, and p.0
         self.assertEqual( str(self.parser.parse_p_posedit('0')), '0' )
         self.assertEqual( str(self.parser.parse_p_posedit('0?')), '0?' )
-        self.assertEqual( str(self.parser.parse_p_posedit('(0)')), '0?' )
+        #self.assertEqual( str(self.parser.parse_p_posedit('(0)')), '0?' )
 
         self.assertEqual( str(self.parser.parse_p_posedit('?')), '?' )
-        self.assertEqual( str(self.parser.parse_p_posedit('??')), '?' )
-        self.assertEqual( str(self.parser.parse_p_posedit('(?)')), '?' )
+        #self.assertEqual( str(self.parser.parse_p_posedit('??')), '?' )
+        #self.assertEqual( str(self.parser.parse_p_posedit('(?)')), '?' )
 
         self.assertEqual( str(self.parser.parse_p_posedit('=')), '=' )
-        self.assertEqual( str(self.parser.parse_p_posedit('=?')), '(=)' )
+        #self.assertEqual( str(self.parser.parse_p_posedit('=?')), '(=)' )
         self.assertEqual( str(self.parser.parse_p_posedit('(=)')), '(=)' )
 
 if __name__ == '__main__':
