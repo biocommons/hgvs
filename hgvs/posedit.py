@@ -10,9 +10,7 @@ class PosEdit( recordtype.recordtype( 'PosEdit', [('pos',None),('edit',None),('u
     def __str__(self):
         rv = str(self.edit) if self.pos is None else '{self.pos}{self.edit}'.format(self=self)
         if self.uncertain:
-            if self.edit == '?':
-                pass
-            elif self.edit == '0':
+            if self.edit in ['0','']:
                 rv = rv + '?'
             else:
                 rv = '(' + rv + ')'
