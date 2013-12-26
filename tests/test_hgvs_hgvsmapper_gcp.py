@@ -2,10 +2,13 @@
 # to execute, try:
 # PYTHONPATH=. python tests/test_hgvs_hgvsmapper_gcp.py
 
-import unittest, csv, sys, pprint
+import csv
+import unittest
+
+import bdi.sources.uta0_sqlite
+
 import hgvs.hgvsmapper as hgvsmapper
 import hgvs.parser
-import uta.db.transcriptdb
 
 
 def gcp_file_reader(fn):
@@ -18,8 +21,8 @@ def gcp_file_reader(fn):
 
 class Test_HGVSMapper(unittest.TestCase):
     def setUp(self):
-        uta_conn = uta.db.transcriptdb.TranscriptDB()
-        self.hm = hgvs.hgvsmapper.HGVSMapper(uta_conn, cache_transcripts=True)
+        self.bdi = bdi.sources.uta0_sqlite.UTA0('/tmp/uta-0.0.4.db')
+        self.hm = hgvs.hgvsmapper.HGVSMapper(self.bdi, cache_transcripts=True)
         self.hp = hgvs.parser.Parser()
         self.failed = []
 

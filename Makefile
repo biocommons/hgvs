@@ -5,19 +5,9 @@
 
 SHELL:=/bin/bash -o pipefail
 SELF:=$(firstword $(MAKEFILE_LIST))
-
-#export PYTHONPATH=lib/python
-
-ifdef LOCAL_UTA
-export UTA_DB_URL=postgresql://localhost/
-endif
+BDI_UTA_DB:=/tmp/uta-0.0.4.db
 
 PYPI_SERVICE:=-r invitae
-
-# make config in etc/uta.conf available within the Makefile
--include .uta.conf.mk
-.uta.conf.mk: etc/uta.conf
-	./sbin/conf-to-vars $< >$@
 
 ############################################################################
 #= BASIC USAGE
@@ -52,15 +42,13 @@ ${VE_DIR}: ${VE_PY}
 bdist bdist_egg build build_sphinx develop install sdist upload_sphinx: %:
 	python setup.py $*
 
+#=> test-setup -- prepare to run tests
+test-setup: ${BDI_UTA_DB}
+${BDI_UTA_DB}: 
+	wget -P/tmp -nd https://www.dropbox.com/sh/4fzjpdt9erx53rm/pP_F49Zyut/uta%20snapshots/uta-0.0.4.db.gz
+	gunzip -q $<
+
 #=> test -- run tests
-test-setup:
-	# NOTE: HGVS is unfortunately dependent on UTA for testing. This will
-	# be remedied later. DO NOT add this to setup.py.
-	python -c 'import uta' 1>/dev/null 2>/dev/null || pip install hg+ssh://hg@bitbucket.org/locusdevelopment/uta
-
-test-setup-coverage: 
-	pip install coverage
-
 test: test-setup
 	nosetests --with-xunit --exclude test_nightly
 

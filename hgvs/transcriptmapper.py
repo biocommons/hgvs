@@ -13,12 +13,12 @@ from hgvs.exceptions import *
 class TranscriptMapper(object):
     __doc__ = """All coordinates are in HGVS format (human 1-based)"""
 
-    def __init__(self, db, ac, ref='GRCH37.p10'):
-        self.db = db
+    def __init__(self, bdi, ac, ref='GRCH37.p10'):
+        self.bdi = bdi
         self.ref = ref
         self.ac = ac
-        self.tx_info = db.get_tx_info(self.ac)
-        self.tx_exons = db.get_tx_exons(self.ac, ref)
+        self.tx_info = bdi.get_tx_info(self.ac)
+        self.tx_exons = bdi.get_tx_exons(self.ac, ref)
         if self.tx_info is None or len(self.tx_exons) == 0:
             raise HGVSError("Couldn't build TranscriptMapper(ref={self.ref}, ac={self.ac})".format(self=self))
         self.strand = self.tx_info['strand']
@@ -205,9 +205,8 @@ def build_tx_cigar(exons, strand):
 
 
 if __name__ == '__main__':
-    from uta.db.transcriptdb import TranscriptDB
-
+    import bdi.sources.uta0
     ref = 'GRCh37.p10'
     ac = 'NM_145249.2'
-    db = TranscriptDB()
-    tm = TranscriptMapper(db,ac,ref)
+    bdi = bdi.sources.uta0.UTA0('/tmp/uta-0.0.4.db')
+    tm = TranscriptMapper(bdi,ac,ref)

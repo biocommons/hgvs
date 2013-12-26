@@ -36,9 +36,18 @@ setup(
         'biopython',
         'parsley',
         'recordtype',
+
+        # Non-PyPI dependencies:
+        'bdi',
         ],
 
     setup_requires = [
+        'coverage',
         'hgtools',
         ],
+
+    dependency_links = [
+        'hg+ssh://hg@bitbucket.org/locusdevelopment/bdi#egg=bdi',
+        ]
+
 )

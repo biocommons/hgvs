@@ -1,14 +1,14 @@
 import unittest
 
-import uta.db.transcriptdb
+import bdi.sources.uta0_sqlite
 
 import hgvs.parser
 import hgvs.hgvsmapper
 
 class Test_HGVSMapper(unittest.TestCase):
     def setUp(self):
-        uta_conn = uta.db.transcriptdb.TranscriptDB()
-        self.hm = hgvs.hgvsmapper.HGVSMapper(uta_conn, cache_transcripts=True)
+        self.bdi = bdi.sources.uta0_sqlite.UTA0('/tmp/uta-0.0.4.db')
+        self.hm = hgvs.hgvsmapper.HGVSMapper(self.bdi, cache_transcripts=True)
         self.hp = hgvs.parser.Parser()
 
     def test_1(self):
