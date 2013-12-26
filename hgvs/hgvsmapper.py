@@ -20,8 +20,8 @@ class HGVSMapper(object):
     All methods require and return objects of type hgvs.variant.Variant.
     """
 
-    def __init__(self,db=None,cache_transcripts=False):
-        self.db = db
+    def __init__(self,bdi,cache_transcripts=False):
+        self.bdi = bdi
         self.cache_transcripts = cache_transcripts
         self.__tm_cache = {}
 
@@ -199,10 +199,10 @@ class HGVSMapper(object):
                                                        'cds_start', 'cds_stop', 'protein_accession'])):
 
             @classmethod
-            def setup_transcript_data(cls, ac, ac_p, db, ref='GRCh37.p10'):
+            def setup_transcript_data(cls, ac, ac_p, bdi, ref='GRCh37.p10'):
                 """helper for generating RefTranscriptData from for hgvsc_to_hgvsp"""
-                tx_info = db.get_tx_info(ac)
-                tx_seq = db.get_tx_seq(ac)
+                tx_info = bdi.get_tx_info(ac)
+                tx_seq = bdi.get_tx_seq(ac)
 
                 if tx_info is None or tx_seq is None:
                     raise hgvs.exceptions.HGVSError("Missing transcript data for accession: {}".format(ac))
@@ -227,7 +227,7 @@ class HGVSMapper(object):
         if not (var_c.type == 'c'):
             raise hgvs.exceptions.InvalidHGVSVariantError('Expected a cDNA (c.); got ' + str(var_c))
 
-        reference_data = RefTranscriptData.setup_transcript_data(var_c.ac, ac_p, self.db)
+        reference_data = RefTranscriptData.setup_transcript_data(var_c.ac, ac_p, self.bdi)
         builder = altseqbuilder.AltSeqBuilder(var_c, reference_data)
 
         # TODO - handle case where you get 2+ alt sequences back; currently get list of 1 element
@@ -255,19 +255,22 @@ class HGVSMapper(object):
         try:
             tm = self.__tm_cache[ac]
         except KeyError:
-            tm = hgvs.transcriptmapper.TranscriptMapper(self.db, ref = ref, ac = ac)
+            tm = hgvs.transcriptmapper.TranscriptMapper(self.bdi, ref = ref, ac = ac)
             if self.cache_transcripts:
                 self.__tm_cache[ac] = tm
         return tm
  
 
 if __name__ == '__main__':
-    import uta.db.transcriptdb
     import hgvs.parser
+    import hgvs.hgvsmapper
+    from bdi.sources.uta0_sqlite import UTA0
 
+    bdi = UTA0('/tmp/uta-0.0.4.db')
     hp = hgvs.parser.Parser()
-    uta_conn = uta.db.transcriptdb.TranscriptDB()
-    hm = HGVSMapper(uta_conn, cache_transcripts=True)
+    hm = hgvs.hgvsmapper.HGVSMapper(bdi, cache_transcripts=True)
+
+    ref = 'GRCh37.p10'
 
     # From garcia.tsv:
     # AOAH    NM_001177507.1:c.1486G>A      

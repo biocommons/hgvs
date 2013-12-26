@@ -40,6 +40,18 @@ required.
 Feedback and bug reports are welcome.
 
 
+Requirements
+------------
+Variant mapping requires exon structures appropriate for the accessions
+being mapped and the choice of reference geneome. In order to isolate hgvs
+from the myriad choices, these data must be provided through an
+implementation of the Bioinformatics Data Interface (BDI; XXX:link here).
+As of Dec 2013, the only implementation supported by BDI is for RefSeq
+accessions and the GRCh37 primary assembly. A sqlite database of those
+data are available at `uta public snapshots`_.
+
+_`uta public snapshots`: http://goo.gl/24ZkIY
+
 
 Example
 -------

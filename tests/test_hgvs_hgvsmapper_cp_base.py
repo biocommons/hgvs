@@ -1,14 +1,14 @@
 #
 # Base class for cp tests
 #
-from __future__ import with_statement
 import csv
 import re
 import unittest
 
+import bdi.sources.uta0_sqlite
+
 import hgvs.hgvsmapper
 import hgvs.parser
-import uta.db.transcriptdb
 
 def gcp_file_reader(fn):
     rdr = csv.DictReader(open(fn, 'r'), delimiter='\t')
@@ -21,8 +21,8 @@ def gcp_file_reader(fn):
 class TestHgvsCToPBase(unittest.TestCase):
 
     def setUp(self):
-        uta_conn = uta.db.transcriptdb.TranscriptDB()
-        self._hm = hgvs.hgvsmapper.HGVSMapper(uta_conn, cache_transcripts=True)
+        self.bdi = bdi.sources.uta0_sqlite.UTA0('/tmp/uta-0.0.4.db')
+        self._hm = hgvs.hgvsmapper.HGVSMapper(self.bdi, cache_transcripts=True)
         self._hp = hgvs.parser.Parser()
         self._failed = []
 
