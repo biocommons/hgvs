@@ -2,7 +2,7 @@
 
 import IPython
 
-import uta.db.transcriptdb
+from bdi.sources.uta0_pg import UTA0
 
 import hgvs.parser
 import hgvs.hgvsmapper
@@ -11,10 +11,10 @@ import hgvs.hgvsmapper
 hgvs_g = 'NC_000007.13:g.36561662C>T'
 hgvs_c = 'NM_001637.3:c.1582G>A'
 
-uta_conn = uta.db.transcriptdb.TranscriptDB()
+bdi = UTA0()
 
 hgvsparser = hgvs.parser.Parser()
-hgvsmapper = hgvs.hgvsmapper.HGVSMapper( uta_conn, cache_transcripts = True )
+hgvsmapper = hgvs.hgvsmapper.HGVSMapper( bdi, cache_transcripts = True )
 
 var_g = hgvsparser.parse_hgvs_variant(hgvs_g)
 var_c = hgvsparser.parse_hgvs_variant(hgvs_c)

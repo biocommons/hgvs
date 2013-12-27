@@ -14,9 +14,9 @@ Genome Variation Society (`HGVS`_) recommendations. ::
   In [5]: var_g
   Out[5]: Variant(ac=NC_000007.13, type=g, posedit=36561662C>T)
 
-  In [6]: import uta.db.transcriptdb, hgvs.hgvsmapper
-  In [7]: uta_conn = uta.db.transcriptdb.TranscriptDB()
-  In [8]: hm = hgvs.hgvsmapper.HGVSMapper( uta_conn, cache_transcripts=True )
+  In [6]: import bdi.sources.uta0_pg, hgvs.hgvsmapper
+  In [7]: bdi = bdi.sources.uta0_pg.UTA0()
+  In [8]: hm = hgvs.hgvsmapper.HGVSMapper( bdi, cache_transcripts=True )
   In [9]: var_c = hm.hgvsg_to_hgvsc( var_g, 'NM_001637.3' )
   In [10]: var_c
   Out[10]: Variant(ac=NM_001637.3, type=c, posedit=1582G>A)
