@@ -52,32 +52,31 @@ Feedback and bug reports are welcome.
 
 
 
-Requirements
-------------
-
-Variant mapping requires exon structures appropriate for the accessions
-being mapped and the choice of reference geneome. In order to isolate the
-hgvs package from the myriad choices and tradeoffs, these data must be
-provided through an implementation of the Bioinformatics Data Interface
-(`BDI`_).
-
-As of Dec 2013, the only BDI implementation available is through `UTA`_.
-`Invitae`_ provides a public UTA database instance that is used by
-default, but you may also install your own PostgreSQL or SQLite version.
-
-
-
 Installation
 ------------
 On Ubuntu 13.10, Python 2.7.5+::
 
   $ mkvirtualenv hgvs-test
   (hgvs-test)$ pip install setuptools --upgrade
+  (hgvs-test)$ pip install hg+ssh://hg@bitbucket.org/locusdevelopment/uta
   (hgvs-test)$ pip install hg+ssh://hg@bitbucket.org/locusdevelopment/hgvs
 
 
-License
--------
+External Data Requirements
+..........................
+
+Variant mapping and validation requires access to external data,
+specifically exon structures, transcript alignments, and protein
+accessions.  In order to isolate the hgvs package from the myriad choices
+and tradeoffs, these data are provided through an implementation of the
+(abstract) Bioinformatics Data Interface (`BDI`_).  
+
+As of Dec 2013, the only BDI implementation available is through the
+Universal Transcript Archive (`UTA`_), a sister project that provides
+access to transcripts and genome-transcript alignments.  `Invitae`_
+provides a public UTA database instance that is used by default; see the
+`UTA`_ page for instructions on installing your own PostgreSQL or SQLite
+version.
 
 
 
