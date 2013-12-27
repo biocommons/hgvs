@@ -39,6 +39,7 @@ setup(
 
         # Non-PyPI dependencies:
         'bdi',
+        'uta',
         ],
 
     setup_requires = [
@@ -48,6 +49,7 @@ setup(
 
     dependency_links = [
         'hg+ssh://hg@bitbucket.org/locusdevelopment/bdi#egg=bdi',
+        'hg+ssh://hg@bitbucket.org/locusdevelopment/uta#egg=uta',
         ]
 
 )
