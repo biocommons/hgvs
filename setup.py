@@ -37,9 +37,16 @@ setup(
         'parsley',
         'recordtype',
 
-        # Non-PyPI dependencies:
+        # Non-PyPI dependencies -- requires dependency_links below
+        # N.B. These do not work via pip install, but do work with python setup.py install
         'bdi',
         'uta',
+        ],
+
+    dependency_links = [
+        # for non-PyPI dependencies
+        'hg+ssh://hg@bitbucket.org/locusdevelopment/bdi#egg=bdi',
+        'hg+ssh://hg@bitbucket.org/locusdevelopment/uta#egg=uta',
         ],
 
     setup_requires = [
@@ -47,8 +54,4 @@ setup(
         'hgtools',
         ],
 
-    dependency_links = [
-        'hg+ssh://hg@bitbucket.org/locusdevelopment/bdi@2ea37da#egg=bdi-2ea37da',
-        'hg+ssh://hg@bitbucket.org/locusdevelopment/uta@c3931dd#egg=uta-c3931dd',
-        ]
-)
+    )

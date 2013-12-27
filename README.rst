@@ -56,28 +56,41 @@ Installation
 ------------
 On Ubuntu 13.10, Python 2.7.5+::
 
+First, build a virtualenv::
+  $ sudo apt-get install python2.7 libpq-dev virtualenvwrapper
   $ mkvirtualenv hgvs-test
+
+Install via pip::
   (hgvs-test)$ pip install setuptools --upgrade
   (hgvs-test)$ pip install hg+ssh://hg@bitbucket.org/locusdevelopment/uta
+  (hgvs-test)$ pip install hg+ssh://hg@bitbucket.org/locusdevelopment/bdi
   (hgvs-test)$ pip install hg+ssh://hg@bitbucket.org/locusdevelopment/hgvs
 
+Alternatively, test and install from source::
+  (hgvs-test)$ hg clone hg+ssh://hg@bitbucket.org/locusdevelopment/hgvs
+  (hgvs-test)$ cd hgvs
+  (hgvs-test)$ make test
+  (hgvs-test)$ make install
 
-External Data Requirements
-..........................
+Other platforms and dependency versions are expected to work but are not
+tested.
 
-Variant mapping and validation requires access to external data,
-specifically exon structures, transcript alignments, and protein
-accessions.  In order to isolate the hgvs package from the myriad choices
-and tradeoffs, these data are provided through an implementation of the
-(abstract) Bioinformatics Data Interface (`BDI`_).  
 
-As of Dec 2013, the only BDI implementation available is through the
-Universal Transcript Archive (`UTA`_), a sister project that provides
-access to transcripts and genome-transcript alignments.  `Invitae`_
-provides a public UTA database instance that is used by default; see the
-`UTA`_ page for instructions on installing your own PostgreSQL or SQLite
-version.
+.. note::
 
+  Variant mapping and validation requires access to external data,
+  specifically exon structures, transcript alignments, and protein
+  accessions.  In order to isolate the hgvs package from the myriad choices
+  and tradeoffs, these data are provided through an implementation of the
+  (abstract) Bioinformatics Data Interface (`BDI`_).  
+  
+  As of Dec 2013, the only available BDI implementation uses the Universal
+  Transcript Archive (`UTA`_), a sister project that provides access to
+  transcripts and genome-transcript alignments.  `Invitae`_ provides a
+  public UTA database instance that is used by default; see the `UTA`_
+  page for instructions on installing your own PostgreSQL or SQLite
+  version.  In the future, other BDI implmentations may be contributed for
+  other data sources.
 
 
 .. _HGVS: http://www.hgvs.org/mutnomen/
