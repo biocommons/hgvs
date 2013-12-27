@@ -25,11 +25,11 @@ Genome Variation Society (`HGVS`_) recommendations. ::
 Features
 --------
 
-  * Grammar-based parsing of HGVS variants and variant components
-  * Object model for variants and variant components
-  * Simple canonicalization of variants
-  * Mapping of variants between genome, transcript, and protein coordinates (requires `UTA`_; see `Requirements`)
-  * Extensive automated tests for mapping, including in regions of genome-transcript discrepancies
+* Grammar-based parsing of HGVS variants and variant components
+* Object model for variants and variant components
+* Simple canonicalization of variants
+* Mapping of variants between genome, transcript, and protein coordinates (requires `UTA`_; see `Requirements`)
+* Extensive automated tests for mapping, including in regions of genome-transcript discrepancies
 
 
 Status
@@ -44,9 +44,9 @@ required.
 This packages intends to implement features of `HGVS`_ Nomeclature that are in
 widespread use.  Certain common features are not yet implemented, including:
 
-  * inversions
-  * tranlocations
-  * compound variants
+* inversions
+* tranlocations
+* compound variants
 
 Feedback and bug reports are welcome.
 
@@ -62,7 +62,8 @@ provided through an implementation of the Bioinformatics Data Interface
 (`BDI`_).
 
 As of Dec 2013, the only BDI implementation available is through `UTA`_.
-`Invitae`_ 
+`Invitae`_ provides a public UTA database instance that is used by
+default, but you may also install your own PostgreSQL or SQLite version.
 
 
 
