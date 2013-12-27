@@ -45,6 +45,7 @@ setup(
     setup_requires = [
         'coverage',
         'hgtools',
+        'setuptools>2.0',
         ],
 
     dependency_links = [
