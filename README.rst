@@ -57,16 +57,19 @@ Installation
 On Ubuntu 13.10, Python 2.7.5+::
 
 First, build a virtualenv::
+
   $ sudo apt-get install python2.7 libpq-dev virtualenvwrapper
   $ mkvirtualenv hgvs-test
 
 Install via pip::
+
   (hgvs-test)$ pip install setuptools --upgrade
   (hgvs-test)$ pip install hg+ssh://hg@bitbucket.org/locusdevelopment/uta
   (hgvs-test)$ pip install hg+ssh://hg@bitbucket.org/locusdevelopment/bdi
   (hgvs-test)$ pip install hg+ssh://hg@bitbucket.org/locusdevelopment/hgvs
 
 Alternatively, test and install from source::
+
   (hgvs-test)$ hg clone hg+ssh://hg@bitbucket.org/locusdevelopment/hgvs
   (hgvs-test)$ cd hgvs
   (hgvs-test)$ make test
