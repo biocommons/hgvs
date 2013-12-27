@@ -54,11 +54,12 @@ Feedback and bug reports are welcome.
 
 Installation
 ------------
-On Ubuntu 13.10, Python 2.7.5+::
+The following instructions were tested on Ubuntu 13.10 (Python 2.7.5+) and
+Ubuntu 13.04 (Python 2.7.3).
 
 First, build a virtualenv::
 
-  $ sudo apt-get install python2.7 libpq-dev virtualenvwrapper
+  $ sudo apt-get install python2.7 python2.7-dev libpq-dev mercurial virtualenvwrapper
   $ mkvirtualenv hgvs-test
 
 Install via pip::
@@ -70,8 +71,9 @@ Install via pip::
 
 Alternatively, test and install from source::
 
-  (hgvs-test)$ hg clone hg+ssh://hg@bitbucket.org/locusdevelopment/hgvs
+  (hgvs-test)$ hg clone ssh://hg@bitbucket.org/locusdevelopment/hgvs
   (hgvs-test)$ cd hgvs
+  (hgvs-test)$ make develop
   (hgvs-test)$ make test
   (hgvs-test)$ make install
 
@@ -79,7 +81,8 @@ Other platforms and dependency versions are expected to work but are not
 tested.
 
 
-.. note::
+Dependency Note
+...............
 
   Variant mapping and validation requires access to external data,
   specifically exon structures, transcript alignments, and protein
