@@ -5,7 +5,6 @@
 
 SHELL:=/bin/bash -o pipefail
 SELF:=$(firstword $(MAKEFILE_LIST))
-BDI_UTA_DB:=/tmp/uta-0.0.4.db
 
 PYPI_SERVICE:=-r invitae
 
@@ -42,11 +41,10 @@ ${VE_DIR}: ${VE_PY}
 bdist bdist_egg build build_sphinx develop install sdist upload_sphinx: %:
 	python setup.py $*
 
+$(info ${BDI_UTA_DB})
+
 #=> test-setup -- prepare to run tests
-test-setup: ${BDI_UTA_DB}
-${BDI_UTA_DB}: 
-	wget -P/tmp -nd https://www.dropbox.com/sh/4fzjpdt9erx53rm/pP_F49Zyut/uta%20snapshots/uta-0.0.4.db.gz
-	gunzip -q $<
+test-setup:
 
 #=> test -- run tests
 test: test-setup

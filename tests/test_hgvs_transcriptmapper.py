@@ -1,6 +1,6 @@
 import unittest
 
-import bdi.sources.uta0_sqlite
+from bdi.sources.uta0_pg import UTA0
 
 import hgvs.location
 import hgvs.parser
@@ -11,7 +11,7 @@ class Test_transcriptmapper(unittest.TestCase):
     ref = 'GRCh37.p10'
 
     def setUp(self):
-        self.bdi = bdi.sources.uta0_sqlite.UTA0('/tmp/uta-0.0.4.db')
+        self.bdi = UTA0()
 
     def test_transcriptmapper_failures(self):
         self.assertRaises(HGVSError, TranscriptMapper, self.bdi, ref=self.ref, ac='bogus')
