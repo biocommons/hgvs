@@ -48,8 +48,7 @@ setup(
         ],
 
     dependency_links = [
-        'hg+ssh://hg@bitbucket.org/locusdevelopment/bdi#egg=bdi',
-        'hg+ssh://hg@bitbucket.org/locusdevelopment/uta#egg=uta',
+        'hg+ssh://hg@bitbucket.org/locusdevelopment/bdi@2ea37da#egg=bdi-2ea37da',
+        'hg+ssh://hg@bitbucket.org/locusdevelopment/uta@c3931dd#egg=uta-c3931dd',
         ]
-
 )
