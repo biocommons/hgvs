@@ -51,7 +51,6 @@ widespread use.  Certain common features are not yet implemented, including:
 Feedback and bug reports are welcome.
 
 
-
 Installation
 ------------
 
@@ -82,22 +81,41 @@ Other platforms and dependency versions are expected to work but are not
 tested.
 
 
-Dependency Note
-...............
+Data Dependencies and Architecture
+..................................
 
-  Variant mapping and validation requires access to external data,
-  specifically exon structures, transcript alignments, and protein
-  accessions.  In order to isolate the hgvs package from the myriad choices
-  and tradeoffs, these data are provided through an implementation of the
-  (abstract) Bioinformatics Data Interface (`BDI`_).  
-  
-  As of Dec 2013, the only available BDI implementation uses the Universal
-  Transcript Archive (`UTA`_), a sister project that provides access to
-  transcripts and genome-transcript alignments.  `Invitae`_ provides a
-  public UTA database instance that is used by default; see the `UTA`_
-  page for instructions on installing your own PostgreSQL or SQLite
-  version.  In the future, other BDI implmentations may be contributed for
-  other data sources.
+Variant mapping and validation requires access to external data,
+specifically exon structures, transcript alignments, and protein
+accessions.  In order to isolate the hgvs package from the myriad choices
+and tradeoffs, these data are provided through an implementation of the
+(abstract) Bioinformatics Data Interface (`BDI`_).  
+
+As of Dec 2013, the only available BDI implementation uses the Universal
+Transcript Archive (`UTA`_), a sister project that provides access to
+transcripts and genome-transcript alignments.  `Invitae`_ provides a
+public UTA database instance that is used by default; see the `UTA`_
+page for instructions on installing your own PostgreSQL or SQLite
+version.  In the future, other BDI implmentations may be contributed for
+other data sources.
+
+The architecture in a nutshell:
+
+:hgvs:
+   The ``hgvs`` package is most user-visible component that provides
+   parsing, formatting, and mapping.  It depends on the ``bdi`` package.
+
+:bdi:
+   ``bdi`` provider interface for hgvs mapping. Although the intent is to
+   enable non-UTA sources eventually, only UTA is currently
+   supported. This layer also provides functionality that doesn't belong
+   in the ``uta`` package, like fasta file indexing.
+
+:uta:
+   ``uta`` is an archive of transcripts and alignments. ``bdi`` supports a
+   publicly accessible UTA database (in AWS RDS).  A local sqlite version
+   is in testing.
+
+
 
 
 .. _HGVS: http://www.hgvs.org/mutnomen/
