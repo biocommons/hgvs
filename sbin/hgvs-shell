@@ -8,6 +8,7 @@ import hgvs.parser
 import hgvs.hgvsmapper
 
 
+ref = 'GRCh37.p10'
 hgvs_g = 'NC_000007.13:g.36561662C>T'
 hgvs_c = 'NM_001637.3:c.1582G>A'
 
@@ -19,7 +20,7 @@ hgvsmapper = hgvs.hgvsmapper.HGVSMapper( bdi, cache_transcripts = True )
 var_g = hgvsparser.parse_hgvs_variant(hgvs_g)
 var_c = hgvsparser.parse_hgvs_variant(hgvs_c)
 
-var_c_from_g = hgvsmapper.hgvsg_to_hgvsc( var_g, var_c.ac )
-var_g_from_c = hgvsmapper.hgvsc_to_hgvsg( var_c, 'NC_000007.13' )
+var_g_to_c = hgvsmapper.hgvsg_to_hgvsc( var_g, var_c.ac, ref )
+var_c_to_g = hgvsmapper.hgvsc_to_hgvsg( var_c, ref )
 
 IPython.embed()
