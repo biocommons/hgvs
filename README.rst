@@ -54,8 +54,9 @@ Feedback and bug reports are welcome.
 
 Installation
 ------------
-The following instructions were tested on Ubuntu 13.10 (Python 2.7.5+) and
-Ubuntu 13.04 (Python 2.7.3).
+
+The following instructions were tested on Ubuntu 13.10 (Python 2.7.5+),
+Ubuntu 13.04 (Python 2.7.3), and Ubuntu 12.04 (Python 2.7.3).
 
 First, build a virtualenv::
 
