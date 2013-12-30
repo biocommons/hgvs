@@ -218,6 +218,9 @@ class HGVSMapper(object):
 
                 tx_seq_cds = Seq(tx_seq_to_translate)
                 protein_seq = str(tx_seq_cds.translate())
+                
+                if ac_p is None:
+                    ac_p = hgvs.stopgap.pseq_to_ac(protein_seq)
 
                 transcript_data = RefTranscriptData(tx_seq, protein_seq, cds_start,
                                                     cds_stop, ac_p)
