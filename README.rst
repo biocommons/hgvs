@@ -65,13 +65,13 @@ First, build a virtualenv::
 Install via pip::
 
   (hgvs-test)$ pip install setuptools --upgrade
-  (hgvs-test)$ pip install hg+ssh://hg@bitbucket.org/locusdevelopment/uta
-  (hgvs-test)$ pip install hg+ssh://hg@bitbucket.org/locusdevelopment/bdi
-  (hgvs-test)$ pip install hg+ssh://hg@bitbucket.org/locusdevelopment/hgvs
+  (hgvs-test)$ pip install hg+ssh://hg@bitbucket.org/invitae/uta
+  (hgvs-test)$ pip install hg+ssh://hg@bitbucket.org/invitae/bdi
+  (hgvs-test)$ pip install hg+ssh://hg@bitbucket.org/invitae/hgvs
 
 Alternatively, test and install from source::
 
-  (hgvs-test)$ hg clone ssh://hg@bitbucket.org/locusdevelopment/hgvs
+  (hgvs-test)$ hg clone ssh://hg@bitbucket.org/invitae/hgvs
   (hgvs-test)$ cd hgvs
   (hgvs-test)$ make develop
   (hgvs-test)$ make test
