@@ -50,10 +50,10 @@ test-setup:
 test: test-setup
 	nosetests --with-xunit --exclude test_nightly
 
-test-with-coverage: test-setup test-setup-coverage
+test-with-coverage: test-setup
 	nosetests --with-xunit --with-coverage --cover-erase --cover-package=hgvs --cover-html --exclude test_nightly
 
-test-all-with-coverage: test-setup test-setup-coverage
+test-all-with-coverage: test-setup
 	nosetests --with-xunit --with-coverage --cover-erase --cover-package=hgvs --cover-html 
 
 #=> lint -- run lint, flake, etc
