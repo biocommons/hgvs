@@ -48,13 +48,13 @@ test-setup:
 
 #=> test -- run tests
 test: test-setup
-	nosetests --with-xunit --exclude test_nightly
+	python setup.py nosetests --with-xunit --exclude test_nightly
 
 test-with-coverage: test-setup
-	nosetests --with-xunit --with-coverage --cover-erase --cover-package=hgvs --cover-html --exclude test_nightly
+	python setup.py nosetests --with-xunit --with-coverage --cover-erase --cover-package=hgvs --cover-html --exclude test_nightly
 
 test-all-with-coverage: test-setup
-	nosetests --with-xunit --with-coverage --cover-erase --cover-package=hgvs --cover-html 
+	python setup.py nosetests --with-xunit --with-coverage --cover-erase --cover-package=hgvs --cover-html 
 
 #=> lint -- run lint, flake, etc
 # TBD

@@ -50,8 +50,10 @@ setup(
         ],
 
     setup_requires = [
-        'coverage',
         'hgtools',
         ],
 
+    tests_require = [
+        'coverage',
+        ],
     )
