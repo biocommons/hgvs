@@ -9,7 +9,7 @@ from setuptools import setup, find_packages
 # full path appears to be required for old (0.6.x?) versions of setuptools
 root_dir = os.path.dirname(os.path.abspath(__file__))
 
-with open(os.path.join(root_dir, 'doc/description.rst')) as f:
+with open(os.path.join(root_dir, 'doc/source/description.rst')) as f:
     long_description = f.read()
 
 setup(
