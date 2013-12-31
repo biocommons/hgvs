@@ -1,4 +1,5 @@
-"""Mapping intervals between pairs of congruent segments
+"""
+Mapping intervals between pairs of congruent segments
 
 The IntervalMapper class is at the heart of mapping between aligned sequences.  An instance
 of :class:`uta.tools.intervalmapper.IntervalMapper` is constructed with an ordered list of
@@ -12,6 +13,7 @@ has an insertion relative to seq A, then mapping coordinate at the
 boundaries can either be minimal or maximal for both the start and
 end. Consider this alignment
 
+..
         0         15   20         35         50
         |==========|====|==========|==========|
         |          | __/        __/|          |

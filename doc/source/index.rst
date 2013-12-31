@@ -1,10 +1,11 @@
 .. _index:
 
 =======================================================
-HGVS -- Human Genome Variation Society Parser/Formatter
+hgvs -- Parse, Format, and Manipulate Sequence Variants
 =======================================================
 
-.. include description.rst
+.. include:: description.rst
+
 
 Contents
 --------
@@ -14,12 +15,18 @@ Contents
 
    overview
    developer
+   classes
+
+   reST-examples
 
 
 Additional Resources
 --------------------
 
+* UTA, BDI
+
 * `HGVS Recommendations`_
+* Laros
 
 .. _`HGVS Recommendations`: http://www.hgvs.org/mutnomen/
 
