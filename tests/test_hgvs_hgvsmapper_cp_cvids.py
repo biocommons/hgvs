@@ -8,7 +8,7 @@ import test_hgvs_hgvsmapper_cp_base
 
 class TestHgvsCToPAllCvids(test_hgvs_hgvsmapper_cp_base.TestHgvsCToPBase):
 
-    def test_nightly_hgvsc_to_hgvsp_cvid_plus_sample(self):
+    def test_nightly_hgvsc_to_hgvsp_all_cvids(self):
         infilename = 'cvids_all.tsv'
         outfilename = 'cvids_all.out'
         infile = os.path.join(os.path.dirname(__file__), 'data', infilename)
