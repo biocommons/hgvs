@@ -1,3 +1,10 @@
+"""
+hgvs.hgvsmapper
+
+This is the module documentation
+"""
+
+
 import os,re,sys
 
 from Bio.Seq import Seq
@@ -184,14 +191,15 @@ class HGVSMapper(object):
         return var_c
 
     def hgvsc_to_hgvsp(self, var_c, ac_p):
-        """Convert hgvsc tag to hgvsp tag
+        """
+        Convert hgvsc tag to hgvsp tag
 
         :param var_c: hgvsc tag
         :type SequenceVariant
         :param ac_p: protein accession
         :type string
         :return hgvsp tag
-        :type SequenceVariant
+        :rtype SequenceVariant
         """
 
         class RefTranscriptData(recordtype.recordtype('RefTranscriptData',
