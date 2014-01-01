@@ -14,6 +14,7 @@ Contents
    :maxdepth: 2
 
    overview
+   getting_started
    developer
    classes
 
