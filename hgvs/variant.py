@@ -2,7 +2,7 @@ import warnings
 
 import recordtype
 
-class SequenceVariant( recordtype.recordtype('Variant', ['ac','type','posedit']) ):
+class SequenceVariant( recordtype.recordtype('SequenceVariant', ['ac','type','posedit']) ):
     """
     represents a basic HGVS variant.  The only requirement is that each
     component can be stringified; for example, passing pos as either a string
