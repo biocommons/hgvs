@@ -167,7 +167,10 @@ class AltSeqToHgvsp(object):
                 alt = ''
                 self._is_ambiguous = True   # side-effect
             elif start == len(self._ref_seq):                           # extension at stop codon
-                len_ext = len(insertion) - len(deletion) # don't include the former stop codon
+                if self._alt_seq[-1] == '*':
+                    len_ext = len(insertion) - len(deletion) # don't include the former stop codon
+                else:
+                    len_ext = '?'
                 subst_at_stop_codon = insertion[0]
 
                 aa_start = aa_end = hgvs.location.AAPosition(base=start, aa='*')
@@ -235,7 +238,10 @@ class AltSeqToHgvsp(object):
 
                 else:                                                   # insertion OR extension
                     if start == len(self._ref_seq):                     # extension
-                        len_ext = len(insertion) # don't include the former stop codon
+                        if self._alt_seq[-1] == '*':
+                            len_ext = len(insertion) - len(deletion) # don't include the former stop codon
+                        else:
+                            len_ext = '?'
                         subst_at_stop_codon = insertion[0]
 
                         aa_start = aa_end = hgvs.location.AAPosition(base=start, aa='*')
@@ -244,7 +250,7 @@ class AltSeqToHgvsp(object):
                         fs = 'ext*{}'.format(len_ext)
 
                     else:                                               # insertion
-                        start = start - 1
+                        start -= 1
                         end = start + 1
 
                         aa_start = hgvs.location.AAPosition(base=start, aa=self._ref_seq[start - 1])
