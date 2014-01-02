@@ -12,7 +12,7 @@ from Bio.Seq import Seq
 import hgvs.edit
 from hgvs.location import CDS_END
 
-DBG = False
+DBG = True
 
 class AltTranscriptData(recordtype.recordtype('AltTranscriptData', [
         'transcript_sequence', 'aa_sequence', 'cds_start', 'cds_stop', 'protein_accession',

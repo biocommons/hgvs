@@ -13,7 +13,7 @@ import hgvs.posedit
 import hgvs.utils
 import hgvs.variant
 
-DBG = False
+DBG = True
 
 class AltSeqToHgvsp(object):
 
