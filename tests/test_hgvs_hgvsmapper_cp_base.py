@@ -26,15 +26,15 @@ class TestHgvsCToPBase(unittest.TestCase):
         self._hp = hgvs.parser.Parser()
         self._failed = []
 
-    def test_dbg(self):
-        """For purposes of tesing a single result"""
-        hgvsc = 'NM_000169.2:c.1235_1236delCT'
-        hgvsp_expected = 'NP_000160.1:p.Thr412Serfs*25'
-        var_c = self._hp.parse_hgvs_variant(hgvsc)
-        var_p = self._hm.hgvsc_to_hgvsp(var_c, hgvsp_expected.split(':')[0])
-        hgvsp_actual = str(var_p)
-        msg = "hgvsp expected: {} actual: {}".format(hgvsp_expected, hgvsp_actual)
-        self.assertEqual(hgvsp_expected, hgvsp_actual, msg)
+    # def test_dbg(self):
+    #     """For purposes of tesing a single result"""
+    #     hgvsc = 'NM_000169.2:c.1235_1236delCT'
+    #     hgvsp_expected = 'NP_000160.1:p.Thr412Serfs*25'
+    #     var_c = self._hp.parse_hgvs_variant(hgvsc)
+    #     var_p = self._hm.hgvsc_to_hgvsp(var_c, hgvsp_expected.split(':')[0])
+    #     hgvsp_actual = str(var_p)
+    #     msg = "hgvsp expected: {} actual: {}".format(hgvsp_expected, hgvsp_actual)
+    #     self.assertEqual(hgvsp_expected, hgvsp_actual, msg)
 
     #
     # internal methods
