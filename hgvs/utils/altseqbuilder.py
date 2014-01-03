@@ -10,7 +10,7 @@ import recordtype
 from Bio.Seq import Seq
 
 import hgvs.edit
-from hgvs.location import CDS_END
+from hgvs.location import CDS_START, CDS_END
 
 DBG = False
 
@@ -92,13 +92,13 @@ class AltSeqBuilder(object):
         type_map = {hgvs.edit.NARefAlt: self._incorporate_delins,
                     hgvs.edit.Dup: self._incorporate_dup,
                     hgvs.edit.Repeat: self._incorporate_repeat,
-                    NOT_CDS: self._create_alt_eq_ref
+                    NOT_CDS: self._create_alt_eq_ref_noncds
                     }
 
         # TODO - loop over each allele rather than assume only 1 variant; return a list for now
         alt_data = []
 
-        variant_location = self._get_variant_location()
+        variant_location = self._get_variant_region()
 
         if variant_location == self.EXON:
             edit_type = type(self._var_c.posedit.edit)
@@ -125,19 +125,37 @@ class AltSeqBuilder(object):
 
         return alt_data
 
-    def _get_variant_location(self):
+    def _get_variant_region(self):
         """Categorize variant by location in transcript (5'utr, exon, intron, 3'utr)
         :return "exon", "intron", "five_utr", "three_utr"
         """
-        if CDS_END in [self._var_c.posedit.pos.start.datum, self._var_c.posedit.pos.end.datum]:
+        if self._var_c.posedit.pos.start.datum == CDS_END and self._var_c.posedit.pos.end.datum == CDS_END:
             result = self.T_UTR
-        elif self._var_c.posedit.pos.start.base < 0 or self._var_c.posedit.pos.end.base < 0:
+        elif self._var_c.posedit.pos.start.base < 0 and self._var_c.posedit.pos.end.base < 0:
             result = self.F_UTR
         elif self._var_c.posedit.pos.start.offset != 0 or self._var_c.posedit.pos.end.offset != 0:
+            # leave out anything intronic for now
             result = self.INTRON
-        else:
+        else:   # anything else that contains an exon
             result = self.EXON
         return result
+
+    # def _is_intron_only(self):
+    #     """Checks if variant is entirely intronic"""
+    #
+    #     # case 1: same base,same sign on offset -> start, end are anchored from the same base
+    #     same_start = self._var_c.posedit.pos.start.base == self._var_c.posedit.pos.end.base
+    #     pos_offset = self._var_c.posedit.pos.start.offset > 0 and self._var_c.posedit.pos.end.offset > 0
+    #     neg_offset = self._var_c.posedit.pos.start.offset < 0 and self._var_c.posedit.pos.end.offset < 0
+    #
+    #     # case 2: start, end between 2 different exon bases but don't overlap either
+    #     same_start_plus_1 = (self._var_c.posedit.pos.start.base + 1) == self._var_c.posedit.pos.end.base
+    #     pm_offset = self._var_c.posedit.pos.start.offset > 0 and self._var_c.posedit.pos.end.offset < 0
+    #
+    #     # other types of introns would overlap at least 1 exon base
+    #
+    #     return (same_start and (pos_offset or neg_offset)) or (same_start_plus_1 and pm_offset)
+
 
     def _incorporate_delins(self):
         """Incorporate delins"""
@@ -161,8 +179,11 @@ class AltSeqBuilder(object):
         else:                                       # insertion
             seq[start + 1:start + 1] = list(alt)    # insertion in list before python list index
 
+        if DBG:
+            print "net base change: {}".format(net_base_change)
         is_frameshift = net_base_change % 3 != 0
-        variant_start_aa = int(math.ceil((self._var_c.posedit.pos.start.base) / 3.0))
+        # use max of mod 3 value and 1 (in event that indel starts in the 5'utr range)
+        variant_start_aa = max(int(math.ceil((self._var_c.posedit.pos.start.base) / 3.0)), 1)
 
         alt_data = AltTranscriptData.create_for_variant_inserter(seq, cds_start, cds_stop,
                                                                  is_frameshift, variant_start_aa,
@@ -202,13 +223,33 @@ class AltSeqBuilder(object):
         cds_start = self._transcript_data.cds_start
         cds_stop = self._transcript_data.cds_stop
 
-        start = (cds_start - 1) + self._var_c.posedit.pos.start.base - 1   # list is zero-based; seq pos is 1-based
-        end = (cds_start - 1) + self._var_c.posedit.pos.end.base
+        start_end = []
+        for pos in (self._var_c.posedit.pos.start, self._var_c.posedit.pos.end):
+            # list is zero-based; seq pos is 1-based
+            if pos.datum == CDS_START:
+                if pos.base < 0:                  # 5' UTR
+                    result = cds_start - 1
+                else:                             # cds/intron
+                    if pos.offset <= 0:
+                        result = (cds_start - 1) + pos.base - 1
+                    else:
+                        result = (cds_start - 1) + pos.base
+            elif pos.datum == CDS_END:            # 3' UTR
+                result = cds_stop + pos.base - 1
+            else:
+                raise NotImplementedError("Unsupported/unexpected location")
+            start_end.append(result)
 
+        # unpack; increment end by 1 (0-based exclusive)
+        (start, end) = start_end
+        end += 1
+
+        if DBG:
+            print "len seq:{} cds_start:{} cds_stop:{} start:{} end:{}".format(len(seq), cds_start, cds_stop, start, end)
         return seq, cds_start, cds_stop, start, end
 
-    def _create_alt_eq_ref(self):
-        """Create an alt seq that matches the reference"""
+    def _create_alt_eq_ref_noncds(self):
+        """Create an alt seq that matches the reference (for non-cds variants)"""
         alt_data = AltTranscriptData.create_for_variant_inserter(list(self._transcript_data.transcript_sequence),
                                                                  self._transcript_data.cds_start,
                                                                  self._transcript_data.cds_stop,
@@ -222,11 +263,14 @@ class AltSeqBuilder(object):
         """Get starting position (AA ref index) of the last frameshift
         which affects the rest of the sequence, i.e. not offset by subsequent frameshifts
         :param variant_data: info on each variant
-        :type list of dictionaries
-        :return variant data with additional field for AA index (1-based) of the frameshift start; -1 if none
+        :type RecordType
+        :return variant data with additional field for AA index (1-based) of the frameshift start
         """
         # TODO - implement for 2+ variants
 
+        if DBG:
+            print "is_frameshift:{}".format(variant_data.is_frameshift)
+            print "variant_start_aa:{}".format(variant_data.variant_start_aa)
         if variant_data.is_frameshift:
             variant_data.frameshift_start = variant_data.variant_start_aa
         return variant_data

@@ -101,6 +101,11 @@ class TestHgvsCToP(unittest.TestCase):
         hgvsp_expected = "MOCK:p.Ala3Argfs*6"
         self._run_conversion(hgvsc, hgvsp_expected)
 
+    def test_deletion_no_frameshift_removes_stop_plus_previous(self):
+        hgvsc = "NM_999999.1:c.25_30del"
+        hgvsp_expected = "MOCK:p.Lys9_Ter10delinsGly"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
     def test_indel_no_frameshift(self):
         hgvsc = "NM_999999.1:c.11_12delinsTCCCA"
         hgvsp_expected = "MOCK:p.Lys4delinsIlePro"
@@ -159,6 +164,36 @@ class TestHgvsCToP(unittest.TestCase):
     def test_three_prime_utr(self):
         hgvsc = "NM_999999.1:c.*3G>A"
         hgvsp_expected = "MOCK:p.?"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
+    def test_deletion_into_three_prime_utr_frameshift(self):
+        hgvsc = "NM_999999.1:c.27_*3del"
+        hgvsp_expected = "MOCK:p.Lys9Xaafs*?"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
+    def test_deletion_into_three_prime_utr_no_frameshift(self):
+        hgvsc = "NM_999995.1:c.28_*3del"
+        hgvsp_expected = "MOCK:p.Lys10_Ter11delinsArgGlnPheArg"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
+    def test_delins_into_three_prime_utr_no_frameshift(self):
+        hgvsc = "NM_999995.1:c.28_*3delinsGGG"
+        hgvsp_expected = "MOCK:p.Lys10_Ter11delinsGlyArgGlnPheArg"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
+    def test_deletion_from_five_prime_utr_frameshift(self):
+        hgvsc = "NM_999999.1:c.-3_1del"
+        hgvsp_expected = "MOCK:p.Met1?"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
+    def test_deletion_from_five_prime_utr_no_frameshift(self):
+        hgvsc = "NM_999999.1:c.-3_3del"
+        hgvsp_expected = "MOCK:p.Met1?"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
+    def test_delins_from_five_prime_utr_no_frameshift(self):
+        hgvsc = "NM_999999.1:c.-3_3delinsAAA"
+        hgvsp_expected = "MOCK:p.Met1?"
         self._run_conversion(hgvsc, hgvsp_expected)
 
     # The following are unsupported

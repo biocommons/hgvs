@@ -30,12 +30,14 @@ class AltSeqToHgvsp(object):
         self._protein_accession = self._ref_data.protein_accession
         self._ref_seq = self._ref_data.aa_sequence
         self._alt_seq = self._alt_data.aa_sequence
+        self._is_frameshift = self._alt_data.is_frameshift
         self._frameshift_start = self._alt_data.frameshift_start
         self._is_substitution = self._alt_data.is_substitution
         self._is_ambiguous = self._alt_data.is_ambiguous
 
         if DBG:
-            print len(self._ref_seq), len(self._alt_seq), self._frameshift_start, self._protein_accession
+            print "len ref seq:{} len alt seq:{}".format(len(self._ref_seq), len(self._alt_seq))
+            print "fs start:{} protein ac:{}".format(self._frameshift_start, self._protein_accession)
             print self._ref_seq
             print self._alt_seq
             print "aa variant start: {}".format(self._alt_data.variant_start_aa)
@@ -151,51 +153,46 @@ class AltSeqToHgvsp(object):
         insertion = ''.join(variant['ins'])
         deletion = ''.join(variant['del'])
 
-        is_frameshift = insertion and deletion and deletion[-1] == '*'
-
         # defaults
         is_dup = False  # assume not dup
         fs = None
 
-
-        if is_frameshift:                                               # frameshift
-            aa_start = aa_end = hgvs.location.AAPosition(base=start, aa=deletion[0])
-            ref = ''
-
-            if start == 1:
-                ref = ''
-                alt = ''
-                self._is_ambiguous = True   # side-effect
-            elif start == len(self._ref_seq):                           # extension at stop codon
-                if self._alt_seq[-1] == '*':
-                    len_ext = len(insertion) - len(deletion) # don't include the former stop codon
-                else:
-                    len_ext = '?'
-                subst_at_stop_codon = insertion[0]
-
-                aa_start = aa_end = hgvs.location.AAPosition(base=start, aa='*')
-                ref = ''
-                alt = subst_at_stop_codon
-                fs = 'ext*{}'.format(len_ext)
-            else:
-                try:
-                    new_stop = str(insertion.index("*") + 1)    # start w/ 1st change; ends w/ * (inclusive)
-                except ValueError:
-                    new_stop = "?"
-
-                if new_stop != "1":
-                    alt = insertion[0]
-                    fs = 'fs*{}'.format(new_stop)
-
-                else:   # frameshift introduced stop codon at variant position
-                    alt = '*'
-
-        elif start == 1:                                          # initial methionine is modified
+        if start == 1:                                                  # initial methionine is modified
                 aa_start = aa_end = hgvs.location.AAPosition(base=start, aa=deletion)
                 ref = ''
                 alt = ''
                 self._is_ambiguous = True   # side-effect
-        else:                                                           # no frameshift
+
+        if insertion and insertion.find("*") == 0:                      # stop codon at variant position
+            aa_start = aa_end = hgvs.location.AAPosition(base=start, aa=deletion[0])
+            ref = ''
+            alt = '*'
+
+        elif start == len(self._ref_seq):                               # extension
+            if self._alt_seq[-1] == '*':
+                len_ext = len(insertion) - len(deletion) # don't include the former stop codon
+            else:
+                len_ext = '?'
+            subst_at_stop_codon = insertion[0]
+
+            aa_start = aa_end = hgvs.location.AAPosition(base=start, aa='*')
+            ref = ''
+            alt = subst_at_stop_codon
+            fs = 'ext*{}'.format(len_ext)
+
+        elif self._is_frameshift:                                       # frameshift
+            aa_start = aa_end = hgvs.location.AAPosition(base=start, aa=deletion[0])
+            ref = ''
+
+            try:
+                new_stop = str(insertion.index("*") + 1)    # start w/ 1st change; ends w/ * (inclusive)
+            except ValueError:
+                new_stop = "?"
+
+            alt = insertion[0]
+            fs = 'fs*{}'.format(new_stop)
+
+        else:                                                           # no frameshift - sub/delins/dup
             if len(insertion) == len(deletion) == 1:                    # substitution
                 aa_start = aa_end = hgvs.location.AAPosition(base=start, aa=deletion)
                 ref = ''
@@ -236,27 +233,14 @@ class AltSeqToHgvsp(object):
                     aa_end =  hgvs.location.AAPosition(base=dup_end, aa=insertion[-1])
                     ref = alt = None
 
-                else:                                                   # insertion OR extension
-                    if start == len(self._ref_seq):                     # extension
-                        if self._alt_seq[-1] == '*':
-                            len_ext = len(insertion) - len(deletion) # don't include the former stop codon
-                        else:
-                            len_ext = '?'
-                        subst_at_stop_codon = insertion[0]
+                else:                                                   # insertion
+                    start -= 1
+                    end = start + 1
 
-                        aa_start = aa_end = hgvs.location.AAPosition(base=start, aa='*')
-                        ref = ''
-                        alt = subst_at_stop_codon
-                        fs = 'ext*{}'.format(len_ext)
-
-                    else:                                               # insertion
-                        start -= 1
-                        end = start + 1
-
-                        aa_start = hgvs.location.AAPosition(base=start, aa=self._ref_seq[start - 1])
-                        aa_end =  hgvs.location.AAPosition(base=end, aa=self._ref_seq[end - 1])
-                        ref = None
-                        alt = insertion
+                    aa_start = hgvs.location.AAPosition(base=start, aa=self._ref_seq[start - 1])
+                    aa_end =  hgvs.location.AAPosition(base=end, aa=self._ref_seq[end - 1])
+                    ref = None
+                    alt = insertion
 
             else: # should never get here
                 raise ValueError("unexpected variant: {}".format(variant))
