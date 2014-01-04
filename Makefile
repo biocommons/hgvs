@@ -6,7 +6,9 @@
 SHELL:=/bin/bash -o pipefail
 SELF:=$(firstword $(MAKEFILE_LIST))
 
-PYPI_SERVICE:=-r invitae
+ifdef LOCAL_UTA
+export UTA_DB_URL=postgresql://localhost/uta
+endif
 
 ############################################################################
 #= BASIC USAGE
@@ -35,18 +37,17 @@ ${VE_DIR}: ${VE_PY}
 
 
 ############################################################################
-#= UTILITY FUNCTIONS
+#= UTILITY TARGETS
 
 #=> develop, build_sphinx, sdist, upload_sphinx
-bdist bdist_egg build build_sphinx develop install sdist upload_sphinx: %:
+bdist bdist_egg build build_sphinx develop install sdist upload_docs: %:
 	python setup.py $*
 
-#=> test-setup -- prepare to run tests
-test-setup:
+# sphinx docs needs to be able to import packages
+build_sphinx: develop
 
-#=> test -- run tests
-test: test-setup
-	python setup.py nosetests --with-xunit --exclude test_nightly
+#=> docs -- make sphinx docs
+docs: # build_sphinx
 
 test-with-coverage: test-setup
 	python setup.py nosetests --with-xunit --with-coverage --cover-erase --cover-package=hgvs --cover-html --exclude test_nightly
@@ -54,11 +55,22 @@ test-with-coverage: test-setup
 test-all-with-coverage: test-setup
 	python setup.py nosetests --with-xunit --with-coverage --cover-erase --cover-package=hgvs --cover-html 
 
+
+#=> upload
+upload:
+	python setup.py bdist_egg sdist upload
+
+
 #=> lint -- run lint, flake, etc
 # TBD
 
-#=> docs -- make sphinx docs
-docs: build_sphinx
+
+#=> test-setup -- prepare to run tests
+test-setup:
+
+#=> test -- run tests
+test: install
+	python setup.py nosetests --with-xunit
 
 #=> continuous integration tests -- target for jenkins (and now travis, drone, or other providers)
 ci-test jenkins:
@@ -76,15 +88,6 @@ ci-test-nightly jenkins-nightly:
 	&& make test-all-with-coverage \
 	&& make docs
 
-#=> upload-<tag>
-upload-%:
-	[ -z "$$(hg st -admnr)" ] || { echo "Directory contains changes; aborting." 1>&2; hg st -admr; exit 1; }
-	R=$$(hg id -t); hg up -r $*; python setup.py sdist upload ${PYPI_SERVICE}; hg up -r $$R
-
-#=> upload
-upload:
-	python setup.py bdist bdist_egg sdist upload ${PYPI_SERVICE}
-
 
 ############################################################################
 hgvs/data/seguid-acs.json.gz:
@@ -101,7 +104,7 @@ clean:
 cleaner: clean
 	find . -name \*.pyc -print0 | xargs -0r /bin/rm -f
 	/bin/rm -fr distribute-* *.egg *.egg-info *.tar.gz nosetests.xml
-	make -C doc clean
+	-make -C doc clean
 #=> cleanest: above, and remove the virtualenv, .orig, and .bak files
 cleanest: cleaner
 	find . \( -name \*.orig -o -name \*.bak \) -print0 | xargs -0r /bin/rm -v
