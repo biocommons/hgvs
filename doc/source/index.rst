@@ -4,8 +4,11 @@
 hgvs -- Parse, Format, and Manipulate Sequence Variants
 =======================================================
 
-.. include:: description.rst
+.. sidebar:: Quick Links
 
+  | `BitBucket Repo <https://bitbucket.org/invitae/hgvs>`_
+  | `Documentation <http://pythonhosted.org/hgvs/>`_
+  .. image:: https://drone.io/bitbucket.org/invitae/hgvs/status.png
 
 Contents
 --------
@@ -14,6 +17,7 @@ Contents
    :maxdepth: 2
 
    overview
+   installation
    getting_started
    developer
    classes
@@ -31,6 +35,12 @@ Additional Resources
 
 .. _`HGVS Recommendations`: http://www.hgvs.org/mutnomen/
 
+
+License
+-------
+
+hgvs is released under the `Apache License 2.0
+<http://www.apache.org/licenses/LICENSE-2.0>`_.
 
 Indices and tables
 ------------------
