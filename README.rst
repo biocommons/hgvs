@@ -2,6 +2,9 @@
 HGVS -- Tools to Parse, Format, and Map Biological Sequence Variants
 ====================================================================
 
+.. image:: https://drone.io/bitbucket.org/invitae/hgvs/status.png
+  :target: https://drone.io/bitbucket.org/invitae/hgvs
+
 This package provides a Python library to facilitate the use of genome,
 transcript, and protein variants that are represented using the Human
 Genome Variation Society (`HGVS`_) recommendations. ::

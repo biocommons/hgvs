@@ -17,7 +17,7 @@ setup(
     license = 'Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)',
     long_description = long_description,
     use_hg_version = True,
-    zip_safe = True,
+    zip_safe = False,
 
     author_email = 'reece+hgvs@invitae.com',
     description = """HGVS Parser""",
@@ -27,34 +27,24 @@ setup(
     url = 'https://bitbucket.org/invitae/hgvs',
 
     install_requires = [
-        'nose',
-        'sphinx',
-        'sphinx-pypi-upload',
-        'sphinx_rtd_theme',
-        'sphinxcontrib-httpdomain',
-
+        'bdi',
         'biopython',
         'parsley',
         'recordtype',
-
-        # Non-PyPI dependencies -- requires dependency_links below
-        # N.B. These do not work via pip install, but do work with python setup.py install
-        'bdi',
         'uta',
-        ],
-
-    dependency_links = [
-        # for non-PyPI dependencies
-        'hg+ssh://hg@bitbucket.org/invitae/bdi#egg=bdi',
-        'hg+ssh://hg@bitbucket.org/invitae/uta#egg=uta',
         ],
 
     setup_requires = [
         'hgtools',
+        'nose',
+        'sphinx',
+        'sphinx_rtd_theme',
+        'sphinxcontrib-httpdomain',
         ],
 
     tests_require = [
         'coverage',
+        'nose',
         ],
     )
 
