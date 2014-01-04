@@ -41,8 +41,6 @@ ${VE_DIR}: ${VE_PY}
 bdist bdist_egg build build_sphinx develop install sdist upload_sphinx: %:
 	python setup.py $*
 
-$(info ${BDI_UTA_DB})
-
 #=> test-setup -- prepare to run tests
 test-setup:
 
@@ -98,7 +96,7 @@ hgvs/data/seguid-acs.json.gz:
 .PHONY: clean cleaner cleanest pristine
 #=> clean: clean up editor backups, etc.
 clean:
-	find . \( -name \*~ -o -name \*.fai \) -print0 | xargs -0r /bin/rm
+	find . -name \*~ -print0 | xargs -0r /bin/rm
 #=> cleaner: above, and remove generated files
 cleaner: clean
 	find . -name \*.pyc -print0 | xargs -0r /bin/rm -f

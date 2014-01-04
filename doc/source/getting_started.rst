@@ -1,7 +1,7 @@
 .. _getting_started.rst:
 
-Getting Started with the HGVS Package
-=====================================
+Getting Started
+===============
 
 This tutorial provides a comprehensive example of how to use the HGVS
 package.  Specifically, we'll:
