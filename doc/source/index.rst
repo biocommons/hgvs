@@ -4,11 +4,17 @@
 hgvs -- Parse, Format, and Manipulate Sequence Variants
 =======================================================
 
-.. sidebar:: Quick Links
+.. sidebar:: Links
 
   | `BitBucket Repo <https://bitbucket.org/invitae/hgvs>`_
   | `Documentation <http://pythonhosted.org/hgvs/>`_
-  .. image:: https://drone.io/bitbucket.org/invitae/hgvs/status.png
+  | |build_status|
+
+
+``hgvs`` is a Python package to parse, format, and manipulate biological
+sequence variants according to standards of the Human Genome Variation
+Society.
+
 
 Contents
 --------
@@ -48,4 +54,9 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+
+.. |build_status| image:: https://drone.io/bitbucket.org/invitae/hgvs/status.png
+  :target: https://drone.io/bitbucket.org/invitae/hgvs
+  :align: middle
 

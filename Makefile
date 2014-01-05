@@ -47,7 +47,7 @@ bdist bdist_egg build build_sphinx develop install sdist upload_docs: %:
 build_sphinx: develop
 
 #=> docs -- make sphinx docs
-docs: # build_sphinx
+docs: build_sphinx
 
 test-with-coverage: test-setup
 	python setup.py nosetests --with-xunit --with-coverage --cover-erase --cover-package=hgvs --cover-html --exclude test_nightly

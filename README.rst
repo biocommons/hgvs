@@ -2,8 +2,7 @@
 HGVS -- Tools to Parse, Format, and Map Biological Sequence Variants
 ====================================================================
 
-.. image:: https://drone.io/bitbucket.org/invitae/hgvs/status.png
-  :target: https://drone.io/bitbucket.org/invitae/hgvs
+`Docs <http://hgvs.readthedocs.org/>`_ | |build_status|
 
 This package provides a Python library to facilitate the use of genome,
 transcript, and protein variants that are represented using the Human
@@ -125,3 +124,8 @@ The architecture in a nutshell:
 .. _UTA: http://bitbucket.org/invitae/uta
 .. _BDI: http://bitbucket.org/invitae/bdi
 .. _Invitae: http://invitae.com/
+
+
+.. |build_status| image:: https://drone.io/bitbucket.org/invitae/hgvs/status.png
+  :target: https://drone.io/bitbucket.org/invitae/hgvs
+  :align: middle
