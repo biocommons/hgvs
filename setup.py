@@ -13,12 +13,12 @@ with open(os.path.join(root_dir, 'doc/source/description.rst')) as f:
     long_description = f.read()
 
 setup(
-    author = 'InVitae Keyboard Monkeys',
     license = 'Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)',
     long_description = long_description,
     use_hg_version = True,
     zip_safe = False,
 
+    author = 'HGVS Contributors',
     author_email = 'reece+hgvs@invitae.com',
     description = """HGVS Parser""",
     name = "hgvs",
@@ -31,7 +31,6 @@ setup(
         'biopython',
         'parsley',
         'recordtype',
-        'uta',
         ],
 
     setup_requires = [
