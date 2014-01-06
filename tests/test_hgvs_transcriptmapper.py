@@ -1,6 +1,6 @@
 import unittest
 
-from bdi.sources.uta0_pg import UTA0
+import bdi.sources.uta0
 
 import hgvs.location
 import hgvs.parser
@@ -11,7 +11,7 @@ class Test_transcriptmapper(unittest.TestCase):
     ref = 'GRCh37.p10'
 
     def setUp(self):
-        self.bdi = UTA0()
+        self.bdi = bdi.sources.uta0.connect()
 
     def test_transcriptmapper_failures(self):
         self.assertRaises(HGVSError, TranscriptMapper, self.bdi, ref=self.ref, ac='bogus')

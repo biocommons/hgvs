@@ -5,7 +5,7 @@ import csv
 import re
 import unittest
 
-from bdi.sources.uta0_pg import UTA0
+import bdi.sources.uta0
 
 import hgvs.hgvsmapper
 import hgvs.parser
@@ -21,7 +21,7 @@ def gcp_file_reader(fn):
 class TestHgvsCToPBase(unittest.TestCase):
 
     def setUp(self):
-        self.bdi = UTA0()
+        self.bdi = bdi.sources.uta0.connect()
         self._hm = hgvs.hgvsmapper.HGVSMapper(self.bdi, cache_transcripts=True)
         self._hp = hgvs.parser.Parser()
         self._failed = []
