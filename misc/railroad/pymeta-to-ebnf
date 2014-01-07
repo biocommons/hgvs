@@ -1,0 +1,37 @@
+#!/usr/bin/env perl
+
+while (<>) {
+	my $orig = $_;
+
+	# remove comments (but print blank line to preserve line numbers
+	s%#(.*)%%;
+
+	# hgvs package specific
+	s/ \| (-> 0)//;
+	s/\s+->\s+hgvs.edit.AARefAlt\(.+fs\)//;
+	s/\s+->\s+\Qhgvs.location.AAPosition(pos,hgvs.utils.aa_to_aa1(aa))\E//;
+	s/\Q<'fs' (aa13_term (num|'?')?)?>\E/'fs' | fs aa13_term | fs aa13_term num | fs aa13_term '?'/;
+    s/\Qletter letterOrDigit+ ('_' letterOrDigit+)? ('.' digit+)?\E/letter letterOrDigit+ | letter letterOrDigit+ '_' letterOrDigit+ | letter letterOrDigit+ '_' letterOrDigit+ '.' digit+/;
+
+	# = -> ::=
+	s%^(\w+\s*)=%$1 ::=%;
+
+	# strip variable names
+	s/:\w+//g;
+
+	# ":x ?(x in 'gmn') -> x" -> 'g'|'m'|'n'
+	s%\?\(\w+ in '([^']+?)'\)%join("|",map {sprintf("'\%s'",$_)} split(//,$1))%ge;
+
+	# strip object creation (rule -> object)
+	s/\s*->\s*[\w._]+(?:\([^)]*\))?//g;
+
+	# remove angle brackets from stringified matches
+	s/<([^>]+?)>/$1/g;
+
+	s/(\w+)\?/($1|'')/g;
+
+	s/\Q| () | \E/|/;
+	s/\Q('?')\E/ '?'/;
+
+	print;
+}
