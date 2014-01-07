@@ -1,0 +1,78 @@
+Func	Test	Valid	InType	Expected
+Not_Yet_Implemented	NOT YET IMPLEMENTED	True	one	
+Not_Yet_Implemented	foobar	False	one	
+pm	-+	True	string	
+pm	*	False	one	
+num	1234567890	True	string	
+num	1234567890	True	one	
+num	123X	False	one	
+snum	+123	True	one	123
+snum	123|-123	True	list	
+snum	+-123	False	one	
+offset	10|-10	True	list	
+offset		True	one	0
+#offset	?	True	one	None
+base	+123	True	one	123
+base	123|-123	True	list	
+base	?	True	one	None
+aa3_term	Ter	True	one	
+aa3_term	ter	False	one	
+aa1_term	X*	True	string	
+aa1_term	T	False	one	
+aa13_term	X|*|Ter	True	list	
+aa13_term	ter	False	one	
+aa3	Ala|Cys|Asp|Glu|Phe|Gly|His|Ile|Lys|Leu|Met|Asn|Pro|Gln|Arg|Ser|Thr|Val|Trp|Tyr	True	list	
+aa3	Zaa	False	one	
+aa1	ACDEFGHIKLMNPQRSTVWY	True	string	
+aa1	Za1	False	string	
+aa13	Ala|A	True	list	
+aa13	Zaa|Z	False	list	
+aat13	Trp|W|Ter|X|*	True	list	
+aat13	Zaa|Z	False	list	
+rna	ACGUacgu	True	string	
+rna	XYZxyzTt	False	string	
+dna	ACGTacgt	True	string	
+dna	XYZxyzUu	False	string	
+aa3_seq	Cys|PheGly|HisHisHis	True	list	
+aa3_seq	Cyx|ProYyyGln|PheGlyZzz|XxxPheGly	False	list	
+aa1_seq	C|WY|ACDEFGHIKLMNPQRSTVWY	True	list	
+aa1_seq	c|JY|YJ|YYJ|YJY|JYY|JJJ	False	list	
+aa13_seq	C|LM|Cys|LysMet	list	|	
+aa13_seq	CysM|Yyy|J	list	|	
+aa13_fs	fs|fs*|fs*10|fs*?|fsTer|fsTer8|fsTer?|fsX|fsX10|fsX?	True	list	
+aa13_fs	fsCys|fsGly10|fsGly?|fsTerGly?	False	list	
+aa3t_seq	Ter||GlyTer|IleGlyTer	True	list	
+aa3t_seq	TerGly|XxxIleGly	False	list	
+aa1t_seq	*|X||G*|IG*	True	list	
+aa1t_seq	J|JJ|XYJ|GGG*G	False	list	
+#aat13_seq	GlyTer|G*	True	list	
+aat13_seq	GlyTer	True	one	
+#aat13_seq	G*	True	one	
+aat13_seq	TerGly|JT	False	list	
+rna_seq	ACGUacgu	True	string	
+rna_seq	AA|Aa|aA|uA|Ua|ACGUacgu	True	list	
+rna_seq	T|t|TT|ACT|TAC	False	list	
+dna_seq	ACGTacgt	True	string	
+dna_seq	AA|Aa|aA|tA|Ta|ACGTacgt	True	list	
+dna_seq	U|u|UU|ACU|UAC	False	list	
+def_p_pos	Met1|Gly10	True	list	
+def_p_pos	M1|G10	True	list	Met1|Gly10
+def_p_pos	Ter10|X0|Glx5|J5	False	list	
+def_c_pos	1|11+1|9-3|-1|*10	True	list	
+def_c_pos	X|11_12|10*	False	list	
+#def_c_pos:parse but cannot stringify	0	False	list	
+def_r_pos	1|11+1|9-3	True	list	
+#def_r_pos:parse but cannot stringify	-1|0	False	list	
+def_r_pos	X|11_12|10*	False	list	
+def_gmn_pos	2	True	list
+#def_gmn_pos:why not None	?	True	one	None
+def_gmn_pos	A|2?|*1|-2	False	list
+def_n_pos	2	True	list
+#def_n_pos:why not None	?	True	one	None
+def_n_pos	A|2?|*1|-2	False	list
+def_m_pos	2	True	list
+#def_m_pos:why not None	?	True	one	None
+def_m_pos	A|2?|*1|-2	False	list
+def_g_pos	2	True	list
+#def_g_pos:why not None	?	True	one	None
+def_g_pos	A|2?|*1|-2	False	list
