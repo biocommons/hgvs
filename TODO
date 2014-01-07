@@ -1,0 +1,64 @@
+-*-outline-*-
+
+* IMMEDIATE
+
+** PosEdit class
+complex, compound, mosaic, chimeric posedits
+uncertainty
+
+** position uncertainty
+p.(=)
+c.(67_70)insG (p.Gly23fs)
+c.(165_253)del11
+c.(1520_1524)del3
+c.(?_-30)_12+?del
+c.(?_-30)_(*220_?)del
+
+** hgvs_invitae
+- copyN, etc
+
+** split gmn_ in grammar for parity
+- at least make all gmn rules distinct, to match c,r,p
+
+** implement dup
+
+** set uncertain p. in hgvsctop
+
+
+* SOON
+
+* rename uta conn s/db/uta_conn/
+
+** documentation
+
+** grammar tests
+...for each rule
+
+** move tests adjacent to code
+
+
+* LATER
+
+** valideer on hgvs classes
+
+** docs
+take new pass at docs
+
+** hgvs.util NC 2 chr & vv
+
+** hgvs mapper
+
+** hgvs formatter
+use in lieu of __str__ currently
+support options, incl. aa1 or aa3
+
+** hgvs validator
+
+** get entire match string from parsley?
+Low priority.
+If we can, then attach text to node as a comment to help trace parsing
+- Question here: http://stackoverflow.com/questions/20187065
+
+
+* DEFERRED
+
