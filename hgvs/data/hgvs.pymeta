@@ -149,9 +149,9 @@ rna_dup    = 'dup' <rna*>:seq         -> hgvs.edit.Dup(seq=seq)
 pro_edit_mu = pro_edit | '(' pro_edit:edit ')' -> edit.set_uncertain()
 pro_edit   = pro_subst | pro_delins | pro_ins | pro_del | pro_dup
 pro_subst  = aat13:alt aa13_fs?:fs         -> hgvs.edit.AARefAlt(ref='',alt=hgvs.utils.aa_to_aa1(alt),fs=fs)
-pro_delins = 'delins' aat_seq:alt aa13_fs?:fs -> hgvs.edit.AARefAlt(ref='',alt=hgvs.utils.aa_to_aa1(alt),fs=fs)
+pro_delins = 'delins' aat13_seq:alt aa13_fs?:fs -> hgvs.edit.AARefAlt(ref='',alt=hgvs.utils.aa_to_aa1(alt),fs=fs)
 pro_del    = 'del'                         -> hgvs.edit.AARefAlt(ref='',alt=None)
-pro_ins    = 'ins' aat_seq:alt aa13_fs?:fs -> hgvs.edit.AARefAlt(ref=None,alt=hgvs.utils.aa_to_aa1(alt),fs=fs)
+pro_ins    = 'ins' aat13_seq:alt aa13_fs?:fs -> hgvs.edit.AARefAlt(ref=None,alt=hgvs.utils.aa_to_aa1(alt),fs=fs)
 pro_dup    = 'dup'                         -> hgvs.edit.Dup(seq=seq)
 
 
