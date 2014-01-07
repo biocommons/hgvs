@@ -6,6 +6,7 @@ Getting Started
 This tutorial provides a comprehensive example of how to use the HGVS
 package.  Specifically, we'll:
 
+* install hgvs
 * parse a transcript (c.) variant in MCL1 obtained from dbSNP
 * project that variant to genomic coordinates (as a g. variant)
 * project it back on to another transcript in the same gene
@@ -29,13 +30,28 @@ This variant was chosen because it has data in dbSNP for comparison and
 because it has an intronic variant to spice up the example.
 
 
+Installation
+------------
+
+For this demo, you'll need hgvs (of course).  We recommend that you
+install IPython as well.  In a reasonably modern environment, the
+following should suffice::
+
+  $ pip install hgvs ipython
+
+If you get a warning about setuptools versions, do this::
+
+  $ pip install --upgrade setuptools
+
+
+
 Parse the variant
 -----------------
 
 To parse variants, we need to create a an instance of the
 :py:class:`hgvs.parser.Parser`.  Since building the grammar is
 computationally expensive, you should be only one instance and use it for
-all parsing operations.
+all parsing operations.  Start ``ipython``, then do this:
 
 >>> import hgvs.parser
 >>> hgvsparser = hgvs.parser.Parser()
@@ -82,8 +98,11 @@ really need to understand the architecture to use HGVS.)
 
 First, connect to UTA via BDI:
 
->>> import bdi.sources.uta0_pg
-bdi = bdi.sources.uta0_pg.UTA0()
+>>> import bdi.sources.uta0
+bdi = bdi.sources.uta0.connect()
+
+By default, you'll connect to the public UTA database instance hosted by
+`Invitae <http://invitae.com/>`_.
 
 Then, with that connection, instantiate an HGVSMapper:
 
