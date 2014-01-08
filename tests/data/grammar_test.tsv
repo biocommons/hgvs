@@ -109,7 +109,7 @@ g_interval	2_10|(2_10)	True	list
 ############################################################
 ## Edits
 ### protein edits confuse me...
-#pro_dup	dupMG	True	one	
+#pro_dup	dup	True	one	
 #pro_ins	insfs*	True	one	
 #pro_del
 #pro_delins
@@ -150,4 +150,52 @@ dna_edit_mu	A>C	True	one
 ## why? ## dna_edit_mu	(A>C)	True	one	
 ############################################################
 ## PosEdits
+p_posedit_special	=|(=)|0?|0|?	True	list	
+p_posedit_special	*|+|()|?0	False	list	
+## not clear from p_edits above ## p_posedit	Met1_Gly10|(Met1_Gly10)	True	list	
+r_posedit	5G>U|1_10A>C|(1_10)A>C|1_2delAAinsC	True	list	
+r_posedit	5G>T|(1_10A>C)	False	list
+c_posedit	76+3A>T|*1T>A|5G>T|1_10A>C|(1_10)A>C|1_2delAAinsC	True	list	
+c_posedit	1*T>A|(1_10A>C)	False	list	
+gmn_posedit	112_117delinsTG|10A>T|5dup|5dupT|7_8dup|7_8dupTG|(1_10)A>T	True	list	
+gmn_posedit	(1_10A>T)|5A>U	False	list	
+n_posedit	10A>T	True	one	
+m_posedit	112_117delinsTG	True	one	
+g_posedit	7_8dup	True	one	
+############################################################
+## HGVS Position
+r_hgvs_position	AC_01234.5:r.1|AC_01234.5:r.5+10	True	list	
+r_hgvs_position	AC_01234.5:c.1|AC_01234.5:g.2|AC_01234.5:p.1|AC_01234.5:r.1A>T	False	list	
+p_hgvs_position	AC_01234.5:p.Met1|AC_01234.5:p.Met1_Gly10	True	list	
+p_hgvs_position	AC_01234.5:r.Met1|AC_01234.5:c.Met1	False	list	
+c_hgvs_position	AC_01234.5:c.1|AC_01234.5:c.5+10	True	list	
+c_hgvs_position	AC_01234.5:r.1|AC_01234.5:p.1	False	list
+gmn_hgvs_position	AC_01234.5:g.1|AC_01234.5:m.1|AC_01234.5:n.1	True	list	
+gmn_hgvs_position	AC_01234.5:c.1	False	one	
+n_hgvs_position	AC_01234.5:n.1	True	one	
+m_hgvs_position	AC_01234.5:m.1	True	one	
+g_hgvs_position	AC_01234.5:g.1	True	one	
+hgvs_position	AC_01234.5:g.1|AC_01234.5:c.1|AC_01234.5:r.1|AC_01234.5:p.Met1	True	list	
+hgvs_position	NM_01234.5:c.22+6	True	one	
+############################################################
+## HGVS Edit
+## none of these seem to be working ##
+#r_edit	r.76+3A>U	True	one	
+#p_edit	p.Ala1Ser	True	one	
+#c_edit	c.76+3A>T	True	one	
+#gmn_edit	g.76A>T	True	one
+#n_edit	n.76A>T	True	one	
+#m_edit	m.76A>T	True	one	
+#g_edit	g.76A>T	True	one	
+############################################################
+## HGVS Sequence Variant
+#any_variant	AC_01234.5:g.???
+r_variant	AC_01234.5:r.1A>U	True	one	
+p_variant	AC_01234.5:p.Ala1Ser	True	one	
+c_variant	AC_01234.5:c.1A>T	True	one	
+gmn_variant	AC_01234.5:g.1A>T	True	one	
+n_variant	AC_01234.5:n.1A>T	True	one
+m_variant	AC_01234.5:m.1A>T	True	one	
+g_variant	AC_01234.5:g.1A>T	True	one	
+hgvs_variant	AC_01234.5:c.1A>T|AC_01234.5:r.1A>U|AC_01234.5:g.1A>T|AC_01234.5:p.Ala1Ser	True	list	
 
