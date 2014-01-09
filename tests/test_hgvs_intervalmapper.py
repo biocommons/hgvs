@@ -11,9 +11,6 @@ import hgvs.intervalmapper
 class Test_IntervalMapper(unittest.TestCase):
     longMessage = True
 
-    def setUp(self):
-        pass
-
     def test_interval_valid(self):
         interval = hgvs.intervalmapper.Interval(3, 4)
         st = str(interval)
@@ -58,7 +55,6 @@ class Test_IntervalMapper(unittest.TestCase):
         with self.assertRaises(hgvs.exceptions.InvalidIntervalError):
             (s, e) = ivm.map_tgt_to_ref(0, 7)
 
-
     #
     # internal methods
     #
@@ -70,7 +66,8 @@ class Test_IntervalMapper(unittest.TestCase):
         repr_str = 'IntervalPair(ref=Interval(start_i={},end_i={}),tgt=Interval(start_i={},end_i={}))'
         self.assertEqual(intervalpair.__repr__(), repr_str.format(s1, e1, s2, e2))
 
-    def _build_mock_intervalmapper(self):
+    @staticmethod
+    def _build_mock_intervalmapper():
         iv1 = [hgvs.intervalmapper.Interval(1, 5),
                hgvs.intervalmapper.Interval(5, 6),
                hgvs.intervalmapper.Interval(6, 10)
