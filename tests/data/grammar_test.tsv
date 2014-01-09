@@ -40,8 +40,8 @@ aa3_seq	Cys|PheGly|HisHisHis	True	list
 aa3_seq	Cyx|ProYyyGln|PheGlyZzz|XxxPheGly	False	list	
 aa1_seq	C|WY|ACDEFGHIKLMNPQRSTVWY	True	list	
 aa1_seq	c|JY|YJ|YYJ|YJY|JYY|JJJ	False	list	
-aa13_seq	C|LM|Cys|LysMet	list	|	
-aa13_seq	CysM|Yyy|J	list	|	
+aa13_seq	C|LM|Cys|LysMet	True	list	
+aa13_seq	CysM|Yyy|J	False	list	
 aa13_fs	fs|fs*|fs*10|fs*?|fsTer|fsTer8|fsTer?|fsX|fsX10|fsX?	True	list	
 aa13_fs	fsCys|fsGly10|fsGly?|fsTerGly?	False	list	
 aa3t_seq	Ter||GlyTer|IleGlyTer	True	list	
@@ -52,7 +52,7 @@ aat13_seq	GlyTer|Ter	True	list
 aat13_seq	GlyTer|HisHisHisTer	True	list	
 aat13_seq	GlyTer	True	one	
 ## why? ## aat13_seq	G*	True	one	
-aat13_seq	TerGly|JT	False	list	
+aat13_seq	TerGly|JT|GlyA|AGly	False	list	
 rna_seq	ACGUacgu	True	string	
 rna_seq	AA|Aa|aA|uA|Ua|ACGUacgu	True	list	
 rna_seq	T|t|TT|ACT|TAC	False	list	
@@ -108,11 +108,20 @@ m_interval	2_10|(2_10)	True	list
 g_interval	2_10|(2_10)	True	list	
 ############################################################
 ## Edits
-### protein edits confuse me...
-#pro_dup	dup	True	one	
-#pro_ins	insfs*	True	one	
-#pro_del
-#pro_delins
+#pro_dup_BUG	dup	True	one
+#pro_dup	dup2|dupGG|dupGlyAla	False	list
+pro_ins	insAla|insAlaGly	True	list
+#pro_ins	insA|insAG	True	list	insArg|insArgGly
+## Q: should these be accepted? ## 
+pro_ins ins|insfs|insAfs|insAfs*|insAfs*9|insAfs*?|insAlafs|insAlafs*|insAlafs*9|insAlafs*?	True	list
+pro_ins	insArgA|insFoo|insJ	False	list
+pro_del	del	True	one
+pro_del	delA|delAla|del3	False	list
+pro_delins	delinsAlaGly|delinsGlyIleArg	True	list
+#pro_delins	delinsAla	True	list
+#pro_delins	delinsA|delinsAG	True	list	delinsArg|delinsArgGly
+## Q: should these be accepted? ## 
+pro_delins delins|delinsAfs|delinsAfs*|delinsAfs*9|delinsAfs*?|delinsAlafs|delinsAlafs*|delinsAlafs*9|delinsAlafs*?	True	list
 #pro_subst
 #pro_edit
 #pro_edit_mu
@@ -179,14 +188,14 @@ hgvs_position	AC_01234.5:g.1|AC_01234.5:c.1|AC_01234.5:r.1|AC_01234.5:p.Met1	Tru
 hgvs_position	NM_01234.5:c.22+6	True	one	
 ############################################################
 ## HGVS Edit
-## none of these seem to be working ##
-#r_edit	r.76+3A>U	True	one	
-#p_edit	p.Ala1Ser	True	one	
-#c_edit	c.76+3A>T	True	one	
-#gmn_edit	g.76A>T	True	one
-#n_edit	n.76A>T	True	one	
-#m_edit	m.76A>T	True	one	
-#g_edit	g.76A>T	True	one	
+## Q: Is "None" acceptable for the string here? ##
+r_edit	r.76+3A>U	True	one	None:r.76+3A>U
+p_edit	p.Ala1Ser	True	one	None:p.Ala1Ser
+c_edit	c.76+3A>T	True	one	None:c.76+3A>T
+gmn_edit	g.76A>T	True	one	None:g.76A>T
+n_edit	n.76A>T	True	one	None:n.76A>T
+m_edit	m.76A>T	True	one	None:m.76A>T
+g_edit	g.76A>T	True	one	None:g.76A>T
 ############################################################
 ## HGVS Sequence Variant
 #any_variant	AC_01234.5:g.???
