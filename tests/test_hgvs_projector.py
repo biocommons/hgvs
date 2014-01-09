@@ -2,50 +2,38 @@ import unittest
 
 import bdi.sources.uta0
 
-from hgvs.projector import Projector
 from hgvs.exceptions import *
 import hgvs.location
+import hgvs.parser
+import hgvs.projector
 
 class TestHgvsProjector(unittest.TestCase):
     def setUp(self):
-        self._bdi = bdi.sources.uta0.connect()
+        self.bdi = bdi.sources.uta0.connect()
         self.ref = 'GRCh37.p10'
-
-    # Test combinations of these, both ways
-    # MCL1, multiple transcripts, SNPs mapped by NCBI
-    # http://tinyurl.com/len34jc
-    # http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=12036617
-    # NM_001197320.1:c.514G>A
-    # NM_021960.4:c.973G>A
-    # NM_182763.2:c.725G>A
-
-    def _to_and_fro( self, pj, a, b ):
-        ai = hgvs.location.Interval(
-            start = hgvs.location.BaseOffsetPosition( base=a[0], datum=hgvs.location.CDS_START ),
-            end   = hgvs.location.BaseOffsetPosition( base=a[1], datum=hgvs.location.CDS_START ),
-            )
-        bi = hgvs.location.Interval(
-            start = hgvs.location.BaseOffsetPosition( base=b[0], datum=hgvs.location.CDS_START ),
-            end   = hgvs.location.BaseOffsetPosition( base=b[1], datum=hgvs.location.CDS_START ),
-            )
+        self.hp = hgvs.parser.Parser()
         
-        self.assertEquals( pj.project_interval_forward(ai), bi )
-        self.assertEquals( pj.project_interval_backward(bi), ai )
-        
+    def tst_forward_and_backward(self,v1,v2):
+        pj = hgvs.projector.Projector(self.bdi,self.ref,v1.ac,v2.ac)
+        self.assertEqual( pj.project_variant_forward(v1), v2 )
+        self.assertEqual( pj.project_variant_backward(v2), v1 )
 
-    def test_20_60(self):
-        self._to_and_fro( Projector(self._bdi,self.ref,'NM_001197320.1','NM_021960.4'), (513,514), (972,973) )
+    def test_rs201430561(self):
+        # rs201430561 http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=201430561
+        hgvs_c = ['NM_001197320.1:c.281C>T','NM_021960.4:c.740C>T','NM_182763.2:c.688+403C>T']
+        var_c = [ self.hp.parse_hgvs_variant(h) for h in hgvs_c ]
+        self.tst_forward_and_backward( var_c[0], var_c[1] )
+        self.tst_forward_and_backward( var_c[0], var_c[2] )
+        self.tst_forward_and_backward( var_c[1], var_c[2] )
 
-    def test_20_63(self):
-        self._to_and_fro( Projector(self._bdi,self.ref,'NM_001197320.1','NM_182763.2'), (513,514), (724,725) )
+    def test_bad_acs(self):
+        hgvs_c = ['NM_001197320.1:c.281C>T','NM_021960.4:c.740C>T','NM_182763.2:c.688+403C>T']
+        var_c = [ self.hp.parse_hgvs_variant(h) for h in hgvs_c ]
+        pj = hgvs.projector.Projector(self.bdi,self.ref,var_c[0].ac,var_c[1].ac)
+        # intentionally call p_v_f with variant on *destination* transcript, and vice versa
+        self.assertRaises( RuntimeError, pj.project_variant_forward, var_c[1] )
+        self.assertRaises( RuntimeError, pj.project_variant_backward, var_c[0] )
 
-    def test_60_63(self):
-        self._to_and_fro( Projector(self._bdi,self.ref,'NM_021960.4','NM_182763.2'), (972,973), (724,725) )
-
-    def test_failures(self):
-        self.assertRaises( HGVSError, Projector, self._bdi,self.ref,'NM_bogus','NM_bogus' )
-        self.assertRaises( HGVSError, Projector, self._bdi,'bogus','NM_001197320.1','NM_021960.4' )
-        
 
 if __name__ == '__main__':
     unittest.main()

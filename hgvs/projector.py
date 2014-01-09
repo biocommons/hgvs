@@ -3,6 +3,8 @@ Utility class that projects variants from one transcript to another via a
 common reference sequence.
 """
 
+import copy
+
 import hgvs.transcriptmapper
 
 class Projector(object):
@@ -45,4 +47,33 @@ class Projector(object):
         """
         return self.src_tm.hgvsg_to_hgvsc( self.dst_tm.hgvsc_to_hgvsg( c_interval ) )
 
-    #TODO: project_variant_{forward,backward}
+
+    def project_variant_forward(self,c_variant):
+        """
+        project c_variant on the source transcript onto the destination transcript
+
+        :param c_variant: an :class:`hgvs.variant.SequenceVariant` object on the source transcript
+        :returns: c_variant: an :class:`hgvs.variant.SequenceVariant` object on the destination transcript
+        """
+        if c_variant.ac != self.src_tm.ac:
+            raise RuntimeError('variant accession does not match that used to initialize '+__name__)
+        new_c_variant = copy.deepcopy( c_variant )
+        new_c_variant.ac = self.dst_tm.ac
+        new_c_variant.posedit.pos = self.project_interval_forward( c_variant.posedit.pos )
+        return new_c_variant
+
+    def project_variant_backward(self,c_variant):
+        """
+        project c_variant on the source transcript onto the destination transcript
+
+        :param c_variant: an :class:`hgvs.variant.SequenceVariant` object on the source transcript
+        :returns: c_variant: an :class:`hgvs.variant.SequenceVariant` object on the destination transcript
+        """
+        if c_variant.ac != self.dst_tm.ac:
+            raise RuntimeError('variant accession does not match that used to initialize '+__name__)
+        new_c_variant = copy.deepcopy( c_variant )
+        new_c_variant.ac = self.src_tm.ac
+        new_c_variant.posedit.pos = self.project_interval_backward( c_variant.posedit.pos )
+        return new_c_variant
+
+
