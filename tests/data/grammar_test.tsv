@@ -40,8 +40,8 @@ aa3_seq	Cys|PheGly|HisHisHis	True	list
 aa3_seq	Cyx|ProYyyGln|PheGlyZzz|XxxPheGly	False	list	
 aa1_seq	C|WY|ACDEFGHIKLMNPQRSTVWY	True	list	
 aa1_seq	c|JY|YJ|YYJ|YJY|JYY|JJJ	False	list	
-aa13_seq	C|LM|Cys|LysMet	list	|	
-aa13_seq	CysM|Yyy|J	list	|	
+aa13_seq	C|LM|Cys|LysMet	True	list	
+aa13_seq	CysM|Yyy|J	False	list	
 aa13_fs	fs|fs*|fs*10|fs*?|fsTer|fsTer8|fsTer?|fsX|fsX10|fsX?	True	list	
 aa13_fs	fsCys|fsGly10|fsGly?|fsTerGly?	False	list	
 aa3t_seq	Ter||GlyTer|IleGlyTer	True	list	
@@ -52,7 +52,7 @@ aat13_seq	GlyTer|Ter	True	list
 aat13_seq	GlyTer|HisHisHisTer	True	list	
 aat13_seq	GlyTer	True	one	
 ## why? ## aat13_seq	G*	True	one	
-aat13_seq	TerGly|JT	False	list	
+aat13_seq	TerGly|JT|GlyA|AGly	False	list	
 rna_seq	ACGUacgu	True	string	
 rna_seq	AA|Aa|aA|uA|Ua|ACGUacgu	True	list	
 rna_seq	T|t|TT|ACT|TAC	False	list	
@@ -108,14 +108,31 @@ m_interval	2_10|(2_10)	True	list
 g_interval	2_10|(2_10)	True	list	
 ############################################################
 ## Edits
-### protein edits confuse me...
-#pro_dup	dupMG	True	one	
-#pro_ins	insfs*	True	one	
-#pro_del
-#pro_delins
-#pro_subst
-#pro_edit
-#pro_edit_mu
+#pro_dup_BUG	dup	True	one
+#pro_dup	dup2|dupGG|dupGlyAla	False	list
+pro_ins	insAla|insAlaGly	True	list
+#pro_ins	insA|insAG	True	list	insArg|insArgGly
+## Q: should these be accepted? ## 
+pro_ins ins|insfs|insAfs|insAfs*|insAfs*9|insAfs*?|insAlafs|insAlafs*|insAlafs*9|insAlafs*?	True	list
+pro_ins	insArgA|insFoo|insJ	False	list
+pro_del	del	True	one
+pro_del	delA|delAla|del3	False	list
+pro_delins	delinsAlaGly|delinsGlyIleArg	True	list
+##bug - reports Ala #pro_delins	delinsAla	True	list
+#pro_delins	delinsA|delinsAG	True	list	delinsArg|delinsArgGly
+## Q: should these be accepted? ## 
+pro_delins delins|delinsAfs|delinsAfs*|delinsAfs*9|delinsAfs*?|delinsAlafs|delinsAlafs*|delinsAlafs*9|delinsAlafs*?	True	list
+pro_subst	Arg|Phe	True	list	
+pro_subst	R|F	True	list	Arg|Phe
+pro_subst	Ter|*	True	list	Ter|Ter
+## Q: should these be accepted? ## 
+pro_subst	Argfs|Argfs*|Argfs*9|Argfs*?	True	list
+pro_subst	ArgPhe|10ValArg|Val>Arg	False	list	
+pro_subst	10VA|V>R	False	list	
+pro_edit	insPro|del|delinsMetSer|Gln	True	list
+pro_edit	insProdel|delinsMetSer>Gln	False	list
+pro_edit_mu	delinsCysTyr|(delinsCysTyr)|del|(del)|insAsn|(insAsn)|Glu|(Glu)	True	list
+pro_edit_mu	(delins)CysTyr|delins(CysTyr)|(Gln)Gln|ins(Lys)	False	list
 rna_dup	dup|dupA|dupCAG|dupCAU	True	list	
 rna_dup	dupCAT	False	one	
 rna_ins	insA|insC|insG|insU	True	list	
@@ -150,4 +167,52 @@ dna_edit_mu	A>C	True	one
 ## why? ## dna_edit_mu	(A>C)	True	one	
 ############################################################
 ## PosEdits
+p_posedit_special	=|(=)|0?|0|?	True	list	
+p_posedit_special	*|+|()|?0	False	list	
+## not clear from p_edits above ## p_posedit	Met1_Gly10|(Met1_Gly10)	True	list	
+r_posedit	5G>U|1_10A>C|(1_10)A>C|1_2delAAinsC	True	list	
+r_posedit	5G>T|(1_10A>C)	False	list
+c_posedit	76+3A>T|*1T>A|5G>T|1_10A>C|(1_10)A>C|1_2delAAinsC	True	list	
+c_posedit	1*T>A|(1_10A>C)	False	list	
+gmn_posedit	112_117delinsTG|10A>T|5dup|5dupT|7_8dup|7_8dupTG|(1_10)A>T	True	list	
+gmn_posedit	(1_10A>T)|5A>U	False	list	
+n_posedit	10A>T	True	one	
+m_posedit	112_117delinsTG	True	one	
+g_posedit	7_8dup	True	one	
+############################################################
+## HGVS Position
+r_hgvs_position	AC_01234.5:r.1|AC_01234.5:r.5+10	True	list	
+r_hgvs_position	AC_01234.5:c.1|AC_01234.5:g.2|AC_01234.5:p.1|AC_01234.5:r.1A>T	False	list	
+p_hgvs_position	AC_01234.5:p.Met1|AC_01234.5:p.Met1_Gly10	True	list	
+p_hgvs_position	AC_01234.5:r.Met1|AC_01234.5:c.Met1	False	list	
+c_hgvs_position	AC_01234.5:c.1|AC_01234.5:c.5+10	True	list	
+c_hgvs_position	AC_01234.5:r.1|AC_01234.5:p.1	False	list
+gmn_hgvs_position	AC_01234.5:g.1|AC_01234.5:m.1|AC_01234.5:n.1	True	list	
+gmn_hgvs_position	AC_01234.5:c.1	False	one	
+n_hgvs_position	AC_01234.5:n.1	True	one	
+m_hgvs_position	AC_01234.5:m.1	True	one	
+g_hgvs_position	AC_01234.5:g.1	True	one	
+hgvs_position	AC_01234.5:g.1|AC_01234.5:c.1|AC_01234.5:r.1|AC_01234.5:p.Met1	True	list	
+hgvs_position	NM_01234.5:c.22+6	True	one	
+############################################################
+## HGVS Edit
+## Q: Is "None" acceptable for the string here? ##
+r_edit	r.76+3A>U	True	one	None:r.76+3A>U
+p_edit	p.Ala1Ser	True	one	None:p.Ala1Ser
+c_edit	c.76+3A>T	True	one	None:c.76+3A>T
+gmn_edit	g.76A>T	True	one	None:g.76A>T
+n_edit	n.76A>T	True	one	None:n.76A>T
+m_edit	m.76A>T	True	one	None:m.76A>T
+g_edit	g.76A>T	True	one	None:g.76A>T
+############################################################
+## HGVS Sequence Variant
+#any_variant	AC_01234.5:g.???
+r_variant	AC_01234.5:r.1A>U	True	one	
+p_variant	AC_01234.5:p.Ala1Ser	True	one	
+c_variant	AC_01234.5:c.1A>T	True	one	
+gmn_variant	AC_01234.5:g.1A>T	True	one	
+n_variant	AC_01234.5:n.1A>T	True	one
+m_variant	AC_01234.5:m.1A>T	True	one	
+g_variant	AC_01234.5:g.1A>T	True	one	
+hgvs_variant	AC_01234.5:c.1A>T|AC_01234.5:r.1A>U|AC_01234.5:g.1A>T|AC_01234.5:p.Ala1Ser	True	list	
 
