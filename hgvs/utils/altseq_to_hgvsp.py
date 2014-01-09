@@ -270,12 +270,12 @@ class AltSeqToHgvsp(object):
             is_dup = True
             variant_start = dup_candidate_start + 1
 
-        # dup after?
-        dup_candidate_start = start - 1
-        dup_candidate = self._ref_seq[dup_candidate_start: dup_candidate_start + len(insertion)]
-        if insertion == dup_candidate:
-            is_dup = True
-            variant_start = dup_candidate_start + 1
+        # # dup after?
+        # dup_candidate_start = start - 1
+        # dup_candidate = self._ref_seq[dup_candidate_start: dup_candidate_start + len(insertion)]
+        # if insertion == dup_candidate:
+        #     is_dup = True
+        #     variant_start = dup_candidate_start + 1
 
         return is_dup, variant_start
 
