@@ -159,10 +159,10 @@ class AltSeqToHgvsp(object):
         fs = None
 
         if start == 1:                                                  # initial methionine is modified
-                aa_start = aa_end = hgvs.location.AAPosition(base=start, aa=deletion)
-                ref = ''
-                alt = ''
-                self._is_ambiguous = True   # side-effect
+            aa_start = aa_end = hgvs.location.AAPosition(base=start, aa=deletion)
+            ref = ''
+            alt = ''
+            self._is_ambiguous = True   # side-effect
 
         if insertion and insertion.find("*") == 0:                      # stop codon at variant position
             aa_start = aa_end = hgvs.location.AAPosition(base=start, aa=deletion[0])
@@ -263,19 +263,11 @@ class AltSeqToHgvsp(object):
         is_dup = False  # assume no
         variant_start = None
 
-        # dup before?
         dup_candidate_start = start - len(insertion) - 1
         dup_candidate = self._ref_seq[dup_candidate_start: dup_candidate_start + len(insertion)]
         if insertion == dup_candidate:
             is_dup = True
             variant_start = dup_candidate_start + 1
-
-        # # dup after?
-        # dup_candidate_start = start - 1
-        # dup_candidate = self._ref_seq[dup_candidate_start: dup_candidate_start + len(insertion)]
-        # if insertion == dup_candidate:
-        #     is_dup = True
-        #     variant_start = dup_candidate_start + 1
 
         return is_dup, variant_start
 
