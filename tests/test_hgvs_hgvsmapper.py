@@ -16,11 +16,57 @@ class Test_HGVSMapper(unittest.TestCase):
         # AOAH    NM_001177507.1:c.1486G>A      
         hgvs_g = 'NC_000007.13:g.36561662C>T'
         hgvs_c = 'NM_001637.3:c.1582G>A'
-    
+        hgvs_g = 'NC_000007.13:g.36561662C>T'
+        hgvs_c = 'NM_001637.3:c.1582G>A'
+        hgvs_p = 'NP_001628.1:p.Gly528Arg'  # from Mutalyzer
+
         var_g = self.hp.parse_hgvs_variant(hgvs_g)
         var_c = self.hm.hgvsg_to_hgvsc( var_g, 'NM_001637.3' )
+        var_p = self.hm.hgvsc_to_hgvsp( var_c, None )
 
         self.assertEqual( str(var_c) , hgvs_c )
+        self.assertEqual( str(var_p) , hgvs_p )
+
+
+    def test_gcrp_invalid_input_type(self):
+        hgvs_g = 'NC_000007.13:g.36561662C>T'
+        hgvs_c = 'NM_001637.3:c.1582G>A'
+
+        var_g = self.hp.parse_hgvs_variant(hgvs_g)
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+
+        cases = {'gc': (self.hm.hgvsg_to_hgvsc, (var_c, 'NM_001637.3')),
+                 'gr': (self.hm.hgvsg_to_hgvsr, (var_c, 'NM_001637.3')),
+                 'rg': (self.hm.hgvsr_to_hgvsg, (var_c,)),
+                 'cg': (self.hm.hgvsc_to_hgvsg, (var_g,)),
+                 'cr': (self.hm.hgvsc_to_hgvsr, (var_g,)),
+                 'rc': (self.hm.hgvsr_to_hgvsc, (var_g,)),
+                 'cp': (self.hm.hgvsc_to_hgvsp, (var_g, None)),
+                 }
+
+        failures = []
+        for key in cases:
+            try:
+                func, args = cases[key]
+                var_result = func(*args)
+                failures.append(key)
+            except hgvs.exceptions.InvalidHGVSVariantError:
+                pass
+
+        self.assertFalse(failures, "conversions not failing: {}".format(failures))
+
+    def test_gc_invalid_input_nm_accession(self):
+        hgvs_g = 'NC_000007.13:g.36561662C>T'
+        var_g = self.hp.parse_hgvs_variant(hgvs_g)
+        with self.assertRaises(hgvs.exceptions.HGVSError):
+            var_p = self.hm.hgvsc_to_hgvsp(var_g, 'NM_999999.1')
+
+    # def test_cp_invalid_input_nm_accession(self):
+    #     hgvs_c = 'NM_999999.3:c.1582G>A'
+    #     var_c = self.hp.parse_hgvs_variant(hgvs_c)
+    #     with self.assertRaises(hgvs.exceptions.HGVSError):
+    #         var_p = self.hm.hgvsc_to_hgvsp(var_c, None)
+
 
 
 if __name__ == '__main__':

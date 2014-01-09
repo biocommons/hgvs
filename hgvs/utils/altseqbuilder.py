@@ -24,19 +24,19 @@ class AltTranscriptData(recordtype.recordtype('AltTranscriptData', [
                                     is_substitution=False, is_ambiguous=False):
         """Create a variant sequence using inputs from VariantInserter
         :param seq: DNA sequence wiith variant incorporated
-        :type str or list
+        :type seq: str or list
         :param cds_start: coding sequence start (1-based)
-        :type int
+        :type cds_start: int
         :param cds_stop: coding sequence stop (1-based)
-        :type int
+        :type cds_stop: int
         :param is_frameshift: is this variant a frameshift
-        :type bool
+        :type is_frameshift: bool
         :param variant_start_aa: AA start index (1-based) for this variant
-        :type int
+        :type variant_start_aa: int
         :param accession: protein accession, e.g. NP_999999.2
-        :type str
+        :type accession: str
         :return variant sequence data
-        :type recordtype
+        :rtype recordtype
         """
         if isinstance(seq, basestring):
             seq = list(seq)
@@ -66,10 +66,10 @@ class AltSeqBuilder(object):
     def __init__(self, var_c, transcript_data):
         """Constructor
 
-        :param variant representation of hgvs variant
-        :type variant
-        :param transcript_data representation of transcript
-        :type recordtype
+        :param var_c: representation of hgvs variant
+        :type var_c: SequenceVariant
+        :param transcript_data: representation of transcript
+        :type transcript_data: recordtype
 
         """
         self._var_c = var_c
@@ -85,7 +85,7 @@ class AltSeqBuilder(object):
         downstream.
 
         :returns variant sequence data
-        :type list of dictionaries
+        :rtype list of dictionaries
         """
         NOT_CDS = "not_cds_variant"
 
@@ -127,7 +127,9 @@ class AltSeqBuilder(object):
 
     def _get_variant_region(self):
         """Categorize variant by location in transcript (5'utr, exon, intron, 3'utr)
+
         :return "exon", "intron", "five_utr", "three_utr"
+        :rtype str
         """
         if self._var_c.posedit.pos.start.datum == CDS_END and self._var_c.posedit.pos.end.datum == CDS_END:
             result = self.T_UTR
@@ -215,7 +217,7 @@ class AltSeqBuilder(object):
         """Helper to setup incorporate functions
         :return (transcript sequence, cds start [1-based], cds stop [1-based],
         cds start index in seq [inc, 0-based], cds end index in seq [excl, 0-based])
-        :type (list, int, int, int, int)
+        :rtype (list, int, int, int, int)
         """
         seq = list(self._transcript_data.transcript_sequence)
 
@@ -263,8 +265,9 @@ class AltSeqBuilder(object):
         """Get starting position (AA ref index) of the last frameshift
         which affects the rest of the sequence, i.e. not offset by subsequent frameshifts
         :param variant_data: info on each variant
-        :type RecordType
+        :type variant_data: recordtype
         :return variant data with additional field for AA index (1-based) of the frameshift start
+        :rtype recordtype
         """
         # TODO - implement for 2+ variants
 

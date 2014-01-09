@@ -1,0 +1,153 @@
+Func	Test	Valid	InType	Expected
+Not_Yet_Implemented	NOT YET IMPLEMENTED	True	one	
+Not_Yet_Implemented	foobar	False	one	
+############################################################
+## Basic types
+pm	-+	True	string
+pm	*	False	one	
+num	1234567890	True	string	
+num	1234567890	True	one
+num	123X	False	one	
+snum	+123	True	one	123
+snum	123|-123	True	list	
+snum	+-123	False	one	
+offset	10|-10	True	list	
+offset		True	one	0
+## why? ## offset	?	True	one	None
+base	+123	True	one	123
+base	123|-123	True	list	
+base	?	True	one	None
+aa3_term	Ter	True	one	
+aa3_term	ter	False	one	
+aa1_term	X*	True	string	
+aa1_term	T	False	one	
+aa13_term	X|*|Ter	True	list	
+aa13_term	ter	False	one	
+aa3	Ala|Cys|Asp|Glu|Phe|Gly|His|Ile|Lys|Leu|Met|Asn|Pro|Gln|Arg|Ser|Thr|Val|Trp|Tyr	True	list	
+aa3	Zaa	False	one	
+aa1	ACDEFGHIKLMNPQRSTVWY	True	string	
+aa1	Za1	False	string	
+aa1	JUZBOX	False	string	
+aa13	Ala|A	True	list
+aa13	Zaa|Z	False	list	
+aat13	Trp|W|Ter|X|*	True	list	
+aat13	Zaa|Z	False	list	
+rna	ACGUacgu	True	string	
+rna	XYZxyzTt	False	string	
+dna	ACGTacgt	True	string	
+dna	XYZxyzUu	False	string	
+aa3_seq	Cys|PheGly|HisHisHis	True	list	
+aa3_seq	Cyx|ProYyyGln|PheGlyZzz|XxxPheGly	False	list	
+aa1_seq	C|WY|ACDEFGHIKLMNPQRSTVWY	True	list	
+aa1_seq	c|JY|YJ|YYJ|YJY|JYY|JJJ	False	list	
+aa13_seq	C|LM|Cys|LysMet	list	|	
+aa13_seq	CysM|Yyy|J	list	|	
+aa13_fs	fs|fs*|fs*10|fs*?|fsTer|fsTer8|fsTer?|fsX|fsX10|fsX?	True	list	
+aa13_fs	fsCys|fsGly10|fsGly?|fsTerGly?	False	list	
+aa3t_seq	Ter||GlyTer|IleGlyTer	True	list	
+aa3t_seq	TerGly|XxxIleGly	False	list	
+aa1t_seq	*|X||G*|IG*	True	list	
+aa1t_seq	J|JJ|XYJ|GGG*G	False	list	
+aat13_seq	GlyTer|Ter	True	list	
+aat13_seq	GlyTer|HisHisHisTer	True	list	
+aat13_seq	GlyTer	True	one	
+## why? ## aat13_seq	G*	True	one	
+aat13_seq	TerGly|JT	False	list	
+rna_seq	ACGUacgu	True	string	
+rna_seq	AA|Aa|aA|uA|Ua|ACGUacgu	True	list	
+rna_seq	T|t|TT|ACT|TAC	False	list	
+dna_seq	ACGTacgt	True	string	
+dna_seq	AA|Aa|aA|tA|Ta|ACGTacgt	True	list	
+dna_seq	U|u|UU|ACU|UAC	False	list	
+############################################################
+## Locations
+def_p_pos	Met1|Gly10	True	list	
+def_p_pos	M1|G10	True	list	Met1|Gly10
+def_p_pos	Ter10|X0|Glx5|J5	False	list	
+def_c_pos	1|11+1|9-3|-1|*10	True	list	
+def_c_pos	X|11_12|10*	False	list	
+#hgvs skips 0 for c. so -2, -1, 1, 1 and r. starts at 1 
+#def_c_pos:parse but cannot stringify	0	False	list	
+def_r_pos	1|11+1|9-3	True	list	
+#def_r_pos:parse but cannot stringify	-1|0	False	list	
+def_r_pos	X|11_12|10*	False	list	
+def_gmn_pos	2	True	list
+#simple positions stringify returns '?' not None
+def_gmn_pos	?	True	one	
+def_gmn_pos	A|2?|*1|-2	False	list
+def_n_pos	2	True	list
+def_n_pos	?	True	one	
+def_n_pos	A|2?|*1|-2	False	list
+def_m_pos	2	True	list
+def_m_pos	?	True	one	
+def_m_pos	A|2?|*1|-2	False	list
+def_g_pos	2	True	list
+def_g_pos	?	True	one	
+def_g_pos	A|2?|*1|-2	False	list
+p_pos	Met1	True	one	
+c_pos	11+1	True	one	
+r_pos	9-3	True	one	
+gmn_pos	2	True	one	
+def_p_interval	Met1_Gly10|Met1	True	list	
+def_p_interval	Met1-Gly10	False	one	
+def_c_interval	1_10|1|1+2_10-2	True	list	
+## why? ## def_c_interval	1-10	False	one	
+def_r_interval	1_10|1|1+2_10-2	True	list	
+## why? ## def_r_interval	1-10	False	one	
+def_gmn_interval	2_10|2	True	list	
+def_gmn_interval	2-10	False	one	
+def_n_interval	2_10|2	True	list	
+def_m_interval	2_10|2	True	list	
+def_g_interval	2_10|2	True	list	
+p_interval	Met1_Gly10|(Met1_Gly10)	True	list	
+c_interval	1_10|(1_10)	True	list	
+r_interval	1_10|(1_10)	True	list	
+gmn_interval	2_10|(2_10)	True	list	
+n_interval	2_10|(2_10)	True	list	
+m_interval	2_10|(2_10)	True	list	
+g_interval	2_10|(2_10)	True	list	
+############################################################
+## Edits
+### protein edits confuse me...
+#pro_dup	dupMG	True	one	
+#pro_ins	insfs*	True	one	
+#pro_del
+#pro_delins
+#pro_subst
+#pro_edit
+#pro_edit_mu
+rna_dup	dup|dupA|dupCAG|dupCAU	True	list	
+rna_dup	dupCAT	False	one	
+rna_ins	insA|insC|insG|insU	True	list	
+##why? ## rna_ins	insAA	False	one	
+rna_ins	insT	False	one	
+rna_del	delA|del5|delACGU	True	list	
+rna_del	del5A|delT	False	list	
+rna_delins	delAAAAGGGinsU|delAAinsC	True	list	
+## why? ## rna_delins	delAinsC	True	one	
+## why? ## rna_delins	del5insU	True	one
+## why? ## rna_delins	delAAinsCG	False	one	
+rna_subst	A>C|A>G|A>U|C>G|C>U|G>U	True	list	
+rna_subst	A>T	False	one	
+rna_edit	A>C|delAAinsC|insA|delA|dupA	True	list
+rna_edit	A>T|del5A	False	list	
+rna_edit_mu	A>C	True	one
+## why? ## rna_edit_mu	(A>C)	True	one		
+dna_dup	dup|dupA|dupCAG|dupCAT	True	list	
+dna_dup	dupCAU	False	one
+dna_ins	insA|insC|insG|insT	True	list	
+dna_ins	insU	False	one	
+dna_del	delA|del5|delAAAA	True	list	
+dna_del	del5A	False	one	
+dna_delins	delAAAAGGGinsT|delAAinsC	True	list
+## why? ## dna_delins	delAinsT	True	one	
+## why? ## dna_delins	del5insA	True	one
+## why? ## dna_delins	delAAinsCG	False	one	
+dna_subst	A>C|A>G|A>T|C>G|C>T|G>T	True	list	
+dna_edit	A>C|delAAinsC|insA|delA|dupA	True	list	
+dna_edit	A>U|del5A	False	list	
+dna_edit_mu	A>C	True	one	
+## why? ## dna_edit_mu	(A>C)	True	one	
+############################################################
+## PosEdits
+

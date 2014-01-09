@@ -195,9 +195,9 @@ class HGVSMapper(object):
         Convert hgvsc tag to hgvsp tag
 
         :param var_c: hgvsc tag
-        :type SequenceVariant
+        :type var_c: SequenceVariant
         :param ac_p: protein accession
-        :type string
+        :type ac_p: str
         :return hgvsp tag
         :rtype SequenceVariant
         """

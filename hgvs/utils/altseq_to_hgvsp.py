@@ -21,9 +21,9 @@ class AltSeqToHgvsp(object):
         """Constructor
 
         :param ref_data: reference transcript record
-        :type recordtype
+        :type ref_data: recordtype
         :param alt_data: alt transcript record
-        :type recordtype
+        :type ref_data: recordtype
         """
         self._ref_data = ref_data
         self._alt_data = alt_data
@@ -48,7 +48,7 @@ class AltSeqToHgvsp(object):
         """Compare two amino acid sequences; generate an hgvs tag from the output
 
         :return list of variants in sequence order
-        :type list of dict
+        :rtype list of dict
         """
 
         variants = []
@@ -144,10 +144,11 @@ class AltSeqToHgvsp(object):
         """Convert AA variant to an hgvs representation
 
         :param variant: contains start, del, and ins
-        :type dict
+        :type variant: dict
         :param acc: protein accession
-        :type str
+        :type acc: str
         :return hgvs string
+        :rtype str
         """
         start = variant['start']
         insertion = ''.join(variant['ins'])
@@ -252,12 +253,12 @@ class AltSeqToHgvsp(object):
     def _check_if_ins_is_dup(self, start, insertion):
         """Helper to identify an insertion as a duplicate
 
-        :param start 1-based insertion start
-        :type int
-        :param insertion sequence
-        :type str
+        :param start: 1-based insertion start
+        :type start: int
+        :param insertion: sequence
+        :type insertion: str
         :return (is duplicate, variant start)
-        :type (bool, int)
+        :rtype (bool, int)
         """
         is_dup = False  # assume no
         variant_start = None
