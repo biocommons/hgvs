@@ -44,7 +44,7 @@ Parsing
 :mod:`hgvs.parser`
 ^^^^^^^^^^^^^^^^^^
 
-.. automodule:: hgvs.parsing
+.. automodule:: hgvs.parser
     :members:
     :undoc-members:
     :show-inheritance:
@@ -73,6 +73,14 @@ Mapping
     :undoc-members:
     :show-inheritance:
 
+
+:mod:`hgvs.projector`
+^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: hgvs.projector
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 :mod:`hgvs.transcriptmapper`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
