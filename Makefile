@@ -1,3 +1,4 @@
+
 .SUFFIXES :
 .PRECIOUS :
 .PHONY : FORCE
@@ -6,17 +7,21 @@
 SHELL:=/bin/bash -o pipefail
 SELF:=$(firstword $(MAKEFILE_LIST))
 
-ifdef LOCAL_UTA
-export UTA_DB_URL=postgresql://localhost/uta
-endif
+UTA_DB_URL=postgresql://uta_public:uta_public@uta.invitae.com/uta
+#UTA_DB_URL=sqlite:///tmp/uta-0.0.5.db
+#UTA_DB_URL=postgresql://localhost/uta
 
 ############################################################################
 #= BASIC USAGE
 default: help
 
 #=> help -- display this help message
-help:
+help: config
 	@sbin/extract-makefile-documentation "${SELF}"
+
+config:
+	@echo CONFIGURATION
+	@echo "  UTA_DB_URL=${UTA_DB_URL}"
 
 ############################################################################
 #= INSTALLATION/SETUP
@@ -103,12 +108,12 @@ clean:
 #=> cleaner: above, and remove generated files
 cleaner: clean
 	find . -name \*.pyc -print0 | xargs -0r /bin/rm -f
-	/bin/rm -fr distribute-* *.egg *.egg-info *.tar.gz nosetests.xml
+	/bin/rm -fr build bdist dist sdist ve virtualenv*
 	-make -C doc clean
 #=> cleanest: above, and remove the virtualenv, .orig, and .bak files
 cleanest: cleaner
 	find . \( -name \*.orig -o -name \*.bak \) -print0 | xargs -0r /bin/rm -v
-	/bin/rm -fr build bdist dist sdist ve virtualenv*
+	/bin/rm -fr distribute-* *.egg *.egg-info *.tar.gz nosetests.xml
 #=> pristine: above, and delete anything unknown to mercurial
 pristine: cleanest
 	hg st -un0 | xargs -0r echo /bin/rm -fv
