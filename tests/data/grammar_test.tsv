@@ -118,13 +118,21 @@ pro_ins	insArgA|insFoo|insJ	False	list
 pro_del	del	True	one
 pro_del	delA|delAla|del3	False	list
 pro_delins	delinsAlaGly|delinsGlyIleArg	True	list
-#pro_delins	delinsAla	True	list
+##bug - reports Ala #pro_delins	delinsAla	True	list
 #pro_delins	delinsA|delinsAG	True	list	delinsArg|delinsArgGly
 ## Q: should these be accepted? ## 
 pro_delins delins|delinsAfs|delinsAfs*|delinsAfs*9|delinsAfs*?|delinsAlafs|delinsAlafs*|delinsAlafs*9|delinsAlafs*?	True	list
-#pro_subst
-#pro_edit
-#pro_edit_mu
+pro_subst	Arg|Phe	True	list	
+pro_subst	R|F	True	list	Arg|Phe
+pro_subst	Ter|*	True	list	Ter|Ter
+## Q: should these be accepted? ## 
+pro_subst	Argfs|Argfs*|Argfs*9|Argfs*?	True	list
+pro_subst	ArgPhe|10ValArg|Val>Arg	False	list	
+pro_subst	10VA|V>R	False	list	
+pro_edit	insPro|del|delinsMetSer|Gln	True	list
+pro_edit	insProdel|delinsMetSer>Gln	False	list
+pro_edit_mu	delinsCysTyr|(delinsCysTyr)|del|(del)|insAsn|(insAsn)|Glu|(Glu)	True	list
+pro_edit_mu	(delins)CysTyr|delins(CysTyr)|(Gln)Gln|ins(Lys)	False	list
 rna_dup	dup|dupA|dupCAG|dupCAU	True	list	
 rna_dup	dupCAT	False	one	
 rna_ins	insA|insC|insG|insU	True	list	
