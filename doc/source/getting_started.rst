@@ -86,14 +86,14 @@ Create an HGVSMapper instance
 -----------------------------
 
 Mapping variants between genomic (g.), transcript (c.), and protein (p.)
-sequences is performed by an instance of :py:class:`HGVSMapper`. As with
+sequences is performed by an instance of :py:class:`hgvs.hgvsmapper.HGVSMapper`. As with
 the parser, you need only one instance per session.
 
 Variant mapping and validation requires access to external data,
 specifically exon structures, transcript alignments, and protein
 accessions.  Right now, the only source of this data is via the BDI and
 UTA sister projects.  (If you want more information on the architecture of
-HGVS, BDI, and UTA, see :doc:`architecture.rst`.  However, you don't
+HGVS, BDI, and UTA, see :doc:`architecture`.  However, you don't
 really need to understand the architecture to use HGVS.)
 
 First, connect to UTA via BDI:

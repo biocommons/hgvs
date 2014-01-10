@@ -1,5 +1,8 @@
 .. _architecture.rst:
 
+Architecture
+~~~~~~~~~~~~
+
 .. sidebar:: HGVS Architecture in a Nutshell
 
   :hgvs:
