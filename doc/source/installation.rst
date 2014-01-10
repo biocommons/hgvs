@@ -6,7 +6,7 @@ Installation
 The following instructions were tested on Ubuntu 13.10 (Python 2.7.5+),
 Ubuntu 13.04 (Python 2.7.3), and Ubuntu 12.04 (Python 2.7.3).
 
-First, build a virtualenv::
+Optionally, first build a virtualenv::
 
   $ sudo apt-get install python2.7 python2.7-dev libpq-dev mercurial virtualenvwrapper
   $ mkvirtualenv hgvs-test
@@ -14,9 +14,7 @@ First, build a virtualenv::
 Install via pip::
 
   (hgvs-test)$ pip install setuptools --upgrade
-  (hgvs-test)$ pip install hg+ssh://hg@bitbucket.org/invitae/uta
-  (hgvs-test)$ pip install hg+ssh://hg@bitbucket.org/invitae/bdi
-  (hgvs-test)$ pip install hg+ssh://hg@bitbucket.org/invitae/hgvs
+  (hgvs-test)$ pip install hgvs
 
 Alternatively, test and install from source::
 
@@ -28,3 +26,13 @@ Alternatively, test and install from source::
 
 Other platforms and dependency versions are expected to work but are not
 tested.
+
+Test your setup like this::
+
+  (hgvs-test)$ python
+  Python 2.7.5+ (default, Sep 19 2013, 13:48:49) 
+  [GCC 4.8.1] on linux2
+  Type "help", "copyright", "credits" or "license" for more information.
+  >>> import hgvs.parser
+  >>> hgvs.parser.Parser().parse_hgvs_variant("NM_01234.5:c.12+3A>T")
+  SequenceVariant(ac=NM_01234.5, type=c, posedit=12+3A>T)
