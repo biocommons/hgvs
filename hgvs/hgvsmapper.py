@@ -1,9 +1,6 @@
 """
 hgvs.hgvsmapper
-
-This is the module documentation
 """
-
 
 import os,re,sys
 
@@ -168,7 +165,7 @@ class HGVSMapper(object):
         return var_r
 
     def hgvsr_to_hgvsc(self, var_r, ref='CRCh37.p10'):
-        """Given a RNA (r.) HGVS variant and an inferred transcript, return an cDNA (c.) variant.
+        """Given a RNA (r.) HGVS variant and an inferred transcript, return an cDNA 
         hgvs must be an HGVS-formatted variant or variant position
         """
 
@@ -191,14 +188,14 @@ class HGVSMapper(object):
 
     def hgvsc_to_hgvsp(self, var_c, ac_p):
         """
-        Convert hgvsc tag to hgvsp tag
+        Converts a c. SequenceVariant to a p. SequenceVariant on the specified protein accession
 
         :param var_c: hgvsc tag
         :type var_c: SequenceVariant
         :param ac_p: protein accession
         :type ac_p: str
-        :return hgvsp tag
-        :rtype SequenceVariant
+        :rtype: SequenceVariant
+
         """
 
         class RefTranscriptData(recordtype.recordtype('RefTranscriptData',

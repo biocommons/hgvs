@@ -62,8 +62,6 @@ Mapping
     :undoc-members:
     :show-inheritance:
 
-:doc:`More Info <modules/hgvs.hgvsmapper.rst>`
-
 
 :mod:`hgvs.intervalmapper`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^

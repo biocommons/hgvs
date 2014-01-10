@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 
-__doc__ = """
+"""
 hgvs.location -- classes for dealing with the locations of HGVS variants
 
 This module provides for Representing the location of variants in HGVS nomenclature, including:
@@ -10,10 +10,11 @@ This module provides for Representing the location of variants in HGVS nomenclat
   * CDS stop coordinates (e.g., NM_01234.5:c.*13A>C)  
 
 Classes:
-  * SimplePosition -- a simple integer
-  * BaseOffsetPosition -- a position with datum, base, and offset for c. and r. coordinates
-  * AAPosition -- an amino acid position (with AA)
-  * Interval -- an interval of Positions
+
+  * :class:`SimplePosition` -- a simple integer
+  * :class:`BaseOffsetPosition` -- a position with datum, base, and offset for c. and r. coordinates
+  * :class:`AAPosition` -- an amino acid position (with AA)
+  * :class:`Interval` -- an interval of Positions
 """
 
 import sys
@@ -60,9 +61,9 @@ class BaseOffsetPosition( recordtype.recordtype(
     """
     Class for dealing with CDS coordinates in transcript variants.
 
-    This class models CDS positions using a `base' coordinate, which is
-    measured relative to a specified `datum' (CDS_START or CDS_END), and
-    an `offset', which is 0 for exonic positions and non-zero for intronic
+    This class models CDS positions using a `base` coordinate, which is
+    measured relative to a specified `datum` (CDS_START or CDS_END), and
+    an `offset`, which is 0 for exonic positions and non-zero for intronic
     positions.  Positions and offsets are 1-based, with no 0, per the HGVS
     recommendations.  (If you're using this with UTA, be aware that UTA
     uses interbase coordinates.)
