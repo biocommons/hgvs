@@ -28,8 +28,6 @@ Contents
    developer
    classes
 
-   reST-examples
-
 
 Additional Resources
 --------------------
