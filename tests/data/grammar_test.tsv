@@ -120,7 +120,7 @@ pro_del	delA|delAla|del3	False	list
 pro_delins	delinsAlaGly|delinsGlyIleArg	True	list
 ##bug - reports Ala #pro_delins	delinsAla	True	list
 #pro_delins	delinsA|delinsAG	True	list	delinsArg|delinsArgGly
-## Q: should these be accepted? ## 
+## Q: should these be accepted? - in particular, delins undecorated is ambiguous ## 
 pro_delins delins|delinsAfs|delinsAfs*|delinsAfs*9|delinsAfs*?|delinsAlafs|delinsAlafs*|delinsAlafs*9|delinsAlafs*?	True	list
 pro_subst	Arg|Phe	True	list	
 pro_subst	R|F	True	list	Arg|Phe
@@ -169,7 +169,12 @@ dna_edit_mu	A>C	True	one
 ## PosEdits
 p_posedit_special	=|(=)|0?|0|?	True	list	
 p_posedit_special	*|+|()|?0	False	list	
-## not clear from p_edits above ## p_posedit	Met1_Gly10|(Met1_Gly10)	True	list	
+p_posedit	Ala3Phe|Ala3del|Ala3_Tyr6del|Gly10_Phe11insMetMet|Cys200_Tyr205delinsIleLeuGln	True	list
+p_posedit	A3F|A3_Y6del	True	list	Ala3Phe|Ala3_Tyr6del|Gly10_Phe11insMetMet
+## fails due to ins/delins in pro_del/delins ##p_posedit	G10_F11insMM|C200_Y205delinsILQ	True	list	Gly10_Phe11insMetMet|Cys200_Tyr205delinsIleLeuGln
+p_posedit	=|(=)|0?|0|?	True	list
+p_posedit	Phe|Ala3|Ala3_Phe4|Ala3=|Ala3_Phedel|Ala3Phe4insGly|Ala3_Phe4>Gly3_Ile4	False	list
+##invalid but parses #p_posedit	Ala3_Tyr3del|Ala4_Phe3del|Ala3insPheGly	False	one
 r_posedit	5G>U|1_10A>C|(1_10)A>C|1_2delAAinsC	True	list	
 r_posedit	5G>T|(1_10A>C)	False	list
 c_posedit	76+3A>T|*1T>A|5G>T|1_10A>C|(1_10)A>C|1_2delAAinsC	True	list	
@@ -206,9 +211,9 @@ m_edit	m.76A>T	True	one	None:m.76A>T
 g_edit	g.76A>T	True	one	None:g.76A>T
 ############################################################
 ## HGVS Sequence Variant
-#any_variant	AC_01234.5:g.???
+any_variant	HiThere123:x.10A>T	True	one
 r_variant	AC_01234.5:r.1A>U	True	one	
-p_variant	AC_01234.5:p.Ala1Ser	True	one	
+p_variant	AC_01234.5:p.Ala1Ser|AC_01234.5:p.Phe2_Ala4del|AC_01234.5:p.Phe2_Ala3insGlnGln|AC_01234.5:p.Cys9_Val10delinsArgGluThr	True	list	
 c_variant	AC_01234.5:c.1A>T	True	one	
 gmn_variant	AC_01234.5:g.1A>T	True	one	
 n_variant	AC_01234.5:n.1A>T	True	one
