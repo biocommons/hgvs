@@ -157,6 +157,7 @@ class AltSeqToHgvsp(object):
         # defaults
         is_dup = False  # assume not dup
         fs = None
+        is_sub = False
 
         if start == 1:                                                  # initial methionine is modified
             aa_start = aa_end = hgvs.location.AAPosition(base=start, aa=deletion)
@@ -168,6 +169,7 @@ class AltSeqToHgvsp(object):
             aa_start = aa_end = hgvs.location.AAPosition(base=start, aa=deletion[0])
             ref = ''
             alt = '*'
+            is_sub = True
 
         elif start == len(self._ref_seq):                               # extension
             if self._alt_seq[-1] == '*':
@@ -180,10 +182,12 @@ class AltSeqToHgvsp(object):
             ref = ''
             alt = subst_at_stop_codon
             fs = 'ext*{}'.format(len_ext)
+            is_sub = True
 
         elif self._is_frameshift:                                       # frameshift
             aa_start = aa_end = hgvs.location.AAPosition(base=start, aa=deletion[0])
             ref = ''
+            is_sub = True
 
             try:
                 new_stop = str(insertion.index("*") + 1)    # start w/ 1st change; ends w/ * (inclusive)
@@ -198,6 +202,7 @@ class AltSeqToHgvsp(object):
                 aa_start = aa_end = hgvs.location.AAPosition(base=start, aa=deletion)
                 ref = ''
                 alt = insertion
+                is_sub = True
 
             elif len(deletion) > 0:                                     # delins OR deletion OR stop codon at variant position
                 ref = deletion
@@ -216,6 +221,7 @@ class AltSeqToHgvsp(object):
                         aa_end = hgvs.location.AAPosition(base=start, aa=deletion[0])
                         ref = ''
                         alt = '*'
+                        is_sub = True
                     else:                                               # deletion
                         aa_start = hgvs.location.AAPosition(base=start, aa=deletion[0])
                         if end > start:
@@ -246,7 +252,7 @@ class AltSeqToHgvsp(object):
             else: # should never get here
                 raise ValueError("unexpected variant: {}".format(variant))
 
-        var_p = self._create_variant(aa_start, aa_end, ref, alt, fs, is_dup, acc, is_ambiguous=self._is_ambiguous)
+        var_p = self._create_variant(aa_start, aa_end, ref, alt, fs, is_dup, acc, is_ambiguous=self._is_ambiguous, is_sub=is_sub)
 
         return var_p
 
@@ -271,13 +277,15 @@ class AltSeqToHgvsp(object):
 
         return is_dup, variant_start
 
-    def _create_variant(self, start, end, ref, alt, fs=None, is_dup=False, acc=None, is_ambiguous=False):
+    def _create_variant(self, start, end, ref, alt, fs=None, is_dup=False, acc=None, is_ambiguous=False, is_sub=False):
         """Creates a SequenceVariant object"""
         interval = hgvs.location.Interval(start=start, end=end)
         if is_ambiguous:
             edit = hgvs.edit.AASpecial(status='?')
         elif is_dup:
             edit = hgvs.edit.Dup()
+        elif is_sub:
+            edit = hgvs.edit.AASub(ref=ref, alt=alt, fs=fs)
         elif ref == alt == '':
             edit = hgvs.edit.AASpecial(status='=')
         else:
