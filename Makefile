@@ -50,11 +50,7 @@ build_sphinx: develop
 docs: build_sphinx
 
 test-with-coverage: test-setup
-	python setup.py nosetests --with-xunit --with-coverage --cover-erase --cover-package=hgvs --cover-html --exclude test_nightly
-
-test-all-with-coverage: test-setup
-	python setup.py nosetests --with-xunit --with-coverage --cover-erase --cover-package=hgvs --cover-html 
-
+	python setup.py nosetests --with-xunit --with-coverage --cover-erase --cover-package=hgvs --cover-html
 
 #=> upload
 upload:
@@ -79,15 +75,6 @@ ci-test jenkins:
 	&& make install \
 	&& make test-with-coverage \
 	&& make docs
-
-ci-test-nightly jenkins-nightly:
-	make cleanest \
-	&& make ve \
-	&& source ve/bin/activate \
-	&& make install \
-	&& make test-all-with-coverage \
-	&& make docs
-
 
 ############################################################################
 hgvs/data/seguid-acs.json.gz:
