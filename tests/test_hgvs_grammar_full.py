@@ -55,12 +55,12 @@ class TestGrammarFull(unittest.TestCase):
                 is_valid = True if row['Valid'].lower() == 'true' else False
 
                 for key in expected_map:
-                    expected_result = expected_map[key]
+                    expected_result = str(expected_map[key])
                     function_to_test = getattr(self.p._grammar(key), row['Func'])
                     row_str = "{}\t{}\t{}\t{}\t{}".format(row['Func'], key, row['Valid'], 'one', expected_result)
                     try:
-                        actual_result = function_to_test()
-                        if not is_valid or (actual_result is not None and expected_result != str(actual_result)):
+                        actual_result = str(function_to_test())
+                        if not is_valid or (expected_result != actual_result):
                             fail_cases.append(row_str)
                     except Exception as e:
                         if is_valid:
