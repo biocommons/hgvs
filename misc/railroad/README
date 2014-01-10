@@ -1,0 +1,8 @@
+This directory contains code that draws the railroad/syntax diagram for
+the HGVS as implemented in the hgvs Python package.
+
+This is fragile hack intended to be run by Reece during releases. 
+
+You will need the railroad diagram generator, available here:
+https://github.com/xStone/railroad-diagram-generator
+
