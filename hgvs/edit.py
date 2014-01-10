@@ -37,7 +37,7 @@ class NARefAlt( Edit, recordtype.recordtype('NARefAlt', [('ref',None),('alt',Non
         if self.ref is not None and self.alt is not None:
             if self.ref == self.alt:
                 s =  '='
-            if len(self.alt) == 1 and len(self.ref) == 1:
+            elif len(self.alt) == 1 and len(self.ref) == 1:
                 s = '{self.ref}>{self.alt}'.format(self=self)
             else:
                 s = 'del{self.ref}ins{self.alt}'.format(self=self)
@@ -70,8 +70,8 @@ class AARefAlt( Edit, recordtype.recordtype('AARefAlt', [('ref',None),('alt',Non
         if self.ref is not None and self.alt is not None:
             if self.ref == self.alt:
                 s = '='
-            # elif ( (len(self.ref) == 1 or self.ref == '') and len(self.alt) == 1 ):
-            #     s = aa1_to_aa3(self.alt) + (self.fs or '')
+            elif ( (len(self.ref) == 1 or self.ref == '') and len(self.alt) == 1 ):
+                s = aa1_to_aa3(self.alt) + (self.fs or '')
             else:
                 s = 'delins{alt}{fs}'.format(alt = aa1_to_aa3(self.alt),fs = self.fs or '')
 
