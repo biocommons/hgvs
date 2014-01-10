@@ -54,30 +54,28 @@ build_sphinx: develop
 #=> docs -- make sphinx docs
 docs: build_sphinx
 
+#=> upload
+upload:
+	python setup.py bdist_egg sdist upload
+
+#=> lint -- run lint, flake, etc
+# TBD
+
+############################################################################
+#= TESTING
+
+#=> test -- run tests
+test-setup: install
+
+test: test-with-coverage
+
 test-with-coverage: test-setup
 	python setup.py nosetests --with-xunit --with-coverage --cover-erase --cover-package=hgvs --cover-html --exclude test_nightly
 
 test-all-with-coverage: test-setup
 	python setup.py nosetests --with-xunit --with-coverage --cover-erase --cover-package=hgvs --cover-html 
 
-
-#=> upload
-upload:
-	python setup.py bdist_egg sdist upload
-
-
-#=> lint -- run lint, flake, etc
-# TBD
-
-
-#=> test-setup -- prepare to run tests
-test-setup:
-
-#=> test -- run tests
-test: install
-	python setup.py nosetests --with-xunit
-
-#=> continuous integration tests -- target for jenkins (and now travis, drone, or other providers)
+#=> ci-test-nightly -- per-commit test target for CI
 ci-test jenkins:
 	make ve \
 	&& source ve/bin/activate \
@@ -85,6 +83,7 @@ ci-test jenkins:
 	&& make test-with-coverage \
 	&& make docs
 
+#=> ci-test-nightly -- nightly test target for CI
 ci-test-nightly jenkins-nightly:
 	make cleanest \
 	&& make ve \
