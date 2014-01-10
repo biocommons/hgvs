@@ -14,7 +14,6 @@ import hgvs.exceptions
 import hgvs.variant
 import hgvs.posedit
 import hgvs.location
-import hgvs.stopgap
 import hgvs.transcriptmapper
 import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
 import hgvs.utils.altseqbuilder as altseqbuilder
@@ -228,7 +227,8 @@ class HGVSMapper(object):
                 protein_seq = str(tx_seq_cds.translate())
                 
                 if ac_p is None:
-                    ac_p = hgvs.stopgap.pseq_to_ac(protein_seq)
+                    # get_acs... will always return at least the MD5_ accession
+                    ac_p = bdi.get_acs_for_protein_seq(protein_seq)[0]
 
                 transcript_data = RefTranscriptData(tx_seq, protein_seq, cds_start,
                                                     cds_stop, ac_p)
