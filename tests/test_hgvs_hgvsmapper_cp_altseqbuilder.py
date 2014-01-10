@@ -5,7 +5,6 @@ from Bio.Seq import Seq
 import recordtype
 
 import hgvs.parser
-import hgvs.stopgap
 import hgvs.utils.altseqbuilder as altseqbuilder
 
 import framework.mock_input_source as mock_input_data_source
