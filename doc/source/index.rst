@@ -28,6 +28,8 @@ Contents
    developer
    classes
 
+   license
+
 
 Additional Resources
 --------------------
@@ -40,11 +42,6 @@ Additional Resources
 .. _`HGVS Recommendations`: http://www.hgvs.org/mutnomen/
 
 
-License
--------
-
-hgvs is released under the `Apache License 2.0
-<http://www.apache.org/licenses/LICENSE-2.0>`_.
 
 Indices and tables
 ------------------
