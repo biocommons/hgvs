@@ -67,12 +67,8 @@ upload:
 #=> test -- run tests
 test-setup: install
 
-test: test-with-coverage
-
-test-with-coverage: test-setup
-	python setup.py nosetests --with-xunit --with-coverage --cover-erase --cover-package=hgvs --cover-html --exclude test_nightly
-
-test-all-with-coverage: test-setup
+#=> test, test-with-coverage -- per-commit test target for CI
+test test-with-coverage: test-setup
 	python setup.py nosetests --with-xunit --with-coverage --cover-erase --cover-package=hgvs --cover-html 
 
 #=> ci-test-nightly -- per-commit test target for CI
@@ -80,16 +76,7 @@ ci-test jenkins:
 	make ve \
 	&& source ve/bin/activate \
 	&& make install \
-	&& make test-with-coverage \
-	&& make docs
-
-#=> ci-test-nightly -- nightly test target for CI
-ci-test-nightly jenkins-nightly:
-	make cleanest \
-	&& make ve \
-	&& source ve/bin/activate \
-	&& make install \
-	&& make test-all-with-coverage \
+	&& make test \
 	&& make docs
 
 
