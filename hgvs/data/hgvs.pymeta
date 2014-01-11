@@ -148,11 +148,11 @@ rna_dup    = 'dup' <rna*>:seq         -> hgvs.edit.Dup(seq=seq)
 
 pro_edit_mu = pro_edit | '(' pro_edit:edit ')' -> edit.set_uncertain()
 pro_edit   = pro_subst | pro_delins | pro_ins | pro_del | pro_dup
-pro_subst  = aat13:alt aa13_fs?:fs         -> hgvs.edit.AARefAlt(ref='',alt=hgvs.utils.aa_to_aa1(alt),fs=fs)
-pro_delins = 'delins' aat13_seq:alt aa13_fs?:fs -> hgvs.edit.AARefAlt(ref='',alt=hgvs.utils.aa_to_aa1(alt),fs=fs)
+pro_subst  = aat13:alt aa13_fs?:fs         -> hgvs.edit.AASub(ref='',alt=hgvs.utils.aa_to_aa1(alt),fs=fs)
+pro_delins = 'delins' aa13t_seq:alt aa13_fs?:fs -> hgvs.edit.AARefAlt(ref='',alt=hgvs.utils.aa_to_aa1(alt),fs=fs)
 pro_del    = 'del'                         -> hgvs.edit.AARefAlt(ref='',alt=None)
-pro_ins    = 'ins' aat13_seq:alt aa13_fs?:fs -> hgvs.edit.AARefAlt(ref=None,alt=hgvs.utils.aa_to_aa1(alt),fs=fs)
-pro_dup    = 'dup'                         -> hgvs.edit.Dup(seq=seq)
+pro_ins    = 'ins' aa13t_seq:alt aa13_fs?:fs -> hgvs.edit.AARefAlt(ref=None,alt=hgvs.utils.aa_to_aa1(alt),fs=fs)
+pro_dup    = 'dup'                         -> hgvs.edit.Dup(seq='')
 
 
 ############################################################################
@@ -207,7 +207,7 @@ gmn_type = :x ?(x in 'gmn') -> x
 # sequences of NA/AA
 dna_seq = <dna+>
 rna_seq = <rna+>
-aat13_seq = aa3t_seq | aa1t_seq
+aa13t_seq = aa3t_seq | aa1t_seq
 aa1t_seq = <aa1_seq* aa1_term?>
 aa3t_seq = <aa3_seq* aa3_term?>
 aa13_fs  = <'fs' (aa13_term (num|'?')?)?>
@@ -230,7 +230,7 @@ aa3_term = 'Ter'
 # position primitives
 # N.B. ? is not supported in mapping
 base = snum | ('?' -> None)
-offset = snum | (-> 0) | ('?' -> None)
+offset = snum | ('?' -> None) | (-> 0)
 snum = <pm? num>:x -> int(x)
 num = <digit+>:x -> int(x)
 pm = :x ?(x in '-+') -> x
