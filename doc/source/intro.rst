@@ -26,13 +26,13 @@ The intent is to centralize the subset of HGVS variant manipulation that
 is routinely used in modern, high-throughput sequencing analysis.
 
 
-Architecture
-~~~~~~~~~~~~
+Components
+~~~~~~~~~~
 
-This package consists of several interoperable components:
+The ``hgvs`` package consists of several interoperable components:
 
-* a PEG-based grammar for HGVS variant names
-* :doc:`classes` that model HGVS concepts, such as CDS positions with offsets
+* :class:`hgvs.parser.Parser`, based on Parsley_ and a Parsing Expression Grammar (PEG_).
+* :doc:`Classes <modules>` that model HGVS concepts, such as CDS positions with offsets
 * formatters that generate HGVS strings from classes
 * tools to map variants between genome, transcript, and protein sequences
 
@@ -43,7 +43,10 @@ because.
 
 
 
-.. sidebar:: HGVS Architecture in a Nutshell
+Architecture
+~~~~~~~~~~~~
+
+.. sidebar:: Package Architecture in a Nutshell
 
   :hgvs:
      The ``hgvs`` package is most user-visible component that provides
@@ -85,3 +88,4 @@ other data sources.
 .. _`Parsley`: https://pypi.python.org/pypi/Parsley
 .. _`HGVS`: http://www.hgvs.org/
 .. _`HGVS Recommendations`: http://hgvs.org/mutnomen/
+.. _PEG: http://en.wikipedia.org/wiki/Parsing_expression_grammar

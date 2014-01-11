@@ -22,6 +22,7 @@ html_static_path = ['../static']
 
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
     'sphinx.ext.coverage',
     'sphinx.ext.intersphinx',
     'sphinx.ext.pngmath',

@@ -1,11 +1,24 @@
 Conventions
 -----------
 
-The following glossary and code variable conventions hold for most of the hgvs code:
+.. note:: This section is being written.
 
-:var*: a variant
+Variables
+~~~~~~~~~
 
-:hgvs*: 
+The following code variable conventions are used for most of the ``hgvs``
+code base.  They should be considered aspirations rather than reality or
+policy.  Understanding these conventions will help uses and developers
+understand the code.
+
+.. note:: A note on variable suffixes
+  If a particular variant type is expected, a suffix is often added to
+  variable names. |eg| ``var_c`` in a function argument list signifies
+  that a SequenceVariant object with type='c' is expected.
+
+:hgvs*: a string representing an HGVS variant name.  
+
+:var*: a :class:`hgvs.variant.SequenceVariant` object
 
 :pos: 
 
@@ -14,6 +27,4 @@ The following glossary and code variable conventions hold for most of the hgvs c
 :hgvs_position:
 
 
-* var, var_g, var_r, var_c, var_p -- hgvs.variant.Variant instances of unknown or specified/expected types
-
-* hgvs, hgvs_g, hgvs_r, hgvs_c, hgvs_p -- HGVS *strings* of unknown or specified/expected type
+.. |eg| replace:: *e.g.,*

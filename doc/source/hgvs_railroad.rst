@@ -1,8 +1,8 @@
 HGVS Railroad Diagram
-=====================
+^^^^^^^^^^^^^^^^^^^^^
 
   | Generated from `hgvs (https://bitbucket.org/invitae/hgvs/) <https://bitbucket.org/invitae/hgvs/>`_
-  | f66ecfc3100f+ CORE-97-doc-fixes tip
+  | f93276270527+ CORE-97-doc-fixes tip
   | See the source code for the OMeta-based grammar
 
 Variants
