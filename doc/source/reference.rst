@@ -3,7 +3,7 @@ Reference
 
 .. toctree::
 
+  hgvs_railroad
   conventions
-  architecture
   modules
   classes

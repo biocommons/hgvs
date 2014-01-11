@@ -23,8 +23,9 @@ config:
 	@echo CONFIGURATION
 	@echo "  UTA_DB_URL=${UTA_DB_URL}"
 
+
 ############################################################################
-#= INSTALLATION/SETUP
+#= SETUP, INSTALLATION, PACKAGING
 
 #=> ve -- create a virtualenv
 VE_DIR:=ve
@@ -40,9 +41,9 @@ ${VE_DIR}: ${VE_PY}
 	${SYSTEM_PYTHON} $< ${VE_DIR} 2>&1 | tee "$@.err"
 	/bin/mv "$@.err" "$@"
 
-
-############################################################################
-#= UTILITY TARGETS
+# => setup
+setup: requirements.txt build
+	pip install -r $<
 
 #=> develop, build_sphinx, sdist, upload_sphinx
 bdist bdist_egg build build_sphinx develop install sdist upload_docs: %:
@@ -51,15 +52,10 @@ bdist bdist_egg build build_sphinx develop install sdist upload_docs: %:
 # sphinx docs needs to be able to import packages
 build_sphinx: develop
 
-#=> docs -- make sphinx docs
-docs: build_sphinx
-
 #=> upload
 upload:
 	python setup.py bdist_egg sdist upload
 
-#=> lint -- run lint, flake, etc
-# TBD
 
 ############################################################################
 #= TESTING
@@ -81,8 +77,13 @@ ci-test jenkins:
 
 
 ############################################################################
-hgvs/data/seguid-acs.json.gz:
-	gzip -cdq human.protein.faa.gz* | ./sbin/fasta-seguid | gzip -cq >$@
+#= UTILITY TARGETS
+
+#=> docs -- make sphinx docs
+docs: build_sphinx
+
+#=> lint -- run lint, flake, etc
+# TBD
 
 
 ############################################################################

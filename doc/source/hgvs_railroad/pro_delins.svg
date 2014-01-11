@@ -1,0 +1,19 @@
+<?xml version="1.0" standalone="no"?>
+<svg width="464" height="132" viewBox="-8 -58 464 132 " xmlns="http://www.w3.org/2000/svg" version="1.1">
+<defs><style type="text/css">.terminal_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.terminal_text{fill:black;font-family:Verdana,Sans-serif;text-anchor:middle;font-size:14px;}.symbol_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.symbol_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-style:italic;text-anchor:middle;font-size:14px;}.path{fill:none;stroke:black;stroke-width:2;}.rule_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-size:14px;}.rule_path_edge{fill:none;stroke:black;stroke-width:3;}</style></defs>
+<text class="rule_text" x="0" y="-36" >pro_delins:</text>
+<rect class="terminal_rect" x="30" y="-14" width="76" height="28" rx="28" />
+<text class="terminal_text" x="68" y="4" >delins</text>
+<rect class="symbol_rect" x="130" y="-14" width="106" height="28" rx="1" />
+<text class="symbol_text" x="183" y="4" >aat13_seq</text>
+<rect class="symbol_rect" x="296" y="-14" width="86" height="28" rx="1" />
+<text class="symbol_text" x="339" y="4" >aa13_fs</text>
+<rect class="terminal_rect" x="296" y="30" width="16" height="28" rx="28" />
+<text class="terminal_text" x="304" y="48" ></text>
+<path class="path" d="M260 0 L296 0 M260 0 Q272 0 272 12 M418 0 L382 0 M418 0 Q406 0 406 12" />
+<path class="path" d="M284 44 L296 44 M284 44 Q272 44 272 32 L272 12 M394 44 L312 44 M394 44 Q406 44 406 32 L406 12" />
+<path class="path" d="M106 0 L130 0" />
+<path class="path" d="M236 0 L260 0" />
+<path class="path" d="M0 0 L30 0 M448 0 L418 0" />
+<path class="rule_path_edge" d="M0 -6 L0 6 M448 -6 L448 6" />
+</svg>
