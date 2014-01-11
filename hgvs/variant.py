@@ -15,7 +15,10 @@ class SequenceVariant( recordtype.recordtype('SequenceVariant', ['ac','type','po
         return self.ac
 
     def __str__(self):
-        return '{self.ac}:{self.type}.{self.posedit}'.format(self=self)
+        if self.ac is not None:
+            return '{self.ac}:{self.type}.{self.posedit}'.format(self=self)
+        else:
+            return '{self.type}.{self.posedit}'.format(self=self)
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/invitae/hgvs)
