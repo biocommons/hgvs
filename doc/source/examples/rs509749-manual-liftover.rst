@@ -1,6 +1,6 @@
 
-rs509749-mapping
-================
+Manual liftover of NM\_001261456.1:c.1762A>G (rs509749) to NM\_001261457.1 via GRCh37
+=====================================================================================
 
 
 http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=509749

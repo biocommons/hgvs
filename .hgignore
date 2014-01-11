@@ -27,7 +27,7 @@ dist
 distribute-*
 doc/build
 examples/.ipynb_checkpoints
-examples/*-mapping_files
+examples/*_files
 hgtools-*
 lib/python/uta/_release.py
 misc/data
@@ -49,3 +49,4 @@ workspace
 
 syntax: regexp
 (.*/)?\#[^/]*\#$
+^examples/.+\.rst
