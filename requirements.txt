@@ -4,3 +4,7 @@ sphinx
 sphinx_rtd_theme
 sphinxcontrib-httpdomain
 sphinxcontrib-fulltoc
+bdi
+biopython
+parsley
+recordtype
