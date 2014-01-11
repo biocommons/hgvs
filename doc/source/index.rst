@@ -20,6 +20,7 @@ Contents
    getting_started
    reference
    resources
+   contact
    license
 
 
