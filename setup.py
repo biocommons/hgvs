@@ -64,6 +64,7 @@ setup(
         'sphinx',
         'sphinx_rtd_theme',
         'sphinxcontrib-httpdomain',
+        'sphinxcontrib-fulltoc',
         ],
 
     tests_require = [

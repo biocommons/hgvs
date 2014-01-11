@@ -30,18 +30,17 @@ This variant was chosen because it has data in dbSNP for comparison and
 because it has an intronic variant to spice up the example.
 
 
-Installation
-------------
+Install ``hgvs``
+----------------
 
 For this demo, you'll need hgvs (of course).  We recommend that you
 install IPython as well.  In a reasonably modern environment, the
 following should suffice::
 
+  $ pip install --upgrade setuptools
   $ pip install hgvs ipython
 
-If you get a warning about setuptools versions, do this::
-
-  $ pip install --upgrade setuptools
+More detailed installation instructions are in :doc:`installation`.
 
 
 
