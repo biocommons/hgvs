@@ -58,7 +58,7 @@ class NARefAlt( Edit, recordtype.recordtype('NARefAlt', [('ref',None),('alt',Non
 
         
 class AARefAlt( Edit, recordtype.recordtype('AARefAlt', [('ref',None),('alt',None),('fs',None),('uncertain',False)]) ):
-    def __init__(self,ref,alt,fs=None,uncertain=False, is_sub=False):
+    def __init__(self,ref,alt,fs=None,uncertain=False):
         super(AARefAlt,self).__init__(ref=aa_to_aa1(ref),alt=aa_to_aa1(alt),fs=fs)
 
     def __str__(self):
@@ -70,7 +70,7 @@ class AARefAlt( Edit, recordtype.recordtype('AARefAlt', [('ref',None),('alt',Non
         if self.ref is not None and self.alt is not None:
             if self.ref == self.alt:
                 s = '='
-            elif ( (len(self.ref) == 1 or self.ref == '') and len(self.alt) == 1 ):
+            elif len(self.ref) == 1 and len(self.alt) == 1:
                 s = aa1_to_aa3(self.alt) + (self.fs or '')
             else:
                 s = 'delins{alt}{fs}'.format(alt = aa1_to_aa3(self.alt),fs = self.fs or '')
