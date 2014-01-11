@@ -1,0 +1,6 @@
+# https://caremad.io/blog/setup-vs-requirement/
+
+sphinx
+sphinx_rtd_theme
+sphinxcontrib-httpdomain
+sphinxcontrib-fulltoc

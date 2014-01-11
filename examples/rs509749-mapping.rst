@@ -1,14 +1,18 @@
 
-http://www.ncbi.nlm.nih.gov/projects/SNP/snp\_ref.cgi?rs=509749
+rs509749-mapping
+================
+
+
+http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=509749
 
 .. code:: python
 
-    import bdi.sources.uta0_pg
+    import bdi.sources.uta0
     import hgvs.hgvsmapper
     import hgvs.parser
 .. code:: python
 
-    bdi = bdi.sources.uta0_pg.UTA0()
+    bdi = bdi.sources.uta0.connect()
     hgvsmapper = hgvs.hgvsmapper.HGVSMapper(bdi)
     hgvsparser = hgvs.parser.Parser()
 .. code:: python
@@ -21,8 +25,8 @@ http://www.ncbi.nlm.nih.gov/projects/SNP/snp\_ref.cgi?rs=509749
 
 .. parsed-literal::
 
-    (Variant(ac=NM_001261456.1, type=c, posedit=1762A>G),
-     Variant(ac=NP_001248385.1, type=p, posedit=Met588Val))
+    (SequenceVariant(ac=NM_001261456.1, type=c, posedit=1762A>G),
+     SequenceVariant(ac=NP_001248385.1, type=p, posedit=Met588Val))
 
 
 
@@ -35,7 +39,7 @@ http://www.ncbi.nlm.nih.gov/projects/SNP/snp\_ref.cgi?rs=509749
 
 .. parsed-literal::
 
-    Variant(ac=NC_000001.10, type=g, posedit=160793560A>G)
+    SequenceVariant(ac=NC_000001.10, type=g, posedit=160793560A>G)
 
 
 
@@ -63,8 +67,8 @@ http://www.ncbi.nlm.nih.gov/projects/SNP/snp\_ref.cgi?rs=509749
 
 .. parsed-literal::
 
-    (Variant(ac=NM_001261457.1, type=c, posedit=1534A>G),
-     Variant(ac=NP_001248386.1, type=p, posedit=Met512Val))
+    (SequenceVariant(ac=NM_001261457.1, type=c, posedit=1534A>G),
+     SequenceVariant(ac=NP_001248386.1, type=p, posedit=Met512Val))
 
 
 

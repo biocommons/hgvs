@@ -1,9 +1,8 @@
-Reference
----------
+Reference Manual
+----------------
 
 .. toctree::
 
-  hgvs_railroad
   conventions
+  grammar
   modules
-  classes

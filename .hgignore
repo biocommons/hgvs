@@ -26,6 +26,8 @@ cover
 dist
 distribute-*
 doc/build
+examples/.ipynb_checkpoints
+examples/*-mapping_files
 hgtools-*
 lib/python/uta/_release.py
 misc/data

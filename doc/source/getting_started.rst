@@ -92,7 +92,7 @@ Variant mapping and validation requires access to external data,
 specifically exon structures, transcript alignments, and protein
 accessions.  Right now, the only source of this data is via the BDI and
 UTA sister projects.  (If you want more information on the architecture of
-HGVS, BDI, and UTA, see :doc:`architecture`.  However, you don't
+HGVS, BDI, and UTA, see :doc:`intro`.  However, you don't
 really need to understand the architecture to use HGVS.)
 
 First, connect to UTA via BDI:
