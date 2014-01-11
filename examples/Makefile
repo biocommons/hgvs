@@ -16,3 +16,11 @@ default all: ${rst_nbs}
 
 doc-install: ${rst_nbs}
 	rm -fr ${DOC_EXAMPLES_DIR}; mkdir ${DOC_EXAMPLES_DIR}; cp $^ ${DOC_EXAMPLES_DIR}/
+
+
+.PHONY: clean cleaner cleanest
+clean:
+	/bin/rm -f *~
+cleaner: clean
+cleanest: cleaner
+	/bin/rm -fr *_files *.rst
