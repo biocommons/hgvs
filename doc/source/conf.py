@@ -26,7 +26,8 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.pngmath',
     'sphinx.ext.todo',
-    'sphinx.ext.viewcode'
+    'sphinx.ext.viewcode',
+    'sphinxcontrib.fulltoc',
     ]
 
 extlinks={
