@@ -61,10 +61,6 @@ setup(
     setup_requires = [
         'hgtools',
         'nose',
-        'sphinx',
-        'sphinx_rtd_theme',
-        'sphinxcontrib-httpdomain',
-        'sphinxcontrib-fulltoc',
         ],
 
     tests_require = [

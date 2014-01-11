@@ -51,3 +51,6 @@ database instance that is used by default; see the `UTA
 your own PostgreSQL or SQLite version.  In the future, other `BDI
 <http://bitbucket.org/invitae/bdi>`_ implmentations may be contributed for
 other data sources.
+
+
+.. _`Parsley`: https://pypi.python.org/pypi/Parsley

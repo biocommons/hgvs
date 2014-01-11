@@ -1,0 +1,18 @@
+<?xml version="1.0" standalone="no"?>
+<svg width="450" height="160" viewBox="-8 -86 450 160 " xmlns="http://www.w3.org/2000/svg" version="1.1">
+<defs><style type="text/css">.terminal_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.terminal_text{fill:black;font-family:Verdana,Sans-serif;text-anchor:middle;font-size:14px;}.symbol_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.symbol_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-style:italic;text-anchor:middle;font-size:14px;}.path{fill:none;stroke:black;stroke-width:2;}.rule_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-size:14px;}.rule_path_edge{fill:none;stroke:black;stroke-width:3;}</style></defs>
+<text class="rule_text" x="0" y="-64" >aa3t_seq:</text>
+<rect class="symbol_rect" x="78" y="-14" width="86" height="28" rx="1" />
+<text class="symbol_text" x="121" y="4" >aa3_seq</text>
+<path class="path" d="M78 0 L54 0 M66 0 Q54 0 54 -12 L54 -36 Q54 -48 66 -48 L176 -48 Q188 -48 188 -36 L188 -12 Q188 0 176 0 L164 0 L188 0" />
+<path class="path" d="M78 0 L30 0 Q42 0 42 12 L42 24 Q42 36 54 36 L188 36 Q200 36 200 24 L200 12 Q200 0 212 0 L164 0 M30 0 L54 0 M188 0 L212 0" />
+<rect class="symbol_rect" x="272" y="-14" width="96" height="28" rx="1" />
+<text class="symbol_text" x="320" y="4" >aa3_term</text>
+<rect class="terminal_rect" x="272" y="30" width="16" height="28" rx="28" />
+<text class="terminal_text" x="280" y="48" ></text>
+<path class="path" d="M236 0 L272 0 M236 0 Q248 0 248 12 M404 0 L368 0 M404 0 Q392 0 392 12" />
+<path class="path" d="M260 44 L272 44 M260 44 Q248 44 248 32 L248 12 M380 44 L288 44 M380 44 Q392 44 392 32 L392 12" />
+<path class="path" d="M212 0 L236 0" />
+<path class="path" d="M0 0 L30 0 M434 0 L404 0" />
+<path class="rule_path_edge" d="M0 -6 L0 6 M434 -6 L434 6" />
+</svg>
