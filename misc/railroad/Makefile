@@ -1,9 +1,11 @@
 .SUFFIXES:
 .PHONY: FORCE
 
+SHELL:=/bin/bash
+
 RDG:=${HOME}/opt/railroad-diagram-generator/build/railroad-diagram-generator
 
-default: hgvs-syntax-diagram.html
+default: hgvs-syntax-diagram.html hgvs_railroad.rst
 
 .PRECIOUS: %.ebnf
 %.ebnf: ../../hgvs/data/%.pymeta FORCE
@@ -15,6 +17,15 @@ default: hgvs-syntax-diagram.html
 
 %-syntax-diagram.html: hgvs.ebnf_grammar/all.html
 	./redact-html $< >$@
+
+hgvs_railroad.rst: %.rst: hgvs.ebnf_grammar/all.html
+	/bin/mkdir $*
+	/bin/cp -l ${<D}/*.svg $*/
+	./make-hgvs-railroad-doc --hgvs-version "$$(hg id -bit)" hgvs_railroad/*svg >$@
+
+install:
+	rm -fr ../../doc/source/hgvs_railroad*
+	make hgvs_railroad.rst && /bin/mv -b hgvs_railroad* ../../doc/source/
 
 
 .PHONY: clean cleaner cleanest
