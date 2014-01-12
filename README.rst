@@ -6,7 +6,33 @@ HGVS -- Tools to Parse, Format, and Map Biological Sequence Variants
 
 This package provides a Python library to facilitate the use of genome,
 transcript, and protein variants that are represented using the Human
-Genome Variation Society (`HGVS`_) recommendations. ::
+Genome Variation Society (`HGVS`_) recommendations.
+
+Features
+--------
+
+* `A formal grammar <http://pythonhosted.org/hgvs/grammar.html>`_ for HGVS variant names
+* `Classes <http://pythonhosted.org/hgvs/modules.html>`_ that model HGVS
+  concepts such as `Interval
+  <http://pythonhosted.org/hgvs/modules.html#hgvs.location.Interval>`_,
+  intronic offsets (in `BaseOffsetPosition
+  <http://pythonhosted.org/hgvs/modules.html#hgvs.location.BaseOffsetPosition>`_),
+  frameshifts, uncertain positions, and types of variation (`hgvs.edit
+  <http://pythonhosted.org/hgvs/modules.html#module-hgvs.edit>`_)
+* Formatters that generate HGVS strings from internal representations
+* Tools to map variants between genome, transcript, and protein sequences
+  (`HGVSMapper <http://pythonhosted.org/hgvs/modules.html#hgvs.hgvsmapper.HGVSMapper>`_ and `Projector
+  <http://pythonhosted.org/hgvs/modules.html#hgvs.projector.Projector>`_)
+* Reliable handling of regions reference-transcript discrepancy (requires UTA_)
+* Tools to validate variants (coming soon)
+* Support for alternative sources of reference and transcript mapping
+  information (via BDI_)
+* Extensive automated tests
+
+
+An Example
+----------
+::
 
   $ ipython
   In [1]: import hgvs.parser
@@ -23,27 +49,7 @@ Genome Variation Society (`HGVS`_) recommendations. ::
   In [10]: var_c
   Out[10]: Variant(ac=NM_001637.3, type=c, posedit=1582G>A)
 
-
-Features
---------
-
-* `A formal grammar <http://pythonhosted.org/hgvs/grammar.html>`_ for HGVS variant names
-* `Classes <>` that model HGVS concepts such as `Interval
-  <http://pythonhosted.org/hgvs/modules.html#hgvs.location.Interval>`_,
-  intronic offsets (in `BaseOffsetPosition
-  <http://pythonhosted.org/hgvs/modules.html#hgvs.location.BaseOffsetPosition>`_),
-  frameshifts, uncertain positions, and types of variation (`hgvs.edit
-  <http://pythonhosted.org/hgvs/modules.html#module-hgvs.edit>`_)
-* Formatters that generate HGVS strings from internal representations
-* Tools to map variants between genome, transcript, and protein sequences
-  (`HGVSMapper <http://pythonhosted.org/hgvs/modules.html#hgvs.hgvsmapper.HGVSMapper>`_ and `Projector
-  <http://pythonhosted.org/hgvs/modules.html#hgvs.projector.Projector>`_)
-* Reliable handling of regions reference-transcript discrepancy (requires
-  `UTA <https://bitbucket.org/invitae/uta/>`_)
-* Tools to validate variants (coming soon)
-* Support for alternative sources of reference and transcript mapping
-  information (via `BDI <https://bitbucket.org/invitae/bdi/>`_)
-* Extensive automated tests
+There are `more examples in the documentation <http://pythonhosted.org/hgvs/examples.html>`_.
 
 
 .. _HGVS: http://www.hgvs.org/mutnomen/
