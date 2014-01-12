@@ -39,18 +39,7 @@ class HGVSMapper(object):
         tm = self._fetch_TranscriptMapper(ac=ac,ref=ref)
         
         pos_c = tm.hgvsg_to_hgvsc( var_g.posedit.pos )
-        if isinstance(var_g.posedit.edit, hgvs.edit.NARefAlt):
-            if tm.strand == 1:
-                edit_c = var_g.posedit.edit
-            else:
-                edit_g = var_g.posedit.edit
-                edit_c = hgvs.edit.NARefAlt(
-                    ref = reverse_complement(edit_g.ref),
-                    alt = reverse_complement(edit_g.alt),
-                    )
-        else:
-            raise NotImplemented('Only NARefAlt types are currently implemented')
-
+        edit_c = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
         var_c = hgvs.variant.SequenceVariant(ac=ac,
                                              type='c',
                                              posedit=hgvs.posedit.PosEdit( pos_c, edit_c ) )
@@ -67,18 +56,7 @@ class HGVSMapper(object):
         tm = self._fetch_TranscriptMapper(ac=ac,ref=ref)
 
         pos_r = tm.hgvsg_to_hgvsr( var_g.posedit.pos )
-        if isinstance(var_g.posedit.edit, hgvs.edit.NARefAlt):
-            if tm.strand == 1:
-                edit_r = var_g.posedit.edit
-            else:
-                edit_g = var_g.posedit.edit
-                edit_r = hgvs.edit.NARefAlt(
-                    ref = reverse_complement(edit_g.ref),
-                    alt = reverse_complement(edit_g.alt),
-                    )
-        else:
-            raise NotImplemented('Only NARefAlt types are currently implemented')
-
+        edit_r = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
         var_r = hgvs.variant.SequenceVariant(ac=ac,
                                              type='r',
                                              posedit=hgvs.posedit.PosEdit( pos_r, edit_r ) )
@@ -95,17 +73,7 @@ class HGVSMapper(object):
         tm = self._fetch_TranscriptMapper(ac=var_r.ac,ref=ref)
 
         pos_g = tm.hgvsr_to_hgvsg( var_r.posedit.pos )
-        if isinstance(var_r.posedit.edit, hgvs.edit.NARefAlt):
-            if tm.strand == 1:
-                edit_r = var_r.posedit.edit
-            else:
-                edit_r = var_r.posedit.edit
-                edit_g = hgvs.edit.NARefAlt(
-                    ref = reverse_complement(edit_r.ref),
-                    alt = reverse_complement(edit_r.alt),
-                    )
-        else:
-            raise NotImplemented('Only NARefAlt types are currently implemented')
+        edit_g = self._convert_edit_check_strand(tm.strand, var_r.posedit.edit)
 
         # get NC accession for g.
         var_g = hgvs.variant.SequenceVariant(ac=chr_to_nc(tm.tx_info['chr']),
@@ -124,17 +92,7 @@ class HGVSMapper(object):
         tm = self._fetch_TranscriptMapper(ac=var_c.ac, ref=ref)
 
         pos_g = tm.hgvsc_to_hgvsg(var_c.posedit.pos)
-        if isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt):
-            if tm.strand == 1:
-                edit_g = var_c.posedit.edit
-            else:
-                edit_c = var_c.posedit.edit
-                edit_g = hgvs.edit.NARefAlt(
-                    ref = reverse_complement(edit_c.ref),
-                    alt = reverse_complement(edit_c.alt),
-                )
-        else:
-            raise NotImplemented('Only NARefAlt types are currently implemented')
+        edit_g = self._convert_edit_check_strand(tm.strand, var_c.posedit.edit)
 
         # get NC accession for g.
         var_g = hgvs.variant.SequenceVariant(ac=chr_to_nc(tm.tx_info['chr']),
@@ -154,10 +112,10 @@ class HGVSMapper(object):
         pos_r = tm.hgvsc_to_hgvsr(var_c.posedit.pos)
 
         # not necessary to check strand
-        if isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt):
+        if isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_c.posedit.edit, hgvs.edit.Dup):
             edit_r = var_c.posedit.edit
         else:
-            raise NotImplemented('Only NARefAlt types are currently implemented')
+            raise NotImplemented('Only NARefAlt/Dup types are currently implemented')
 
         var_r = hgvs.variant.SequenceVariant(ac=var_c.ac,
                                              type='r',
@@ -176,7 +134,7 @@ class HGVSMapper(object):
         pos_c = tm.hgvsr_to_hgvsc(var_r.posedit.pos)
 
         # not necessary to check strand
-        if isinstance(var_r.posedit.edit, hgvs.edit.NARefAlt):
+        if isinstance(var_r.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_r.posedit.edit, hgvs.edit.Dup):
             edit_c = var_r.posedit.edit
         else:
             raise NotImplemented('Only NARefAlt types are currently implemented')
@@ -267,7 +225,30 @@ class HGVSMapper(object):
             if self.cache_transcripts:
                 self.__tm_cache[ac] = tm
         return tm
- 
+
+    @staticmethod
+    def _convert_edit_check_strand(strand, edit_in):
+        """
+        Convert an edit from one type to another, based on the stand and type
+        """
+        if isinstance(edit_in, hgvs.edit.NARefAlt):
+            if strand == 1:
+                edit_out = edit_in
+            else:
+                edit_out = hgvs.edit.NARefAlt(
+                    ref = reverse_complement(edit_in.ref),
+                    alt = reverse_complement(edit_in.alt),
+                    )
+        elif isinstance(edit_in, hgvs.edit.Dup):
+            if strand == 1:
+                edit_out = edit_in
+            else:
+                edit_out = hgvs.edit.Dup(
+                    seq = reverse_complement(edit_in.seq)
+                )
+        else:
+            raise NotImplemented('Only NARefAlt/Dup types are currently implemented')
+        return edit_out
 
 if __name__ == '__main__':
     import hgvs.parser
