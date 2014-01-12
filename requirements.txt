@@ -4,8 +4,6 @@ bdi
 biopython
 parsley
 recordtype
-setuptools
-sphinx
 sphinx_rtd_theme
 sphinxcontrib-fulltoc
 sphinxcontrib-httpdomain

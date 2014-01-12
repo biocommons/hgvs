@@ -25,6 +25,7 @@ Features
 * Tools to validate variants (coming soon)
 * Support for alternative sources of reference and transcript mapping
   information (via `BDI <https://bitbucket.org/invitae/bdi/>`_)
+* Extensive automated tests
 
 
 Contents

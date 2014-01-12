@@ -60,6 +60,7 @@ setup(
     setup_requires = [
         'hgtools',
         'nose',
+        'sphinx',
         ],
 
     tests_require = [

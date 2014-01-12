@@ -46,7 +46,7 @@ setup: requirements.txt build
 	pip install -r $<
 
 #=> develop, build_sphinx, sdist, upload_sphinx
-bdist bdist_egg build build_sphinx develop install sdist upload_docs: %:
+bdist bdist_egg build build_sphinx develop install sdist upload_sphinx upload_docs: %:
 	python setup.py $*
 
 # sphinx docs needs to be able to import packages
