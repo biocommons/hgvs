@@ -22,7 +22,7 @@ class Test_HGVSMapper(unittest.TestCase):
 
         var_g = self.hp.parse_hgvs_variant(hgvs_g)
         var_c = self.hm.hgvsg_to_hgvsc( var_g, 'NM_001637.3' )
-        var_p = self.hm.hgvsc_to_hgvsp( var_c, None )
+        var_p = self.hm.hgvsc_to_hgvsp( var_c )
 
         self.assertEqual( str(var_c) , hgvs_c )
         self.assertEqual( str(var_p) , hgvs_p )
