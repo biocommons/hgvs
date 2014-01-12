@@ -72,8 +72,7 @@ ci-test jenkins:
 	make ve \
 	&& source ve/bin/activate \
 	&& make install \
-	&& make test \
-	&& make docs
+	&& make test
 
 
 ############################################################################
