@@ -144,13 +144,13 @@ class HGVSMapper(object):
                                              posedit=hgvs.posedit.PosEdit( pos_c, edit_c ) )
         return var_c
 
-    def hgvsc_to_hgvsp(self, var_c, ac_p):
+    def hgvsc_to_hgvsp(self, var_c, ac_p=None):
         """
         Converts a c. SequenceVariant to a p. SequenceVariant on the specified protein accession
 
         :param var_c: hgvsc tag
         :type var_c: SequenceVariant
-        :param ac_p: protein accession
+        :param ac_p: protein accession (default None - will look up and pull 1st match)
         :type ac_p: str
         :rtype: SequenceVariant
 
