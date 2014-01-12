@@ -46,13 +46,6 @@ Features
 * Extensive automated tests
 
 
-
-Links
------
-* `Installation <http://pythonhosted.org/hgvs/installation.html>`
-* `Architecture Overview <http://pythonhosted.org/hgvs/overview.html>`
-
-
 .. _HGVS: http://www.hgvs.org/mutnomen/
 .. _UTA: http://bitbucket.org/invitae/uta
 .. _BDI: http://bitbucket.org/invitae/bdi
