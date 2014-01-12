@@ -106,8 +106,8 @@ m_interval	2_10|(2_10)	True	list
 g_interval	2_10|(2_10)	True	list	
 ############################################################
 ## Edits
-#pro_dup CORE-94	dup	True	one
-#pro_dup CORE-64	dup2|dupGG|dupGlyAla	False	list
+pro_dup	dup	True	one
+pro_dup	dup2|dupGG|dupGlyAla	False	list
 pro_ins	insAla|insAlaGly	True	list
 #pro_ins	insA|insAG	True	list	insArg|insArgGly
 ## Q: should these be accepted? ##  CORE-65
@@ -116,8 +116,8 @@ pro_ins	insArgA|insFoo|insJ	False	list
 pro_del	del	True	one
 pro_del	delA|delAla|del3	False	list
 pro_delins	delinsAlaGly|delinsGlyIleArg	True	list
-##CORE-92 - reports Ala #pro_delins	delinsAla	True	list
-#pro_delins	delinsA|delinsAG	True	list	delinsArg|delinsArgGly
+pro_delins	delinsAla	True	list	
+#pro_delins_CORE-99	delinsA|delinsAG	True	list	delinsArg|delinsArgGly
 ## Q: should these be accepted? - in particular, delins undecorated is ambiguous ##  fix in CORE-65
 pro_delins delins|delinsAfs|delinsAfs*|delinsAfs*9|delinsAfs*?|delinsAlafs|delinsAlafs*|delinsAlafs*9|delinsAlafs*?	True	list
 pro_subst	Arg|Phe	True	list	

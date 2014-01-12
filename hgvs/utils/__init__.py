@@ -48,7 +48,7 @@ def aa_to_aa3(s):
 
 complement_transtable = string.maketrans('ACGT','TGCA')
 def reverse_complement(s):
-    return ''.join(reversed(s.translate(complement_transtable)))
+    return ''.join(reversed(s.translate(complement_transtable))) if s is not None else None
 
 
 def __looks_like_aa3_p(s):
