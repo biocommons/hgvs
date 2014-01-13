@@ -111,7 +111,7 @@ g_interval	2_10|(2_10)	True	list
 pro_dup	dup	True	one
 pro_dup	dup2|dupGG|dupGlyAla	False	list
 pro_ins	insAla|insAlaGly	True	list
-#pro_ins	insA|insAG	True	list	insArg|insArgGly
+pro_ins	insA|insAG	True	list	insAla|insAlaGly
 ## Q: should these be accepted? ##  CORE-65
 #pro_ins	ins|insfs|insAfs|insAfs*|insAfs*9|insAfs*?|insAlafs|insAlafs*|insAlafs*9|insAlafs*?	True	list
 # why does this pass? pro_ins	ins	False	one
@@ -145,7 +145,7 @@ rna_del	delA|del5|delACGU	True	list
 rna_del	del5A|delT	False	list	
 rna_delins	delAAAAGGGinsU|delAAinsC	True	list	
 rna_delins	delAinsC	True	one	A>C
-#BUG reports 5>U rna_delins	del5insU	True	one
+rna_delins	del5insU	True	one
 rna_delins	delAAinsCG	True	one	
 rna_subst	A>C|A>G|A>U|C>G|C>U|G>U	True	list	
 rna_subst	A>T	False	one	
@@ -161,7 +161,7 @@ dna_del	delA|del5|delAAAA	True	list
 dna_del	del5A	False	one	
 dna_delins	delAAAAGGGinsT|delAAinsC	True	list
 dna_delins	delAinsT	True	one	A>T
-#BUG reports 5>T dna_delins	del5insA	True	one
+dna_delins	del5insA	True	one
 dna_delins	delAAinsCG	True	one	
 dna_subst	A>C|A>G|A>T|C>G|C>T|G>T	True	list	
 dna_edit	A>C|delAAinsC|insA|delA|dupA	True	list	
