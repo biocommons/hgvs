@@ -4,28 +4,50 @@ Installation
 ------------
 
 The following instructions were tested on Ubuntu 13.10 (Python 2.7.5+),
-Ubuntu 13.04 (Python 2.7.3), and Ubuntu 12.04 (Python 2.7.3).
+Ubuntu 13.04 (Python 2.7.3), and Ubuntu 12.04 (Python 2.7.3).  Other
+platforms and dependency versions are expected to work but are not tested.
 
 Optionally, first build a virtualenv::
 
   $ sudo apt-get install python2.7 python2.7-dev libpq-dev mercurial virtualenvwrapper
   $ mkvirtualenv hgvs-test
 
-Install via pip::
+``mkvirtualenv`` will automatically activate your virtualenv and usually
+change the prompt to indicate this.
 
-  (hgvs-test)$ pip install setuptools --upgrade
-  (hgvs-test)$ pip install hgvs
+BDI currently requires the PostgreSQL client libraries and the Python psycopg2
+package. Install PostgreSQL as appropriate for your platform, then::
+
+  $ pip install psycopg2
+
+Ensure you have a current ``setuptools`` package::
+
+  $ pip install setuptools --upgrade
+
+You're now ready to install bdi and hgvs via pip::
+
+  $ pip install bdi
+  $ pip install hgvs
+
+``hgvs`` will pull in ``bdi`` automatically, but separating these commands
+makes it easier to identify installation problems.
+
+
+
+Development
+-----------
 
 Alternatively, test and install from source::
 
-  (hgvs-test)$ hg clone ssh://hg@bitbucket.org/invitae/hgvs
-  (hgvs-test)$ cd hgvs
-  (hgvs-test)$ make develop
-  (hgvs-test)$ make test
-  (hgvs-test)$ make install
+  $ hg clone ssh://hg@bitbucket.org/invitae/hgvs
+  $ cd hgvs
+  $ make develop
+  $ make test
+  $ make install
 
-Other platforms and dependency versions are expected to work but are not
-tested.
+
+Test your installation
+----------------------
 
 Test your setup like this::
 
