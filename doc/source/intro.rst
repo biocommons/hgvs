@@ -39,7 +39,8 @@ The ``hgvs`` package consists of several interoperable components:
 We have made an intentional choice to not implement some components of
 HGVS, especially those that do not refer to variants precisely.  For
 instance, our grammar does not permit referring to a variant by gene name
-because.
+because gene names do not precisely define a reference sequence for the
+variant.
 
 
 

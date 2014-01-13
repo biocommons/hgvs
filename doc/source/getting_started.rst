@@ -110,7 +110,7 @@ hgvsmapper = hgvs.hgvsmapper.HGVSMapper(bdi)
 
 We can use this mapper to transform our transcript variant to a protein variant:
 
->>> hgvsmapper.hgvsc_to_hgvsp(var_c1,None)
+>>> hgvsmapper.hgvsc_to_hgvsp(var_c1)
 SequenceVariant(ac=NP_001184249.1, type=p, posedit=Ser94Phe)
 
 
