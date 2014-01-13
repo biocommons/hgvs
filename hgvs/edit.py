@@ -36,8 +36,8 @@ class NARefAlt( Edit, recordtype.recordtype('NARefAlt', [('ref',None),('alt',Non
         # subst and delins
         if self.ref is not None and self.alt is not None:
             if self.ref == self.alt:
-                s =  '='
-            elif len(self.alt) == 1 and len(self.ref) == 1:
+                s = '='
+            elif len(self.alt) == 1 and len(self.ref) == 1 and not self.ref.isdigit(): # don't turn del5insT into 5>T
                 s = '{self.ref}>{self.alt}'.format(self=self)
             else:
                 s = 'del{self.ref}ins{self.alt}'.format(self=self)
