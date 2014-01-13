@@ -17,12 +17,12 @@ offset	?	True	one	None
 base	+123	True	one	123
 base	123|-123	True	list	
 base	?	True	one	None
-aa3_term	Ter	True	one	
-aa3_term	ter	False	one	
-aa1_term	X*	True	string	
-aa1_term	T	False	one	
-aa13_term	X|*|Ter	True	list	
-aa13_term	ter	False	one	
+term3	Ter	True	one	
+term3	ter	False	one	
+term1	X*	True	string	
+term1	T	False	one	
+term13	X|*|Ter	True	list	
+term13	ter	False	one	
 aa3	Ala|Cys|Asp|Glu|Phe|Gly|His|Ile|Lys|Leu|Met|Asn|Pro|Gln|Arg|Ser|Thr|Val|Trp|Tyr	True	list	
 aa3	Zaa	False	one	
 aa1	ACDEFGHIKLMNPQRSTVWY	True	string	
@@ -44,14 +44,16 @@ aa13_seq	C|LM|Cys|LysMet	True	list
 aa13_seq	CysM|Yyy|J	False	list	
 aa13_fs	fs|fs*|fs*10|fs*?|fsTer|fsTer8|fsTer?|fsX|fsX10|fsX?	True	list	
 aa13_fs	fsCys|fsGly10|fsGly?|fsTerGly?	False	list	
-aa3t_seq	Ter||GlyTer|IleGlyTer	True	list	
-aa3t_seq	TerGly|XxxIleGly	False	list	
-aa1t_seq	*|X||G*|IG*	True	list	
-aa1t_seq	J|JJ|XYJ|GGG*G	False	list	
-aa13t_seq	GlyTer|Ter	True	list	
-aa13t_seq	GlyTer|HisHisHisTer	True	list	
-aa13t_seq	GlyTer	True	one	
-## why? CORE-99## aat13_seq	G*	True	one	
+aat3_seq		False	list	
+aat3_seq	Ter|GlyTer|IleGlyTer	True	list	
+aat3_seq	TerGly|XxxIleGly	False	list	
+aat1_seq		False	list	
+aat1_seq	*|X|G*|IG*	True	list	
+aat1_seq	J|JJ|XYJ|GGG*G	False	list	
+aat13_seq	GlyTer|Ter	True	list	
+aat13_seq	GlyTer|HisHisHisTer	True	list	
+aat13_seq	GlyTer	True	one	
+aat13_seq	G*	True	one
 aat13_seq	TerGly|JT|GlyA|AGly	False	list	
 rna_seq	ACGUacgu	True	string	
 rna_seq	AA|Aa|aA|uA|Ua|ACGUacgu	True	list	
