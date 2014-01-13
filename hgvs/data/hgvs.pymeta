@@ -201,31 +201,37 @@ def_p_pos = aa13:aa num:pos -> hgvs.location.AAPosition(pos,hgvs.utils.aa_to_aa1
 
 ############################################################################
 ## Basic types
+# Amino acids may be referred to with 1 or 3 letters.  In the following
+# rules, '1' = 1-letter AA, '3' = 3-letter, '13' = 1 or 3, and 't' =
+# includes terminator codon.  '_seq' refers to a sequence of any of these.
 
 gmn_type = :x ?(x in 'gmn') -> x
+
+# fs
+aa13_fs  = <'fs' (term13 (num|'?')?)?>
 
 # sequences of NA/AA
 dna_seq = <dna+>
 rna_seq = <rna+>
 aa13t_seq = aa3t_seq | aa1t_seq
-aa1t_seq = <aa1_seq* aa1_term?>
-aa3t_seq = <aa3_seq* aa3_term?>
-aa13_fs  = <'fs' (aa13_term (num|'?')?)?>
+aa1t_seq = <aa1+ term1?>
+aa3t_seq = <aa3+ term3?>
 aa13_seq = aa3_seq | aa1_seq
 aa1_seq = <aa1+>
 aa3_seq = <aa3+>
 
-# single NA/AA
-# 1 = 1-letter AA, 3 = 3-letter, 13 = 1 or 3
+# A single 1-or-3 letter amino acid
 dna = :x ?(x in 'ACGTacgt') -> x
 rna = :x ?(x in 'ACGUacgu') -> x
-aat13 = aa13_term | aa13
+aat13 = aa13 | term13
+aat3 = aa3 | term3
+aat1 = aa1 | term1
 aa13 = aa3 | aa1
 aa1 = :x ?(x in 'ACDEFGHIKLMNPQRSTVWY') -> x
 aa3 = 'Ala'|'Cys'|'Asp'|'Glu'|'Phe'|'Gly'|'His'|'Ile'|'Lys'|'Leu'|'Met'|'Asn'|'Pro'|'Gln'|'Arg'|'Ser'|'Thr'|'Val'|'Trp'|'Tyr'
-aa13_term = aa3_term | aa1_term
-aa1_term = :x ?(x in 'X*') -> x
-aa3_term = 'Ter'
+term13 = term3 | term1
+term1 = :x ?(x in 'X*') -> x
+term3 = 'Ter'
 
 # position primitives
 # N.B. ? is not supported in mapping

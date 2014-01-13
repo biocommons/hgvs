@@ -28,6 +28,20 @@ class Test_Parser(unittest.TestCase):
         self.assertEqual( self.grammar('LRG_1234').accn(), 'LRG_1234' )
         self.assertEqual( self.grammar('LRG_1234t1').accn(), 'LRG_1234t1' )
 
+    def test_parser_aa_seq(self):
+        self.assertEqual( self.p.parse_aa3t_seq('Ala'), 'Ala' )
+        self.assertEqual( self.p.parse_aa1t_seq('A'), 'A' )
+        self.assertEqual( self.p.parse_aa13t_seq('Ala'), 'Ala' )
+        self.assertEqual( self.p.parse_aa13t_seq('A'), 'A' )
+        self.assertEqual( self.p.parse_aa3t_seq('AlaAla'), 'AlaAla' )
+        self.assertEqual( self.p.parse_aa1t_seq('AA'), 'AA' )
+        self.assertEqual( self.p.parse_aa13t_seq('AlaAla'), 'AlaAla' )
+        self.assertEqual( self.p.parse_aa13t_seq('AA'), 'AA' )
+        self.assertEqual( self.p.parse_aa3t_seq('AlaAlaTer'), 'AlaAlaTer' )
+        self.assertEqual( self.p.parse_aa1t_seq('AA*'), 'AA*' )
+        self.assertEqual( self.p.parse_aa13t_seq('AlaAlaTer'), 'AlaAlaTer' )
+        self.assertEqual( self.p.parse_aa13t_seq('AA*'), 'AA*' )
+
 
 if __name__ == '__main__':
     unittest.main()
