@@ -113,15 +113,19 @@ pro_dup	dup2|dupGG|dupGlyAla	False	list
 pro_ins	insAla|insAlaGly	True	list
 #pro_ins	insA|insAG	True	list	insArg|insArgGly
 ## Q: should these be accepted? ##  CORE-65
-pro_ins ins|insfs|insAfs|insAfs*|insAfs*9|insAfs*?|insAlafs|insAlafs*|insAlafs*9|insAlafs*?	True	list
+#pro_ins	ins|insfs|insAfs|insAfs*|insAfs*9|insAfs*?|insAlafs|insAlafs*|insAlafs*9|insAlafs*?	True	list
+# why does this pass? pro_ins	ins	False	one
+#pro_ins	ins|insfs|insAlafs|insAlafs*|insAlafs*9|insAlafs*?	False	list
 pro_ins	insArgA|insFoo|insJ	False	list
 pro_del	del	True	one
 pro_del	delA|delAla|del3	False	list
 pro_delins	delinsAlaGly|delinsGlyIleArg	True	list
 pro_delins	delinsAla	True	list	
-#pro_delins_CORE-99	delinsA|delinsAG	True	list	delinsArg|delinsArgGly
+pro_delins	delinsA|delinsAG	True	list	delinsAla|delinsAlaGly
 ## Q: should these be accepted? - in particular, delins undecorated is ambiguous ##  fix in CORE-65
-pro_delins delins|delinsAfs|delinsAfs*|delinsAfs*9|delinsAfs*?|delinsAlafs|delinsAlafs*|delinsAlafs*9|delinsAlafs*?	True	list
+#pro_delins	delins|delinsAfs|delinsAfs*|delinsAfs*9|delinsAfs*?|delinsAlafs|delinsAlafs*|delinsAlafs*9|delinsAlafs*?	True	list
+#pro_delins	delinsAlafs|delinsAlafs*|delinsAlafs*9|delinsAlafs*?	False	list
+#pro_delins	delinsAfs	True	one
 pro_subst	Arg|Phe	True	list	
 pro_subst	R|F	True	list	Arg|Phe
 pro_subst	Ter|*	True	list	Ter|Ter
@@ -135,14 +139,14 @@ pro_edit_mu	(delins)CysTyr|delins(CysTyr)|(Gln)Gln|ins(Lys)	False	list
 rna_dup	dup|dupA|dupCAG|dupCAU	True	list	
 rna_dup	dupCAT	False	one	
 rna_ins	insA|insC|insG|insU	True	list	
-##why? CORE-99## rna_ins	insAA	False	one	
+rna_ins	insAA	True	one	
 rna_ins	insT	False	one	
 rna_del	delA|del5|delACGU	True	list	
 rna_del	del5A|delT	False	list	
 rna_delins	delAAAAGGGinsU|delAAinsC	True	list	
-## why? CORE-99## rna_delins	delAinsC	True	one	
-## why? CORE-99## rna_delins	del5insU	True	one
-## why? CORE-99## rna_delins	delAAinsCG	False	one	
+rna_delins	delAinsC	True	one	A>C
+#BUG reports 5>U rna_delins	del5insU	True	one
+rna_delins	delAAinsCG	True	one	
 rna_subst	A>C|A>G|A>U|C>G|C>U|G>U	True	list	
 rna_subst	A>T	False	one	
 rna_edit	A>C|delAAinsC|insA|delA|dupA	True	list
@@ -156,9 +160,9 @@ dna_ins	insU	False	one
 dna_del	delA|del5|delAAAA	True	list	
 dna_del	del5A	False	one	
 dna_delins	delAAAAGGGinsT|delAAinsC	True	list
-## why? CORE-99## dna_delins	delAinsT	True	one	
-## why? CORE-99## dna_delins	del5insA	True	one
-## why? CORE-99## dna_delins	delAAinsCG	False	one	
+dna_delins	delAinsT	True	one	A>T
+#BUG reports 5>T dna_delins	del5insA	True	one
+dna_delins	delAAinsCG	True	one	
 dna_subst	A>C|A>G|A>T|C>G|C>T|G>T	True	list	
 dna_edit	A>C|delAAinsC|insA|delA|dupA	True	list	
 dna_edit	A>U|del5A	False	list	
@@ -170,7 +174,7 @@ p_posedit_special	=|(=)|0?|0|?	True	list
 p_posedit_special	*|+|()|?0	False	list	
 p_posedit	Ala3Phe|Ala3del|Ala3_Tyr6del|Gly10_Phe11insMetMet|Cys200_Tyr205delinsIleLeuGln	True	list
 p_posedit	A3F|A3_Y6del	True	list	Ala3Phe|Ala3_Tyr6del|Gly10_Phe11insMetMet
-## CORE-99 fails due to ins/delins in pro_del/delins ##p_posedit	G10_F11insMM|C200_Y205delinsILQ	True	list	Gly10_Phe11insMetMet|Cys200_Tyr205delinsIleLeuGln
+p_posedit	G10_F11insMM|C200_Y205delinsILQ	True	list	Gly10_Phe11insMetMet|Cys200_Tyr205delinsIleLeuGln
 p_posedit	=|(=)|0?|0|?	True	list
 p_posedit	Phe|Ala3|Ala3_Phe4|Ala3=|Ala3_Phedel|Ala3Phe4insGly|Ala3_Phe4>Gly3_Ile4	False	list
 r_posedit	5G>U|1_10A>C|(1_10)A>C|1_2delAAinsC	True	list	
