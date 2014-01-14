@@ -194,7 +194,7 @@ def_gmn_pos = (num|'?'->None):pos -> hgvs.location.SimplePosition(pos)
 def_r_pos = base:b offset:o -> hgvs.location.BaseOffsetPosition(b,o,datum=hgvs.location.SEQ_START)
 def_c_pos = base:b offset:o -> hgvs.location.BaseOffsetPosition(b,o,datum=hgvs.location.CDS_START)
        | '*' num:b offset:o -> hgvs.location.BaseOffsetPosition(b,o,datum=hgvs.location.CDS_END)
-def_p_pos = aa13:aa num:pos -> hgvs.location.AAPosition(pos,hgvs.utils.aa_to_aa1(aa))
+def_p_pos = (term13|aa13):aa num:pos -> hgvs.location.AAPosition(pos,hgvs.utils.aa_to_aa1(aa))
 
 
 

@@ -63,9 +63,9 @@ dna_seq	AA|Aa|aA|tA|Ta|ACGTacgt	True	list
 dna_seq	U|u|UU|ACU|UAC	False	list	
 ############################################################
 ## Locations
-def_p_pos	Met1|Gly10	True	list	
-def_p_pos	M1|G10	True	list	Met1|Gly10
-def_p_pos	Ter10|X0|Glx5|J5	False	list	
+def_p_pos	Met1|Gly10|Ter10	True	list	
+def_p_pos	M1|G10|*10	True	list	Met1|Gly10|Ter10
+def_p_pos	Glx5|J5	False	list	
 def_c_pos	1|11+1|9-3|-1|*10	True	list	
 def_c_pos	X|11_12|10*	False	list	
 def_c_pos	0	False	list	
@@ -217,7 +217,7 @@ g_edit	g.76A>T	True	one	g.76A>T
 ## HGVS Sequence Variant
 any_variant	HiThere123:x.10A>T	True	one
 r_variant	AC_01234.5:r.1A>U	True	one	
-p_variant	AC_01234.5:p.Ala1Ser|AC_01234.5:p.Phe2_Ala4del|AC_01234.5:p.Phe2_Ala3insGlnGln|AC_01234.5:p.Cys9_Val10delinsArgGluThr	True	list	
+p_variant	AC_01234.5:p.Ala1Ser|AC_01234.5:p.Phe2_Ala4del|AC_01234.5:p.Phe2_Ala3insGlnGln|AC_01234.5:p.Cys9_Val10delinsArgGluThr|NP_000040.1:p.Ter314Trpext*45	True	list	
 p_variant	AC_01234.5:p.Met1?	True	one	
 c_variant	AC_01234.5:c.1A>T	True	one	
 gmn_variant	AC_01234.5:g.1A>T	True	one	
