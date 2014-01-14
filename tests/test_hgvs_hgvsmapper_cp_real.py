@@ -34,6 +34,13 @@ class TestHgvsCToPReal(unittest.TestCase):
         outfile = os.path.join(os.path.dirname(__file__), 'data', outfilename)
         self._run_cp_test(infile, outfile)
 
+    def test_hgvsc_to_hgvsp_ext(self):
+        infilename = 'ext.tsv'
+        outfilename = 'ext.out'
+        infile = os.path.join(os.path.dirname(__file__), 'data', infilename)
+        outfile = os.path.join(os.path.dirname(__file__), 'data', outfilename)
+        self._run_cp_test(infile, outfile)
+
     #
     # internal methods
     #
