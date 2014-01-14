@@ -1,3 +1,4 @@
+# Python project Makefile
 
 .SUFFIXES :
 .PRECIOUS :
@@ -27,28 +28,14 @@ config:
 ############################################################################
 #= SETUP, INSTALLATION, PACKAGING
 
-#=> ve -- create a virtualenv
-VE_DIR:=ve
-VE_MAJOR:=1
-VE_MINOR:=10
-VE_PY_DIR:=virtualenv-${VE_MAJOR}.${VE_MINOR}
-VE_PY:=${VE_PY_DIR}/virtualenv.py
-${VE_PY}:
-	curl -sO  https://pypi.python.org/packages/source/v/virtualenv/virtualenv-${VE_MAJOR}.${VE_MINOR}.tar.gz
-	tar -xvzf virtualenv-${VE_MAJOR}.${VE_MINOR}.tar.gz
-	rm -f virtualenv-${VE_MAJOR}.${VE_MINOR}.tar.gz
-${VE_DIR}: ${VE_PY} 
-	${SYSTEM_PYTHON} $< ${VE_DIR} 2>&1 | tee "$@.err"
-	/bin/mv "$@.err" "$@"
-
 # => setup
-setup: requirements.txt build
+setup: requirements.txt #build
 	pip install -r $<
 
-#=> develop, build_sphinx, sdist, upload_sphinx
-bdist bdist_egg build build_sphinx develop install sdist upload_sphinx upload_docs: %:
-	python setup.py $*
+#=> docs -- make sphinx docs
+docs: setup build_sphinx
 
+#=> build_sphinx
 # sphinx docs needs to be able to import packages
 build_sphinx: develop
 
@@ -56,12 +43,24 @@ build_sphinx: develop
 upload:
 	python setup.py bdist_egg sdist upload
 
+#=> upload to pypi and invitae (internal) pypi
+# This requires an invitae config stanza in ~/.pypirc
+upload2:
+	python setup.py bdist_egg sdist upload upload -r invitae
+
+#=> develop, build_sphinx, sdist, upload_sphinx
+bdist bdist_egg build build_sphinx develop install sdist upload_sphinx upload_docs: %:
+	python setup.py $*
+
 
 ############################################################################
 #= TESTING
 
+#=> test -- run tests
+test-setup: develop
+
 #=> test, test-with-coverage -- per-commit test target for CI
-test test-with-coverage:
+test test-with-coverage: test-setup
 	python setup.py nosetests --with-xunit --with-coverage --cover-erase --cover-package=hgvs --cover-html 
 
 #=> ci-test-nightly -- per-commit test target for CI
@@ -75,11 +74,27 @@ ci-test jenkins:
 ############################################################################
 #= UTILITY TARGETS
 
-#=> docs -- make sphinx docs
-docs: build_sphinx
-
 #=> lint -- run lint, flake, etc
 # TBD
+
+#=> docs-aux -- make generated docs for sphinx
+docs-aux:
+	make -C misc/railroad doc-install
+	make -C examples doc-install
+
+#=> ve -- create a *local* virtualenv (not typically needed)
+VE_DIR:=ve
+VE_MAJOR:=1
+VE_MINOR:=10
+VE_PY_DIR:=virtualenv-${VE_MAJOR}.${VE_MINOR}
+VE_PY:=${VE_PY_DIR}/virtualenv.py
+${VE_PY}:
+	curl -sO  https://pypi.python.org/packages/source/v/virtualenv/virtualenv-${VE_MAJOR}.${VE_MINOR}.tar.gz
+	tar -xvzf virtualenv-${VE_MAJOR}.${VE_MINOR}.tar.gz
+	rm -f virtualenv-${VE_MAJOR}.${VE_MINOR}.tar.gz
+${VE_DIR}: ${VE_PY} 
+	${SYSTEM_PYTHON} $< ${VE_DIR} 2>&1 | tee "$@.err"
+	/bin/mv "$@.err" "$@"
 
 
 ############################################################################
