@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="no"?>
 <svg width="174" height="132" viewBox="-8 -58 174 132 " xmlns="http://www.w3.org/2000/svg" version="1.1">
 <defs><style type="text/css">.terminal_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.terminal_text{fill:black;font-family:Verdana,Sans-serif;text-anchor:middle;font-size:14px;}.symbol_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.symbol_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-style:italic;text-anchor:middle;font-size:14px;}.path{fill:none;stroke:black;stroke-width:2;}.rule_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-size:14px;}.rule_path_edge{fill:none;stroke:black;stroke-width:3;}</style></defs>
-<text class="rule_text" x="0" y="-36" >aa1_term:</text>
+<text class="rule_text" x="0" y="-36" >term1:</text>
 <rect class="terminal_rect" x="66" y="-14" width="26" height="28" rx="28" />
 <text class="terminal_text" x="79" y="4" >X</text>
 <rect class="terminal_rect" x="66" y="30" width="26" height="28" rx="28" />
