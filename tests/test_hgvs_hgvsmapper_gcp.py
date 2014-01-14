@@ -46,10 +46,7 @@ class Test_HGVSMapper(unittest.TestCase):
     def _test_gcp_mapping(self, rec):
         var_g = self.hp.parse_hgvs_variant(rec['HGVSg'])
         var_c = self.hp.parse_hgvs_variant(rec['HGVSc'])
-        if rec['HGVSp'] is not None and rec['HGVSp'].endswith('Met1?'):   # get rid of this once Met1? is parsing
-            var_p = None
-        else:
-            var_p = self.hp.parse_hgvs_variant(rec['HGVSp']) if rec['HGVSp'] is not None and rec['HGVSp'] != '' else None
+        var_p = self.hp.parse_hgvs_variant(rec['HGVSp']) if rec['HGVSp'] is not None and rec['HGVSp'] != '' else None
 
         # g -> c
         var_c_test = self.hm.hgvsg_to_hgvsc(var_g, var_c.ac)

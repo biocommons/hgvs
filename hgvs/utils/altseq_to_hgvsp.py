@@ -281,15 +281,15 @@ class AltSeqToHgvsp(object):
         """Creates a SequenceVariant object"""
         interval = hgvs.location.Interval(start=start, end=end)
         if is_ambiguous:
-            edit = hgvs.edit.AASpecial(status='?')
+            edit = '?'
         elif is_dup:
             edit = hgvs.edit.Dup()
         elif is_sub:
             edit = hgvs.edit.AASub(ref=ref, alt=alt, fs=fs)
         elif ref == alt == '':
-            edit = hgvs.edit.AASpecial(status='=')
+            edit = '='
         else:
-            edit = hgvs.edit.AARefAlt(ref=ref, alt=alt, fs=fs)
+            edit = hgvs.edit.AARefAlt(ref=ref, alt=alt)
         posedit = hgvs.posedit.PosEdit(interval, edit)
         var_p = hgvs.variant.SequenceVariant(acc, 'p', posedit)
 

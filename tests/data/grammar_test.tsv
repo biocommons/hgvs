@@ -113,23 +113,25 @@ pro_dup	dup2|dupGG|dupGlyAla	False	list
 pro_ins	insAla|insAlaGly	True	list
 pro_ins	insA|insAG	True	list	insAla|insAlaGly
 ## Q: should these be accepted? ##  CORE-65
-#pro_ins	ins|insfs|insAfs|insAfs*|insAfs*9|insAfs*?|insAlafs|insAlafs*|insAlafs*9|insAlafs*?	True	list
-# why does this pass? pro_ins	ins	False	one
-#pro_ins	ins|insfs|insAlafs|insAlafs*|insAlafs*9|insAlafs*?	False	list
-pro_ins	insArgA|insFoo|insJ	False	list
+pro_ins	insAlafs|insAlafs*|insAlafs*9|insAlafs*?	False	list
+pro_ins	insAfs|insAfs*|insAfs*9|insAfs*?	False	list	insAlafs|insAlafs*|insAlafs*9|insAlafs*?
+pro_ins	ins|insfs|insArgA|insFoo|insJ	False	list
 pro_del	del	True	one
 pro_del	delA|delAla|del3	False	list
 pro_delins	delinsAlaGly|delinsGlyIleArg	True	list
 pro_delins	delinsAla	True	list	
 pro_delins	delinsA|delinsAG	True	list	delinsAla|delinsAlaGly
 ## Q: should these be accepted? - in particular, delins undecorated is ambiguous ##  fix in CORE-65
-#pro_delins	delins|delinsAfs|delinsAfs*|delinsAfs*9|delinsAfs*?|delinsAlafs|delinsAlafs*|delinsAlafs*9|delinsAlafs*?	True	list
-#pro_delins	delinsAlafs|delinsAlafs*|delinsAlafs*9|delinsAlafs*?	False	list
-#pro_delins	delinsAfs	True	one
+pro_delins	delinsAlafs*|delinsAlafs*9|delinsAlafs*?	False	list
+pro_delins	delinsAfs|delinsAfs*|delinsAfs*9|delinsAfs*?	False	list	delinsAlafs|delinsAlafs*|delinsAlafs*9|delinsAlafs*?
+pro_delins	delins|delinsfs|Alafs	False	list	
 pro_subst	Arg|Phe	True	list	
 pro_subst	R|F	True	list	Arg|Phe
 pro_subst	Ter|*	True	list	Ter|Ter
 pro_subst	Argfs|Argfs*|Argfs*9|Argfs*?	True	list
+pro_subst	Terext*|Terext*9|Terext*?	True	list
+pro_subst	*ext*|*ext*9|*ext*?	True	list	Terext*|Terext*9|Terext*?
+pro_subst	?	True	one
 pro_subst	ArgPhe|10ValArg|Val>Arg	False	list	
 pro_subst	10VA|V>R	False	list	
 pro_edit	insPro|del|delinsMetSer|Gln	True	list
@@ -205,6 +207,7 @@ hgvs_position	NM_01234.5:c.22+6	True	one
 ## HGVS Edit
 r_edit	r.76+3A>U	True	one	r.76+3A>U
 p_edit	p.Ala1Ser	True	one	p.Ala1Ser
+p_edit	p.Met1?	True	one	p.Met1?
 c_edit	c.76+3A>T	True	one	c.76+3A>T
 gmn_edit	g.76A>T	True	one	g.76A>T
 n_edit	n.76A>T	True	one	n.76A>T
@@ -215,6 +218,7 @@ g_edit	g.76A>T	True	one	g.76A>T
 any_variant	HiThere123:x.10A>T	True	one
 r_variant	AC_01234.5:r.1A>U	True	one	
 p_variant	AC_01234.5:p.Ala1Ser|AC_01234.5:p.Phe2_Ala4del|AC_01234.5:p.Phe2_Ala3insGlnGln|AC_01234.5:p.Cys9_Val10delinsArgGluThr	True	list	
+p_variant	AC_01234.5:p.Met1?	True	one	
 c_variant	AC_01234.5:c.1A>T	True	one	
 gmn_variant	AC_01234.5:g.1A>T	True	one	
 n_variant	AC_01234.5:n.1A>T	True	one
