@@ -7,8 +7,12 @@ RDG:=${HOME}/opt/railroad-diagram-generator/build/railroad-diagram-generator
 
 default: hgvs-syntax-diagram.html hgvs_railroad.rst
 
+.PRECIOUS: %.pymeta
+%.pymeta:: ../../hgvs/data/%.pymeta
+	ln -s $<
+
 .PRECIOUS: %.ebnf
-%.ebnf: ../../hgvs/data/%.pymeta FORCE
+%.ebnf: %.pymeta FORCE
 	./pymeta-to-ebnf $< >$@
 
 .PRECIOUS: %.ebnf_grammar/all.html

@@ -33,7 +33,11 @@ lib/python/uta/_release.py
 misc/data
 misc/exon-str-cmp
 misc/railroad/*_grammar
+misc/railroad/hgvs_railroad
 misc/tests
+misc/railroad/hgvs.ebnf
+misc/railroad/hgvs.pymeta
+misc/railroad/hgvs_railroad.rst
 nosetests.xml
 parts
 patches
