@@ -2,7 +2,7 @@ HGVS Railroad Diagram
 ^^^^^^^^^^^^^^^^^^^^^
 
   | Generated from `hgvs (https://bitbucket.org/invitae/hgvs/) <https://bitbucket.org/invitae/hgvs/>`_
-  | f93276270527+ CORE-97-doc-fixes tip
+  | c1a058136af7+ default tip
   | See the source code for the OMeta-based grammar
 
 Variants
@@ -193,13 +193,13 @@ Sequences
   :align: center
 .. image:: hgvs_railroad/aa1_seq.svg
   :align: center
-.. image:: hgvs_railroad/aa1t_seq.svg
-  :align: center
 .. image:: hgvs_railroad/aa3_seq.svg
   :align: center
-.. image:: hgvs_railroad/aa3t_seq.svg
-  :align: center
 .. image:: hgvs_railroad/aat13_seq.svg
+  :align: center
+.. image:: hgvs_railroad/aat1_seq.svg
+  :align: center
+.. image:: hgvs_railroad/aat3_seq.svg
   :align: center
 .. image:: hgvs_railroad/dna_seq.svg
   :align: center
@@ -209,21 +209,21 @@ Sequences
 
 Residues
 ~~~~~~~~
+.. image:: hgvs_railroad/aa13_ext.svg
+  :align: center
 .. image:: hgvs_railroad/aa13_fs.svg
   :align: center
 .. image:: hgvs_railroad/aa13.svg
   :align: center
-.. image:: hgvs_railroad/aa13_term.svg
-  :align: center
 .. image:: hgvs_railroad/aa1.svg
-  :align: center
-.. image:: hgvs_railroad/aa1_term.svg
   :align: center
 .. image:: hgvs_railroad/aa3.svg
   :align: center
-.. image:: hgvs_railroad/aa3_term.svg
-  :align: center
 .. image:: hgvs_railroad/aat13.svg
+  :align: center
+.. image:: hgvs_railroad/aat1.svg
+  :align: center
+.. image:: hgvs_railroad/aat3.svg
   :align: center
 .. image:: hgvs_railroad/dna.svg
   :align: center
@@ -248,6 +248,12 @@ Remaining rules
 .. image:: hgvs_railroad/pm.svg
   :align: center
 .. image:: hgvs_railroad/snum.svg
+  :align: center
+.. image:: hgvs_railroad/term13.svg
+  :align: center
+.. image:: hgvs_railroad/term1.svg
+  :align: center
+.. image:: hgvs_railroad/term3.svg
   :align: center
 
 
