@@ -28,9 +28,16 @@ class Test_Edit(unittest.TestCase):
 
     def test_AASub(self):
         self.assertEqual( str(hgvs.edit.AASub('A','T'  ))  , 'Thr'           )
-        self.assertEqual( str(hgvs.edit.AASub('A','T','fs*6'))  , 'Thrfs*6'  )
-        self.assertEqual( str(hgvs.edit.AASub('A','T','ext*10'))  , 'Thrext*10'  )
 
+    def test_AAFs(self):
+        self.assertEqual( str(hgvs.edit.AAFs('A','T','6'))  , 'Thrfs*6'  )
+        self.assertEqual( str(hgvs.edit.AAFs('A','T','?'))  , 'Thrfs*?'  )
+        self.assertEqual( str(hgvs.edit.AAFs('A','T', None))  , 'Thrfs*'  )
+
+    def test_AAExt(self):
+        self.assertEqual( str(hgvs.edit.AAExt('A','V', '*', 10))  , 'Valext*10'  )
+        self.assertEqual( str(hgvs.edit.AAExt('A','V', None, -10))  , 'Valext-10'  )
+        self.assertEqual( str(hgvs.edit.AAExt('A',None, None, -5))  , 'ext-5'  )
 
     def test_Dup(self):
         self.assertEqual( str(hgvs.edit.Dup())				, 'dup' 		)
