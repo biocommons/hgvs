@@ -71,7 +71,3 @@ http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=509749
      SequenceVariant(ac=NP_001248386.1, type=p, posedit=Met512Val))
 
 
-
-.. code:: python
-
-    
