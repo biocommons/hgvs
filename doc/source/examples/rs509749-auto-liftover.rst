@@ -33,7 +33,3 @@ http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=509749
     SequenceVariant(ac=NM_001261457.1, type=c, posedit=1534A>G)
 
 
-
-.. code:: python
-
-    
