@@ -93,17 +93,10 @@ class AARefAlt( Edit, recordtype.recordtype('AARefAlt', [('ref',None),('alt',Non
         return self
 
 
-class AASub( Edit, recordtype.recordtype('AASub', [('ref',None),('alt',None), ('uncertain',False)]) ):
-    def __init__(self,ref,alt, uncertain=False):
-        super(AASub, self).__init__(ref=aa_to_aa1(ref), alt=aa_to_aa1(alt), uncertain=uncertain)
-
+class AASub( AARefAlt ):
     def __str__(self):
         s = aa1_to_aa3(self.alt) if self.alt != '?' else self.alt
         return '('+s+')' if self.uncertain else s
-
-    def set_uncertain(self):
-        self.uncertain = True
-        return self
 
 
 class AAFs(Edit, recordtype.recordtype('AAFs', [('ref',None),('alt',None),('length',None),('uncertain',False)])):
