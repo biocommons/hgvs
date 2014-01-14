@@ -93,15 +93,44 @@ class AARefAlt( Edit, recordtype.recordtype('AARefAlt', [('ref',None),('alt',Non
         return self
 
 
-class AASub( Edit, recordtype.recordtype('AASub', [('ref',None),('alt',None),('fs',None),('uncertain',False)]) ):
-    def __init__(self,ref,alt,fs=None,uncertain=False):
-        super(AASub, self).__init__(ref=aa_to_aa1(ref), alt=aa_to_aa1(alt), fs=fs, uncertain=uncertain)
+class AASub( Edit, recordtype.recordtype('AASub', [('ref',None),('alt',None), ('uncertain',False)]) ):
+    def __init__(self,ref,alt, uncertain=False):
+        super(AASub, self).__init__(ref=aa_to_aa1(ref), alt=aa_to_aa1(alt), uncertain=uncertain)
 
     def __str__(self):
-        if self.alt != '?':
-            s = aa1_to_aa3(self.alt) + (self.fs or '')
-        else:   # e.g. for Met1?
-            s = self.alt + (self.fs or '')
+        s = aa1_to_aa3(self.alt) if self.alt != '?' else self.alt
+        return '('+s+')' if self.uncertain else s
+
+    def set_uncertain(self):
+        self.uncertain = True
+        return self
+
+
+class AAFs(Edit, recordtype.recordtype('AAFs', [('ref',None),('alt',None),('length',None),('uncertain',False)])):
+    def __init__(self,ref,alt,length=None,uncertain=False):
+        super(AAFs, self).__init__(ref=aa_to_aa1(ref), alt=aa_to_aa1(alt), length=length, uncertain=uncertain)
+
+    def __str__(self):
+        st_length = self.length or ''
+        s = "{alt}fs*{length}".format(alt=aa1_to_aa3(self.alt), length=st_length)
+        return '('+s+')' if self.uncertain else s
+
+    def set_uncertain(self):
+        self.uncertain = True
+        return self
+
+
+class AAExt(Edit, recordtype.recordtype('AAExt', [('ref',None),('alt',None), ('aaterm', None), ('length',None),
+                                                  ('uncertain',False)])):
+    def __init__(self,ref,alt,aaterm=None, length=None,uncertain=False):
+        super(AAExt, self).__init__(ref=aa_to_aa1(ref), alt=aa_to_aa1(alt), aaterm=aa_to_aa1(aaterm), length=length,
+                                    uncertain=uncertain)
+
+    def __str__(self):
+        st_alt = self.alt or ''
+        st_aaterm = self.aaterm or ''
+        st_length = self.length or ''
+        s = "{alt}ext{term}{length}".format(alt=aa1_to_aa3(st_alt), term=st_aaterm, length=st_length)
         return '('+s+')' if self.uncertain else s
 
     def set_uncertain(self):

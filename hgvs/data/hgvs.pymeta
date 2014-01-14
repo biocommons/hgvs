@@ -50,7 +50,6 @@
 
 ## MISSING FEATURES
 # * LATER: posedits structure for chimeric, mosaic, compound variants, multiallelic variants
-# * LATER: new translation initiation site (p.Met1ext-5, p.Met1Valext-12)
 # * LATER: gene name
 # * WONTFIX: translocations: intentionally omitted
 # * WONTFIX: conversions: intentionally omitted
@@ -146,12 +145,14 @@ rna_ins    = 'ins' <rna+>:alt         -> hgvs.edit.NARefAlt(ref=None,alt=alt)
 rna_dup    = 'dup' <rna*>:seq         -> hgvs.edit.Dup(seq=seq)
 
 pro_edit_mu = pro_edit | '(' pro_edit:edit ')' -> edit.set_uncertain()
-pro_edit   = pro_subst | pro_delins | pro_ins | pro_del | pro_dup
-pro_subst  = (aat13|'?'):alt (aa13_fs|aa13_ext)?:fs -> hgvs.edit.AASub(ref='',alt=hgvs.utils.aa_to_aa1(alt),fs=fs)
+pro_edit   = pro_fs | pro_ext | pro_subst | pro_delins | pro_ins | pro_del | pro_dup
+pro_subst  = (aat13|'?'):alt -> hgvs.edit.AASub(ref='',alt=hgvs.utils.aa_to_aa1(alt))
 pro_delins = 'delins' aat13_seq:alt -> hgvs.edit.AARefAlt(ref='',alt=hgvs.utils.aa_to_aa1(alt))
 pro_del    = 'del'                         -> hgvs.edit.AARefAlt(ref='',alt=None)
 pro_ins    = 'ins' aat13_seq:alt -> hgvs.edit.AARefAlt(ref=None,alt=hgvs.utils.aa_to_aa1(alt))
 pro_dup    = 'dup'                         -> hgvs.edit.Dup(seq='')
+pro_fs     = aat13:alt fs:length -> hgvs.edit.AAFs(ref='',alt=hgvs.utils.aa_to_aa1(alt),length=length)
+pro_ext    = aat13?:alt ext:(aaterm, length) -> hgvs.edit.AAExt(ref='',alt=hgvs.utils.aa_to_aa1(alt),aaterm=hgvs.utils.aa_to_aa1(aaterm), length=length)
 
 
 ############################################################################
@@ -206,10 +207,14 @@ def_p_pos = (term13|aa13):aa num:pos -> hgvs.location.AAPosition(pos,hgvs.utils.
 
 gmn_type = :x ?(x in 'gmn') -> x
 
-# fs/ext
-# represent as something like AAfsext(type={'fs','ext'}, edit={Ter, None}, len={num, ?, None})
-aa13_fs  = <'fs' (term13 (num|'?')?)?>
-aa13_ext  = <'ext' (term13 (num|'?')?)?>
+# AA fs/ext
+fs = 'fs' (aa13_fs | -> None):n -> n
+ext = 'ext' (aa13_ext | -> (None, None)):(aat, n) -> (aat, n)
+aa13_fs = term13 fsext_offset:n -> n
+aa13_ext = term13:aat fsext_offset:n -> (aat, n)
+         | (aa13 | (-> None)):aat ext_5p_offset:n -> (aat, n)
+fsext_offset = num|'?'| (-> None)
+ext_5p_offset = nnum|'?'| (-> None)
 
 # sequences of NA/AA
 dna_seq = <dna+>
@@ -238,6 +243,7 @@ term3 = 'Ter'
 # N.B. ? is not supported in mapping
 base = snum | ('?' -> None)
 offset = snum | ('?' -> None) | (-> 0)
+nnum = <'-' num>:x -> int(x)
 snum = <pm? num>:x -> int(x)
 num = <digit+>:x -> int(x)
 pm = :x ?(x in '-+') -> x
