@@ -12,7 +12,7 @@ default: hgvs-syntax-diagram.html hgvs_railroad.rst
 	ln -s $<
 
 .PRECIOUS: %.ebnf
-%.ebnf: %.pymeta FORCE
+%.ebnf: %.pymeta
 	./pymeta-to-ebnf $< >$@
 
 .PRECIOUS: %.ebnf_grammar/all.html
@@ -23,7 +23,7 @@ default: hgvs-syntax-diagram.html hgvs_railroad.rst
 	./redact-html $< >$@
 
 hgvs_railroad.rst: %.rst: hgvs.ebnf_grammar/all.html
-	/bin/mkdir $*
+	/bin/mkdir -p $*
 	/bin/cp -l ${<D}/*.svg $*/
 	./make-hgvs-railroad-doc --hgvs-version "$$(hg id -bit)" hgvs_railroad/*svg >$@
 
@@ -37,4 +37,4 @@ clean:
 	/bin/rm -f *~
 cleaner: clean
 cleanest: cleaner
-	/bin/rm -fr hgvs.ebnf hgvs.ebnf_grammar hgvs-syntax-diagram.html
+	/bin/rm -fr hgvs.ebnf hgvs.ebnf_grammar hgvs-syntax-diagram.html hgvs_railroad
