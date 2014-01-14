@@ -60,11 +60,8 @@ upload:
 ############################################################################
 #= TESTING
 
-#=> test -- run tests
-test-setup: install
-
 #=> test, test-with-coverage -- per-commit test target for CI
-test test-with-coverage: test-setup
+test test-with-coverage:
 	python setup.py nosetests --with-xunit --with-coverage --cover-erase --cover-package=hgvs --cover-html 
 
 #=> ci-test-nightly -- per-commit test target for CI

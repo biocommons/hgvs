@@ -57,9 +57,9 @@ class NARefAlt( Edit, recordtype.recordtype('NARefAlt', [('ref',None),('alt',Non
         return self
 
         
-class AARefAlt( Edit, recordtype.recordtype('AARefAlt', [('ref',None),('alt',None),('fs',None),('uncertain',False)]) ):
-    def __init__(self,ref,alt,fs=None,uncertain=False):
-        super(AARefAlt,self).__init__(ref=aa_to_aa1(ref),alt=aa_to_aa1(alt),fs=fs)
+class AARefAlt( Edit, recordtype.recordtype('AARefAlt', [('ref',None),('alt',None), ('uncertain',False)]) ):
+    def __init__(self,ref, alt, uncertain=False):
+        super(AARefAlt, self).__init__(ref=aa_to_aa1(ref), alt=aa_to_aa1(alt), uncertain=uncertain)
 
     def __str__(self):
         if self.ref is None and self.alt is None:
@@ -71,9 +71,9 @@ class AARefAlt( Edit, recordtype.recordtype('AARefAlt', [('ref',None),('alt',Non
             if self.ref == self.alt:
                 s = '='
             elif len(self.ref) == 1 and len(self.alt) == 1:
-                s = aa1_to_aa3(self.alt) + (self.fs or '')
+                s = aa1_to_aa3(self.alt)
             else:
-                s = 'delins{alt}{fs}'.format(alt = aa1_to_aa3(self.alt),fs = self.fs or '')
+                s = 'delins{alt}'.format(alt = aa1_to_aa3(self.alt))
 
         # del case
         elif self.ref is not None and self.alt is None:
@@ -81,7 +81,7 @@ class AARefAlt( Edit, recordtype.recordtype('AARefAlt', [('ref',None),('alt',Non
 
         # ins case
         elif self.ref is None and self.alt is not None:
-            s = 'ins{alt}{fs}'.format(alt=aa1_to_aa3(self.alt),fs=self.fs or '')
+            s = 'ins{alt}'.format(alt=aa1_to_aa3(self.alt))
 
         else:
             raise RuntimeError("Should not be here")
@@ -93,16 +93,17 @@ class AARefAlt( Edit, recordtype.recordtype('AARefAlt', [('ref',None),('alt',Non
         return self
 
 
-class AASub( AARefAlt ):
+class AASub( Edit, recordtype.recordtype('AASub', [('ref',None),('alt',None),('fs',None),('uncertain',False)]) ):
+    def __init__(self,ref,alt,fs=None,uncertain=False):
+        super(AASub, self).__init__(ref=aa_to_aa1(ref), alt=aa_to_aa1(alt), fs=fs, uncertain=uncertain)
+
     def __str__(self):
-        s = aa1_to_aa3(self.alt) + (self.fs or '')
+        if self.alt != '?':
+            s = aa1_to_aa3(self.alt) + (self.fs or '')
+        else:   # e.g. for Met1?
+            s = self.alt + (self.fs or '')
         return '('+s+')' if self.uncertain else s
 
-
-class AASpecial( Edit, recordtype.recordtype('AASpecial', [('status',None),('uncertain',False)]) ):
-    def __str__(self):
-        return '('+self.status+')' if self.uncertain else self.status
-    
     def set_uncertain(self):
         self.uncertain = True
         return self

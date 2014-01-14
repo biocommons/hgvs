@@ -61,9 +61,11 @@ class TestGrammarFull(unittest.TestCase):
                     try:
                         actual_result = str(function_to_test())
                         if not is_valid or (expected_result != actual_result):
+                            print "expected: {} actual:{}".format(expected_result, actual_result)
                             fail_cases.append(row_str)
                     except Exception as e:
                         if is_valid:
+                            print "expected: {} Exception: {}".format(expected_result, e)
                             fail_cases.append(row_str)
 
         # everything should have passed - report whatever failed
