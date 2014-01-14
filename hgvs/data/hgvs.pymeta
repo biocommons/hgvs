@@ -212,9 +212,8 @@ fs = 'fs' (aa13_fs | -> None):n -> n
 ext = 'ext' (aa13_ext | -> (None, None)):(aat, n) -> (aat, n)
 aa13_fs = term13 fsext_offset:n -> n
 aa13_ext = term13:aat fsext_offset:n -> (aat, n)
-         | (aa13 | (-> None)):aat ext_5p_offset:n -> (aat, n)
+         | (aa13 | (-> None)):aat nnum:n -> (aat, n)
 fsext_offset = num|'?'| (-> None)
-ext_5p_offset = nnum|'?'| (-> None)
 
 # sequences of NA/AA
 dna_seq = <dna+>
