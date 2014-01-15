@@ -105,7 +105,7 @@ class AAFs(Edit, recordtype.recordtype('AAFs', [('ref',None),('alt',None),('leng
 
     def __str__(self):
         st_length = self.length or ''
-        s = "{alt}fs*{length}".format(alt=aa1_to_aa3(self.alt), length=st_length)
+        s = "{alt}fsTer{length}".format(alt=aa1_to_aa3(self.alt), length=st_length)
         return '('+s+')' if self.uncertain else s
 
     def set_uncertain(self):
@@ -123,7 +123,7 @@ class AAExt(Edit, recordtype.recordtype('AAExt', [('ref',None),('alt',None), ('a
         st_alt = self.alt or ''
         st_aaterm = self.aaterm or ''
         st_length = self.length or ''
-        s = "{alt}ext{term}{length}".format(alt=aa1_to_aa3(st_alt), term=st_aaterm, length=st_length)
+        s = "{alt}ext{term}{length}".format(alt=aa1_to_aa3(st_alt), term=aa1_to_aa3(st_aaterm), length=st_length)
         return '('+s+')' if self.uncertain else s
 
     def set_uncertain(self):

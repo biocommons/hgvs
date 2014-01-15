@@ -30,12 +30,12 @@ class Test_Edit(unittest.TestCase):
         self.assertEqual( str(hgvs.edit.AASub('A','T'  ))  , 'Thr'           )
 
     def test_AAFs(self):
-        self.assertEqual( str(hgvs.edit.AAFs('A','T','6'))  , 'Thrfs*6'  )
-        self.assertEqual( str(hgvs.edit.AAFs('A','T','?'))  , 'Thrfs*?'  )
-        self.assertEqual( str(hgvs.edit.AAFs('A','T', None))  , 'Thrfs*'  )
+        self.assertEqual( str(hgvs.edit.AAFs('A','T','6'))  , 'ThrfsTer6'  )
+        self.assertEqual( str(hgvs.edit.AAFs('A','T','?'))  , 'ThrfsTer?'  )
+        self.assertEqual( str(hgvs.edit.AAFs('A','T', None))  , 'ThrfsTer'  )
 
     def test_AAExt(self):
-        self.assertEqual( str(hgvs.edit.AAExt('A','V', '*', 10))  , 'Valext*10'  )
+        self.assertEqual( str(hgvs.edit.AAExt('A','V', '*', 10))  , 'ValextTer10'  )
         self.assertEqual( str(hgvs.edit.AAExt('A','V', None, -10))  , 'Valext-10'  )
         self.assertEqual( str(hgvs.edit.AAExt('A',None, None, -5))  , 'ext-5'  )
 
