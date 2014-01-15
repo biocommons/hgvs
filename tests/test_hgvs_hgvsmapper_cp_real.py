@@ -70,6 +70,12 @@ class TestHgvsCToPReal(unittest.TestCase):
                     if hgvsp_expected.endswith("*") \
                         and hgvsp_actual.endswith("Ter") and hgvsp_expected[:-1] == hgvsp_actual[:-3]:
                         pass    # skip * vs Ter
+                    elif hgvsp_actual.find("fsTer") != -1 \
+                        and hgvsp_actual.replace("fsTer", "fs*") == hgvsp_expected:
+                        pass    # skip fs* vs. fsTer
+                    elif hgvsp_actual.find("extTer") != -1 \
+                        and hgvsp_actual.replace("extTer", "ext*") == hgvsp_expected:
+                        pass    # skip ext* vs. extTer
                     else:
                         self._append_fail(out, row_id, hgvsg, hgvsc, hgvsp_expected, hgvsp_actual, "MISMATCH")
             except Exception as e:

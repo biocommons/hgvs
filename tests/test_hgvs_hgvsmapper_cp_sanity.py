@@ -33,7 +33,7 @@ class TestHgvsCToP(unittest.TestCase):
 
     def test_substitution_removes_stop_codon(self):
         hgvsc = "NM_999998.1:c.30G>T"
-        hgvsp_expected = "MOCK:p.Ter10Tyrext*3"
+        hgvsp_expected = "MOCK:p.Ter10TyrextTer3"
         self._run_conversion(hgvsc, hgvsp_expected)
 
     def test_substitution_removes_start_codon(self):
@@ -48,7 +48,7 @@ class TestHgvsCToP(unittest.TestCase):
 
     def test_insertion_frameshift(self):
         hgvsc = "NM_999999.1:c.22_23insT"
-        hgvsp_expected = "MOCK:p.Ala8Valfs*?"
+        hgvsp_expected = "MOCK:p.Ala8ValfsTer?"
         self._run_conversion(hgvsc, hgvsp_expected)
 
     def test_insertion_adds_stop(self):
@@ -93,12 +93,12 @@ class TestHgvsCToP(unittest.TestCase):
 
     def test_deletion_frameshift_nostop(self):
         hgvsc = "NM_999999.1:c.11_12del"
-        hgvsp_expected = "MOCK:p.Lys4Serfs*?"
+        hgvsp_expected = "MOCK:p.Lys4SerfsTer?"
         self._run_conversion(hgvsc, hgvsp_expected)
 
     def test_deletion_frameshift_adds_stop(self):
         hgvsc = "NM_999997.1:c.7del"
-        hgvsp_expected = "MOCK:p.Ala3Argfs*6"
+        hgvsp_expected = "MOCK:p.Ala3ArgfsTer6"
         self._run_conversion(hgvsc, hgvsp_expected)
 
     def test_deletion_no_frameshift_removes_stop_plus_previous(self):
@@ -118,7 +118,7 @@ class TestHgvsCToP(unittest.TestCase):
 
     def test_indel_frameshift_nostop(self):
         hgvsc = "NM_999999.1:c.8delinsGG"
-        hgvsp_expected = "MOCK:p.Ala3Glyfs*?"
+        hgvsp_expected = "MOCK:p.Ala3GlyfsTer?"
         self._run_conversion(hgvsc, hgvsp_expected)
 
     def test_dup_1AA_no_frameshift_2(self):
@@ -148,7 +148,7 @@ class TestHgvsCToP(unittest.TestCase):
 
     def test_dup_frameshift(self):
         hgvsc = "NM_999999.1:c.12_13dup"
-        hgvsp_expected = "MOCK:p.Ala5Glufs*?"
+        hgvsp_expected = "MOCK:p.Ala5GlufsTer?"
         self._run_conversion(hgvsc, hgvsp_expected)
 
     def test_intron(self):
@@ -168,7 +168,7 @@ class TestHgvsCToP(unittest.TestCase):
 
     def test_deletion_into_three_prime_utr_frameshift(self):
         hgvsc = "NM_999999.1:c.27_*3del"
-        hgvsp_expected = "MOCK:p.Lys9Xaafs*?"
+        hgvsp_expected = "MOCK:p.Lys9XaafsTer?"
         self._run_conversion(hgvsc, hgvsp_expected)
 
     def test_deletion_into_three_prime_utr_no_frameshift(self):
