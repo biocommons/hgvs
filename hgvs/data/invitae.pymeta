@@ -1,7 +1,6 @@
 ############################################################################
 ## invitae /additions/ to hgvs_strict
 # i.e., this will NOT parse valid HGVS
-# invitae_variant = (copyN, dupN)
 
 dna_edit = dna_dupN | super | dna_copy
 dna_copy = 'copy' num:n -> hgvs.iv.edit_iv.NACopy(copy=n)
