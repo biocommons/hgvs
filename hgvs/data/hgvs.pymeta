@@ -128,12 +128,15 @@ p_posedit_special =
 ## TODO: Repeat
 
 dna_edit_mu = dna_edit | '(' dna_edit:edit ')' -> edit.set_uncertain()
-dna_edit   = dna_subst | dna_delins | dna_ins | dna_del | dna_dup
+dna_edit   = dna_dupN | dna_subst | dna_delins | dna_ins | dna_del | dna_dup | dna_copy
 dna_subst  = dna:ref '>' dna:alt      -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
 dna_delins = 'del' (<num>|<dna*>):ref 'ins' <dna+>:alt  -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
 dna_del    = 'del' (<num>|<dna*>):ref -> hgvs.edit.NARefAlt(ref=ref,alt=None)
 dna_ins    = 'ins' <dna+>:alt         -> hgvs.edit.NARefAlt(ref=None,alt=alt)
 dna_dup    = 'dup' <dna*>:seq         -> hgvs.edit.Dup(seq=seq)
+# internal
+dna_copy = 'copy' num:n -> hgvs.edit.NACopy(copy=n)
+dna_dupN = 'dup' num:n -> hgvs.edit.NADupN(n=n)
 
 # Hey, self- I caught you! Stick to one feature add at a time!
 # dna_rpt    = '[' num:count ']' -> Repeat(seq=None, min=count, max=count)

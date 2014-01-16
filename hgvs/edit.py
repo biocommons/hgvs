@@ -154,8 +154,30 @@ class Repeat( Edit, recordtype.recordtype('Repeat', [('seq',None),('min',None),(
         self.uncertain = True
         return self
 
+#
+# internal
+#
+
+class NACopy(Edit, recordtype.recordtype('NACopy', ['copy', ('uncertain', False)])):
+
+    def __str__(self):
+        s = 'copy{}'.format(self.copy)
+        return '('+s+')' if self.uncertain else s
+
+    def set_uncertain(self):
+        self.uncertain = True
+        return self
 
 
+class NADupN(Edit, recordtype.recordtype('NADupN', ['n', ('uncertain', False)])):
+
+    def __str__(self):
+        s = 'dup{}'.format(self.n)
+        return '('+s+')' if self.uncertain else s
+
+    def set_uncertain(self):
+        self.uncertain = True
+        return self
 
 
 # class Inv( Edit, recordtype.recordtype('Inv', [], default=None) ):
