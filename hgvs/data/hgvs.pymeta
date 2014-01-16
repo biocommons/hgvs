@@ -106,8 +106,11 @@ m_posedit   = gmn_posedit
 n_posedit   = gmn_posedit
 gmn_posedit = gmn_interval:pos dna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit)
 c_posedit   = c_interval:pos dna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit)
-r_posedit   = r_interval:pos rna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit)
-p_posedit   = (p_interval:pos pro_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit)) | p_posedit_special
+r_posedit   = (r_interval:pos rna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit))
+   | ('(' r_interval:pos rna_edit:edit ')' -> hgvs.posedit.PosEdit(pos=pos,edit=edit, uncertain=True))
+p_posedit   = (p_interval:pos pro_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit))
+   | ('(' p_interval:pos pro_edit:edit ')' -> hgvs.posedit.PosEdit(pos=pos,edit=edit, uncertain=True))
+   | p_posedit_special
 p_posedit_special = 
       '=':x -> hgvs.posedit.PosEdit(pos=None,edit=x,uncertain=False)
 	| '(' '=':x ')' -> hgvs.posedit.PosEdit(pos=None,edit=x,uncertain=True)
