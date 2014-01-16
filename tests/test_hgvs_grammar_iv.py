@@ -1,12 +1,21 @@
 import os
 import unittest
 
+import hgvs.parser
 import test_hgvs_grammar_base
 
-class TestGrammarFull(test_hgvs_grammar_base.TestGrammarBase):
+class TestGrammarIV(test_hgvs_grammar_base.TestGrammarBase):
+
+    def setUp(self):
+        self.p = hgvs.parser.Parser(use_internal=True)
+        self.grammar = self.p._grammar
 
     def test_parser_grammar_full(self):
         fn = os.path.join(os.path.dirname(__file__), 'data', 'grammar_test.tsv')
+        self._check_parser_grammar(fn)
+
+    def test_parser_grammar_iv(self):
+        fn = os.path.join(os.path.dirname(__file__), 'data', 'grammar_test_iv.tsv')
         self._check_parser_grammar(fn)
 
 if __name__ == '__main__':

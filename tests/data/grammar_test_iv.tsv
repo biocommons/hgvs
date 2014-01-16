@@ -1,0 +1,16 @@
+Func	Test	Valid	InType	Expected
+dna_copy	copy1|copy2|copy3	True	list
+dna_copy	copy|copy?	False	list
+dna_dupN	dup3|dup55	True	list
+dna_dup	dup|dupAG	True	list
+dna_edit	copy1|copy2|copy3	True	list
+c_variant	NM_000352.3:c.2557_2694copy2	True	one     
+c_variant	NM_015702.2:c.307_324dup18	True	one     
+#regression - minimal test that other things work
+g_variant	NC_000014.8:g.88401076_88459508copy4	True	one
+dna_edit	A>G|del|insC|delinsGG	True	list
+c_variant	AC_01234.5:c.1A>T	True	one     
+gmn_variant	AC_01234.5:g.1A>T	True	one     
+n_variant	AC_01234.5:n.1A>T	True	one
+m_variant	AC_01234.5:m.1A>T	True	one     
+g_variant	AC_01234.5:g.1A>T	True	one   

@@ -1,6 +1,16 @@
 ############################################################################
 ## invitae /additions/ to hgvs_strict
 # i.e., this will NOT parse valid HGVS
-# invitae_variant = (copyN, delN)
+# invitae_variant = (copyN, dupN)
+
+dna_edit = dna_dupN | super | dna_copy
+dna_copy = 'copy' num:n -> hgvs.iv.edit_iv.NACopy(copy=n)
+dna_dupN = 'dup' num:n -> hgvs.iv.edit_iv.NADupN(n=n)
+
+# parser dependencies
+# ext grammar file
+# dictionary to define variables
+# import any newly referred modules
+
 
 
