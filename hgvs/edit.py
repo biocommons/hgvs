@@ -100,6 +100,8 @@ class AASub( AARefAlt ):
 
 
 class AAFs(Edit, recordtype.recordtype('AAFs', [('ref',None),('alt',None),('length',None),('uncertain',False)])):
+    type = 'fs' # type is a keyword - see if this works
+
     def __init__(self,ref,alt,length=None,uncertain=False):
         super(AAFs, self).__init__(ref=aa_to_aa1(ref), alt=aa_to_aa1(alt), length=length, uncertain=uncertain)
 
