@@ -15,7 +15,13 @@ class Test_Edit(unittest.TestCase):
         self.assertEqual( str(hgvs.edit.NARefAlt(None,'TT'))  , 'insTT'         )
         self.assertEqual( str(hgvs.edit.NARefAlt('AA','T' ))  , 'delAAinsT'     )
         self.assertEqual( str(hgvs.edit.NARefAlt('A','TT' ))  , 'delAinsTT'     )
-
+        # edit types
+        self.assertEqual( str(hgvs.edit.NARefAlt('A','A'  ).type)  , 'None'     )
+        self.assertEqual( str(hgvs.edit.NARefAlt('A','T'  ).type)  , 'sub'      )
+        self.assertEqual( str(hgvs.edit.NARefAlt('AA',None).type)  , 'del'      )
+        self.assertEqual( str(hgvs.edit.NARefAlt(None,'TT').type)  , 'ins'      )
+        self.assertEqual( str(hgvs.edit.NARefAlt('AA','T' ).type)  , 'delins'   )
+        self.assertEqual( str(hgvs.edit.NARefAlt('A','TT' ).type)  , 'delins'   )
 
     def test_AARefAlt(self):
         self.assertEqual( str(hgvs.edit.AARefAlt('A','A'  ))  , '='             )
@@ -25,26 +31,49 @@ class Test_Edit(unittest.TestCase):
         self.assertEqual( str(hgvs.edit.AARefAlt('','T' ))  ,   'delinsThr'     )
         self.assertEqual( str(hgvs.edit.AARefAlt('AA','T' ))  , 'delinsThr'     )
         self.assertEqual( str(hgvs.edit.AARefAlt('A','TT' ))  , 'delinsThrThr'  )
+        # edit types
+        self.assertEqual( str(hgvs.edit.AARefAlt('A','A'  ).type)  , 'None'     )
+        self.assertEqual( str(hgvs.edit.AARefAlt('A','T'  ).type)  , 'sub'      )
+        self.assertEqual( str(hgvs.edit.AARefAlt('AA',None).type)  , 'del'      )
+        self.assertEqual( str(hgvs.edit.AARefAlt(None,'TT').type)  , 'ins'      )
+        self.assertEqual( str(hgvs.edit.AARefAlt('','T' ).type)  ,   'delins'   )
+        self.assertEqual( str(hgvs.edit.AARefAlt('AA','T' ).type)  , 'delins'   )
+        self.assertEqual( str(hgvs.edit.AARefAlt('A','TT' ).type)  , 'delins'   )
 
     def test_AASub(self):
         self.assertEqual( str(hgvs.edit.AASub('A','T'  ))  , 'Thr'           )
+        # edit types
+        self.assertEqual( str(hgvs.edit.AASub('A','T'  ).type)  , 'sub'      )
 
     def test_AAFs(self):
         self.assertEqual( str(hgvs.edit.AAFs('A','T','6'))  , 'ThrfsTer6'  )
         self.assertEqual( str(hgvs.edit.AAFs('A','T','?'))  , 'ThrfsTer?'  )
-        self.assertEqual( str(hgvs.edit.AAFs('A','T', None))  , 'ThrfsTer'  )
+        self.assertEqual( str(hgvs.edit.AAFs('A','T', None))  , 'ThrfsTer' )
+        # edit types
+        self.assertEqual( str(hgvs.edit.AAFs('A','T','6').type)  , 'fs'    )
+        self.assertEqual( str(hgvs.edit.AAFs('A','T','?').type)  , 'fs'    )
+        self.assertEqual( str(hgvs.edit.AAFs('A','T', None).type)  , 'fs'  )
 
     def test_AAExt(self):
         self.assertEqual( str(hgvs.edit.AAExt('A','V', '*', 10))  , 'ValextTer10'  )
         self.assertEqual( str(hgvs.edit.AAExt('A','V', None, -10))  , 'Valext-10'  )
-        self.assertEqual( str(hgvs.edit.AAExt('A',None, None, -5))  , 'ext-5'  )
+        self.assertEqual( str(hgvs.edit.AAExt('A',None, None, -5))  , 'ext-5'      )
+        # edit types
+        self.assertEqual( str(hgvs.edit.AAExt('A','V', '*', 10).type)  , 'ext'     )
+        self.assertEqual( str(hgvs.edit.AAExt('A','V', None, -10).type)  , 'ext'   )
+        self.assertEqual( str(hgvs.edit.AAExt('A',None, None, -5).type)  , 'ext'   )
 
     def test_Dup(self):
         self.assertEqual( str(hgvs.edit.Dup())				, 'dup' 		)
         self.assertEqual( str(hgvs.edit.Dup('T'))			, 'dupT' 		)
-        
+        # edit types
+        self.assertEqual( str(hgvs.edit.Dup().type)				, 'dup' 		)
+        self.assertEqual( str(hgvs.edit.Dup('T').type)			, 'dup' 		)
+
     def test_Repeat(self):
         self.assertEqual( str(hgvs.edit.Repeat('CAG',12,34)), 'CAG(12_34)' 	)
+        # edit types
+        self.assertEqual( str(hgvs.edit.Repeat('CAG',12,34).type), 'repeat' 	)
 
     def test_Repeat_exceptions(self):
         with self.assertRaises(HGVSError):

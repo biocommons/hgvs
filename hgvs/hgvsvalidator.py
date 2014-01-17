@@ -7,35 +7,27 @@ import hgvs.parser
 import re
 
 
-class IntrinsicValidation():
+class Validate(object):
+    """Validates a parsed HGVS variant using intrinsic and extrinsic methods"""
+    pass
+
+
+class IntrinsicValidation(object):
     """
     Attempts to determine if the HGVS name is internally consistent
     """
-    def __init__(self):
-        self.hp = hgvs.parser.Parser()
+    def __init__(self, var):
+        assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
+        self.var = var
 
-    def valid_parse(self, hgvs):
-        try:
-            self.hp.parse_hgvs_variant(hgvs)
-        except Exception, e:
-            #return 'Failed to parse {hgvs}: {error}'.format(hgvs=hgvs, error=e)
-            return False
-        return True
-
-    def end_gt_start(self, hgvs):
-        if self.valid_parse(hgvs):
-            var = self.hp.parse_hgvs_variant(hgvs)
-            if var.type == 'g':
-                if var.posedit.pos.end.base >= var.posedit.pos.start.base:
-                    return True
-                else:
-                    return False
-            if var.type in ['c', 'r', 'p']:
-                if (var.posedit.pos.end.base + var.posedit.pos.end.offset) >= \
-                        (var.posedit.pos.start.base + var.posedit.pos.start.offset):
-                    return True
-                else:
-                    return False
+    def end_lt_start(self):
+            if self.var.type == 'g':
+                if self.var.posedit.pos.end.base < self.var.posedit.pos.start.base:
+                    raise Exception('end position must be >= start position')
+            if self.var.type in ['c', 'r', 'p']:
+                if (self.var.posedit.pos.end.base + self.var.posedit.pos.end.offset) < \
+                        (self.var.posedit.pos.start.base + self.var.posedit.pos.start.offset):
+                    raise Exception('end position must be >= start position')
 
     def valid_ins(self, hgvs):
         if self.valid_parse(hgvs):
