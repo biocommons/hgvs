@@ -55,6 +55,7 @@ setup(
         'biopython',
         'parsley',
         'recordtype',
+        'requests',
         ],
 
     setup_requires = [
