@@ -28,7 +28,6 @@ class Edit(object):
     pass
 
 class NARefAlt( Edit, recordtype.recordtype('NARefAlt', [('ref',None),('alt',None),('uncertain',False)]) ):
-
     def __str__(self):
         if self.ref is None and self.alt is None:
             raise HGVSError('RefAlt: ref and alt sequences are both undefined')
@@ -41,7 +40,6 @@ class NARefAlt( Edit, recordtype.recordtype('NARefAlt', [('ref',None),('alt',Non
                 s = '{self.ref}>{self.alt}'.format(self=self)
             else:
                 s = 'del{self.ref}ins{self.alt}'.format(self=self)
-
         # del case
         elif self.ref is not None:
             s = 'del{self.ref}'.format(self=self)
@@ -56,7 +54,21 @@ class NARefAlt( Edit, recordtype.recordtype('NARefAlt', [('ref',None),('alt',Non
         self.uncertain = True
         return self
 
-        
+    @property
+    def type(self):
+        if self.ref is not None and self.alt is not None:
+            if self.ref == self.alt:
+                edit_type = None
+            elif len(self.alt) == 1 and len(self.ref) == 1 and not self.ref.isdigit():
+                edit_type = 'sub'
+            else:
+                edit_type = 'delins'
+        elif self.ref is not None:
+            edit_type = 'del'
+        else:
+            edit_type = 'ins'
+        return edit_type
+
 class AARefAlt( Edit, recordtype.recordtype('AARefAlt', [('ref',None),('alt',None), ('uncertain',False)]) ):
     def __init__(self,ref, alt, uncertain=False):
         super(AARefAlt, self).__init__(ref=aa_to_aa1(ref), alt=aa_to_aa1(alt), uncertain=uncertain)
@@ -92,16 +104,31 @@ class AARefAlt( Edit, recordtype.recordtype('AARefAlt', [('ref',None),('alt',Non
         self.uncertain = True
         return self
 
+    @property
+    def type(self):
+        if self.ref is not None and self.alt is not None:
+            if self.ref == self.alt:
+                edit_type = None
+            elif len(self.ref) == 1 and len(self.alt) == 1:
+                edit_type = 'sub'
+            else:
+                edit_type = 'delins'
+        elif self.ref is not None and self.alt is None:
+            edit_type = 'del'
+        elif self.ref is None and self.alt is not None:
+            edit_type = 'ins'
+        return edit_type
 
 class AASub( AARefAlt ):
     def __str__(self):
         s = aa1_to_aa3(self.alt) if self.alt != '?' else self.alt
         return '('+s+')' if self.uncertain else s
 
+    @property
+    def type(self):
+        return 'sub'
 
 class AAFs(Edit, recordtype.recordtype('AAFs', [('ref',None),('alt',None),('length',None),('uncertain',False)])):
-    type = 'fs' # type is a keyword - see if this works
-
     def __init__(self,ref,alt,length=None,uncertain=False):
         super(AAFs, self).__init__(ref=aa_to_aa1(ref), alt=aa_to_aa1(alt), length=length, uncertain=uncertain)
 
@@ -114,6 +141,9 @@ class AAFs(Edit, recordtype.recordtype('AAFs', [('ref',None),('alt',None),('leng
         self.uncertain = True
         return self
 
+    @property
+    def type(self):
+        return 'fs'
 
 class AAExt(Edit, recordtype.recordtype('AAExt', [('ref',None),('alt',None), ('aaterm', None), ('length',None),
                                                   ('uncertain',False)])):
@@ -132,6 +162,9 @@ class AAExt(Edit, recordtype.recordtype('AAExt', [('ref',None),('alt',None), ('a
         self.uncertain = True
         return self
 
+    @property
+    def type(self):
+        return 'ext'
 
 class Dup( Edit, recordtype.recordtype('Dup', [('seq',None),('uncertain',False)]) ):
 
@@ -142,6 +175,9 @@ class Dup( Edit, recordtype.recordtype('Dup', [('seq',None),('uncertain',False)]
         self.uncertain = True
         return self
 
+    @property
+    def type(self):
+        return 'dup'
 
 class Repeat( Edit, recordtype.recordtype('Repeat', [('seq',None),('min',None),('max',None),('uncertain',False)]) ):
 
@@ -156,6 +192,9 @@ class Repeat( Edit, recordtype.recordtype('Repeat', [('seq',None),('min',None),(
         self.uncertain = True
         return self
 
+    @property
+    def type(self):
+        return 'repeat'
 
 
 
