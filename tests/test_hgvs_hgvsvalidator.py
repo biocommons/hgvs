@@ -10,60 +10,59 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
 
     def setUp(self):
         self.hp = hgvs.parser.Parser()
-        self.i_valid = hgvs.hgvsvalidator.IntrinsicValidation()
+        self.validate_int = hgvs.hgvsvalidator.IntrinsicValidation()
 
-    def test_check_parsing(self):
-        """Test if g., r., c., p. HGVS names parse correctly"""
-        self.assertTrue(self.i_valid.valid_parse('NC_000007.13:g.36561662C>T'))
-        self.assertTrue(self.i_valid.valid_parse('NM_001637.3:r.1582G>A'))
-        self.assertTrue(self.i_valid.valid_parse('NM_001637.3:c.1582G>A'))
-        self.assertTrue(self.i_valid.valid_parse('NP_001628.1:p.Gly528Arg'))
+    def test_start_lte_end(self):
+        """Test if start position is less <= end position"""
+        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('NC_000007.13:g.36561662C>T')))
+        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('NC_000007.13:g.36561662_36561663insT')))
+        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('NM_01234.5:c.76_77insT')))
+        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.123+54_123+55insT')))
 
-        self.assertFalse(self.i_valid.valid_parse('NC_000007.13:z.36561662C>T'))
-        self.assertFalse(self.i_valid.valid_parse('NC_000007.13:r.36561662C>T'))
-        self.assertFalse(self.i_valid.valid_parse('NC_000007.13:g.36561662+2C>T'))
+        with self.assertRaisesRegexp(Exception, self.validate_int.RANGE_ERROR_MSG):
+            self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.123+56_123+55A>T'))
 
-    def test_end_gt_start(self):
-        """Test if end position is greater than start position"""
-        self.assertTrue(self.i_valid.end_gt_start('NC_000007.13:g.36561662C>T'))
-        self.assertTrue(self.i_valid.end_gt_start('NC_000007.13:g.36561662_36561663insT'))
-        self.assertTrue(self.i_valid.end_gt_start('AC_01234.5:c.76_77insT'))
-        self.assertTrue(self.i_valid.end_gt_start('AC_01234.5:c.123+54_123+55insT'))
+        with self.assertRaisesRegexp(Exception, self.validate_int.RANGE_ERROR_MSG):
+            self.validate_int.validate(self.hp.parse_hgvs_variant('NC_000007.13:g.36561664_36561663A>T'))
 
-        self.assertFalse(self.i_valid.end_gt_start('AC_01234.5:c.123+56_123+55insT'))
-        self.assertFalse(self.i_valid.end_gt_start('NC_000007.13:g.36561662_36561660C>T'))
+    def test_ins_length_is_one(self):
+        """Test if insertion length = 1"""
+        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('NC_000007.13:g.36561662_36561663insT')))
+        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.76_77insT')))
+        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.123+54_123+55insT')))
+        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.123-54_123-53insT')))
 
-    def test_check_ins_length(self):
-        """Test if ins length is 1"""
-        self.assertTrue(self.i_valid.valid_ins('NC_000007.13:g.36561662_36561663insT'))
-        self.assertTrue(self.i_valid.valid_ins('AC_01234.5:c.76_77insT'))
-        self.assertTrue(self.i_valid.valid_ins('AC_01234.5:c.123+54_123+55insT'))
-        self.assertTrue(self.i_valid.valid_ins('AC_01234.5:c.123-54_123-53insT'))
+        with self.assertRaisesRegexp(Exception, self.validate_int.INS_ERROR_MSG):
+            self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.76_78insTT'))
 
-        self.assertFalse(self.i_valid.valid_ins('AC_01234.5:c.76_77delinsTT'))
-        self.assertFalse(self.i_valid.valid_ins('AC_01234.5:c.123+54_123+56insT'))
+        with self.assertRaisesRegexp(Exception, self.validate_int.INS_ERROR_MSG):
+            self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.123+54_123+56insT'))
 
-    def test_check_del_length(self):
+    def test_del_length(self):
         """Test if del length agrees with position range"""
-        self.assertTrue(self.i_valid.valid_del('AC_01234.5:c.76_78delACT'))
-        self.assertTrue(self.i_valid.valid_del('AC_01234.5:c.123+54_123+55delTA'))  # <-- haha "delta"
+        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.76_78delACT')))
+        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.123+54_123+55delTA')))  # <-- haha "delta"
 
-        self.assertFalse(self.i_valid.valid_del('AC_01234.5:c.76_78del'))
+        with self.assertRaisesRegexp(Exception, self.validate_int.DEL_ERROR_MSG):
+            self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.76_78del'))
 
-class Test_HGVSExtrinsicValidator(unittest.TestCase):
-    """Tests for external validation"""
+        with self.assertRaisesRegexp(Exception, self.validate_int.DEL_ERROR_MSG):
+            self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.76_78delACTACAT'))
 
-    def setUp(self):
-        self.bdi = bdi.sources.uta0.connect()
-        self.hm = hgvs.hgvsmapper.HGVSMapper(self.bdi, cache_transcripts=True)
-        self.hp = hgvs.parser.Parser()
-        self.e_valid = hgvs.hgvsvalidator.ExtrinsicValidation()
-
-    def test_valid_ac(self):
-        """Test if accession is present in REST transcript sequence database"""
-        self.assertTrue(self.e_valid.valid_ac('NM_001637.3:r.1582G>A'))
-
-        self.assertTrue(self.e_valid.valid_ac('NM_01234.5:r.1582G>A'))
+#class Test_HGVSExtrinsicValidator(unittest.TestCase):
+#    """Tests for external validation"""
+#
+#    def setUp(self):
+#        self.bdi = bdi.sources.uta0.connect()
+#        self.hm = hgvs.hgvsmapper.HGVSMapper(self.bdi, cache_transcripts=True)
+#        self.hp = hgvs.parser.Parser()
+#        self.e_valid = hgvs.hgvsvalidator.ExtrinsicValidation()
+#
+#    def test_valid_ac(self):
+#        """Test if accession is present in REST transcript sequence database"""
+#        self.assertTrue(self.e_valid.valid_ac('NM_001637.3:r.1582G>A'))
+#
+#        self.assertTrue(self.e_valid.valid_ac('NM_01234.5:r.1582G>A'))
 
 
 
