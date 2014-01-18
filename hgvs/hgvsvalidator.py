@@ -2,9 +2,7 @@
 hgvs.hgvsvalidator
 """
 
-import requests
 import hgvs.parser
-import re
 
 
 class Validate(object):
@@ -16,59 +14,55 @@ class IntrinsicValidation(object):
     """
     Attempts to determine if the HGVS name is internally consistent
     """
-    def __init__(self, var):
+    RANGE_ERROR_MSG = 'start position must be <= end position'
+    INS_ERROR_MSG = 'insertion length must be 1'
+    DEL_ERROR_MSG = 'start and end position range must equal sequence deletion length'
+
+    def __init__(self):
+        self.var = None
+
+    def validate(self, var):
         assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
         self.var = var
+        self._start_lte_end()
+        self._ins_length_is_one()
+        self._del_length()
+        return True
 
-    def end_lt_start(self):
+    def _start_lte_end(self):
+        if self.var.type == 'g':
+            if self.var.posedit.pos.start.base > self.var.posedit.pos.end.base:
+                raise Exception(self.RANGE_ERROR_MSG)
+        if self.var.type in ['c', 'r', 'p']:
+            if (self.var.posedit.pos.start.base + self.var.posedit.pos.start.offset) > \
+                    (self.var.posedit.pos.end.base + self.var.posedit.pos.end.offset):
+                raise Exception(self.RANGE_ERROR_MSG)
+        return True
+    
+    def _ins_length_is_one(self):
+        if self.var.posedit.edit.type == 'ins':
             if self.var.type == 'g':
-                if self.var.posedit.pos.end.base < self.var.posedit.pos.start.base:
-                    raise Exception('end position must be >= start position')
+                if (self.var.posedit.pos.end.base - self.var.posedit.pos.start.base) != 1:
+                    raise Exception(self.INS_ERROR_MSG)
             if self.var.type in ['c', 'r', 'p']:
-                if (self.var.posedit.pos.end.base + self.var.posedit.pos.end.offset) < \
-                        (self.var.posedit.pos.start.base + self.var.posedit.pos.start.offset):
-                    raise Exception('end position must be >= start position')
+                if ((self.var.posedit.pos.end.base + self.var.posedit.pos.end.offset) -
+                        (self.var.posedit.pos.start.base + self.var.posedit.pos.start.offset)) != 1:
+                    raise Exception(self.INS_ERROR_MSG)
+            return True
+        
+    def _del_length(self):
+        if self.var.posedit.edit.type == 'del':
+            del_len = len(self.var.posedit.edit.ref)
+            if self.var.type == 'g':
+                if (self.var.posedit.pos.end.base - self.var.posedit.pos.start.base + 1) != del_len:
+                    raise Exception(self.DEL_ERROR_MSG)
+            if self.var.type in ['c', 'r', 'p']:
+                if ((self.var.posedit.pos.end.base + self.var.posedit.pos.end.offset) -
+                        (self.var.posedit.pos.start.base + self.var.posedit.pos.start.offset) + 1) != del_len:
+                    raise Exception(self.DEL_ERROR_MSG)
+            return True
 
-    def valid_ins(self, hgvs):
-        if self.valid_parse(hgvs):
-            var = self.hp.parse_hgvs_variant(hgvs)
-            #? can I get the edit type somewhere?
-            ins_re = re.compile('^ins')
-            if len(ins_re.findall(str(var.posedit.edit))) == 1:
-                # ins length should be 1
-                if var.type == 'g':
-                    if (var.posedit.pos.end.base - var.posedit.pos.start.base) == 1:
-                        return True
-                    else:
-                        return False
-                if var.type in ['c', 'r', 'p']:
-                    if ((var.posedit.pos.end.base + var.posedit.pos.end.offset) -
-                            (var.posedit.pos.start.base + var.posedit.pos.start.offset)) == 1:
-                        return True
-                    else:
-                        return False
-            else:
-                return False
 
-    def valid_del(self, hgvs):
-        if self.valid_parse(hgvs):
-            var = self.hp.parse_hgvs_variant(hgvs)
-            del_re = re.compile('^del')
-            if len(del_re.findall(str(var.posedit.edit))) == 1:
-                del_length = len(var.posedit.edit.ref)
-                if var.type == 'g':
-                    if (var.posedit.pos.end.base - var.posedit.pos.start.base + 1) == del_length:
-                        return True
-                    else:
-                        return False
-                if var.type in ['c', 'r', 'p']:
-                    if ((var.posedit.pos.end.base + var.posedit.pos.end.offset) -
-                            (var.posedit.pos.start.base + var.posedit.pos.start.offset) + 1) == del_length:
-                        return True
-                    else:
-                        return False
-            else:
-                return False
 
 
 class ExtrinsicValidation():
