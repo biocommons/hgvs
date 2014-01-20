@@ -14,7 +14,8 @@ class IntrinsicValidation(object):
     """
     Attempts to determine if the HGVS name is internally consistent
     """
-    RANGE_ERROR_MSG = 'start position must be <= end position'
+    BASE_RANGE_ERROR_MSG = 'base start position must be <= end position'
+    OFFSET_RANGE_ERROR_MSG = 'offset start must be <= end position'
     INS_ERROR_MSG = 'insertion length must be 1'
     DEL_ERROR_MSG = 'start and end position range must equal sequence deletion length'
 
@@ -32,11 +33,13 @@ class IntrinsicValidation(object):
     def _start_lte_end(self):
         if self.var.type == 'g':
             if self.var.posedit.pos.start.base > self.var.posedit.pos.end.base:
-                raise Exception(self.RANGE_ERROR_MSG)
+                raise Exception(self.BASE_RANGE_ERROR_MSG)
         if self.var.type in ['c', 'r', 'p']:
-            if (self.var.posedit.pos.start.base + self.var.posedit.pos.start.offset) > \
-                    (self.var.posedit.pos.end.base + self.var.posedit.pos.end.offset):
-                raise Exception(self.RANGE_ERROR_MSG)
+            if self.var.posedit.pos.start.base > self.var.posedit.pos.end.base:
+                raise Exception(self.BASE_RANGE_ERROR_MSG)
+            elif self.var.posedit.pos.start.base == self.var.posedit.pos.end.base:
+                if self.var.posedit.pos.start.offset > self.var.posedit.pos.end.offset:
+                    raise Exception(self.OFFSET_RANGE_ERROR_MSG)
         return True
     
     def _ins_length_is_one(self):
@@ -64,37 +67,37 @@ class IntrinsicValidation(object):
 
 
 
-
 class ExtrinsicValidation():
     """
     Attempts to determine if the HGVS name validates against external data sources
     """
-    def __init__(self):
-        self.hp = hgvs.parser.Parser()
-        self.ivalid = IntrinsicValidation()
-
-    def valid_ac(self, hgvs):
-        if self.ivalid.valid_parse(hgvs):
-            var = self.hp.parse_hgvs_variant(hgvs)
-            r = requests.get('http://uta.locusdev.net/api/v0/transcripts/fetch_seq?ac={ac}&start=0&end=10'
-                            .format(ac=var.ac))
-            if r.status_code == 200:
-                return True
-            else:
-                return False
-        else:
-            return False
-
-    def valid_ref(self, hgvs):
-        if self.ivalid.valid_parse(hgvs):
-            var = self.hp.parse_hgvs_variant(hgvs)
-            if len(var.posedit.edit.ref) >= 1:
-                r = requests.get('http://uta.locusdev.net/api/v0/transcripts/fetch_seq?ac={ac}&start={start}&end={end}'
-                                .format(ac=var.ac, start=var.posedit.pos.start.base, end=var.posedit.pos.end.base))
-                if r.status_code == 200:
-                    return True
-                else:
-                    return False
+    pass
+    #def __init__(self):
+    #    self.hp = hgvs.parser.Parser()
+    #    self.ivalid = IntrinsicValidation()
+    #
+    #def valid_ac(self, hgvs):
+    #    if self.ivalid.valid_parse(hgvs):
+    #        var = self.hp.parse_hgvs_variant(hgvs)
+    #        r = requests.get('http://uta.locusdev.net/api/v0/transcripts/fetch_seq?ac={ac}&start=0&end=10'
+    #                        .format(ac=var.ac))
+    #        if r.status_code == 200:
+    #            return True
+    #        else:
+    #            return False
+    #    else:
+    #        return False
+    #
+    #def valid_ref(self, hgvs):
+    #    if self.ivalid.valid_parse(hgvs):
+    #        var = self.hp.parse_hgvs_variant(hgvs)
+    #        if len(var.posedit.edit.ref) >= 1:
+    #            r = requests.get('http://uta.locusdev.net/api/v0/transcripts/fetch_seq?ac={ac}&start={start}&end={end}'
+    #                            .format(ac=var.ac, start=var.posedit.pos.start.base, end=var.posedit.pos.end.base))
+    #            if r.status_code == 200:
+    #                return True
+    #            else:
+    #                return False
 
 
 
