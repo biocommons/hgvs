@@ -3,14 +3,14 @@ import unittest
 import bdi.sources.uta0
 import hgvs.parser
 import hgvs.hgvsmapper
-import hgvs.hgvsvalidator
+import hgvs.validator
 
 class Test_HGVSIntrinsicValidator(unittest.TestCase):
     """Tests for internal validation"""
 
     def setUp(self):
         self.hp = hgvs.parser.Parser()
-        self.validate_int = hgvs.hgvsvalidator.IntrinsicValidation()
+        self.validate_int = hgvs.validator.IntrinsicValidation()
 
     def test_start_lte_end(self):
         """Test if start position is less <= end position"""
@@ -18,12 +18,13 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('NC_000007.13:g.36561662_36561663insT')))
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('NM_01234.5:c.76_77insT')))
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.123+54_123+55insT')))
+        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.123+54A>T')))
 
-        with self.assertRaisesRegexp(Exception, self.validate_int.RANGE_ERROR_MSG):
-            self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.123+56_123+55A>T'))
-
-        with self.assertRaisesRegexp(Exception, self.validate_int.RANGE_ERROR_MSG):
+        with self.assertRaisesRegexp(Exception, self.validate_int.BASE_RANGE_ERROR_MSG):
             self.validate_int.validate(self.hp.parse_hgvs_variant('NC_000007.13:g.36561664_36561663A>T'))
+
+        with self.assertRaisesRegexp(Exception, self.validate_int.OFFSET_RANGE_ERROR_MSG):
+            self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.123+56_123+55A>T'))
 
     def test_ins_length_is_one(self):
         """Test if insertion length = 1"""

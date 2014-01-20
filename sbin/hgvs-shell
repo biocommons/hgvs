@@ -6,7 +6,7 @@ import bdi.sources.uta0
 
 import hgvs.parser
 import hgvs.hgvsmapper
-import hgvs.hgvsvalidator
+import hgvs.validator
 
 
 ref = 'GRCh37.p10'
