@@ -40,6 +40,8 @@ class IntrinsicValidation(object):
             elif self.var.posedit.pos.start.base == self.var.posedit.pos.end.base:
                 if self.var.posedit.pos.start.offset > self.var.posedit.pos.end.offset:
                     raise Exception(self.OFFSET_RANGE_ERROR_MSG)
+            if self.var.posedit.pos.start.datum > self.var.posedit.pos.end.datum:
+                raise Exception(self.BASE_RANGE_ERROR_MSG)
         return True
     
     def _ins_length_is_one(self):
