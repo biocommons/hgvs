@@ -95,6 +95,11 @@ class TestAltSeqBuilder(unittest.TestCase):
         expected_sequence = "AAAATCAAAATGAAAGCGAAAGCGTTTCGCGCGTTTCGCGCGAAATAGGGG"
         self._run_comparison(hgvsc, expected_sequence)
 
+    def test_delete_gene(self):
+        hgvsc = "NM_999999.1:c.-3_*1del"
+        expected_sequence = ""
+        self._run_comparison(hgvsc, expected_sequence)
+
 
     # def test_2_substitutions(self):
     #     pass
