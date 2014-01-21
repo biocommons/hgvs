@@ -196,6 +196,16 @@ class TestHgvsCToP(unittest.TestCase):
         hgvsp_expected = "MOCK:p.(Met1?)"
         self._run_conversion(hgvsc, hgvsp_expected)
 
+    def test_delete_entire_gene(self):
+        hgvsc = "NM_999999.1:c.-3_*1del"
+        hgvsp_expected = "MOCK:p.0?"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
+    def test_multiple_stop_codons(self):
+        hgvsc = "NM_999992.1:c.4G>A"
+        hgvsp_expected = "MOCK:p.?"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
     # The following are unsupported
     #
     # def test_repeats(self):
