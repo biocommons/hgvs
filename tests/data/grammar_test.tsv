@@ -195,10 +195,14 @@ p_posedit_special	*|+|()|?0	False	list
 p_posedit	Ala3Phe|Ala3del|Ala3_Tyr6del|Gly10_Phe11insMetMet|Cys200_Tyr205delinsIleLeuGln	True	list
 p_posedit	A3F|A3_Y6del	True	list	Ala3Phe|Ala3_Tyr6del|Gly10_Phe11insMetMet
 p_posedit	G10_F11insMM|C200_Y205delinsILQ	True	list	Gly10_Phe11insMetMet|Cys200_Tyr205delinsIleLeuGln
+p_posedit	(Ala3Phe)|(Ala3del)|(Ala3_Tyr6del)|(Gly10_Phe11insMetMet)|(Cys200_Tyr205delinsIleLeuGln)	True	list
+p_posedit	(A3F)|(A3_Y6del)	True	list	(Ala3Phe)|(Ala3_Tyr6del)|(Gly10_Phe11insMetMet)
+p_posedit	(G10_F11insMM)|(C200_Y205delinsILQ)	True	list	(Gly10_Phe11insMetMet)|(Cys200_Tyr205delinsIleLeuGln)
 p_posedit	=|(=)|0?|0|?	True	list
-p_posedit	Phe|Ala3|Ala3_Phe4|Ala3=|Ala3_Phedel|Ala3Phe4insGly|Ala3_Phe4>Gly3_Ile4	False	list
+p_posedit	(?)|(Phe|Phe)|(Phe)Ala|Phe|Ala3|Ala3_Phe4|Ala3=|Ala3_Phedel|Ala3Phe4insGly|Ala3_Phe4>Gly3_Ile4	False	list
 r_posedit	5G>U|1_10A>C|(1_10)A>C|1_2delAAinsC	True	list	
-r_posedit	5G>T|(1_10A>C)	False	list
+r_posedit	(5G>U)|(1_10A>C)|((1_10)A>C)|(1_2delAAinsC)	True	list	
+r_posedit	5G>T|(1_10A>C|1_10A>C)	False	list
 c_posedit	76+3A>T|*1T>A|5G>T|1_10A>C|(1_10)A>C|1_2delAAinsC	True	list	
 c_posedit	1*T>A|(1_10A>C)	False	list	
 gmn_posedit	112_117delinsTG|10A>T|5dup|5dupT|7_8dup|7_8dupTG|(1_10)A>T	True	list	
@@ -246,4 +250,12 @@ n_variant	AC_01234.5:n.1A>T	True	one
 m_variant	AC_01234.5:m.1A>T	True	one	
 g_variant	AC_01234.5:g.1A>T	True	one	
 hgvs_variant	AC_01234.5:c.1A>T|AC_01234.5:r.1A>U|AC_01234.5:g.1A>T|AC_01234.5:p.Ala1Ser	True	list	
-
+############################################################
+## InVitae internal
+dna_copy	copy1|copy2|copy3	True	list
+dna_copy	copy|copy?	False	list
+dna_dupN	dup3|dup55	True	list
+dna_edit	copy1|copy2|copy3|dup3|dup55	True	list
+c_variant	NM_000352.3:c.2557_2694copy2	True	one     
+c_variant	NM_015702.2:c.307_324dup18	True	one     
+g_variant	NC_000014.8:g.88401076_88459508copy4	True	one

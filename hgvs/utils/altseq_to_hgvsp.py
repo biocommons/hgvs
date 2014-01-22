@@ -297,6 +297,8 @@ class AltSeqToHgvsp(object):
         else:
             edit = hgvs.edit.AARefAlt(ref=ref, alt=alt)
         posedit = hgvs.posedit.PosEdit(interval, edit)
+        if not(is_ambiguous and start == ''):
+            posedit.set_uncertain()
         var_p = hgvs.variant.SequenceVariant(acc, 'p', posedit)
 
         return var_p
