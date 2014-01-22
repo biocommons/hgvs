@@ -53,7 +53,7 @@ class AltSeqToHgvsp(object):
 
         variants = []
 
-        if not self._is_ambiguous:
+        if not self._is_ambiguous and len(self._alt_seq) > 0:
 
             do_delins = True
             if self._ref_seq == self._alt_seq:
@@ -125,6 +125,9 @@ class AltSeqToHgvsp(object):
         if self._is_ambiguous:
             var_ps = [self._create_variant('', '', '', '', acc=self._protein_accession,
                                            is_ambiguous=self._is_ambiguous)]
+        elif len(self._alt_seq) == 0:
+            var_ps = [self._create_variant('', '', '', '', acc=self._protein_accession,
+                                           is_ambiguous=self._is_ambiguous, is_no_protein=True)]
         elif variants:
             var_ps = [self._convert_to_sequence_variants(x, self._protein_accession) for x in variants]
         else:    # ref = alt - "silent" hgvs change
@@ -278,11 +281,13 @@ class AltSeqToHgvsp(object):
         return is_dup, variant_start
 
     def _create_variant(self, start, end, ref, alt, fsext_len=None, is_dup=False, acc=None,
-                        is_ambiguous=False, is_sub=False, is_ext=False):
+                        is_ambiguous=False, is_sub=False, is_ext=False, is_no_protein=False):
         """Creates a SequenceVariant object"""
         interval = hgvs.location.Interval(start=start, end=end)
         # Note - order matters
-        if is_ambiguous:
+        if is_no_protein:
+            edit = '0'
+        elif is_ambiguous:
             edit = '?'
         elif is_sub:
             edit = hgvs.edit.AASub(ref=ref, alt=alt)

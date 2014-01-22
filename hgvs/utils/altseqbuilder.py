@@ -29,25 +29,32 @@ class AltTranscriptData(recordtype.recordtype('AltTranscriptData', [
         :type cds_start: int
         :param cds_stop: coding sequence stop (1-based)
         :type cds_stop: int
+        :param protein_accession: protein accession, e.g. NP_999999.2
+        :type protein_accession: str
         :param is_frameshift: is this variant a frameshift
         :type is_frameshift: bool
         :param variant_start_aa: AA start index (1-based) for this variant
         :type variant_start_aa: int
-        :param accession: protein accession, e.g. NP_999999.2
-        :type accession: str
+        :param is_substitution: flag if this is a substitution AA variant
+        :type is_substitution: bool
+        :param is_ambiguous: flag if variant is "?"
+        :type is_ambiguous: bool
         :return variant sequence data
         :rtype recordtype
         """
-        if isinstance(seq, basestring):
-            seq = list(seq)
-        seq_cds = seq[cds_start - 1:]
-        if len(seq_cds) % 3 != 0:   # padding so biopython won't complain during the conversion
-            seq_cds.extend(['N']*((3-len(seq_cds) % 3) % 3))
-        seq_cds = ''.join(seq_cds)
-        seq_aa = str(Seq(seq_cds).translate())
-        stop_pos = seq_aa.find("*")
-        if stop_pos != -1:
-            seq_aa = seq_aa[:stop_pos + 1]
+        if len(seq) > 0:
+            if isinstance(seq, basestring):
+                seq = list(seq)
+            seq_cds = seq[cds_start - 1:]
+            if len(seq_cds) % 3 != 0:   # padding so biopython won't complain during the conversion
+                seq_cds.extend(['N']*((3-len(seq_cds) % 3) % 3))
+            seq_cds = ''.join(seq_cds)
+            seq_aa = str(Seq(seq_cds).translate())
+            stop_pos = seq_aa.find("*")
+            if stop_pos != -1:
+                seq_aa = seq_aa[:stop_pos + 1]
+        else:
+            seq_aa = []
 
         alt_data = AltTranscriptData(''.join(seq), seq_aa, cds_start, cds_stop, accession,
                                      is_frameshift=is_frameshift, variant_start_aa=variant_start_aa,
@@ -62,6 +69,7 @@ class AltSeqBuilder(object):
     INTRON = "intron"
     F_UTR = "five utr"
     T_UTR = "three utr"
+    WHOLE_GENE = "whole gene"
 
     def __init__(self, var_c, transcript_data):
         """Constructor
@@ -77,6 +85,9 @@ class AltSeqBuilder(object):
         if DBG:
             print transcript_data.transcript_sequence
 
+        # check reference for special characteristics
+        self._ref_has_multiple_stops = self._transcript_data.aa_sequence.count("*") > 1
+
     def build_altseq(self):
         """given a variant and a sequence, incorporate the variant and return the new sequence
 
@@ -88,11 +99,13 @@ class AltSeqBuilder(object):
         :rtype list of dictionaries
         """
         NOT_CDS = "not_cds_variant"
+        WHOLE_GENE_DELETED = "whole_gene_deleted"
 
         type_map = {hgvs.edit.NARefAlt: self._incorporate_delins,
                     hgvs.edit.Dup: self._incorporate_dup,
                     hgvs.edit.Repeat: self._incorporate_repeat,
-                    NOT_CDS: self._create_alt_eq_ref_noncds
+                    NOT_CDS: self._create_alt_equals_ref_noncds,
+                    WHOLE_GENE_DELETED: self._create_no_protein
                     }
 
         # TODO - loop over each allele rather than assume only 1 variant; return a list for now
@@ -109,6 +122,11 @@ class AltSeqBuilder(object):
         elif variant_location == self.F_UTR:
             # TODO - handle case where variant introduces a Met (new start)
             edit_type = NOT_CDS
+        elif variant_location == self.WHOLE_GENE:
+            if self._var_c.posedit.edit.ref is not None and self._var_c.posedit.edit.alt is None:
+                edit_type = WHOLE_GENE_DELETED
+            else:
+                edit_type = NOT_CDS
         else:   # should never get here
             raise ValueError("value_location = {}".format(variant_location))
 
@@ -128,13 +146,15 @@ class AltSeqBuilder(object):
     def _get_variant_region(self):
         """Categorize variant by location in transcript (5'utr, exon, intron, 3'utr)
 
-        :return "exon", "intron", "five_utr", "three_utr"
+        :return "exon", "intron", "five_utr", "three_utr", "whole_gene"
         :rtype str
         """
         if self._var_c.posedit.pos.start.datum == CDS_END and self._var_c.posedit.pos.end.datum == CDS_END:
             result = self.T_UTR
         elif self._var_c.posedit.pos.start.base < 0 and self._var_c.posedit.pos.end.base < 0:
             result = self.F_UTR
+        elif self._var_c.posedit.pos.start.base < 0 and self._var_c.posedit.pos.end.datum == CDS_END:
+            result = self.WHOLE_GENE
         elif self._var_c.posedit.pos.start.offset != 0 or self._var_c.posedit.pos.end.offset != 0:
             # leave out anything intronic for now
             result = self.INTRON
@@ -190,7 +210,8 @@ class AltSeqBuilder(object):
         alt_data = AltTranscriptData.create_for_variant_inserter(seq, cds_start, cds_stop,
                                                                  is_frameshift, variant_start_aa,
                                                                  self._transcript_data.protein_accession,
-                                                                 is_substitution=is_substitution)
+                                                                 is_substitution=is_substitution,
+                                                                 is_ambiguous=self._ref_has_multiple_stops)
         return alt_data
 
     def _incorporate_dup(self):
@@ -205,7 +226,8 @@ class AltSeqBuilder(object):
 
         alt_data = AltTranscriptData.create_for_variant_inserter(seq, cds_start, cds_stop,
                                                                  is_frameshift, variant_start_aa,
-                                                                 self._transcript_data.protein_accession)
+                                                                 self._transcript_data.protein_accession,
+                                                                 is_ambiguous=self._ref_has_multiple_stops)
         return alt_data
 
     def _incorporate_repeat(self):
@@ -250,7 +272,7 @@ class AltSeqBuilder(object):
             print "len seq:{} cds_start:{} cds_stop:{} start:{} end:{}".format(len(seq), cds_start, cds_stop, start, end)
         return seq, cds_start, cds_stop, start, end
 
-    def _create_alt_eq_ref_noncds(self):
+    def _create_alt_equals_ref_noncds(self):
         """Create an alt seq that matches the reference (for non-cds variants)"""
         alt_data = AltTranscriptData.create_for_variant_inserter(list(self._transcript_data.transcript_sequence),
                                                                  self._transcript_data.cds_start,
@@ -259,6 +281,17 @@ class AltSeqBuilder(object):
                                                                  None,
                                                                  self._transcript_data.protein_accession,
                                                                  is_ambiguous=True)
+        return alt_data
+
+    def _create_no_protein(self):
+        """Create a no-protein result"""
+        alt_data = AltTranscriptData.create_for_variant_inserter([],
+                                                                 None,
+                                                                 None,
+                                                                 False,
+                                                                 None,
+                                                                 self._transcript_data.protein_accession,
+                                                                 is_ambiguous=False)
         return alt_data
 
     def _get_frameshift_start(self, variant_data):
