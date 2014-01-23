@@ -43,14 +43,18 @@ build_sphinx: develop
 upload:
 	python setup.py bdist_egg sdist upload
 
-#=> upload to pypi and invitae (internal) pypi
+#=> upload_iv: upload to invitae (internal) pypi
 # This requires an invitae config stanza in ~/.pypirc
-upload2:
+upload_iv:
 	python setup.py bdist_egg sdist upload upload -r invitae
+
+#=> upload_all: upload, upload_iv, and upload_docs
+upload_all: upload upload_iv upload_docs
 
 #=> develop, build_sphinx, sdist, upload_sphinx
 bdist bdist_egg build build_sphinx develop install sdist upload_sphinx upload_docs: %:
 	python setup.py $*
+
 
 
 ############################################################################
