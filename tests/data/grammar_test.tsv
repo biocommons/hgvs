@@ -2,6 +2,17 @@ Func	Test	Valid	InType	Expected
 Not_Yet_Implemented	NOT YET IMPLEMENTED	True	one	
 Not_Yet_Implemented	foobar	False	one	
 ############################################################
+## Accession
+accn	NM_123456.7|NC_999999.9|NP_023456.7	True	list	
+accn	XR_123456.7|XM_999999.9|ZZ_12345678890.0	True	list	
+accn	NM_123456|NC_999999	True	list	
+accn	NM_X3|NC_333	True	list	
+accn	NM|NC	True	list	
+accn	N|M|3	False	list	
+accn	NM_|3M|33_12345678.9|NM_12345.|NM_*901.3	False	list	
+accn	NM_123456.C|NC_999999.T	False	list	
+accn	NM_123456.7:c.G>A|NC_999999.9:g.del|NP_1234567:p.Ala10Gly	False	list	
+############################################################
 ## Basic types
 pm	-+	True	string
 pm	*	False	one	
@@ -33,6 +44,10 @@ aa1	Za1	False	string
 aa1	JUZBOX	False	string	
 aa13	Ala|A	True	list
 aa13	Zaa|Z	False	list	
+aat1	A|*	True	list	
+aat1	J|a	False	list	
+aat3	Ala|Ter	True	list	
+aat3	Jer|Xer|AlaG|AlaTer|Ala*	False	list	
 aat13	Trp|W|Ter|X|*	True	list	
 aat13	Zaa|Z	False	list	
 rna	ACGUacgu	True	string	
@@ -60,6 +75,8 @@ fs	fs2|fs?	False	list
 ext	ext|ext*|ext*10|ext*?|extTer|extTer8|extTer?|extX|extX10|extX?	True	list	(None, None)|('*', None)|('*', 10)|('*', '?')|('Ter', None)|('Ter', 8)|('Ter', '?')|('X', None)|('X', 10)|('X', '?')
 ext	extVal-5|ext-12	True	list	('Val', -5)|(None, -12)
 ext	extGlyTrp|extTerGly?	False	list	
+gmn_type	gnm	True	string	
+gmn_type	cpx	False	string
 aat3_seq		False	list	
 aat3_seq	Ter|GlyTer|IleGlyTer	True	list	
 aat3_seq	TerGly|XxxIleGly	False	list	
@@ -103,7 +120,12 @@ def_g_pos	A|2?|*1|-2	False	list
 p_pos	Met1	True	one	
 c_pos	11+1	True	one	
 r_pos	9-3	True	one	
+g_pos	2	True	one	
+m_pos	2	True	one	
+n_pos	2	True	one	
 gmn_pos	2	True	one	
+gmn_pos	-1|0	False	list	
+gmn_pos	[2]|(2_3)	False	list	
 def_p_interval	Met1_Gly10|Met1	True	list	
 def_p_interval	Met1-Gly10	False	one	
 def_c_interval	1_10|1|1+2_10-2	True	list	
