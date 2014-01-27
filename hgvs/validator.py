@@ -5,9 +5,15 @@ hgvs.hgvsvalidator
 import hgvs.parser
 
 
-class Validate(object):
+def validate(var):
     """Validates a parsed HGVS variant using intrinsic and extrinsic methods"""
-    pass
+    assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
+    iv = IntrinsicValidation()
+    ev = ExtrinsicValidation()
+    if iv.validate(var) and ev.validate(var):
+        return True
+    else:
+        return False
 
 
 class IntrinsicValidation(object):
@@ -73,7 +79,15 @@ class ExtrinsicValidation():
     """
     Attempts to determine if the HGVS name validates against external data sources
     """
-    pass
+
+    def __init__(self):
+        self.var = None
+
+    def validate(self, var):
+        assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
+        self.var = var
+        return True
+
     #def __init__(self):
     #    self.hp = hgvs.parser.Parser()
     #    self.ivalid = IntrinsicValidation()
