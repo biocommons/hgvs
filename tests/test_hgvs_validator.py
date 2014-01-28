@@ -53,20 +53,19 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
         with self.assertRaisesRegexp(Exception, self.validate_int.DEL_ERROR_MSG):
             self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.76_78delACTACAT'))
 
-#class Test_HGVSExtrinsicValidator(unittest.TestCase):
-#    """Tests for external validation"""
-#
-#    def setUp(self):
-#        self.bdi = bdi.sources.uta0.connect()
-#        self.hm = hgvs.hgvsmapper.HGVSMapper(self.bdi, cache_transcripts=True)
-#        self.hp = hgvs.parser.Parser()
-#        self.e_valid = hgvs.hgvsvalidator.ExtrinsicValidation()
-#
-#    def test_valid_ac(self):
-#        """Test if accession is present in REST transcript sequence database"""
-#        self.assertTrue(self.e_valid.valid_ac('NM_001637.3:r.1582G>A'))
-#
-#        self.assertTrue(self.e_valid.valid_ac('NM_01234.5:r.1582G>A'))
+class Test_HGVSExtrinsicValidator(unittest.TestCase):
+    """Tests for external validation"""
+
+    def setUp(self):
+        self.hp = hgvs.parser.Parser()
+        self.validate_ext = hgvs.validator.ExtrinsicValidation()
+
+    def test_valid_ac(self):
+        """Test if accession is present in transcript sequence database"""
+        self.assertTrue(self.validate_ext.validate(self.hp.parse_hgvs_variant('NM_001637.3:r.1582G>A')))
+
+        with self.assertRaisesRegexp(Exception, self.validate_ext.AC_ERROR_MSG):
+            self.validate_ext.validate(self.hp.parse_hgvs_variant('NM_001637.13:r.1582G>A'))
 
 
 
