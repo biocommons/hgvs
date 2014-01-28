@@ -3,6 +3,7 @@ hgvs.hgvsvalidator
 """
 
 import hgvs.parser
+import bdi.sources.uta0
 
 
 def validate(var):
@@ -79,14 +80,27 @@ class ExtrinsicValidation():
     """
     Attempts to determine if the HGVS name validates against external data sources
     """
+    AC_ERROR_MSG = 'Accession is not present in BDI database'
 
     def __init__(self):
         self.var = None
+        self.bdi = bdi.sources.uta0.connect()
 
     def validate(self, var):
         assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
         self.var = var
+        self._ac_is_valid()
         return True
+
+    def _ac_is_valid(self):
+        ac = self.bdi.get_tx_info(self.var.ac)
+        if ac is None:
+            raise Exception(self.AC_ERROR_MSG)
+        elif ac['ac'] != self.var.ac:
+            raise Exception(self.AC_ERROR_MSG)
+        else:
+            return True
+
 
     #def __init__(self):
     #    self.hp = hgvs.parser.Parser()
