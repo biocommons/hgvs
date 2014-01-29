@@ -128,7 +128,7 @@ class HGVSMapper(object):
         """
 
         if not (var_r.type == 'r'):
-            raise hgvs.exceptions.InvalidHGVSVariantError('Expected a cDNA (c.); got ' + str(var_r))
+            raise hgvs.exceptions.InvalidHGVSVariantError('Expected RNA (r.); got ' + str(var_r))
 
         tm = self._fetch_TranscriptMapper(ac=var_r.ac, ref=ref)
         pos_c = tm.hgvsr_to_hgvsc(var_r.posedit.pos)
