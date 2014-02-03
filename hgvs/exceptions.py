@@ -22,6 +22,9 @@ class InvalidIntervalError(HGVSError):
 class InvalidHGVSVariantError(HGVSError):
     pass
 
+class HGVSValidationError(HGVSError):
+    pass
+
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/invitae/hgvs)
 ## 
