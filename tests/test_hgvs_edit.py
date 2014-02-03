@@ -16,7 +16,7 @@ class Test_Edit(unittest.TestCase):
         self.assertEqual( str(hgvs.edit.NARefAlt('AA','T' ))  , 'delAAinsT'     )
         self.assertEqual( str(hgvs.edit.NARefAlt('A','TT' ))  , 'delAinsTT'     )
         # edit types
-        self.assertEqual( str(hgvs.edit.NARefAlt('A','A'  ).type)  , 'None'     )
+        self.assertEqual( str(hgvs.edit.NARefAlt('A','A'  ).type)  , 'identity' )
         self.assertEqual( str(hgvs.edit.NARefAlt('A','T'  ).type)  , 'sub'      )
         self.assertEqual( str(hgvs.edit.NARefAlt('AA',None).type)  , 'del'      )
         self.assertEqual( str(hgvs.edit.NARefAlt(None,'TT').type)  , 'ins'      )
@@ -32,7 +32,7 @@ class Test_Edit(unittest.TestCase):
         self.assertEqual( str(hgvs.edit.AARefAlt('AA','T' ))  , 'delinsThr'     )
         self.assertEqual( str(hgvs.edit.AARefAlt('A','TT' ))  , 'delinsThrThr'  )
         # edit types
-        self.assertEqual( str(hgvs.edit.AARefAlt('A','A'  ).type)  , 'None'     )
+        self.assertEqual( str(hgvs.edit.AARefAlt('A','A'  ).type)  , 'identity' )
         self.assertEqual( str(hgvs.edit.AARefAlt('A','T'  ).type)  , 'sub'      )
         self.assertEqual( str(hgvs.edit.AARefAlt('AA',None).type)  , 'del'      )
         self.assertEqual( str(hgvs.edit.AARefAlt(None,'TT').type)  , 'ins'      )
