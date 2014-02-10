@@ -162,14 +162,14 @@ class CIGARElement(object):
     @property
     def ref_len(self):
         """returns number of nt/aa consumed in reference sequence for this edit"""
-        return self.len if self.op in 'DMNX' else 0
+        return self.len if self.op in '=INX' else 0
     @property
     def tgt_len(self):
         """returns number of nt/aa consumed in target sequence for this edit"""
-        return self.len if self.op in 'IMX'  else 0
+        return self.len if self.op in '=DX'  else 0
 
 def cigar_to_intervalpairs(cigar):
-    cigar_elem_re = re.compile('(?P<len>\d+)(?P<op>[DIMNX])')
+    cigar_elem_re = re.compile('(?P<len>\d+)(?P<op>[=DINX])')
     ces = [ CIGARElement(op=md['op'],len=int(md['len']))
             for md in [ m.groupdict() for m in cigar_elem_re.finditer(cigar) ] ]
     ips = [None] * len(ces)
