@@ -90,10 +90,15 @@ class TranscriptMapper(object):
         return hgvs.location.Interval(
             start=hgvs.location.SimplePosition(ci_to_hgvs_coord(gs, ge)[0], uncertain=r_interval.start.uncertain),
             end  =hgvs.location.SimplePosition(ci_to_hgvs_coord(gs, ge)[1], uncertain=r_interval.end.uncertain),
-            uncertain=r_interval.uncertain
-            )
+            uncertain=r_interval.uncertain)
 
     def hgvsr_to_hgvsc(self, r_interval):
+        if r_interval.start.base <= 0:
+            raise HGVSError("Transcript out of bounds.  Start position ({rs}) is <= 0.".
+                            format(rs=r_interval.start.base))
+        if r_interval.end.base > self.im.tgt_len:
+            raise HGVSError("Transcript out of bounds. End position ({re}) is > than transcript length ({len}).".
+                            format(re=r_interval.end.base, len=self.im.tgt_len))
         # start
         if r_interval.start.base <= self.cds_start_i:
             cs = r_interval.start.base - (self.cds_start_i + 1)
@@ -118,8 +123,7 @@ class TranscriptMapper(object):
         c_interval = hgvs.location.Interval(
             start=hgvs.location.BaseOffsetPosition(base=cs, offset=r_interval.start.offset, datum=cs_datum),
             end  =hgvs.location.BaseOffsetPosition(base=ce, offset=r_interval.end.offset,   datum=ce_datum),
-            uncertain=r_interval.uncertain
-            )
+            uncertain=r_interval.uncertain)
         return c_interval
 
     def hgvsc_to_hgvsr(self, c_interval):
@@ -138,11 +142,16 @@ class TranscriptMapper(object):
         elif c_interval.end.datum == hgvs.location.CDS_END:
             re = c_interval.end.base + self.cds_end_i
 
+        if rs <= 0:
+            raise HGVSError("Transcript out of bounds.  Start position ({rs}) is <= 0.".format(rs=rs))
+        if re > self.im.tgt_len:
+            raise HGVSError("Transcript out of bounds. End position ({re}) is > than transcript length ({len}).".
+                            format(re=re, len=self.im.tgt_len))
+
         r_interval = hgvs.location.Interval(
             start=hgvs.location.BaseOffsetPosition(base=rs, offset=c_interval.start.offset, datum=hgvs.location.SEQ_START),
             end  =hgvs.location.BaseOffsetPosition(base=re, offset=c_interval.end.offset, datum=hgvs.location.SEQ_START),
-            uncertain=c_interval.uncertain
-            )
+            uncertain=c_interval.uncertain)
         return r_interval
 
     def hgvsg_to_hgvsc(self, g_interval):
