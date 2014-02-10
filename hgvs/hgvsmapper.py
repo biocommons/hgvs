@@ -28,9 +28,9 @@ class HGVSMapper(object):
         self.cache_transcripts = cache_transcripts
         self.__tm_cache = {}
 
-    def hgvsg_to_hgvsc(self,var_g, tx_ac, alt_aln_method='splign'):
-        """Given a genomic (g.) HGVS variant, return a transcript (c.) variant on the specified transcript.
-        hgvs must be an HGVS-formatted variant or variant position.
+    def hgvsg_to_hgvsc(self, var_g, tx_ac, alt_aln_method='splign'):
+        """Given a genomic (g.) parsed HGVS variant, return a transcript (c.) variant on the specified transcript using
+        the specified alignment method (default is 'splign' from NCBI).
         """
 
         if not (var_g.type == 'g'):
@@ -45,70 +45,68 @@ class HGVSMapper(object):
                                              posedit=hgvs.posedit.PosEdit( pos_c, edit_c ) )
         return var_c
 
-    def hgvsg_to_hgvsr(self,var_g, ac, ref='GRCh37.p10'):
-        """Given a genomic (g.) HGVS variant, return a transcript (r.) variant on the specified transcript.
-        hgvs must be an HGVS-formatted variant or variant position.
+    def hgvsg_to_hgvsr(self, var_g, tx_ac, alt_aln_method='splign'):
+        """Given a genomic (g.) parsed HGVS variant, return a transcript (r.) variant on the specified transcript using
+        the specified alignment method (default is 'splign' from NCBI).
         """
 
         if not (var_g.type == 'g'):
             raise hgvs.exceptions.InvalidHGVSVariantError('Expected a genomic (g.); got '+ str(var_g))
 
-        tm = self._fetch_TranscriptMapper(ac=ac,ref=ref)
+        tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
 
         pos_r = tm.hgvsg_to_hgvsr( var_g.posedit.pos )
         edit_r = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
-        var_r = hgvs.variant.SequenceVariant(ac=ac,
+        var_r = hgvs.variant.SequenceVariant(ac=tx_ac,
                                              type='r',
                                              posedit=hgvs.posedit.PosEdit( pos_r, edit_r ) )
         return var_r
 
-    def hgvsr_to_hgvsg(self,var_r, ref='GRCh37.p10'):
-        """Given an RNA (r.) HGVS variant, return a genomic (g.) variant from the inferred transcript.
-        hgvs must be an HGVS-formatted variant or variant position.
+    def hgvsr_to_hgvsg(self, var_r, alt_ac, alt_aln_method='splign'):
+        """Given an RNA (r.) parsed HGVS variant, return a genomic (g.) variant on the specified transcript using
+        the specified alignment method (default is 'splign' from NCBI).
         """
 
         if not (var_r.type == 'r'):
             raise hgvs.exceptions.InvalidHGVSVariantError('Expected a RNA (r.); got '+ str(var_r))
 
-        tm = self._fetch_TranscriptMapper(ac=var_r.ac,ref=ref)
+        tm = self._fetch_TranscriptMapper(tx_ac=var_r.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
 
         pos_g = tm.hgvsr_to_hgvsg( var_r.posedit.pos )
         edit_g = self._convert_edit_check_strand(tm.strand, var_r.posedit.edit)
 
-        # get NC accession for g.
-        var_g = hgvs.variant.SequenceVariant(ac=chr_to_nc(tm.tx_info['chr']),
+        var_g = hgvs.variant.SequenceVariant(ac=alt_ac,
                                              type='g',
                                              posedit=hgvs.posedit.PosEdit( pos_g, edit_g ) )
         return var_g
     
-    def hgvsc_to_hgvsg(self, var_c, ref='GRCh37.p10'):
-        """Given a cDNA (c.) HGVS variant and an inferred transcript, return a genomic (g.) variant.
-        hgvs must be an HGVS-formatted variant or variant position.
+    def hgvsc_to_hgvsg(self, var_c, alt_ac, alt_aln_method='splign'):
+        """Given a cDNA (c.) parsed HGVS variant, return a genomic (g.) variant on the specified transcript using
+        the specified alignment method (default is 'splign' from NCBI).
         """
 
         if not (var_c.type == 'c'):
             raise hgvs.exceptions.InvalidHGVSVariantError('Expected a cDNA (c.); got ' + str(var_c))
 
-        tm = self._fetch_TranscriptMapper(ac=var_c.ac, ref=ref)
+        tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
 
         pos_g = tm.hgvsc_to_hgvsg(var_c.posedit.pos)
         edit_g = self._convert_edit_check_strand(tm.strand, var_c.posedit.edit)
 
-        # get NC accession for g.
-        var_g = hgvs.variant.SequenceVariant(ac=chr_to_nc(tm.tx_info['chr']),
+        var_g = hgvs.variant.SequenceVariant(ac=alt_ac,
                                              type='g',
                                              posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
         return var_g
 
-    def hgvsc_to_hgvsr(self, var_c, ref='GRCh37.p10'):
-        """Given a cDNA (c.) HGVS variant and an inferred transcript, return an RNA (r.) variant.
-        hgvs must be an HGVS-formatted variant or variant position
+    def hgvsc_to_hgvsr(self, var_c, alt_ac, alt_aln_method='transcript'):
+        """Given a cDNA (c.) parsed HGVS variant, return a RNA (r.) variant on the specified transcript using
+        the specified alignment method (default is 'transcript' indicating a self alignment).
         """
 
         if not (var_c.type == 'c'):
             raise hgvs.exceptions.InvalidHGVSVariantError('Expected a cDNA (c.); got ' + str(var_c))
 
-        tm = self._fetch_TranscriptMapper(ac=var_c.ac, ref=ref)
+        tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         pos_r = tm.hgvsc_to_hgvsr(var_c.posedit.pos)
 
         # not necessary to check strand
@@ -117,20 +115,20 @@ class HGVSMapper(object):
         else:
             raise NotImplemented('Only NARefAlt/Dup types are currently implemented')
 
-        var_r = hgvs.variant.SequenceVariant(ac=var_c.ac,
+        var_r = hgvs.variant.SequenceVariant(ac=alt_ac,
                                              type='r',
                                              posedit=hgvs.posedit.PosEdit( pos_r, edit_r ) )
         return var_r
 
-    def hgvsr_to_hgvsc(self, var_r, ref='CRCh37.p10'):
-        """Given a RNA (r.) HGVS variant and an inferred transcript, return an cDNA 
-        hgvs must be an HGVS-formatted variant or variant position
+    def hgvsr_to_hgvsc(self, var_r, alt_ac, alt_aln_method='transcript'):
+        """Given an RNA (r.) parsed HGVS variant, return a cDNA (c.) variant on the specified transcript using
+        the specified alignment method (default is 'transcript' indicating a self alignment).
         """
 
         if not (var_r.type == 'r'):
             raise hgvs.exceptions.InvalidHGVSVariantError('Expected RNA (r.); got ' + str(var_r))
 
-        tm = self._fetch_TranscriptMapper(ac=var_r.ac, ref=ref)
+        tm = self._fetch_TranscriptMapper(tx_ac=var_r.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         pos_c = tm.hgvsr_to_hgvsc(var_r.posedit.pos)
 
         # not necessary to check strand
@@ -139,19 +137,19 @@ class HGVSMapper(object):
         else:
             raise NotImplemented('Only NARefAlt types are currently implemented')
 
-        var_c = hgvs.variant.SequenceVariant(ac=var_r.ac,
+        var_c = hgvs.variant.SequenceVariant(ac=alt_ac,
                                              type='c',
                                              posedit=hgvs.posedit.PosEdit( pos_c, edit_c ) )
         return var_c
 
-    def hgvsc_to_hgvsp(self, var_c, ac_p=None):
+    def hgvsc_to_hgvsp(self, var_c, alt_ac=None, alt_aln_method='transcript'):
         """
         Converts a c. SequenceVariant to a p. SequenceVariant on the specified protein accession
 
         :param var_c: hgvsc tag
         :type var_c: SequenceVariant
-        :param ac_p: protein accession (default None - will look up and pull 1st match)
-        :type ac_p: str
+        :param alt_ac: protein accession
+        :type alt_ac: str
         :rtype: SequenceVariant
 
         """
@@ -161,13 +159,13 @@ class HGVSMapper(object):
                                                        'cds_start', 'cds_stop', 'protein_accession'])):
 
             @classmethod
-            def setup_transcript_data(cls, ac, ac_p, bdi, ref='GRCh37.p10'):
+            def setup_transcript_data(cls, bdi, tx_ac, alt_ac, alt_aln_method):
                 """helper for generating RefTranscriptData from for hgvsc_to_hgvsp"""
-                tx_info = bdi.get_tx_info(ac)
-                tx_seq = bdi.get_tx_seq(ac)
+                tx_info = bdi.get_tx_info(tx_ac, tx_ac, alt_aln_method)  # want identity returned
+                tx_seq = bdi.get_tx_seq(tx_ac)
 
                 if tx_info is None or tx_seq is None:
-                    raise hgvs.exceptions.HGVSError("Missing transcript data for accession: {}".format(ac))
+                    raise hgvs.exceptions.HGVSError("Missing transcript data for accession: {}".format(tx_ac))
 
                 # use 1-based hgvs coords
                 cds_start = tx_info['cds_start_i'] + 1
@@ -180,20 +178,20 @@ class HGVSMapper(object):
 
                 tx_seq_cds = Seq(tx_seq_to_translate)
                 protein_seq = str(tx_seq_cds.translate())
-                
-                if ac_p is None:
+
+                if alt_ac is None:
                     # get_acs... will always return at least the MD5_ accession
-                    ac_p = bdi.get_acs_for_protein_seq(protein_seq)[0]
+                    alt_ac = bdi.get_acs_for_protein_seq(protein_seq)[0]
 
                 transcript_data = RefTranscriptData(tx_seq, protein_seq, cds_start,
-                                                    cds_stop, ac_p)
+                                                    cds_stop, alt_ac)
 
                 return transcript_data
 
         if not (var_c.type == 'c'):
             raise hgvs.exceptions.InvalidHGVSVariantError('Expected a cDNA (c.); got ' + str(var_c))
 
-        reference_data = RefTranscriptData.setup_transcript_data(var_c.ac, ac_p, self.bdi)
+        reference_data = RefTranscriptData.setup_transcript_data(self.bdi, var_c.ac, alt_ac, alt_aln_method)
         builder = altseqbuilder.AltSeqBuilder(var_c, reference_data)
 
         # TODO - handle case where you get 2+ alt sequences back; currently get list of 1 element
@@ -218,13 +216,14 @@ class HGVSMapper(object):
         Get a new TranscriptMapper for the given transcript accession (ac),
         possibly caching the result.
         """
+        key = '_'.join([tx_ac, alt_ac, alt_aln_method])
         try:
-            tm = self.__tm_cache[tx_ac]
+            tm = self.__tm_cache[key]
         except KeyError:
             tm = hgvs.transcriptmapper.TranscriptMapper(self.bdi, tx_ac=tx_ac, alt_ac=alt_ac,
                                                         alt_aln_method=alt_aln_method)
             if self.cache_transcripts:
-                self.__tm_cache[tx_ac] = tm
+                self.__tm_cache[key] = tm
         return tm
 
     @staticmethod
