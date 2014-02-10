@@ -1,0 +1,9 @@
+# https://caremad.io/blog/setup-vs-requirement/
+
+bdi
+biopython
+parsley
+recordtype
+sphinx_rtd_theme
+sphinxcontrib-fulltoc
+sphinxcontrib-httpdomain

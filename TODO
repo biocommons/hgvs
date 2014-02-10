@@ -1,0 +1,13 @@
+-*-outline-*-
+
+* IMMEDIATE
+
+** split gmn_ in grammar for parity
+- at least make all gmn rules distinct, to match c,r,p
+
+
+* LATER
+
+** hgvs formatter
+use in lieu of __str__ currently
+support options, incl. aa1 or aa3
