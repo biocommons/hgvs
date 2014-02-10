@@ -11,7 +11,7 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
 
     def setUp(self):
         self.hp = hgvs.parser.Parser()
-        self.validate_int = hgvs.validator.IntrinsicValidation()
+        self.validate_int = hgvs.validator.IntrinsicValidator()
 
     def test_start_lte_end(self):
         """Test if start position is less <= end position"""
@@ -68,7 +68,7 @@ class Test_HGVSExtrinsicValidator(unittest.TestCase):
 
     def setUp(self):
         self.hp = hgvs.parser.Parser()
-        self.validate_ext = hgvs.validator.ExtrinsicValidation()
+        self.validate_ext = hgvs.validator.ExtrinsicValidator()
 
     def test_valid_ac(self):
         """Test if accession is present in transcript sequence database"""
