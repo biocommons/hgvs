@@ -1,10 +1,16 @@
 import unittest
 
+from bdi.multifastadb import MultiFastaDB
+from bdi.sources import uta0
+
 from hgvs.exceptions import HGVSValidationError
-import bdi.sources.uta0
 import hgvs.parser
 import hgvs.hgvsmapper
 import hgvs.validator
+
+db_dir = ['tests/data/sample_data']
+bdi = uta0.connect()
+mfdb = MultiFastaDB(db_dir, use_meta_index=True)
 
 
 class Test_HGVSValidator(unittest.TestCase):
@@ -12,7 +18,7 @@ class Test_HGVSValidator(unittest.TestCase):
 
     def setUp(self):
         self.hp = hgvs.parser.Parser()
-        self.vr = hgvs.validator.Validator()
+        self.vr = hgvs.validator.Validator(bdi,mfdb)
 
     def test_wrapper(self):
         """Test that validator wrapper is working"""
@@ -81,7 +87,7 @@ class Test_HGVSExtrinsicValidator(unittest.TestCase):
 
     def setUp(self):
         self.hp = hgvs.parser.Parser()
-        self.validate_ext = hgvs.validator.ExtrinsicValidator()
+        self.validate_ext = hgvs.validator.ExtrinsicValidator(bdi,mfdb)
 
     def test_valid_ac(self):
         """Test if accession is present in transcript sequence database"""

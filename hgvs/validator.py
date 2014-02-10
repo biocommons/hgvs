@@ -2,10 +2,8 @@
 hgvs.hgvsvalidator
 """
 from hgvs.exceptions import HGVSValidationError
-from bdi.sources import uta0
-from bdi.multifastadb import MultiFastaDB
 
-import hgvsmapper
+import hgvs.hgvsmapper
 import hgvs.parser
 
 
@@ -25,7 +23,7 @@ def validate(var):
 
 class Validator(object):
     """invoke intrinsic and extrinsic validation"""
-    def __init__(self, bdi=None, mfdb=None):
+    def __init__(self, bdi, mfdb):
         self.ivr = IntrinsicValidator()
         self.evr = ExtrinsicValidator(bdi,mfdb)
 
@@ -94,19 +92,10 @@ class ExtrinsicValidator():
     Attempts to determine if the HGVS name validates against external data sources
     """
 
-    def __init__(self, bdi=None, mfdb=None):
-        # optional args for bdi and mfdb (users may already have them)
-        if bdi is None:
-            self.bdi = uta0.connect()
-        else:
-            self.bdi = bdi
-        if mfdb is None:
-            # specify path to data files
-            db_dir = ['tests/data/sample_data']  # local sample data - replace if necessary with path to real data
-            self.mfdb = MultiFastaDB(db_dir, use_meta_index=True)
-        else:
-            self.mfdb = mfdb
-        self.hm = hgvsmapper.HGVSMapper(self.bdi, cache_transcripts=True)
+    def __init__(self, bdi, mfdb):
+        self.bdi = bdi
+        self.mfdb = mfdb
+        self.hm = hgvs.hgvsmapper.HGVSMapper(self.bdi, cache_transcripts=True)
 
     def validate(self, var):
         assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
