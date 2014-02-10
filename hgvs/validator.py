@@ -12,15 +12,15 @@ import hgvs.parser
 def validate(var):
     """Validates a parsed HGVS variant using intrinsic and extrinsic methods"""
     assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
-    iv = IntrinsicValidation()
-    ev = ExtrinsicValidation()
+    iv = IntrinsicValidator()
+    ev = ExtrinsicValidator()
     if iv.validate(var) and ev.validate(var):
         return True
     else:
         return False
 
 
-class IntrinsicValidation(object):
+class IntrinsicValidator(object):
     """
     Attempts to determine if the HGVS name is internally consistent
     """
@@ -81,7 +81,7 @@ class IntrinsicValidation(object):
                 raise HGVSValidationError(self.SUB_ERROR_MSG)
 
 
-class ExtrinsicValidation():
+class ExtrinsicValidator():
     """
     Attempts to determine if the HGVS name validates against external data sources
     """
@@ -131,7 +131,7 @@ class ExtrinsicValidation():
 if __name__ == '__main__':
     hgvsparser = hgvs.parser.Parser()
     var1 = hgvsparser.parse_hgvs_variant('NM_001005405.2:r.2T>A')
-    validate_ext = ExtrinsicValidation()
+    validate_ext = ExtrinsicValidator()
     validate_ext.validate(var1)
 
 ## <LICENSE>
