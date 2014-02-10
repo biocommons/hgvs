@@ -9,26 +9,34 @@ import hgvsmapper
 import hgvs.parser
 
 
+BASE_RANGE_ERROR_MSG = 'base start position must be <= end position'
+OFFSET_RANGE_ERROR_MSG = 'offset start must be <= end position'
+INS_ERROR_MSG = 'insertion length must be 1'
+DEL_ERROR_MSG = 'start and end position range must equal sequence deletion length'
+SUB_ERROR_MSG = 'substitution cannot have the same ref and alt base'
+AC_ERROR_MSG = 'Accession is not present in BDI database'
+SEQ_ERROR_MSG = 'Ref variant does not agree with reference sequence/transcript'
+
+
 def validate(var):
     """Validates a parsed HGVS variant using intrinsic and extrinsic methods"""
-    assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
-    iv = IntrinsicValidator()
-    ev = ExtrinsicValidator()
-    if iv.validate(var) and ev.validate(var):
-        return True
-    else:
-        return False
+    return Validator().validate(var)
+
+
+class Validator(object):
+    """invoke intrinsic and extrinsic validation"""
+    def __init__(self, bdi=None, mfdb=None):
+        self.ivr = IntrinsicValidator()
+        self.evr = ExtrinsicValidator(bdi,mfdb)
+
+    def validate(self,var):
+        return self.ivr.validate(var) and self.evr.validate(var)
 
 
 class IntrinsicValidator(object):
     """
     Attempts to determine if the HGVS name is internally consistent
     """
-    BASE_RANGE_ERROR_MSG = 'base start position must be <= end position'
-    OFFSET_RANGE_ERROR_MSG = 'offset start must be <= end position'
-    INS_ERROR_MSG = 'insertion length must be 1'
-    DEL_ERROR_MSG = 'start and end position range must equal sequence deletion length'
-    SUB_ERROR_MSG = 'substitution cannot have the same ref and alt base'
 
     def validate(self, var):
         assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
@@ -41,26 +49,26 @@ class IntrinsicValidator(object):
     def _start_lte_end(self, var):
         if var.type == 'g':
             if var.posedit.pos.start.base > var.posedit.pos.end.base:
-                raise HGVSValidationError(self.BASE_RANGE_ERROR_MSG)
+                raise HGVSValidationError(BASE_RANGE_ERROR_MSG)
         if var.type in ['c', 'r', 'p']:
             if var.posedit.pos.start.base > var.posedit.pos.end.base:
-                raise HGVSValidationError(self.BASE_RANGE_ERROR_MSG)
+                raise HGVSValidationError(BASE_RANGE_ERROR_MSG)
             elif var.posedit.pos.start.base == var.posedit.pos.end.base:
                 if var.posedit.pos.start.offset > var.posedit.pos.end.offset:
-                    raise HGVSValidationError(self.OFFSET_RANGE_ERROR_MSG)
+                    raise HGVSValidationError(OFFSET_RANGE_ERROR_MSG)
             if var.posedit.pos.start.datum > var.posedit.pos.end.datum:
-                raise HGVSValidationError(self.BASE_RANGE_ERROR_MSG)
+                raise HGVSValidationError(BASE_RANGE_ERROR_MSG)
         return True
     
     def _ins_length_is_one(self, var):
         if var.posedit.edit.type == 'ins':
             if var.type == 'g':
                 if (var.posedit.pos.end.base - var.posedit.pos.start.base) != 1:
-                    raise HGVSValidationError(self.INS_ERROR_MSG)
+                    raise HGVSValidationError(INS_ERROR_MSG)
             if var.type in ['c', 'r', 'p']:
                 if ((var.posedit.pos.end.base + var.posedit.pos.end.offset) -
                         (var.posedit.pos.start.base + var.posedit.pos.start.offset)) != 1:
-                    raise HGVSValidationError(self.INS_ERROR_MSG)
+                    raise HGVSValidationError(INS_ERROR_MSG)
             return True
         
     def _del_length(self, var):
@@ -68,25 +76,23 @@ class IntrinsicValidator(object):
             del_len = len(var.posedit.edit.ref)
             if var.type == 'g':
                 if (var.posedit.pos.end.base - var.posedit.pos.start.base + 1) != del_len:
-                    raise HGVSValidationError(self.DEL_ERROR_MSG)
+                    raise HGVSValidationError(DEL_ERROR_MSG)
             if var.type in ['c', 'r', 'p']:
                 if ((var.posedit.pos.end.base + var.posedit.pos.end.offset) -
                         (var.posedit.pos.start.base + var.posedit.pos.start.offset) + 1) != del_len:
-                    raise HGVSValidationError(self.DEL_ERROR_MSG)
+                    raise HGVSValidationError(DEL_ERROR_MSG)
             return True
 
     def _sub_alt_is_not_ref(self, var):
         if var.posedit.edit.type == 'identity':
             if var.posedit.edit.ref == var.posedit.edit.alt:
-                raise HGVSValidationError(self.SUB_ERROR_MSG)
+                raise HGVSValidationError(SUB_ERROR_MSG)
 
 
 class ExtrinsicValidator():
     """
     Attempts to determine if the HGVS name validates against external data sources
     """
-    AC_ERROR_MSG = 'Accession is not present in BDI database'
-    SEQ_ERROR_MSG = 'Ref variant does not agree with reference sequence/transcript'
 
     def __init__(self, bdi=None, mfdb=None):
         # optional args for bdi and mfdb (users may already have them)
@@ -111,9 +117,9 @@ class ExtrinsicValidator():
     def _ac_is_valid(self, var):
         ac = self.bdi.get_tx_info(var.ac)
         if ac is None:
-            raise HGVSValidationError(self.AC_ERROR_MSG)
+            raise HGVSValidationError(AC_ERROR_MSG)
         elif ac['ac'] != var.ac:
-            raise HGVSValidationError(self.AC_ERROR_MSG)
+            raise HGVSValidationError(AC_ERROR_MSG)
         else:
             return True
 
@@ -124,7 +130,7 @@ class ExtrinsicValidator():
             # fetch uses interbase coordinates
             seq = self.mfdb.fetch(var.ac, var.posedit.pos.start.base - 1, var.posedit.pos.end.base)
             if seq != var.posedit.edit.ref:
-                raise HGVSValidationError(self.SEQ_ERROR_MSG)
+                raise HGVSValidationError(SEQ_ERROR_MSG)
         return True
 
 
