@@ -13,24 +13,26 @@ from hgvs.exceptions import *
 class TranscriptMapper(object):
     __doc__ = """All coordinates are in HGVS format (human 1-based)"""
 
-    def __init__(self, bdi, ac, ref='GRCH37.p10'):
+    def __init__(self, bdi, tx_ac, alt_ac, alt_aln_method):
         self.bdi = bdi
-        self.ref = ref
-        self.ac = ac
-        self.tx_info = bdi.get_tx_info(self.ac)
-        self.tx_exons = bdi.get_tx_exons(self.ac, ref)
+        self.tx_ac = tx_ac
+        self.alt_ac = alt_ac
+        self.alt_aln_method = alt_aln_method
+        self.tx_info = bdi.get_tx_info(self.tx_ac, self.alt_ac, self.alt_aln_method)
+        self.tx_exons = bdi.get_tx_exons(self.tx_ac, self.alt_ac, self.alt_aln_method)
         if self.tx_info is None or len(self.tx_exons) == 0:
-            raise HGVSError("Couldn't build TranscriptMapper(ref={self.ref}, ac={self.ac})".format(self=self))
-        self.strand = self.tx_info['strand']
+            raise HGVSError("Couldn't build TranscriptMapper(tx_ac={self.tx_ac}, "
+                            "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method})".format(self=self))
+        self.strand = self.tx_exons[0]['alt_strand']
         self.cds_start_i = self.tx_info['cds_start_i']
         self.cds_end_i = self.tx_info['cds_end_i']
-        self.gc_offset = self.tx_exons[0]['g_start_i']
+        self.gc_offset = self.tx_exons[0]['alt_start_i']
         self.cigar = build_tx_cigar(self.tx_exons, self.strand)
         self.im = IntervalMapper.from_cigar(self.cigar)
 
     def __str__(self):
-        return '{self.__class__.__name__}: {self.ac} ~ {self.ref}; {self.strand_pm} strand; {n_exons} exons; ' \
-               'offset={self.gc_offset}'.format(self=self, n_exons=len(self.tx_exons))
+        return '{self.__class__.__name__}: {self.tx_ac} ~ {self.alt_ac} ~ {self.alt_aln_method); ' \
+               '{self.strand_pm} strand; {n_exons} exons; offset={self.gc_offset}'.format(self=self, n_exons=len(self.tx_exons))
 
     @property
     def strand_pm(self):
@@ -197,19 +199,19 @@ def build_tx_cigar(exons, strand):
     if len(exons) == 0:
         return None
 
-    cigarelem_re = re.compile('\d+[DIMNX]')
+    cigarelem_re = re.compile('\d+[DIMNX=]')
 
     def _reverse_cigar(c):
         return ''.join(reversed(cigarelem_re.findall(c)))
 
     if strand == -1:
         for i in range(len(exons)):
-            exons[i]['g_cigar'] = _reverse_cigar(exons[i]['g_cigar'])
+            exons[i]['cigar'] = _reverse_cigar(exons[i]['cigar'])
 
-    tx_cigar = [exons[0]['g_cigar']]  # exon 1
+    tx_cigar = [exons[0]['cigar']]  # exon 1
     for i in range(1, len(exons)):     # and intron + exon pairs thereafter
-        tx_cigar += [str(exons[i]['g_start_i'] - exons[i - 1]['g_end_i']) + 'N',
-                     exons[i]['g_cigar']]
+        tx_cigar += [str(exons[i]['alt_start_i'] - exons[i - 1]['alt_end_i']) + 'N',
+                     exons[i]['cigar']]
     return ''.join(tx_cigar)
 
 

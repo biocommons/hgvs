@@ -28,7 +28,7 @@ class HGVSMapper(object):
         self.cache_transcripts = cache_transcripts
         self.__tm_cache = {}
 
-    def hgvsg_to_hgvsc(self,var_g, ac, ref='GRCh37.p10'):
+    def hgvsg_to_hgvsc(self,var_g, tx_ac, alt_aln_method='splign'):
         """Given a genomic (g.) HGVS variant, return a transcript (c.) variant on the specified transcript.
         hgvs must be an HGVS-formatted variant or variant position.
         """
@@ -36,7 +36,7 @@ class HGVSMapper(object):
         if not (var_g.type == 'g'):
             raise hgvs.exceptions.InvalidHGVSVariantError('Expected a genomic (g.); got '+ str(var_g))
 
-        tm = self._fetch_TranscriptMapper(ac=ac,ref=ref)
+        tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
         
         pos_c = tm.hgvsg_to_hgvsc( var_g.posedit.pos )
         edit_c = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
@@ -213,17 +213,18 @@ class HGVSMapper(object):
     ############################################################################
     ## Internal methods
 
-    def _fetch_TranscriptMapper(self,ac,ref='GRCh37.p10'):
+    def _fetch_TranscriptMapper(self, tx_ac, alt_ac, alt_aln_method):
         """
         Get a new TranscriptMapper for the given transcript accession (ac),
         possibly caching the result.
         """
         try:
-            tm = self.__tm_cache[ac]
+            tm = self.__tm_cache[tx_ac]
         except KeyError:
-            tm = hgvs.transcriptmapper.TranscriptMapper(self.bdi, ref = ref, ac = ac)
+            tm = hgvs.transcriptmapper.TranscriptMapper(self.bdi, tx_ac=tx_ac, alt_ac=alt_ac,
+                                                        alt_aln_method=alt_aln_method)
             if self.cache_transcripts:
-                self.__tm_cache[ac] = tm
+                self.__tm_cache[tx_ac] = tm
         return tm
 
     @staticmethod
