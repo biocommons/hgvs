@@ -40,7 +40,7 @@ class HGVSMapper(object):
         
         pos_c = tm.hgvsg_to_hgvsc( var_g.posedit.pos )
         edit_c = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
-        var_c = hgvs.variant.SequenceVariant(ac=ac,
+        var_c = hgvs.variant.SequenceVariant(ac=tx_ac,
                                              type='c',
                                              posedit=hgvs.posedit.PosEdit( pos_c, edit_c ) )
         return var_c
