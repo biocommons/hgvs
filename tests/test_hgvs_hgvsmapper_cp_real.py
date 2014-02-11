@@ -27,13 +27,6 @@ class TestHgvsCToPReal(unittest.TestCase):
         self._hp = hgvs.parser.Parser()
         self._failed = []
 
-    def test_hgvsc_to_hgvsp_real(self):
-        infilename = 'real_gcp.tsv'
-        outfilename = 'real_gcp.out'
-        infile = os.path.join(os.path.dirname(__file__), 'data', infilename)
-        outfile = os.path.join(os.path.dirname(__file__), 'data', outfilename)
-        self._run_cp_test(infile, outfile)
-
     def test_hgvsc_to_hgvsp_ext(self):
         infilename = 'ext.tsv'
         outfilename = 'ext.out'
