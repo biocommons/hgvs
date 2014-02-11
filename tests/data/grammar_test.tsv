@@ -4,7 +4,7 @@ Not_Yet_Implemented	foobar	False	one
 ############################################################
 ## Accession
 accn	NM_123456.7|NC_999999.9|NP_023456.7	True	list	
-accn	XR_123456.7|XM_999999.9|ZZ_12345678890.0	True	list	
+accn	XR_123456.7|XM_999999.9|ZZ_12345678890.0|U14680.1	True	list
 accn	NM_123456|NC_999999	True	list	
 accn	NM_X3|NC_333	True	list	
 accn	NM|NC	True	list	
