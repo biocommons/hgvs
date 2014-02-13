@@ -1,13 +1,13 @@
 import unittest
 
-import bdi.sources.uta0
+import bdi.sources.uta1
 
 import hgvs.parser
 import hgvs.hgvsmapper
 
 class Test_HGVSMapper(unittest.TestCase):
     def setUp(self):
-        self.bdi = bdi.sources.uta0.connect()
+        self.bdi = bdi.sources.uta1.connect()
         self.hm = hgvs.hgvsmapper.HGVSMapper(self.bdi, cache_transcripts=True)
         self.hp = hgvs.parser.Parser()
 
@@ -37,8 +37,8 @@ class Test_HGVSMapper(unittest.TestCase):
 
         cases = {'gc': (self.hm.hgvsg_to_hgvsc, (var_c, 'NM_001637.3')),
                  'gr': (self.hm.hgvsg_to_hgvsr, (var_c, 'NM_001637.3')),
-                 'rg': (self.hm.hgvsr_to_hgvsg, (var_c,)),
-                 'cg': (self.hm.hgvsc_to_hgvsg, (var_g,)),
+                 'rg': (self.hm.hgvsr_to_hgvsg, (var_c, 'NM_001637.3')),
+                 'cg': (self.hm.hgvsc_to_hgvsg, (var_g, 'NM_001637.3')),
                  'cr': (self.hm.hgvsc_to_hgvsr, (var_g,)),
                  'rc': (self.hm.hgvsr_to_hgvsc, (var_g,)),
                  'cp': (self.hm.hgvsc_to_hgvsp, (var_g, None)),

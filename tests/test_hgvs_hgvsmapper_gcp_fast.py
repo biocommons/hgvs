@@ -5,7 +5,7 @@ import csv
 import os
 import unittest
 
-import bdi.sources.uta0
+import bdi.sources.uta1
 
 import hgvs.hgvsmapper as hgvsmapper
 import hgvs.parser
@@ -22,7 +22,7 @@ def gcp_file_reader(fn):
 class TestHGVSMapperFast(unittest.TestCase):
     def setUp(self):
         sqlite_path = 'sqlite://{}'.format(os.path.join(os.path.dirname(__file__), 'db', 'uta-test-0.0.5.db'))
-        self.bdi = bdi.sources.uta0.connect(sqlite_path)
+        self.bdi = bdi.sources.uta1.connect(sqlite_path)
         self.hm = hgvs.hgvsmapper.HGVSMapper(self.bdi, cache_transcripts=True)
         self.hp = hgvs.parser.Parser()
         self.failed = []

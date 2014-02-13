@@ -98,7 +98,7 @@ class HGVSMapper(object):
                                              posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
         return var_g
 
-    def hgvsc_to_hgvsr(self, var_c, alt_ac, alt_aln_method='transcript'):
+    def hgvsc_to_hgvsr(self, var_c):
         """Given a cDNA (c.) parsed HGVS variant, return a RNA (r.) variant on the specified transcript using
         the specified alignment method (default is 'transcript' indicating a self alignment).
         """
@@ -106,7 +106,7 @@ class HGVSMapper(object):
         if not (var_c.type == 'c'):
             raise hgvs.exceptions.InvalidHGVSVariantError('Expected a cDNA (c.); got ' + str(var_c))
 
-        tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
+        tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=var_c.ac, alt_aln_method='transcript')
         pos_r = tm.hgvsc_to_hgvsr(var_c.posedit.pos)
 
         # not necessary to check strand
@@ -115,12 +115,12 @@ class HGVSMapper(object):
         else:
             raise NotImplemented('Only NARefAlt/Dup types are currently implemented')
 
-        var_r = hgvs.variant.SequenceVariant(ac=alt_ac,
+        var_r = hgvs.variant.SequenceVariant(ac=var_c.ac,
                                              type='r',
                                              posedit=hgvs.posedit.PosEdit( pos_r, edit_r ) )
         return var_r
 
-    def hgvsr_to_hgvsc(self, var_r, alt_ac, alt_aln_method='transcript'):
+    def hgvsr_to_hgvsc(self, var_r):
         """Given an RNA (r.) parsed HGVS variant, return a cDNA (c.) variant on the specified transcript using
         the specified alignment method (default is 'transcript' indicating a self alignment).
         """
@@ -128,7 +128,7 @@ class HGVSMapper(object):
         if not (var_r.type == 'r'):
             raise hgvs.exceptions.InvalidHGVSVariantError('Expected RNA (r.); got ' + str(var_r))
 
-        tm = self._fetch_TranscriptMapper(tx_ac=var_r.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
+        tm = self._fetch_TranscriptMapper(tx_ac=var_r.ac, alt_ac=var_r.ac, alt_aln_method='transcript')
         pos_c = tm.hgvsr_to_hgvsc(var_r.posedit.pos)
 
         # not necessary to check strand
@@ -137,7 +137,7 @@ class HGVSMapper(object):
         else:
             raise NotImplemented('Only NARefAlt types are currently implemented')
 
-        var_c = hgvs.variant.SequenceVariant(ac=alt_ac,
+        var_c = hgvs.variant.SequenceVariant(ac=var_r.ac,
                                              type='c',
                                              posedit=hgvs.posedit.PosEdit( pos_c, edit_c ) )
         return var_c
