@@ -18,17 +18,25 @@ class TranscriptMapper(object):
         self.tx_ac = tx_ac
         self.alt_ac = alt_ac
         self.alt_aln_method = alt_aln_method
-        self.tx_info = bdi.get_tx_info(self.tx_ac, self.alt_ac, self.alt_aln_method)
-        self.tx_exons = bdi.get_tx_exons(self.tx_ac, self.alt_ac, self.alt_aln_method)
-        if self.tx_info is None or len(self.tx_exons) == 0:
-            raise HGVSError("Couldn't build TranscriptMapper(tx_ac={self.tx_ac}, "
-                            "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method})".format(self=self))
-        self.strand = self.tx_exons[0]['alt_strand']
-        self.cds_start_i = self.tx_info['cds_start_i']
-        self.cds_end_i = self.tx_info['cds_end_i']
-        self.gc_offset = self.tx_exons[0]['alt_start_i']
-        self.cigar = build_tx_cigar(self.tx_exons, self.strand)
-        self.im = IntervalMapper.from_cigar(self.cigar)
+        if self.alt_aln_method != 'transcript':
+            self.tx_info = bdi.get_tx_info(self.tx_ac, self.alt_ac, self.alt_aln_method)
+            self.tx_exons = bdi.get_tx_exons(self.tx_ac, self.alt_ac, self.alt_aln_method)
+            if self.tx_info is None or self.tx_exons is None:
+                raise HGVSError("Couldn't build TranscriptMapper(tx_ac={self.tx_ac}, "
+                                "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method})".format(self=self))
+            self.strand = self.tx_exons[0]['alt_strand']
+            self.cds_start_i = self.tx_info['cds_start_i']
+            self.cds_end_i = self.tx_info['cds_end_i']
+            self.gc_offset = self.tx_exons[0]['alt_start_i']
+            self.cigar = build_tx_cigar(self.tx_exons, self.strand)
+            self.im = IntervalMapper.from_cigar(self.cigar)
+            self.tgt_len = self.im.tgt_len
+        else:
+            # this covers the identity cases r <-> c
+            self.tx_identity_info = bdi.get_tx_identity_info(self.tx_ac)
+            self.cds_start_i = self.tx_identity_info['cds_start_i']
+            self.cds_end_i = self.tx_identity_info['cds_end_i']
+            self.tgt_len = sum(self.tx_identity_info['lengths'])
 
     def __str__(self):
         return '{self.__class__.__name__}: {self.tx_ac} ~ {self.alt_ac} ~ {self.alt_aln_method); ' \
@@ -48,12 +56,12 @@ class TranscriptMapper(object):
         # frs, fre = (f)orward (r)na (s)tart & (e)nd; forward w.r.t. genome
         frs, fre = self.im.map_ref_to_tgt(g_ci[0] - self.gc_offset, g_ci[1] - self.gc_offset, max_extent=False)
         if self.strand == -1:
-            frs, fre = self.im.tgt_len - fre, self.im.tgt_len - frs
+            frs, fre = self.tgt_len - fre, self.tgt_len - frs
         # get BaseOffsetPosition information for r.
         if self.strand == 1:
             grs, gre = self.im.map_tgt_to_ref(frs, fre, max_extent=False)
         elif self.strand == -1:
-            grs, gre = self.im.map_tgt_to_ref((self.im.tgt_len - fre), (self.im.tgt_len - frs), max_extent=False)
+            grs, gre = self.im.map_tgt_to_ref((self.tgt_len - fre), (self.tgt_len - frs), max_extent=False)
         grs, gre = grs + self.gc_offset, gre + self.gc_offset
         # 0-width interval indicates an intron.  Need to calculate offsets but we're are in ci coordinates
         # requires adding 1 strategically to get the HGVS position (shift coordinates to 3' end of the ref nucleotide)
@@ -82,7 +90,7 @@ class TranscriptMapper(object):
             start_offset, end_offset = r_interval.start.offset, r_interval.end.offset
         elif self.strand == -1:
             frs, fre = hgvs_coord_to_ci(r_interval.start.base, r_interval.end.base)
-            fre, frs = self.im.tgt_len - frs, self.im.tgt_len - fre
+            fre, frs = self.tgt_len - frs, self.tgt_len - fre
             start_offset, end_offset = self.strand * r_interval.end.offset, self.strand * r_interval.start.offset
 
         # returns the genomic range start (grs) and end (gre)
@@ -98,9 +106,9 @@ class TranscriptMapper(object):
         if r_interval.start.base <= 0:
             raise HGVSError("Transcript out of bounds.  Start position ({rs}) is <= 0.".
                             format(rs=r_interval.start.base))
-        if r_interval.end.base > self.im.tgt_len:
+        if r_interval.end.base > self.tgt_len:
             raise HGVSError("Transcript out of bounds. End position ({re}) is > than transcript length ({len}).".
-                            format(re=r_interval.end.base, len=self.im.tgt_len))
+                            format(re=r_interval.end.base, len=self.tgt_len))
         # start
         if r_interval.start.base <= self.cds_start_i:
             cs = r_interval.start.base - (self.cds_start_i + 1)
@@ -146,9 +154,9 @@ class TranscriptMapper(object):
 
         if rs <= 0:
             raise HGVSError("Transcript out of bounds.  Start position ({rs}) is <= 0.".format(rs=rs))
-        if re > self.im.tgt_len:
+        if re > self.tgt_len:
             raise HGVSError("Transcript out of bounds. End position ({re}) is > than transcript length ({len}).".
-                            format(re=re, len=self.im.tgt_len))
+                            format(re=re, len=self.tgt_len))
 
         r_interval = hgvs.location.Interval(
             start=hgvs.location.BaseOffsetPosition(base=rs, offset=c_interval.start.offset, datum=hgvs.location.SEQ_START),
