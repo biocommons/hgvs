@@ -157,7 +157,7 @@ pro_delins = 'delins' aat13_seq:alt -> hgvs.edit.AARefAlt(ref='',alt=hgvs.utils.
 pro_del    = 'del'                         -> hgvs.edit.AARefAlt(ref='',alt=None)
 pro_ins    = 'ins' aat13_seq:alt -> hgvs.edit.AARefAlt(ref=None,alt=hgvs.utils.aa_to_aa1(alt))
 pro_dup    = 'dup'                         -> hgvs.edit.Dup(seq='')
-pro_fs     = aat13:alt fs:length -> hgvs.edit.AAFs(ref='',alt=hgvs.utils.aa_to_aa1(alt),length=length)
+pro_fs     = (aat13 | (-> '')):alt fs:length -> hgvs.edit.AAFs(ref='',alt=hgvs.utils.aa_to_aa1(alt),length=length)
 pro_ext    = aat13?:alt ext:(aaterm, length) -> hgvs.edit.AAExt(ref='',alt=hgvs.utils.aa_to_aa1(alt),aaterm=hgvs.utils.aa_to_aa1(aaterm), length=length)
 
 

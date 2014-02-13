@@ -170,12 +170,14 @@ pro_subst	10VA|V>R	False	list
 pro_fs	ArgfsTer|ArgfsTer9|ArgfsTer?	True	list	
 pro_fs	Argfs*|Argfs*9|Argfs*?	True	list	ArgfsTer|ArgfsTer9|ArgfsTer?
 pro_fs	Argfs	True	one	ArgfsTer
-pro_fs	fs*|ArgPhefs*9	False	list	
+pro_fs	fs*	True	one	fsTer
+pro_fs	ArgPhefs*9	False	one	
 pro_fs	Argfs2|Argfs?	False	list	
 pro_ext	GlnextTer|GlnextTer9|GlnextTer?	True	list	
 pro_ext	Glnext*|Glnext*9|Glnext*?	True	list	GlnextTer|GlnextTer9|GlnextTer?
 pro_edit	insPro|del|delinsMetSer|Gln	True	list
 pro_edit	insProdel|delinsMetSer>Gln	False	list
+pro_edit    Argfs|Rfs	True	list	ArgfsTer|ArgfsTer
 pro_edit_mu	delinsCysTyr|(delinsCysTyr)|del|(del)|insAsn|(insAsn)|Glu|(Glu)	True	list
 pro_edit_mu	(delins)CysTyr|delins(CysTyr)|(Gln)Gln|ins(Lys)	False	list
 rna_dup	dup|dupA|dupCAG|dupCAU	True	list	
@@ -265,6 +267,7 @@ p_variant	AC_01234.5:p.Ala1Ser|AC_01234.5:p.Phe2_Ala4del|AC_01234.5:p.Phe2_Ala3i
 p_variant	NP_000001.1:p.Gly25TrpfsTer10|NP_000040.1:p.Ter314TrpextTer45	True	list	
 p_variant	NP_000001.1:p.Gly25Trpfs*10|NP_000040.1:p.Ter314Trpext*45	True	list	NP_000001.1:p.Gly25TrpfsTer10|NP_000040.1:p.Ter314TrpextTer45
 p_variant	NP_000001.1:p.Met1Valext-10|NP_000040.1:p.Met1ext-12	True	list	
+p_variant	NP_078951.2:p.Arg1039fs|NP_078951.2:p.N1039fs	True	list	NP_078951.2:p.Arg1039fsTer|NP_078951.2:p.Asn1039fsTer
 p_variant	AC_01234.5:p.Met1?	True	one	
 c_variant	AC_01234.5:c.1A>T	True	one	
 gmn_variant	AC_01234.5:g.1A>T	True	one	
