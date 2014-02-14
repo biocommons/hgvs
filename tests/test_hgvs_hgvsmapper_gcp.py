@@ -26,7 +26,7 @@ class Test_HGVSMapper(unittest.TestCase):
         self.hp = hgvs.parser.Parser()
         self.failed = []
 
-    def test_DNAH11_hgmd(self):
+    def notest_DNAH11_hgmd(self):
         for rec in gcp_file_reader('tests/data/DNAH11-HGMD.tsv'):
             self._test_gcp_mapping(rec)
 
@@ -34,7 +34,7 @@ class Test_HGVSMapper(unittest.TestCase):
         for rec in gcp_file_reader('tests/data/DNAH11-dbSNP_small.tsv'):
             self._test_gcp_mapping(rec)
 
-    def test_real(self):
+    def notest_real(self):
         for rec in gcp_file_reader('tests/data/real_gcp.tsv'):
             self._test_gcp_mapping(rec)
 
@@ -44,6 +44,7 @@ class Test_HGVSMapper(unittest.TestCase):
             self._test_gcp_mapping(rec)
 
     def _test_gcp_mapping(self, rec):
+        print rec
         var_g = self.hp.parse_hgvs_variant(rec['HGVSg'])
         var_c = self.hp.parse_hgvs_variant(rec['HGVSc'])
         var_p = self.hp.parse_hgvs_variant(rec['HGVSp']) if rec['HGVSp'] is not None and rec['HGVSp'] != '' else None

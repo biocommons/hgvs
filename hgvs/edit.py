@@ -58,7 +58,7 @@ class NARefAlt( Edit, recordtype.recordtype('NARefAlt', [('ref',None),('alt',Non
     def type(self):
         if self.ref is not None and self.alt is not None:
             if self.ref == self.alt:
-                edit_type = None
+                edit_type = 'identity'
             elif len(self.alt) == 1 and len(self.ref) == 1 and not self.ref.isdigit():
                 edit_type = 'sub'
             else:
@@ -108,7 +108,7 @@ class AARefAlt( Edit, recordtype.recordtype('AARefAlt', [('ref',None),('alt',Non
     def type(self):
         if self.ref is not None and self.alt is not None:
             if self.ref == self.alt:
-                edit_type = None
+                edit_type = 'identity'
             elif len(self.ref) == 1 and len(self.alt) == 1:
                 edit_type = 'sub'
             else:
