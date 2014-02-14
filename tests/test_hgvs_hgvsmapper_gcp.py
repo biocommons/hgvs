@@ -31,7 +31,7 @@ class Test_HGVSMapper(unittest.TestCase):
             self._test_gcp_mapping(rec)
 
     def test_DNAH11_dbSNP(self):
-        for rec in gcp_file_reader('tests/data/DNAH11-dbSNP.tsv'):
+        for rec in gcp_file_reader('tests/data/DNAH11-dbSNP_small.tsv'):
             self._test_gcp_mapping(rec)
 
     def test_real(self):
@@ -53,7 +53,7 @@ class Test_HGVSMapper(unittest.TestCase):
         self.assertEquals(str(var_c_test), str(var_c))
 
         # c -> g
-        var_g_test = self.hm.hgvsc_to_hgvsg(var_c)
+        var_g_test = self.hm.hgvsc_to_hgvsg(var_c, var_g.ac)
         self.assertEquals(str(var_g_test), str(var_g))
 
         if var_p is not None:
