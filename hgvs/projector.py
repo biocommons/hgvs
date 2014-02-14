@@ -21,11 +21,11 @@ class Projector(object):
     strand. This assumption obviates some work in flipping sequence
     variants twice unnecessarily.
     """
-    def __init__(self,bdi,ref,src_ac,dst_ac):
+    def __init__(self,bdi,alt_ac,src_ac,dst_ac,src_atl_aln_method,dst_alt_aln_method):
         self.bdi = bdi
-        self.ref = ref
-        self.src_tm = hgvs.transcriptmapper.TranscriptMapper(bdi,src_ac,ref)
-        self.dst_tm = hgvs.transcriptmapper.TranscriptMapper(bdi,dst_ac,ref)
+        self.alt_ac = alt_ac
+        self.src_tm = hgvs.transcriptmapper.TranscriptMapper(bdi,src_ac,alt_ac,src_atl_aln_method)
+        self.dst_tm = hgvs.transcriptmapper.TranscriptMapper(bdi,dst_ac,alt_ac,dst_alt_aln_method)
 
     def project_interval_forward(self,c_interval):
         """
@@ -55,10 +55,10 @@ class Projector(object):
         :param c_variant: an :class:`hgvs.variant.SequenceVariant` object on the source transcript
         :returns: c_variant: an :class:`hgvs.variant.SequenceVariant` object on the destination transcript
         """
-        if c_variant.ac != self.src_tm.ac:
+        if c_variant.ac != self.src_tm.tx_ac:
             raise RuntimeError('variant accession does not match that used to initialize '+__name__)
         new_c_variant = copy.deepcopy( c_variant )
-        new_c_variant.ac = self.dst_tm.ac
+        new_c_variant.ac = self.dst_tm.tx_ac
         new_c_variant.posedit.pos = self.project_interval_forward( c_variant.posedit.pos )
         return new_c_variant
 
@@ -69,10 +69,10 @@ class Projector(object):
         :param c_variant: an :class:`hgvs.variant.SequenceVariant` object on the source transcript
         :returns: c_variant: an :class:`hgvs.variant.SequenceVariant` object on the destination transcript
         """
-        if c_variant.ac != self.dst_tm.ac:
+        if c_variant.ac != self.dst_tm.tx_ac:
             raise RuntimeError('variant accession does not match that used to initialize '+__name__)
         new_c_variant = copy.deepcopy( c_variant )
-        new_c_variant.ac = self.src_tm.ac
+        new_c_variant.ac = self.src_tm.tx_ac
         new_c_variant.posedit.pos = self.project_interval_backward( c_variant.posedit.pos )
         return new_c_variant
 

@@ -161,7 +161,8 @@ class HGVSMapper(object):
             @classmethod
             def setup_transcript_data(cls, bdi, tx_ac, alt_ac, alt_aln_method):
                 """helper for generating RefTranscriptData from for hgvsc_to_hgvsp"""
-                tx_info = bdi.get_tx_info(tx_ac, tx_ac, alt_aln_method)  # want identity returned
+                tx_info = bdi.get_tx_identity_info(var_c.ac)
+                #tx_info = bdi.get_tx_info(tx_ac, tx_ac, alt_aln_method)  # want identity returned
                 tx_seq = bdi.get_tx_seq(tx_ac)
 
                 if tx_info is None or tx_seq is None:

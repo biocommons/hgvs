@@ -35,6 +35,9 @@ class MockInputSource():
                       'cds_end_i': data['cds_end_i']}
         return result
 
+    def get_tx_identity_info(self, ac):
+        return self.fetch_transcript_info(ac)
+
     def get_tx_info(self, ac):
         return self.fetch_transcript_info(ac)
 
