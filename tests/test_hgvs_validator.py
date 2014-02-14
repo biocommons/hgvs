@@ -1,7 +1,7 @@
 import unittest
 
 from bdi.multifastadb import MultiFastaDB
-from bdi.sources import uta0
+from bdi.sources import uta1
 
 from hgvs.exceptions import HGVSValidationError
 import hgvs.parser
@@ -9,7 +9,7 @@ import hgvs.hgvsmapper
 import hgvs.validator
 
 db_dir = ['tests/data/sample_data']
-bdi = uta0.connect()
+bdi = uta1.connect()
 mfdb = MultiFastaDB(db_dir, use_meta_index=True)
 
 
