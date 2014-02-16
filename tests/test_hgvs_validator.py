@@ -89,13 +89,6 @@ class Test_HGVSExtrinsicValidator(unittest.TestCase):
         self.hp = hgvs.parser.Parser()
         self.validate_ext = hgvs.validator.ExtrinsicValidator(bdi,mfdb)
 
-    def test_valid_ac(self):
-        """Test if accession is present in transcript sequence database"""
-        self.assertTrue(self.validate_ext.validate(self.hp.parse_hgvs_variant('NM_001005405.2:c.6C>A')))
-
-        with self.assertRaisesRegexp(HGVSValidationError, hgvs.validator.AC_ERROR_MSG):
-            self.validate_ext.validate(self.hp.parse_hgvs_variant('NM_001005405.12:c.6C>A'))
-
     def test_valid_ref(self):
         """Test if reference seqeuence is valid. Uses sample_data in tests directory"""
         self.assertTrue(self.validate_ext.validate(self.hp.parse_hgvs_variant('NM_001005405.2:c.6C>A')))
