@@ -26,7 +26,7 @@ class Test_HGVSMapper(unittest.TestCase):
         self.hp = hgvs.parser.Parser()
         self.failed = []
 
-    def notest_DNAH11_hgmd(self):
+    def test_DNAH11_hgmd(self):
         for rec in gcp_file_reader('tests/data/DNAH11-HGMD.tsv'):
             self._test_gcp_mapping(rec)
 
@@ -34,20 +34,20 @@ class Test_HGVSMapper(unittest.TestCase):
         for rec in gcp_file_reader('tests/data/DNAH11-dbSNP.tsv'):
             self._test_gcp_mapping(rec)
 
-    def notest_real(self):
+    def test_real(self):
         for rec in gcp_file_reader('tests/data/real_gcp.tsv'):
             self._test_gcp_mapping(rec)
 
-    # TODO: Enable NEFL tests, requires adding ac=NM_006158.4
-    def notest_NEFL_dbSNP(self):
+    def test_NEFL_dbSNP(self):
         for rec in gcp_file_reader('tests/data/NEFL-dbSNP.tsv'):
             self._test_gcp_mapping(rec)
 
     def _test_gcp_mapping(self, rec):
-        print rec
         var_g = self.hp.parse_hgvs_variant(rec['HGVSg'])
         var_c = self.hp.parse_hgvs_variant(rec['HGVSc'])
         var_p = self.hp.parse_hgvs_variant(rec['HGVSp']) if rec['HGVSp'] is not None and rec['HGVSp'] != '' else None
+
+        failed = []
 
         # g -> c
         var_c_test = self.hm.hgvsg_to_hgvsc(var_g, var_c.ac)
