@@ -99,18 +99,8 @@ class ExtrinsicValidator():
 
     def validate(self, var):
         assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
-        self._ac_is_valid(var)
         self._ref_is_valid(var)
         return True
-
-    def _ac_is_valid(self, var):
-        ac = self.bdi.get_tx_info(var.ac)
-        if ac is None:
-            raise HGVSValidationError(AC_ERROR_MSG)
-        elif ac['ac'] != var.ac:
-            raise HGVSValidationError(AC_ERROR_MSG)
-        else:
-            return True
 
     def _ref_is_valid(self, var):
         if var.posedit.edit.ref is not None:
