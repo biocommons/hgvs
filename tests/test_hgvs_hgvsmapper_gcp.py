@@ -31,11 +31,11 @@ class Test_HGVSMapper(unittest.TestCase):
             self._test_gcp_mapping(rec)
 
     def test_DNAH11_dbSNP_NM_003777(self):
-        for rec in gcp_file_reader('tests/data/DNAH11-dbSNP-NM_003777.tsv.tsv'):
+        for rec in gcp_file_reader('tests/data/DNAH11-dbSNP-NM_003777.tsv'):
             self._test_gcp_mapping(rec)
 
     def test_DNAH11_dbSNP_NM_001277115(self):
-        for rec in gcp_file_reader('tests/data/ DNAH11-dbSNP-NM_001277115.tsv'):
+        for rec in gcp_file_reader('tests/data/DNAH11-dbSNP-NM_001277115.tsv'):
             self._test_gcp_mapping(rec)
 
     def test_real(self):
