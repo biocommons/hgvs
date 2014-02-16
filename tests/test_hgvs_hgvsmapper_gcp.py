@@ -31,7 +31,7 @@ class Test_HGVSMapper(unittest.TestCase):
             self._test_gcp_mapping(rec)
 
     def test_DNAH11_dbSNP(self):
-        for rec in gcp_file_reader('tests/data/DNAH11-dbSNP_small.tsv'):
+        for rec in gcp_file_reader('tests/data/DNAH11-dbSNP.tsv'):
             self._test_gcp_mapping(rec)
 
     def notest_real(self):
