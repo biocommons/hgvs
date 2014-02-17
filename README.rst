@@ -10,7 +10,7 @@ transcript, and protein variants that are represented using the Human
 Genome Variation Society (`HGVS`_) recommendations.
 
 Features
---------
+-------- 
 
 * `A formal grammar <http://pythonhosted.org/hgvs/grammar.html>`_ for HGVS variant names
 * `Classes <http://pythonhosted.org/hgvs/modules.html>`_ that model HGVS
@@ -62,6 +62,10 @@ There are `more examples in the documentation <http://pythonhosted.org/hgvs/exam
 .. _Invitae: http://invitae.com/
 
 
-.. |build_status| image:: https://drone.io/bitbucket.org/invitae/hgvs/status.png
+.. |build_status| image:: https://travis-ci.org/reece/hgvs-integration-test.png?branch=master
+  :target: https://travis-ci.org/reece/hgvs-integration-test
+  :align: middle
+
+.. |build_status_old| image:: https://drone.io/bitbucket.org/invitae/hgvs/status.png
   :target: https://drone.io/bitbucket.org/invitae/hgvs
   :align: middle
