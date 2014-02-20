@@ -206,13 +206,13 @@ def hgvs_coord_to_ci(s, e):
 def build_tx_cigar(exons, strand):
     if len(exons) == 0:
         return None
-    cigarelem_re = re.compile('\d+[=DINX]')
-    def _reverse_cigar(c):
-        return ''.join(reversed(cigarelem_re.findall(c)))
-
-    if strand == -1:
-        for i in range(len(exons)):
-            exons[i]['cigar'] = _reverse_cigar(exons[i]['cigar'])
+    #cigarelem_re = re.compile('\d+[=DINX]')
+    #def _reverse_cigar(c):
+    #    return ''.join(reversed(cigarelem_re.findall(c)))
+    #
+    #if strand == -1:
+    #    for i in range(len(exons)):
+    #        exons[i]['cigar'] = _reverse_cigar(exons[i]['cigar'])
 
     tx_cigar = [exons[0]['cigar']]  # exon 1
     for i in range(1, len(exons)):     # and intron + exon pairs thereafter

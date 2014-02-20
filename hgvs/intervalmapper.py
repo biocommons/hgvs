@@ -166,7 +166,7 @@ class CIGARElement(object):
     @property
     def tgt_len(self):
         """returns number of nt/aa consumed in target sequence for this edit"""
-        return self.len if self.op in '=DX'  else 0
+        return self.len if self.op in '=NDX'  else 0
 
 def cigar_to_intervalpairs(cigar):
     cigar_elem_re = re.compile('(?P<len>\d+)(?P<op>[=DINX])')
