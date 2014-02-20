@@ -27,7 +27,7 @@ class TranscriptMapper(object):
             self.strand = self.tx_exons[0]['alt_strand']
             self.cds_start_i = self.tx_info['cds_start_i']
             self.cds_end_i = self.tx_info['cds_end_i']
-            self.gc_offset = self.tx_exons[0]['alt_start_i']
+            self.gc_offset = self.tx_exons[0]['alt_start_i'] if self.strand == 1 else self.tx_exons[-1]['alt_start_i']
             self.cigar = build_tx_cigar(self.tx_exons, self.strand)
             self.im = IntervalMapper.from_cigar(self.cigar)
             self.tgt_len = self.im.tgt_len
@@ -216,7 +216,7 @@ def build_tx_cigar(exons, strand):
 
     tx_cigar = [exons[0]['cigar']]  # exon 1
     for i in range(1, len(exons)):     # and intron + exon pairs thereafter
-        tx_cigar += [str(exons[i]['alt_start_i'] - exons[i - 1]['alt_end_i']) + 'N',
+        tx_cigar += [str((exons[i]['alt_start_i'] - exons[i - 1]['alt_end_i']) * strand) + 'N',
                      exons[i]['cigar']]
     return ''.join(tx_cigar)
 

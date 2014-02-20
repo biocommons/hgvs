@@ -13,98 +13,98 @@ class Test_transcriptmapper(unittest.TestCase):
     def setUp(self):
         self.bdi = bdi.sources.uta1.connect()
 
-    def test_transcriptmapper_failures(self):
-        self.assertRaises(HGVSError, TranscriptMapper, self.bdi, tx_ac='bogus', alt_ac='NM_033089.6', alt_aln_method='splign')
-        self.assertRaises(HGVSError, TranscriptMapper, self.bdi, tx_ac='NM_033089.6', alt_ac='bogus', alt_aln_method='splign')
-        self.assertRaises(HGVSError, TranscriptMapper, self.bdi, tx_ac='NM_000051.3', alt_ac='NC_000011.9', alt_aln_method='bogus')
-
-    def test_transcriptmapper_TranscriptMapper_LCE3C_uncertain(self):
-        """Use NM_178434.2 tests to test mapping with uncertain positions"""
-        tx_ac = 'NM_178434.2'
-        alt_ac = 'NC_000001.10'
-        tm = TranscriptMapper(self.bdi, tx_ac, alt_ac, alt_aln_method='splign')
-        parser = hgvs.parser.Parser()
-        test_cases = [
-            {'g': parser.parse_g_interval('(152573138)'), 'r': parser.parse_r_interval('(1)'), 'c': parser.parse_c_interval('(-70)')},
-            {'g': parser.parse_g_interval('(152573138_152573139)'), 'r': parser.parse_r_interval('(1_2)'), 'c': parser.parse_c_interval('(-70_-69)')},
-            # ? is not yet supported
-            # {'g': parser.parse_g_interval('(?_152573139)'), 'r': parser.parse_r_interval('(?_2)'), 'c': parser.parse_c_interval('(?_-69)')},
-            # {'g': parser.parse_g_interval('(152573138_?)'), 'r': parser.parse_r_interval('(1_?)'), 'c': parser.parse_c_interval('(-70_?)')},
-        ]
-        self.run_cases(tm, test_cases)
-
-    def test_transcriptmapper_TranscriptMapper_LCE3C(self):
-        """NM_178434.2: LCE3C single exon, strand = +1, all coordinate input/output are in HGVS"""
-        tx_ac = 'NM_178434.2'
-        alt_ac = 'NC_000001.10'
-        tm = TranscriptMapper(self.bdi, tx_ac, alt_ac, alt_aln_method='splign')
-        parser = hgvs.parser.Parser()
-        test_cases = [
-            # 5'
-            {'g': parser.parse_g_interval('152573138'), 'r': parser.parse_r_interval('1'), 'c': parser.parse_c_interval('-70')},
-            {'g': parser.parse_g_interval('152573140'), 'r': parser.parse_r_interval('3'), 'c': parser.parse_c_interval('-68')},
-            # cds
-            {'g': parser.parse_g_interval('152573207'), 'r': parser.parse_r_interval('70'), 'c': parser.parse_c_interval('-1')},
-            {'g': parser.parse_g_interval('152573208'), 'r': parser.parse_r_interval('71'), 'c': parser.parse_c_interval('1')},
-            # 3'
-            {'g': parser.parse_g_interval('152573492'), 'r': parser.parse_r_interval('355'), 'c': parser.parse_c_interval('285')},
-            {'g': parser.parse_g_interval('152573493'), 'r': parser.parse_r_interval('356'), 'c': parser.parse_c_interval('*1')},
-            {'g': parser.parse_g_interval('152573560'), 'r': parser.parse_r_interval('423'), 'c': parser.parse_c_interval('*68')},
-            {'g': parser.parse_g_interval('152573562'), 'r': parser.parse_r_interval('425'), 'c': parser.parse_c_interval('*70')},
-        ]
-        self.run_cases(tm, test_cases)
-
-    def test_transcriptmapper_TranscriptMapper_HIST3H2A(self):
-        """NM_033445.2: LCE3C single exon, strand = -1, all coordinate input/output are in HGVS"""
-        tx_ac = 'NM_033445.2'
-        alt_ac = 'NC_000001.10'
-        tm = TranscriptMapper(self.bdi, tx_ac, alt_ac, alt_aln_method='splign')
-        parser = hgvs.parser.Parser()
-        test_cases = [
-            # 3'
-            {'g': parser.parse_g_interval('228645560'), 'r': parser.parse_r_interval('1'), 'c': parser.parse_c_interval('-42')},
-            {'g': parser.parse_g_interval('228645558'), 'r': parser.parse_r_interval('3'), 'c': parser.parse_c_interval('-40')},
-            # cds
-            {'g': parser.parse_g_interval('228645519'), 'r': parser.parse_r_interval('42'), 'c': parser.parse_c_interval('-1')},
-            {'g': parser.parse_g_interval('228645518'), 'r': parser.parse_r_interval('43'), 'c': parser.parse_c_interval('1')},
-            # 5'
-            {'g': parser.parse_g_interval('228645126'), 'r': parser.parse_r_interval('435'), 'c': parser.parse_c_interval('393')},
-            {'g': parser.parse_g_interval('228645125'), 'r': parser.parse_r_interval('436'), 'c': parser.parse_c_interval('*1')},
-            {'g': parser.parse_g_interval('228645124'), 'r': parser.parse_r_interval('437'), 'c': parser.parse_c_interval('*2')},
-            {'g': parser.parse_g_interval('228645065'), 'r': parser.parse_r_interval('496'), 'c': parser.parse_c_interval('*61')},
-        ]
-        self.run_cases(tm, test_cases)
-
-    def test_transcriptmapper_TranscriptMapper_LCE2B(self):
-        """NM_014357.4: LCE2B, two exons, strand = +1, all coordinate input/output are in HGVS"""
-        tx_ac = 'NM_014357.4'
-        alt_ac = 'NC_000001.10'
-        tm = TranscriptMapper(self.bdi, tx_ac, alt_ac, alt_aln_method='splign')
-        parser = hgvs.parser.Parser()
-        test_cases = [
-             # 5'
-            {'g': parser.parse_g_interval('152658599'), 'r': parser.parse_r_interval('1'), 'c': parser.parse_c_interval('-54')},
-            {'g': parser.parse_g_interval('152658601'), 'r': parser.parse_r_interval('3'), 'c': parser.parse_c_interval('-52')},
-            # cds
-            {'g': parser.parse_g_interval('152659319'), 'r': parser.parse_r_interval('54'), 'c': parser.parse_c_interval('-1')},
-            {'g': parser.parse_g_interval('152659320'), 'r': parser.parse_r_interval('55'), 'c': parser.parse_c_interval('1')},
-            # around end of exon 1
-            {'g': parser.parse_g_interval('152658632'), 'r': parser.parse_r_interval('34'), 'c': parser.parse_c_interval('-21')},
-            {'g': parser.parse_g_interval('152658633'), 'r': parser.parse_r_interval('34+1'), 'c': parser.parse_c_interval('-21+1')},
-            # span
-            {'g': parser.parse_g_interval('152658633_152659299'), 'r': parser.parse_r_interval('34+1_35-1'), 'c': parser.parse_c_interval('-21+1_-20-1')},
-            # around beginning of exon 2
-            {'g': parser.parse_g_interval('152659300'), 'r': parser.parse_r_interval('35'), 'c': parser.parse_c_interval('-20')},
-            {'g': parser.parse_g_interval('152659299'), 'r': parser.parse_r_interval('35-1'), 'c': parser.parse_c_interval('-20-1')},
-            # around end of exon 2
-            {'g': parser.parse_g_interval('152659652'), 'r': parser.parse_r_interval('387'), 'c': parser.parse_c_interval('333')},
-            {'g': parser.parse_g_interval('152659653'), 'r': parser.parse_r_interval('388'), 'c': parser.parse_c_interval('*1')},
-            # span
-            {'g': parser.parse_g_interval('152659651_152659654'), 'r': parser.parse_r_interval('386_389'), 'c': parser.parse_c_interval('332_*2')},
-            # 3'
-            {'g': parser.parse_g_interval('152659877'), 'r': parser.parse_r_interval('612'), 'c': parser.parse_c_interval('*225')},
-        ]
-        self.run_cases(tm, test_cases)
+    #def test_transcriptmapper_failures(self):
+    #    self.assertRaises(HGVSError, TranscriptMapper, self.bdi, tx_ac='bogus', alt_ac='NM_033089.6', alt_aln_method='splign')
+    #    self.assertRaises(HGVSError, TranscriptMapper, self.bdi, tx_ac='NM_033089.6', alt_ac='bogus', alt_aln_method='splign')
+    #    self.assertRaises(HGVSError, TranscriptMapper, self.bdi, tx_ac='NM_000051.3', alt_ac='NC_000011.9', alt_aln_method='bogus')
+    #
+    #def test_transcriptmapper_TranscriptMapper_LCE3C_uncertain(self):
+    #    """Use NM_178434.2 tests to test mapping with uncertain positions"""
+    #    tx_ac = 'NM_178434.2'
+    #    alt_ac = 'NC_000001.10'
+    #    tm = TranscriptMapper(self.bdi, tx_ac, alt_ac, alt_aln_method='splign')
+    #    parser = hgvs.parser.Parser()
+    #    test_cases = [
+    #        {'g': parser.parse_g_interval('(152573138)'), 'r': parser.parse_r_interval('(1)'), 'c': parser.parse_c_interval('(-70)')},
+    #        {'g': parser.parse_g_interval('(152573138_152573139)'), 'r': parser.parse_r_interval('(1_2)'), 'c': parser.parse_c_interval('(-70_-69)')},
+    #        # ? is not yet supported
+    #        # {'g': parser.parse_g_interval('(?_152573139)'), 'r': parser.parse_r_interval('(?_2)'), 'c': parser.parse_c_interval('(?_-69)')},
+    #        # {'g': parser.parse_g_interval('(152573138_?)'), 'r': parser.parse_r_interval('(1_?)'), 'c': parser.parse_c_interval('(-70_?)')},
+    #    ]
+    #    self.run_cases(tm, test_cases)
+    #
+    #def test_transcriptmapper_TranscriptMapper_LCE3C(self):
+    #    """NM_178434.2: LCE3C single exon, strand = +1, all coordinate input/output are in HGVS"""
+    #    tx_ac = 'NM_178434.2'
+    #    alt_ac = 'NC_000001.10'
+    #    tm = TranscriptMapper(self.bdi, tx_ac, alt_ac, alt_aln_method='splign')
+    #    parser = hgvs.parser.Parser()
+    #    test_cases = [
+    #        # 5'
+    #        {'g': parser.parse_g_interval('152573138'), 'r': parser.parse_r_interval('1'), 'c': parser.parse_c_interval('-70')},
+    #        {'g': parser.parse_g_interval('152573140'), 'r': parser.parse_r_interval('3'), 'c': parser.parse_c_interval('-68')},
+    #        # cds
+    #        {'g': parser.parse_g_interval('152573207'), 'r': parser.parse_r_interval('70'), 'c': parser.parse_c_interval('-1')},
+    #        {'g': parser.parse_g_interval('152573208'), 'r': parser.parse_r_interval('71'), 'c': parser.parse_c_interval('1')},
+    #        # 3'
+    #        {'g': parser.parse_g_interval('152573492'), 'r': parser.parse_r_interval('355'), 'c': parser.parse_c_interval('285')},
+    #        {'g': parser.parse_g_interval('152573493'), 'r': parser.parse_r_interval('356'), 'c': parser.parse_c_interval('*1')},
+    #        {'g': parser.parse_g_interval('152573560'), 'r': parser.parse_r_interval('423'), 'c': parser.parse_c_interval('*68')},
+    #        {'g': parser.parse_g_interval('152573562'), 'r': parser.parse_r_interval('425'), 'c': parser.parse_c_interval('*70')},
+    #    ]
+    #    self.run_cases(tm, test_cases)
+    #
+    #def test_transcriptmapper_TranscriptMapper_HIST3H2A(self):
+    #    """NM_033445.2: LCE3C single exon, strand = -1, all coordinate input/output are in HGVS"""
+    #    tx_ac = 'NM_033445.2'
+    #    alt_ac = 'NC_000001.10'
+    #    tm = TranscriptMapper(self.bdi, tx_ac, alt_ac, alt_aln_method='splign')
+    #    parser = hgvs.parser.Parser()
+    #    test_cases = [
+    #        # 3'
+    #        {'g': parser.parse_g_interval('228645560'), 'r': parser.parse_r_interval('1'), 'c': parser.parse_c_interval('-42')},
+    #        {'g': parser.parse_g_interval('228645558'), 'r': parser.parse_r_interval('3'), 'c': parser.parse_c_interval('-40')},
+    #        # cds
+    #        {'g': parser.parse_g_interval('228645519'), 'r': parser.parse_r_interval('42'), 'c': parser.parse_c_interval('-1')},
+    #        {'g': parser.parse_g_interval('228645518'), 'r': parser.parse_r_interval('43'), 'c': parser.parse_c_interval('1')},
+    #        # 5'
+    #        {'g': parser.parse_g_interval('228645126'), 'r': parser.parse_r_interval('435'), 'c': parser.parse_c_interval('393')},
+    #        {'g': parser.parse_g_interval('228645125'), 'r': parser.parse_r_interval('436'), 'c': parser.parse_c_interval('*1')},
+    #        {'g': parser.parse_g_interval('228645124'), 'r': parser.parse_r_interval('437'), 'c': parser.parse_c_interval('*2')},
+    #        {'g': parser.parse_g_interval('228645065'), 'r': parser.parse_r_interval('496'), 'c': parser.parse_c_interval('*61')},
+    #    ]
+    #    self.run_cases(tm, test_cases)
+    #
+    #def test_transcriptmapper_TranscriptMapper_LCE2B(self):
+    #    """NM_014357.4: LCE2B, two exons, strand = +1, all coordinate input/output are in HGVS"""
+    #    tx_ac = 'NM_014357.4'
+    #    alt_ac = 'NC_000001.10'
+    #    tm = TranscriptMapper(self.bdi, tx_ac, alt_ac, alt_aln_method='splign')
+    #    parser = hgvs.parser.Parser()
+    #    test_cases = [
+    #         # 5'
+    #        {'g': parser.parse_g_interval('152658599'), 'r': parser.parse_r_interval('1'), 'c': parser.parse_c_interval('-54')},
+    #        {'g': parser.parse_g_interval('152658601'), 'r': parser.parse_r_interval('3'), 'c': parser.parse_c_interval('-52')},
+    #        # cds
+    #        {'g': parser.parse_g_interval('152659319'), 'r': parser.parse_r_interval('54'), 'c': parser.parse_c_interval('-1')},
+    #        {'g': parser.parse_g_interval('152659320'), 'r': parser.parse_r_interval('55'), 'c': parser.parse_c_interval('1')},
+    #        # around end of exon 1
+    #        {'g': parser.parse_g_interval('152658632'), 'r': parser.parse_r_interval('34'), 'c': parser.parse_c_interval('-21')},
+    #        {'g': parser.parse_g_interval('152658633'), 'r': parser.parse_r_interval('34+1'), 'c': parser.parse_c_interval('-21+1')},
+    #        # span
+    #        {'g': parser.parse_g_interval('152658633_152659299'), 'r': parser.parse_r_interval('34+1_35-1'), 'c': parser.parse_c_interval('-21+1_-20-1')},
+    #        # around beginning of exon 2
+    #        {'g': parser.parse_g_interval('152659300'), 'r': parser.parse_r_interval('35'), 'c': parser.parse_c_interval('-20')},
+    #        {'g': parser.parse_g_interval('152659299'), 'r': parser.parse_r_interval('35-1'), 'c': parser.parse_c_interval('-20-1')},
+    #        # around end of exon 2
+    #        {'g': parser.parse_g_interval('152659652'), 'r': parser.parse_r_interval('387'), 'c': parser.parse_c_interval('333')},
+    #        {'g': parser.parse_g_interval('152659653'), 'r': parser.parse_r_interval('388'), 'c': parser.parse_c_interval('*1')},
+    #        # span
+    #        {'g': parser.parse_g_interval('152659651_152659654'), 'r': parser.parse_r_interval('386_389'), 'c': parser.parse_c_interval('332_*2')},
+    #        # 3'
+    #        {'g': parser.parse_g_interval('152659877'), 'r': parser.parse_r_interval('612'), 'c': parser.parse_c_interval('*225')},
+    #    ]
+    #    self.run_cases(tm, test_cases)
 
     def test_transcriptmapper_TranscriptMapper_PTH2(self):
         """NM_178449.3: PTH2, two exons, strand = -1, all coordinate input/output are in HGVS"""
