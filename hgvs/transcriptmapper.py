@@ -27,7 +27,7 @@ class TranscriptMapper(object):
             self.strand = self.tx_exons[0]['alt_strand']
             self.cds_start_i = self.tx_info['cds_start_i']
             self.cds_end_i = self.tx_info['cds_end_i']
-            self.gc_offset = self.tx_exons[0]['alt_start_i'] if self.strand == 1 else self.tx_exons[-1]['alt_start_i']
+            self.gc_offset = self.tx_exons[0]['alt_start_i'] if self.strand == 1 else self.tx_exons[0]['alt_start_i'] - 1
             self.cigar = build_tx_cigar(self.tx_exons, self.strand)
             self.im = IntervalMapper.from_cigar(self.cigar)
             self.tgt_len = self.im.tgt_len
@@ -54,14 +54,15 @@ class TranscriptMapper(object):
 
         g_ci = hgvs_coord_to_ci(g_interval.start.base, g_interval.end.base)
         # frs, fre = (f)orward (r)na (s)tart & (e)nd; forward w.r.t. genome
-        frs, fre = self.im.map_ref_to_tgt(g_ci[0] - self.gc_offset, g_ci[1] - self.gc_offset, max_extent=False)
+        #frs, fre = self.im.map_ref_to_tgt(g_ci[0] - self.gc_offset, g_ci[1] - self.gc_offset, max_extent=False)
+        frs, fre = self.im.map_tgt_to_ref(g_ci[0] - self.gc_offset, g_ci[1] - self.gc_offset, max_extent=False)
         if self.strand == -1:
             frs, fre = self.tgt_len - fre, self.tgt_len - frs
         # get BaseOffsetPosition information for r.
         if self.strand == 1:
-            grs, gre = self.im.map_tgt_to_ref(frs, fre, max_extent=False)
+            grs, gre = self.im.map_ref_to_tgt(frs, fre, max_extent=False)
         elif self.strand == -1:
-            grs, gre = self.im.map_tgt_to_ref((self.tgt_len - fre), (self.tgt_len - frs), max_extent=False)
+            grs, gre = self.im.map_ref_to_tgt((self.tgt_len - fre), (self.tgt_len - frs), max_extent=False)
         grs, gre = grs + self.gc_offset, gre + self.gc_offset
         # 0-width interval indicates an intron.  Need to calculate offsets but we're are in ci coordinates
         # requires adding 1 strategically to get the HGVS position (shift coordinates to 3' end of the ref nucleotide)

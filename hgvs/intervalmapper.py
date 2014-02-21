@@ -162,7 +162,7 @@ class CIGARElement(object):
     @property
     def ref_len(self):
         """returns number of nt/aa consumed in reference sequence for this edit"""
-        return self.len if self.op in '=INX' else 0
+        return self.len if self.op in '=IX' else 0
     @property
     def tgt_len(self):
         """returns number of nt/aa consumed in target sequence for this edit"""
