@@ -61,6 +61,9 @@ def __looks_like_aa3_p(s):
 
 def chr_to_nc(s):
     return chr_to_NC_dict[s]
+
+
+
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/invitae/hgvs)
 ## 

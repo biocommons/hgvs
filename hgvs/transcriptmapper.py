@@ -1,11 +1,13 @@
 """
 Maps transcription coordinates between g <-> r, c, p
 """
+
+import math
+import re
+
 import hgvs.location
 import hgvs.variant
 import hgvs.posedit
-import math
-import re
 from hgvs.intervalmapper import IntervalMapper
 from hgvs.exceptions import *
 
@@ -192,6 +194,7 @@ def ci_to_hgvs_coord(s, e):
     return (None if s is None else _ci_to_hgvs(s),
             None if e is None else _ci_to_hgvs(e) - 1)
 
+
 def hgvs_coord_to_ci(s, e):
     """convert start,end interval in inclusive, discontinuous HGVS coordinates
     (..,-2,-1,1,2,..) to continuous interbase (right-open) coordinates
@@ -204,21 +207,25 @@ def hgvs_coord_to_ci(s, e):
 
 
 def build_tx_cigar(exons, strand):
-    if len(exons) == 0:
-        return None
-    cigarelem_re = re.compile('\d+[=DINX]')
+    cigarelem_re = re.compile('\d+[=DIMNX]')
     def _reverse_cigar(c):
         return ''.join(reversed(cigarelem_re.findall(c)))
+
+    if len(exons) == 0:
+        return None
 
     if strand == -1:
         for i in range(len(exons)):
             exons[i]['cigar'] = _reverse_cigar(exons[i]['cigar'])
 
-    tx_cigar = [exons[0]['cigar']]  # exon 1
-    for i in range(1, len(exons)):     # and intron + exon pairs thereafter
-        tx_cigar += [str(exons[i]['alt_start_i'] - exons[i - 1]['alt_end_i']) + 'N',
+    tx_cigar = [exons[0]['cigar']]    # exon 1
+    for i in range(1, len(exons)):    # and intron + exon pairs thereafter
+        tx_cigar += [str(exons[i]['alt_start_i'] - exons[i-1]['alt_end_i']) + 'N',
                      exons[i]['cigar']]
-    return ''.join(tx_cigar)
+    
+    tx_cigar_str = ''.join(tx_cigar)
+    
+    return tx_cigar_str
 
 
 if __name__ == '__main__':
