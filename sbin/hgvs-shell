@@ -8,11 +8,10 @@ import hgvs.parser
 import hgvs.hgvsmapper
 import hgvs.validator
 
-alt_ac = 'NC_000007.13'
 alt_aln_method = 'splign'
 hgvs_g = 'NC_000007.13:g.36561662C>T'
 hgvs_c = 'NM_001637.3:c.1582G>A'
-hgvs_p = 'NP_000001.1:p.Gly25TrpfsTer10'
+hgvs_p = 'NP_001628.1:p.(Gly528Arg)'
 
 bdi_uta1 = bdi.sources.uta1.connect()
 
@@ -24,11 +23,7 @@ var_c = hgvsparser.parse_hgvs_variant(hgvs_c)
 var_p = hgvsparser.parse_hgvs_variant(hgvs_p)
 
 var_g_to_c = hgvsmapper.hgvsg_to_hgvsc( var_g, var_c.ac )
-var_r = hgvsmapper.hgvsg_to_hgvsr(var_g, var_c.ac, 'splign')
-#var_c_to_g = hgvsmapper.hgvsc_to_hgvsg( var_c, ref )
-
-# orignal uta0
-#var_g_to_c = hgvsmapper.hgvsg_to_hgvsc( var_g, var_c.ac, ref )
+var_g_to_r = hgvsmapper.hgvsg_to_hgvsr(var_g, var_c.ac, 'splign')
 #var_c_to_g = hgvsmapper.hgvsc_to_hgvsg( var_c, ref )
 
 IPython.embed()

@@ -17,6 +17,7 @@ import hgvs.utils.altseqbuilder as altseqbuilder
 from hgvs.utils import reverse_complement
 from hgvs.utils import chr_to_nc
 
+
 class HGVSMapper(object):
     """
     Maps HGVS variants to and from g., r., c., and p. representations.
@@ -251,7 +252,11 @@ class HGVSMapper(object):
             raise NotImplemented('Only NARefAlt/Dup types are currently implemented')
         return edit_out
 
+
 if __name__ == '__main__':
+    raise Exception("""This code is broken as of the upgrade from interface0 to interface1""")
+    
+
     import hgvs.parser
     import hgvs.hgvsmapper
     from bdi.sources.uta0_sqlite import UTA0

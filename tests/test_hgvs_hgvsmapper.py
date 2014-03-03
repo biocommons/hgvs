@@ -13,9 +13,6 @@ class Test_HGVSMapper(unittest.TestCase):
 
     def test_1(self):
         # From garcia.tsv:
-        # AOAH    NM_001177507.1:c.1486G>A      
-        hgvs_g = 'NC_000007.13:g.36561662C>T'
-        hgvs_c = 'NM_001637.3:c.1582G>A'
         hgvs_g = 'NC_000007.13:g.36561662C>T'
         hgvs_c = 'NM_001637.3:c.1582G>A'
         hgvs_p = 'NP_001628.1:p.(Gly528Arg)'  # from Mutalyzer

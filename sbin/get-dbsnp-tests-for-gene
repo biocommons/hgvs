@@ -11,9 +11,9 @@ if __name__ == '__main__':
     hgnc = sys.argv[1]
     ec = eutils.clientx.ClientX()
 
-    print('\t'.join(['id','HGVSg','HGVSc','HGVSp']))
-
     results = ec.fetch_snps_for_gene(hgnc)
+
+    print('\t'.join(['id','HGVSg','HGVSc','HGVSp']))
     for rs in results:
         hgvs_g = rs.hgvs_genome_tags
         if len(hgvs_g) != 1:
