@@ -1,5 +1,4 @@
 import os
-import sys
 
 from ez_setup import use_setuptools
 use_setuptools()
@@ -13,13 +12,13 @@ with open(os.path.join(root_dir, 'doc/description.txt')) as f:
     long_description = f.read()
 
 setup(
-    license = "License :: OSI Approved :: Apache Software License",
+    license = 'Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)',
     long_description = long_description,
     use_hg_version = True,
     zip_safe = False,
 
     author = 'HGVS Contributors',
-    author_email = 'reece+hgvs@invitae.com',
+    author_email = 'reecehart+hgvs@gmail.com',
     description = """HGVS Parser""",
     name = "hgvs",
     package_data = {'hgvs': ['data/*']},
@@ -39,6 +38,7 @@ setup(
         "Topic :: Scientific/Engineering :: Bio-Informatics",
         "Topic :: Scientific/Engineering :: Medical Science Apps.",
         ],
+
     keywords = [
         'bioinformatics',
         'computational biology',
@@ -65,7 +65,6 @@ setup(
 
     tests_require = [
         'coverage',
-        'nose',
         ],
     )
 
