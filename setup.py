@@ -14,7 +14,7 @@ with open(os.path.join(root_dir, 'doc/description.txt')) as f:
 setup(
     license = 'Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)',
     long_description = long_description,
-    use_hg_version = True,
+    use_vcs_version = True,
     zip_safe = False,
 
     author = 'HGVS Contributors',
