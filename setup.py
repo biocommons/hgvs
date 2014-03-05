@@ -61,6 +61,7 @@ setup(
         'hgtools',
         'nose',
         'sphinx',
+        'sphinxcontrib-fulltoc',
         ],
 
     tests_require = [
