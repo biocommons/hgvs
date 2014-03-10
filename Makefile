@@ -63,8 +63,9 @@ bdist bdist_egg build build_sphinx install sdist upload_sphinx upload_docs: %:
 #= TESTING
 
 #=> test, test-with-coverage -- per-commit test target for CI
-test test-with-coverage: # make setup is presumed
-	python setup.py nosetests --with-xunit --with-coverage --cover-erase --cover-html 
+# see test configuration in setup.cfg
+test test-with-coverage:
+	nosetests
 
 #=> ci-test -- per-commit test target for CI
 ci-test: test-with-coverage

@@ -9,6 +9,13 @@ This package provides a Python library to facilitate the use of genome,
 transcript, and protein variants that are represented using the Human
 Genome Variation Society (`HGVS`_) recommendations.
 
+.. IMPORTANT::
+   hgvs 0.2.x **requires** the uta1 interface.  Apologies to users who
+   received errors with 0.1.11 due to this undocumented change.  The
+   example below has been updated.  Other examples will be updated soon.
+   Examples will now be written in doctest format and included in testing.
+
+
 Features
 -------- 
 
@@ -38,20 +45,21 @@ An Example
   $ mkvirtualenv hgvs-test
   (hgvs-test)$ pip install --upgrade setuptools
   (hgvs-test)$ pip install hgvs
-  (hgvs-test)$ ipython
-  In [1]: import hgvs.parser
-  In [2]: hp = hgvs.parser.Parser()
-  In [3]: hgvs_g = 'NC_000007.13:g.36561662C>T'
-  In [4]: var_g = hp.parse_hgvs_variant(hgvs_g)
-  In [5]: var_g
-  Out[5]: Variant(ac=NC_000007.13, type=g, posedit=36561662C>T)
+  (hgvs-test)$ python
 
-  In [6]: import bdi.sources.uta0, hgvs.hgvsmapper
-  In [7]: bdi = bdi.sources.uta0.connect()
-  In [8]: hm = hgvs.hgvsmapper.HGVSMapper( bdi, cache_transcripts=True )
-  In [9]: var_c = hm.hgvsg_to_hgvsc( var_g, 'NM_001637.3' )
-  In [10]: var_c
-  Out[10]: Variant(ac=NM_001637.3, type=c, posedit=1582G>A)
+  >>> import hgvs.parser
+  >>> hp = hgvs.parser.Parser()
+  >>> hgvs_g = 'NC_000007.13:g.36561662C>T'
+  >>> var_g = hp.parse_hgvs_variant(hgvs_g)
+  >>> var_g
+  SequenceVariant(ac=NC_000007.13, type=g, posedit=36561662C>T)
+
+  >>> import bdi.sources.uta1, hgvs.hgvsmapper
+  >>> bdi = bdi.sources.uta1.connect()
+  >>> hm = hgvs.hgvsmapper.HGVSMapper( bdi, cache_transcripts=True )
+  >>> var_c = hm.hgvsg_to_hgvsc( var_g, 'NM_001637.3' )
+  >>> var_c
+  SequenceVariant(ac=NM_001637.3, type=c, posedit=1582G>A)
 
 There are `more examples in the documentation <http://pythonhosted.org/hgvs/examples.html>`_.
 
