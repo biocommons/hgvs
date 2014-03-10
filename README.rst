@@ -9,11 +9,18 @@ This package provides a Python library to facilitate the use of genome,
 transcript, and protein variants that are represented using the Human
 Genome Variation Society (`HGVS`_) recommendations.
 
-.. IMPORTANT::
-   hgvs 0.2.x **requires** the uta1 interface.  Apologies to users who
-   received errors with 0.1.11 due to this undocumented change.  The
-   example below has been updated.  Other examples will be updated soon.
-   Examples will now be written in doctest format and included in testing.
+----
+
+.. uses definition list because bitbucket doesn't style admonitions
+
+IMPORTANT
+
+  hgvs 0.2.x **requires** the uta1 interface.  Apologies to users who
+  received errors with 0.1.11 due to this undocumented change.  The
+  example below has been updated.  Other examples will be updated soon.
+  Examples will now be written in doctest format and included in testing.
+
+----
 
 
 Features
