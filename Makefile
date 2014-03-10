@@ -53,7 +53,6 @@ upload_all: upload upload_iv upload_docs
 
 #=> develop, build_sphinx, sdist, upload_docs, etc
 develop: %:
-	pip install --upgrade setuptools
 	python setup.py $*
 bdist bdist_egg build build_sphinx install sdist upload_sphinx upload_docs: %:
 	python setup.py $*
@@ -64,8 +63,8 @@ bdist bdist_egg build build_sphinx install sdist upload_sphinx upload_docs: %:
 
 #=> test, test-with-coverage -- per-commit test target for CI
 # see test configuration in setup.cfg
-test test-with-coverage: setup
-	nosetests
+test test-with-coverage:
+	python setup.py nosetests
 
 #=> ci-test -- per-commit test target for CI
 ci-test: test
