@@ -64,12 +64,13 @@ bdist bdist_egg build build_sphinx install sdist upload_sphinx upload_docs: %:
 
 #=> test, test-with-coverage -- per-commit test target for CI
 # see test configuration in setup.cfg
-test test-with-coverage:
+test test-with-coverage: setup
 	nosetests
 
 #=> ci-test -- per-commit test target for CI
-ci-test: test-with-coverage
+ci-test: test
 
+#=> ci-test-ve -- test in virtualenv
 ci-test-ve: ve
 	source ve/bin/activate; \
 	make ci-test
