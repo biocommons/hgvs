@@ -11,14 +11,13 @@ Genome Variation Society (`HGVS`_) recommendations.
 
 ----
 
-.. uses definition list because bitbucket doesn't style admonitions
+  .. use rudimentary styling because bitbucket doesn't style admonitions
 
-IMPORTANT
-
-  hgvs 0.2.x **requires** the uta1 interface.  Apologies to users who
-  received errors with 0.1.11 due to this undocumented change.  The
-  example below has been updated.  Other examples will be updated soon.
-  Examples will now be written in doctest format and included in testing.
+  **IMPORTANT**: hgvs 0.2.x **requires** the uta1 interface.  Apologies to
+  users who received errors with 0.1.11 due to this undocumented change.
+  The example below has been updated.  Other examples will be updated
+  soon.  Examples will now be written in doctest format and included in
+  testing.
 
 ----
 
