@@ -2,8 +2,9 @@
 HGVS -- Tools to Parse, Format, and Map Biological Sequence Variants
 ====================================================================
 
-| Users: `PyPI <https://pypi.python.org/pypi?name=hgvs>`_ | `Documentation <http://pythonhosted.org/hgvs/>`_ | `Discuss <https://groups.google.com/forum/#!forum/hgvs-discuss>`_
-| Developers: |build_status| | `Source <https://bitbucket.org/invitae/hgvs>`_ | `Issues <https://bitbucket.org/invitae/hgvs/issues?status=new&status=open>`_
+| Use: `PyPI <https://pypi.python.org/pypi?name=hgvs>`_  (status: |install_status|) | `Documentation <http://pythonhosted.org/hgvs/>`_ 
+| Interact: `Discuss <https://groups.google.com/forum/#!forum/hgvs-discuss>`_ | `Report an Issue <https://bitbucket.org/invitae/hgvs/issues?status=new&status=open>`_
+| Develop: `Source <https://bitbucket.org/invitae/hgvs>`_ (status: |build_status|)
 
 This package provides a Python library to facilitate the use of genome,
 transcript, and protein variants that are represented using the Human
@@ -76,10 +77,10 @@ There are `more examples in the documentation <http://pythonhosted.org/hgvs/exam
 .. _Invitae: http://invitae.com/
 
 
-.. |build_status| image:: https://travis-ci.org/reece/hgvs-integration-test.png?branch=master
+.. |install_status| image:: https://travis-ci.org/reece/hgvs-integration-test.png?branch=master
   :target: https://travis-ci.org/reece/hgvs-integration-test
   :align: middle
 
-.. |build_status_old| image:: https://drone.io/bitbucket.org/invitae/hgvs/status.png
+.. |build_status| image:: https://drone.io/bitbucket.org/invitae/hgvs/status.png
   :target: https://drone.io/bitbucket.org/invitae/hgvs
-  :align: middle
+  :align: middle 
