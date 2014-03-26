@@ -62,11 +62,12 @@ An Example
   SequenceVariant(ac=NC_000007.13, type=g, posedit=36561662C>T)
 
   >>> import bdi.sources.uta1, hgvs.hgvsmapper
-  >>> bdi = bdi.sources.uta1.connect()
-  >>> hm = hgvs.hgvsmapper.HGVSMapper( bdi, cache_transcripts=True )
-  >>> var_c = hm.hgvsg_to_hgvsc( var_g, 'NM_001637.3' )
+  >>> uta1 = bdi.sources.uta1.connect()
+  >>> hm = hgvs.hgvsmapper.HGVSMapper(uta1, cache_transcripts=True)
+  >>> var_c = hm.hgvsg_to_hgvsc(var_g, 'NM_001637.3')
   >>> var_c
   SequenceVariant(ac=NM_001637.3, type=c, posedit=1582G>A)
+
 
 There are `more examples in the documentation <http://pythonhosted.org/hgvs/examples.html>`_.
 
@@ -84,3 +85,6 @@ There are `more examples in the documentation <http://pythonhosted.org/hgvs/exam
 .. |build_status| image:: https://drone.io/bitbucket.org/invitae/hgvs/status.png
   :target: https://drone.io/bitbucket.org/invitae/hgvs
   :align: middle 
+
+.. https://badge.fury.io/py/hgvs.png
+.. http://badge.fury.io/for/py/uta
