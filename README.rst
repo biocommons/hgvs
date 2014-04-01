@@ -60,6 +60,8 @@ An Example
   >>> var_g = hp.parse_hgvs_variant(hgvs_g)
   >>> var_g
   SequenceVariant(ac=NC_000007.13, type=g, posedit=36561662C>T)
+  >>> str(var_g)
+  'NC_000007.13:g.36561662C>T'
 
   >>> import bdi.sources.uta1, hgvs.hgvsmapper
   >>> uta1 = bdi.sources.uta1.connect()
@@ -67,6 +69,8 @@ An Example
   >>> var_c = hm.hgvsg_to_hgvsc(var_g, 'NM_001637.3')
   >>> var_c
   SequenceVariant(ac=NM_001637.3, type=c, posedit=1582G>A)
+  >>> str(var_c)
+  'NM_001637.3:c.1582G>A'
 
 
 There are `more examples in the documentation <http://pythonhosted.org/hgvs/examples.html>`_.
