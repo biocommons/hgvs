@@ -2,23 +2,24 @@
 HGVS -- Tools to Parse, Format, and Map Biological Sequence Variants
 ====================================================================
 
-| Use: `PyPI <https://pypi.python.org/pypi?name=hgvs>`_  (status: |install_status|) | `Documentation <http://pythonhosted.org/hgvs/>`_ 
-| Interact: `Discuss <https://groups.google.com/forum/#!forum/hgvs-discuss>`_ | `Report an Issue <https://bitbucket.org/invitae/hgvs/issues?status=new&status=open>`_
-| Develop: `Source <https://bitbucket.org/invitae/hgvs>`_ (status: |build_status|)
+| **Use:** `PyPI <https://pypi.python.org/pypi?name=hgvs>`_  (status: |install_status|) | `Documentation <http://pythonhosted.org/hgvs/>`_ 
+| **Interact:** `Mailing List <https://groups.google.com/forum/#!forum/hgvs-discuss>`_ | `Report an Issue <https://bitbucket.org/invitae/hgvs/issues?status=new&status=open>`_
+| **Develop:** `Source <https://bitbucket.org/invitae/hgvs>`_ (status: |build_status|)
 
 This package provides a Python library to facilitate the use of genome,
 transcript, and protein variants that are represented using the Human
 Genome Variation Society (`HGVS`_) recommendations.
 
-----
 
-  .. use rudimentary styling because bitbucket doesn't style admonitions
+Important Notes
+---------------
 
-  **IMPORTANT**: hgvs 0.2.x **requires** the uta1 interface.  Apologies to
-  users who received errors with 0.1.11 due to this undocumented change.
-  The example below has been updated.  Other examples will be updated
-  soon.  Examples will now be written in doctest format and included in
-  testing.
+  * This package is under development. Although no serious bugs are known,
+    you are encouraged to `browse issues
+    <https://bitbucket.org/invitae/hgvs/issues>`_. Please report any
+    issues you find.
+  * Consider using a pip package specification like "hgvs >=0.1,<0.2" to
+    ensure stay within minor releases for API stability.
 
 ----
 
