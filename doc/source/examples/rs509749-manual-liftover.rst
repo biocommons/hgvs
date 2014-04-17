@@ -7,13 +7,13 @@ http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=509749
 
 .. code:: python
 
-    import bdi.sources.uta0
+    import bdi.sources.uta1
     import hgvs.hgvsmapper
     import hgvs.parser
 .. code:: python
 
-    bdi = bdi.sources.uta0.connect()
-    hgvsmapper = hgvs.hgvsmapper.HGVSMapper(bdi)
+    u1 = bdi.sources.uta1.connect()
+    hgvsmapper = hgvs.hgvsmapper.HGVSMapper(u1)
     hgvsparser = hgvs.parser.Parser()
 .. code:: python
 
@@ -26,13 +26,13 @@ http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=509749
 .. parsed-literal::
 
     (SequenceVariant(ac=NM_001261456.1, type=c, posedit=1762A>G),
-     SequenceVariant(ac=NP_001248385.1, type=p, posedit=Met588Val))
+     SequenceVariant(ac=MD5_e999a940ca422ec8cab9bc3cc64e0d7d, type=p, posedit=(Met588Val)))
 
 
 
 .. code:: python
 
-    var_g = hgvsmapper.hgvsc_to_hgvsg(var_c1,'GRCh37.p10')
+    var_g = hgvsmapper.hgvsc_to_hgvsg(var_c1,'NC_000001.10')
     var_g
 
 
@@ -45,21 +45,43 @@ http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=509749
 
 .. code:: python
 
-    txs = bdi.get_tx_for_gene('LY9')
-    len(txs)
-    [ tx['ac'] for tx in txs ] 
+    txs = u1.get_tx_for_gene('LY9')
+    txs
 
 
 
 .. parsed-literal::
 
-    ['NM_002348.3', 'NM_001261456.1', 'NM_001261457.1', 'NM_001033667.2']
+    [['LY9', 30, 1998, 'ENST00000263285', 'NC_000001.10', 'genebuild'],
+     ['LY9', 1, 583, 'ENST00000368039', 'NC_000001.10', 'genebuild'],
+     ['LY9', 0, 1648, 'ENST00000392203', 'NC_000001.10', 'genebuild'],
+     ['LY9', 0, 1833, 'ENST00000368037', 'NC_000001.10', 'genebuild'],
+     ['LY9', 211, 1024, 'ENST00000368035', 'NC_000001.10', 'genebuild'],
+     ['LY9', 50, 1616, 'ENST00000341032', 'NC_000001.10', 'genebuild'],
+     ['LY9', 170, 1751, 'ENST00000368041', 'NC_000001.10', 'genebuild'],
+     ['LY9', 1094, 1907, 'ENST00000368040', 'NC_000001.10', 'genebuild'],
+     ['LY9', 114, 2040, 'NM_001261456.1', 'AC_000133.1', 'splign'],
+     ['LY9', 114, 2040, 'NM_001261456.1', 'NC_000001.10', 'blat'],
+     ['LY9', 114, 2040, 'NM_001261456.1', 'NC_000001.10', 'splign'],
+     ['LY9', 114, 2040, 'NM_001261456.1', 'NC_018912.2', 'splign'],
+     ['LY9', 114, 696, 'NM_001033667.2', 'AC_000133.1', 'splign'],
+     ['LY9', 114, 696, 'NM_001033667.2', 'NC_000001.10', 'blat'],
+     ['LY9', 114, 696, 'NM_001033667.2', 'NC_000001.10', 'splign'],
+     ['LY9', 114, 696, 'NM_001033667.2', 'NC_018912.2', 'splign'],
+     ['LY9', 114, 2082, 'NM_002348.3', 'AC_000133.1', 'splign'],
+     ['LY9', 114, 2082, 'NM_002348.3', 'NC_000001.10', 'blat'],
+     ['LY9', 114, 2082, 'NM_002348.3', 'NC_000001.10', 'splign'],
+     ['LY9', 114, 2082, 'NM_002348.3', 'NC_018912.2', 'splign'],
+     ['LY9', 114, 1812, 'NM_001261457.1', 'AC_000133.1', 'splign'],
+     ['LY9', 114, 1812, 'NM_001261457.1', 'NC_000001.10', 'blat'],
+     ['LY9', 114, 1812, 'NM_001261457.1', 'NC_000001.10', 'splign'],
+     ['LY9', 114, 1812, 'NM_001261457.1', 'NC_018912.2', 'splign']]
 
 
 
 .. code:: python
 
-    var_c2 = hgvsmapper.hgvsg_to_hgvsc(var_g,'NM_001261457.1')
+    var_c2 = hgvsmapper.hgvsg_to_hgvsc(var_g,'NM_001261457.1',alt_aln_method='splign')
     var_p2 = hgvsmapper.hgvsc_to_hgvsp(var_c2, None)
     var_c2, var_p2
 
@@ -68,6 +90,10 @@ http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=509749
 .. parsed-literal::
 
     (SequenceVariant(ac=NM_001261457.1, type=c, posedit=1534A>G),
-     SequenceVariant(ac=NP_001248386.1, type=p, posedit=Met512Val))
+     SequenceVariant(ac=MD5_921ebefe79bff479f4bfa17e133fc084, type=p, posedit=(Met512Val)))
 
 
+
+.. code:: python
+
+    
