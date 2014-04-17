@@ -14,10 +14,10 @@ Genome Variation Society (`HGVS`_) recommendations.
 Important Notes
 ---------------
 
-* This package is under development. Although no serious bugs are known,
+* This package is under development.  Although no serious bugs are known,
   you are encouraged to `browse issues
-  <https://bitbucket.org/invitae/hgvs/issues>`_. Please report any
-  issues you find.
+  <https://bitbucket.org/invitae/hgvs/issues>`_. Please report any issues
+  you find.
 * Consider using a pip package specification like "hgvs >=0.1,<0.2" to
   ensure stay within minor releases for API stability.
 

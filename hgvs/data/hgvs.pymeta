@@ -17,7 +17,7 @@
 # 
 #     NM_01234.5 : c . [ 12 A>C ; 34 -56 _ 78 +90 del ]
 #     -----------------------------------------------    hgvs_variant
-#                  -     ----------------------------    edit = type, posedits
+#                  -     ----------------------------    type, posedits
 #                        ------   -------------------    posedits = two posedit instances
 #                        -- ---   --------------- ---    2 x posedit = interval,edit
 #                        -- - -   ------   ------ ---    int = <start,end>; edit = <ref,alt>
@@ -101,6 +101,8 @@ r_hgvs_position   = accn:ac ':' 'r':type      '.'   r_interval:pos -> hgvs.hgvsp
 ############################################################################
 ## PosEdits -- position + edit objects
 
+# any_posedit = g_posedit | m_posedit | n_posedit | c_posedit | r_posedit | p_posedit 
+
 g_posedit   = gmn_posedit
 m_posedit   = gmn_posedit
 n_posedit   = gmn_posedit
@@ -124,8 +126,7 @@ p_posedit_special =
 ## subst, delins, del, and ins are represented using two classes, NARefAlt
 ## and AARefAlt.  See edit.py for the meaning of the ref and alt instance
 ## variables.
-
-## TODO: Repeat
+## "_mu" = "maybe uncertain"
 
 dna_edit_mu = dna_edit | '(' dna_edit:edit ')' -> edit.set_uncertain()
 dna_edit   = dna_dupN | dna_subst | dna_delins | dna_ins | dna_del | dna_dup | dna_copy
@@ -138,32 +139,34 @@ dna_dup    = 'dup' <dna*>:seq         -> hgvs.edit.Dup(seq=seq)
 dna_copy = 'copy' num:n -> hgvs.edit.NACopy(copy=n)
 dna_dupN = 'dup' num:n -> hgvs.edit.NADupN(n=n)
 
+## TODO: Repeat
 # Hey, self- I caught you! Stick to one feature add at a time!
 # dna_rpt    = '[' num:count ']' -> Repeat(seq=None, min=count, max=count)
 # 		     | <dna+>:seq '(' num:min '_' num:max ')' -> Repeat(seq=seq, min=min, max=max)
 
 rna_edit_mu = rna_edit | '(' rna_edit:edit ')' -> edit.set_uncertain()
 rna_edit   = rna_subst | rna_delins | rna_ins | rna_del | rna_dup
-rna_subst  = rna:ref '>' rna:alt      -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
+rna_subst  = rna:ref '>' rna:alt             -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
 rna_delins = 'del' (<num>|<rna*>):ref 'ins' <rna+>:alt  -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
-rna_del    = 'del' (<num>|<rna*>):ref -> hgvs.edit.NARefAlt(ref=ref,alt=None)
-rna_ins    = 'ins' <rna+>:alt         -> hgvs.edit.NARefAlt(ref=None,alt=alt)
-rna_dup    = 'dup' <rna*>:seq         -> hgvs.edit.Dup(seq=seq)
+rna_del    = 'del' (<num>|<rna*>):ref        -> hgvs.edit.NARefAlt(ref=ref,alt=None)
+rna_ins    = 'ins' <rna+>:alt                -> hgvs.edit.NARefAlt(ref=None,alt=alt)
+rna_dup    = 'dup' <rna*>:seq                -> hgvs.edit.Dup(seq=seq)
 
 pro_edit_mu = pro_edit | '(' pro_edit:edit ')' -> edit.set_uncertain()
 pro_edit   = pro_fs | pro_ext | pro_subst | pro_delins | pro_ins | pro_del | pro_dup
-pro_subst  = (aat13|'?'):alt -> hgvs.edit.AASub(ref='',alt=hgvs.utils.aa_to_aa1(alt))
-pro_delins = 'delins' aat13_seq:alt -> hgvs.edit.AARefAlt(ref='',alt=hgvs.utils.aa_to_aa1(alt))
-pro_del    = 'del'                         -> hgvs.edit.AARefAlt(ref='',alt=None)
-pro_ins    = 'ins' aat13_seq:alt -> hgvs.edit.AARefAlt(ref=None,alt=hgvs.utils.aa_to_aa1(alt))
-pro_dup    = 'dup'                         -> hgvs.edit.Dup(seq='')
+pro_subst  = (aat13|'?'):alt                 -> hgvs.edit.AASub(ref='',alt=hgvs.utils.aa_to_aa1(alt))
+pro_delins = 'delins' aat13_seq:alt          -> hgvs.edit.AARefAlt(ref='',alt=hgvs.utils.aa_to_aa1(alt))
+pro_del    = 'del'                           -> hgvs.edit.AARefAlt(ref='',alt=None)
+pro_ins    = 'ins' aat13_seq:alt             -> hgvs.edit.AARefAlt(ref=None,alt=hgvs.utils.aa_to_aa1(alt))
+pro_dup    = 'dup'                           -> hgvs.edit.Dup(seq='')
 pro_fs     = (aat13 | (-> '')):alt fs:length -> hgvs.edit.AAFs(ref='',alt=hgvs.utils.aa_to_aa1(alt),length=length)
 pro_ext    = aat13?:alt ext:(aaterm, length) -> hgvs.edit.AAExt(ref='',alt=hgvs.utils.aa_to_aa1(alt),aaterm=hgvs.utils.aa_to_aa1(aaterm), length=length)
 
 
 ############################################################################
 ## Locations
-## This is complex because HGVS allows positions and intervals to be uncertain
+# Much of the complexity below is to handle the combinations of various
+# location syntax and uncertainty
 
 # potentially indefinite/uncertain intervals
 g_interval = gmn_interval
