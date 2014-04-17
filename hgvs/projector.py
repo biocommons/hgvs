@@ -12,19 +12,21 @@ class Projector(object):
     The Projector class implements liftover between two transcripts via a
     common reference sequence.
 
-    :param bdi: Bioinformatics Data Interface-compliant instance (see :class:`bdi.interface0.Interface0`)
+    :param bdi: Bioinformatics Data Interface-compliant instance (see :class:`bdi.interface1.Interface1`)
     :param ref: string representing the common reference assembly (e.g., GRCh37.p10)
     :param src_ac: string representing the source transcript accession (e.g., NM_000551.2)
     :param dst_ac: string representing the destination transcript accession (e.g., NM_000551.3)
+    :param src_alt_aln_method: string representing the source transcript alignment method
+    :param dst_alt_aln_method: string representing the destination transcript alignment method
 
     This class assumes (and verifies) that the transcripts are on the same
     strand. This assumption obviates some work in flipping sequence
     variants twice unnecessarily.
     """
-    def __init__(self,bdi,alt_ac,src_ac,dst_ac,src_atl_aln_method,dst_alt_aln_method):
+    def __init__(self,bdi,alt_ac,src_ac,dst_ac,src_alt_aln_method='splign',dst_alt_aln_method='splign'):
         self.bdi = bdi
         self.alt_ac = alt_ac
-        self.src_tm = hgvs.transcriptmapper.TranscriptMapper(bdi,src_ac,alt_ac,src_atl_aln_method)
+        self.src_tm = hgvs.transcriptmapper.TranscriptMapper(bdi,src_ac,alt_ac,src_alt_aln_method)
         self.dst_tm = hgvs.transcriptmapper.TranscriptMapper(bdi,dst_ac,alt_ac,dst_alt_aln_method)
 
     def project_interval_forward(self,c_interval):
