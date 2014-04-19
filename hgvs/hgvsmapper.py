@@ -2,7 +2,10 @@
 hgvs.hgvsmapper
 """
 
-import os,re,sys
+import copy
+import os
+import re
+import sys
 
 from Bio.Seq import Seq
 import recordtype
@@ -235,7 +238,7 @@ class HGVSMapper(object):
         """
         if isinstance(edit_in, hgvs.edit.NARefAlt):
             if strand == 1:
-                edit_out = edit_in
+                edit_out = copy.deepcopy(edit_in)
             else:
                 edit_out = hgvs.edit.NARefAlt(
                     ref = reverse_complement(edit_in.ref),
@@ -243,7 +246,7 @@ class HGVSMapper(object):
                     )
         elif isinstance(edit_in, hgvs.edit.Dup):
             if strand == 1:
-                edit_out = edit_in
+                edit_out = copy.deepcopy(edit_in)
             else:
                 edit_out = hgvs.edit.Dup(
                     seq = reverse_complement(edit_in.seq)
@@ -253,29 +256,6 @@ class HGVSMapper(object):
         return edit_out
 
 
-if __name__ == '__main__':
-    raise Exception("""This code is broken as of the upgrade from interface0 to interface1""")
-    
-
-    import hgvs.parser
-    import hgvs.hgvsmapper
-    from bdi.sources.uta0_sqlite import UTA0
-
-    bdi = UTA0('/tmp/uta-0.0.4.db')
-    hp = hgvs.parser.Parser()
-    hm = hgvs.hgvsmapper.HGVSMapper(bdi, cache_transcripts=True)
-
-    ref = 'GRCh37.p10'
-
-    # From garcia.tsv:
-    # AOAH    NM_001177507.1:c.1486G>A      
-    hgvs_g = 'NC_000007.13:g.36561662C>T'
-    hgvs_c = 'NM_001637.3:c.1582G>A'
-    
-    var_g = hp.parse_hgvs_variant(hgvs_g)
-    var_c = hm.hgvsg_to_hgvsc( var_g, 'NM_001637.3' )
-
-    print( str(var_g) + ' --> ' + str(var_c) )
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/invitae/hgvs)
