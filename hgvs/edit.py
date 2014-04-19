@@ -28,6 +28,47 @@ class Edit(object):
     pass
 
 class NARefAlt( Edit, recordtype.recordtype('NARefAlt', [('ref',None),('alt',None),('uncertain',False)]) ):
+    """
+    represents substitutions, deletions, insertions, and indels.
+
+    Attributes:
+    :ivar ref: reference sequence or length
+    :ivar alt: alternate sequence
+    :ivar uncertain: boolean indicating whether the variant is uncertain/undetermined
+    """
+
+    @property
+    def ref_s(self):
+        """
+        returns a string representing the ref sequence, if it is not None and smells like a sequence
+
+        >>> NARefAlt('ACGT').ref_s
+        'ACGT'
+        >>> NARefAlt('7').ref_s
+        >>> NARefAlt(7).ref_s
+
+        """
+        return self.ref if (isinstance(self.ref,basestring) and self.ref and self.ref[0] in 'ACGTUN') else None
+
+    @property
+    def ref_n(self):
+        """
+        returns an integer, either from the `ref' instance variable if it's a number, or the length of
+        ref if it's a string, or None otherwise
+
+        >>> NARefAlt('ACGT').ref_n
+        4
+        >>> NARefAlt('7').ref_n
+        7
+        >>> NARefAlt(7).ref_n
+        7
+        """
+        try:
+            return int(self.ref)
+        except ValueError:
+            return len(self.ref) if self.ref else None
+
+
     def __str__(self):
         if self.ref is None and self.alt is None:
             raise HGVSError('RefAlt: ref and alt sequences are both undefined')
@@ -216,6 +257,11 @@ class NADupN(Edit, recordtype.recordtype('NADupN', ['n', ('uncertain', False)]))
     def set_uncertain(self):
         self.uncertain = True
         return self
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
 
 
 # class Inv( Edit, recordtype.recordtype('Inv', [], default=None) ):
