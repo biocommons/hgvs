@@ -240,8 +240,14 @@ class HGVSMapper(object):
             if strand == 1:
                 edit_out = copy.deepcopy(edit_in)
             else:
+                try:
+                    # if smells like an int, do nothing
+                    int(edit_in.ref)
+                    ref = edit_in.ref
+                except (ValueError, TypeError):
+                    ref = reverse_complement(edit_in.ref)
                 edit_out = hgvs.edit.NARefAlt(
-                    ref = reverse_complement(edit_in.ref),
+                    ref = ref,
                     alt = reverse_complement(edit_in.alt),
                     )
         elif isinstance(edit_in, hgvs.edit.Dup):

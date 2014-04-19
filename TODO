@@ -1,13 +1,22 @@
 -*-outline-*-
 
-* IMMEDIATE
+Actionable issues are at https://bitbucket.org/invitae/hgvs/issues.
+This file is intended for ideas that need fleshing out.
 
-** split gmn_ in grammar for parity
-- at least make all gmn rules distinct, to match c,r,p
+* class restructuring
+current: intervalmapper, transcriptmapper, hgvsmapper, projector, validator
+
+* clean/standardize naming
+** Strive for this:
+- hgvs_{,g,c,p} -- string
+- var_{,g,c,p} -- variant
+- ival -- interval
+- location stuff: interval, position, location, pos, loc, start/end v. start/stop, posedit
 
 
-* LATER
+** violations:
+- hgvsmapper -- would become variantmapper
+- location-ish stuff -- everywhere
 
-** hgvs formatter
-use in lieu of __str__ currently
-support options, incl. aa1 or aa3
+* move intrinsic validation to posedits (and recurse)
+
