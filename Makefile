@@ -29,7 +29,7 @@ config:
 ############################################################################
 #= SETUP, INSTALLATION, PACKAGING
 
-# => setup
+#=> setup
 setup: develop
 
 #=> docs -- make sphinx docs
@@ -39,27 +39,34 @@ docs: setup build_sphinx
 # sphinx docs needs to be able to import packages
 build_sphinx: develop
 
-#=> upload
-upload:
-	python setup.py bdist_egg sdist upload
-
-#=> upload_iv: upload to invitae (internal) pypi
-# This requires an invitae config stanza in ~/.pypirc
-upload_iv:
-	python setup.py bdist_egg sdist upload upload -r invitae
-
-#=> upload_all: upload, upload_iv, and upload_docs
-upload_all: upload upload_iv upload_docs
-
-#=> develop, build_sphinx, sdist, upload_docs, etc
+#=> develop, bdist, bdist_egg, sdist, upload_docs, etc
 develop: %:
+	#pip install --upgrade setuptools
 	python setup.py $*
-bdist bdist_egg build build_sphinx install sdist upload_sphinx upload_docs: %:
+
+bdist bdist_egg build build_sphinx install sdist: %:
 	python setup.py $*
+
+#=> upload
+upload: upload_pypi
+
+#=> upload_all: upload_pypi, upload_invitae, and upload_docs
+upload_all: upload_pypi upload_docs
+
+#=> upload_*: upload to named pypi service (requires config in ~/.pypirc)
+upload_%:
+	python setup.py bdist_egg sdist upload -r $*
+
+#=> upload_docs: upload documentation to pythonhosted
+upload_docs: %:
+	python setup.py $* -r pypi
 
 
 ############################################################################
 #= TESTING
+
+#=> test -- run tests
+test-setup: develop
 
 #=> test, test-with-coverage -- per-commit test target for CI
 # see test configuration in setup.cfg

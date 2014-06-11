@@ -5,17 +5,20 @@ use_setuptools()
 
 from setuptools import setup, find_packages
 
-# full path appears to be required for old (0.6.x?) versions of setuptools
-root_dir = os.path.dirname(os.path.abspath(__file__))
-
-with open(os.path.join(root_dir, 'doc/description.txt')) as f:
+with open('doc/description.txt') as f:
     long_description = f.read()
+
+def version_handler(mgr, options):
+    version = mgr.get_current_version()
+    if version.endswith('dev'):
+        version += '-' + mgr._invoke('log','-l1','-r.','--template','{node|short}').strip()
+    return version
 
 setup(
     license = 'Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)',
     long_description = long_description,
-    use_vcs_version = True,
-    zip_safe = False,
+    use_vcs_version = {'version_handler': version_handler},
+    zip_safe = True,
 
     author = 'HGVS Contributors',
     author_email = 'reecehart+hgvs@gmail.com',
