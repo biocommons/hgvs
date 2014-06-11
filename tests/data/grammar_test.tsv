@@ -261,7 +261,8 @@ m_edit	m.76A>T	True	one	m.76A>T
 g_edit	g.76A>T	True	one	g.76A>T
 ############################################################
 ## HGVS Sequence Variant
-any_variant	HiThere123:x.10A>T	True	one
+#issue #167: disabled any_variant
+# any_variant	HiThere123:x.10A>T	True	one
 r_variant	AC_01234.5:r.1A>U	True	one	
 p_variant	AC_01234.5:p.Ala1Ser|AC_01234.5:p.Phe2_Ala4del|AC_01234.5:p.Phe2_Ala3insGlnGln|AC_01234.5:p.Cys9_Val10delinsArgGluThr	True	list	
 p_variant	NP_000001.1:p.Gly25TrpfsTer10|NP_000040.1:p.Ter314TrpextTer45	True	list	
