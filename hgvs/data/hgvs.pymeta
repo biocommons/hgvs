@@ -70,7 +70,9 @@ p_variant   = accn:ac ':'      'p':type '.'   p_posedit:posedit -> hgvs.variant.
 r_variant   = accn:ac ':'      'r':type '.'   r_posedit:posedit -> hgvs.variant.SequenceVariant(ac,type,posedit)
 
 # any_variant is intended for lax parsing around ':' and '.' components
-any_variant = accn:ac ':' letter:type '.' <anything+>:posedit -> hgvs.variant.SequenceVariant(ac,type,posedit)
+# Disabling in response to issue #167. The SequenceVariant object returned below is significantly
+# unlike those returned by parsing proper HGVS variants that it is confusing.
+# any_variant = accn:ac ':' letter:type '.' <anything+>:posedit -> hgvs.variant.SequenceVariant(ac,type,posedit)
 
 
 ############################################################################
