@@ -4,10 +4,12 @@ import csv
 import re
 import unittest
 
+from nose.plugins.attrib import attr
+
 import bdi.sources.uta1
 
 import hgvs.variant
-import hgvs.hgvsmapper as hgvsmapper
+import hgvs.hgvsmapper
 import hgvs.parser
 
 
@@ -34,7 +36,7 @@ class Test_HGVSMapper(unittest.TestCase):
     # │ ZCCHC3 │          1 │       1 │ NM_033089.6 │ NC_000020.10 │ 484=3I2275= │          24 │      1236 │
     # └────────┴────────────┴─────────┴─────────────┴──────────────┴─────────────┴─────────────┴───────────┘
     def test_ZCCHC3_dbSNP(self):
-        for rec in gcp_file_reader('tests/data/ZCCHC3-dbSNP.tsv'):
+        for rec in gcp_file_reader('tests/data/gcp/ZCCHC3-dbSNP.tsv'):
             self._test_gcp_mapping(rec)
 
 
@@ -46,7 +48,7 @@ class Test_HGVSMapper(unittest.TestCase):
     # │ ORAI1 │          1 │       2 │ NM_032790.3 │ NC_000012.11 │ 319=6I177=;1000= │         193 │      1099 │
     # └───────┴────────────┴─────────┴─────────────┴──────────────┴──────────────────┴─────────────┴───────────┘
     def test_ORAI1_dbSNP(self):
-        for rec in gcp_file_reader('tests/data/ORAI1-dbSNP.tsv'):
+        for rec in gcp_file_reader('tests/data/gcp/ORAI1-dbSNP.tsv'):
             self._test_gcp_mapping(rec)
 
 
@@ -59,7 +61,7 @@ class Test_HGVSMapper(unittest.TestCase):
     # └───────┴────────────┴─────────┴─────────────┴─────────────┴──────────────────────────────┴─────────────┴───────────┘
     def test_FOLR3_dbSNP(self):
         # TODO: CORE-158: g-to-c mapped insertions have incorrect interval bounds
-        for rec in gcp_file_reader('tests/data/FOLR3-dbSNP.tsv'):
+        for rec in gcp_file_reader('tests/data/gcp/FOLR3-dbSNP.tsv'):
             self._test_gcp_mapping(rec)
 
 
@@ -71,7 +73,7 @@ class Test_HGVSMapper(unittest.TestCase):
     # │ ADRA2B │         -1 │       1 │ NM_000682.5 │ NC_000002.11 │ 891=9D2375= │           0 │      1353 │
     # └────────┴────────────┴─────────┴─────────────┴──────────────┴─────────────┴─────────────┴───────────┘
     def test_ADRA2B_dbSNP(self):
-        for rec in gcp_file_reader('tests/data/ADRA2B-dbSNP.tsv'):
+        for rec in gcp_file_reader('tests/data/gcp/ADRA2B-dbSNP.tsv'):
             self._test_gcp_mapping(rec)
 
 
@@ -84,30 +86,30 @@ class Test_HGVSMapper(unittest.TestCase):
     # └──────┴────────────┴─────────┴────────────────┴──────────────┴───────────────────────┴─────────────┴───────────┘
     def test_JRK_dbSNP(self):
         # TODO: CORE-157: del26 on -1 strands gets reverse complemented as del62
-        for rec in gcp_file_reader('tests/data/JRK-dbSNP.tsv'):
+        for rec in gcp_file_reader('tests/data/gcp/JRK-dbSNP.tsv'):
             self._test_gcp_mapping(rec)
 
 
     def test_NEFL_dbSNP(self):
-        for rec in gcp_file_reader('tests/data/NEFL-dbSNP.tsv'):
+        for rec in gcp_file_reader('tests/data/gcp/NEFL-dbSNP.tsv'):
             self._test_gcp_mapping(rec)
 
 
     def test_DNAH11_hgmd(self):
-        for rec in gcp_file_reader('tests/data/DNAH11-HGMD.tsv'):
+        for rec in gcp_file_reader('tests/data/gcp/DNAH11-HGMD.tsv'):
             self._test_gcp_mapping(rec)
 
     def test_DNAH11_dbSNP_NM_003777(self):
-        for rec in gcp_file_reader('tests/data/DNAH11-dbSNP-NM_003777.tsv'):
+        for rec in gcp_file_reader('tests/data/gcp/DNAH11-dbSNP-NM_003777.tsv'):
             self._test_gcp_mapping(rec)
 
     def test_DNAH11_dbSNP_NM_001277115(self):
-        for rec in gcp_file_reader('tests/data/DNAH11-dbSNP-NM_001277115.tsv'):
+        for rec in gcp_file_reader('tests/data/gcp/DNAH11-dbSNP-NM_001277115.tsv'):
             self._test_gcp_mapping(rec)
 
 
     def test_real(self):
-        for rec in gcp_file_reader('tests/data/real_gcp.tsv'):
+        for rec in gcp_file_reader('tests/data/gcp/real.tsv'):
             self._test_gcp_mapping(rec)
 
 
