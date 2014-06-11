@@ -247,6 +247,10 @@ class NACopy(Edit, recordtype.recordtype('NACopy', ['copy', ('uncertain', False)
         self.uncertain = True
         return self
 
+    @property
+    def type(self):
+        return 'copy'
+
 
 class NADupN(Edit, recordtype.recordtype('NADupN', ['n', ('uncertain', False)])):
 
@@ -257,6 +261,10 @@ class NADupN(Edit, recordtype.recordtype('NADupN', ['n', ('uncertain', False)]))
     def set_uncertain(self):
         self.uncertain = True
         return self
+
+    @property
+    def type(self):
+        return 'dup'
 
 
 if __name__ == "__main__":
