@@ -1,13 +1,13 @@
 # we're not testing hgvs.parser, but rather merely using it to load the
 # grammar.  See test_hgvs_parser.py for the parser tests
 
-import os
 import unittest
 
-from parsley import ParseError
+from nose.plugins.attrib import attr
 
 import hgvs.parser
 
+@attr(tags=["quick"])
 class Test_Parser(unittest.TestCase):
     longMessage = True
 

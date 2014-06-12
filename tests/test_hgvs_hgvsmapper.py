@@ -58,11 +58,6 @@ class Test_HGVSMapper(unittest.TestCase):
         with self.assertRaises(hgvs.exceptions.HGVSError):
             var_p = self.hm.hgvsc_to_hgvsp(var_g, 'NM_999999.1')
 
-    # def test_cp_invalid_input_nm_accession(self):
-    #     hgvs_c = 'NM_999999.3:c.1582G>A'
-    #     var_c = self.hp.parse_hgvs_variant(hgvs_c)
-    #     with self.assertRaises(hgvs.exceptions.HGVSError):
-    #         var_p = self.hm.hgvsc_to_hgvsp(var_c, None)
 
 
 

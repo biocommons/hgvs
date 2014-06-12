@@ -1,7 +1,10 @@
 import unittest
 
+from nose.plugins.attrib import attr
+
 import hgvs.location
 
+@attr(tags=["quick"])
 class Test_SimplePosition(unittest.TestCase):
     def test_success(self):
         self.assertEqual( str(hgvs.location.SimplePosition(5)), '5' )
@@ -13,6 +16,7 @@ class Test_SimplePosition(unittest.TestCase):
             self.assertEqual( hgvs.location.SimplePosition(-1), 'SHOULD FAIL' )
 
 
+@attr(tags=["quick"])
 class Test_BaseOffsetPosition(unittest.TestCase):
     def test_success(self):
         # r.5
@@ -48,6 +52,7 @@ class Test_BaseOffsetPosition(unittest.TestCase):
         self.assertEqual( str(cdsp), '(*5+7)' )
 
 
+@attr(tags=["quick"])
 class Test_AAPosition(unittest.TestCase):
     def test_AAPosition(self):
         ap = hgvs.location.AAPosition( 15, 'S' )
@@ -55,6 +60,7 @@ class Test_AAPosition(unittest.TestCase):
         self.assertEqual( str(ap), 'Ser15' )
 
         
+@attr(tags=["quick"])
 class Test_Interval(unittest.TestCase):        
     def test_Interval(self):
         ival = hgvs.location.Interval( hgvs.location.BaseOffsetPosition(base=12,offset=+34),

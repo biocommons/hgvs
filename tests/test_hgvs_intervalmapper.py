@@ -1,13 +1,13 @@
 from __future__ import with_statement
-#
-# IntervalMapper: very basic tests and error handling
-#
 
 import unittest
+
+from nose.plugins.attrib import attr
 
 import hgvs.exceptions
 import hgvs.intervalmapper
 
+@attr(tags=["quick"])
 class Test_IntervalMapper(unittest.TestCase):
     longMessage = True
 

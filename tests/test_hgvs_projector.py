@@ -1,8 +1,9 @@
 import unittest
 
+from nose.plugins.attrib import attr
+
 import bdi.sources.uta1
 
-from hgvs.exceptions import *
 import hgvs.location
 import hgvs.parser
 import hgvs.projector
@@ -19,6 +20,7 @@ class TestHgvsProjector(unittest.TestCase):
         self.assertEqual( pj.project_variant_forward(v1), v2 )
         self.assertEqual( pj.project_variant_backward(v2), v1 )
 
+    @attr(tags=["quick"])
     def test_rs201430561(self):
         # rs201430561 http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=201430561
         hgvs_c = ['NM_001197320.1:c.281C>T','NM_021960.4:c.740C>T','NM_182763.2:c.688+403C>T']
@@ -27,6 +29,7 @@ class TestHgvsProjector(unittest.TestCase):
         self.tst_forward_and_backward( var_c[0], var_c[2] )
         self.tst_forward_and_backward( var_c[1], var_c[2] )
 
+    @attr(tags=["quick"])
     def test_bad_acs(self):
         hgvs_c = ['NM_001197320.1:c.281C>T','NM_021960.4:c.740C>T','NM_182763.2:c.688+403C>T']
         var_c = [ self.hp.parse_hgvs_variant(h) for h in hgvs_c ]

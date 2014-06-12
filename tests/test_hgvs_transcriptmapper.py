@@ -1,12 +1,15 @@
 import unittest
 
+from nose.plugins.attrib import attr
+
 import bdi.sources.uta1
 
 import hgvs.location
 import hgvs.parser
-from hgvs.exceptions import *
+from hgvs.exceptions import HGVSError
 from hgvs.transcriptmapper import TranscriptMapper
 
+@attr(tags=["quick"])
 class Test_transcriptmapper(unittest.TestCase):
     ref = 'GRCh37.p10'
 
@@ -141,6 +144,7 @@ class Test_transcriptmapper(unittest.TestCase):
             self.assertEquals(tm.hgvsc_to_hgvsr(test_case['c']), test_case['r'])
             self.assertEquals(tm.hgvsg_to_hgvsc(test_case['g']), test_case['c'])
             self.assertEquals(tm.hgvsc_to_hgvsg(test_case['c']), test_case['g'])
+
 
 if __name__ == '__main__':
     unittest.main()
