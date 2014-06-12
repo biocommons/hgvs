@@ -66,17 +66,21 @@ upload_docs: %:
 #= TESTING
 # see test configuration in setup.cfg
 
+# without stdbuf, the relative order of components is screwed up.  I
+# have no idea.
+machine-info:
+	stdbuf -o0 ./sbin/machine-info | sed -e 's/^/## /'
+
 #=> test -- run all tests (except those tagged "extra")
-test:
+test: machine-info
 	python setup.py nosetests -A '(not tags) or ("extra" not in tags)'
 
 #=> test-* -- run tests with specified tag
-test-%:
+test-%: machine-info
 	python setup.py nosetests -a 'tags=$*'
 
 #=> ci-test -- per-commit test target for CI
 ci-test: test
-	cat /proc/cpuinfo
 
 #=> ci-test-ve -- test in virtualenv
 ci-test-ve: ve
