@@ -2,7 +2,7 @@ import unittest
 
 from nose.plugins.attrib import attr
 
-import bdi.sources.uta1
+import hgvs.dataproviders.uta
 
 import hgvs.location
 import hgvs.parser
@@ -10,13 +10,13 @@ import hgvs.projector
 
 class TestHgvsProjector(unittest.TestCase):
     def setUp(self):
-        self.bdi = bdi.sources.uta1.connect()
+        self.hdp = hgvs.dataproviders.uta.connect()
         self.alt_ac = 'NC_000001.10'
         self.alt_aln_method = 'splign'
         self.hp = hgvs.parser.Parser()
         
     def tst_forward_and_backward(self,v1,v2):
-        pj = hgvs.projector.Projector(self.bdi,self.alt_ac,v1.ac,v2.ac,self.alt_aln_method,self.alt_aln_method)
+        pj = hgvs.projector.Projector(self.hdp,self.alt_ac,v1.ac,v2.ac,self.alt_aln_method,self.alt_aln_method)
         self.assertEqual( pj.project_variant_forward(v1), v2 )
         self.assertEqual( pj.project_variant_backward(v2), v1 )
 
@@ -33,7 +33,7 @@ class TestHgvsProjector(unittest.TestCase):
     def test_bad_acs(self):
         hgvs_c = ['NM_001197320.1:c.281C>T','NM_021960.4:c.740C>T','NM_182763.2:c.688+403C>T']
         var_c = [ self.hp.parse_hgvs_variant(h) for h in hgvs_c ]
-        pj = hgvs.projector.Projector(self.bdi,self.alt_ac,var_c[0].ac,var_c[1].ac,self.alt_aln_method,self.alt_aln_method)
+        pj = hgvs.projector.Projector(self.hdp,self.alt_ac,var_c[0].ac,var_c[1].ac,self.alt_aln_method,self.alt_aln_method)
         # intentionally call p_v_f with variant on *destination* transcript, and vice versa
         self.assertRaises( RuntimeError, pj.project_variant_forward, var_c[1] )
         self.assertRaises( RuntimeError, pj.project_variant_backward, var_c[0] )

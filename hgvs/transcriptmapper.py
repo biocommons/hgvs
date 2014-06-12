@@ -13,21 +13,21 @@ class TranscriptMapper(object):
     coordinates are 1-based inclusive, per the HGVS recommendations.
     All methods take :class:`hgvs.location.Interval` objects.
 
-    :param bdi: Bioinformatics Data Interface-compliant instance (see :class:`bdi.interface1.Interface1`)
+    :param hdp: HGVS Data Provider Interface-compliant instance (see :class:`hgvs.dataproviders.interface.Interface`)
     :param str tx_ac: string representing transcript accession (e.g., NM_000551.2)
     :param str alt_ac: string representing the reference sequence accession (e.g., NM_000551.3)
     :param str alt_aln_method: string representing the alignment method; valid values depend on data source
 
     """
 
-    def __init__(self, bdi, tx_ac, alt_ac, alt_aln_method):
-        self.bdi = bdi
+    def __init__(self, hdp, tx_ac, alt_ac, alt_aln_method):
+        self.hdp = hdp
         self.tx_ac = tx_ac
         self.alt_ac = alt_ac
         self.alt_aln_method = alt_aln_method
         if self.alt_aln_method != 'transcript':
-            self.tx_info = bdi.get_tx_info(self.tx_ac, self.alt_ac, self.alt_aln_method)
-            self.tx_exons = bdi.get_tx_exons(self.tx_ac, self.alt_ac, self.alt_aln_method)
+            self.tx_info = hdp.get_tx_info(self.tx_ac, self.alt_ac, self.alt_aln_method)
+            self.tx_exons = hdp.get_tx_exons(self.tx_ac, self.alt_ac, self.alt_aln_method)
             if self.tx_info is None or self.tx_exons is None:
                 raise HGVSError("Couldn't build TranscriptMapper(tx_ac={self.tx_ac}, "
                                 "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method})".format(self=self))
@@ -40,7 +40,7 @@ class TranscriptMapper(object):
             self.tgt_len = self.im.tgt_len
         else:
             # this covers the identity cases r <-> c
-            self.tx_identity_info = bdi.get_tx_identity_info(self.tx_ac)
+            self.tx_identity_info = hdp.get_tx_identity_info(self.tx_ac)
             self.cds_start_i = self.tx_identity_info['cds_start_i']
             self.cds_end_i = self.tx_identity_info['cds_end_i']
             self.tgt_len = sum(self.tx_identity_info['lengths'])

@@ -31,6 +31,7 @@ Object Representation
 .. automodule:: hgvs.variant
 
 
+
 Parsing
 -------
 
@@ -67,6 +68,7 @@ Mapping
 .. automodule:: hgvs.transcriptmapper
 
 
+
 Validating
 ----------
 
@@ -74,3 +76,12 @@ Validating
 ^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: hgvs.validator
+
+
+
+Data Sources
+------------
+
+:mod:`hgvs.datainterface.interface`
+
+.. automodule:: hgvs.datainterface.interface

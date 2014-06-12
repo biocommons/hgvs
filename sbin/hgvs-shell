@@ -2,8 +2,7 @@
 
 import IPython
 
-import bdi.sources.uta1
-
+import hgvs.dataproviders.uta
 import hgvs.parser
 import hgvs.hgvsmapper
 import hgvs.validator
@@ -13,10 +12,10 @@ hgvs_g = 'NC_000007.13:g.36561662C>T'
 hgvs_c = 'NM_001637.3:c.1582G>A'
 hgvs_p = 'NP_001628.1:p.(Gly528Arg)'
 
-u1 = bdi.sources.uta1.connect()
+hdp = hgvs.dataproviders.uta.connect()
 
 hgvsparser = hgvs.parser.Parser()
-hgvsmapper = hgvs.hgvsmapper.HGVSMapper( u1, cache_transcripts = True )
+hgvsmapper = hgvs.hgvsmapper.HGVSMapper( hdp, cache_transcripts = True )
 
 var_g = hgvsparser.parse_hgvs_variant(hgvs_g)
 var_c = hgvsparser.parse_hgvs_variant(hgvs_c)

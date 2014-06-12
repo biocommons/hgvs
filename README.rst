@@ -41,8 +41,8 @@ Features
   <http://pythonhosted.org/hgvs/modules.html#hgvs.projector.Projector>`_)
 * Reliable handling of regions reference-transcript discrepancy (requires UTA_)
 * Tools to validate variants (coming soon)
-* Support for alternative sources of reference and transcript mapping
-  information (via BDI_)
+* Pluggable data providers support alternative sources of transcript mapping
+  data
 * Extensive automated tests
 
 
@@ -64,8 +64,8 @@ An Example
   >>> str(var_g)
   'NC_000007.13:g.36561662C>T'
 
-  >>> import bdi.sources.uta1, hgvs.hgvsmapper
-  >>> uta1 = bdi.sources.uta1.connect()
+  >>> import hgvs.dataproviders.uta, hgvs.hgvsmapper
+  >>> uta1 = hgvs.dataproviders.uta.connect()
   >>> hm = hgvs.hgvsmapper.HGVSMapper(uta1, cache_transcripts=True)
   >>> var_c = hm.hgvsg_to_hgvsc(var_g, 'NM_001637.3')
   >>> var_c
@@ -79,7 +79,6 @@ There are `more examples in the documentation <http://pythonhosted.org/hgvs/exam
 
 .. _HGVS: http://www.hgvs.org/mutnomen/
 .. _UTA: http://bitbucket.org/invitae/uta
-.. _BDI: http://bitbucket.org/invitae/bdi
 .. _Invitae: http://invitae.com/
 
 

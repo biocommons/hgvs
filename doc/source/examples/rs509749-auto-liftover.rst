@@ -13,12 +13,12 @@ http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=509749
     var_c1 = hgvsparser.parse_hgvs_variant('NM_001261456.1:c.1762A>G')
 .. code:: python
 
-    import bdi.sources.uta1
-    u1 = bdi.sources.uta1.connect()
+    import hgvs.dataproviders.uta
+    u1 = hgvs.dataproviders.uta.connect()
 .. code:: python
 
     import hgvs.projector
-    pj = hgvs.projector.Projector(bdi=u1,
+    pj = hgvs.projector.Projector(hdp=u1,
                                   alt_ac='NC_000001.10',
                                   src_ac=var_c1.ac,
                                   dst_ac='NM_001261457.1')

@@ -90,15 +90,15 @@ the parser, you need only one instance per session.
 
 Variant mapping and validation requires access to external data,
 specifically exon structures, transcript alignments, and protein
-accessions.  Right now, the only source of this data is via the BDI and
-UTA sister projects.  (If you want more information on the architecture of
-HGVS, BDI, and UTA, see :doc:`intro`.  However, you don't
+accessions.  Right now, the only source of this data is via the UTA
+UTA sister projects.  (If you want more information on the
+architecture of HGVS, UTA, see :doc:`intro`.  However, you don't
 really need to understand the architecture to use HGVS.)
 
-First, connect to UTA via BDI:
+First, connect to UTA via :class:``hgvs.dataproviders.uta``:
 
->>> import bdi.sources.uta0
-bdi = bdi.sources.uta0.connect()
+>>> import hgvs.dataproviders.uta
+hdp = hgvs.dataproviders.uta.connect()
 
 By default, you'll connect to the public UTA database instance hosted by
 `Invitae <http://invitae.com/>`_.
@@ -106,7 +106,7 @@ By default, you'll connect to the public UTA database instance hosted by
 Then, with that connection, instantiate an HGVSMapper:
 
 >>> import hgvs.hgvsmapper
-hgvsmapper = hgvs.hgvsmapper.HGVSMapper(bdi)
+hgvsmapper = hgvs.hgvsmapper.HGVSMapper(hdp)
 
 We can use this mapper to transform our transcript variant to a protein variant:
 
@@ -165,9 +165,10 @@ Map the genomic variant to another transcript
 ---------------------------------------------
 
 To map our genomic variant to another transcript, we need to provide a
-transcript accession. One way to get those is to ask BDI:
+transcript accession. One way to get those is to ask the data
+provider:
 
->>> [ tx['ac'] for tx in bdi.get_tx_for_gene('MCL1') ]
+>>> [ tx['ac'] for tx in hdp.get_tx_for_gene('MCL1') ]
 ['NM_021960.4', 'NM_182763.2', 'NM_001197320.1']
 
 Let's map to the transcript for which this is an intronic variant.

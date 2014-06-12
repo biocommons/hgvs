@@ -12,7 +12,7 @@ import io, csv, logging, sys
 
 import ometa.runtime
 
-import bdi.sources.uta1
+import hgvs.dataproviders.uta
 
 import hgvs.hgvsmapper as hgvsmapper
 import hgvs.parser
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     logger = logging.getLogger(__name__)
 
     m = 'splign'
-    u1 = bdi.sources.uta1.connect()
+    u1 = hgvs.dataproviders.uta.connect()
     hgvsmapper = hgvs.hgvsmapper.HGVSMapper(u1, cache_transcripts=True)
     hgvsparser = hgvs.parser.Parser()
     
