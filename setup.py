@@ -54,7 +54,6 @@ setup(
     install_requires = [
         'psycopg2',
         'pysam',
-        #'bdi >= 0.1.0',
         'biopython',
         'parsley',
         'recordtype',
