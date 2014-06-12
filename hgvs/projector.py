@@ -12,7 +12,7 @@ class Projector(object):
     The Projector class implements liftover between two transcripts via a
     common reference sequence.
 
-    :param hdp: Bioinformatics Data Interface-compliant instance (see :class:`hgvs.dataproviders.interface.Interface`)
+    :param hdp: HGVS Data Provider Interface-compliant instance (see :class:`hgvs.dataproviders.interface.Interface`)
     :param ref: string representing the common reference assembly (e.g., GRCh37.p10)
     :param src_ac: string representing the source transcript accession (e.g., NM_000551.2)
     :param dst_ac: string representing the destination transcript accession (e.g., NM_000551.3)

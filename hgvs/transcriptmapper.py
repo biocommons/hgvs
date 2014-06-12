@@ -13,7 +13,7 @@ class TranscriptMapper(object):
     coordinates are 1-based inclusive, per the HGVS recommendations.
     All methods take :class:`hgvs.location.Interval` objects.
 
-    :param hdp: Bioinformatics Data Interface-compliant instance (see :class:`hdp.interface1.Interface1`)
+    :param hdp: HGVS Data Provider Interface-compliant instance (see :class:`hgvs.dataproviders.interface.Interface`)
     :param str tx_ac: string representing transcript accession (e.g., NM_000551.2)
     :param str alt_ac: string representing the reference sequence accession (e.g., NM_000551.3)
     :param str alt_aln_method: string representing the alignment method; valid values depend on data source

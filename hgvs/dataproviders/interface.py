@@ -1,24 +1,24 @@
 import abc
 
 class Interface(object):
-    """
-    One of the primary uses of the BDI is to provide an interface to external
-    data used by the `HGVS`_ package.  Variant mapping and validation requires
-    access to external data, specifically exon structures, transcript
-    alignments, and protein accessions.  In order to isolate the hgvs package
-    from the myriad choices and tradeoffs, these data are provided through an
-    implementation of the (abstract) Bioinformatics Data Interface (`BDI`_).
+    """Variant mapping and validation requires access to external data,
+    specifically exon structures, transcript alignments, and protein
+    accessions.  In order to isolate the hgvs package from the myriad
+    choices and tradeoffs, these data are provided through an
+    implementation of the (abstract) HGVS Data Provider Interface.
     
-    As of Dec 2013, the only available BDI implementation uses the Universal
-    Transcript Archive (`UTA`_), a sister project that provides access to
-    transcripts and genome-transcript alignments.  `Invitae`_ provides a
-    public UTA database instance that is used by default; see the `UTA`_
-    page for instructions on installing your own PostgreSQL or SQLite
-    version.  In the future, other BDI implmentations may be contributed for
-    other data sources.
+    As of June 2014, the only available data provider implementation
+    uses the Universal Transcript Archive (`UTA`_), a sister project
+    that provides access to transcripts and genome-transcript
+    alignments.  `Invitae`_ provides a public UTA database instance
+    that is used by default; see the `UTA`_ page for instructions on
+    installing your own PostgreSQL or SQLite version.  In the future,
+    other implementations may be availablefor other data sources.
 
-    Pure virtural class for the Bioinformatics Data Interface.
-    Every BDI implementation should be a subclass (possibly indirect) of this class.
+    Pure virtural class for the HGVS Data Provider Interface.  Every
+    data provider implementation should be a subclass (possibly
+    indirect) of this class.
+
     """
 
     __metaclass__ = abc.ABCMeta
