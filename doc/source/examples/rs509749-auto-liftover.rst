@@ -18,7 +18,7 @@ http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=509749
 .. code:: python
 
     import hgvs.projector
-    pj = hgvs.projector.Projector(bdi=u1,
+    pj = hgvs.projector.Projector(hdp=u1,
                                   alt_ac='NC_000001.10',
                                   src_ac=var_c1.ac,
                                   dst_ac='NM_001261457.1')

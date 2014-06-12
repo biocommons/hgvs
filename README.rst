@@ -79,7 +79,6 @@ There are `more examples in the documentation <http://pythonhosted.org/hgvs/exam
 
 .. _HGVS: http://www.hgvs.org/mutnomen/
 .. _UTA: http://bitbucket.org/invitae/uta
-.. _BDI: http://bitbucket.org/invitae/bdi
 .. _Invitae: http://invitae.com/
 
 

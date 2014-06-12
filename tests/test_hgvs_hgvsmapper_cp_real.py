@@ -22,8 +22,8 @@ def gcp_file_reader(fn):
 class TestHgvsCToPReal(unittest.TestCase):
 
     def setUp(self):
-        self.bdi = hgvs.dataproviders.uta.connect()
-        self._hm = hgvs.hgvsmapper.HGVSMapper(self.bdi, cache_transcripts=True)
+        self.hdp = hgvs.dataproviders.uta.connect()
+        self._hm = hgvs.hgvsmapper.HGVSMapper(self.hdp, cache_transcripts=True)
         self._hp = hgvs.parser.Parser()
         self._failed = []
 
