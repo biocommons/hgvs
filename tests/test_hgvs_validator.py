@@ -27,7 +27,7 @@ class Test_HGVSValidator(unittest.TestCase):
         self.assertTrue(self.vr.validate(self.hp.parse_hgvs_variant('NM_001005405.2:c.6C>A')))
 
 
-@attr(tags=["quick"])
+@attr(tags=["quick","validation"])
 class Test_HGVSIntrinsicValidator(unittest.TestCase):
     """Tests for internal validation"""
 
@@ -85,7 +85,7 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
             self.validate_int.validate(self.hp.parse_hgvs_variant('NC_000007.13:g.36561662_36561663T>T'))
 
 
-@attr(tags=["quick"])
+@attr(tags=["validation"])
 class Test_HGVSExtrinsicValidator(unittest.TestCase):
     """Tests for external validation"""
 
