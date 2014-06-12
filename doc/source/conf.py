@@ -20,6 +20,8 @@ html_logo = '../static/hgvs-logo.svg'
 html_favicon = '../static/favicon.ico'
 html_static_path = ['../static']
 
+autodoc_default_flags = ['members', 'undoc-members', 'show-inheritance'] #, 'inherited-members']
+
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',

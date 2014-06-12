@@ -9,33 +9,26 @@ Object Representation
 ^^^^^^^^^^^^^^^^
 
 .. automodule:: hgvs.edit
-    :members:
-    :undoc-members:
-    :show-inheritance:
+
+:mod:`hgvs.hgvsposition`
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: hgvs.hgvsposition
 
 :mod:`hgvs.location`
 ^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: hgvs.location
-    :members:
-    :undoc-members:
-    :show-inheritance:
 
 :mod:`hgvs.posedit`
 ^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: hgvs.posedit
-    :members:
-    :undoc-members:
-    :show-inheritance:
 
 :mod:`hgvs.variant`
 ^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: hgvs.variant
-    :members:
-    :undoc-members:
-    :show-inheritance:
 
 
 Parsing
@@ -45,9 +38,6 @@ Parsing
 ^^^^^^^^^^^^^^^^^^
 
 .. automodule:: hgvs.parser
-    :members:
-    :undoc-members:
-    :show-inheritance:
 
 
 
@@ -58,32 +48,29 @@ Mapping
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: hgvs.hgvsmapper
-    :members:
-    :undoc-members:
-    :show-inheritance:
 
 
 :mod:`hgvs.intervalmapper`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: hgvs.intervalmapper
-    :members:
-    :undoc-members:
-    :show-inheritance:
 
 
 :mod:`hgvs.projector`
 ^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: hgvs.projector
-    :members:
-    :undoc-members:
-    :show-inheritance:
 
 :mod:`hgvs.transcriptmapper`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: hgvs.transcriptmapper
-    :members:
-    :undoc-members:
-    :show-inheritance:
+
+
+Validating
+----------
+
+:mod:`hgvs.validator`
+^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: hgvs.validator

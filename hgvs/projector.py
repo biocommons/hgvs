@@ -23,11 +23,13 @@ class Projector(object):
     strand. This assumption obviates some work in flipping sequence
     variants twice unnecessarily.
     """
+
     def __init__(self,bdi,alt_ac,src_ac,dst_ac,src_alt_aln_method='splign',dst_alt_aln_method='splign'):
         self.bdi = bdi
         self.alt_ac = alt_ac
         self.src_tm = hgvs.transcriptmapper.TranscriptMapper(bdi,src_ac,alt_ac,src_alt_aln_method)
         self.dst_tm = hgvs.transcriptmapper.TranscriptMapper(bdi,dst_ac,alt_ac,dst_alt_aln_method)
+
 
     def project_interval_forward(self,c_interval):
         """
@@ -39,6 +41,7 @@ class Projector(object):
         """
         return self.dst_tm.hgvsg_to_hgvsc( self.src_tm.hgvsc_to_hgvsg( c_interval ) )
         
+
     def project_interval_backward(self,c_interval):
         """
         project c_interval on the destination transcript to the
@@ -63,6 +66,7 @@ class Projector(object):
         new_c_variant.ac = self.dst_tm.tx_ac
         new_c_variant.posedit.pos = self.project_interval_forward( c_variant.posedit.pos )
         return new_c_variant
+
 
     def project_variant_backward(self,c_variant):
         """

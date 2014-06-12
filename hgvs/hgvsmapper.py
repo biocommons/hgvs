@@ -3,9 +3,6 @@ hgvs.hgvsmapper
 """
 
 import copy
-import os
-import re
-import sys
 
 from Bio.Seq import Seq
 import recordtype
@@ -18,13 +15,12 @@ import hgvs.transcriptmapper
 import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
 import hgvs.utils.altseqbuilder as altseqbuilder
 from hgvs.utils import reverse_complement
-from hgvs.utils import chr_to_nc
 
 
 class HGVSMapper(object):
     """
     Maps HGVS variants to and from g., r., c., and p. representations.
-    All methods require and return objects of type hgvs.variant.Variant.
+    All methods require and return objects of type :class:`hgvs.variant.SequenceVariant`.
     """
 
     def __init__(self,bdi,cache_transcripts=False):
@@ -32,13 +28,21 @@ class HGVSMapper(object):
         self.cache_transcripts = cache_transcripts
         self.__tm_cache = {}
 
+
     def hgvsg_to_hgvsc(self, var_g, tx_ac, alt_aln_method='splign'):
         """Given a genomic (g.) parsed HGVS variant, return a transcript (c.) variant on the specified transcript using
         the specified alignment method (default is 'splign' from NCBI).
+
+        :param hgvs.variant.SequenceVariant var_g: a variant object
+        :param str tx_ac: a transcript accession (e.g., NM_012345.6 or ENST012345678)
+        :param str alt_aln_method: the alignment method; valid values depend on data source
+        :returns: variant object (:class:`hgvs.variant.SequenceVariant`) using CDS coordinates
+        :raises hgvs.exceptions.InvalidHGVSVariantError: if var_g is not of type 'g'
+
         """
 
         if not (var_g.type == 'g'):
-            raise hgvs.exceptions.InvalidHGVSVariantError('Expected a genomic (g.); got '+ str(var_g))
+            raise hgvs.exceptions.InvalidHGVSVariantError('Expected a genomic (g.) variant; got '+ str(var_g))
 
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
         
@@ -49,9 +53,17 @@ class HGVSMapper(object):
                                              posedit=hgvs.posedit.PosEdit( pos_c, edit_c ) )
         return var_c
 
+
     def hgvsg_to_hgvsr(self, var_g, tx_ac, alt_aln_method='splign'):
         """Given a genomic (g.) parsed HGVS variant, return a transcript (r.) variant on the specified transcript using
         the specified alignment method (default is 'splign' from NCBI).
+
+        :param hgvs.variant.SequenceVariant var_g: a variant object
+        :param str tx_ac: a transcript accession (e.g., NM_012345.6 or ENST012345678)
+        :param str alt_aln_method: the alignment method; valid values depend on data source
+        :returns: variant object (:class:`hgvs.variant.SequenceVariant`) using transcript (r.) coordinates
+        :raises hgvs.exceptions.InvalidHGVSVariantError: if var_g is not of type 'g'
+
         """
 
         if not (var_g.type == 'g'):
@@ -66,9 +78,17 @@ class HGVSMapper(object):
                                              posedit=hgvs.posedit.PosEdit( pos_r, edit_r ) )
         return var_r
 
+
     def hgvsr_to_hgvsg(self, var_r, alt_ac, alt_aln_method='splign'):
         """Given an RNA (r.) parsed HGVS variant, return a genomic (g.) variant on the specified transcript using
         the specified alignment method (default is 'splign' from NCBI).
+
+        :param hgvs.variant.SequenceVariant var_r: a variant object
+        :param str alt_ac: a reference sequence accession (e.g., NC_000001.11)
+        :param str alt_aln_method: the alignment method; valid values depend on data source
+        :returns: variant object (:class:`hgvs.variant.SequenceVariant`)
+        :raises hgvs.exceptions.InvalidHGVSVariantError: if var_r is not of type 'r'
+
         """
 
         if not (var_r.type == 'r'):
@@ -83,10 +103,18 @@ class HGVSMapper(object):
                                              type='g',
                                              posedit=hgvs.posedit.PosEdit( pos_g, edit_g ) )
         return var_g
+
     
     def hgvsc_to_hgvsg(self, var_c, alt_ac, alt_aln_method='splign'):
         """Given a cDNA (c.) parsed HGVS variant, return a genomic (g.) variant on the specified transcript using
         the specified alignment method (default is 'splign' from NCBI).
+
+        :param hgvs.variant.SequenceVariant var_c: a variant object
+        :param str alt_ac: a reference sequence accession (e.g., NC_000001.11)
+        :param str alt_aln_method: the alignment method; valid values depend on data source
+        :returns: variant object (:class:`hgvs.variant.SequenceVariant`)
+        :raises hgvs.exceptions.InvalidHGVSVariantError: if var_c is not of type 'c'
+
         """
 
         if not (var_c.type == 'c'):
@@ -102,9 +130,15 @@ class HGVSMapper(object):
                                              posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
         return var_g
 
+
     def hgvsc_to_hgvsr(self, var_c):
         """Given a cDNA (c.) parsed HGVS variant, return a RNA (r.) variant on the specified transcript using
         the specified alignment method (default is 'transcript' indicating a self alignment).
+
+        :param hgvs.variant.SequenceVariant var_c: a variant object
+        :returns: variant object (:class:`hgvs.variant.SequenceVariant`)
+        :raises hgvs.exceptions.InvalidHGVSVariantError: if var_c is not of type 'c'
+
         """
 
         if not (var_c.type == 'c'):
@@ -124,9 +158,15 @@ class HGVSMapper(object):
                                              posedit=hgvs.posedit.PosEdit( pos_r, edit_r ) )
         return var_r
 
+
     def hgvsr_to_hgvsc(self, var_r):
         """Given an RNA (r.) parsed HGVS variant, return a cDNA (c.) variant on the specified transcript using
         the specified alignment method (default is 'transcript' indicating a self alignment).
+
+        :param hgvs.variant.SequenceVariant var_r: a variant object
+        :returns: variant object (:class:`hgvs.variant.SequenceVariant`)
+        :raises hgvs.exceptions.InvalidHGVSVariantError: if var_r is not of type 'r'
+
         """
 
         if not (var_r.type == 'r'):
@@ -146,15 +186,15 @@ class HGVSMapper(object):
                                              posedit=hgvs.posedit.PosEdit( pos_c, edit_c ) )
         return var_c
 
+
+    #TODO (API): alt_ac and alt_aln_method are not required; drop them
     def hgvsc_to_hgvsp(self, var_c, alt_ac=None, alt_aln_method='transcript'):
         """
         Converts a c. SequenceVariant to a p. SequenceVariant on the specified protein accession
 
-        :param var_c: hgvsc tag
-        :type var_c: SequenceVariant
-        :param alt_ac: protein accession
-        :type alt_ac: str
-        :rtype: SequenceVariant
+        :param SequenceVariant var_c: hgvsc tag
+        :param str alt_ac: protein accession
+        :rtype: hgvs.variant.SequenceVariant
 
         """
 
@@ -230,6 +270,7 @@ class HGVSMapper(object):
             if self.cache_transcripts:
                 self.__tm_cache[key] = tm
         return tm
+
 
     @staticmethod
     def _convert_edit_check_strand(strand, edit_in):
