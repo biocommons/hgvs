@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# machine-info -- report summary machine info
+# cpu-info -- report summary machine info
 
 # Motiviation: drone.io bots have wildly variable performance: the
 # hgvs test suite runs in ~5 minutes around 20% of the time, but in
@@ -7,7 +7,6 @@
 # sometime in between.  This is driving me nuts.
 
 import re
-import subprocess
 
 cpuinfo_tags = ['processor', 'model name', 'cpu MHz', 'cache size', 'cpu cores', 'bogomips']
 cpuinfo_block_re = re.compile(".+?".join([ "^{t}\s+:\s+([^\n]+)".format(t=t) for t in cpuinfo_tags ]),
@@ -15,6 +14,3 @@ cpuinfo_block_re = re.compile(".+?".join([ "^{t}\s+:\s+([^\n]+)".format(t=t) for
 print("\t".join(cpuinfo_tags))
 for m in cpuinfo_block_re.finditer(open('/proc/cpuinfo','r').read()):
     print("\t".join(m.groups()))
-print('')
-
-subprocess.call('/usr/bin/free')
