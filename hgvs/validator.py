@@ -23,9 +23,9 @@ def validate(var):
 
 class Validator(object):
     """invoke intrinsic and extrinsic validation"""
-    def __init__(self, bdi, mfdb):
+    def __init__(self, hdp, mfdb):
         self.ivr = IntrinsicValidator()
-        self.evr = ExtrinsicValidator(bdi,mfdb)
+        self.evr = ExtrinsicValidator(hdp,mfdb)
 
     def validate(self,var):
         return self.ivr.validate(var) and self.evr.validate(var)
@@ -92,10 +92,10 @@ class ExtrinsicValidator():
     Attempts to determine if the HGVS name validates against external data sources
     """
 
-    def __init__(self, bdi, mfdb):
-        self.bdi = bdi
+    def __init__(self, hdp, mfdb):
+        self.hdp = hdp
         self.mfdb = mfdb
-        self.hm = hgvs.hgvsmapper.HGVSMapper(self.bdi, cache_transcripts=True)
+        self.hm = hgvs.hgvsmapper.HGVSMapper(self.hdp, cache_transcripts=True)
 
     def validate(self, var):
         assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'

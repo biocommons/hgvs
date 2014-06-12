@@ -23,8 +23,8 @@ class HGVSMapper(object):
     All methods require and return objects of type :class:`hgvs.variant.SequenceVariant`.
     """
 
-    def __init__(self,bdi,cache_transcripts=False):
-        self.bdi = bdi
+    def __init__(self,hdp,cache_transcripts=False):
+        self.hdp = hdp
         self.cache_transcripts = cache_transcripts
         self.__tm_cache = {}
 
@@ -203,11 +203,11 @@ class HGVSMapper(object):
                                                        'cds_start', 'cds_stop', 'protein_accession'])):
 
             @classmethod
-            def setup_transcript_data(cls, bdi, tx_ac, alt_ac, alt_aln_method):
+            def setup_transcript_data(cls, hdp, tx_ac, alt_ac, alt_aln_method):
                 """helper for generating RefTranscriptData from for hgvsc_to_hgvsp"""
-                tx_info = bdi.get_tx_identity_info(var_c.ac)
-                #tx_info = bdi.get_tx_info(tx_ac, tx_ac, alt_aln_method)  # want identity returned
-                tx_seq = bdi.get_tx_seq(tx_ac)
+                tx_info = hdp.get_tx_identity_info(var_c.ac)
+                #tx_info = hdp.get_tx_info(tx_ac, tx_ac, alt_aln_method)  # want identity returned
+                tx_seq = hdp.get_tx_seq(tx_ac)
 
                 if tx_info is None or tx_seq is None:
                     raise hgvs.exceptions.HGVSError("Missing transcript data for accession: {}".format(tx_ac))
@@ -226,7 +226,7 @@ class HGVSMapper(object):
 
                 if alt_ac is None:
                     # get_acs... will always return at least the MD5_ accession
-                    alt_ac = bdi.get_acs_for_protein_seq(protein_seq)[0]
+                    alt_ac = hdp.get_acs_for_protein_seq(protein_seq)[0]
 
                 transcript_data = RefTranscriptData(tx_seq, protein_seq, cds_start,
                                                     cds_stop, alt_ac)
@@ -236,7 +236,7 @@ class HGVSMapper(object):
         if not (var_c.type == 'c'):
             raise hgvs.exceptions.InvalidHGVSVariantError('Expected a cDNA (c.); got ' + str(var_c))
 
-        reference_data = RefTranscriptData.setup_transcript_data(self.bdi, var_c.ac, alt_ac, alt_aln_method)
+        reference_data = RefTranscriptData.setup_transcript_data(self.hdp, var_c.ac, alt_ac, alt_aln_method)
         builder = altseqbuilder.AltSeqBuilder(var_c, reference_data)
 
         # TODO - handle case where you get 2+ alt sequences back; currently get list of 1 element
@@ -265,7 +265,7 @@ class HGVSMapper(object):
         try:
             tm = self.__tm_cache[key]
         except KeyError:
-            tm = hgvs.transcriptmapper.TranscriptMapper(self.bdi, tx_ac=tx_ac, alt_ac=alt_ac,
+            tm = hgvs.transcriptmapper.TranscriptMapper(self.hdp, tx_ac=tx_ac, alt_ac=alt_ac,
                                                         alt_aln_method=alt_aln_method)
             if self.cache_transcripts:
                 self.__tm_cache[key] = tm

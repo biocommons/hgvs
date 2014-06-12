@@ -3,15 +3,14 @@ import unittest
 from nose.plugins.attrib import attr
 
 from hgvs.dataproviders.multifastadb import MultiFastaDB
-from bdi.sources import uta1
-
 from hgvs.exceptions import HGVSValidationError
-import hgvs.parser
+import hgvs.dataproviders.uta
 import hgvs.hgvsmapper
+import hgvs.parser
 import hgvs.validator
 
 db_dir = ['tests/data/sample_data']
-bdi = uta1.connect()
+hdp = hgvs.dataproviders.uta.connect()
 mfdb = MultiFastaDB(db_dir, use_meta_index=True)
 
 
@@ -20,7 +19,7 @@ class Test_HGVSValidator(unittest.TestCase):
 
     def setUp(self):
         self.hp = hgvs.parser.Parser()
-        self.vr = hgvs.validator.Validator(bdi,mfdb)
+        self.vr = hgvs.validator.Validator(hdp,mfdb)
 
     def test_wrapper(self):
         """Test that validator wrapper is working"""
@@ -91,7 +90,7 @@ class Test_HGVSExtrinsicValidator(unittest.TestCase):
 
     def setUp(self):
         self.hp = hgvs.parser.Parser()
-        self.validate_ext = hgvs.validator.ExtrinsicValidator(bdi,mfdb)
+        self.validate_ext = hgvs.validator.ExtrinsicValidator(hdp,mfdb)
 
     def test_valid_ref(self):
         """Test if reference seqeuence is valid. Uses sample_data in tests directory"""

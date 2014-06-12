@@ -324,7 +324,7 @@ class UTA_postgresql(UTA):
 
 
 ## <LICENSE>
-## Copyright 2014 BDI Contributors (https://bitbucket.org/invitae/bdi)
+## Copyright 2014 HGVS Contributors (https://bitbucket.org/invitae/hgvs)
 ## 
 ## Licensed under the Apache License, Version 2.0 (the "License");
 ## you may not use this file except in compliance with the License.

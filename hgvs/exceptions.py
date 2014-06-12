@@ -14,6 +14,9 @@ class InvalidHGVSVariantError(HGVSError):
 class HGVSValidationError(HGVSError):
     pass
 
+class DataNotAvailable(HGVSError):
+    pass
+
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/invitae/hgvs)

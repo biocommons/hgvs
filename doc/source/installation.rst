@@ -15,22 +15,15 @@ Optionally, first build a virtualenv::
 ``mkvirtualenv`` will automatically activate your virtualenv and usually
 change the prompt to indicate this.
 
-BDI currently requires the PostgreSQL client libraries and the Python psycopg2
-package. Install PostgreSQL as appropriate for your platform, then::
-
-  $ pip install psycopg2
-
 Ensure you have a current ``setuptools`` package::
 
   $ pip install setuptools --upgrade
 
-You're now ready to install bdi and hgvs via pip::
+You're now ready to install hgvs via pip::
 
-  $ pip install bdi
   $ pip install hgvs
 
-``hgvs`` will pull in ``bdi`` automatically, but separating these commands
-makes it easier to identify installation problems.
+``hgvs`` will install dependencies automatically.
 
 
 
