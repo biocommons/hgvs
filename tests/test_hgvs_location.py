@@ -4,7 +4,7 @@ from nose.plugins.attrib import attr
 
 import hgvs.location
 
-@attr(tags=["quick"])
+@attr(tags=["quick","models"])
 class Test_SimplePosition(unittest.TestCase):
     def test_success(self):
         self.assertEqual( str(hgvs.location.SimplePosition(5)), '5' )

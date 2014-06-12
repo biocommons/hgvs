@@ -5,7 +5,7 @@ from nose.plugins.attrib import attr
 import hgvs.hgvsposition
 
 class Test_HGVSPosition(unittest.TestCase):
-    @attr(tags=["quick"])
+    @attr(tags=["quick","models"])
     def test_hgvsposition(self):
         var = hgvs.hgvsposition.HGVSPosition(
             seqref='NM_01234.5',

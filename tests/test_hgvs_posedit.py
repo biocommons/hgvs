@@ -6,7 +6,7 @@ import hgvs.edit
 import hgvs.location
 import hgvs.posedit
 
-@attr(tags=["quick"])
+@attr(tags=["quick","models","models"])
 class Test_PosEdit(unittest.TestCase):
     def test_PosEdit(self):
         pos = hgvs.location.Interval(

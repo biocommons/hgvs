@@ -5,7 +5,7 @@ from nose.plugins.attrib import attr
 import hgvs.edit
 from hgvs.exceptions import HGVSError
 
-@attr(tags=["quick"])
+@attr(tags=["quick","models"])
 class Test_Edit(unittest.TestCase):
     def test_NARefAlt_exceptions(self):
         with self.assertRaises(HGVSError):
