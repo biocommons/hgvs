@@ -5,7 +5,6 @@ import re
 import unittest
 
 from nose.plugins.attrib import attr
-from nose.tools import timed
 
 import bdi.sources.uta1
 
@@ -38,7 +37,6 @@ class Test_HGVSMapper(unittest.TestCase):
     # │ ZCCHC3 │          1 │       1 │ NM_033089.6 │ NC_000020.10 │ 484=3I2275= │          24 │      1236 │
     # └────────┴────────────┴─────────┴─────────────┴──────────────┴─────────────┴─────────────┴───────────┘
     @attr(tags=["quick"])
-    @timed(1)
     def test_ZCCHC3_dbSNP(self):
         for rec in gcp_file_reader('tests/data/gcp/ZCCHC3-dbSNP.tsv'):
             self._test_gcp_mapping(rec)

@@ -76,6 +76,7 @@ test-%:
 
 #=> ci-test -- per-commit test target for CI
 ci-test: test
+	cat /proc/cpuinfo
 
 #=> ci-test-ve -- test in virtualenv
 ci-test-ve: ve
