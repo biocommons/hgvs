@@ -61,13 +61,13 @@ setup(
     setup_requires = [
         'hgtools',
         'nose',
+        'nose-timer',
         'sphinx',
         'sphinxcontrib-fulltoc',
         ],
 
     tests_require = [
         'coverage',
-        'nose-timer',
         ],
     )
 
