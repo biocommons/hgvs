@@ -11,9 +11,8 @@ of strand/orientation; that issue is handled by the
 NOTE: Mapping at the boundaries around indels requires a choice.  If seq B
 has an insertion relative to seq A, then mapping coordinate at the
 boundaries can either be minimal or maximal for both the start and
-end. Consider this alignment
+end. Consider this alignment::
 
-..
         0         15   20         35         50
         |==========|====|==========|==========|
         |          | __/        __/|          |
@@ -28,8 +27,7 @@ end. Consider this alignment
   segment 4: [35,35] ~ [30,35]
   segment 5: [35,50] ~ [35,50]
 
-
-and these intervals around reference position 35:
+and these intervals around reference position 35::
 
   interval 1: 34,36   -> 29,36 (no ambiguity)
   interval 2: 35,35   -> 30,35 (reasonable)
@@ -155,20 +153,32 @@ class IntervalMapper(object):
 
 
 class CIGARElement(object):
+    """represents elements of a CIGAR string and provides methods for
+    determining the number of ref and tgt bases consumed by the
+    operation"""
+
     __slots__ = ('len','op')
     def __init__(self,len,op):
         self.len = len
         self.op = op
+
     @property
     def ref_len(self):
         """returns number of nt/aa consumed in reference sequence for this edit"""
         return self.len if self.op in '=INX' else 0
+
     @property
     def tgt_len(self):
         """returns number of nt/aa consumed in target sequence for this edit"""
         return self.len if self.op in '=DX'  else 0
 
+
 def cigar_to_intervalpairs(cigar):
+    """For a given CIGAR string, return a list of (Interval,Interval)
+    pairs.  The length of the returned list will be equal to the
+    number of CIGAR operations
+    """
+
     cigar_elem_re = re.compile('(?P<len>\d+)(?P<op>[=DIMNX])')
     ces = [ CIGARElement(op=md['op'],len=int(md['len']))
             for md in [ m.groupdict() for m in cigar_elem_re.finditer(cigar) ] ]

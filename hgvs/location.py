@@ -17,11 +17,10 @@ Classes:
   * :class:`Interval` -- an interval of Positions
 """
 
-import sys
 
 import recordtype
 
-from hgvs.utils import aa1_to_aa3,aa_to_aa1
+from hgvs.utils import aa1_to_aa3
 
 SEQ_START = 0
 CDS_START = 1
@@ -32,10 +31,6 @@ class SimplePosition( recordtype.recordtype(
         field_names = [ ('base', None), ('uncertain', False) ]
         )):
 
-    def validate(self):
-        assert self.base is None or self.base>=1, self.__class__.__name__ + ': base must be >= 1'
-        return True
-
     def __str__(self):
         self.validate()
         s = '?' if self.base is None else str(self.base)
@@ -43,12 +38,18 @@ class SimplePosition( recordtype.recordtype(
 
     @property
     def is_uncertain(self):
+        """return True if the position is marked uncertain or undefined"""
         return self.uncertain or self.base in None
 
     def set_uncertain(self):
         "mark this location as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"
         self.uncertain = True
         return self
+
+    def validate(self):
+        "raise AssertionError if instance variables are invalid; otherwise return True"
+        assert self.base is None or self.base>=1, self.__class__.__name__ + ': base must be >= 1'
+        return True
 
 
 class BaseOffsetPosition( recordtype.recordtype(
@@ -64,23 +65,35 @@ class BaseOffsetPosition( recordtype.recordtype(
     This class models CDS positions using a `base` coordinate, which is
     measured relative to a specified `datum` (CDS_START or CDS_END), and
     an `offset`, which is 0 for exonic positions and non-zero for intronic
-    positions.  Positions and offsets are 1-based, with no 0, per the HGVS
+    positions.  **Positions and offsets are 1-based**, with no 0, per the HGVS
     recommendations.  (If you're using this with UTA, be aware that UTA
     uses interbase coordinates.)
 
-    hgvs     datum      base  offset  meaning
-    r.55     SEQ_START    55       0  RNA position 55
-    c.55     CDS_START    55       0  CDS position 55
-    c.55     CDS_START    55       0  CDS position 55
-    c.55+1   CDS_START    55       1  intronic variant +1 from boundary
-    c.-55    CDS_START   -55       0  5' UTR variant, 55 nt upstream of ATG
-    c.1      CDS_START     1       0    start codon
-    c.1234   CDS_START  1234       0  stop codon (assuming CDS length is 1233)
-    c.*1     CDS_END       0       1  STOP + 1
-    c.*55    CDS_END       0      55  3' UTR variant, 55 nt after STOP
+    +----------+------------+-------+---------+------------------------------------------+
+    | hgvs     | datum      | base  | offset  | meaning                                  |
+    +==========+============+=======+=========+==========================================+
+    | r.55     | SEQ_START  |   55  |      0  | RNA position 55                          |
+    +----------+------------+-------+---------+------------------------------------------+
+    | c.55     | CDS_START  |   55  |      0  | CDS position 55                          |
+    +----------+------------+-------+---------+------------------------------------------+
+    | c.55     | CDS_START  |   55  |      0  | CDS position 55                          |
+    +----------+------------+-------+---------+------------------------------------------+
+    | c.55+1   | CDS_START  |   55  |      1  | intronic variant +1 from boundary        |
+    +----------+------------+-------+---------+------------------------------------------+
+    | c.-55    | CDS_START  |  -55  |      0  | 5' UTR variant, 55 nt upstream of ATG    |
+    +----------+------------+-------+---------+------------------------------------------+
+    | c.1      | CDS_START  |    1  |      0  |   start codon                            |
+    +----------+------------+-------+---------+------------------------------------------+
+    | c.1234   | CDS_START  | 1234  |      0  | stop codon (assuming CDS length is 1233) |
+    +----------+------------+-------+---------+------------------------------------------+
+    | c.*1     | CDS_END    |    0  |      1  | STOP + 1                                 |
+    +----------+------------+-------+---------+------------------------------------------+
+    | c.*55    | CDS_END    |    0  |     55  | 3' UTR variant, 55 nt after STOP         |
+    +----------+------------+-------+---------+------------------------------------------+
     """
     
     def validate(self):
+        "raise AssertionError if instance variables are invalid; otherwise return True"
         assert self.base is None or self.base != 0, 'BaseOffsetPosition base may not be 0'
         assert self.base is None or self.datum == CDS_START or self.base >= 1, 'BaseOffsetPosition base must be >=1 for datum = SEQ_START or CDS_END'
         return True
@@ -103,6 +116,7 @@ class BaseOffsetPosition( recordtype.recordtype(
 
     @property
     def is_uncertain(self):
+        """return True if the position is marked uncertain or undefined"""
         return self.uncertain or self.base is None or self.offset is None
 
 
@@ -110,6 +124,7 @@ class AAPosition( recordtype.recordtype(
         'AAPosition', field_names = [ ('base',None), ('aa',None), ('uncertain',False) ] ) ):
 
     def validate(self):
+        "raise AssertionError if instance variables are invalid; otherwise return True"
         assert self.base is None or self.base >= 1, 'AAPosition location must be >=1'
         assert len(self.aa) == 1, 'More than 1 AA associated with position'
         return True
@@ -123,6 +138,7 @@ class AAPosition( recordtype.recordtype(
 
     @property
     def pos(self):
+        """return base, for backward compatibility"""
         return self.base
 
     def set_uncertain(self):
@@ -132,12 +148,14 @@ class AAPosition( recordtype.recordtype(
 
     @property
     def is_uncertain(self):
+        """return True if the position is marked uncertain or undefined"""
         return self.uncertain or self.base is None or self.aa is None
 
 class Interval( recordtype.recordtype(
         'Interval', field_names = [ 'start', ('end',None), ('uncertain',False) ] ) ):
 
     def validate(self):
+        "raise AssertionError if instance variables are invalid; otherwise return True"
         return True
 
     def __str__(self):
@@ -154,7 +172,9 @@ class Interval( recordtype.recordtype(
 
     @property
     def is_uncertain(self):
+        """return True if the position is marked uncertain or undefined"""
         return self.uncertain or self.start.is_uncertain or self.end.is_uncertain
+
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/invitae/hgvs)

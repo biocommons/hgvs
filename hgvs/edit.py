@@ -7,31 +7,27 @@ of the structure.  The HGVS grammar for NA and AA are subtly
 different (e.g., the ref AA in a protein substitution is part of the
 location).
 
-
-  TYPE      NA              AA          REF/ALT representation (NA; AA)
-  subst     A>T             T           A/T           ''/T
-  delins    del(AA)insTT    delinsTT    (AA|'')/TT    same
-  del       del(AA)         del(AA)     (AA|'')/None  same
-  ins       insTT           insTT       None/TT       same
-
-patterns of seq/seq, seq/None, None/seq determine basic variant type
-'' means missing optional sequence
-
 """
+
+#TODO: investigate using abc to require implementation of type, __str__, etc
+#TODO: use subclassing better to reduce redundant code (e.g., uncertain)
+#TODO: set_uncertain -> _set_uncertain (in grammar too)
+
 
 import recordtype
 
 from hgvs.exceptions import HGVSError
 from hgvs.utils import aa_to_aa1,aa1_to_aa3
 
+
 class Edit(object):
     pass
+
 
 class NARefAlt( Edit, recordtype.recordtype('NARefAlt', [('ref',None),('alt',None),('uncertain',False)]) ):
     """
     represents substitutions, deletions, insertions, and indels.
 
-    Attributes:
     :ivar ref: reference sequence or length
     :ivar alt: alternate sequence
     :ivar uncertain: boolean indicating whether the variant is uncertain/undetermined
@@ -53,7 +49,7 @@ class NARefAlt( Edit, recordtype.recordtype('NARefAlt', [('ref',None),('alt',Non
     @property
     def ref_n(self):
         """
-        returns an integer, either from the `ref' instance variable if it's a number, or the length of
+        returns an integer, either from the `ref` instance variable if it's a number, or the length of
         ref if it's a string, or None otherwise
 
         >>> NARefAlt('ACGT').ref_n
@@ -62,6 +58,7 @@ class NARefAlt( Edit, recordtype.recordtype('NARefAlt', [('ref',None),('alt',Non
         7
         >>> NARefAlt(7).ref_n
         7
+
         """
         try:
             return int(self.ref)
@@ -92,11 +89,19 @@ class NARefAlt( Edit, recordtype.recordtype('NARefAlt', [('ref',None),('alt',Non
         return '('+s+')' if self.uncertain else s
 
     def set_uncertain(self):
+        """sets the uncertain flag to True; used primarily by the HGVS grammar
+
+        :returns: self
+        """
         self.uncertain = True
         return self
 
     @property
     def type(self):
+        """return the type of this Edit
+
+        :returns: edit type (str)
+        """
         if self.ref is not None and self.alt is not None:
             if self.ref == self.alt:
                 edit_type = 'identity'
@@ -109,6 +114,7 @@ class NARefAlt( Edit, recordtype.recordtype('NARefAlt', [('ref',None),('alt',Non
         else:
             edit_type = 'ins'
         return edit_type
+
 
 class AARefAlt( Edit, recordtype.recordtype('AARefAlt', [('ref',None),('alt',None), ('uncertain',False)]) ):
     def __init__(self,ref, alt, uncertain=False):
@@ -142,11 +148,19 @@ class AARefAlt( Edit, recordtype.recordtype('AARefAlt', [('ref',None),('alt',Non
         return '('+s+')' if self.uncertain else s
     
     def set_uncertain(self):
+        """sets the uncertain flag to True; used primarily by the HGVS grammar
+
+        :returns: self
+        """
         self.uncertain = True
         return self
 
     @property
     def type(self):
+        """return the type of this Edit
+
+        :returns: edit type (str)
+        """
         if self.ref is not None and self.alt is not None:
             if self.ref == self.alt:
                 edit_type = 'identity'
@@ -160,6 +174,7 @@ class AARefAlt( Edit, recordtype.recordtype('AARefAlt', [('ref',None),('alt',Non
             edit_type = 'ins'
         return edit_type
 
+
 class AASub( AARefAlt ):
     def __str__(self):
         s = aa1_to_aa3(self.alt) if self.alt != '?' else self.alt
@@ -167,7 +182,12 @@ class AASub( AARefAlt ):
 
     @property
     def type(self):
+        """return the type of this Edit
+
+        :returns: edit type (str)
+        """
         return 'sub'
+
 
 class AAFs(Edit, recordtype.recordtype('AAFs', [('ref',None),('alt',None),('length',None),('uncertain',False)])):
     def __init__(self,ref,alt,length=None,uncertain=False):
@@ -179,12 +199,21 @@ class AAFs(Edit, recordtype.recordtype('AAFs', [('ref',None),('alt',None),('leng
         return '('+s+')' if self.uncertain else s
 
     def set_uncertain(self):
+        """sets the uncertain flag to True; used primarily by the HGVS grammar
+
+        :returns: self
+        """
         self.uncertain = True
         return self
 
     @property
     def type(self):
+        """return the type of this Edit
+
+        :returns: edit type (str)
+        """
         return 'fs'
+
 
 class AAExt(Edit, recordtype.recordtype('AAExt', [('ref',None),('alt',None), ('aaterm', None), ('length',None),
                                                   ('uncertain',False)])):
@@ -200,12 +229,21 @@ class AAExt(Edit, recordtype.recordtype('AAExt', [('ref',None),('alt',None), ('a
         return '('+s+')' if self.uncertain else s
 
     def set_uncertain(self):
+        """sets the uncertain flag to True; used primarily by the HGVS grammar
+
+        :returns: self
+        """
         self.uncertain = True
         return self
 
     @property
     def type(self):
+        """return the type of this Edit
+
+        :returns: edit type (str)
+        """
         return 'ext'
+
 
 class Dup( Edit, recordtype.recordtype('Dup', [('seq',None),('uncertain',False)]) ):
 
@@ -213,12 +251,21 @@ class Dup( Edit, recordtype.recordtype('Dup', [('seq',None),('uncertain',False)]
         return 'dup' + (self.seq or '')
 
     def set_uncertain(self):
+        """sets the uncertain flag to True; used primarily by the HGVS grammar
+
+        :returns: self
+        """
         self.uncertain = True
         return self
 
     @property
     def type(self):
+        """return the type of this Edit
+
+        :returns: edit type (str)
+        """
         return 'dup'
+
 
 class Repeat( Edit, recordtype.recordtype('Repeat', [('seq',None),('min',None),('max',None),('uncertain',False)]) ):
 
@@ -230,12 +277,21 @@ class Repeat( Edit, recordtype.recordtype('Repeat', [('seq',None),('min',None),(
         return '{self.seq}({self.min}_{self.max})'.format(self=self)
 
     def set_uncertain(self):
+        """sets the uncertain flag to True; used primarily by the HGVS grammar
+
+        :returns: self
+        """
         self.uncertain = True
         return self
 
     @property
     def type(self):
+        """return the type of this Edit
+
+        :returns: edit type (str)
+        """
         return 'repeat'
+
 
 class NACopy(Edit, recordtype.recordtype('NACopy', ['copy', ('uncertain', False)])):
 
@@ -244,11 +300,19 @@ class NACopy(Edit, recordtype.recordtype('NACopy', ['copy', ('uncertain', False)
         return '('+s+')' if self.uncertain else s
 
     def set_uncertain(self):
+        """sets the uncertain flag to True; used primarily by the HGVS grammar
+
+        :returns: self
+        """
         self.uncertain = True
         return self
 
     @property
     def type(self):
+        """return the type of this Edit
+
+        :returns: edit type (str)
+        """
         return 'copy'
 
 
@@ -259,11 +323,19 @@ class NADupN(Edit, recordtype.recordtype('NADupN', ['n', ('uncertain', False)]))
         return '('+s+')' if self.uncertain else s
 
     def set_uncertain(self):
+        """sets the uncertain flag to True; used primarily by the HGVS grammar
+
+        :returns: self
+        """
         self.uncertain = True
         return self
 
     @property
     def type(self):
+        """return the type of this Edit
+
+        :returns: edit type (str)
+        """
         return 'dup'
 
 

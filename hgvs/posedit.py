@@ -1,10 +1,8 @@
 import recordtype
 
-from hgvs.exceptions import HGVSError
-
 class PosEdit( recordtype.recordtype( 'PosEdit', [('pos',None),('edit',None),('uncertain',False)] )):
     """
-    represents a **simple** variant
+    represents a **simple** variant, consisting of a single position and edit pair
     """
     
     def __str__(self):
@@ -17,6 +15,10 @@ class PosEdit( recordtype.recordtype( 'PosEdit', [('pos',None),('edit',None),('u
         return rv
 
     def set_uncertain(self):
+        """sets the uncertain flag to True; used primarily by the HGVS grammar
+
+        :returns: self
+        """
         self.uncertain = True
         return self
     

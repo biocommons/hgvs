@@ -20,3 +20,7 @@ current: intervalmapper, transcriptmapper, hgvsmapper, projector, validator
 
 * move intrinsic validation to posedits (and recurse)
 
+
+* small stuff
+var_{crgp} -> var in hgvsmapper (don't specify type)
+set_uncertain -> _set_uncertain (make internal)

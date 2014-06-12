@@ -4,26 +4,16 @@ class HGVSError(Exception):
 class HGVSParseError(HGVSError):
     pass
 
+#TODO: Stick to HGVS prefix on exceptions
 class InvalidIntervalError(HGVSError):
     pass
 
-###
-#class UTAError(Exception):
-#    pass
-#
-#class DatabaseError(UTAError):
-#    pass
-#
-#class InvalidTranscriptError(UTAError):
-#    pass
-#
-#
-#
 class InvalidHGVSVariantError(HGVSError):
     pass
 
 class HGVSValidationError(HGVSError):
     pass
+
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/invitae/hgvs)
