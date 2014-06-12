@@ -6,7 +6,7 @@ import os
 import re
 import unittest
 
-import bdi.sources.uta1
+import hgvs.dataproviders.uta
 
 import hgvs.hgvsmapper
 import hgvs.parser
@@ -22,7 +22,7 @@ def gcp_file_reader(fn):
 class TestHgvsCToPReal(unittest.TestCase):
 
     def setUp(self):
-        self.bdi = bdi.sources.uta1.connect()
+        self.bdi = hgvs.dataproviders.uta.connect()
         self._hm = hgvs.hgvsmapper.HGVSMapper(self.bdi, cache_transcripts=True)
         self._hp = hgvs.parser.Parser()
         self._failed = []

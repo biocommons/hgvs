@@ -2,7 +2,7 @@ import unittest
 
 from nose.plugins.attrib import attr
 
-import bdi.sources.uta1
+import hgvs.dataproviders.uta
 
 import hgvs.location
 import hgvs.parser
@@ -10,7 +10,7 @@ import hgvs.projector
 
 class TestHgvsProjector(unittest.TestCase):
     def setUp(self):
-        self.bdi = bdi.sources.uta1.connect()
+        self.bdi = hgvs.dataproviders.uta.connect()
         self.alt_ac = 'NC_000001.10'
         self.alt_aln_method = 'splign'
         self.hp = hgvs.parser.Parser()
