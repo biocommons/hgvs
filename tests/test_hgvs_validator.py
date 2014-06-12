@@ -1,5 +1,7 @@
 import unittest
 
+from nose.plugins.attrib import attr
+
 from bdi.multifastadb import MultiFastaDB
 from bdi.sources import uta1
 
@@ -25,6 +27,7 @@ class Test_HGVSValidator(unittest.TestCase):
         self.assertTrue(self.vr.validate(self.hp.parse_hgvs_variant('NM_001005405.2:c.6C>A')))
 
 
+@attr(tags=["quick"])
 class Test_HGVSIntrinsicValidator(unittest.TestCase):
     """Tests for internal validation"""
 
@@ -82,6 +85,7 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
             self.validate_int.validate(self.hp.parse_hgvs_variant('NC_000007.13:g.36561662_36561663T>T'))
 
 
+@attr(tags=["quick"])
 class Test_HGVSExtrinsicValidator(unittest.TestCase):
     """Tests for external validation"""
 
@@ -99,6 +103,7 @@ class Test_HGVSExtrinsicValidator(unittest.TestCase):
 
         with self.assertRaisesRegexp(HGVSValidationError, hgvs.validator.SEQ_ERROR_MSG):
             self.validate_ext.validate(self.hp.parse_hgvs_variant('NM_001005405.2:c.435_440delCTGCT'))
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -64,14 +64,15 @@ upload_docs: %:
 
 ############################################################################
 #= TESTING
-
-#=> test -- run tests
-test-setup: develop
-
-#=> test, test-with-coverage -- per-commit test target for CI
 # see test configuration in setup.cfg
-test test-with-coverage:
-	python setup.py nosetests
+
+#=> test -- run all tests (except those tagged "extra")
+test:
+	python setup.py nosetests -A '(not tags) or ("extra" not in tags)'
+
+#=> test-* -- run tests with specified tag
+test-%:
+	python setup.py nosetests -a 'tags=$*'
 
 #=> ci-test -- per-commit test target for CI
 ci-test: test

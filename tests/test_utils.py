@@ -1,9 +1,10 @@
 import unittest
 
+from nose.plugins.attrib import attr
+
 import hgvs.utils
 
-from hgvs.exceptions import HGVSError
-
+@attr(tags=["quick"])
 class Test_Utils(unittest.TestCase):
     # set of aa1 and aa3 -- must be in alpha order
     all_aa1 = '*ACDEFGHIKLMNPQRSTUVWXY'
@@ -53,6 +54,7 @@ class Test_Utils(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/invitae/hgvs)

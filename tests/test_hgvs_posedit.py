@@ -1,9 +1,12 @@
 import unittest
 
+from nose.plugins.attrib import attr
+
 import hgvs.edit
 import hgvs.location
 import hgvs.posedit
 
+@attr(tags=["quick"])
 class Test_PosEdit(unittest.TestCase):
     def test_PosEdit(self):
         pos = hgvs.location.Interval(
