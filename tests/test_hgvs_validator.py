@@ -2,7 +2,7 @@ import unittest
 
 from nose.plugins.attrib import attr
 
-from bdi.multifastadb import MultiFastaDB
+from hgvs.dataproviders.multifastadb import MultiFastaDB
 from bdi.sources import uta1
 
 from hgvs.exceptions import HGVSValidationError

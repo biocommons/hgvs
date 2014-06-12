@@ -1,13 +1,13 @@
 import unittest
 
-import bdi.sources.uta1
+import hgvs.dataproviders.uta
 
 import hgvs.parser
 import hgvs.hgvsmapper
 
 class Test_HGVSMapper(unittest.TestCase):
     def setUp(self):
-        self.bdi = bdi.sources.uta1.connect()
+        self.bdi = hgvs.dataproviders.uta.connect()
         self.hm = hgvs.hgvsmapper.HGVSMapper(self.bdi, cache_transcripts=True)
         self.hp = hgvs.parser.Parser()
 

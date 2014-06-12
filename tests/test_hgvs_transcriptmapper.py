@@ -2,7 +2,7 @@ import unittest
 
 from nose.plugins.attrib import attr
 
-import bdi.sources.uta1
+import hgvs.dataproviders.uta
 
 import hgvs.location
 import hgvs.parser
@@ -14,7 +14,7 @@ class Test_transcriptmapper(unittest.TestCase):
     ref = 'GRCh37.p10'
 
     def setUp(self):
-        self.bdi = bdi.sources.uta1.connect()
+        self.bdi = hgvs.dataproviders.uta.connect()
 
     def test_transcriptmapper_failures(self):
         self.assertRaises(HGVSError, TranscriptMapper, self.bdi, tx_ac='bogus', alt_ac='NM_033089.6', alt_aln_method='splign')
