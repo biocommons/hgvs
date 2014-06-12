@@ -17,7 +17,6 @@ If you have questions about the `HGVS Mutation Nomenclature Recommendations
 Links
 ~~~~~
 
-* `Bioinformatics Data Interface (BDI) <https://bitbucket.org/invitae/bdi/>`_
 * `HGVS Mutation Nomenclature Recommendations <http://www.hgvs.org/mutnomen/>`_
 * `Human Genome Variation Society (HGVS) <http://www.hgvs.org/>`_
 * `Parsley <https://pypi.python.org/pypi/Parsley>`_

@@ -1,21 +1,9 @@
-class HGVSError(Exception):
-    pass
+import string
 
-class HGVSParseError(HGVSError):
-    pass
-
-#TODO: Stick to HGVS prefix on exceptions
-class InvalidIntervalError(HGVSError):
-    pass
-
-class InvalidHGVSVariantError(HGVSError):
-    pass
-
-class HGVSValidationError(HGVSError):
-    pass
-
-class DataNotAvailable(HGVSError):
-    pass
+complement_transtable = string.maketrans('ACGT','TGCA')
+def reverse_complement(s):
+    "return the reverse complement of string s"
+    return ''.join(reversed(s.translate(complement_transtable)))
 
 
 ## <LICENSE>

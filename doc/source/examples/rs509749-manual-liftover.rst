@@ -7,12 +7,12 @@ http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=509749
 
 .. code:: python
 
-    import bdi.sources.uta1
+    import hgvs.dataproviders.uta
     import hgvs.hgvsmapper
     import hgvs.parser
 .. code:: python
 
-    u1 = bdi.sources.uta1.connect()
+    u1 = hgvs.dataproviders.uta.connect()
     hgvsmapper = hgvs.hgvsmapper.HGVSMapper(u1)
     hgvsparser = hgvs.parser.Parser()
 .. code:: python

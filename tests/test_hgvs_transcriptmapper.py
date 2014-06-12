@@ -2,7 +2,7 @@ import unittest
 
 from nose.plugins.attrib import attr
 
-import bdi.sources.uta1
+import hgvs.dataproviders.uta
 
 import hgvs.location
 import hgvs.parser
@@ -14,18 +14,18 @@ class Test_transcriptmapper(unittest.TestCase):
     ref = 'GRCh37.p10'
 
     def setUp(self):
-        self.bdi = bdi.sources.uta1.connect()
+        self.hdp = hgvs.dataproviders.uta.connect()
 
     def test_transcriptmapper_failures(self):
-        self.assertRaises(HGVSError, TranscriptMapper, self.bdi, tx_ac='bogus', alt_ac='NM_033089.6', alt_aln_method='splign')
-        self.assertRaises(HGVSError, TranscriptMapper, self.bdi, tx_ac='NM_033089.6', alt_ac='bogus', alt_aln_method='splign')
-        self.assertRaises(HGVSError, TranscriptMapper, self.bdi, tx_ac='NM_000051.3', alt_ac='NC_000011.9', alt_aln_method='bogus')
+        self.assertRaises(HGVSError, TranscriptMapper, self.hdp, tx_ac='bogus', alt_ac='NM_033089.6', alt_aln_method='splign')
+        self.assertRaises(HGVSError, TranscriptMapper, self.hdp, tx_ac='NM_033089.6', alt_ac='bogus', alt_aln_method='splign')
+        self.assertRaises(HGVSError, TranscriptMapper, self.hdp, tx_ac='NM_000051.3', alt_ac='NC_000011.9', alt_aln_method='bogus')
 
     def test_transcriptmapper_TranscriptMapper_LCE3C_uncertain(self):
         """Use NM_178434.2 tests to test mapping with uncertain positions"""
         tx_ac = 'NM_178434.2'
         alt_ac = 'NC_000001.10'
-        tm = TranscriptMapper(self.bdi, tx_ac, alt_ac, alt_aln_method='splign')
+        tm = TranscriptMapper(self.hdp, tx_ac, alt_ac, alt_aln_method='splign')
         parser = hgvs.parser.Parser()
         test_cases = [
             {'g': parser.parse_g_interval('(152573138)'), 'r': parser.parse_r_interval('(1)'), 'c': parser.parse_c_interval('(-70)')},
@@ -40,7 +40,7 @@ class Test_transcriptmapper(unittest.TestCase):
         """NM_178434.2: LCE3C single exon, strand = +1, all coordinate input/output are in HGVS"""
         tx_ac = 'NM_178434.2'
         alt_ac = 'NC_000001.10'
-        tm = TranscriptMapper(self.bdi, tx_ac, alt_ac, alt_aln_method='splign')
+        tm = TranscriptMapper(self.hdp, tx_ac, alt_ac, alt_aln_method='splign')
         parser = hgvs.parser.Parser()
         test_cases = [
             # 5'
@@ -61,7 +61,7 @@ class Test_transcriptmapper(unittest.TestCase):
         """NM_033445.2: LCE3C single exon, strand = -1, all coordinate input/output are in HGVS"""
         tx_ac = 'NM_033445.2'
         alt_ac = 'NC_000001.10'
-        tm = TranscriptMapper(self.bdi, tx_ac, alt_ac, alt_aln_method='splign')
+        tm = TranscriptMapper(self.hdp, tx_ac, alt_ac, alt_aln_method='splign')
         parser = hgvs.parser.Parser()
         test_cases = [
             # 3'
@@ -82,7 +82,7 @@ class Test_transcriptmapper(unittest.TestCase):
         """NM_014357.4: LCE2B, two exons, strand = +1, all coordinate input/output are in HGVS"""
         tx_ac = 'NM_014357.4'
         alt_ac = 'NC_000001.10'
-        tm = TranscriptMapper(self.bdi, tx_ac, alt_ac, alt_aln_method='splign')
+        tm = TranscriptMapper(self.hdp, tx_ac, alt_ac, alt_aln_method='splign')
         parser = hgvs.parser.Parser()
         test_cases = [
              # 5'
@@ -113,7 +113,7 @@ class Test_transcriptmapper(unittest.TestCase):
         """NM_178449.3: PTH2, two exons, strand = -1, all coordinate input/output are in HGVS"""
         tx_ac = 'NM_178449.3'
         alt_ac = 'NC_000019.9'
-        tm = TranscriptMapper(self.bdi, tx_ac, alt_ac, alt_aln_method='splign')
+        tm = TranscriptMapper(self.hdp, tx_ac, alt_ac, alt_aln_method='splign')
         parser = hgvs.parser.Parser()
         test_cases = [
              # 3'
@@ -176,7 +176,7 @@ if __name__ == '__main__':
     #
     #    ### Add one to g., r., and c. because we are returning hgvs coordinates ###
     #    ac = 'NM_033089.6'
-    #    tm = TranscriptMapper(self.bdi, ac, self.ref)
+    #    tm = TranscriptMapper(self.hdp, ac, self.ref)
     #    cds = 24 + 1 # hgvs
     #    # gs, ge = genomic start/end; rs,re = rna start/end; cs, ce = cdna start/end; so, eo = start offset/end offset
     #    test_cases = [
@@ -218,7 +218,7 @@ if __name__ == '__main__':
     #    ### Add one to g., r., and c. because we are returning hgvs coordinates ###
     #
     #    ac = 'NM_182763.2'
-    #    tm = TranscriptMapper(self.bdi, ac, self.ref)
+    #    tm = TranscriptMapper(self.hdp, ac, self.ref)
     #    cds = 208 + 1 # hgvs
     #    test_cases = [
     #        {'gs': 150552215, 'ge': 150552215, 'rs': 1, 're': 1, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START , 'cs': 1-cds, 'ce': 1-cds},
@@ -294,7 +294,7 @@ if __name__ == '__main__':
     #    ### Add one to g., r., and c. because we are returning hgvs coordinates ###
     #
     #    ac = 'NM_145249.2'
-    #    tm = TranscriptMapper(self.bdi, ac, self.ref)
+    #    tm = TranscriptMapper(self.hdp, ac, self.ref)
     #    cds = 254 + 1 # hgvs
     #    test_cases = [
     #        #{'gs': 94547639, 'ge': 94547639, 'rs': 1, 're': 1, 'so': 0, 'eo': 0, 'd': hgvs.location.SEQ_START, 'cs': 1-cds, 'ce': 1-cds},
@@ -326,7 +326,7 @@ if __name__ == '__main__':
 #  NM_145171.3 |   1 | 1    |         0 |      56 | GRCh37.p10 |  63785537 | 63785593 | 56M       |
 # def test_transcriptmapper_TranscriptMapper_GPHB5(self):
 #     ac = 'NM_145171.3'
-#     tm = TranscriptMapper(self.bdi,ac,self.ref)
+#     tm = TranscriptMapper(self.hdp,ac,self.ref)
 #     pass
 
 ## <LICENSE>

@@ -6,7 +6,7 @@ import unittest
 
 from nose.plugins.attrib import attr
 
-import bdi.sources.uta1
+import hgvs.dataproviders.uta
 
 import hgvs.variant
 import hgvs.hgvsmapper
@@ -24,8 +24,8 @@ def gcp_file_reader(fn):
 @attr(tags=["mapping"])
 class Test_HGVSMapper(unittest.TestCase):
     def setUp(self):
-        self.bdi = bdi.sources.uta1.connect()
-        self.hm = hgvs.hgvsmapper.HGVSMapper(self.bdi, cache_transcripts=True)
+        self.hdp = hgvs.dataproviders.uta.connect()
+        self.hm = hgvs.hgvsmapper.HGVSMapper(self.hdp, cache_transcripts=True)
         self.hp = hgvs.parser.Parser()
 
 
