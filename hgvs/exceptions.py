@@ -4,17 +4,16 @@ class HGVSError(Exception):
 class HGVSParseError(HGVSError):
     pass
 
-#TODO: Stick to HGVS prefix on exceptions
-class InvalidIntervalError(HGVSError):
+class HGVSInvalidIntervalError(HGVSError):
     pass
 
-class InvalidHGVSVariantError(HGVSError):
+class HGVSInvalidVariantError(HGVSError):
     pass
 
 class HGVSValidationError(HGVSError):
     pass
 
-class DataNotAvailable(HGVSError):
+class HGVSDataNotAvailable(HGVSError):
     pass
 
 

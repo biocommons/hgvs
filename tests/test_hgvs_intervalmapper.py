@@ -18,7 +18,7 @@ class Test_IntervalMapper(unittest.TestCase):
         self.assertEqual(interval.__repr__(), 'Interval(start_i=3,end_i=4)')
 
     def test_interval_invalid_start_gt_end(self):
-        with self.assertRaises(hgvs.exceptions.InvalidIntervalError):
+        with self.assertRaises(hgvs.exceptions.HGVSInvalidIntervalError):
             interval = hgvs.intervalmapper.Interval(4,3)
 
     def test_intervalpair_valid_match(self):
@@ -33,7 +33,7 @@ class Test_IntervalMapper(unittest.TestCase):
     def test_intervalpair_invalid(self):
         iv1 = hgvs.intervalmapper.Interval(3, 4)
         iv2 = hgvs.intervalmapper.Interval(6, 9)
-        with self.assertRaises(hgvs.exceptions.InvalidIntervalError):
+        with self.assertRaises(hgvs.exceptions.HGVSInvalidIntervalError):
             intervalpair = hgvs.intervalmapper.IntervalPair(iv1, iv2)
 
     def test_intervalmapper_valid_ranges(self):
@@ -50,9 +50,9 @@ class Test_IntervalMapper(unittest.TestCase):
 
     def test_intervalmapper_invalid_out_of_range(self):
         ivm = self._build_mock_intervalmapper()
-        with self.assertRaises(hgvs.exceptions.InvalidIntervalError):
+        with self.assertRaises(hgvs.exceptions.HGVSInvalidIntervalError):
             (s, e) = ivm.map_tgt_to_ref(1, 200)
-        with self.assertRaises(hgvs.exceptions.InvalidIntervalError):
+        with self.assertRaises(hgvs.exceptions.HGVSInvalidIntervalError):
             (s, e) = ivm.map_tgt_to_ref(0, 7)
 
     #
