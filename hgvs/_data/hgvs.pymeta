@@ -34,7 +34,7 @@
  
 # * HGVS Location -- sequence intervals
 # This grammar also supports "HGVS-lite" notations for position used at
-# InVitae, like 'NM_01234.5:c.56'.  The hgvs_lite rule consists of a ref
+# Invitae, like 'NM_01234.5:c.56'.  The hgvs_lite rule consists of a ref
 # sequence, type, and position, and is parsed into corresponding objects.
 #      NM_01234.5 : c . 34 -56 _ 78 +90
 #      --------------------------------  hgvs_position

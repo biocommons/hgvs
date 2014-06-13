@@ -5,7 +5,7 @@ version = hgvs.__version__
 release = str(hgvs.__version__)
 
 project = u'HGVS'
-copyright = u'2014, InVitae'
+copyright = u'2014, Invitae'
 
 source_suffix = '.rst'
 master_doc = 'index'
