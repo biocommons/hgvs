@@ -9,10 +9,6 @@ location).
 
 """
 
-#TODO: investigate using abc to require implementation of type, __str__, etc
-#TODO: use subclassing better to reduce redundant code (e.g., uncertain)
-#TODO: set_uncertain -> _set_uncertain (in grammar too)
-
 
 import recordtype
 
@@ -88,7 +84,7 @@ class NARefAlt( Edit, recordtype.recordtype('NARefAlt', [('ref',None),('alt',Non
 
         return '('+s+')' if self.uncertain else s
 
-    def set_uncertain(self):
+    def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
 
         :returns: self
@@ -147,7 +143,7 @@ class AARefAlt( Edit, recordtype.recordtype('AARefAlt', [('ref',None),('alt',Non
             
         return '('+s+')' if self.uncertain else s
     
-    def set_uncertain(self):
+    def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
 
         :returns: self
@@ -198,7 +194,7 @@ class AAFs(Edit, recordtype.recordtype('AAFs', [('ref',None),('alt',None),('leng
         s = "{alt}fsTer{length}".format(alt=aa1_to_aa3(self.alt), length=st_length)
         return '('+s+')' if self.uncertain else s
 
-    def set_uncertain(self):
+    def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
 
         :returns: self
@@ -228,7 +224,7 @@ class AAExt(Edit, recordtype.recordtype('AAExt', [('ref',None),('alt',None), ('a
         s = "{alt}ext{term}{length}".format(alt=aa1_to_aa3(st_alt), term=aa1_to_aa3(st_aaterm), length=st_length)
         return '('+s+')' if self.uncertain else s
 
-    def set_uncertain(self):
+    def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
 
         :returns: self
@@ -250,7 +246,7 @@ class Dup( Edit, recordtype.recordtype('Dup', [('seq',None),('uncertain',False)]
     def __str__(self):
         return 'dup' + (self.seq or '')
 
-    def set_uncertain(self):
+    def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
 
         :returns: self
@@ -276,7 +272,7 @@ class Repeat( Edit, recordtype.recordtype('Repeat', [('seq',None),('min',None),(
             return '{self.seq}[{self.min}]'.format(self=self)
         return '{self.seq}({self.min}_{self.max})'.format(self=self)
 
-    def set_uncertain(self):
+    def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
 
         :returns: self
@@ -299,7 +295,7 @@ class NACopy(Edit, recordtype.recordtype('NACopy', ['copy', ('uncertain', False)
         s = 'copy{}'.format(self.copy)
         return '('+s+')' if self.uncertain else s
 
-    def set_uncertain(self):
+    def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
 
         :returns: self
@@ -322,7 +318,7 @@ class NADupN(Edit, recordtype.recordtype('NADupN', ['n', ('uncertain', False)]))
         s = 'dup{}'.format(self.n)
         return '('+s+')' if self.uncertain else s
 
-    def set_uncertain(self):
+    def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
 
         :returns: self

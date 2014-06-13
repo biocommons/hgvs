@@ -14,7 +14,7 @@ class PosEdit( recordtype.recordtype( 'PosEdit', [('pos',None),('edit',None),('u
                 rv = '(' + rv + ')'
         return rv
 
-    def set_uncertain(self):
+    def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
 
         :returns: self

@@ -41,7 +41,7 @@ class SimplePosition( recordtype.recordtype(
         """return True if the position is marked uncertain or undefined"""
         return self.uncertain or self.base in None
 
-    def set_uncertain(self):
+    def _set_uncertain(self):
         "mark this location as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"
         self.uncertain = True
         return self
@@ -109,7 +109,7 @@ class BaseOffsetPosition( recordtype.recordtype(
         pos = base_str + offset_str
         return '('+pos+')' if self.uncertain else pos
 
-    def set_uncertain(self):
+    def _set_uncertain(self):
         "mark this location as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"
         self.uncertain = True
         return self
@@ -141,7 +141,7 @@ class AAPosition( recordtype.recordtype(
         """return base, for backward compatibility"""
         return self.base
 
-    def set_uncertain(self):
+    def _set_uncertain(self):
         "mark this location as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"
         self.uncertain = True
         return self
@@ -165,7 +165,7 @@ class Interval( recordtype.recordtype(
         iv = str(self.start) + '_' + str(self.end)
         return '('+iv+')' if self.uncertain else iv
 
-    def set_uncertain(self):
+    def _set_uncertain(self):
         "mark this interval as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"
         self.uncertain = True
         return self
