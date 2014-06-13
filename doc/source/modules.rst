@@ -21,7 +21,7 @@ Object Representation
 .. automodule:: hgvs.location
 
 :mod:`hgvs.posedit`
-^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: hgvs.posedit
 
@@ -46,7 +46,7 @@ Mapping
 -------
 
 :mod:`hgvs.variantmapper`
-^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: hgvs.variantmapper
 
