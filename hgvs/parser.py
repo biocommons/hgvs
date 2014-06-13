@@ -64,7 +64,7 @@ class Parser(object):
 
     """
 
-    __default_grammar_fn = resource_filename(__name__, 'data/hgvs.pymeta')
+    __default_grammar_fn = resource_filename(__name__, '_data/hgvs.pymeta')
 
     def __init__(self,grammar_fn=__default_grammar_fn):
         self._grammar_fn = grammar_fn

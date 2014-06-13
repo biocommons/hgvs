@@ -47,7 +47,7 @@ class TestGrammarFull(unittest.TestCase):
                 rules_tested.add(row['Func'])
 
         rules_all= set()
-        grammar_fn = pkg_resources.resource_filename(__name__, '../hgvs/data/hgvs.pymeta')
+        grammar_fn = pkg_resources.resource_filename(__name__, '../hgvs/_data/hgvs.pymeta')
         for line in open(grammar_fn, 'r'):
             if len(line) > 0 and line[0] != '#' and line[0].isalpha():
                 line = line.strip()
