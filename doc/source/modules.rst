@@ -82,6 +82,14 @@ Validating
 Data Sources
 ------------
 
-:mod:`hgvs.datainterface.interface`
+:mod:`hgvs.dataproviders.interface`
 
-.. automodule:: hgvs.datainterface.interface
+.. automodule:: hgvs.dataproviders.interface
+
+:mod:`hgvs.dataproviders.multifastadb`
+
+.. automodule:: hgvs.dataproviders.multifastadb
+
+:mod:`hgvs.dataproviders.uta`
+
+.. automodule:: hgvs.dataproviders.uta

@@ -191,27 +191,28 @@ class TranscriptMapper(object):
 
     ############################################################################
     ## DEPRECATED METHODS
-    @deprecated
+    @deprecated(use_instead='g_to_c(...)')
     def hgvsg_to_hgvsc(self,*args,**kwargs):
         return self.g_to_c(*args,**kwargs)
-    @deprecated
+    @deprecated(use_instead='g_to_r(...)')
     def hgvsg_to_hgvsr(self,*args,**kwargs):
         return self.g_to_r(*args,**kwargs)
-    @deprecated
+    @deprecated(use_instead='r_to_g(...)')
     def hgvsr_to_hgvsg(self,*args,**kwargs):
         return self.r_to_g(*args,**kwargs)
-    @deprecated
+    @deprecated(use_instead='c_to_g(...)')
     def hgvsc_to_hgvsg(self,*args,**kwargs):
         return self.c_to_g(*args,**kwargs)
-    @deprecated
+    @deprecated(use_instead='c_to_r(...)')
     def hgvsc_to_hgvsr(self,*args,**kwargs):
         return self.c_to_r(*args,**kwargs)
-    @deprecated
+    @deprecated(use_instead='r_to_c(...)')
     def hgvsr_to_hgvsc(self,*args,**kwargs):
         return self.r_to_c(*args,**kwargs)
-    @deprecated
+    @deprecated(use_instead='c_to_p(...)')
     def hgvsc_to_hgvsp(self,*args,**kwargs):
         return self.c_to_p(*args,**kwargs)
+
 
 def _strand_pm(s):
     return (None if s is None

@@ -19,6 +19,8 @@ class Interface(object):
     data provider implementation should be a subclass (possibly
     indirect) of this class.
 
+    .. _UTA: http://bitbucket.org/invitae/uta
+    .. _Invitae: http://invitae.com/
     """
 
     __metaclass__ = abc.ABCMeta

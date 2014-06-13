@@ -2,10 +2,8 @@
 Creating a SequenceVariant from scratch is not difficult, but it's hardly straightforward. This example shows you how.
 ----------------------------------------------------------------------------------------------------------------------
 
-
 0. Overview
 ~~~~~~~~~~~
-
 
 A SequenceVariant consists of an accession (a string), a sequence type
 (a string), and a PosEdit, like this:
@@ -26,9 +24,9 @@ parser, which means that you have the tools to serialize and deserialize
 1. Make an Interval to defined a position of the edit
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
 .. code:: python
 
+    import hgvs.location
     import hgvs.posedit
 .. code:: python
 
@@ -72,7 +70,6 @@ parser, which means that you have the tools to serialize and deserialize
 2. Make an edit object
 ~~~~~~~~~~~~~~~~~~~~~~
 
-
 .. code:: python
 
     import hgvs.edit, hgvs.posedit
@@ -105,7 +102,6 @@ parser, which means that you have the tools to serialize and deserialize
 3. Make the variant
 ~~~~~~~~~~~~~~~~~~~
 
-
 .. code:: python
 
     import hgvs.variant
@@ -129,7 +125,6 @@ hgvs.validator.Validator for validation options.**
 
 4. Update your variant
 ~~~~~~~~~~~~~~~~~~~~~~
-
 
 The stringification happens on-the-fly. That means that you can update
 components of the variant and see the effects immediately.
@@ -179,6 +174,3 @@ components of the variant and see the effects immediately.
 
 
 
-.. code:: python
-
-    
