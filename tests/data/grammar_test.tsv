@@ -277,7 +277,7 @@ m_variant	AC_01234.5:m.1A>T	True	one
 g_variant	AC_01234.5:g.1A>T	True	one	
 hgvs_variant	AC_01234.5:c.1A>T|AC_01234.5:r.1A>U|AC_01234.5:g.1A>T|AC_01234.5:p.Ala1Ser	True	list	
 ############################################################
-## InVitae internal
+## Invitae internal
 dna_copy	copy1|copy2|copy3	True	list
 dna_copy	copy|copy?	False	list
 dna_dupN	dup3|dup55	True	list
