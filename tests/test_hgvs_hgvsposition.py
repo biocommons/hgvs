@@ -8,7 +8,7 @@ class Test_HGVSPosition(unittest.TestCase):
     @attr(tags=["quick","models"])
     def test_hgvsposition(self):
         var = hgvs.hgvsposition.HGVSPosition(
-            seqref='NM_01234.5',
+            ac='NM_01234.5',
             type='c',
             pos=hgvs.location.Interval( hgvs.location.BaseOffsetPosition(base=12,offset=+34),
                                         hgvs.location.BaseOffsetPosition(base=56,offset=-78) ) )
