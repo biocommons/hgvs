@@ -68,7 +68,7 @@ An Example
   >>> var_g
   SequenceVariant(ac=NC_000007.13, type=g, posedit=36561662C>T)
 
-  # posedit is actually a tree of structured objects, e.g.,
+  # SequenceVariants are composed of structured objects, e.g.,
   >>> var_g.posedit.pos.start
   SimplePosition(base=36561662, uncertain=False)
 
