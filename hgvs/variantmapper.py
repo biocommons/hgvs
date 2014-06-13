@@ -1,7 +1,3 @@
-"""
-hgvs.variantmapper
-"""
-
 import copy
 
 from Bio.Seq import Seq
@@ -17,6 +13,7 @@ import hgvs.variant
 
 from hgvs.utils import reverse_complement
 from hgvs.utils.deprecated import deprecated
+
 
 
 class VariantMapper(object):
@@ -311,6 +308,7 @@ class VariantMapper(object):
             else:
                 try:
                     # if smells like an int, do nothing
+                    # TODO: should use ref_n, right?
                     int(edit_in.ref)
                     ref = edit_in.ref
                 except (ValueError, TypeError):
@@ -331,6 +329,99 @@ class VariantMapper(object):
         return edit_out
 
 
+# TODO: move assembly data to UTA and query through HDPI
+primary_assembly_accessions = {
+    'GRCh37': {
+        'NC_000001.10', 'NC_000002.11', 'NC_000003.11',
+        'NC_000004.11', 'NC_000005.9' , 'NC_000006.11',
+        'NC_000007.13', 'NC_000008.10', 'NC_000009.11',
+        'NC_000010.10', 'NC_000011.9' , 'NC_000012.11',
+        'NC_000013.10', 'NC_000014.10', 'NC_000015.9',
+        'NC_000016.9' , 'NC_000017.10', 'NC_000018.9',
+        'NC_000019.9' , 'NC_000020.10', 'NC_000021.8',
+        'NC_000022.10', 'NC_000023.10', 'NC_000024.9',
+        },
+    }
+
+class EasyVariantMapper(VariantMapper):
+    """Provides simplified variant mapping for a single assembly and
+    transcript-reference alignment method.
+    
+    EasyVariantMapper is instantiated with a primary_assembly and
+    alt_aln_method. These enable the following conveniences over
+    VariantMapper:
+
+    * The primary assembly and alignment method are used to
+      automatically select an appropriate chromosomal reference
+      sequence when mapping from a transcript to a genome (i.e.,
+      c_to_g(...) and r_to_g(...)).
+
+    * A new method, relevant_trancripts(g_variant), returns a list of
+      transcript accessions available for the specified variant. These
+      accessions are candidates mapping from genomic to trancript
+      coordinates (i.e., g_to_c(...) and g_to_r(...)).
+
+    [tests occur in module doc (rather than in method doc) to use a
+    single db connection]
+
+    IMPORTANT: Callers should be prepared to catch HGVSError
+    exceptions. These will be thrown whenever a transcript maps
+    ambiguously to a chromosome, such as for pseudoautosomal region
+    transcripts.
+    """
+
+    def __init__(self,hdp,primary_assembly='GRCh37',alt_aln_method='splign',cache_transcripts=False):
+        super(EasyVariantMapper,self).__init__(hdp=hdp,cache_transcripts=cache_transcripts)
+        self.primary_assembly = primary_assembly
+        self.alt_aln_method = alt_aln_method
+        self.primary_assembly_accessions = set(primary_assembly_accessions[primary_assembly])
+
+    def g_to_c(self, var_g, tx_ac): 
+        return super(EasyVariantMapper,self).g_to_c(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
+    def g_to_r(self, var_g, tx_ac): 
+        return super(EasyVariantMapper,self).g_to_r(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
+
+    def c_to_g(self, var_c): 
+        alt_ac = self._alt_ac_for_tx_ac(var_c.ac)
+        return super(EasyVariantMapper,self).c_to_g(var_c, alt_ac, alt_aln_method=self.alt_aln_method)
+    def r_to_g(self, var_r): 
+        alt_ac = self._alt_ac_for_tx_ac(var_r.ac)
+        return super(EasyVariantMapper,self).r_to_g(var_r, alt_ac, alt_aln_method=self.alt_aln_method)
+
+    def c_to_r(self, var_c): 
+        return super(EasyVariantMapper,self).c_to_r(var_c)
+    def r_to_c(self, var_r): 
+        return super(EasyVariantMapper,self).r_to_c(var_r)
+
+    def c_to_p(self, var_c): 
+        return super(EasyVariantMapper,self).c_to_p(var_c, alt_ac=None, alt_aln_method='transcript')
+
+    def relevant_transcripts(self,var_g):
+        """return list of transcripts accessions (strings) for given variant,
+        selected by genomic overlap"""
+        tx = self.hdp.get_tx_for_region(var_g.ac,
+                                        self.alt_aln_method,
+                                        var_g.posedit.pos.start.base,
+                                        var_g.posedit.pos.end.base)
+        return [ e['tx_ac'] for e in tx ]
+
+    def _alt_ac_for_tx_ac(self,tx_ac):
+        """return chromosomal accession for given transcript accession (and
+        the primary_assembly and aln_method setting used to
+        instantiate this EasyVariantMapper)
+
+        """
+        alt_acs = [e['alt_ac'] 
+                   for e in  self.hdp.get_tx_mapping_options(tx_ac)
+                   if e['alt_aln_method'] == self.alt_aln_method
+                   and e['alt_ac'] in self.primary_assembly_accessions]
+        if len(alt_acs) > 1:
+            raise hgvs.exceptions.HGVSError("Multiple chromosomal alignments for {tx_ac} in {pa} using {am} (likely paralog or pseudoautosomal region)".format(
+                tx_ac=tx_ac, pa=self.primary_assembly, am=self.alt_aln_method))
+        if len(alt_acs) == 0:
+            raise hgvs.exceptions.HGVSError("No alignments for {tx_ac} in {pa} using {am}".format(
+                tx_ac=tx_ac, pa=self.primary_assembly, am=self.alt_aln_method))
+        return alt_acs[0]       # exactly one remains
 
 
 

@@ -18,6 +18,7 @@ pg_schema = 'uta_20140210'
 
 logger = logging.getLogger(__name__)
 
+
 def connect(db_url=default_db_url):
     """
     Connect to a UTA database instance and return a UTA interface instance.
@@ -55,34 +56,117 @@ def connect(db_url=default_db_url):
     return conn
 
 
-class UTA(Interface):
-    tx_exons_sql = 'select * from tx_exon_aln_v where tx_ac=? and alt_ac=? and alt_aln_method=? order by alt_start_i'
-    tx_identity_info_sql = 'select distinct(tx_ac), alt_ac, alt_aln_method, cds_start_i, cds_end_i, lengths, hgnc from tx_def_summary_v where tx_ac=?'
-    tx_info_sql = 'select hgnc, cds_start_i, cds_end_i, tx_ac, alt_ac, alt_aln_method from transcript T join exon_set ES on T.ac=ES.tx_ac where tx_ac=? and alt_ac=? and alt_aln_method=?'
-    tx_mapping_options_sql = "select distinct tx_ac,alt_ac,alt_aln_method from tx_exon_aln_v where tx_ac=? and exon_aln_id is not NULL"
-    tx_for_gene_sql = "select hgnc, cds_start_i, cds_end_i, tx_ac, alt_ac, alt_aln_method from transcript T join exon_set ES on T.ac=ES.tx_ac where alt_aln_method != 'transcript' and hgnc=?"
-    gene_info_sql = 'select * from gene where hgnc=?'
-    acs_for_protein_md5_sql = 'select ac from seq_anno where seq_id=?'
-    tx_seq_sql = 'select seq from seq S join seq_anno SA on S.seq_id=SA.seq_id where ac=?'
+class UTABase(Interface):
+    sql = {
+        "acs_for_protein_md5": """
+            select ac
+            from seq_anno
+            where seq_id=?
+            """,
+
+        "gene_info": """
+            select *
+            from gene
+            where hgnc=?
+            """,
+
+        "tx_exons": """
+            select *
+            from tx_exon_aln_v
+            where tx_ac=? and alt_ac=? and alt_aln_method=?
+            order by alt_start_i
+            """,
+        
+        "tx_for_gene": """
+            select hgnc, cds_start_i, cds_end_i, tx_ac, alt_ac, alt_aln_method
+            from transcript T
+            join exon_set ES on T.ac=ES.tx_ac where alt_aln_method != 'transcript' and hgnc=?
+            """,
+
+        "tx_for_region": """
+            select tx_ac,alt_ac,alt_strand,alt_aln_method,min(start_i) as start_i,max(end_i) as end_i
+            from exon_set ES
+            join exon E on ES.exon_set_id=E.exon_set_id 
+            where alt_ac=? and alt_aln_method=?
+            group by tx_ac,alt_ac,alt_strand,alt_aln_method
+            having max(end_i)>=? and min(start_i)<=?
+            """,
+
+        "tx_identity_info": """
+            select distinct(tx_ac), alt_ac, alt_aln_method, cds_start_i, cds_end_i, lengths, hgnc
+            from tx_def_summary_v
+            where tx_ac=?
+            """,
+
+        "tx_info": """
+            select hgnc, cds_start_i, cds_end_i, tx_ac, alt_ac, alt_aln_method
+            from transcript T
+            join exon_set ES on T.ac=ES.tx_ac
+            where tx_ac=? and alt_ac=? and alt_aln_method=?
+            """,
+
+        "tx_mapping_options": """
+            select distinct tx_ac,alt_ac,alt_aln_method
+            from tx_exon_aln_v where tx_ac=? and exon_aln_id is not NULL
+            """,
+
+        "tx_seq": """
+            select seq
+            from seq S
+            join seq_anno SA on S.seq_id=SA.seq_id
+            where ac=?
+            """,
+    }
 
     def __init__(self):
         self._check_schema_version('1')
 
-    def _check_schema_version(self,required_version):
-        obs_Mm = self.schema_version().split('.')[:2]
-        req_Mm = required_version.split('.')[:2]
-        if ( obs_Mm != req_Mm ):
-            raise RuntimeError("Version mismatch: Version {req_Mm} required, but {self.db_url} is version {obs_Mm}".format(
-                req_Mm = '.'.join(req_Mm), self=self, obs_Mm = '.'.join(obs_Mm)))
-        # else no error
 
     def data_version(self):
         cur = self._get_cursor()
         cur.execute("select * from meta where key = 'schema_version'")
         return cur.fetchone()['value']
 
+
     def schema_version(self):
         return self.data_version()
+
+
+    ############################################################################
+    ## Queries
+    def get_acs_for_protein_seq(self,seq):
+        """
+        returns a list of protein accessions for a given sequence.  The
+        list is guaranteed to contain at least one element with the
+        MD5-based accession (MD5_01234abc...def56789) at the end of the
+        list.
+        """
+        md5 = seq_md5(seq)
+        cur = self._get_cursor()
+        cur.execute(self.sql['acs_for_protein_md5'],[md5])
+        return [ r['ac'] for r in cur.fetchall() ] + [ 'MD5_'+md5 ]
+
+
+    def get_gene_info(self, gene):
+        """
+        returns basic information about the gene.
+
+        :param gene: HGNC gene name
+        :type gene: str
+
+        # database results
+        hgnc    | ATM
+        maploc  | 11q22-q23
+        descr   | ataxia telangiectasia mutated
+        summary | The protein encoded by this gene belongs to the PI3/PI4-kinase family. This...
+        aliases | AT1,ATA,ATC,ATD,ATE,ATDC,TEL1,TELO1
+        added   | 2014-02-04 21:39:32.57125
+
+        """
+        cur = self._get_cursor()
+        cur.execute(self.sql['gene_info'],[gene])
+        return cur.fetchone()
+
 
     def get_tx_exons(self, tx_ac, alt_ac, alt_aln_method):
         """
@@ -127,12 +211,59 @@ class UTA(Interface):
         
         """
         cur = self._get_cursor()
-        cur.execute(self.tx_exons_sql,[tx_ac, alt_ac, alt_aln_method])
+        cur.execute(self.sql['tx_exons'],[tx_ac, alt_ac, alt_aln_method])
         r = cur.fetchall()
         if len(r) == 0:
             return None
         else:
             return r
+
+
+    def get_tx_for_gene(self,gene):
+        """
+        return transcript info records for supplied gene, in order of decreasing length
+
+        :param gene: HGNC gene name
+        :type gene: str
+        """
+        cur = self._get_cursor()
+        cur.execute(self.sql['tx_for_gene'],[gene])
+        return cur.fetchall()
+
+    def get_tx_for_region(self,alt_ac,alt_aln_method,start_i,end_i):
+        """
+        return transcripts that overlap given region
+
+        :param str alt_ac: reference sequence (e.g., NC_000007.13)
+        :param str alt_aln_method: alignment method (e.g., splign)
+        :param int start_i: 5' bound of region
+        :param int end_i: 3' bound of region
+        """
+        cur = self._get_cursor()
+        cur.execute(self.sql['tx_for_region'],[alt_ac,alt_aln_method,start_i,end_i])
+        return cur.fetchall()
+
+    def get_tx_identity_info(self, tx_ac):
+        """returns features associated with a single transcript.
+
+        :param tx_ac: transcript accession with version (e.g., 'NM_199425.2')
+        :type tx_ac: str
+
+        # database output
+        -[ RECORD 1 ]--+-------------
+        tx_ac          | NM_199425.2
+        alt_ac         | NM_199425.2
+        alt_aln_method | transcript
+        cds_start_i    | 283
+        cds_end_i      | 1003
+        lengths        | {707,79,410}
+        hgnc           | VSX1
+
+        """
+        cur = self._get_cursor()
+        cur.execute(self.sql['tx_identity_info'],[tx_ac])
+        return cur.fetchone()
+
 
     def get_tx_info(self, tx_ac, alt_ac, alt_aln_method):
         """return a single transcript info for supplied accession (tx_ac, alt_ac, alt_aln_method), or None if not found
@@ -157,8 +288,9 @@ class UTA(Interface):
 
         """
         cur = self._get_cursor()
-        cur.execute(self.tx_info_sql,[tx_ac, alt_ac, alt_aln_method])
+        cur.execute(self.sql['tx_info'],[tx_ac, alt_ac, alt_aln_method])
         return cur.fetchone()
+
 
     def get_tx_seq(self,ac):
         """return transcript sequence for supplied accession (ac), or None if not found
@@ -167,58 +299,18 @@ class UTA(Interface):
         :type ac: str
         """
         cur = self._get_cursor()
-        cur.execute(self.tx_seq_sql,[ac])
+        cur.execute(self.sql['tx_seq'],[ac])
         try:
             return cur.fetchone()['seq']
         except TypeError:
             return None
 
-    def get_tx_for_gene(self,gene):
-        """
-        return transcript info records for supplied gene, in order of decreasing length
-
-        :param gene: HGNC gene name
-        :type gene: str
-        """
-        cur = self._get_cursor()
-        cur.execute(self.tx_for_gene_sql,[gene])
-        return cur.fetchall()
-
-    def get_acs_for_protein_seq(self,seq):
-        """
-        returns a list of protein accessions for a given sequence.  The
-        list is guaranteed to contain at least one element with the
-        MD5-based accession (MD5_01234abc...def56789) at the end of the
-        list.
-        """
-        md5 = seq_md5(seq)
-        cur = self._get_cursor()
-        cur.execute(self.acs_for_protein_md5_sql,[md5])
-        return [ r['ac'] for r in cur.fetchall() ] + [ 'MD5_'+md5 ]
-
-    def get_gene_info(self, gene):
-        """
-        returns basic information about the gene.
-
-        :param gene: HGNC gene name
-        :type gene: str
-
-        # database results
-        hgnc    | ATM
-        maploc  | 11q22-q23
-        descr   | ataxia telangiectasia mutated
-        summary | The protein encoded by this gene belongs to the PI3/PI4-kinase family. This protein is an important cell cycle checkpoint kinase that phosphorylates; thus, it functions as a regulator of a wide variety of downstream proteins, including tumor suppressor proteins p53 and BRCA1, checkpoint kinase CHK2, checkpoint proteins RAD17 and RAD9, and DNA repair protein NBS1. This protein and the closely related kinase ATR are thought to be master controllers of cell cycle checkpoint signaling pathways that are required for cell response to DNA damage and for genome stability. Mutations in this gene are associated with ataxia telangiectasia, an autosomal recessive disorder. [provided by RefSeq, Aug 2010]
-        aliases | AT1,ATA,ATC,ATD,ATE,ATDC,TEL1,TELO1
-        added   | 2014-02-04 21:39:32.57125
-
-        """
-        cur = self._get_cursor()
-        cur.execute(self.gene_info_sql,[gene])
-        return cur.fetchone()
 
     def get_tx_mapping_options(self, tx_ac):
-        """return one or more transcript info for supplied accession (tx_ac), or None if not found.
-        Use this method to discovery possible mapping options supported in the database
+        """Return all transcript alignment sets for a given transcript
+        accession (tx_ac); returns empty list if transcript does not
+        exist.  Use this method to discovery possible mapping options
+        supported in the database
 
         :param tx_ac: transcript accession with version (e.g., 'NM_000051.3')
         :type tx_ac: str
@@ -241,36 +333,26 @@ class UTA(Interface):
 
         """
         cur = self._get_cursor()
-        cur.execute(self.tx_mapping_options_sql,[tx_ac])
+        cur.execute(self.sql['tx_mapping_options'],[tx_ac])
         r = cur.fetchall()
-        if len(r) == 0:
-            return None
-        else:
-            return r
-
-    def get_tx_identity_info(self, tx_ac):
-        """returns features associated with a single transcript.  alt_ac = tx_ac and alt_aln_method = transcript
-
-        :param tx_ac: transcript accession with version (e.g., 'NM_199425.2')
-        :type tx_ac: str
-
-        # database output
-        -[ RECORD 1 ]--+-------------
-        tx_ac          | NM_199425.2
-        alt_ac         | NM_199425.2
-        alt_aln_method | transcript
-        cds_start_i    | 283
-        cds_end_i      | 1003
-        lengths        | {707,79,410}
-        hgnc           | VSX1
-
-        """
-        cur = self._get_cursor()
-        cur.execute(self.tx_identity_info_sql,[tx_ac])
-        return cur.fetchone()
+        return r
 
 
-class UTA_sqlite(UTA):
+
+
+    ############################################################################
+    ## INTERNAL FUNCTIONS
+    def _check_schema_version(self,required_version):
+        obs_Mm = self.schema_version().split('.')[:2]
+        req_Mm = required_version.split('.')[:2]
+        if ( obs_Mm != req_Mm ):
+            raise RuntimeError("Version mismatch: Version {req_Mm} required, but {self.db_url} is version {obs_Mm}".format(
+                req_Mm = '.'.join(req_Mm), self=self, obs_Mm = '.'.join(obs_Mm)))
+        # else no error
+
+
+
+class UTA_sqlite(UTABase):
     def __init__(self,url):
         def _sqlite3_row_dict_factory(cur, row):
             "convert sqlite row to dict"
@@ -290,7 +372,7 @@ class UTA_sqlite(UTA):
         return self._con.cursor()
 
 
-class UTA_postgresql(UTA):
+class UTA_postgresql(UTABase):
     def __init__(self,url):
         self.db_url = url.geturl()
 
@@ -306,14 +388,8 @@ class UTA_postgresql(UTA):
         self._con = psycopg2.connect(host=host, port=port, database=database, user=user, password=password)
         super(UTA_postgresql,self).__init__()
 
-        self.tx_exons_sql = self.tx_exons_sql.replace('?','%s')
-        self.tx_info_sql = self.tx_info_sql.replace('?','%s')
-        self.tx_seq_sql = self.tx_seq_sql.replace('?','%s')
-        self.tx_for_gene_sql = self.tx_for_gene_sql.replace('?','%s')
-        self.acs_for_protein_md5_sql = self.acs_for_protein_md5_sql.replace('?','%s')
-        self.gene_info_sql = self.gene_info_sql.replace('?','%s')
-        self.tx_mapping_options_sql = self.tx_mapping_options_sql.replace('?','%s')
-        self.tx_identity_info_sql = self.tx_identity_info_sql.replace('?', '%s')
+        # remap sqlite's ? placeholders to psycopg2's %s
+        self.sql = { k: v.replace('?','%s') for k,v in self.sql.iteritems() }
         
     def _get_cursor(self):
         cur = self._con.cursor(cursor_factory=psycopg2.extras.DictCursor)

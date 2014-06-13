@@ -36,7 +36,6 @@ class Test_VariantMapper(unittest.TestCase):
     # ├────────┼────────────┼─────────┼─────────────┼──────────────┼─────────────┼─────────────┼───────────┤
     # │ ZCCHC3 │          1 │       1 │ NM_033089.6 │ NC_000020.10 │ 484=3I2275= │          24 │      1236 │
     # └────────┴────────────┴─────────┴─────────────┴──────────────┴─────────────┴─────────────┴───────────┘
-    @attr(tags=["quick"])
     def test_ZCCHC3_dbSNP(self):
         for rec in gcp_file_reader('tests/data/gcp/ZCCHC3-dbSNP.tsv'):
             self._test_gcp_mapping(rec)
@@ -49,7 +48,6 @@ class Test_VariantMapper(unittest.TestCase):
     # ├───────┼────────────┼─────────┼─────────────┼──────────────┼──────────────────┼─────────────┼───────────┤
     # │ ORAI1 │          1 │       2 │ NM_032790.3 │ NC_000012.11 │ 319=6I177=;1000= │         193 │      1099 │
     # └───────┴────────────┴─────────┴─────────────┴──────────────┴──────────────────┴─────────────┴───────────┘
-    @attr(tags=["quick"])
     def test_ORAI1_dbSNP(self):
         for rec in gcp_file_reader('tests/data/gcp/ORAI1-dbSNP.tsv'):
             self._test_gcp_mapping(rec)
@@ -62,7 +60,6 @@ class Test_VariantMapper(unittest.TestCase):
     # ├───────┼────────────┼─────────┼─────────────┼─────────────┼──────────────────────────────┼─────────────┼───────────┤
     # │ FOLR3 │          1 │       5 │ NM_000804.2 │ NC_000011.9 │ 44=;174=;150=2D37=;136=;304= │          50 │       788 │
     # └───────┴────────────┴─────────┴─────────────┴─────────────┴──────────────────────────────┴─────────────┴───────────┘
-    @attr(tags=["quick"])
     def test_FOLR3_dbSNP(self):
         # TODO: CORE-158: g-to-c mapped insertions have incorrect interval bounds
         for rec in gcp_file_reader('tests/data/gcp/FOLR3-dbSNP.tsv'):
@@ -76,7 +73,6 @@ class Test_VariantMapper(unittest.TestCase):
     # ├────────┼────────────┼─────────┼─────────────┼──────────────┼─────────────┼─────────────┼───────────┤
     # │ ADRA2B │         -1 │       1 │ NM_000682.5 │ NC_000002.11 │ 891=9D2375= │           0 │      1353 │
     # └────────┴────────────┴─────────┴─────────────┴──────────────┴─────────────┴─────────────┴───────────┘
-    @attr(tags=["quick"])
     def test_ADRA2B_dbSNP(self):
         for rec in gcp_file_reader('tests/data/gcp/ADRA2B-dbSNP.tsv'):
             self._test_gcp_mapping(rec)
@@ -89,20 +85,17 @@ class Test_VariantMapper(unittest.TestCase):
     # ├──────┼────────────┼─────────┼────────────────┼──────────────┼───────────────────────┼─────────────┼───────────┤
     # │ JRK  │         -1 │       3 │ NM_001077527.1 │ NC_000008.10 │ 52=;1844=2I199=;1483= │         514 │      2185 │
     # └──────┴────────────┴─────────┴────────────────┴──────────────┴───────────────────────┴─────────────┴───────────┘
-    @attr(tags=["quick"])
     def test_JRK_dbSNP(self):
         # TODO: CORE-157: del26 on -1 strands gets reverse complemented as del62
         for rec in gcp_file_reader('tests/data/gcp/JRK-dbSNP.tsv'):
             self._test_gcp_mapping(rec)
 
 
-    @attr(tags=["quick"])
     def test_NEFL_dbSNP(self):
         for rec in gcp_file_reader('tests/data/gcp/NEFL-dbSNP.tsv'):
             self._test_gcp_mapping(rec)
 
 
-    @attr(tags=["quick"])
     def test_DNAH11_hgmd(self):
         for rec in gcp_file_reader('tests/data/gcp/DNAH11-HGMD.tsv'):
             self._test_gcp_mapping(rec)
@@ -120,7 +113,6 @@ class Test_VariantMapper(unittest.TestCase):
         for rec in gcp_file_reader('tests/data/gcp/DNAH11-dbSNP.tsv'):
             self._test_gcp_mapping(rec)
 
-    @attr(tags=["quick"])
     def test_real(self):
         for rec in gcp_file_reader('tests/data/gcp/real.tsv'):
             self._test_gcp_mapping(rec)
