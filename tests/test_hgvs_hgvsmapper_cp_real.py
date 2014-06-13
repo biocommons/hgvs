@@ -27,7 +27,7 @@ class TestHgvsCToPReal(unittest.TestCase):
         self._hp = hgvs.parser.Parser()
         self._failed = []
 
-    def test_hgvsc_to_hgvsp_ext(self):
+    def test_c_to_p_ext(self):
         infilename = 'ext.tsv'
         outfilename = 'ext.out'
         infile = os.path.join(os.path.dirname(__file__), 'data', infilename)
@@ -56,7 +56,7 @@ class TestHgvsCToPReal(unittest.TestCase):
         if not row_id.startswith("#") and hgvsc and hgvsp_expected:
             try:
                 var_c = self._hp.parse_hgvs_variant(hgvsc)
-                var_p = self._hm.hgvsc_to_hgvsp(var_c,  hgvsp_expected.split(':')[0]) # hack until p.?, p.= etc parse
+                var_p = self._hm.c_to_p(var_c,  hgvsp_expected.split(':')[0]) # hack until p.?, p.= etc parse
                 hgvsp_actual = str(var_p)
 
                 if hgvsp_expected != hgvsp_actual:

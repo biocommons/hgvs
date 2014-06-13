@@ -110,7 +110,7 @@ hgvsmapper = hgvs.hgvsmapper.HGVSMapper(hdp)
 
 We can use this mapper to transform our transcript variant to a protein variant:
 
->>> hgvsmapper.hgvsc_to_hgvsp(var_c1)
+>>> hgvsmapper.c_to_p(var_c1)
 SequenceVariant(ac=NP_001184249.1, type=p, posedit=Ser94Phe)
 
 
@@ -119,7 +119,7 @@ Map our variant to the genome
 
 Mapping between sequences is straightforward:
 
->>> var_g = hgvsmapper.hgvsc_to_hgvsg(var_c1,'GRCh37.p10')
+>>> var_g = hgvsmapper.c_to_g(var_c1,'GRCh37.p10')
 >>> var_g
 SequenceVariant(ac=NC_000001.10, type=g, posedit=150550916G>A)
 >>> str(var_g)
@@ -173,7 +173,7 @@ provider:
 
 Let's map to the transcript for which this is an intronic variant.
 
->>> var_c2 = hgvsmapper.hgvsg_to_hgvsc(var_g,'NM_182763.2','GRCh37.p10')
+>>> var_c2 = hgvsmapper.g_to_c(var_g,'NM_182763.2','GRCh37.p10')
 >>> var_c2
 SequenceVariant(ac=NM_182763.2, type=c, posedit=688+403C>T)
 >>> var_c2.posedit.pos.start
@@ -182,7 +182,7 @@ BaseOffsetPosition(base=688, offset=403, datum=1, uncertain=False)
 And, if we attempt to infer a protein consequence for this variant, we get
 the expected uncertain interpretation:
 
->>> var_p2 = hgvsmapper.hgvsc_to_hgvsp(var_c2,None)
+>>> var_p2 = hgvsmapper.c_to_p(var_c2,None)
 >>> var_p2
 SequenceVariant(ac=NP_877495.1, type=p, posedit=?)
 >>> str(var_p2)

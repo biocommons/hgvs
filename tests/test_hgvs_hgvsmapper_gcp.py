@@ -132,12 +132,12 @@ class Test_HGVSMapper(unittest.TestCase):
         var_p = self.hp.parse_hgvs_variant(rec['HGVSp']) if rec['HGVSp'] is not None and rec['HGVSp'] != '' else None
 
         # g -> c
-        var_c_test = self.hm.hgvsg_to_hgvsc(var_g, var_c.ac)
+        var_c_test = self.hm.g_to_c(var_g, var_c.ac)
         self.assertEquals(str(var_c_test), str(var_c),
                           msg="%s != %s (%s)" % (str(var_c_test),str(var_c),rec['id']))
 
         # c -> g
-        var_g_test = self.hm.hgvsc_to_hgvsg(var_c, var_g.ac)
+        var_g_test = self.hm.c_to_g(var_c, var_g.ac)
         self.assertEquals(str(var_g_test), str(var_g),
                           msg="%s != %s (%s)" % (str(var_g_test),str(var_g),rec['id']))
 
@@ -145,7 +145,7 @@ class Test_HGVSMapper(unittest.TestCase):
             # c -> p
             hgvs_p_exp = str(var_p)
 
-            var_p_test = self.hm.hgvsc_to_hgvsp(var_c, var_p.ac)
+            var_p_test = self.hm.c_to_p(var_c, var_p.ac)
 
             if not var_p.posedit.uncertain:
                 # if expected value isn't uncertain, strip uncertain from test

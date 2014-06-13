@@ -5,22 +5,21 @@ This file is intended for ideas that need fleshing out.
 
 * class restructuring
 current: intervalmapper, transcriptmapper, hgvsmapper, projector, validator
+proposed: hgvsmapper -> variantmapper, hgvsposition -> position
+
 
 * clean/standardize naming
 ** Strive for this:
-- hgvs_{,g,c,p} -- string
-- var_{,g,c,p} -- variant
+- hgvs{,_g,_c,_p} -- string
+- var{,_g,_c,_p} -- variant
 - ival -- interval
 - location stuff: interval, position, location, pos, loc, start/end v. start/stop, posedit
 
-
-** violations:
-- hgvsmapper -- would become variantmapper
 - location-ish stuff -- everywhere
+
 
 * move intrinsic validation to posedits (and recurse)
 
 
 * small stuff
-var_{crgp} -> var in hgvsmapper (don't specify type)
 set_uncertain -> _set_uncertain (make internal)

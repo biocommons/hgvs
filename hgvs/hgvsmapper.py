@@ -8,13 +8,15 @@ from Bio.Seq import Seq
 import recordtype
 
 import hgvs.exceptions
-import hgvs.variant
-import hgvs.posedit
 import hgvs.location
+import hgvs.posedit
 import hgvs.transcriptmapper
 import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
 import hgvs.utils.altseqbuilder as altseqbuilder
+import hgvs.variant
+
 from hgvs.utils import reverse_complement
+from hgvs.utils.deprecated import deprecated
 
 
 class HGVSMapper(object):
@@ -29,7 +31,7 @@ class HGVSMapper(object):
         self.__tm_cache = {}
 
 
-    def hgvsg_to_hgvsc(self, var_g, tx_ac, alt_aln_method='splign'):
+    def g_to_c(self, var_g, tx_ac, alt_aln_method='splign'):
         """Given a genomic (g.) parsed HGVS variant, return a transcript (c.) variant on the specified transcript using
         the specified alignment method (default is 'splign' from NCBI).
 
@@ -46,7 +48,7 @@ class HGVSMapper(object):
 
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
         
-        pos_c = tm.hgvsg_to_hgvsc( var_g.posedit.pos )
+        pos_c = tm.g_to_c( var_g.posedit.pos )
         edit_c = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
         var_c = hgvs.variant.SequenceVariant(ac=tx_ac,
                                              type='c',
@@ -54,7 +56,7 @@ class HGVSMapper(object):
         return var_c
 
 
-    def hgvsg_to_hgvsr(self, var_g, tx_ac, alt_aln_method='splign'):
+    def g_to_r(self, var_g, tx_ac, alt_aln_method='splign'):
         """Given a genomic (g.) parsed HGVS variant, return a transcript (r.) variant on the specified transcript using
         the specified alignment method (default is 'splign' from NCBI).
 
@@ -71,7 +73,7 @@ class HGVSMapper(object):
 
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
 
-        pos_r = tm.hgvsg_to_hgvsr( var_g.posedit.pos )
+        pos_r = tm.g_to_r( var_g.posedit.pos )
         edit_r = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
         var_r = hgvs.variant.SequenceVariant(ac=tx_ac,
                                              type='r',
@@ -79,7 +81,7 @@ class HGVSMapper(object):
         return var_r
 
 
-    def hgvsr_to_hgvsg(self, var_r, alt_ac, alt_aln_method='splign'):
+    def r_to_g(self, var_r, alt_ac, alt_aln_method='splign'):
         """Given an RNA (r.) parsed HGVS variant, return a genomic (g.) variant on the specified transcript using
         the specified alignment method (default is 'splign' from NCBI).
 
@@ -96,7 +98,7 @@ class HGVSMapper(object):
 
         tm = self._fetch_TranscriptMapper(tx_ac=var_r.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
 
-        pos_g = tm.hgvsr_to_hgvsg( var_r.posedit.pos )
+        pos_g = tm.r_to_g( var_r.posedit.pos )
         edit_g = self._convert_edit_check_strand(tm.strand, var_r.posedit.edit)
 
         var_g = hgvs.variant.SequenceVariant(ac=alt_ac,
@@ -105,7 +107,7 @@ class HGVSMapper(object):
         return var_g
 
     
-    def hgvsc_to_hgvsg(self, var_c, alt_ac, alt_aln_method='splign'):
+    def c_to_g(self, var_c, alt_ac, alt_aln_method='splign'):
         """Given a cDNA (c.) parsed HGVS variant, return a genomic (g.) variant on the specified transcript using
         the specified alignment method (default is 'splign' from NCBI).
 
@@ -122,7 +124,7 @@ class HGVSMapper(object):
 
         tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
 
-        pos_g = tm.hgvsc_to_hgvsg(var_c.posedit.pos)
+        pos_g = tm.c_to_g(var_c.posedit.pos)
         edit_g = self._convert_edit_check_strand(tm.strand, var_c.posedit.edit)
 
         var_g = hgvs.variant.SequenceVariant(ac=alt_ac,
@@ -131,7 +133,7 @@ class HGVSMapper(object):
         return var_g
 
 
-    def hgvsc_to_hgvsr(self, var_c):
+    def c_to_r(self, var_c):
         """Given a cDNA (c.) parsed HGVS variant, return a RNA (r.) variant on the specified transcript using
         the specified alignment method (default is 'transcript' indicating a self alignment).
 
@@ -145,7 +147,7 @@ class HGVSMapper(object):
             raise hgvs.exceptions.InvalidHGVSVariantError('Expected a cDNA (c.); got ' + str(var_c))
 
         tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=var_c.ac, alt_aln_method='transcript')
-        pos_r = tm.hgvsc_to_hgvsr(var_c.posedit.pos)
+        pos_r = tm.c_to_r(var_c.posedit.pos)
 
         # not necessary to check strand
         if isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_c.posedit.edit, hgvs.edit.Dup):
@@ -159,7 +161,7 @@ class HGVSMapper(object):
         return var_r
 
 
-    def hgvsr_to_hgvsc(self, var_r):
+    def r_to_c(self, var_r):
         """Given an RNA (r.) parsed HGVS variant, return a cDNA (c.) variant on the specified transcript using
         the specified alignment method (default is 'transcript' indicating a self alignment).
 
@@ -173,7 +175,7 @@ class HGVSMapper(object):
             raise hgvs.exceptions.InvalidHGVSVariantError('Expected RNA (r.); got ' + str(var_r))
 
         tm = self._fetch_TranscriptMapper(tx_ac=var_r.ac, alt_ac=var_r.ac, alt_aln_method='transcript')
-        pos_c = tm.hgvsr_to_hgvsc(var_r.posedit.pos)
+        pos_c = tm.r_to_c(var_r.posedit.pos)
 
         # not necessary to check strand
         if isinstance(var_r.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_r.posedit.edit, hgvs.edit.Dup):
@@ -188,7 +190,7 @@ class HGVSMapper(object):
 
 
     #TODO (API): alt_ac and alt_aln_method are not required; drop them
-    def hgvsc_to_hgvsp(self, var_c, alt_ac=None, alt_aln_method='transcript'):
+    def c_to_p(self, var_c, alt_ac=None, alt_aln_method='transcript'):
         """
         Converts a c. SequenceVariant to a p. SequenceVariant on the specified protein accession
 
@@ -204,7 +206,7 @@ class HGVSMapper(object):
 
             @classmethod
             def setup_transcript_data(cls, hdp, tx_ac, alt_ac, alt_aln_method):
-                """helper for generating RefTranscriptData from for hgvsc_to_hgvsp"""
+                """helper for generating RefTranscriptData from for c_to_p"""
                 tx_info = hdp.get_tx_identity_info(var_c.ac)
                 #tx_info = hdp.get_tx_info(tx_ac, tx_ac, alt_aln_method)  # want identity returned
                 tx_seq = hdp.get_tx_seq(tx_ac)
@@ -252,6 +254,32 @@ class HGVSMapper(object):
         var_p = var_ps[0]
 
         return var_p
+
+
+    ############################################################################
+    ## DEPRECATED METHODS
+    @deprecated
+    def hgvsg_to_hgvsc(self,*args,**kwargs):
+        return self.g_to_c(*args,**kwargs)
+    @deprecated
+    def hgvsg_to_hgvsr(self,*args,**kwargs):
+        return self.g_to_r(*args,**kwargs)
+    @deprecated
+    def hgvsr_to_hgvsg(self,*args,**kwargs):
+        return self.r_to_g(*args,**kwargs)
+    @deprecated
+    def hgvsc_to_hgvsg(self,*args,**kwargs):
+        return self.c_to_g(*args,**kwargs)
+    @deprecated
+    def hgvsc_to_hgvsr(self,*args,**kwargs):
+        return self.c_to_r(*args,**kwargs)
+    @deprecated
+    def hgvsr_to_hgvsc(self,*args,**kwargs):
+        return self.r_to_c(*args,**kwargs)
+    @deprecated
+    def hgvsc_to_hgvsp(self,*args,**kwargs):
+        return self.c_to_p(*args,**kwargs)
+
 
     ############################################################################
     ## Internal methods
@@ -301,6 +329,8 @@ class HGVSMapper(object):
         else:
             raise NotImplemented('Only NARefAlt/Dup types are currently implemented')
         return edit_out
+
+
 
 
 

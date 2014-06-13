@@ -105,7 +105,7 @@ class ExtrinsicValidator():
     def _ref_is_valid(self, var):
         if var.posedit.edit.ref is not None:
             if var.type == 'c':
-                var = self.hm.hgvsc_to_hgvsr(var)
+                var = self.hm.c_to_r(var)
             # fetch uses interbase coordinates
             seq = self.mfdb.fetch(var.ac, var.posedit.pos.start.base - 1, var.posedit.pos.end.base)
             if seq != var.posedit.edit.ref:

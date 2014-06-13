@@ -18,8 +18,8 @@ class Test_HGVSMapper(unittest.TestCase):
         hgvs_p = 'NP_001628.1:p.(Gly528Arg)'  # from Mutalyzer
 
         var_g = self.hp.parse_hgvs_variant(hgvs_g)
-        var_c = self.hm.hgvsg_to_hgvsc( var_g, 'NM_001637.3' )
-        var_p = self.hm.hgvsc_to_hgvsp( var_c )
+        var_c = self.hm.g_to_c( var_g, 'NM_001637.3' )
+        var_p = self.hm.c_to_p( var_c )
 
         self.assertEqual( str(var_c) , hgvs_c )
         self.assertEqual( str(var_p) , hgvs_p )
@@ -32,13 +32,13 @@ class Test_HGVSMapper(unittest.TestCase):
         var_g = self.hp.parse_hgvs_variant(hgvs_g)
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
 
-        cases = {'gc': (self.hm.hgvsg_to_hgvsc, (var_c, 'NM_001637.3')),
-                 'gr': (self.hm.hgvsg_to_hgvsr, (var_c, 'NM_001637.3')),
-                 'rg': (self.hm.hgvsr_to_hgvsg, (var_c, 'NM_001637.3')),
-                 'cg': (self.hm.hgvsc_to_hgvsg, (var_g, 'NM_001637.3')),
-                 'cr': (self.hm.hgvsc_to_hgvsr, (var_g,)),
-                 'rc': (self.hm.hgvsr_to_hgvsc, (var_g,)),
-                 'cp': (self.hm.hgvsc_to_hgvsp, (var_g, None)),
+        cases = {'gc': (self.hm.g_to_c, (var_c, 'NM_001637.3')),
+                 'gr': (self.hm.g_to_r, (var_c, 'NM_001637.3')),
+                 'rg': (self.hm.r_to_g, (var_c, 'NM_001637.3')),
+                 'cg': (self.hm.c_to_g, (var_g, 'NM_001637.3')),
+                 'cr': (self.hm.c_to_r, (var_g,)),
+                 'rc': (self.hm.r_to_c, (var_g,)),
+                 'cp': (self.hm.c_to_p, (var_g, None)),
                  }
 
         failures = []
@@ -56,7 +56,7 @@ class Test_HGVSMapper(unittest.TestCase):
         hgvs_g = 'NC_000007.13:g.36561662C>T'
         var_g = self.hp.parse_hgvs_variant(hgvs_g)
         with self.assertRaises(hgvs.exceptions.HGVSError):
-            var_p = self.hm.hgvsc_to_hgvsp(var_g, 'NM_999999.1')
+            var_p = self.hm.c_to_p(var_g, 'NM_999999.1')
 
 
 
