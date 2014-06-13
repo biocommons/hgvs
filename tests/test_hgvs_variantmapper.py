@@ -50,7 +50,7 @@ class Test_VariantMapper(unittest.TestCase):
                 func, args = cases[key]
                 var_result = func(*args)
                 failures.append(key)
-            except hgvs.exceptions.InvalidHGVSVariantError:
+            except hgvs.exceptions.HGVSInvalidVariantError:
                 pass
 
         self.assertFalse(failures, "conversions not failing: {}".format(failures))

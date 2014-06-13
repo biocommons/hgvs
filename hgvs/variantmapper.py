@@ -36,12 +36,12 @@ class VariantMapper(object):
         :param str tx_ac: a transcript accession (e.g., NM_012345.6 or ENST012345678)
         :param str alt_aln_method: the alignment method; valid values depend on data source
         :returns: variant object (:class:`hgvs.variant.SequenceVariant`) using CDS coordinates
-        :raises hgvs.exceptions.InvalidHGVSVariantError: if var_g is not of type 'g'
+        :raises hgvs.exceptions.HGVSInvalidVariantError: if var_g is not of type 'g'
 
         """
 
         if not (var_g.type == 'g'):
-            raise hgvs.exceptions.InvalidHGVSVariantError('Expected a genomic (g.) variant; got '+ str(var_g))
+            raise hgvs.exceptions.HGVSInvalidVariantError('Expected a genomic (g.) variant; got '+ str(var_g))
 
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
         
@@ -61,12 +61,12 @@ class VariantMapper(object):
         :param str tx_ac: a transcript accession (e.g., NM_012345.6 or ENST012345678)
         :param str alt_aln_method: the alignment method; valid values depend on data source
         :returns: variant object (:class:`hgvs.variant.SequenceVariant`) using transcript (r.) coordinates
-        :raises hgvs.exceptions.InvalidHGVSVariantError: if var_g is not of type 'g'
+        :raises hgvs.exceptions.HGVSInvalidVariantError: if var_g is not of type 'g'
 
         """
 
         if not (var_g.type == 'g'):
-            raise hgvs.exceptions.InvalidHGVSVariantError('Expected a genomic (g.); got '+ str(var_g))
+            raise hgvs.exceptions.HGVSInvalidVariantError('Expected a genomic (g.); got '+ str(var_g))
 
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
 
@@ -86,12 +86,12 @@ class VariantMapper(object):
         :param str alt_ac: a reference sequence accession (e.g., NC_000001.11)
         :param str alt_aln_method: the alignment method; valid values depend on data source
         :returns: variant object (:class:`hgvs.variant.SequenceVariant`)
-        :raises hgvs.exceptions.InvalidHGVSVariantError: if var_r is not of type 'r'
+        :raises hgvs.exceptions.HGVSInvalidVariantError: if var_r is not of type 'r'
 
         """
 
         if not (var_r.type == 'r'):
-            raise hgvs.exceptions.InvalidHGVSVariantError('Expected a RNA (r.); got '+ str(var_r))
+            raise hgvs.exceptions.HGVSInvalidVariantError('Expected a RNA (r.); got '+ str(var_r))
 
         tm = self._fetch_TranscriptMapper(tx_ac=var_r.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
 
@@ -112,12 +112,12 @@ class VariantMapper(object):
         :param str alt_ac: a reference sequence accession (e.g., NC_000001.11)
         :param str alt_aln_method: the alignment method; valid values depend on data source
         :returns: variant object (:class:`hgvs.variant.SequenceVariant`)
-        :raises hgvs.exceptions.InvalidHGVSVariantError: if var_c is not of type 'c'
+        :raises hgvs.exceptions.HGVSInvalidVariantError: if var_c is not of type 'c'
 
         """
 
         if not (var_c.type == 'c'):
-            raise hgvs.exceptions.InvalidHGVSVariantError('Expected a cDNA (c.); got ' + str(var_c))
+            raise hgvs.exceptions.HGVSInvalidVariantError('Expected a cDNA (c.); got ' + str(var_c))
 
         tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
 
@@ -136,12 +136,12 @@ class VariantMapper(object):
 
         :param hgvs.variant.SequenceVariant var_c: a variant object
         :returns: variant object (:class:`hgvs.variant.SequenceVariant`)
-        :raises hgvs.exceptions.InvalidHGVSVariantError: if var_c is not of type 'c'
+        :raises hgvs.exceptions.HGVSInvalidVariantError: if var_c is not of type 'c'
 
         """
 
         if not (var_c.type == 'c'):
-            raise hgvs.exceptions.InvalidHGVSVariantError('Expected a cDNA (c.); got ' + str(var_c))
+            raise hgvs.exceptions.HGVSInvalidVariantError('Expected a cDNA (c.); got ' + str(var_c))
 
         tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=var_c.ac, alt_aln_method='transcript')
         pos_r = tm.c_to_r(var_c.posedit.pos)
@@ -164,12 +164,12 @@ class VariantMapper(object):
 
         :param hgvs.variant.SequenceVariant var_r: a variant object
         :returns: variant object (:class:`hgvs.variant.SequenceVariant`)
-        :raises hgvs.exceptions.InvalidHGVSVariantError: if var_r is not of type 'r'
+        :raises hgvs.exceptions.HGVSInvalidVariantError: if var_r is not of type 'r'
 
         """
 
         if not (var_r.type == 'r'):
-            raise hgvs.exceptions.InvalidHGVSVariantError('Expected RNA (r.); got ' + str(var_r))
+            raise hgvs.exceptions.HGVSInvalidVariantError('Expected RNA (r.); got ' + str(var_r))
 
         tm = self._fetch_TranscriptMapper(tx_ac=var_r.ac, alt_ac=var_r.ac, alt_aln_method='transcript')
         pos_c = tm.r_to_c(var_r.posedit.pos)
@@ -234,7 +234,7 @@ class VariantMapper(object):
                 return transcript_data
 
         if not (var_c.type == 'c'):
-            raise hgvs.exceptions.InvalidHGVSVariantError('Expected a cDNA (c.); got ' + str(var_c))
+            raise hgvs.exceptions.HGVSInvalidVariantError('Expected a cDNA (c.); got ' + str(var_c))
 
         reference_data = RefTranscriptData.setup_transcript_data(self.hdp, var_c.ac, pro_ac)
         builder = altseqbuilder.AltSeqBuilder(var_c, reference_data)

@@ -53,7 +53,7 @@ class Interval(object):
     __slots__ = ('start_i','end_i')
     def __init__(self,start_i,end_i):
         if not (start_i <= end_i):
-            raise InvalidIntervalError('start_i must be less than or equal to end_i')
+            raise HGVSInvalidIntervalError('start_i must be less than or equal to end_i')
         self.start_i = start_i
         self.end_i = end_i
 
@@ -74,7 +74,7 @@ class IntervalPair(object):
         if not (    (ref.len == tgt.len)
                  or (ref.len == 0 and tgt.len != 0)
                  or (ref.len != 0 and tgt.len == 0) ):
-            raise InvalidIntervalError("IntervalPair doesn't represent a match, insertion, or deletion")
+            raise HGVSInvalidIntervalError("IntervalPair doesn't represent a match, insertion, or deletion")
         self.ref = ref
         self.tgt = tgt
 
@@ -135,7 +135,7 @@ class IntervalMapper(object):
                 sil = [ i for i,iv in enumerate(from_ivs) if iv.start_i <= from_start_i <= iv.end_i ]
                 eil = [ i for i,iv in enumerate(from_ivs) if iv.start_i <= from_end_i   <= iv.end_i ]
                 if len(sil) == 0 or len(eil) == 0:
-                    raise InvalidIntervalError('start or end or both are beyond the bounds of transcript record')
+                    raise HGVSInvalidIntervalError('start or end or both are beyond the bounds of transcript record')
                 si,ei = (sil[0],eil[-1]) if max_extent else (sil[-1],eil[0])
             return si,ei
 
@@ -146,7 +146,7 @@ class IntervalMapper(object):
         try:
             si,ei = iv_map(from_ivs,to_ivs,from_start_i,from_end_i,max_extent)
         except ValueError:
-            raise InvalidIntervalError('start_i,end_i interval out of bounds')
+            raise HGVSInvalidIntervalError('start_i,end_i interval out of bounds')
         to_start_i = clip_to_iv( to_ivs[si], to_ivs[si].start_i + (from_start_i - from_ivs[si].start_i) )
         to_end_i   = clip_to_iv( to_ivs[ei], to_ivs[ei].end_i   - (from_ivs[ei].end_i - from_end_i)     )
         return to_start_i,to_end_i
