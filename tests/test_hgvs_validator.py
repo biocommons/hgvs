@@ -5,7 +5,7 @@ from nose.plugins.attrib import attr
 from hgvs.dataproviders.multifastadb import MultiFastaDB
 from hgvs.exceptions import HGVSValidationError
 import hgvs.dataproviders.uta
-import hgvs.hgvsmapper
+import hgvs.variantmapper
 import hgvs.parser
 import hgvs.validator
 

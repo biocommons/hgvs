@@ -17,7 +17,7 @@ class deprecated(object):
 
     results in warnings like this:
 
-    /home/reece/projects/hgvs/hgvs/hgvsmapper.py:280: DeprecationWarning: Call to deprecated function hgvsc_to_hgvsp; use c_to_p(...) instead
+    /home/reece/projects/hgvs/hgvs/variantmapper.py:280: DeprecationWarning: Call to deprecated function hgvsc_to_hgvsp; use c_to_p(...) instead
 
     '''
 

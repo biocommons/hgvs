@@ -7,17 +7,17 @@ Manual liftover of NM\_001261456.1:c.1762A>G (rs509749) to NM\_001261457.1 via G
 .. code:: python
 
     import hgvs.dataproviders.uta
-    import hgvs.hgvsmapper
+    import hgvs.variantmapper
     import hgvs.parser
 .. code:: python
 
     hdp = hgvs.dataproviders.uta.connect()
-    hgvsmapper = hgvs.hgvsmapper.HGVSMapper(hdp)
+    variantmapper = hgvs.variantmapper.VariantMapper(hdp)
     hgvsparser = hgvs.parser.Parser()
 .. code:: python
 
     var_c1 = hgvsparser.parse_hgvs_variant('NM_001261456.1:c.1762A>G')
-    var_p1 = hgvsmapper.c_to_p(var_c1, None)
+    var_p1 = variantmapper.c_to_p(var_c1, None)
     var_c1, var_p1
 
 
@@ -31,7 +31,7 @@ Manual liftover of NM\_001261456.1:c.1762A>G (rs509749) to NM\_001261457.1 via G
 
 .. code:: python
 
-    var_g = hgvsmapper.c_to_g(var_c1,'NC_000001.10')
+    var_g = variantmapper.c_to_g(var_c1,'NC_000001.10')
     var_g
 
 
@@ -80,8 +80,8 @@ Manual liftover of NM\_001261456.1:c.1762A>G (rs509749) to NM\_001261457.1 via G
 
 .. code:: python
 
-    var_c2 = hgvsmapper.g_to_c(var_g,'NM_001261457.1',alt_aln_method='splign')
-    var_p2 = hgvsmapper.c_to_p(var_c2, None)
+    var_c2 = variantmapper.g_to_c(var_g,'NM_001261457.1',alt_aln_method='splign')
+    var_p2 = variantmapper.c_to_p(var_c2, None)
     var_c2, var_p2
 
 

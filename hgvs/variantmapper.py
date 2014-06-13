@@ -1,5 +1,5 @@
 """
-hgvs.hgvsmapper
+hgvs.variantmapper
 """
 
 import copy
@@ -19,7 +19,7 @@ from hgvs.utils import reverse_complement
 from hgvs.utils.deprecated import deprecated
 
 
-class HGVSMapper(object):
+class VariantMapper(object):
     """
     Maps HGVS variants to and from g., r., c., and p. representations.
     All methods require and return objects of type :class:`hgvs.variant.SequenceVariant`.

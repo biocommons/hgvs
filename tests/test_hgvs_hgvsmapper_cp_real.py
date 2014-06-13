@@ -8,7 +8,7 @@ import unittest
 
 import hgvs.dataproviders.uta
 
-import hgvs.hgvsmapper
+import hgvs.variantmapper
 import hgvs.parser
 
 def gcp_file_reader(fn):
@@ -23,7 +23,7 @@ class TestHgvsCToPReal(unittest.TestCase):
 
     def setUp(self):
         self.hdp = hgvs.dataproviders.uta.connect()
-        self._hm = hgvs.hgvsmapper.HGVSMapper(self.hdp, cache_transcripts=True)
+        self._hm = hgvs.variantmapper.VariantMapper(self.hdp, cache_transcripts=True)
         self._hp = hgvs.parser.Parser()
         self._failed = []
 

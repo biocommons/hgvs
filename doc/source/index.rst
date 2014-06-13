@@ -18,7 +18,7 @@ Features
   positions, and types of variation (:mod:`hgvs.edit`)
 * Formatters that generate HGVS strings from internal representations
 * Tools to map variants between genome, transcript, and protein sequences
-  (:class:`HGVSMapper <hgvs.hgvsmapper.HGVSMapper>` and :class:`Projector
+  (:class:`VariantMapper <hgvs.variantmapper.VariantMapper>` and :class:`Projector
   <hgvs.projector.Projector>`)
 * Reliable handling of regions reference-transcript discrepancy (requires
   `UTA <https://bitbucket.org/invitae/uta/>`_)
