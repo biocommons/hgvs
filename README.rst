@@ -65,8 +65,8 @@ An Example
   'NC_000007.13:g.36561662C>T'
 
   >>> import hgvs.dataproviders.uta, hgvs.hgvsmapper
-  >>> uta1 = hgvs.dataproviders.uta.connect()
-  >>> hm = hgvs.hgvsmapper.HGVSMapper(uta1, cache_transcripts=True)
+  >>> hdp = hgvs.dataproviders.uta.connect()
+  >>> hm = hgvs.hgvsmapper.HGVSMapper(hdp, cache_transcripts=True)
   >>> var_c = hm.g_to_c(var_g, 'NM_001637.3')
   >>> var_c
   SequenceVariant(ac=NM_001637.3, type=c, posedit=1582G>A)

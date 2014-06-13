@@ -2,9 +2,8 @@
 Manual liftover of NM\_001261456.1:c.1762A>G (rs509749) to NM\_001261457.1 via GRCh37
 =====================================================================================
 
-
-http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=509749
-
+                http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=509749
+                
 .. code:: python
 
     import hgvs.dataproviders.uta
@@ -12,8 +11,8 @@ http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=509749
     import hgvs.parser
 .. code:: python
 
-    u1 = hgvs.dataproviders.uta.connect()
-    hgvsmapper = hgvs.hgvsmapper.HGVSMapper(u1)
+    hdp = hgvs.dataproviders.uta.connect()
+    hgvsmapper = hgvs.hgvsmapper.HGVSMapper(hdp)
     hgvsparser = hgvs.parser.Parser()
 .. code:: python
 
@@ -45,7 +44,7 @@ http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=509749
 
 .. code:: python
 
-    txs = u1.get_tx_for_gene('LY9')
+    txs = hdp.get_tx_for_gene('LY9')
     txs
 
 
@@ -94,6 +93,3 @@ http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=509749
 
 
 
-.. code:: python
-
-    

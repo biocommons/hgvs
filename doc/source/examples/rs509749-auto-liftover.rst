@@ -2,10 +2,9 @@
 Automated liftover of NM\_001261456.1:c.1762A>G (rs509749) to NM\_001261457.1 via GRCh37
 ========================================================================================
 
-
-Automatically project variant from one transcript to another via common reference.
+                Automatically project variant from one transcript to another via common reference.
 http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=509749
-
+                
 .. code:: python
 
     import hgvs.parser
@@ -14,11 +13,11 @@ http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=509749
 .. code:: python
 
     import hgvs.dataproviders.uta
-    u1 = hgvs.dataproviders.uta.connect()
+    hdp = hgvs.dataproviders.uta.connect()
 .. code:: python
 
     import hgvs.projector
-    pj = hgvs.projector.Projector(hdp=u1,
+    pj = hgvs.projector.Projector(hdp=hdp,
                                   alt_ac='NC_000001.10',
                                   src_ac=var_c1.ac,
                                   dst_ac='NM_001261457.1')
@@ -34,6 +33,3 @@ http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=509749
 
 
 
-.. code:: python
-
-    

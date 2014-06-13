@@ -119,15 +119,18 @@ ${VE_DIR}: ${VE_PY}
 #=> clean: clean up editor backups, etc.
 clean:
 	find . -name \*~ -print0 | xargs -0r /bin/rm
+	make -C examples $@
 #=> cleaner: above, and remove generated files
 cleaner: clean
 	find . -name \*.pyc -print0 | xargs -0r /bin/rm -f
 	/bin/rm -fr build bdist cover dist sdist ve virtualenv* examples/.ipynb_checkpoints
 	-make -C doc clean
+	make -C examples $@
 #=> cleanest: above, and remove the virtualenv, .orig, and .bak files
 cleanest: cleaner
 	find . \( -name \*.orig -o -name \*.bak \) -print0 | xargs -0r /bin/rm -v
 	/bin/rm -fr distribute-* *.egg *.egg-info *.tar.gz nosetests.xml cover
+	make -C examples $@
 #=> pristine: above, and delete anything unknown to mercurial
 pristine: cleanest
 	hg st -un0 | xargs -0r echo /bin/rm -fv
