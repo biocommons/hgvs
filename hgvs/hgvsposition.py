@@ -2,18 +2,17 @@
 
 import recordtype
 
-#TODO (API): seqref should be ac for consistency with variant
-class HGVSPosition( recordtype.recordtype('HGVSPosition', ['seqref','type','pos']) ):
+class HGVSPosition( recordtype.recordtype('HGVSPosition', ['ac','type','pos']) ):
     """
     HGVSPosition -- Represent partial HGVS tags that refer to a position without alleles
     
-    :param str seqref: sequence accession
+    :param str ac: sequence accession
     :param str type: type of sequence and coordinate
     :param str pos: sequence position
     
     """
     def __str__(self):
-        return '{self.seqref}:{self.type}.{self.pos}'.format(self=self)
+        return '{self.ac}:{self.type}.{self.pos}'.format(self=self)
 
 
 ## <LICENSE>
