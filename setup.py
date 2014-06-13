@@ -20,7 +20,7 @@ setup(
 
     author = 'HGVS Contributors',
     author_email = 'reecehart+hgvs@gmail.com',
-    description = """HGVS Parser""",
+    description = """HGVS Parser, Formatter, Mapper, Validator""",
     name = "hgvs",
     package_data = {'hgvs': ['_data/*']},
     packages = find_packages(),
@@ -62,7 +62,7 @@ setup(
     setup_requires = [
         'hgtools',
         'nose',
-        'nose-timer',
+        # 'nose-timer', causes errors when installing via pip; cause not investigated
         'sphinx',
         'sphinxcontrib-fulltoc',
         ],
