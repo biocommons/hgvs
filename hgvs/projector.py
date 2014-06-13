@@ -39,7 +39,7 @@ class Projector(object):
         :param c_interval: an :class:`hgvs.interval.Interval` object on the source transcript
         :returns: c_interval: an :class:`hgvs.interval.Interval` object on the destination transcript
         """
-        return self.dst_tm.hgvsg_to_hgvsc( self.src_tm.hgvsc_to_hgvsg( c_interval ) )
+        return self.dst_tm.g_to_c( self.src_tm.c_to_g( c_interval ) )
         
 
     def project_interval_backward(self,c_interval):
@@ -50,7 +50,7 @@ class Projector(object):
         :param c_interval: an :class:`hgvs.interval.Interval` object on the destination transcript
         :returns: c_interval: an :class:`hgvs.interval.Interval` object on the source transcript
         """
-        return self.src_tm.hgvsg_to_hgvsc( self.dst_tm.hgvsc_to_hgvsg( c_interval ) )
+        return self.src_tm.g_to_c( self.dst_tm.c_to_g( c_interval ) )
 
 
     def project_variant_forward(self,c_variant):

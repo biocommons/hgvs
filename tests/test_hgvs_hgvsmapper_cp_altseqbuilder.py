@@ -112,14 +112,14 @@ class TestAltSeqBuilder(unittest.TestCase):
 
     def _run_comparison(self, hgvsc, expected_sequence):
 
-        # test replicates the internal class of hgvsp_to_hgvsc
+        # test replicates the internal class of p_to_c
         class RefTranscriptData(recordtype.recordtype('RefTranscriptData',
                                                       ['transcript_sequence', 'aa_sequence',
                                                        'cds_start', 'cds_stop', 'protein_accession'])):
 
             @classmethod
             def setup_transcript_data(cls, ac, ac_p, db, ref='GRCh37.p10'):
-                """helper for generating RefTranscriptData from for hgvsc_to_hgvsp"""
+                """helper for generating RefTranscriptData from for c_to_p"""
                 tx_info = db.get_tx_info(ac)
                 tx_seq = db.get_tx_seq(ac)
 
@@ -146,7 +146,7 @@ class TestAltSeqBuilder(unittest.TestCase):
 
         ac_p = "DUMMY"
         var = self._parser.parse_hgvs_variant(hgvsc)
-        transcript_data = RefTranscriptData.setup_transcript_data(var.seqref, ac_p, self._datasource)
+        transcript_data = RefTranscriptData.setup_transcript_data(var.ac, ac_p, self._datasource)
 
         builder = altseqbuilder.AltSeqBuilder(var, transcript_data)
         insert_result = builder.build_altseq()

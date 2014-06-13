@@ -6,6 +6,7 @@ import hgvs.variant
 import hgvs.posedit
 from hgvs.intervalmapper import IntervalMapper
 from hgvs.exceptions import HGVSError
+from hgvs.utils.deprecated import deprecated
 
 class TranscriptMapper(object):
     """Provides coordinate (not variant) mapping operations between
@@ -52,7 +53,7 @@ class TranscriptMapper(object):
                    self=self, n_exons=len(self.tx_exons), strand_pm=_strand_pm(self.strand))
 
 
-    def hgvsg_to_hgvsr(self, g_interval):
+    def g_to_r(self, g_interval):
         """convert a genomic (g.) interval to a transcript cDNA (r.) interval"""
 
         assert self.strand in [1,-1], 'strand = '+str(self.strand)+'; must be 1 or -1'
@@ -88,7 +89,7 @@ class TranscriptMapper(object):
                     uncertain=g_interval.uncertain)
 
 
-    def hgvsr_to_hgvsg(self, r_interval):
+    def r_to_g(self, r_interval):
         """convert a transcript cDNA (r.) interval to a genomic (g.) interval"""
 
         assert self.strand in [1,-1], 'strand = '+str(self.strand)+'; must be 1 or -1'
@@ -111,7 +112,7 @@ class TranscriptMapper(object):
             uncertain=r_interval.uncertain)
 
 
-    def hgvsr_to_hgvsc(self, r_interval):
+    def r_to_c(self, r_interval):
         """convert a transcript cDNA (r.) interval to a transcript CDS (c.) interval"""
 
         if r_interval.start.base <= 0:
@@ -148,7 +149,7 @@ class TranscriptMapper(object):
         return c_interval
 
 
-    def hgvsc_to_hgvsr(self, c_interval):
+    def c_to_r(self, c_interval):
         """convert a transcript CDS (c.) interval to a transcript cDNA (r.) interval"""
 
         # start
@@ -178,15 +179,39 @@ class TranscriptMapper(object):
             uncertain=c_interval.uncertain)
         return r_interval
 
-    def hgvsg_to_hgvsc(self, g_interval):
+    def g_to_c(self, g_interval):
         """convert a genomic (g.) interval to a transcript CDS (c.) interval"""
-        return self.hgvsr_to_hgvsc(self.hgvsg_to_hgvsr(g_interval))
+        return self.r_to_c(self.g_to_r(g_interval))
 
-    def hgvsc_to_hgvsg(self, c_interval):
+    def c_to_g(self, c_interval):
         """convert a transcript CDS (c.) interval to a genomic (g.) interval"""
-        return self.hgvsr_to_hgvsg(self.hgvsc_to_hgvsr(c_interval))
+        return self.r_to_g(self.c_to_r(c_interval))
 
 
+
+    ############################################################################
+    ## DEPRECATED METHODS
+    @deprecated
+    def hgvsg_to_hgvsc(self,*args,**kwargs):
+        return self.g_to_c(*args,**kwargs)
+    @deprecated
+    def hgvsg_to_hgvsr(self,*args,**kwargs):
+        return self.g_to_r(*args,**kwargs)
+    @deprecated
+    def hgvsr_to_hgvsg(self,*args,**kwargs):
+        return self.r_to_g(*args,**kwargs)
+    @deprecated
+    def hgvsc_to_hgvsg(self,*args,**kwargs):
+        return self.c_to_g(*args,**kwargs)
+    @deprecated
+    def hgvsc_to_hgvsr(self,*args,**kwargs):
+        return self.c_to_r(*args,**kwargs)
+    @deprecated
+    def hgvsr_to_hgvsc(self,*args,**kwargs):
+        return self.r_to_c(*args,**kwargs)
+    @deprecated
+    def hgvsc_to_hgvsp(self,*args,**kwargs):
+        return self.c_to_p(*args,**kwargs)
 
 def _strand_pm(s):
     return (None if s is None

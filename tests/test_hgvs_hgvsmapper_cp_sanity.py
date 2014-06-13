@@ -243,7 +243,7 @@ class TestHgvsCToP(unittest.TestCase):
         """
         var_c = TestHgvsCToP._parser.parse_hgvs_variant(hgvsc)
         ac_p = "MOCK"
-        hgvsp_actual = str(TestHgvsCToP._mapper.hgvsc_to_hgvsp(var_c, ac_p))
+        hgvsp_actual = str(TestHgvsCToP._mapper.c_to_p(var_c, ac_p))
         msg = "hgvsc: {} hgvsp expected: {} actual: {}".format(hgvsc, hgvsp_expected, hgvsp_actual)
         self.assertEqual(hgvsp_expected, hgvsp_actual, msg)
 

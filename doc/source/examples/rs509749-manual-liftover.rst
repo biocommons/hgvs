@@ -18,7 +18,7 @@ http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=509749
 .. code:: python
 
     var_c1 = hgvsparser.parse_hgvs_variant('NM_001261456.1:c.1762A>G')
-    var_p1 = hgvsmapper.hgvsc_to_hgvsp(var_c1, None)
+    var_p1 = hgvsmapper.c_to_p(var_c1, None)
     var_c1, var_p1
 
 
@@ -32,7 +32,7 @@ http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=509749
 
 .. code:: python
 
-    var_g = hgvsmapper.hgvsc_to_hgvsg(var_c1,'NC_000001.10')
+    var_g = hgvsmapper.c_to_g(var_c1,'NC_000001.10')
     var_g
 
 
@@ -81,8 +81,8 @@ http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=509749
 
 .. code:: python
 
-    var_c2 = hgvsmapper.hgvsg_to_hgvsc(var_g,'NM_001261457.1',alt_aln_method='splign')
-    var_p2 = hgvsmapper.hgvsc_to_hgvsp(var_c2, None)
+    var_c2 = hgvsmapper.g_to_c(var_g,'NM_001261457.1',alt_aln_method='splign')
+    var_p2 = hgvsmapper.c_to_p(var_c2, None)
     var_c2, var_p2
 
 

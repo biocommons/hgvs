@@ -46,8 +46,8 @@ if __name__ == '__main__':
         var_g = hgvsparser.parse_hgvs_variant(rec['HGVSg'])
         var_c = hgvsparser.parse_hgvs_variant(rec['HGVSc'])
         
-        var_c_from_g = hgvsmapper.hgvsg_to_hgvsc( var_g, var_c.ac, alt_aln_method='splign' )
-        var_g_from_c = hgvsmapper.hgvsc_to_hgvsg( var_c, alt_ac = var_g.ac, alt_aln_method='splign' )
+        var_c_from_g = hgvsmapper.g_to_c( var_g, var_c.ac, alt_aln_method='splign' )
+        var_g_from_c = hgvsmapper.c_to_g( var_c, alt_ac = var_g.ac, alt_aln_method='splign' )
         
         hgvs_c_from_g = str(var_c_from_g)
         hgvs_g_from_c = str(var_g_from_c)
@@ -60,7 +60,7 @@ if __name__ == '__main__':
             hgvs_p_from_c = ''
         else:
             var_p = hgvsparser.parse_hgvs_variant(rec['HGVSp'])
-            var_p_from_c = hgvsmapper.hgvsc_to_hgvsp( var_c, var_p.ac )
+            var_p_from_c = hgvsmapper.c_to_p( var_c, var_p.ac )
             var_p_from_c.posedit.uncertain = False
             hgvs_p_from_c = str(var_p_from_c)
             in_posedit = str(var_p).split(':')[1]

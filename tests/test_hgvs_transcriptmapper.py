@@ -138,12 +138,12 @@ class Test_transcriptmapper(unittest.TestCase):
 
     def run_cases(self, tm, test_cases):
         for test_case in test_cases:
-            self.assertEquals(tm.hgvsg_to_hgvsr(test_case['g']), test_case['r'])
-            self.assertEquals(tm.hgvsr_to_hgvsg(test_case['r']), test_case['g'])
-            self.assertEquals(tm.hgvsr_to_hgvsc(test_case['r']), test_case['c'])
-            self.assertEquals(tm.hgvsc_to_hgvsr(test_case['c']), test_case['r'])
-            self.assertEquals(tm.hgvsg_to_hgvsc(test_case['g']), test_case['c'])
-            self.assertEquals(tm.hgvsc_to_hgvsg(test_case['c']), test_case['g'])
+            self.assertEquals(tm.g_to_r(test_case['g']), test_case['r'])
+            self.assertEquals(tm.r_to_g(test_case['r']), test_case['g'])
+            self.assertEquals(tm.r_to_c(test_case['r']), test_case['c'])
+            self.assertEquals(tm.c_to_r(test_case['c']), test_case['r'])
+            self.assertEquals(tm.g_to_c(test_case['g']), test_case['c'])
+            self.assertEquals(tm.c_to_g(test_case['c']), test_case['g'])
 
 
 if __name__ == '__main__':

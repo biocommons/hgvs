@@ -1,4 +1,4 @@
-import warnings
+from hgvs.utils.deprecated import deprecated
 
 import recordtype
 
@@ -9,11 +9,6 @@ class SequenceVariant( recordtype.recordtype('SequenceVariant', ['ac','type','po
     or an hgvs.location.CDSInterval (for example) are both intended uses
     """
     
-    @property
-    def seqref(self):
-        warnings.warn('seqref is deprecated; use ac instead',DeprecationWarning,stacklevel=2)
-        return self.ac
-
     def __str__(self):
         if self.ac is not None:
             return '{self.ac}:{self.type}.{self.posedit}'.format(self=self)
