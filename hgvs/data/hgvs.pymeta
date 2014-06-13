@@ -130,7 +130,7 @@ p_posedit_special =
 ## variables.
 ## "_mu" = "maybe uncertain"
 
-dna_edit_mu = dna_edit | '(' dna_edit:edit ')' -> edit.set_uncertain()
+dna_edit_mu = dna_edit | '(' dna_edit:edit ')' -> edit._set_uncertain()
 dna_edit   = dna_dupN | dna_subst | dna_delins | dna_ins | dna_del | dna_dup | dna_copy
 dna_subst  = dna:ref '>' dna:alt      -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
 dna_delins = 'del' (<num>|<dna*>):ref 'ins' <dna+>:alt  -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
@@ -146,7 +146,7 @@ dna_dupN = 'dup' num:n -> hgvs.edit.NADupN(n=n)
 # dna_rpt    = '[' num:count ']' -> Repeat(seq=None, min=count, max=count)
 # 		     | <dna+>:seq '(' num:min '_' num:max ')' -> Repeat(seq=seq, min=min, max=max)
 
-rna_edit_mu = rna_edit | '(' rna_edit:edit ')' -> edit.set_uncertain()
+rna_edit_mu = rna_edit | '(' rna_edit:edit ')' -> edit._set_uncertain()
 rna_edit   = rna_subst | rna_delins | rna_ins | rna_del | rna_dup
 rna_subst  = rna:ref '>' rna:alt             -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
 rna_delins = 'del' (<num>|<rna*>):ref 'ins' <rna+>:alt  -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
@@ -154,7 +154,7 @@ rna_del    = 'del' (<num>|<rna*>):ref        -> hgvs.edit.NARefAlt(ref=ref,alt=N
 rna_ins    = 'ins' <rna+>:alt                -> hgvs.edit.NARefAlt(ref=None,alt=alt)
 rna_dup    = 'dup' <rna*>:seq                -> hgvs.edit.Dup(seq=seq)
 
-pro_edit_mu = pro_edit | '(' pro_edit:edit ')' -> edit.set_uncertain()
+pro_edit_mu = pro_edit | '(' pro_edit:edit ')' -> edit._set_uncertain()
 pro_edit   = pro_fs | pro_ext | pro_subst | pro_delins | pro_ins | pro_del | pro_dup
 pro_subst  = (aat13|'?'):alt                 -> hgvs.edit.AASub(ref='',alt=hgvs.utils.aa_to_aa1(alt))
 pro_delins = 'delins' aat13_seq:alt          -> hgvs.edit.AARefAlt(ref='',alt=hgvs.utils.aa_to_aa1(alt))
@@ -174,10 +174,10 @@ pro_ext    = aat13?:alt ext:(aaterm, length) -> hgvs.edit.AAExt(ref='',alt=hgvs.
 g_interval = gmn_interval
 m_interval = gmn_interval
 n_interval = gmn_interval
-gmn_interval = def_gmn_interval | '(' def_gmn_interval:iv ')' -> iv.set_uncertain()
-r_interval = def_r_interval | '(' def_r_interval:iv ')' -> iv.set_uncertain()
-c_interval = def_c_interval | '(' def_c_interval:iv ')' -> iv.set_uncertain()
-p_interval = def_p_interval | '(' def_p_interval:iv ')' -> iv.set_uncertain()
+gmn_interval = def_gmn_interval | '(' def_gmn_interval:iv ')' -> iv._set_uncertain()
+r_interval = def_r_interval | '(' def_r_interval:iv ')' -> iv._set_uncertain()
+c_interval = def_c_interval | '(' def_c_interval:iv ')' -> iv._set_uncertain()
+p_interval = def_p_interval | '(' def_p_interval:iv ')' -> iv._set_uncertain()
 
 # definite intervals
 def_g_interval = def_gmn_interval
@@ -193,10 +193,10 @@ g_pos = gmn_pos
 m_pos = gmn_pos
 n_pos = gmn_pos
 #individual coords may not be uncertain (see interval, which may be)
-gmn_pos = def_gmn_pos #| '(' def_gmn_pos:pos ')' -> pos.set_uncertain()
-r_pos = def_r_pos #| '(' def_r_pos:pos ')' -> pos.set_uncertain()
-c_pos = def_c_pos #| '(' def_c_pos:pos ')' -> pos.set_uncertain()
-p_pos = def_p_pos #| '(' def_p_pos:pos ')' -> pos.set_uncertain()
+gmn_pos = def_gmn_pos #| '(' def_gmn_pos:pos ')' -> pos._set_uncertain()
+r_pos = def_r_pos #| '(' def_r_pos:pos ')' -> pos._set_uncertain()
+c_pos = def_c_pos #| '(' def_c_pos:pos ')' -> pos._set_uncertain()
+p_pos = def_p_pos #| '(' def_p_pos:pos ')' -> pos._set_uncertain()
 
 # definite positions
 def_g_pos = def_gmn_pos
