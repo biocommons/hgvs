@@ -22,9 +22,9 @@ Manuscript Example
 .. code:: python
 
     import hgvs.dataproviders.uta
-    import hgvs.hgvsmapper
+    import hgvs.variantmapper
     uta = hgvs.dataproviders.uta.connect(db_url='postgresql://localhost/uta')
-    hm = hgvs.hgvsmapper.HGVSMapper(uta, cache_transcripts=True)
+    hm = hgvs.variantmapper.VariantMapper(uta, cache_transcripts=True)
 .. code:: python
 
     var_p1 = hm.c_to_p(var_c1)

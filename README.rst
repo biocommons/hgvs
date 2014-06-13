@@ -37,7 +37,7 @@ Features
   <http://pythonhosted.org/hgvs/modules.html#module-hgvs.edit>`_)
 * Formatters that generate HGVS strings from internal representations
 * Tools to map variants between genome, transcript, and protein sequences
-  (`HGVSMapper <http://pythonhosted.org/hgvs/modules.html#hgvs.hgvsmapper.HGVSMapper>`_ and `Projector
+  (`VariantMapper <http://pythonhosted.org/hgvs/modules.html#hgvs.variantmapper.VariantMapper>`_ and `Projector
   <http://pythonhosted.org/hgvs/modules.html#hgvs.projector.Projector>`_)
 * Reliable handling of regions reference-transcript discrepancy (requires UTA_)
 * Tools to validate variants (coming soon)
@@ -64,9 +64,9 @@ An Example
   >>> str(var_g)
   'NC_000007.13:g.36561662C>T'
 
-  >>> import hgvs.dataproviders.uta, hgvs.hgvsmapper
+  >>> import hgvs.dataproviders.uta, hgvs.variantmapper
   >>> hdp = hgvs.dataproviders.uta.connect()
-  >>> hm = hgvs.hgvsmapper.HGVSMapper(hdp, cache_transcripts=True)
+  >>> hm = hgvs.variantmapper.VariantMapper(hdp, cache_transcripts=True)
   >>> var_c = hm.g_to_c(var_g, 'NM_001637.3')
   >>> var_c
   SequenceVariant(ac=NM_001637.3, type=c, posedit=1582G>A)

@@ -4,7 +4,7 @@
 import os
 import unittest
 
-import hgvs.hgvsmapper as hgvsmapper
+import hgvs.variantmapper as variantmapper
 import hgvs.parser
 import framework.mock_input_source as mock_input_data_source
 
@@ -13,7 +13,7 @@ class TestHgvsCToP(unittest.TestCase):
 
     fn = os.path.join(os.path.dirname(__file__), 'data', 'sanity_cp.tsv')
     _datasource = mock_input_data_source.MockInputSource(fn)
-    _mapper = hgvsmapper.HGVSMapper(_datasource)
+    _mapper = variantmapper.VariantMapper(_datasource)
     _parser = hgvs.parser.Parser()
 
     def test_silent(self):

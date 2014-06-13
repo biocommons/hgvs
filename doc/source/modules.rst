@@ -45,10 +45,10 @@ Parsing
 Mapping
 -------
 
-:mod:`hgvs.hgvsmapper`
+:mod:`hgvs.variantmapper`
 ^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: hgvs.hgvsmapper
+.. automodule:: hgvs.variantmapper
 
 
 :mod:`hgvs.intervalmapper`
