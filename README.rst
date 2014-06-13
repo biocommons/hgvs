@@ -55,23 +55,46 @@ An Example
   (hgvs-test)$ pip install hgvs
   (hgvs-test)$ python
 
+  >>> import hgvs.dataproviders.uta
   >>> import hgvs.parser
+  >>> import hgvs.variantmapper
+
+  # start with these variants as strings
+  >>> hgvs_g, hgvs_c = 'NC_000007.13:g.36561662C>T', 'NM_001637.3:c.1582G>A'
+
+  # parse the genomic variant into a Python structure
   >>> hp = hgvs.parser.Parser()
-  >>> hgvs_g = 'NC_000007.13:g.36561662C>T'
   >>> var_g = hp.parse_hgvs_variant(hgvs_g)
   >>> var_g
   SequenceVariant(ac=NC_000007.13, type=g, posedit=36561662C>T)
+
+  # posedit is actually a tree of structured objects, e.g.,
+  >>> var_g.posedit.pos.start
+  SimplePosition(base=36561662, uncertain=False)
+
+  # format by stringification 
   >>> str(var_g)
   'NC_000007.13:g.36561662C>T'
 
-  >>> import hgvs.dataproviders.uta, hgvs.variantmapper
+  # initialize the mapper for GRCh37 with splign-based alignments
   >>> hdp = hgvs.dataproviders.uta.connect()
-  >>> hm = hgvs.variantmapper.VariantMapper(hdp, cache_transcripts=True)
-  >>> var_c = hm.g_to_c(var_g, 'NM_001637.3')
+  >>> evm = hgvs.variantmapper.EasyVariantMapper(hdp, cache_transcripts=True, 
+  ...          primary_assembly='GRCh37', alt_aln_method='splign')
+  
+  # identify transcripts that overlap this genomic variant
+  >>> evm.relevant_transcripts(var_g)
+  ['NM_001637.3', 'NM_001177506.1', 'NM_001177507.1']
+
+  # map genomic variant to one of these transcripts
+  >>> var_c = evm.g_to_c(var_g, 'NM_001637.3')
   >>> var_c
   SequenceVariant(ac=NM_001637.3, type=c, posedit=1582G>A)
   >>> str(var_c)
   'NM_001637.3:c.1582G>A'
+
+  # CDS coordinates use BaseOffsetPosition to support intronic offsets
+  >>> var_c.posedit.pos.start
+  BaseOffsetPosition(base=1582, offset=0, datum=1, uncertain=False)
 
 
 There are `more examples in the documentation <http://pythonhosted.org/hgvs/examples.html>`_.
