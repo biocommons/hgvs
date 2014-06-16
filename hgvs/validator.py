@@ -1,8 +1,8 @@
 """
 hgvs.hgvsvalidator
 """
-from hgvs.exceptions import HGVSValidationError
 
+from hgvs.exceptions import HGVSValidationError, HGVSDataNotAvailableError
 import hgvs.variantmapper
 import hgvs.parser
 
@@ -13,17 +13,13 @@ INS_ERROR_MSG = 'insertion length must be 1'
 DEL_ERROR_MSG = 'start and end position range must equal sequence deletion length'
 SUB_ERROR_MSG = 'substitution cannot have the same ref and alt base'
 AC_ERROR_MSG = 'Accession is not present in BDI database'
-SEQ_ERROR_MSG = 'Ref variant does not agree with reference sequence/transcript'
+SEQ_ERROR_MSG = 'Variant reference does not agree with reference sequence'
 
-
-def validate(var):
-    """Validates a parsed HGVS variant using intrinsic and extrinsic methods"""
-    return Validator().validate(var)
 
 
 class Validator(object):
     """invoke intrinsic and extrinsic validation"""
-    def __init__(self, hdp, mfdb):
+    def __init__(self, hdp, mfdb=None):
         self.ivr = IntrinsicValidator()
         self.evr = ExtrinsicValidator(hdp,mfdb)
 
@@ -92,7 +88,7 @@ class ExtrinsicValidator():
     Attempts to determine if the HGVS name validates against external data sources
     """
 
-    def __init__(self, hdp, mfdb):
+    def __init__(self, hdp, mfdb=None):
         self.hdp = hdp
         self.mfdb = mfdb
         self.hm = hgvs.variantmapper.VariantMapper(self.hdp, cache_transcripts=True)
@@ -104,13 +100,27 @@ class ExtrinsicValidator():
 
     def _ref_is_valid(self, var):
         if var.posedit.edit.ref is not None:
-            if var.type == 'c':
-                var = self.hm.c_to_r(var)
+            var_x = self.hm.c_to_r(var) if var.type == 'c' else var
             # fetch uses interbase coordinates
-            seq = self.mfdb.fetch(var.ac, var.posedit.pos.start.base - 1, var.posedit.pos.end.base)
-            if seq != var.posedit.edit.ref:
-                raise HGVSValidationError(SEQ_ERROR_MSG)
+            seq = self._fetch_seq(var_x.ac, var_x.posedit.pos.start.base - 1, var_x.posedit.pos.end.base)
+            if seq != var_x.posedit.edit.ref:
+                raise HGVSValidationError(str(var) + ': ' + SEQ_ERROR_MSG)
         return True
+
+    def _fetch_seq(self,ac,start_i,end_i):
+        """fetch 0-based, right-open subsequence [start_i,end_i) of specified accession
+        first using the hdpi instance then mfdb if not None.
+
+        :raises: hgvs.exceptions.HGVSDataNotAvailableError if couldn't get sequence
+        """
+        q = self.hdp.get_tx_seq(ac)
+        if q:
+            return q[start_i:end_i]
+        if self.mfdb:
+            return self.mfdb(ac,start_i,end_i)
+        raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
+
+
 
 
 if __name__ == '__main__':
@@ -118,6 +128,7 @@ if __name__ == '__main__':
     var1 = hgvsparser.parse_hgvs_variant('NM_001005405.2:r.2T>A')
     validate_ext = ExtrinsicValidator()
     validate_ext.validate(var1)
+
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/invitae/hgvs)
