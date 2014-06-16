@@ -13,7 +13,7 @@ class HGVSInvalidVariantError(HGVSError):
 class HGVSValidationError(HGVSError):
     pass
 
-class HGVSDataNotAvailable(HGVSError):
+class HGVSDataNotAvailableError(HGVSError):
     pass
 
 
