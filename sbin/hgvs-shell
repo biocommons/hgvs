@@ -15,8 +15,11 @@ hgvs_p = 'NP_001628.1:p.(Gly528Arg)'
 
 hdp = hgvs.dataproviders.uta.connect()
 
-hgvsparser = hgvs.parser.Parser()
-variantmapper = hgvs.variantmapper.VariantMapper( hdp, cache_transcripts = True )
+hp = hgvsparser = hgvs.parser.Parser()
+vm = variantmapper = hgvs.variantmapper.VariantMapper( hdp, cache_transcripts = True )
+evm = easyvariantmapper = hgvs.variantmapper.EasyVariantMapper( hdp, cache_transcripts = True, 
+                                                                primary_assembly = 'GRCh37',
+                                                                alt_aln_method = alt_aln_method )
 
 var_g = hgvsparser.parse_hgvs_variant(hgvs_g)
 var_c = hgvsparser.parse_hgvs_variant(hgvs_c)
