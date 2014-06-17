@@ -2,7 +2,9 @@
 HGVS -- Tools to Parse, Format, and Map Biological Sequence Variants
 ====================================================================
 
-| **Use:** `PyPI <https://pypi.python.org/pypi?name=hgvs>`_  (status: |install_status|) | `Documentation <http://pythonhosted.org/hgvs/>`_ 
+.. `PyPI <https://pypi.python.org/pypi?name=hgvs>`_
+
+| **Use:** |pypi_badge|  |install_status| | `Documentation <http://pythonhosted.org/hgvs/>`_ 
 | **Interact:** `Mailing List <https://groups.google.com/forum/#!forum/hgvs-discuss>`_ | `Report an Issue <https://bitbucket.org/invitae/hgvs/issues?status=new&status=open>`_
 | **Develop:** `Source <https://bitbucket.org/invitae/hgvs>`_ (status: |build_status|)
 
@@ -10,7 +12,7 @@ This package provides a Python library to facilitate the use of genome,
 transcript, and protein variants that are represented using the Human
 Genome Variation Society (`HGVS`_) recommendations.
 
-
+  
 Important Notes
 ---------------
 
@@ -43,7 +45,8 @@ Features
 * Tools to validate variants (coming soon)
 * Pluggable data providers support alternative sources of transcript mapping
   data
-* Extensive automated tests
+* Extensive automated tests, including those for all variant types and
+  "problematic" transcripts
 
 
 An Example
@@ -105,13 +108,16 @@ There are `more examples in the documentation <http://pythonhosted.org/hgvs/exam
 .. _Invitae: http://invitae.com/
 
 
-.. |install_status| image:: https://travis-ci.org/reece/hgvs-integration-test.png?branch=master
-  :target: https://travis-ci.org/reece/hgvs-integration-test
+.. |pypi_badge| image:: https://badge.fury.io/py/hgvs.svg
+  :target: https://pypi.python.org/pypi?name=hgvs
   :align: middle
 
 .. |build_status| image:: https://drone.io/bitbucket.org/invitae/hgvs/status.png
   :target: https://drone.io/bitbucket.org/invitae/hgvs
   :align: middle 
 
-.. https://badge.fury.io/py/hgvs.png
+.. |install_status| image:: https://travis-ci.org/reece/hgvs-integration-test.png?branch=master
+  :target: https://travis-ci.org/reece/hgvs-integration-test
+  :align: middle
+
 .. http://badge.fury.io/for/py/uta
