@@ -108,7 +108,7 @@ There are `more examples in the documentation <http://pythonhosted.org/hgvs/exam
 .. _Invitae: http://invitae.com/
 
 
-.. |pypi_badge| image:: https://badge.fury.io/py/hgvs.svg
+.. |pypi_badge| image:: https://badge.fury.io/py/hgvs.png
   :target: https://pypi.python.org/pypi?name=hgvs
   :align: middle
 
