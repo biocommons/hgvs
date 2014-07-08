@@ -18,7 +18,7 @@ Important Notes
 ---------------
 
 * **You are encouraged to `browse issues
-  <https://bitbucket.org/invitae/hgvs/issues>`_**. Please report any
+  <https://bitbucket.org/invitae/hgvs/issues>`_ **. Please report any
   issues you find.
 * **Use a pip package specification to ensure stay within minor
   releases for API stability.** For example, `hgvs >=0.3,<0.4`.
