@@ -51,7 +51,7 @@ bdist bdist_egg build build_sphinx install sdist: %:
 upload: upload_pypi
 
 #=> upload_all: upload_pypi, upload_invitae, and upload_docs
-upload_all: upload_pypi upload_docs
+upload_all: upload_pypi upload_docs;
 
 #=> upload_*: upload to named pypi service (requires config in ~/.pypirc)
 upload_%:
