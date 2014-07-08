@@ -21,10 +21,11 @@ Important Notes
   <https://bitbucket.org/invitae/hgvs/issues>`_. Please report any
   issues you find.
 * **Use a pip package specification to ensure stay within minor
-  releases for API stability.** For example, `hgvs >=0.3,<0.4`.
-* **The default branch is development.** Release versions are
-  determined by tags; e.g., hg up -r 0.3.0 will get you exactly that
-  version as on PyPI.
+  releases for API stability.** For example, ``hgvs >=0.3,<0.4``.
+* **The default branch is development.** Pulling from default will get
+  you a *development* version.  Release versions are determined by
+  tags; updating to a specific version (*e.g.,* ``hg up -r 0.3.0``)
+  will get you exactly that version as on PyPI.
 
 ----
 
