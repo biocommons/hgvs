@@ -45,6 +45,8 @@ Contents
    getting_help
    license
 
+   changelog
+
 
 Indices and tables
 ------------------
