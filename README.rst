@@ -12,19 +12,21 @@ This package provides a Python library to facilitate the use of genome,
 transcript, and protein variants that are represented using the Human
 Genome Variation Society (`HGVS`_) recommendations.
 
+----
   
 Important Notes
 ---------------
 
-* This package is under development.  Although no serious bugs are known,
-  you are encouraged to `browse issues
-  <https://bitbucket.org/invitae/hgvs/issues>`_. Please report any issues
-  you find.
-* Consider using a pip package specification like "hgvs >=0.1,<0.2" to
-  ensure stay within minor releases for API stability.
+* **You are encouraged to `browse issues
+  <https://bitbucket.org/invitae/hgvs/issues>`_**. Please report any
+  issues you find.
+* **Use a pip package specification to ensure stay within minor
+  releases for API stability.** For example, `hgvs >=0.3,<0.4`.
+* **The default branch is development.** Release versions are
+  determined by tags; e.g., hg up -r 0.3.0 will get you exactly that
+  version as on PyPI.
 
 ----
-
 
 Features
 -------- 
@@ -48,6 +50,7 @@ Features
 * Extensive automated tests, including those for all variant types and
   "problematic" transcripts
 
+----
 
 An Example
 ----------
