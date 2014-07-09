@@ -90,6 +90,10 @@ ci-test-ve: ve
 ############################################################################
 #= UTILITY TARGETS
 
+#=> changelog
+doc/source/changelog.rst: CHANGELOG
+	./sbin/clog-txt-to-rst <$< >$@
+
 #=> lint -- run lint, flake, etc
 # TBD
 

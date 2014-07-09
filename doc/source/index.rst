@@ -36,16 +36,16 @@ Contents
 
    intro
    getting_started
+   getting_help
 
    installation
    examples
 
    reference
 
-   getting_help
+   changelog
    license
 
-   changelog
 
 
 Indices and tables
