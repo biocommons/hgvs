@@ -1,4 +1,4 @@
-from hgvs.utils.deprecated import deprecated
+from .decorators.deprecated import deprecated
 
 import recordtype
 

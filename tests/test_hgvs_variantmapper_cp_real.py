@@ -23,7 +23,7 @@ class TestHgvsCToPReal(unittest.TestCase):
 
     def setUp(self):
         self.hdp = hgvs.dataproviders.uta.connect()
-        self._hm = hgvs.variantmapper.VariantMapper(self.hdp, cache_transcripts=True)
+        self._hm = hgvs.variantmapper.VariantMapper(self.hdp)
         self._hp = hgvs.parser.Parser()
         self._failed = []
 

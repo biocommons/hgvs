@@ -9,6 +9,7 @@ import psycopg2.extras
 
 from .interface import Interface
 from ..utils.aminoacids import seq_md5
+from ..decorators.lru_cache import lru_cache
 
 
 localhost_db_url = 'postgresql://localhost/uta'
@@ -122,18 +123,21 @@ class UTABase(Interface):
         self._check_schema_version('1')
 
 
+    @lru_cache(maxsize=1)
     def data_version(self):
         cur = self._get_cursor()
         cur.execute("select * from meta where key = 'schema_version'")
         return cur.fetchone()['value']
 
 
+    @lru_cache(maxsize=1)
     def schema_version(self):
         return self.data_version()
 
 
     ############################################################################
     ## Queries
+    @lru_cache(maxsize=128)
     def get_acs_for_protein_seq(self,seq):
         """
         returns a list of protein accessions for a given sequence.  The
@@ -147,6 +151,7 @@ class UTABase(Interface):
         return [ r['ac'] for r in cur.fetchall() ] + [ 'MD5_'+md5 ]
 
 
+    @lru_cache(maxsize=128)
     def get_gene_info(self, gene):
         """
         returns basic information about the gene.
@@ -168,6 +173,7 @@ class UTABase(Interface):
         return cur.fetchone()
 
 
+    @lru_cache(maxsize=128)
     def get_tx_exons(self, tx_ac, alt_ac, alt_aln_method):
         """
         return transcript exon info for supplied accession (tx_ac, alt_ac, alt_aln_method), or None if not found
@@ -219,6 +225,7 @@ class UTABase(Interface):
             return r
 
 
+    @lru_cache(maxsize=128)
     def get_tx_for_gene(self,gene):
         """
         return transcript info records for supplied gene, in order of decreasing length
@@ -230,6 +237,8 @@ class UTABase(Interface):
         cur.execute(self.sql['tx_for_gene'],[gene])
         return cur.fetchall()
 
+
+    @lru_cache(maxsize=128)
     def get_tx_for_region(self,alt_ac,alt_aln_method,start_i,end_i):
         """
         return transcripts that overlap given region
@@ -243,6 +252,8 @@ class UTABase(Interface):
         cur.execute(self.sql['tx_for_region'],[alt_ac,alt_aln_method,start_i,end_i])
         return cur.fetchall()
 
+
+    @lru_cache(maxsize=128)
     def get_tx_identity_info(self, tx_ac):
         """returns features associated with a single transcript.
 
@@ -265,6 +276,7 @@ class UTABase(Interface):
         return cur.fetchone()
 
 
+    @lru_cache(maxsize=128)
     def get_tx_info(self, tx_ac, alt_ac, alt_aln_method):
         """return a single transcript info for supplied accession (tx_ac, alt_ac, alt_aln_method), or None if not found
 
@@ -292,6 +304,7 @@ class UTABase(Interface):
         return cur.fetchone()
 
 
+    @lru_cache(maxsize=128)
     def get_tx_seq(self,ac):
         """return transcript sequence for supplied accession (ac), or None if not found
 
@@ -306,6 +319,7 @@ class UTABase(Interface):
             return None
 
 
+    @lru_cache(maxsize=128)
     def get_tx_mapping_options(self, tx_ac):
         """Return all transcript alignment sets for a given transcript
         accession (tx_ac); returns empty list if transcript does not

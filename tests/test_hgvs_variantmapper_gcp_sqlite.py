@@ -22,7 +22,7 @@ class TestVariantMapperFast(unittest.TestCase):
     def setUp(self):
         sqlite_path = 'sqlite://{}'.format(os.path.join(os.path.dirname(__file__), 'db', 'uta-test-1.db'))
         self.hdp = hgvs.dataproviders.uta.connect(sqlite_path)
-        self.hm = hgvs.variantmapper.VariantMapper(self.hdp, cache_transcripts=True)
+        self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
         self.hp = hgvs.parser.Parser()
         self.failed = []
 

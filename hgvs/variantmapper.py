@@ -1,4 +1,5 @@
 import copy
+import warnings
 
 from Bio.Seq import Seq
 import recordtype
@@ -11,10 +12,11 @@ import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
 import hgvs.utils.altseqbuilder as altseqbuilder
 import hgvs.variant
 
-from hgvs.utils import reverse_complement
-from hgvs.utils.deprecated import deprecated
+from .utils import reverse_complement
+from .decorators.deprecated import deprecated
+from .decorators.lru_cache import lru_cache
 
-
+UNSET = None
 
 class VariantMapper(object):
     """
@@ -22,10 +24,17 @@ class VariantMapper(object):
     All methods require and return objects of type :class:`hgvs.variant.SequenceVariant`.
     """
 
-    def __init__(self,hdp,cache_transcripts=False):
+    # TODO 0.4.0: cache_transcripts was deprecated in 0.3.x; remove in 0.4.0
+    def __init__(self,hdp,cache_transcripts=UNSET):
         self.hdp = hdp
-        self.cache_transcripts = cache_transcripts
-        self.__tm_cache = {}
+        if cache_transcripts != UNSET:
+            import inspect
+            upframe = inspect.getframeinfo( inspect.currentframe().f_back )
+            warnings.warn_explicit(
+                'VariantMapper cache_transcripts parameter is deprecated and will be removed in a future version',
+                category=DeprecationWarning,
+                filename=upframe.filename,
+                lineno=upframe.lineno + 1)
 
 
     def g_to_c(self, var_g, tx_ac, alt_aln_method='splign'):
@@ -282,20 +291,14 @@ class VariantMapper(object):
     ############################################################################
     ## Internal methods
 
+    @lru_cache(maxsize=128)
     def _fetch_TranscriptMapper(self, tx_ac, alt_ac, alt_aln_method):
         """
         Get a new TranscriptMapper for the given transcript accession (ac),
         possibly caching the result.
         """
-        key = '_'.join([tx_ac, alt_ac, alt_aln_method])
-        try:
-            tm = self.__tm_cache[key]
-        except KeyError:
-            tm = hgvs.transcriptmapper.TranscriptMapper(self.hdp, tx_ac=tx_ac, alt_ac=alt_ac,
-                                                        alt_aln_method=alt_aln_method)
-            if self.cache_transcripts:
-                self.__tm_cache[key] = tm
-        return tm
+        return hgvs.transcriptmapper.TranscriptMapper(self.hdp, tx_ac=tx_ac, alt_ac=alt_ac,
+                                                      alt_aln_method=alt_aln_method)
 
 
     @staticmethod
@@ -344,6 +347,7 @@ primary_assembly_accessions = {
         },
     }
 
+
 class EasyVariantMapper(VariantMapper):
     """Provides simplified variant mapping for a single assembly and
     transcript-reference alignment method.
@@ -371,11 +375,20 @@ class EasyVariantMapper(VariantMapper):
     transcripts.
     """
 
-    def __init__(self,hdp,primary_assembly='GRCh37',alt_aln_method='splign',cache_transcripts=False):
-        super(EasyVariantMapper,self).__init__(hdp=hdp,cache_transcripts=cache_transcripts)
+    # TODO 0.4.0: cache_transcripts was deprecated in 0.3.x; remove in 0.4.0
+    def __init__(self,hdp,primary_assembly='GRCh37',alt_aln_method='splign',cache_transcripts=UNSET):
+        super(EasyVariantMapper,self).__init__(hdp=hdp)
         self.primary_assembly = primary_assembly
         self.alt_aln_method = alt_aln_method
         self.primary_assembly_accessions = set(primary_assembly_accessions[primary_assembly])
+        if cache_transcripts != UNSET:
+            import inspect
+            upframe = inspect.getframeinfo( inspect.currentframe().f_back )
+            warnings.warn_explicit(
+                'VariantMapper cache_transcripts parameter is deprecated and will be removed in a future version',
+                category=DeprecationWarning,
+                filename=upframe.filename,
+                lineno=upframe.lineno + 1)
 
     def g_to_c(self, var_g, tx_ac): 
         return super(EasyVariantMapper,self).g_to_c(var_g, tx_ac, alt_aln_method=self.alt_aln_method)

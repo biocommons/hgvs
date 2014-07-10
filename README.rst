@@ -85,7 +85,7 @@ An Example
 
   # initialize the mapper for GRCh37 with splign-based alignments
   >>> hdp = hgvs.dataproviders.uta.connect()
-  >>> evm = hgvs.variantmapper.EasyVariantMapper(hdp, cache_transcripts=True, 
+  >>> evm = hgvs.variantmapper.EasyVariantMapper(hdp)
   ...          primary_assembly='GRCh37', alt_aln_method='splign')
   
   # identify transcripts that overlap this genomic variant

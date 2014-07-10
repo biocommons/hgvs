@@ -1,9 +1,6 @@
 import collections
-import functools
 import warnings
 
-# Make sure we're showing DeprecationWarnings
-warnings.filterwarnings('default','',DeprecationWarning)
 
 class deprecated(object):
     '''Decorator factory class which returns a decorator function that

@@ -25,7 +25,7 @@ def gcp_file_reader(fn):
 class Test_VariantMapper(unittest.TestCase):
     def setUp(self):
         self.hdp = hgvs.dataproviders.uta.connect()
-        self.hm = hgvs.variantmapper.VariantMapper(self.hdp, cache_transcripts=True)
+        self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
         self.hp = hgvs.parser.Parser()
 
 

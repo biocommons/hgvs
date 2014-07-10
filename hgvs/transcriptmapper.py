@@ -4,9 +4,9 @@ import re
 import hgvs.location
 import hgvs.variant
 import hgvs.posedit
-from hgvs.intervalmapper import IntervalMapper
-from hgvs.exceptions import HGVSError
-from hgvs.utils.deprecated import deprecated
+from .intervalmapper import IntervalMapper
+from .exceptions import HGVSError
+from .decorators.deprecated import deprecated
 
 class TranscriptMapper(object):
     """Provides coordinate (not variant) mapping operations between

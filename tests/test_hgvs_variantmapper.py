@@ -11,7 +11,7 @@ import hgvs.variantmapper
 class Test_VariantMapper(unittest.TestCase):
     def setUp(self):
         self.hdp = hgvs.dataproviders.uta.connect()
-        self.vm = hgvs.variantmapper.VariantMapper(self.hdp, cache_transcripts=True)
+        self.vm = hgvs.variantmapper.VariantMapper(self.hdp)
         self.hp = hgvs.parser.Parser()
 
     def test_VariantMapper_quick(self):
