@@ -46,9 +46,14 @@ def aa_to_aa3(s):
     return aa1_to_aa3(s) if not __looks_like_aa3_p(s) else s
 
 
-complement_transtable = string.maketrans('ACGT','TGCA')
+complement_transtable_str = string.maketrans('ACGT','TGCA')
+complement_transtable_uni = dict(zip(map(ord,u'ACGT'),u'TGCA'))
 def reverse_complement(s):
-    return ''.join(reversed(s.translate(complement_transtable))) if s is not None else None
+    def _rc_str(s):
+        return ''.join(reversed(s.translate(complement_transtable_str)))
+    def _rc_uni(s):
+        return ''.join(reversed(s.translate(complement_transtable_uni)))
+    return None if s is None else _rc_uni(s) if isinstance(s,unicode) else _rc_str(s)
 
 
 def __looks_like_aa3_p(s):
