@@ -1,8 +1,21 @@
 ChangeLog
 ^^^^^^^^^
 
+
 0.3
 ===
+
+0.3.2 (2014-07-12)
+------------------
+
+* `#194 <https://bitbucket.org/invitae/hgvs/issue/194/>`_: fix bug when reverse complementing nucleotides parsed from unicode
+
+0.3.1 (2014-07-12)
+------------------
+
+* `#193 <https://bitbucket.org/invitae/hgvs/issue/193/>`_: fix lookup table for NC_000014.8 (was .10)
+* `#192 <https://bitbucket.org/invitae/hgvs/issue/192/>`_: deprecated VariantMapper cache_transcripts param and replaced with always-on lru cache in uta data provider
+
 
 0.3.0 (2014-06-19)
 ------------------
@@ -100,7 +113,6 @@ ChangeLog
 * cigar intron count fix
 * cut DNAH11 tests to representative set (apx 80% cut)
 * finished integrating uta1 into hgvs and started updating tests
-* first commit
 * fixed DNAH11-dbSNP tests
 * fixed bug when falling off transcripts
 * hgvsmapper is updated with uta1 requirements. testing modifications using hgvs-shell
@@ -115,7 +127,6 @@ ChangeLog
 * updated package metadata; removed requirements.txt; tests pass
 * upped bdi min version to >=0.1.0 (interface1)
 * use pip installation status as build status since that's what users will experience
-* uta0 to uta1
 * working through updating TM and IM. HM g_to_c appears to work
 
 
@@ -129,8 +140,8 @@ ChangeLog
 ------------------
 
 * `#106 <https://bitbucket.org/invitae/hgvs/issue/106/>`_, `#108 <https://bitbucket.org/invitae/hgvs/issue/108/>`_: parse uncertain hgvsp/hgvsr; converter produces uncertain hgvsp.
-* `#110 <https://bitbucket.org/invitae/hgvs/issue/110/>`_, `#111 <https://bitbucket.org/invitae/hgvs/issue/111/>`_ - handle cases of entire gene deletion (p.0?) and stop codon in frame (p.?).   Updated tests.
-* `#65 <https://bitbucket.org/invitae/hgvs/issue/65/>`_ and `#89 <https://bitbucket.org/invitae/hgvs/issue/89/>`_: can now parse Met1? and ext*N; removed extra fs parsing from delins.
+* `#110 <https://bitbucket.org/invitae/hgvs/issue/110/>`_, `#111 <https://bitbucket.org/invitae/hgvs/issue/111/>`_: handle cases of entire gene deletion (p.0?) and stop codon in frame (p.?).   Updated tests.
+* `#65 <https://bitbucket.org/invitae/hgvs/issue/65/>`_, `#89 <https://bitbucket.org/invitae/hgvs/issue/89/>`_: can now parse Met1? and ext*N; removed extra fs parsing from delins.
 * `#65 <https://bitbucket.org/invitae/hgvs/issue/65/>`_: cleanup; AASub can go back to being a subclass of AARefAlt
 * `#65 <https://bitbucket.org/invitae/hgvs/issue/65/>`_: def_p_pos needs to accept term13 as well as aa13 for ext; tests updated.
 * `#65 <https://bitbucket.org/invitae/hgvs/issue/65/>`_: fixed an ordering bug; added tests.
@@ -195,69 +206,63 @@ ChangeLog
 0.1.3 (2014-01-11)
 ------------------
 
-* `#97 <https://bitbucket.org/invitae/hgvs/issue/97/>`_: a bagillion doc updates; branch closed
-* `#97 <https://bitbucket.org/invitae/hgvs/issue/97/>`_: major doc restructuring, cleanup, additions
-* added a projector example
-* `#96 <https://bitbucket.org/invitae/hgvs/issue/96/>`_: cleanup and test update
-* `#92 <https://bitbucket.org/invitae/hgvs/issue/92/>`_: fix error in NARefAlt
+* `#60 <https://bitbucket.org/invitae/hgvs/issue/60/>`_: 1st stab at grammar tests from the bottom-up (through locations/definite positions).   (See header in test_hgvs_grammar_full.py for details.)   Also added a few error checking tests.
 * `#60 <https://bitbucket.org/invitae/hgvs/issue/60/>`_: drop None from SequenceVariant (use case - only parsing an edit); grammar update for offset
-* `#92 <https://bitbucket.org/invitae/hgvs/issue/92/>`_: add a subclass of AARefAlt (AASub) which overrides __str__ to get the representation right; grammar update
 * `#60 <https://bitbucket.org/invitae/hgvs/issue/60/>`_: implement cleanup; distributed remaining items to separate issues.
-* `#96 <https://bitbucket.org/invitae/hgvs/issue/96/>`_: name cleanup
-* lots more doc changes
-* added railroad diagram to docs
-* build reST doc for railroad grammar
-* updated railroad diagram to include version number
-* yet more doc changes
-* lots more doc changes
-* lots of doc restructuring and consolidation
-* updated sphinx doc/source/conf.py
-* added license to docs
-* removed reST examples
-* updated installation
-* eliminated most sphinx warnings
-* added classifiers and keywords to setup.py
-* `#96 <https://bitbucket.org/invitae/hgvs/issue/96/>`_: fix file
-* `#96 <https://bitbucket.org/invitae/hgvs/issue/96/>`_: short set of real data for gcp parsing
-* updated misc/hgvs-shell for new bdi.uta0.connect()
-* merged dev into default
-* merged default into dev
-* `#96 <https://bitbucket.org/invitae/hgvs/issue/96/>`_: removed nightly test target
-* `#96 <https://bitbucket.org/invitae/hgvs/issue/96/>`_: deleting tests/data
 * `#73 <https://bitbucket.org/invitae/hgvs/issue/73/>`_: migrate hgvs to bdi-based protein accession lookup
-* sync default into branch
-* bug fix: make test was running nightly tests
+* `#90 <https://bitbucket.org/invitae/hgvs/issue/90/>`_: fixed typo for delins and ins for parsing hgvsp
+* `#92 <https://bitbucket.org/invitae/hgvs/issue/92/>`_: add a subclass of AARefAlt (AASub) which overrides __str__ to get the representation right; grammar update
+* `#92 <https://bitbucket.org/invitae/hgvs/issue/92/>`_: fix error in NARefAlt
 * `#93 <https://bitbucket.org/invitae/hgvs/issue/93/>`_: added *variant* liftover for HGVS projector, with tests
 * `#93 <https://bitbucket.org/invitae/hgvs/issue/93/>`_: implemented HGVS projector for interval liftover
-* code cleanup
-* More grammar tests; simplified dup check for hgvsc to p conversion
-* sync default into dev
-* minor cleanup
+* `#96 <https://bitbucket.org/invitae/hgvs/issue/96/>`_: cleanup and test update
+* `#96 <https://bitbucket.org/invitae/hgvs/issue/96/>`_: deleting tests/data
+* `#96 <https://bitbucket.org/invitae/hgvs/issue/96/>`_: fix file
+* `#96 <https://bitbucket.org/invitae/hgvs/issue/96/>`_: name cleanup
+* `#96 <https://bitbucket.org/invitae/hgvs/issue/96/>`_: removed nightly test target
+* `#96 <https://bitbucket.org/invitae/hgvs/issue/96/>`_: short set of real data for gcp parsing
+* `#97 <https://bitbucket.org/invitae/hgvs/issue/97/>`_: a bagillion doc updates; branch closed
+* `#97 <https://bitbucket.org/invitae/hgvs/issue/97/>`_: major doc restructuring, cleanup, additions
 * A few more basic tests
+* Add parser test which just tries to parse all the cvids (g, c and p) - currently skips unsupported forms.   Also tweaked the r variants in the all cvid file (T should be U).
 * Add some basic intervalmapper tests based on the coverage results
 * Fill in more protein edit tests
-* Tweak HGVSp expected so an edit creating a stop codon is represented by Ter instead of * (to match hgvs string code)
 * Fixed a bug breaking n_edit and m_edit; updated tests.
-* Add parser test which just tries to parse all the cvids (g, c and p) - currently skips unsupported forms.   Also tweaked the r variants in the all cvid file (T should be U).
-* additional grammar tests - HGVS edits are failing commented out for now
-* add alternative UTA_DB_URL options to Makefile; cleanup eggs in cleanest (not cleaner) and bdist et al. in cleaner (not cleanest)
-* merge from default
-* `#90 <https://bitbucket.org/invitae/hgvs/issue/90/>`_: fixed typo for delins and ins for parsing hgvsp
-* merged
-* more grammar tests
 * Make documentation more Sphinx-friendly
-* commenting out test until I am in a place where I can run it
-* `#60 <https://bitbucket.org/invitae/hgvs/issue/60/>`_: 1st stab at grammar tests from the bottom-up (through locations/definite positions).   (See header in test_hgvs_grammar_full.py for details.)   Also added a few error checking tests.
-* doc updates
+* More grammar tests; simplified dup check for hgvsc to p conversion
+* Tweak HGVSp expected so an edit creating a stop codon is represented by Ter instead of * (to match hgvs string code)
+* add alternative UTA_DB_URL options to Makefile; cleanup eggs in cleanest (not cleaner) and bdist et al. in cleaner (not cleanest)
 * added .travis.yml
+* added a projector example
+* added classifiers and keywords to setup.py
+* added license to docs
+* added railroad diagram to docs
+* additional grammar tests - HGVS edits are failing commented out for now
+* bug fix: make test was running nightly tests
+* build reST doc for railroad grammar
+* code cleanup
+* commenting out test until I am in a place where I can run it
+* doc updates
+* eliminated most sphinx warnings
+* lots of doc restructuring and consolidation
+* minor cleanup
+* more grammar tests
+* removed reST examples
+* sync default into branch
+* sync default into dev
 * updated README with pypi info
+* updated installation
+* updated misc/hgvs-shell for new bdi.uta0.connect()
+* updated railroad diagram to include version number
+* updated sphinx doc/source/conf.py
+* yet more doc changes
 
 
 0.1.2 (2014-01-05)
 ------------------
 
+* `#85 <https://bitbucket.org/invitae/hgvs/issue/85/>`_: adapted hgvs to bdi with runtime-selectable UTA connections
 * updated README with pypi info
-* adapted hgvs to bdi with runtime-selectable UTA connections (`#85 <https://bitbucket.org/invitae/hgvs/issue/85/>`_)
 * doc updates
 * now depend on uta and bdi from PyPI (not dependency_links); sync'd Makefile and setup.py with uta; updated test and docs targets
 
@@ -265,76 +270,76 @@ ChangeLog
 0.1.1 (2014-01-03)
 ------------------
 
-* now depend on uta and bdi from PyPI (not dependency_links); sync'd Makefile and setup.py with uta; updated test and docs targets
-* doc updates
-* `#64 <https://bitbucket.org/invitae/hgvs/issue/64/>`_: update 4 tests to reflect p.Met1? behavior for deletions crossing from 5'utr to cds:
 * `#64 <https://bitbucket.org/invitae/hgvs/issue/64/>`_: handle the following: (1) indel crosses stop codon; (2) indel crosses start codon; need to retest on full suite
-* `#84 <https://bitbucket.org/invitae/hgvs/issue/84/>`_: fix expected result
-* `#84 <https://bitbucket.org/invitae/hgvs/issue/84/>`_: ext with no stop codons are represented as ext*? - updated tests accordingly
-* Turn off more dbg
-* Turn off dbg
+* `#64 <https://bitbucket.org/invitae/hgvs/issue/64/>`_: update 4 tests to reflect p.Met1? behavior for deletions crossing from 5'utr to cds:
 * `#83 <https://bitbucket.org/invitae/hgvs/issue/83/>`_: cleanup fs* cases where mutalyzer assigns fs*N where N = end of transcript instead of an actual stop codon (expected result is now fs*?)
-* `#83 <https://bitbucket.org/invitae/hgvs/issue/83/>`_: fill in intronic variants with expected hgvsp results (p.?) per curators
-* made png and ico logos transparent
-* added *lots* of documentation
 * `#83 <https://bitbucket.org/invitae/hgvs/issue/83/>`_: comment out tests that need review/cleanup (and added comment); fixed tests where expected result was incorrect (still need to check tests w/ no expected result)
-* vastly improved sphinx documentation. More to do
+* `#83 <https://bitbucket.org/invitae/hgvs/issue/83/>`_: fill in intronic variants with expected hgvsp results (p.?) per curators
+* `#84 <https://bitbucket.org/invitae/hgvs/issue/84/>`_: ext with no stop codons are represented as ext*? - updated tests accordingly
+* `#84 <https://bitbucket.org/invitae/hgvs/issue/84/>`_: fix expected result
+* Turn off dbg
+* Turn off more dbg
+* added *lots* of documentation
+* added Apache license and code boilerplate to all source files and scripts
+* doc updates
+* fix coverage by calling tests via python setup.py nosetest; fix  test name
+* logo: rotated, moved to subdir, created favicon
+* made png and ico logos transparent
 * moved sphinx sources to doc/source and updated configs
+* now depend on uta and bdi from PyPI (not dependency_links); sync'd Makefile and setup.py with uta; updated test and docs targets
+* removed test-setup-coverage from Makefile dependencies (put in setup.py instead)
+* s/locusdevelopment/invitae/
 * updated doc static images
 * updated hgvs-logo.png per Makefile
-* logo: rotated, moved to subdir, created favicon
-* fix coverage by calling tests via python setup.py nosetest; fix  test name
-* removed test-setup-coverage from Makefile dependencies (put in setup.py instead)
 * updated setup.py "license" attribute
-* s/locusdevelopment/invitae/
-* added Apache license and code boilerplate to all source files and scripts
+* vastly improved sphinx documentation. More to do
 
 
 0.1.0 (2013-12-30)
 ------------------
 
+* `#52 <https://bitbucket.org/invitae/hgvs/issue/52/>`_: generate syntax/railroad diagrams (in misc/railroad/)
+* `#56 <https://bitbucket.org/invitae/hgvs/issue/56/>`_: updated tests; fixed fs*N (only one still broken)
+* `#62 <https://bitbucket.org/invitae/hgvs/issue/62/>`_: synchronized setup files among UTA program components
+* `#66 <https://bitbucket.org/invitae/hgvs/issue/66/>`_: added support for p.0, p.=, p.?, p.(=), p.(?), with tests
+* `#66 <https://bitbucket.org/invitae/hgvs/issue/66/>`_: updated grammar for p.0, p.=, p.?, p.(=), p.(?) to reject invalid p.(0), etc.
+* `#72 <https://bitbucket.org/invitae/hgvs/issue/72/>`_: update hgvs to use bdi (no direct connections to uta anymore)
+* Close branch jenkins.
+* Convert test input and consumer to use 4-column format
+* Fix extension for frameshift case; update test to get around dupN (trim the N)
+* Fix tag
+* Last cleanup before merge
+* README.rst: fixed preformatted text (that wasn't)
+* Refactored cp tests to work from a common base which more closely resembles the gcp test.    All-CVID test input file is in 4-column format (lots of missing data, though)
+* Revamp of c to p based on tests results; checkpoint.   Sanity & EH tests all run.
+* Update makefile to include a mechanism for generating code coverage during tests
+* Updated Makefile test task to skip tests prefixed with test_nightly; added task to run all;  enabled all cvid test to check this
+* add missing files to package_data
 * added Apache license and code boilerplate to all source files and scripts
 * added architecture & dependency info to README.rst
-* updated examples dir
-* fixed bug that caused protein accession to be not looked up when not specified
-* updated logo and README
+* added comments to failed and broken tests
 * added examples directory
-* corrected minor README typo
-* README.rst: fixed preformatted text (that wasn't)
-* updated README.rst
-* setup.py: testing yet another dependency_links format
-* more README and setup.py updates
+* added sbin/test-runner (see script header for example)
 * added setuptools>2.0 to setup.py (testing); updated README.rst
-* updated bdi and tests to use external UTA instance
-* `#72 <https://bitbucket.org/invitae/hgvs/issue/72/>`_: update hgvs to use bdi (no direct connections to uta anymore)
-* `#66 <https://bitbucket.org/invitae/hgvs/issue/66/>`_: updated grammar for p.0, p.=, p.?, p.(=), p.(?) to reject invalid p.(0), etc.
-* `#66 <https://bitbucket.org/invitae/hgvs/issue/66/>`_: added support for p.0, p.=, p.?, p.(=), p.(?), with tests
-* `#52 <https://bitbucket.org/invitae/hgvs/issue/52/>`_: generate syntax/railroad diagrams (in misc/railroad/)
+* close branch
+* corrected minor README typo
+* fix test
+* fixed bug in reported AA edit for extensions
+* fixed bug introduced in 63e0baf7c986; removed unnecessary and obsolete edti.interface import in tests/framework/mock_input_source.py
+* fixed bug that caused protein accession to be not looked up when not specified
+* fixed bug with unqualified class names in hgvs.pymeta
+* hgvsc to hgvsp bug fixes/updates: changed del/dups to represent the c-terminal end; variants in utr, intron & 1st AA are treated as p.? (subject to review).  Cleaned up test data.   Tweaked seguid data so the tests pick up the correct NP in a case where there's more than one match - mainly just to get the tests to pass.
 * hgvsc to p takes an accession
 * make the nightly start from make cleanest (tougher)
-* Fix tag
-* Updated Makefile test task to skip tests prefixed with test_nightly; added task to run all;  enabled all cvid test to check this
-* fix test
-* Refactored cp tests to work from a common base which more closely resembles the gcp test.    All-CVID test input file is in 4-column format (lots of missing data, though)
-* `#56 <https://bitbucket.org/invitae/hgvs/issue/56/>`_: updated tests; fixed fs*N (only one still broken)
-* Convert test input and consumer to use 4-column format
-* fixed bug introduced in 63e0baf7c986; removed unnecessary and obsolete edti.interface import in tests/framework/mock_input_source.py
-* `#62 <https://bitbucket.org/invitae/hgvs/issue/62/>`_: synchronized setup files among UTA program components
-* fixed bug with unqualified class names in hgvs.pymeta
-* move edti bits to bdi
-* add missing files to package_data
-* Update makefile to include a mechanism for generating code coverage during tests
-* close branch
 * merge into default
-* Last cleanup before merge
-* Fix extension for frameshift case; update test to get around dupN (trim the N)
-* fixed bug in reported AA edit for extensions
-* Revamp of c to p based on tests results; checkpoint.   Sanity & EH tests all run.
-* Close branch jenkins.
-* hgvsc to hgvsp bug fixes/updates: changed del/dups to represent the c-terminal end; variants in utr, intron & 1st AA are treated as p.? (subject to review).  Cleaned up test data.   Tweaked seguid data so the tests pick up the correct NP in a case where there's more than one match - mainly just to get the tests to pass.
+* more README and setup.py updates
+* move edti bits to bdi
 * moved misc/hgvs-shell to sbin
-* added sbin/test-runner (see script header for example)
-* added comments to failed and broken tests
+* setup.py: testing yet another dependency_links format
+* updated README.rst
+* updated bdi and tests to use external UTA instance
+* updated examples dir
+* updated logo and README
 
 
 0.0

@@ -1,16 +1,22 @@
 ChangeLog
 ^^^^^^^^^
 
+
 0.3
 ===
-	
-tip (2014-07-10)
-----------------
 
+0.3.2 (2014-07-12)
+------------------
+
+* #194: fix bug when reverse complementing nucleotides parsed from unicode
+
+0.3.1 (2014-07-12)
+------------------
+
+* #193: fix lookup table for NC_000014.8 (was .10)
 * #192: deprecated VariantMapper cache_transcripts param and replaced with always-on lru cache in uta data provider
-* updated doc configuration
-	
-	
+
+
 0.3.0 (2014-06-19)
 ------------------
 
