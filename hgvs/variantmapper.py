@@ -12,9 +12,11 @@ import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
 import hgvs.utils.altseqbuilder as altseqbuilder
 import hgvs.variant
 
-from .utils import reverse_complement
-from .decorators.deprecated import deprecated
-from .decorators.lru_cache import lru_cache
+from hgvs.decorators.deprecated import deprecated
+from hgvs.decorators.lru_cache import lru_cache
+from hgvs.utils.accessions import primary_assembly_accessions
+from hgvs.utils.nucleicacids import reverse_complement
+
 
 UNSET = None
 
@@ -333,19 +335,6 @@ class VariantMapper(object):
         return edit_out
 
 
-# TODO: move assembly data to UTA and query through HDPI
-primary_assembly_accessions = {
-    'GRCh37': {
-        'NC_000001.10', 'NC_000002.11', 'NC_000003.11',
-        'NC_000004.11', 'NC_000005.9' , 'NC_000006.11',
-        'NC_000007.13', 'NC_000008.10', 'NC_000009.11',
-        'NC_000010.10', 'NC_000011.9' , 'NC_000012.11',
-        'NC_000013.10', 'NC_000014.8',  'NC_000015.9',
-        'NC_000016.9' , 'NC_000017.10', 'NC_000018.9',
-        'NC_000019.9' , 'NC_000020.10', 'NC_000021.8',
-        'NC_000022.10', 'NC_000023.10', 'NC_000024.9',
-        },
-    }
 
 
 class EasyVariantMapper(VariantMapper):
@@ -430,8 +419,9 @@ class EasyVariantMapper(VariantMapper):
                    if e['alt_aln_method'] == self.alt_aln_method
                    and e['alt_ac'] in self.primary_assembly_accessions]
         if len(alt_acs) > 1:
-            raise hgvs.exceptions.HGVSError("Multiple chromosomal alignments for {tx_ac} in {pa} using {am} (likely paralog or pseudoautosomal region)".format(
-                tx_ac=tx_ac, pa=self.primary_assembly, am=self.alt_aln_method))
+            raise hgvs.exceptions.HGVSError("Multiple chromosomal alignments for {tx_ac} in {pa}"
+                                            "using {am} (likely paralog or pseudoautosomal region)".format(
+                                                tx_ac=tx_ac, pa=self.primary_assembly, am=self.alt_aln_method))
         if len(alt_acs) == 0:
             raise hgvs.exceptions.HGVSError("No alignments for {tx_ac} in {pa} using {am}".format(
                 tx_ac=tx_ac, pa=self.primary_assembly, am=self.alt_aln_method))

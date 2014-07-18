@@ -7,9 +7,9 @@ import urlparse
 import psycopg2
 import psycopg2.extras
 
-from .interface import Interface
-from ..utils.aminoacids import seq_md5
-from ..decorators.lru_cache import lru_cache
+from hgvs.dataproviders.interface import Interface
+from hgvs.utils.aminoacids import seq_md5
+from hgvs.decorators.lru_cache import lru_cache
 
 
 localhost_db_url = 'postgresql://localhost/uta'

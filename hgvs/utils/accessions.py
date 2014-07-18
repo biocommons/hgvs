@@ -1,4 +1,15 @@
-import warnings
+primary_assembly_accessions = {
+    'GRCh37': {
+        'NC_000001.10', 'NC_000002.11', 'NC_000003.11',
+        'NC_000004.11', 'NC_000005.9' , 'NC_000006.11',
+        'NC_000007.13', 'NC_000008.10', 'NC_000009.11',
+        'NC_000010.10', 'NC_000011.9' , 'NC_000012.11',
+        'NC_000013.10', 'NC_000014.8',  'NC_000015.9',
+        'NC_000016.9' , 'NC_000017.10', 'NC_000018.9',
+        'NC_000019.9' , 'NC_000020.10', 'NC_000021.8',
+        'NC_000022.10', 'NC_000023.10', 'NC_000024.9',
+        },
+    }
 
 NC_to_chr_dict = {
     'NC_000001.10':  '1', 'NC_000002.11':  '2', 'NC_000003.11': '3',
@@ -10,8 +21,12 @@ NC_to_chr_dict = {
     'NC_000019.9' : '19', 'NC_000020.10': '20', 'NC_000021.8' : '21',
     'NC_000022.10': '22', 'NC_000023.10':  'X', 'NC_000024.9' : 'Y',
     }
-
 chr_to_NC_dict = dict([ (v,k) for k,v in NC_to_chr_dict.iteritems() ])
+
+def chr_to_nc(s):
+    return chr_to_NC_dict[s]
+
+
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/invitae/hgvs)
