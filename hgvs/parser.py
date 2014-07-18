@@ -7,7 +7,6 @@ import hgvs.hgvsposition
 import hgvs.location
 import hgvs.posedit
 import hgvs.variant
-import hgvs.utils
 
 class Parser(object):
     """Provides comprehensive parsing of HGVS varaint strings (*i.e.*,

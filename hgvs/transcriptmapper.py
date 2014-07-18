@@ -1,12 +1,14 @@
 import math
 import re
 
+import hgvs.intervalmapper
 import hgvs.location
-import hgvs.variant
 import hgvs.posedit
-from .intervalmapper import IntervalMapper
-from .exceptions import HGVSError
-from .decorators.deprecated import deprecated
+import hgvs.variant
+
+from hgvs.exceptions import HGVSError
+from hgvs.decorators.deprecated import deprecated
+from hgvs.utils import build_tx_cigar
 
 class TranscriptMapper(object):
     """Provides coordinate (not variant) mapping operations between
@@ -36,8 +38,8 @@ class TranscriptMapper(object):
             self.cds_start_i = self.tx_info['cds_start_i']
             self.cds_end_i = self.tx_info['cds_end_i']
             self.gc_offset = self.tx_exons[0]['alt_start_i']
-            self.cigar = _build_tx_cigar(self.tx_exons, self.strand)
-            self.im = IntervalMapper.from_cigar(self.cigar)
+            self.cigar = build_tx_cigar(self.tx_exons, self.strand)
+            self.im = hgvs.intervalmapper.IntervalMapper.from_cigar(self.cigar)
             self.tgt_len = self.im.tgt_len
         else:
             # this covers the identity cases r <-> c
@@ -214,12 +216,6 @@ class TranscriptMapper(object):
         return self.c_to_p(*args,**kwargs)
 
 
-def _strand_pm(s):
-    return (None if s is None
-            else '+' if s == 1
-            else '-' if s == -1
-            else '?')
-
 
 def _hgvs_offset(g_position, grs, gre):
     """ Calculates the HGVS coordinate offset from a given genomic position"""
@@ -232,7 +228,6 @@ def _hgvs_offset(g_position, grs, gre):
         offset = g_position - gre
     return offset
 
-
 def _ci_to_hgvs_coord(s, e):
     """ Convert continuous interbase (right-open) coordinates (..,-2,-1,0,1,..) to
     discontinuous HGVS coordinates (..,-2,-1,1,2,..)
@@ -241,7 +236,6 @@ def _ci_to_hgvs_coord(s, e):
         return c + 1 if c >= 0 else c
     return (None if s is None else _ci_to_hgvs(s),
             None if e is None else _ci_to_hgvs(e) - 1)
-
 
 def _hgvs_coord_to_ci(s, e):
     """convert start,end interval in inclusive, discontinuous HGVS coordinates
@@ -252,29 +246,6 @@ def _hgvs_coord_to_ci(s, e):
         return c-1 if c>0 else c
     return (None if s is None else _hgvs_to_ci(s),
             None if e is None else _hgvs_to_ci(e) + 1)
-
-
-def _build_tx_cigar(exons, strand):
-    cigarelem_re = re.compile('\d+[=DIMNX]')
-    def _reverse_cigar(c):
-        return ''.join(reversed(cigarelem_re.findall(c)))
-
-    if len(exons) == 0:
-        return None
-
-    if strand == -1:
-        for i in range(len(exons)):
-            exons[i]['cigar'] = _reverse_cigar(exons[i]['cigar'])
-
-    tx_cigar = [exons[0]['cigar']]    # exon 1
-    for i in range(1, len(exons)):    # and intron + exon pairs thereafter
-        tx_cigar += [str(exons[i]['alt_start_i'] - exons[i-1]['alt_end_i']) + 'N',
-                     exons[i]['cigar']]
-    
-    tx_cigar_str = ''.join(tx_cigar)
-    
-    return tx_cigar_str
-
 
 
 ## <LICENSE>

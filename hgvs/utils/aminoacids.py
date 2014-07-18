@@ -57,6 +57,9 @@ def __looks_like_aa3_p(s):
         and (len(s) == 0 or s[1] in string.lowercase)
         )
 
+
+
+
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/invitae/hgvs)
 ## 

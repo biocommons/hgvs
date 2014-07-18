@@ -13,7 +13,7 @@ location).
 import recordtype
 
 from hgvs.exceptions import HGVSError
-from hgvs.utils import aa_to_aa1,aa1_to_aa3
+from hgvs.utils.aminoacids import aa_to_aa1,aa1_to_aa3
 
 
 class Edit(object):
