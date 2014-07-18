@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 #
 # Tests of the grammar
 #
@@ -19,14 +22,13 @@
 # Expected: expected result (if stringifying input does not return the same answer, e,g. '+1' -> '1')
 # - if expected is left blank, then it is assumed that stringifying the parsed input returns the same answer.
 #
-from __future__ import with_statement
 
 import os
-import csv
+import pkg_resources
 import pprint
 import unittest
 
-import pkg_resources
+import unicodecsv as csv
 
 import hgvs.parser
 
@@ -42,7 +44,7 @@ class TestGrammarFull(unittest.TestCase):
         rules_tested = set()
 
         with open(self._test_fn, 'r') as f:
-            reader = csv.DictReader(f, delimiter='\t')
+            reader = csv.DictReader(f, delimiter=str('\t'))
             for row in reader:
                 rules_tested.add(row['Func'])
 
@@ -60,7 +62,7 @@ class TestGrammarFull(unittest.TestCase):
 
     def test_parser_grammar(self):
         with open(self._test_fn, 'r') as f:
-            reader = csv.DictReader(f, delimiter='\t')
+            reader = csv.DictReader(f, delimiter=str('\t'))
 
             fail_cases = []
 
@@ -70,25 +72,23 @@ class TestGrammarFull(unittest.TestCase):
 
                 # setup input
                 inputs = self._split_inputs(row['Test'], row['InType'])
-                expected_results = self._split_inputs(row['Expected'], row['InType']) \
-                    if row['Expected'] else inputs
+                expected_results = self._split_inputs(row['Expected'], row['InType']) if row['Expected'] else inputs
                 expected_map = dict(zip(inputs, expected_results))
-
                 # step through each item and check
                 is_valid = True if row['Valid'].lower() == 'true' else False
 
                 for key in expected_map:
-                    expected_result = str(expected_map[key])
+                    expected_result = unicode(expected_map[key])
                     function_to_test = getattr(self.p._grammar(key), row['Func'])
-                    row_str = "{}\t{}\t{}\t{}\t{}".format(row['Func'], key, row['Valid'], 'one', expected_result)
+                    row_str = u"{}\t{}\t{}\t{}\t{}".format(row['Func'], key, row['Valid'], 'one', expected_result)
                     try:
-                        actual_result = str(function_to_test())
+                        actual_result = unicode(function_to_test())
                         if not is_valid or (expected_result != actual_result):
-                            print "expected: {} actual:{}".format(expected_result, actual_result)
+                            print( "expected: {} actual:{}".format(expected_result, actual_result) )
                             fail_cases.append(row_str)
                     except Exception as e:
                         if is_valid:
-                            print "expected: {} Exception: {}".format(expected_result, e)
+                            print( "expected: {} Exception: {}".format(expected_result, e) )
                             fail_cases.append(row_str)
 
         # everything should have passed - report whatever failed
@@ -106,8 +106,10 @@ class TestGrammarFull(unittest.TestCase):
         inputs = [x if x != 'None' else None for x in inputs]
         return inputs
 
+
 if __name__ == '__main__':
     unittest.main()
+
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/invitae/hgvs)

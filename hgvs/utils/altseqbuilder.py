@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 #
 # Utility to insert an hgvs variant into a transcript sequence.
 # Generates a record corresponding to the modified transcript sequence,
@@ -83,7 +86,7 @@ class AltSeqBuilder(object):
         self._var_c = var_c
         self._transcript_data = transcript_data
         if DBG:
-            print transcript_data.transcript_sequence
+            print( transcript_data.transcript_sequence )
 
         # check reference for special characteristics
         self._ref_has_multiple_stops = self._transcript_data.aa_sequence.count("*") > 1
@@ -139,7 +142,7 @@ class AltSeqBuilder(object):
         this_alt_data = self._get_frameshift_start(this_alt_data)
         alt_data.append(this_alt_data)
         if DBG:
-            print this_alt_data.transcript_sequence
+            print( this_alt_data.transcript_sequence )
 
         return alt_data
 
@@ -202,7 +205,7 @@ class AltSeqBuilder(object):
             seq[start + 1:start + 1] = list(alt)    # insertion in list before python list index
 
         if DBG:
-            print "net base change: {}".format(net_base_change)
+            print( "net base change: {}".format(net_base_change) )
         is_frameshift = net_base_change % 3 != 0
         # use max of mod 3 value and 1 (in event that indel starts in the 5'utr range)
         variant_start_aa = max(int(math.ceil((self._var_c.posedit.pos.start.base) / 3.0)), 1)
@@ -269,7 +272,7 @@ class AltSeqBuilder(object):
         end += 1
 
         if DBG:
-            print "len seq:{} cds_start:{} cds_stop:{} start:{} end:{}".format(len(seq), cds_start, cds_stop, start, end)
+            print( "len seq:{} cds_start:{} cds_stop:{} start:{} end:{}".format(len(seq), cds_start, cds_stop, start, end) )
         return seq, cds_start, cds_stop, start, end
 
     def _create_alt_equals_ref_noncds(self):
@@ -305,11 +308,13 @@ class AltSeqBuilder(object):
         # TODO - implement for 2+ variants
 
         if DBG:
-            print "is_frameshift:{}".format(variant_data.is_frameshift)
-            print "variant_start_aa:{}".format(variant_data.variant_start_aa)
+            print( "is_frameshift:{}".format(variant_data.is_frameshift) )
+            print( "variant_start_aa:{}".format(variant_data.variant_start_aa) )
         if variant_data.is_frameshift:
             variant_data.frameshift_start = variant_data.variant_start_aa
         return variant_data
+
+
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/invitae/hgvs)
 ## 

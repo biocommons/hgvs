@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 """
 Utility class that projects variants from one transcript to another via a
 common reference sequence.

@@ -65,15 +65,15 @@ fsext_offset		True	one	None
 fsext_offset	-12|*	False	list
 aa13_fs	*|*10|*?|Ter|Ter8|Ter?|X|X10|X?	True	list	None|10|?|None|8|?|None|10|?
 aa13_fs	Cys|Gly10|Gly?|TerGly?	False	list	
-aa13_ext	*|*10|*?|Ter|Ter8|Ter?|X|X10|X?	True	list	('*', None)|('*', 10)|('*', '?')|('Ter', None)|('Ter', 8)|('Ter', '?')|('X', None)|('X', 10)|('X', '?')
-aa13_ext	Val-5|-12	True	list	('Val', -5)|(None, -12)
+aa13_ext	*|*10|*?|Ter|Ter8|Ter?|X|X10|X?	True	list	(u'*', None)|(u'*', 10)|(u'*', u'?')|(u'Ter', None)|(u'Ter', 8)|(u'Ter', u'?')|(u'X', None)|(u'X', 10)|(u'X', u'?')
+aa13_ext	Val-5|-12	True	list	(u'Val', -5)|(None, -12)
 aa13_ext	GlyTrp|TerGly?	False	list	
 aa13_ext	Val?|Val|Val-?	False	list	
 fs	fs|fs*|fs*10|fs*?|fsTer|fsTer8|fsTer?|fsX|fsX10|fsX?	True	list	None|None|10|?|None|8|?|None|10|?
 fs	fsCys|fsGly10|fsGly?|fsTerGly?	False	list	
 fs	fs2|fs?	False	list
-ext	ext|ext*|ext*10|ext*?|extTer|extTer8|extTer?|extX|extX10|extX?	True	list	(None, None)|('*', None)|('*', 10)|('*', '?')|('Ter', None)|('Ter', 8)|('Ter', '?')|('X', None)|('X', 10)|('X', '?')
-ext	extVal-5|ext-12	True	list	('Val', -5)|(None, -12)
+ext	ext|ext*|ext*10|ext*?|extTer|extTer8|extTer?|extX|extX10|extX?	True	list	(None, None)|(u'*', None)|(u'*', 10)|(u'*', u'?')|(u'Ter', None)|(u'Ter', 8)|(u'Ter', u'?')|(u'X', None)|(u'X', 10)|(u'X', u'?')
+ext	extVal-5|ext-12	True	list	(u'Val', -5)|(None, -12)
 ext	extGlyTrp|extTerGly?	False	list	
 gmn_type	gnm	True	string	
 gmn_type	cpx	False	string

@@ -1,18 +1,20 @@
-#
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 # Real data - cp tests
-#
-import csv
+
 import os
 import re
 import unittest
 
-import hgvs.dataproviders.uta
+import unicodecsv as csv
 
+import hgvs.dataproviders.uta
 import hgvs.variantmapper
 import hgvs.parser
 
 def gcp_file_reader(fn):
-    rdr = csv.DictReader(open(fn, 'r'), delimiter='\t')
+    rdr = csv.DictReader(open(fn, 'r'), delimiter=str('\t'))
     for rec in rdr:
         if rec['id'].startswith('#'):
             continue

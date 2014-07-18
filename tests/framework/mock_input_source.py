@@ -1,8 +1,9 @@
-#
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 # Mock test input source
-#
-from __future__ import with_statement
-import csv
+
+import unicodecsv as csv
 
 class MockInputSource():
 
@@ -64,7 +65,7 @@ class MockInputSource():
         """
         result = {}
         with open(in_file, 'r') as f:
-            reader = csv.DictReader(f, delimiter='\t')
+            reader = csv.DictReader(f, delimiter=str('\t'))
             for row in reader:
                 result[row['accession']] = {'transcript_sequence': row['transcript_sequence'],
                                                    'cds_start_i': int(row['cds_start_i']),
