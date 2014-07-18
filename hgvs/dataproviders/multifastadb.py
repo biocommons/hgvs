@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 """
 MultiFastaDB -- present a collection of indexed fasta files as a single source
 

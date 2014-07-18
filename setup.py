@@ -69,6 +69,7 @@ setup(
 
     tests_require = [
         'coverage',
+        'unicodecsv',
         ],
     )
 

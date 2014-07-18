@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 #
 # Utility class for creating an hgvsp SequenceVariant object,
 # given a transcript with variants applied.
@@ -36,13 +39,13 @@ class AltSeqToHgvsp(object):
         self._is_ambiguous = self._alt_data.is_ambiguous
 
         if DBG:
-            print "len ref seq:{} len alt seq:{}".format(len(self._ref_seq), len(self._alt_seq))
-            print "fs start:{} protein ac:{}".format(self._frameshift_start, self._protein_accession)
-            print self._ref_seq
-            print self._alt_seq
-            print "aa variant start: {}".format(self._alt_data.variant_start_aa)
-            print self._ref_data.transcript_sequence
-            print self._alt_data.transcript_sequence
+            print( "len ref seq:{} len alt seq:{}".format(len(self._ref_seq), len(self._alt_seq)) )
+            print( "fs start:{} protein ac:{}".format(self._frameshift_start, self._protein_accession) )
+            print( self._ref_seq )
+            print( self._alt_seq )
+            print( "aa variant start: {}".format(self._alt_data.variant_start_aa) )
+            print( self._ref_data.transcript_sequence )
+            print( self._alt_data.transcript_sequence )
 
     def build_hgvsp(self):
         """Compare two amino acid sequences; generate an hgvs tag from the output
@@ -120,7 +123,7 @@ class AltSeqToHgvsp(object):
                     variants.append({"start": aa_start, "ins": insertion, "del": deletion})
 
             if DBG:
-                print variants
+                print(variants)
 
         if self._is_ambiguous:
             var_ps = [self._create_variant('', '', '', '', acc=self._protein_accession,

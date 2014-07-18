@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 __doc__ = """
 hgvs.edit -- representation of edit operations in HGVS variants
 
@@ -35,7 +38,7 @@ class NARefAlt( Edit, recordtype.recordtype('NARefAlt', [('ref',None),('alt',Non
         returns a string representing the ref sequence, if it is not None and smells like a sequence
 
         >>> NARefAlt('ACGT').ref_s
-        'ACGT'
+        u'ACGT'
         >>> NARefAlt('7').ref_s
         >>> NARefAlt(7).ref_s
 

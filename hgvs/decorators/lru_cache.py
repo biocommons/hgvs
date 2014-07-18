@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 # http://code.activestate.com/recipes/578078-py26-and-py30-backport-of-python-33s-lru-cache/
 #
 # Full-featured O(1) LRU cache backported from Python3.3. The full

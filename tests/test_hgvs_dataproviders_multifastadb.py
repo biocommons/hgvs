@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import os
 import unittest
 
@@ -30,7 +33,7 @@ import hgvs.dataproviders.multifastadb
 
 class MFDBTBase(unittest.TestCase):
     test_dir = os.path.join(os.path.dirname(__file__),'data','multifastadb')
-    print test_dir
+    print( test_dir )
     def setUp(self):
         self.mfdb = hgvs.dataproviders.multifastadb.MultiFastaDB([ os.path.join(self.test_dir,s)
                                                      for s in self.sources ], use_meta_index=self.use_meta_index)

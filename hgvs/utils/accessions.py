@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 primary_assembly_accessions = {
     'GRCh37': {
         'NC_000001.10', 'NC_000002.11', 'NC_000003.11',
