@@ -45,18 +45,11 @@ import warnings
 #* alignment indel count > x events (or x events/kb)
 #* alignment within indel
 #* alignment adjacent to indel
-
-
-# TODO: implement hgvs-specific context manager
-#class HGVSWarningContextManager(object):
-#    def __init__(self):
-#        pass
-#    def __enter__(self):
-#        with warnings.catch_warnings(record=True) as self.warnings_messages:
-#            warnings.simplefilter('always')
-#    def __exit__(self, type, value, traceback):
         
+
+
 # TODO: implement warning severity map
+
 
 
 class HGVSWarning(Warning):
@@ -104,3 +97,13 @@ class MappingOverlapsIndel(MappingWarning):
 
 class SequenceWarning(HGVSWarning):
     pass
+
+
+
+
+
+
+############################################################################ 
+## SCRAPS
+
+

@@ -60,9 +60,10 @@ class TranscriptMapper(object):
             self.tgt_len = self.im.tgt_len
 
             with warnings.catch_warnings(record=True) as transcript_warnings:
-                warnings.simplefilter('always')
+                warnings.filterwarnings('always','',hw.HGVSWarning)
                 self._generate_transcript_warnings()
                 self.transcript_warnings = set(w.message for w in transcript_warnings)
+
         else:
             # this covers use case for r <-> c mapping only
             self.tx_identity_info = hdp.get_tx_identity_info(self.tx_ac)
