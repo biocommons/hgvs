@@ -2,3 +2,8 @@
 
 Actionable issues are at https://bitbucket.org/invitae/hgvs/issues.
 This file is intended for ideas that need fleshing out.
+
+
+* 181 -- renaming
+hgvs.location -> hgvs.position or hgvs.interval or hgvs.coordinate?
+hgvs/variant.py -> hgvs/sequencevariant.py

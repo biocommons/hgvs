@@ -11,6 +11,7 @@ import hgvs.location
 import hgvs.posedit
 import hgvs.variant
 
+
 class Parser(object):
     """Provides comprehensive parsing of HGVS varaint strings (*i.e.*,
     variants represented according to the Human Genome Variation
@@ -22,14 +23,14 @@ class Parser(object):
     components, like so:
     
     >>> hp = Parser()
-    >>> v = hp.parse_hgvs_variant("NM_01234.5:c.22+1A>T")
-    >>> v
+    >>> c_var = hp.parse_hgvs_variant("NM_01234.5:c.22+1A>T")
+    >>> c_var
     SequenceVariant(ac=NM_01234.5, type=c, posedit=22+1A>T)
-    >>> v.posedit.pos
-    Interval(start=22+1, end=22+1, uncertain=False)
-    >>> i = hp.parse_c_interval('22+1')
-    >>> i
-    Interval(start=22+1, end=22+1, uncertain=False)
+    >>> c_var.posedit.pos
+    Interval(start=22+1, end=22+1, uncertain=False, warnings=[])
+    >>> ival = hp.parse_c_interval('22+1')
+    >>> ival
+    Interval(start=22+1, end=22+1, uncertain=False, warnings=[])
 
     The `parse_hgvs_variant` and `parse_c_interval` methods correspond
     to the `hgvs_variant` and `c_interval rules` in the grammar,
@@ -62,7 +63,7 @@ class Parser(object):
       >>> hp.parse_c_posedit('22+1A>T')
       PosEdit(pos=22+1, edit=A>T, uncertain=False)
       >>> hp.parse_c_interval('22+1')
-      Interval(start=22+1, end=22+1, uncertain=False)
+      Interval(start=22+1, end=22+1, uncertain=False, warnings=[])
 
     """
 

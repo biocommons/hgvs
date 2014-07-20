@@ -9,21 +9,21 @@ import hgvs.dataproviders.uta
 import hgvs.parser
 import hgvs.variantmapper
 import hgvs.validator
+import hgvs.projector
 
 
 alt_aln_method = 'splign'
-hgvs_g = 'NC_000007.13:g.36561662C>T'
-hgvs_c = 'NM_001637.3:c.1582G>A'
-hgvs_p = 'NP_001628.1:p.(Gly528Arg)'
 
 hdp = hgvs.dataproviders.uta.connect()
-
 hp = hgvsparser = hgvs.parser.Parser()
 vm = variantmapper = hgvs.variantmapper.VariantMapper( hdp )
 evm = easyvariantmapper = hgvs.variantmapper.EasyVariantMapper( hdp,
                                                                 primary_assembly = 'GRCh37',
                                                                 alt_aln_method = alt_aln_method )
 
+hgvs_g = 'NC_000007.13:g.36561662C>T'
+hgvs_c = 'NM_001637.3:c.1582G>A'
+hgvs_p = 'NP_001628.1:p.(Gly528Arg)'
 var_g = hgvsparser.parse_hgvs_variant(hgvs_g)
 var_c = hgvsparser.parse_hgvs_variant(hgvs_c)
 var_p = hgvsparser.parse_hgvs_variant(hgvs_p)
@@ -31,6 +31,18 @@ var_p = hgvsparser.parse_hgvs_variant(hgvs_p)
 var_g_to_c = variantmapper.g_to_c( var_g, var_c.ac )
 var_g_to_r = variantmapper.g_to_r(var_g, var_c.ac, 'splign')
 #var_c_to_g = variantmapper.c_to_g( var_c, ref )
+
+
+
+# compare all 3 bidrirectional liftover/projections for
+# rs201430561 with 3 overlapping transcripts.
+alt_ac = 'NC_000001.10'
+rs201430561_hgvs_c = ['NM_001197320.1:c.281C>T','NM_021960.4:c.740C>T','NM_182763.2:c.688+403C>T']
+rs201430561_var_c = [ hp.parse_hgvs_variant(h) for h in rs201430561_hgvs_c ]
+
+v1,v2 = rs201430561_var_c[0:2]
+pj = hgvs.projector.Projector(hdp,alt_ac,v1.ac,v2.ac,alt_aln_method,alt_aln_method)
+
 
 IPython.embed()
 

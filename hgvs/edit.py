@@ -20,7 +20,10 @@ from hgvs.utils.aminoacids import aa_to_aa1,aa1_to_aa3
 
 
 class Edit(object):
-    pass
+    @property
+    def warnings(self):
+        # TODO: implement edit warnings
+        return set()
 
 
 class NARefAlt( Edit, recordtype.recordtype('NARefAlt', [('ref',None),('alt',None),('uncertain',False)]) ):

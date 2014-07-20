@@ -3,15 +3,19 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import math
 import re
+import warnings
 
 import hgvs.intervalmapper
 import hgvs.location
 import hgvs.posedit
 import hgvs.variant
+import hgvs.warnings as hw
 
 from hgvs.exceptions import HGVSError
 from hgvs.decorators.deprecated import deprecated
 from hgvs.utils import build_tx_cigar
+
+# TODO: merge warnings for intervals
 
 class TranscriptMapper(object):
     """Provides coordinate (not variant) mapping operations between
@@ -23,6 +27,16 @@ class TranscriptMapper(object):
     :param str tx_ac: string representing transcript accession (e.g., NM_000551.2)
     :param str alt_ac: string representing the reference sequence accession (e.g., NM_000551.3)
     :param str alt_aln_method: string representing the alignment method; valid values depend on data source
+
+    Developer's Note: Internally, the code uses the 'r' reference
+    frame to refer to offsets relative to the transcript start (not
+    the CDS start).  The fact that r is associated with RNA sequence
+    is immaterial.  Therefore, the transformations are:
+
+    * g<->r: map coordinates using aligned exon segments and IntervalMapper
+    * r<->c: map by cds_start offset
+    * g<->c: map by composition of g<->r and r<->c
+    * c ->p: mod3 mapping
 
     """
 
@@ -44,18 +58,45 @@ class TranscriptMapper(object):
             self.cigar = build_tx_cigar(self.tx_exons, self.strand)
             self.im = hgvs.intervalmapper.IntervalMapper.from_cigar(self.cigar)
             self.tgt_len = self.im.tgt_len
+
+            with warnings.catch_warnings(record=True) as transcript_warnings:
+                warnings.simplefilter('always')
+                self._generate_transcript_warnings()
+                self.transcript_warnings = set(w.message for w in transcript_warnings)
         else:
-            # this covers the identity cases r <-> c
+            # this covers use case for r <-> c mapping only
             self.tx_identity_info = hdp.get_tx_identity_info(self.tx_ac)
             self.cds_start_i = self.tx_identity_info['cds_start_i']
             self.cds_end_i = self.tx_identity_info['cds_end_i']
             self.tgt_len = sum(self.tx_identity_info['lengths'])
+            self.transcript_warnings = set()
 
 
     def __str__(self):
         return '{self.__class__.__name__}: {self.tx_ac} ~ {self.alt_ac} ~ {self.alt_aln_method); ' \
                '{strand_pm} strand; {n_exons} exons; offset={self.gc_offset}'.format(
                    self=self, n_exons=len(self.tx_exons), strand_pm=_strand_pm(self.strand))
+
+    def _generate_transcript_warnings(self):
+        cigars = [ e['cigar'] for e in self.tx_exons ]
+        X_exons = [ i for i,c in enumerate(cigars) if 'X' in c ]
+        DI_exons = [ i for i,c in enumerate(cigars) if 'D' in c or 'I' in c ]
+        if X_exons:
+            warnings.warn(
+                "{self.tx_ac}~{self.alt_ac} ({self.alt_aln_method}): exon(s) {exons} contain SNVs (CIGARs: {cigars})".format(
+                    self=self,
+                    exons=",".join([str(i+1) for i in X_exons]), 
+                    cigars=",".join([cigars[i] for i in X_exons])),
+                hw.ReferenceSNVDiscrepancy,
+                stacklevel=2)
+        if DI_exons:
+            warnings.warn(
+                "{self.tx_ac}~{self.alt_ac} ({self.alt_aln_method}): exon(s) {exons} contain indels (CIGARs: {cigars})".format(
+                    self=self,
+                    exons=",".join([str(i+1) for i in DI_exons]), 
+                    cigars=",".join([cigars[i] for i in DI_exons])),
+                hw.ReferenceIndelDiscrepancy,
+                stacklevel=2)
 
 
     def g_to_r(self, g_interval):
@@ -89,9 +130,10 @@ class TranscriptMapper(object):
         if end_offset < 0:
             fre += 1
         return hgvs.location.Interval(
-                    start=hgvs.location.BaseOffsetPosition(base=_ci_to_hgvs_coord(frs, fre)[0], offset=start_offset),
-                    end  =hgvs.location.BaseOffsetPosition(base=_ci_to_hgvs_coord(frs, fre)[1], offset=end_offset),
-                    uncertain=g_interval.uncertain)
+            start=hgvs.location.BaseOffsetPosition(base=_ci_to_hgvs_coord(frs, fre)[0], offset=start_offset),
+            end  =hgvs.location.BaseOffsetPosition(base=_ci_to_hgvs_coord(frs, fre)[1], offset=end_offset),
+            uncertain=g_interval.uncertain,
+            warnings=self.transcript_warnings)
 
 
     def r_to_g(self, r_interval):
@@ -114,7 +156,8 @@ class TranscriptMapper(object):
         return hgvs.location.Interval(
             start=hgvs.location.SimplePosition(_ci_to_hgvs_coord(gs, ge)[0], uncertain=r_interval.start.uncertain),
             end  =hgvs.location.SimplePosition(_ci_to_hgvs_coord(gs, ge)[1], uncertain=r_interval.end.uncertain),
-            uncertain=r_interval.uncertain)
+            uncertain=r_interval.uncertain,
+            warnings=self.transcript_warnings)
 
 
     def r_to_c(self, r_interval):
@@ -150,7 +193,8 @@ class TranscriptMapper(object):
         c_interval = hgvs.location.Interval(
             start=hgvs.location.BaseOffsetPosition(base=cs, offset=r_interval.start.offset, datum=cs_datum),
             end  =hgvs.location.BaseOffsetPosition(base=ce, offset=r_interval.end.offset,   datum=ce_datum),
-            uncertain=r_interval.uncertain)
+            uncertain=r_interval.uncertain,
+            warnings=self.transcript_warnings)
         return c_interval
 
 
@@ -181,7 +225,8 @@ class TranscriptMapper(object):
         r_interval = hgvs.location.Interval(
             start=hgvs.location.BaseOffsetPosition(base=rs, offset=c_interval.start.offset, datum=hgvs.location.SEQ_START),
             end  =hgvs.location.BaseOffsetPosition(base=re, offset=c_interval.end.offset, datum=hgvs.location.SEQ_START),
-            uncertain=c_interval.uncertain)
+            uncertain=c_interval.uncertain,
+            warnings=self.transcript_warnings)
         return r_interval
 
     def g_to_c(self, g_interval):

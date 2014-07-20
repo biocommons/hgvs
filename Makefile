@@ -67,7 +67,7 @@ upload_docs: %:
 # see test configuration in setup.cfg
 
 host-info:
-	(PS4="\n>>"; set -x; /bin/uname -a; ./sbin/cpu-info; /usr/bin/free) 2>&1 | sed -e 's/^/## /'
+	(PS4="\n>>"; set -x; /bin/uname -a; ./sbin/cpu-info| expand -t12,60,70,85,100; /usr/bin/free) 2>&1 | sed -e 's/^/## /'
 
 #=> test -- run all tests (except those tagged "extra")
 test: host-info

@@ -25,6 +25,11 @@ class PosEdit( recordtype.recordtype( 'PosEdit', [('pos',None),('edit',None),('u
         self.uncertain = True
         return self
     
+    @property
+    def warnings(self):
+        return self.pos.warnings | self.edit.warnings
+
+
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/invitae/hgvs)

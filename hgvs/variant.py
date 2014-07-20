@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from .decorators.deprecated import deprecated
-
 import recordtype
 
 class SequenceVariant( recordtype.recordtype('SequenceVariant', ['ac','type','posedit']) ):
@@ -17,6 +15,11 @@ class SequenceVariant( recordtype.recordtype('SequenceVariant', ['ac','type','po
             return '{self.ac}:{self.type}.{self.posedit}'.format(self=self)
         else:
             return '{self.type}.{self.posedit}'.format(self=self)
+
+    @property
+    def warnings(self):
+        return self.posedit.warnings
+
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/invitae/hgvs)

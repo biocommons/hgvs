@@ -12,10 +12,10 @@ This module provides for Representing the location of variants in HGVS nomenclat
 
 Classes:
 
+  * :class:`Interval` -- an interval of Positions (start, end)
   * :class:`SimplePosition` -- a simple integer
   * :class:`BaseOffsetPosition` -- a position with datum, base, and offset for c. and r. coordinates
   * :class:`AAPosition` -- an amino acid position (with AA)
-  * :class:`Interval` -- an interval of Positions
 """
 
 
@@ -26,6 +26,37 @@ from hgvs.utils.aminoacids import aa1_to_aa3
 SEQ_START = 0
 CDS_START = 1
 CDS_END = 2
+
+
+class Interval( recordtype.recordtype(
+        'Interval', field_names = [ 'start', ('end',None), ('uncertain',False), ('warnings',set()) ] ) ):
+
+    def validate(self):
+        "raise AssertionError if instance variables are invalid; otherwise return True"
+        return True
+
+    def __str__(self):
+        self.validate()
+        if self.end is None or self.start == self.end:
+            return str(self.start)
+        iv = str(self.start) + '_' + str(self.end)
+        return '('+iv+')' if self.uncertain else iv
+
+    def _set_uncertain(self):
+        "mark this interval as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"
+        self.uncertain = True
+        return self
+
+    def __eq__(self,other):
+        # ignore warnings for the purposes of equality
+        return self.start == other.start and self.end == other.end and self.uncertain == other.uncertain
+
+    @property
+    def is_uncertain(self):
+        """return True if the position is marked uncertain or undefined"""
+        return self.uncertain or self.start.is_uncertain or self.end.is_uncertain
+
+
 
 class SimplePosition( recordtype.recordtype(
         'SimplePosition',
@@ -152,29 +183,7 @@ class AAPosition( recordtype.recordtype(
         """return True if the position is marked uncertain or undefined"""
         return self.uncertain or self.base is None or self.aa is None
 
-class Interval( recordtype.recordtype(
-        'Interval', field_names = [ 'start', ('end',None), ('uncertain',False) ] ) ):
 
-    def validate(self):
-        "raise AssertionError if instance variables are invalid; otherwise return True"
-        return True
-
-    def __str__(self):
-        self.validate()
-        if self.end is None or self.start == self.end:
-            return str(self.start)
-        iv = str(self.start) + '_' + str(self.end)
-        return '('+iv+')' if self.uncertain else iv
-
-    def _set_uncertain(self):
-        "mark this interval as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"
-        self.uncertain = True
-        return self
-
-    @property
-    def is_uncertain(self):
-        """return True if the position is marked uncertain or undefined"""
-        return self.uncertain or self.start.is_uncertain or self.end.is_uncertain
 
 
 ## <LICENSE>
