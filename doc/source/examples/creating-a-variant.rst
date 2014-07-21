@@ -1,6 +1,6 @@
 
-Creating a SequenceVariant from scratch is not difficult, but it's hardly straightforward. This example shows you how.
-----------------------------------------------------------------------------------------------------------------------
+Creating a SequenceVariant from scratch
+---------------------------------------
 
 0. Overview
 ~~~~~~~~~~~

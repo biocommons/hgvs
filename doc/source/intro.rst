@@ -1,22 +1,31 @@
 Introduction
 ------------
 
-About HGVS
-~~~~~~~~~~
+Genome, transcript, and protein sequence variants are typically
+reported using the `mutation nomenclature ("mutnomen") recommendations
+<http://www.hgvs.org/mutnomen/>`_ provided by the `Human Genome
+Variation Society (HGVS) <http://www.hgvs.org/>`_ (`Taschner and den
+Dunnen, 2011 <http://www.ncbi.nlm.nih.gov/pubmed/21309030>`_).  Most
+variants are deceptively simple looking, such as
+NM_021960.4:c.740C>T. In reality, the mutnomen standard provides for
+much more complex concepts and representations.
 
-Genome, transcript, and protein sequence variants are typically reported
-using the `mutation nomenclature ("mutnomen") recommendations
-<http://www.hgvs.org/mutnomen/>`_ provided by the `Human Genome Variation
-Society (HGVS) <http://www.hgvs.org/>`_.  If you're reading this, you've
-likely already seen HGVS-formatted variants: they usually look as simple
-as NM_021960.4:c.740C>T, but can be much more complex.
-
-The mutnomen standard was formulated in an era of specialized sequencing
-and cytogenetic analyses, long before the computational analysis of
-high-throughput sequencing annotation was envisioned.  Unfortunately, the
-complexity of biological phenomena and the breadth of the mutnomen
-standard makes it difficult to implement the standard in software, which
-in turn makes using the standard in high-throughput analyses difficult.
+As high-throughput sequencing becomes commonplace in the investigation
+and diagnosis of disease, it is essential that communicating variants
+from sequencing projects to the scientific community and from
+diagnostic laboratories to health care providers is easy and
+accurate. The HGVS mutation nomenclature recommendations⁠ are generally
+accepted for the communication of sequence variation: they are widely
+endorsed by professional organizations, mandated by numerous journals,
+and the prevalent representation used by databases and interactive
+scientific software tools. The guidelines – originally devised to
+standardize the representation of variants discovered before the
+advent of high-throughput sequencing – are now approved by the HGVS
+and continue to evolve under the auspices of the Human Variome
+Project. Unfortunately, the complexity of biological phenomena and the
+breadth of the mutnomen standard makes it difficult to implement the
+standard in software, which in turn makes using the standard in
+high-throughput analyses difficult.
 
 This package, ``hgvs``, is an easy-to-use Python library for parsing,
 representing, formatting, and mapping variants between genome, transcript,
@@ -26,48 +35,110 @@ The intent is to centralize the subset of HGVS variant manipulation that
 is routinely used in modern, high-throughput sequencing analysis.
 
 
-Components
-~~~~~~~~~~
+Features of the hgvs Package
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``hgvs`` package consists of several interoperable components:
+* **Convenient object representation**. Manipulate variants
+  conceptually rather than by modifying text strings. :doc:`Classes
+  <modules>` model HGVS concepts such as :class:`Interval
+  <hgvs.location.Interval>`, intronic offsets (in
+  :class:`BaseOffsetPosition <hgvs.location.BaseOffsetPosition>`),
+  uncertainty, and types of variation (:mod:`hgvs.edit`).
+* **A grammar-based parser**. `hgvs` uses :doc:`a formal grammar
+  <hgvs_railroad>` to parse HGVS variants rather than string
+  partitioning or regular expression pattern matching.  This makes
+  parsing easier to understand, extend, and validate.
+* **Simple variant formatting**. Object representations of variants
+  may be turned into HGVS strings simply by printing or "stringifying"
+  them.
+* **Robust variant mapping**. The package includes tools to map variants between
+  genome, transcript, and protein sequences (:class:`VariantMapper
+  <hgvs.variantmapper.VariantMapper>` and to perform liftover between
+  two transcript via a common reference (:class:`Projector
+  <hgvs.projector.Projector>`).  The hgvs mapper is specifically
+  designed to reliably handl of regions reference-transcript indel
+  discrepancy that are not covered by other tools.
+* **Additional variant validation**. The package includes tools to
+  validate variants, separate from syntactic validation provided by
+  the grammar.
+* **Extensible data sources**. Mapping and sequence data come from
+  `UTA <https://bitbucket.org/invitae/uta/>`_ by default, but the
+  package includes a well-defined service interface that enables
+  alternative data sources.
+* **Extensive automated tests**. We run extensive automated tests
+  consisting of all supported variant types on many genes for every
+  single commit to the source code repository. Test results are
+  displayed publicly and immediately.
 
-* :class:`hgvs.parser.Parser`, based on Parsley_ and a Parsing Expression Grammar (PEG_).
-* :doc:`Classes <modules>` that model HGVS concepts, such as CDS positions with offsets
-* formatters that generate HGVS strings from classes
-* tools to map variants between genome, transcript, and protein sequences
 
-We have made an intentional choice to not implement some components of
-HGVS, especially those that do not refer to variants precisely.  For
-instance, our grammar does not permit referring to a variant by gene name
-because gene names do not precisely define a reference sequence for the
-variant.
+Current limitations of the hgvs Package
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* **Some HGVS recommendations are intentionally absent.**. We chose to focus on the subset
+  of the HGVS recommendations that are relevant for high-throughput
+  sequencing. Some features, such as translocations, are not currently
+  on our roadmap.
+* **Variant canonicalization is not yet implemented**.
+* **Compond, complex, and mosaic variants are not currently implemented**. 
+
+.. note::
+
+   All issues are public. `hgvs issues
+   <https://bitbucket.org/invitae/hgvs/issues?status=new&status=open>`_
+   are tracked publicly. Go there for a full set of bugs and tasks.
 
 
 
-Architecture
+Related tools
+~~~~~~~~~~~~~
+
+* `Mutalyzer <http://www.humgen.nl/mutalyzer.html>`_ provides a web
+  interface to variant validation and mapping.
+* `Counsyl hgvs package <https://github.com/counsyl/hgvs>`_ provides
+  functionality conceptually similar to that of the Invitae hgvs
+  package.
+
+
+Getting Help
 ~~~~~~~~~~~~
 
-.. sidebar:: Package Architecture in a Nutshell
+There are several ways to get help with the ``hgvs`` package.
 
-  :hgvs:
-     The ``hgvs`` package is most user-visible component that provides
-     parsing, formatting, and mapping. It requires exon structures and
-     sequences to operate, and obtains this data through a class that
-     implements the :class:`hgvs.dataproviders.interface`. A concrete
-     implementation of this interface uses UTA (below), but users may
-     implement their own.
-  
-  :uta:
-     ``uta`` is an archive of transcripts, transcript sequences, and
-     transcript-reference sequence alignments.  Invitae provides a
-     public UTA instance at ``uta.invitae.com:5432`` (PostgreSQL).
+The `hgvs-discuss mailing list
+<https://groups.google.com/forum/#!forum/hgvs-discuss>`_ is the preferred
+way to reach the ``hgvs`` package authors.  Please file bugs and feature
+requests on the `hgvs issue tracker
+<https://bitbucket.org/invitae/hgvs/issues?status=new&status=open>`_.
 
-Variant mapping and validation requires access to external data,
-specifically exon structures, transcript alignments, and protein
-accessions.  In order to isolate the hgvs package from the myriad
-choices and tradeoffs, these data are provided through an
-implementation of the (abstract) Data Provider Interface
-(:class:`hgvs.dataproviders.interface`).
+If you have questions about the `HGVS Mutation Nomenclature Recommendations
+<http://www.hgvs.org/mutnomen/>`_, consider posting your questions to the
+`HGVS Facebook page <https://www.facebook.com/HGVSmutnomen>`_.
+
+
+Links
+~~~~~
+
+* `HGVS Mutation Nomenclature Recommendations <http://www.hgvs.org/mutnomen/>`_
+* `Human Genome Variation Society (HGVS) <http://www.hgvs.org/>`_
+* `Parsley <https://pypi.python.org/pypi/Parsley>`_
+* `Universal Transcript Archive (UTA) <https://bitbucket.org/invitae/uta/>`_
+
+
+References
+~~~~~~~~~~
+
+Describing structural changes by extending HGVS sequence variation nomenclature.
+  | Taschner, P. E. M., & den Dunnen, J. T.
+  | Human mutation, 32(5), 507–11. (2011).
+  | http://www.ncbi.nlm.nih.gov/pubmed/21309030
+
+A formalized description of the standard human variant nomenclature in Extended Backus-Naur Form.
+  | Laros, J. F. J., Blavier, A., den Dunnen, J. T., & Taschner, P. E. M.
+  | BMC bioinformatics, 12 Suppl 4(Suppl 4), S5. (2011). 
+  | http://www.ncbi.nlm.nih.gov/pubmed/21992071
+
+
+
 
 
 .. _`Parsley`: https://pypi.python.org/pypi/Parsley

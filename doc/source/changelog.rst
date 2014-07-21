@@ -1,9 +1,13 @@
 ChangeLog
 ^^^^^^^^^
 
+0.4 series
+==========
+under development
 
-0.3
-===
+
+0.3 series
+==========
 
 0.3.2 (2014-07-12)
 ------------------
@@ -38,8 +42,8 @@ ChangeLog
 * updated examples/manuscript-example; other minor changes
 
 
-0.2
-===
+0.2 series
+==========
 
 0.2.2 (2014-06-12)
 ------------------
@@ -78,9 +82,9 @@ ChangeLog
 * removed accidental tag (!); added sphinxcontrib-fulltoc to setup.py
 
 
-0.1
-===
-	
+0.1 series
+==========
+
 0.1.11 (2014-03-05)
 -------------------
 
@@ -342,8 +346,8 @@ ChangeLog
 * updated logo and README
 
 
-0.0
-===
+0.0 series
+==========
 
 0.0.9 (2013-12-16)
 ------------------

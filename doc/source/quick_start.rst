@@ -1,7 +1,7 @@
-.. _getting_started.rst:
+.. _quick_start.rst:
 
-Getting Started
-===============
+Quick Start
+===========
 
 This tutorial provides a comprehensive example of how to use the HGVS
 package.  Specifically, we'll:
@@ -82,7 +82,7 @@ Finally, "stringifying" a variant regenerates an HGVS variant:
 
 
 Create an VariantMapper instance
------------------------------
+--------------------------------
 
 Mapping variants between genomic (g.), transcript (c.), and protein (p.)
 sequences is performed by an instance of :py:class:`hgvs.variantmapper.VariantMapper`. As with
