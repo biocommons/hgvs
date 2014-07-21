@@ -1,9 +1,8 @@
-Modules and Classes
-===================
+Modules
+~~~~~~~
 
-
-Object Representation
----------------------
+Variant Representation
+......................
 
 :mod:`hgvs.edit`
 ^^^^^^^^^^^^^^^^
@@ -33,7 +32,7 @@ Object Representation
 
 
 Parsing
--------
+.......
 
 :mod:`hgvs.parser`
 ^^^^^^^^^^^^^^^^^^
@@ -43,7 +42,7 @@ Parsing
 
 
 Mapping
--------
+.......
 
 :mod:`hgvs.variantmapper`
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -70,7 +69,7 @@ Mapping
 
 
 Validating
-----------
+..........
 
 :mod:`hgvs.validator`
 ^^^^^^^^^^^^^^^^^^^^^
@@ -80,16 +79,19 @@ Validating
 
 
 Data Sources
-------------
+............
 
 :mod:`hgvs.dataproviders.interface`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: hgvs.dataproviders.interface
 
 :mod:`hgvs.dataproviders.multifastadb`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: hgvs.dataproviders.multifastadb
 
 :mod:`hgvs.dataproviders.uta`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: hgvs.dataproviders.uta

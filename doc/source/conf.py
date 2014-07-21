@@ -15,8 +15,6 @@ elif html_theme == 'bootstrap':
     import sphinx_bootstrap_theme
     html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 
-print(html_theme, html_theme_path)
-
 
 ############################################################################
 ## Project config

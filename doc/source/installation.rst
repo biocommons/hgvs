@@ -1,7 +1,7 @@
 .. _installation.rst
 
 Installation
-------------
+~~~~~~~~~~~~
 
 The following instructions were tested on Ubuntu 13.10 (Python 2.7.5+),
 Ubuntu 13.04 (Python 2.7.3), and Ubuntu 12.04 (Python 2.7.3).  Other
@@ -27,20 +27,8 @@ You're now ready to install hgvs via pip::
 
 
 
-Development
------------
-
-Alternatively, test and install from source::
-
-  $ hg clone ssh://hg@bitbucket.org/invitae/hgvs
-  $ cd hgvs
-  $ make develop
-  $ make test
-  $ make install
-
-
 Test your installation
-----------------------
+......................
 
 Test your setup like this::
 
