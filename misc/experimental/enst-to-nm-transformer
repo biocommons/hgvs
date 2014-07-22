@@ -1,0 +1,134 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+"""demonstrate mapping from ENST variants to NM variants
+
+Mapping from ENST to NMs is frought with corner cases. This
+experimental script is an example of one way to do it.
+
+"""
+
+import hgvs.dataproviders.uta
+import hgvs.parser
+import hgvs.projector
+import hgvs.validator
+import hgvs.variantmapper
+
+from hgvs.decorators.lru_cache import lru_cache
+from hgvs.utils.accessions import primary_assembly_accessions
+
+
+primary_assembly = 'GRCh37'
+src_alt_aln_method = 'genebuild'
+dst_alt_aln_method = 'splign'
+
+
+class Transformer(object):
+    """Projects variants from ENST transcripts to RefSeq transcripts"""
+
+    def __init__(self, hdp,
+                 primary_assembly='GRCh37',
+                 src_alt_aln_method='genebuild',
+                 dst_alt_aln_method='splign',
+                 similarity='exon structure'):
+        self.hdp = hdp
+        self.primary_assembly = primary_assembly
+        self.primary_assembly_accessions = set(primary_assembly_accessions[primary_assembly])
+        self.src_alt_aln_method = src_alt_aln_method
+        self.dst_alt_aln_method = dst_alt_aln_method
+        self.similarity = similarity
+    
+
+    def project_variant(self,c_var):
+        """Given a single ENST c. variant, return a *list* of variants on
+        RefSeqs.
+        """
+
+        assert c_var.ac.startswith('ENST'), 'expected an ENST variant'
+        assert c_var.type == 'c', 'expected a transcript variant'
+
+        alt_ac = self._alt_ac_for_tx_ac(c_var.ac)
+        nm_acs = self._get_enst_nm_equivs(c_var.ac,alt_ac)
+        pjs = [ self._fetch_Projector(c_var.ac,nm_ac,alt_ac) for nm_ac in nm_acs ]
+        return [ pj.project_variant_forward(c_var) for pj in pjs ]
+
+
+    @lru_cache(maxsize=100)
+    def _fetch_Projector(self,src_ac,dst_ac,alt_ac):
+        return hgvs.projector.Projector(self.hdp,
+                                        alt_ac, src_ac, dst_ac,
+                                        src_alt_aln_method=self.src_alt_aln_method,
+                                        dst_alt_aln_method=self.dst_alt_aln_method)
+
+
+    @lru_cache(maxsize=200)
+    def _get_enst_nm_equivs(self,enst_ac,alt_ac):
+        """return NMs that are "similar" to enst_ac"""
+        q = """
+            select E.tx_ac as enst_ac,N.tx_ac as refseq_ac
+            from tx_aln_summary_mv E
+            join tx_aln_summary_mv N on E.es_fingerprint=N.es_fingerprint
+            where E.alt_aln_method='genebuild' and N.alt_aln_method='splign'
+            and E.tx_ac=%s and E.alt_ac=%s
+            """
+        cur = self.hdp._get_cursor()
+        cur.execute(q,[enst_ac,alt_ac])
+        return [ r['refseq_ac'] for r in cur.fetchall() ]
+
+
+    @lru_cache()
+    def _alt_ac_for_tx_ac(self,tx_ac):
+        """return chromosomal accession for given transcript accession (and
+        the primary_assembly and aln_method setting used to
+        instantiate this EasyVariantMapper)
+
+        """
+        alt_acs = [e['alt_ac'] 
+                   for e in  self.hdp.get_tx_mapping_options(tx_ac)
+                   if e['alt_aln_method'] == self.src_alt_aln_method
+                   and e['alt_ac'] in self.primary_assembly_accessions]
+        if len(alt_acs) > 1:
+            raise hgvs.exceptions.HGVSError("Multiple chromosomal alignments for {tx_ac} in {pa}"
+                                            "using {am} (likely paralog or pseudoautosomal region)".format(
+                                                tx_ac=tx_ac, pa=self.primary_assembly, am=self.src_alt_aln_method))
+        if len(alt_acs) == 0:
+            raise hgvs.exceptions.HGVSError("No alignments for {tx_ac} in {pa} using {am}".format(
+                tx_ac=tx_ac, pa=self.primary_assembly, am=self.src_alt_aln_method))
+        return alt_acs[0]       # exactly one remains
+
+
+
+if __name__ == '__main__':
+    hdp = hgvs.dataproviders.uta.connect()
+    hp = hgvs.parser.Parser()
+    tf = Transformer(hdp)
+
+    for hgvs_c in open('testvars','r'):
+        var_c = hp.parse_hgvs_variant(hgvs_c.strip())
+        var_c.ac = var_c.ac.split('.')[0] # strip version number
+        try:
+            var_c_nm_list = tf.project_variant(var_c)
+            print("{var_c}: {n} {equivs}".format(
+                var_c=var_c, n=len(var_c_nm_list), 
+                equivs=', '.join(map(str,var_c_nm_list))))
+        except hgvs.exceptions.HGVSError as e:
+            print("{}: {}".format(var_c,str(e)))
+
+
+## <LICENSE>
+## Copyright 2014 HGVS Contributors (https://bitbucket.org/invitae/hgvs)
+## 
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+## 
+##     http://www.apache.org/licenses/LICENSE-2.0
+## 
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+## </LICENSE>
+
