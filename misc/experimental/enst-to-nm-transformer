@@ -9,7 +9,15 @@ experimental script is an example of one way to do it.
 
 """
 
+import collections
+import logging
+import re
+import sys
+
+import ometa.runtime
+
 import hgvs.dataproviders.uta
+import hgvs.exceptions
 import hgvs.parser
 import hgvs.projector
 import hgvs.validator
@@ -40,18 +48,18 @@ class Transformer(object):
         self.similarity = similarity
     
 
-    def project_variant(self,c_var):
+    def project_variant(self,var_c):
         """Given a single ENST c. variant, return a *list* of variants on
         RefSeqs.
         """
 
-        assert c_var.ac.startswith('ENST'), 'expected an ENST variant'
-        assert c_var.type == 'c', 'expected a transcript variant'
+        assert var_c.ac.startswith('ENST'), "expected an ENST variant ("+str(var_c)+")"
+        assert var_c.type == 'c', "expected a transcript variant ("+str(var_c)+")"
 
-        alt_ac = self._alt_ac_for_tx_ac(c_var.ac)
-        nm_acs = self._get_enst_nm_equivs(c_var.ac,alt_ac)
-        pjs = [ self._fetch_Projector(c_var.ac,nm_ac,alt_ac) for nm_ac in nm_acs ]
-        return [ pj.project_variant_forward(c_var) for pj in pjs ]
+        alt_ac = self._alt_ac_for_tx_ac(var_c.ac)
+        nm_acs = self._get_enst_nm_equivs(var_c.ac,alt_ac)
+        pjs = [ self._fetch_Projector(var_c.ac,nm_ac,alt_ac) for nm_ac in nm_acs ]
+        return [ pj.project_variant_forward(var_c) for pj in pjs ]
 
 
     @lru_cache(maxsize=100)
@@ -100,20 +108,62 @@ class Transformer(object):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
+
     hdp = hgvs.dataproviders.uta.connect()
     hp = hgvs.parser.Parser()
     tf = Transformer(hdp)
+    evm_g = hgvs.variantmapper.EasyVariantMapper(hdp,alt_aln_method='genebuild')
+    evm_s = hgvs.variantmapper.EasyVariantMapper(hdp,alt_aln_method='splign')
 
-    for hgvs_c in open('testvars','r'):
-        var_c = hp.parse_hgvs_variant(hgvs_c.strip())
-        var_c.ac = var_c.ac.split('.')[0] # strip version number
+    fn = sys.argv[1]
+    hgvs_src = open(fn,'r')
+
+    # original enst variants (values) that project to the same genomic hgvs (as key)
+    hgvs_g_ensts = collections.defaultdict(lambda: set())
+
+    # derived nm variants (values) for a genomic hgvs (key)
+    hgvs_g_nms_tf = collections.defaultdict(lambda: [])
+    hgvs_g_nms_evm = collections.defaultdict(lambda: [])
+
+    for hgvs_str in hgvs_src:
+        hgvs_str = hgvs_str.strip()
+
         try:
-            var_c_nm_list = tf.project_variant(var_c)
-            print("{var_c}: {n} {equivs}".format(
-                var_c=var_c, n=len(var_c_nm_list), 
-                equivs=', '.join(map(str,var_c_nm_list))))
-        except hgvs.exceptions.HGVSError as e:
-            print("{}: {}".format(var_c,str(e)))
+            assert 'c.' in hgvs_str, "expected a c. variant ("+hgvs_str+")"
+            assert hgvs_str.startswith('ENST'), "expected an ENST variant ("+hgvs_str+")"
+
+            var_c = hp.parse_hgvs_variant(hgvs_str.strip())
+            var_c.ac = var_c.ac.split('.')[0] # strip version number
+
+            var_g = evm_g.c_to_g(var_c)
+            hgvs_g = str(var_g)
+
+            hgvs_g_ensts[hgvs_g].add(hgvs_str)
+
+            if hgvs_g not in hgvs_g_nms_tf:
+                mapped_vars = tf.project_variant(var_c)
+                if mapped_vars:
+                    hgvs_g_nms_tf[hgvs_g] = map(str,mapped_vars)
+
+            if hgvs_g not in hgvs_g_nms_evm:
+                mapped_vars = [ evm_g.g_to_c(var_g,ac) for ac in evm_g.relevant_transcripts(var_g) ]
+                if mapped_vars:
+                    hgvs_g_nms_evm[hgvs_g] = map(str,mapped_vars)
+
+        except (AssertionError,hgvs.exceptions.HGVSError,ometa.runtime.ParseError) as ex:
+
+            logger.error("{hgvs_str}: {e}".format(hgvs_str=hgvs_str, e=re.sub('[\s^]+',' ',str(ex)) ))
+            #print("! {hgvs_str}: {e}".format(hgvs_str=hgvs_str, e=re.sub('[\s^]+',' ',str(ex)) ))
+
+    print('\t'.join('hgvs_g   n_enst_vars n_tf_vars n_evm_vars    enst_vars tf_vars evm_vars'.split()))
+    for hgvs_g in hgvs_g_ensts:
+        enst_vars = hgvs_g_ensts[hgvs_g]
+        tf_vars = hgvs_g_nms_tf[hgvs_g]
+        evm_vars = hgvs_g_nms_evm[hgvs_g]
+        print('\t'.join([hgvs_g,str(len(enst_vars)),str(len(tf_vars)),str(len(evm_vars)),'|'.join(enst_vars),'|'.join(tf_vars),'|'.join(evm_vars)]))
+
 
 
 ## <LICENSE>
@@ -131,4 +181,3 @@ if __name__ == '__main__':
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 ## </LICENSE>
-
