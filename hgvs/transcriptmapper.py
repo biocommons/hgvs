@@ -33,10 +33,17 @@ class TranscriptMapper(object):
         self.alt_aln_method = alt_aln_method
         if self.alt_aln_method != 'transcript':
             self.tx_info = hdp.get_tx_info(self.tx_ac, self.alt_ac, self.alt_aln_method)
+            if self.tx_info is None:
+                raise HGVSError("TranscriptMapper(tx_ac={self.tx_ac}, "
+                                "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
+                                "No transcript info".format(self=self))
+
             self.tx_exons = hdp.get_tx_exons(self.tx_ac, self.alt_ac, self.alt_aln_method)
-            if self.tx_info is None or self.tx_exons is None:
-                raise HGVSError("Couldn't build TranscriptMapper(tx_ac={self.tx_ac}, "
-                                "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method})".format(self=self))
+            if self.tx_info is None:
+                raise HGVSError("TranscriptMapper(tx_ac={self.tx_ac}, "
+                                "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
+                                "No transcript exons".format(self=self))
+
             self.strand = self.tx_exons[0]['alt_strand']
             self.cds_start_i = self.tx_info['cds_start_i']
             self.cds_end_i = self.tx_info['cds_end_i']
@@ -121,10 +128,10 @@ class TranscriptMapper(object):
         """convert a transcript cDNA (r.) interval to a transcript CDS (c.) interval"""
 
         if r_interval.start.base <= 0:
-            raise HGVSError("Transcript out of bounds.  Start position ({rs}) is <= 0.".
+            raise HGVSError("Coordinate out of bounds. Start position ({rs}) is <= 0.".
                             format(rs=r_interval.start.base))
         if r_interval.end.base > self.tgt_len:
-            raise HGVSError("Transcript out of bounds. End position ({re}) is > than transcript length ({len}).".
+            raise HGVSError("Coordinate out of bounds. End position ({re}) is > than transcript length ({len}).".
                             format(re=r_interval.end.base, len=self.tgt_len))
         # start
         if r_interval.start.base <= self.cds_start_i:
@@ -173,9 +180,9 @@ class TranscriptMapper(object):
             re = c_interval.end.base + self.cds_end_i
 
         if rs <= 0:
-            raise HGVSError("Transcript out of bounds.  Start position ({rs}) is <= 0.".format(rs=rs))
+            raise HGVSError("Coordinate out of bounds. Start position ({rs}) is <= 0.".format(rs=rs))
         if re > self.tgt_len:
-            raise HGVSError("Transcript out of bounds. End position ({re}) is > than transcript length ({len}).".
+            raise HGVSError("Coordinate out of bounds. End position ({re}) is > than transcript length ({len}).".
                             format(re=re, len=self.tgt_len))
 
         r_interval = hgvs.location.Interval(
