@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from pkg_resources import resource_filename
 
+import ometa.runtime
 import parsley
 
 import hgvs.edit
@@ -88,7 +89,11 @@ class Parser(object):
         """
         This function returns a function that takes a string and returns the parsing result.
         """
-        rule_fxn = lambda s: self._grammar(s).__getattr__(rule_name)()
+        def rule_fxn(s):
+            try:
+                return self._grammar(s).__getattr__(rule_name)()
+            except ometa.runtime.ParseError as e:
+                raise hgvs.exceptions.HGVSParseError(e)
         rule_fxn.func_doc = "parse string s using `%s' rule" % rule_name
         return rule_fxn
 
