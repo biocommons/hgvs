@@ -2,6 +2,9 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from pkg_resources import resource_filename
+import inspect
+import sys
+import traceback
 
 import ometa.runtime
 import parsley
@@ -92,8 +95,8 @@ class Parser(object):
         def rule_fxn(s):
             try:
                 return self._grammar(s).__getattr__(rule_name)()
-            except ometa.runtime.ParseError as e:
-                raise hgvs.exceptions.HGVSParseError(e)
+            except ometa.runtime.ParseError as exc:
+                raise hgvs.exceptions.HGVSParseError, hgvs.exceptions.HGVSParseError("{s}: char {exc.position}: {reason}".format(s=s, exc=exc, reason=exc.formatReason()))
         rule_fxn.func_doc = "parse string s using `%s' rule" % rule_name
         return rule_fxn
 
