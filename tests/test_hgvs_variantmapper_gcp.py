@@ -109,6 +109,11 @@ class Test_VariantMapper(unittest.TestCase):
         for rec in gcp_file_reader('tests/data/gcp/DNAH11-dbSNP-NM_001277115.tsv'):
             self._test_gcp_mapping(rec)
 
+    @attr(tags=["regression"])
+    def test_regression(self):
+        for rec in gcp_file_reader('tests/data/gcp/regression.tsv'):
+            self._test_gcp_mapping(rec)
+
     @attr(tags=["extra"])
     def test_DNAH11_dbSNP_full(self):
         for rec in gcp_file_reader('tests/data/gcp/DNAH11-dbSNP.tsv'):
