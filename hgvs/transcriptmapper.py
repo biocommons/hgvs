@@ -232,7 +232,7 @@ def _hgvs_offset(g_position, grs, gre):
     if g_position == grs or g_position == gre:
         return 0
     mid = math.ceil((grs + gre) / 2)
-    if g_position < mid:
+    if g_position <= mid:
         offset = g_position - grs
     else:
         offset = g_position - gre

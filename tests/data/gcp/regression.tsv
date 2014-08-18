@@ -1,0 +1,4 @@
+id	HGVSg	HGVSc	HGVSp
+
+#205: the middle of an odd length intron is measured from end rather than start
+205A	NC_000019.9:g.39069733C>T	NM_001042723.1:c.14349+889C>T		
