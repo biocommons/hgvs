@@ -24,6 +24,10 @@ evm = easyvariantmapper = hgvs.variantmapper.EasyVariantMapper( hdp,
                                                                 primary_assembly = 'GRCh37',
                                                                 alt_aln_method = alt_aln_method )
 
+hgvs_g = 'NC_000001.10:g.156100564_156104193insG'
+#hgvs_g = 'NC_000001.10:g.156104193A>G'
+hgvs_c = 'NM_170707.3:c.513_514-1insG'
+
 var_g = hgvsparser.parse_hgvs_variant(hgvs_g)
 var_c = hgvsparser.parse_hgvs_variant(hgvs_c)
 var_p = hgvsparser.parse_hgvs_variant(hgvs_p)

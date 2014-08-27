@@ -132,12 +132,12 @@ class Test_VariantMapper(unittest.TestCase):
         # g -> c
         var_c_test = self.hm.g_to_c(var_g, var_c.ac)
         self.assertEquals(str(var_c_test), str(var_c),
-                          msg="%s != %s (%s)" % (str(var_c_test),str(var_c),rec['id']))
+                          msg="%s != %s (%s; HGVSg=%s)" % (str(var_c_test),str(var_c),rec['id'],rec['HGVSg']))
 
         # c -> g
         var_g_test = self.hm.c_to_g(var_c, var_g.ac)
         self.assertEquals(str(var_g_test), str(var_g),
-                          msg="%s != %s (%s)" % (str(var_g_test),str(var_g),rec['id']))
+                          msg="%s != %s (%s; HGVSc=%s)" % (str(var_g_test),str(var_g),rec['id'],rec['HGVSc']))
 
         if var_p is not None:
             # c -> p
@@ -161,6 +161,7 @@ class Test_VariantMapper(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/invitae/hgvs)
