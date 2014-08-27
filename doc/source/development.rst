@@ -47,7 +47,7 @@ Installation for Development
 
 ::
 
-  $ hg clone ssh://hg@bitbucket.org/invitae/hgvs
+  $ hg clone ssh://hg@bitbucket.org/hgvs/hgvs
   $ cd hgvs
   $ make develop
 

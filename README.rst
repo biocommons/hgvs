@@ -5,8 +5,8 @@ HGVS -- Tools to Parse, Format, and Map Biological Sequence Variants
 .. `PyPI <https://pypi.python.org/pypi?name=hgvs>`_
 
 | **Use:** |pypi_badge|  |install_status| | `Documentation <http://pythonhosted.org/hgvs/>`_ 
-| **Interact:** `Mailing List <https://groups.google.com/forum/#!forum/hgvs-discuss>`_ | `Report an Issue <https://bitbucket.org/invitae/hgvs/issues?status=new&status=open>`_
-| **Develop:** `Source <https://bitbucket.org/invitae/hgvs>`_ (status: |build_status|)
+| **Interact:** `Mailing List <https://groups.google.com/forum/#!forum/hgvs-discuss>`_ | `Report an Issue <https://bitbucket.org/hgvs/hgvs/issues?status=new&status=open>`_
+| **Develop:** `Source <https://bitbucket.org/hgvs/hgvs>`_ (status: |build_status|)
 
 This package provides a Python library to facilitate the use of genome,
 transcript, and protein variants that are represented using the Human
@@ -18,7 +18,7 @@ Important Notes
 ---------------
 
 * **You are encouraged to** `browse issues
-  <https://bitbucket.org/invitae/hgvs/issues>`_. Please report any
+  <https://bitbucket.org/hgvs/hgvs/issues>`_. Please report any
   issues you find.
 * **Use a pip package specification to ensure stay within minor
   releases for API stability.** For example, ``hgvs >=0.3,<0.4``.
@@ -116,8 +116,8 @@ There are `more examples in the documentation <http://pythonhosted.org/hgvs/exam
   :target: https://pypi.python.org/pypi?name=hgvs
   :align: middle
 
-.. |build_status| image:: https://drone.io/bitbucket.org/invitae/hgvs/status.png
-  :target: https://drone.io/bitbucket.org/invitae/hgvs
+.. |build_status| image:: https://drone.io/bitbucket.org/hgvs/hgvs/status.png
+  :target: https://drone.io/bitbucket.org/hgvs/hgvs
   :align: middle 
 
 .. |install_status| image:: https://travis-ci.org/reece/hgvs-integration-test.png?branch=master

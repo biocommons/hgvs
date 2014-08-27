@@ -1,7 +1,7 @@
 License
 =======
 
-.. _hgvs: https://bitbucket.org/invitae/hgvs
+.. _hgvs: https://bitbucket.org/hgvs/hgvs
 
 hgvs_ is released under the `Apache License 2.0
 <http://www.apache.org/licenses/LICENSE-2.0>`_, the text of which appears

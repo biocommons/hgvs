@@ -138,7 +138,7 @@ class MultiFastaDB(object):
         return self.SequenceProxy(self,ac)
 
 ## <LICENSE>
-## Copyright 2014 HGVS Contributors (https://bitbucket.org/invitae/hgvs)
+## Copyright 2014 HGVS Contributors (https://bitbucket.org/hgvs/hgvs)
 ## 
 ## Licensed under the Apache License, Version 2.0 (the "License");
 ## you may not use this file except in compliance with the License.
