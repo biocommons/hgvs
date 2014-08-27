@@ -13,6 +13,7 @@ from hgvs.exceptions import HGVSError
 from hgvs.decorators.deprecated import deprecated
 from hgvs.utils import build_tx_cigar
 
+
 class TranscriptMapper(object):
     """Provides coordinate (not variant) mapping operations between
     genomic (g), rna (r), cds (c), and protein (p) coordinates.  All
@@ -68,37 +69,64 @@ class TranscriptMapper(object):
     def g_to_r(self, g_interval):
         """convert a genomic (g.) interval to a transcript cDNA (r.) interval"""
 
-        assert self.strand in [1,-1], 'strand = '+str(self.strand)+'; must be 1 or -1'
+        # This code is extremely convoluted. To begin with, it
+        # confuses interbase intervals for a *single* hgvs position
+        # with intervals of *two* hgvs positions.  This is the origin
+        # of bug #205 (now closed). Although the bug is itself fixed,
+        # the mappers really need an overhaul. See #208.
 
-        g_ci = _hgvs_coord_to_ci(g_interval.start.base, g_interval.end.base)
-        # frs, fre = (f)orward (r)na (s)tart & (e)nd; forward w.r.t. genome
-        frs, fre = self.im.map_ref_to_tgt(g_ci[0] - self.gc_offset, g_ci[1] - self.gc_offset, max_extent=False)
+        def _hgvs_offset(g_position, grs, gre, strand):
+            """ Calculates the HGVS coordinate offset from a given genomic position"""
+            if g_position == grs or g_position == gre:
+                return 0
+            mid = (grs + gre) / 2
+            if g_position < mid or (g_position == mid and strand == 1):
+                offset = g_position - grs
+            else:
+                offset = g_position - gre
+            print("_hgvs_offset({g_position},{grs},{gre},{strand}) = {offset}".format(
+                g_position=g_position,grs=grs,gre=gre,strand=strand,offset=offset))
+            return offset
+
+        def map_g_to_r_pos(pos):
+            g_ci = _hgvs_coord_to_ci(pos,pos)
+            # frs, fre = (f)orward (r)na (s)tart & (e)nd; forward w.r.t. genome
+            frs, fre = self.im.map_ref_to_tgt(g_ci[0] - self.gc_offset, g_ci[1] - self.gc_offset, max_extent=False)
+            if self.strand == -1:
+                frs, fre = self.tgt_len - fre, self.tgt_len - frs
+            # get BaseOffsetPosition information for r.
+            if self.strand == 1:
+                grs, gre = self.im.map_tgt_to_ref(frs, fre, max_extent=False)
+            elif self.strand == -1:
+                grs, gre = self.im.map_tgt_to_ref((self.tgt_len - fre), (self.tgt_len - frs), max_extent=False)
+            grs, gre = grs + self.gc_offset, gre + self.gc_offset
+            # 0-width interval indicates an intron.  Need to calculate offsets but we're are in ci coordinates
+            # requires adding 1 strategically to get the HGVS position (shift coordinates to 3' end of the ref nucleotide)
+            if frs == fre:
+                start_offset = _hgvs_offset(g_ci[0] + 1, grs, gre + 1, self.strand)
+                end_offset = _hgvs_offset(g_ci[1], grs, gre + 1, self.strand)
+            else:
+                start_offset = _hgvs_offset(g_ci[0], grs, gre, self.strand)
+                end_offset = _hgvs_offset(g_ci[1], grs, gre, self.strand)
+            if self.strand == -1:
+                start_offset, end_offset = self.strand * end_offset, self.strand * start_offset
+            if start_offset > 0:
+                frs -= 1
+            if end_offset < 0:
+                fre += 1
+            start_base = _ci_to_hgvs_coord(frs, fre)[0]
+            end_base = _ci_to_hgvs_coord(frs, fre)[1]
+            return start_base, start_offset, end_base, end_offset
+
+        start_bo = map_g_to_r_pos(g_interval.start.base)[0:2]
+        end_bo = start_bo if g_interval.start.base == g_interval.end.base else map_g_to_r_pos(g_interval.end.base)[2:4]
         if self.strand == -1:
-            frs, fre = self.tgt_len - fre, self.tgt_len - frs
-        # get BaseOffsetPosition information for r.
-        if self.strand == 1:
-            grs, gre = self.im.map_tgt_to_ref(frs, fre, max_extent=False)
-        elif self.strand == -1:
-            grs, gre = self.im.map_tgt_to_ref((self.tgt_len - fre), (self.tgt_len - frs), max_extent=False)
-        grs, gre = grs + self.gc_offset, gre + self.gc_offset
-        # 0-width interval indicates an intron.  Need to calculate offsets but we're are in ci coordinates
-        # requires adding 1 strategically to get the HGVS position (shift coordinates to 3' end of the ref nucleotide)
-        if frs == fre:
-            start_offset = _hgvs_offset(g_ci[0] + 1, grs, gre + 1)
-            end_offset = _hgvs_offset(g_ci[1], grs, gre + 1)
-        else:
-            start_offset = _hgvs_offset(g_ci[0], grs, gre)
-            end_offset = _hgvs_offset(g_ci[1], grs, gre)
-        if self.strand == -1:
-            start_offset, end_offset = self.strand * end_offset, self.strand * start_offset
-        if start_offset > 0:
-            frs -= 1
-        if end_offset < 0:
-            fre += 1
+            start_bo, end_bo = end_bo, start_bo
+
         return hgvs.location.Interval(
-                    start=hgvs.location.BaseOffsetPosition(base=_ci_to_hgvs_coord(frs, fre)[0], offset=start_offset),
-                    end  =hgvs.location.BaseOffsetPosition(base=_ci_to_hgvs_coord(frs, fre)[1], offset=end_offset),
-                    uncertain=g_interval.uncertain)
+            start=hgvs.location.BaseOffsetPosition(base=start_bo[0], offset=start_bo[1]),
+            end=hgvs.location.BaseOffsetPosition(base=end_bo[0], offset=end_bo[1]),
+            uncertain=g_interval.uncertain)
 
 
     def r_to_g(self, r_interval):
@@ -226,17 +254,6 @@ class TranscriptMapper(object):
         return self.c_to_p(*args,**kwargs)
 
 
-
-def _hgvs_offset(g_position, grs, gre):
-    """ Calculates the HGVS coordinate offset from a given genomic position"""
-    if g_position == grs or g_position == gre:
-        return 0
-    mid = math.ceil((grs + gre) / 2)
-    if g_position <= mid:
-        offset = g_position - grs
-    else:
-        offset = g_position - gre
-    return offset
 
 def _ci_to_hgvs_coord(s, e):
     """ Convert continuous interbase (right-open) coordinates (..,-2,-1,0,1,..) to
