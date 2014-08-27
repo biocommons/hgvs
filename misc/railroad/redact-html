@@ -18,7 +18,7 @@ cat <<EOF
 </head>
 <body>
   <h1>HGVS Railroad Diagram</h1>
-  Generated from <a href="https://bitbucket.org/invitae/hgvs/">hgvs (https://bitbucket.org/invitae/hgvs/)</a>
+  Generated from <a href="https://bitbucket.org/hgvs/hgvs/">hgvs (https://bitbucket.org/hgvs/hgvs/)</a>
   <br> commit $commit ($commit_info)
   <hr>
 EOF

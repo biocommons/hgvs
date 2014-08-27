@@ -84,7 +84,7 @@ Current limitations of the hgvs Package
 .. note::
 
    All issues are public. `hgvs issues
-   <https://bitbucket.org/invitae/hgvs/issues?status=new&status=open>`_
+   <https://bitbucket.org/hgvs/hgvs/issues?status=new&status=open>`_
    are tracked publicly. Go there for a full set of bugs and tasks.
 
 
@@ -108,7 +108,7 @@ The `hgvs-discuss mailing list
 <https://groups.google.com/forum/#!forum/hgvs-discuss>`_ is the preferred
 way to reach the ``hgvs`` package authors.  Please file bugs and feature
 requests on the `hgvs issue tracker
-<https://bitbucket.org/invitae/hgvs/issues?status=new&status=open>`_.
+<https://bitbucket.org/hgvs/hgvs/issues?status=new&status=open>`_.
 
 If you have questions about the `HGVS Mutation Nomenclature Recommendations
 <http://www.hgvs.org/mutnomen/>`_, consider posting your questions to the
