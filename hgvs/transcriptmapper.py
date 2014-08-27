@@ -84,8 +84,6 @@ class TranscriptMapper(object):
                 offset = g_position - grs
             else:
                 offset = g_position - gre
-            print("_hgvs_offset({g_position},{grs},{gre},{strand}) = {offset}".format(
-                g_position=g_position,grs=grs,gre=gre,strand=strand,offset=offset))
             return offset
 
         def map_g_to_r_pos(pos):
