@@ -6,10 +6,6 @@ External Data Providers
 
 .. automodule:: hgvs.dataproviders.interface
 
-:mod:`hgvs.dataproviders.multifastadb`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: hgvs.dataproviders.multifastadb
 
 :mod:`hgvs.dataproviders.uta`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
