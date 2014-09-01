@@ -6,8 +6,8 @@ hgvs.hgvsvalidator
 """
 
 from hgvs.exceptions import HGVSValidationError, HGVSDataNotAvailableError
-import hgvs.variantmapper
 import hgvs.parser
+import hgvs.variantmapper
 
 
 BASE_RANGE_ERROR_MSG = 'base start position must be <= end position'
@@ -22,11 +22,11 @@ SEQ_ERROR_MSG = 'Variant reference does not agree with reference sequence'
 
 class Validator(object):
     """invoke intrinsic and extrinsic validation"""
-    def __init__(self, hdp, mfdb=None):
+    def __init__(self, hdp):
         self.ivr = IntrinsicValidator()
-        self.evr = ExtrinsicValidator(hdp,mfdb)
+        self.evr = ExtrinsicValidator(hdp)
 
-    def validate(self,var):
+    def validate(self, var):
         return self.ivr.validate(var) and self.evr.validate(var)
 
 
@@ -56,7 +56,7 @@ class IntrinsicValidator(object):
             if var.posedit.pos.start.datum > var.posedit.pos.end.datum:
                 raise HGVSValidationError(BASE_RANGE_ERROR_MSG)
         return True
-    
+
     def _ins_length_is_one(self, var):
         if var.posedit.edit.type == 'ins':
             if var.type == 'g':
@@ -67,7 +67,7 @@ class IntrinsicValidator(object):
                         (var.posedit.pos.start.base + var.posedit.pos.start.offset)) != 1:
                     raise HGVSValidationError(INS_ERROR_MSG)
             return True
-        
+
     def _del_length(self, var):
         if var.posedit.edit.type == 'del':
             del_len = len(var.posedit.edit.ref)
@@ -91,9 +91,8 @@ class ExtrinsicValidator():
     Attempts to determine if the HGVS name validates against external data sources
     """
 
-    def __init__(self, hdp, mfdb=None):
+    def __init__(self, hdp):
         self.hdp = hdp
-        self.mfdb = mfdb
         self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
 
     def validate(self, var):
@@ -110,19 +109,16 @@ class ExtrinsicValidator():
                 raise HGVSValidationError(str(var) + ': ' + SEQ_ERROR_MSG)
         return True
 
-    def _fetch_seq(self,ac,start_i,end_i):
+    def _fetch_seq(self, ac, start_i, end_i):
         """fetch 0-based, right-open subsequence [start_i,end_i) of specified accession
-        first using the hdpi instance then mfdb if not None.
+        first using the hdpi instance.
 
         :raises: hgvs.exceptions.HGVSDataNotAvailableError if couldn't get sequence
         """
-        q = self.hdp.get_tx_seq(ac)
-        if q:
-            return q[start_i:end_i]
-        if self.mfdb:
-            return self.mfdb(ac,start_i,end_i)
-        raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
-
+        try:
+            return self.hdp.get_tx_seq(ac)[start_i:end_i]
+        except TypeError:
+            raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
 
 
 

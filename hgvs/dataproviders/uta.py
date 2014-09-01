@@ -11,8 +11,8 @@ import psycopg2
 import psycopg2.extras
 
 from hgvs.dataproviders.interface import Interface
-from hgvs.utils.aminoacids import seq_md5
 from hgvs.decorators.lru_cache import lru_cache
+from hgvs.utils.aminoacids import seq_md5
 
 
 localhost_db_url = 'postgresql://localhost/uta'
@@ -304,19 +304,19 @@ class UTABase(Interface):
 
         """
         cur = self._get_cursor()
-        cur.execute(self.sql['tx_info'],[tx_ac, alt_ac, alt_aln_method])
+        cur.execute(self.sql['tx_info'], [tx_ac, alt_ac, alt_aln_method])
         return cur.fetchone()
 
 
     @lru_cache(maxsize=128)
-    def get_tx_seq(self,ac):
+    def get_tx_seq(self, ac):
         """return transcript sequence for supplied accession (ac), or None if not found
 
         :param ac: transcript accession with version (e.g., 'NM_000051.3')
         :type ac: str
         """
         cur = self._get_cursor()
-        cur.execute(self.sql['tx_seq'],[ac])
+        cur.execute(self.sql['tx_seq'], [ac])
         try:
             return cur.fetchone()['seq']
         except TypeError:

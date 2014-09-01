@@ -46,7 +46,7 @@ setup(
         "Topic :: Database :: Front-Ends",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
         "Topic :: Scientific/Engineering :: Medical Science Apps.",
-        ],
+    ],
 
     keywords = [
         'bioinformatics',
@@ -57,15 +57,15 @@ setup(
         'genomic variation',
         'genomics',
         'hgvs',
-        ],
+    ],
 
     install_requires = [
         'psycopg2',
-        'pysam',
         'biopython',
+        'multifastadb',
         'parsley',
         'recordtype',
-        ],
+    ],
 
     setup_requires = [
         'hgtools',
@@ -73,13 +73,13 @@ setup(
         # 'nose-timer', causes errors when installing via pip; cause not investigated
         'sphinx',
         'sphinxcontrib-fulltoc',
-        ],
+    ],
 
     tests_require = [
         'coverage',
         'unicodecsv',
-        ],
-    )
+    ],
+)
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/hgvs/hgvs)
