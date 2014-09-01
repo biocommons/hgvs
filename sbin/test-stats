@@ -15,7 +15,7 @@ if __name__ == '__main__':
     txs = collections.Counter()
 
     for line in sys.stdin:
-        if line.startswith('#') or line.startswith('id'):
+        if line.startswith('#') or line.startswith('id') or line.strip() == '':
             continue
 
         vals = line.rstrip().split('\t',3)
