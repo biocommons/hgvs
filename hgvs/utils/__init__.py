@@ -3,12 +3,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import re
 
-def strand_pm(s):
-    return (None if s is None
-            else '+' if s == 1
-            else '-' if s == -1
-            else '?')
-
 
 def build_tx_cigar(exons, strand):
     cigarelem_re = re.compile('\d+[=DIMNX]')

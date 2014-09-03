@@ -5,6 +5,8 @@ import copy
 import warnings
 
 from Bio.Seq import Seq
+from bioutils.accessions import primary_assembly_accessions
+from bioutils.sequences import reverse_complement
 import recordtype
 
 import hgvs.exceptions
@@ -17,11 +19,10 @@ import hgvs.variant
 
 from hgvs.decorators.deprecated import deprecated
 from hgvs.decorators.lru_cache import lru_cache
-from hgvs.utils.accessions import primary_assembly_accessions
-from hgvs.utils.nucleicacids import reverse_complement
 
 
 UNSET = None
+
 
 class VariantMapper(object):
     """

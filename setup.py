@@ -5,14 +5,16 @@ from setuptools import setup, find_packages
 
 import re
 
+
 with open('doc/description.txt') as f:
     long_description = f.read()
+
 
 def version_handler(mgr, options):
     version = mgr.get_current_version()
     if version.endswith('dev'):
         version += '-' + mgr._invoke('log', '-l1', '-r.', '--template', '{node|short}').strip()
-    elif re.match('^\d+\.\d+$',version):
+    elif re.match('^\d+\.\d+$', version):
         # StrictVersion considers x.y == x.y.0 and drops the .0 from a
         # repo tag.  Add it back and ensure that it's really a tag for
         # our parent.
@@ -62,6 +64,7 @@ setup(
     install_requires = [
         'psycopg2',
         'biopython',
+        'bioutils',
         'multifastadb',
         'parsley',
         'recordtype',

@@ -9,10 +9,10 @@ import urlparse
 #TODO: make dynamic import with importlib
 import psycopg2
 import psycopg2.extras
+from bioutils.digests import seq_md5
 
 from hgvs.dataproviders.interface import Interface
 from hgvs.decorators.lru_cache import lru_cache
-from hgvs.utils.aminoacids import seq_md5
 
 
 localhost_db_url = 'postgresql://localhost/uta'
