@@ -21,7 +21,7 @@ Classes:
 
 import recordtype
 
-from hgvs.utils.aminoacids import aa1_to_aa3
+from bioutils.sequences import aa1_to_aa3
 
 SEQ_START = 0
 CDS_START = 1

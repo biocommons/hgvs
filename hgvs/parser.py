@@ -2,10 +2,8 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from pkg_resources import resource_filename
-import inspect
-import sys
-import traceback
 
+import bioutils.sequences
 import ometa.runtime
 import parsley
 
@@ -74,7 +72,7 @@ class Parser(object):
 
     def __init__(self,grammar_fn=__default_grammar_fn):
         self._grammar_fn = grammar_fn
-        self._grammar = parsley.makeGrammar(open(grammar_fn,'r').read(),{'hgvs': hgvs})
+        self._grammar = parsley.makeGrammar(open(grammar_fn,'r').read(),{'hgvs': hgvs, 'bioutils': bioutils})
 
         # define function attributes for each grammar rule, prefixed with 'parse_'
         # e.g., Parser.parse_c_interval('26+2_57-3') -> Interval(...)
