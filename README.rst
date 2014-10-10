@@ -13,7 +13,7 @@ transcript, and protein variants that are represented using the Human
 Genome Variation Society (`HGVS`_) recommendations.
 
 
-| **A Python Package for Parsing, Validating, Mapping, and Formatting Sequence Variants Using HGVS Nomenclature.**
+**A Python Package for Parsing, Validating, Mapping, and Formatting Sequence Variants Using HGVS Nomenclature.**
 | Hart RK, Rico R, Hare E, Garcia J, Westbrook J, Fusaro VA.
 | *Bioinformatics*. 2014 Sep 30. `PubMed <http://www.ncbi.nlm.nih.gov/pubmed/25273102>`_
 
