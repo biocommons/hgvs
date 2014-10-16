@@ -41,11 +41,16 @@ def connect(db_url=default_db_url):
 
     A local postgresql database:
         postgresql://localhost/uta
+    
+    A local SQLite database:
+      sqlite:////tmp/uta-0.0.6.db
     """
 
     url = urlparse.urlparse(db_url)
 
-    if url.scheme == 'postgresql':
+    if url.scheme == 'sqlite':
+        conn = UTA_sqlite(url)
+    elif url.scheme == 'postgresql':
         conn = UTA_postgresql(url)
     else:
         # fell through connection scheme cases
