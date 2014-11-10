@@ -18,9 +18,9 @@ syntax: glob
 .DS_Store
 .Python
 .coverage
-.coverage
 .idea
 .installed.cfg
+.ipynb_checkpoints
 archive
 bdist
 build
