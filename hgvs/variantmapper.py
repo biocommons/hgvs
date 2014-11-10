@@ -31,11 +31,11 @@ class VariantMapper(object):
     """
 
     # TODO 0.4.0: cache_transcripts was deprecated in 0.3.x; remove in 0.4.0
-    def __init__(self,hdp,cache_transcripts=UNSET):
+    def __init__(self, hdp, cache_transcripts=UNSET):
         self.hdp = hdp
         if cache_transcripts != UNSET:
             import inspect
-            upframe = inspect.getframeinfo( inspect.currentframe().f_back )
+            upframe = inspect.getframeinfo(inspect.currentframe().f_back)
             warnings.warn_explicit(
                 'VariantMapper cache_transcripts parameter is deprecated and will be removed in a future version',
                 category=DeprecationWarning,
@@ -56,15 +56,15 @@ class VariantMapper(object):
         """
 
         if not (var_g.type == 'g'):
-            raise hgvs.exceptions.HGVSInvalidVariantError('Expected a genomic (g.) variant; got '+ str(var_g))
+            raise hgvs.exceptions.HGVSInvalidVariantError('Expected a genomic (g.) variant; got ' + str(var_g))
 
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
-        
-        pos_c = tm.g_to_c( var_g.posedit.pos )
+
+        pos_c = tm.g_to_c(var_g.posedit.pos)
         edit_c = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
         var_c = hgvs.variant.SequenceVariant(ac=tx_ac,
                                              type='c',
-                                             posedit=hgvs.posedit.PosEdit( pos_c, edit_c ) )
+                                             posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
         return var_c
 
 
@@ -81,15 +81,15 @@ class VariantMapper(object):
         """
 
         if not (var_g.type == 'g'):
-            raise hgvs.exceptions.HGVSInvalidVariantError('Expected a genomic (g.); got '+ str(var_g))
+            raise hgvs.exceptions.HGVSInvalidVariantError('Expected a genomic (g.); got ' + str(var_g))
 
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
 
-        pos_r = tm.g_to_r( var_g.posedit.pos )
+        pos_r = tm.g_to_r(var_g.posedit.pos)
         edit_r = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
         var_r = hgvs.variant.SequenceVariant(ac=tx_ac,
                                              type='r',
-                                             posedit=hgvs.posedit.PosEdit( pos_r, edit_r ) )
+                                             posedit=hgvs.posedit.PosEdit(pos_r, edit_r))
         return var_r
 
 
@@ -106,16 +106,16 @@ class VariantMapper(object):
         """
 
         if not (var_r.type == 'r'):
-            raise hgvs.exceptions.HGVSInvalidVariantError('Expected a RNA (r.); got '+ str(var_r))
+            raise hgvs.exceptions.HGVSInvalidVariantError('Expected a RNA (r.); got ' + str(var_r))
 
         tm = self._fetch_TranscriptMapper(tx_ac=var_r.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
 
-        pos_g = tm.r_to_g( var_r.posedit.pos )
+        pos_g = tm.r_to_g(var_r.posedit.pos)
         edit_g = self._convert_edit_check_strand(tm.strand, var_r.posedit.edit)
 
         var_g = hgvs.variant.SequenceVariant(ac=alt_ac,
                                              type='g',
-                                             posedit=hgvs.posedit.PosEdit( pos_g, edit_g ) )
+                                             posedit=hgvs.posedit.PosEdit(pos_g, edit_g) )
         return var_g
 
     
@@ -169,7 +169,7 @@ class VariantMapper(object):
 
         var_r = hgvs.variant.SequenceVariant(ac=var_c.ac,
                                              type='r',
-                                             posedit=hgvs.posedit.PosEdit( pos_r, edit_r ) )
+                                             posedit=hgvs.posedit.PosEdit(pos_r, edit_r))
         return var_r
 
 
@@ -197,7 +197,7 @@ class VariantMapper(object):
 
         var_c = hgvs.variant.SequenceVariant(ac=var_r.ac,
                                              type='c',
-                                             posedit=hgvs.posedit.PosEdit( pos_c, edit_c ) )
+                                             posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
         return var_c
 
 
@@ -234,7 +234,7 @@ class VariantMapper(object):
                 # padding list so biopython won't complain during the conversion
                 tx_seq_to_translate = tx_seq[cds_start - 1:cds_stop]
                 if len(tx_seq_to_translate) % 3 != 0:
-                    ''.join(list(tx_seq_to_translate).extend(['N']*((3-len(tx_seq_to_translate) % 3) % 3)))
+                    ''.join(list(tx_seq_to_translate).extend(['N'] * ((3 - len(tx_seq_to_translate) % 3) % 3)))
 
                 tx_seq_cds = Seq(tx_seq_to_translate)
                 protein_seq = str(tx_seq_cds.translate())
@@ -271,27 +271,34 @@ class VariantMapper(object):
 
     ############################################################################
     ## DEPRECATED METHODS
+
     @deprecated(use_instead='g_to_c(...)')
-    def hgvsg_to_hgvsc(self,*args,**kwargs):
-        return self.g_to_c(*args,**kwargs)
+    def hgvsg_to_hgvsc(self, *args, **kwargs):
+        return self.g_to_c(*args, **kwargs)
+
     @deprecated(use_instead='g_to_r(...)')
-    def hgvsg_to_hgvsr(self,*args,**kwargs):
-        return self.g_to_r(*args,**kwargs)
+    def hgvsg_to_hgvsr(self, *args, **kwargs):
+        return self.g_to_r(*args, **kwargs)
+
     @deprecated(use_instead='r_to_g(...)')
-    def hgvsr_to_hgvsg(self,*args,**kwargs):
-        return self.r_to_g(*args,**kwargs)
+    def hgvsr_to_hgvsg(self, *args, **kwargs):
+        return self.r_to_g(*args, **kwargs)
+
     @deprecated(use_instead='c_to_g(...)')
-    def hgvsc_to_hgvsg(self,*args,**kwargs):
-        return self.c_to_g(*args,**kwargs)
+    def hgvsc_to_hgvsg(self, *args, **kwargs):
+        return self.c_to_g(*args, **kwargs)
+
     @deprecated(use_instead='c_to_r(...)')
-    def hgvsc_to_hgvsr(self,*args,**kwargs):
-        return self.c_to_r(*args,**kwargs)
+    def hgvsc_to_hgvsr(self, *args, **kwargs):
+        return self.c_to_r(*args, **kwargs)
+
     @deprecated(use_instead='r_to_c(...)')
-    def hgvsr_to_hgvsc(self,*args,**kwargs):
-        return self.r_to_c(*args,**kwargs)
+    def hgvsr_to_hgvsc(self, *args, **kwargs):
+        return self.r_to_c(*args, **kwargs)
+
     @deprecated(use_instead='c_to_p(...)')
-    def hgvsc_to_hgvsp(self,*args,**kwargs):
-        return self.c_to_p(*args,**kwargs)
+    def hgvsc_to_hgvsp(self, *args, **kwargs):
+        return self.c_to_p(*args, **kwargs)
 
 
     ############################################################################
@@ -326,7 +333,7 @@ class VariantMapper(object):
                 edit_out = hgvs.edit.NARefAlt(
                     ref = ref,
                     alt = reverse_complement(edit_in.alt),
-                    )
+                )
         elif isinstance(edit_in, hgvs.edit.Dup):
             if strand == 1:
                 edit_out = copy.deepcopy(edit_in)
@@ -369,14 +376,14 @@ class EasyVariantMapper(VariantMapper):
     """
 
     # TODO 0.4.0: cache_transcripts was deprecated in 0.3.x; remove in 0.4.0
-    def __init__(self,hdp,primary_assembly='GRCh37',alt_aln_method='splign',cache_transcripts=UNSET):
-        super(EasyVariantMapper,self).__init__(hdp=hdp)
+    def __init__(self, hdp, primary_assembly='GRCh37', alt_aln_method='splign', cache_transcripts=UNSET):
+        super(EasyVariantMapper, self).__init__(hdp=hdp)
         self.primary_assembly = primary_assembly
         self.alt_aln_method = alt_aln_method
         self.primary_assembly_accessions = set(primary_assembly_accessions[primary_assembly])
         if cache_transcripts != UNSET:
             import inspect
-            upframe = inspect.getframeinfo( inspect.currentframe().f_back )
+            upframe = inspect.getframeinfo(inspect.currentframe().f_back)
             warnings.warn_explicit(
                 'VariantMapper cache_transcripts parameter is deprecated and will be removed in a future version',
                 category=DeprecationWarning,
@@ -384,42 +391,45 @@ class EasyVariantMapper(VariantMapper):
                 lineno=upframe.lineno + 1)
 
     def g_to_c(self, var_g, tx_ac): 
-        return super(EasyVariantMapper,self).g_to_c(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
+        return super(EasyVariantMapper, self).g_to_c(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
+
     def g_to_r(self, var_g, tx_ac): 
-        return super(EasyVariantMapper,self).g_to_r(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
+        return super(EasyVariantMapper, self).g_to_r(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
 
     def c_to_g(self, var_c): 
         alt_ac = self._alt_ac_for_tx_ac(var_c.ac)
-        return super(EasyVariantMapper,self).c_to_g(var_c, alt_ac, alt_aln_method=self.alt_aln_method)
+        return super(EasyVariantMapper, self).c_to_g(var_c, alt_ac, alt_aln_method=self.alt_aln_method)
+
     def r_to_g(self, var_r): 
         alt_ac = self._alt_ac_for_tx_ac(var_r.ac)
-        return super(EasyVariantMapper,self).r_to_g(var_r, alt_ac, alt_aln_method=self.alt_aln_method)
+        return super(EasyVariantMapper, self).r_to_g(var_r, alt_ac, alt_aln_method=self.alt_aln_method)
 
     def c_to_r(self, var_c): 
-        return super(EasyVariantMapper,self).c_to_r(var_c)
+        return super(EasyVariantMapper, self).c_to_r(var_c)
+
     def r_to_c(self, var_r): 
-        return super(EasyVariantMapper,self).r_to_c(var_r)
+        return super(EasyVariantMapper, self).r_to_c(var_r)
 
     def c_to_p(self, var_c): 
-        return super(EasyVariantMapper,self).c_to_p(var_c)
+        return super(EasyVariantMapper, self).c_to_p(var_c)
 
-    def relevant_transcripts(self,var_g):
+    def relevant_transcripts(self, var_g):
         """return list of transcripts accessions (strings) for given variant,
         selected by genomic overlap"""
         tx = self.hdp.get_tx_for_region(var_g.ac,
                                         self.alt_aln_method,
                                         var_g.posedit.pos.start.base,
                                         var_g.posedit.pos.end.base)
-        return [ e['tx_ac'] for e in tx ]
+        return [e['tx_ac'] for e in tx]
 
-    def _alt_ac_for_tx_ac(self,tx_ac):
+    def _alt_ac_for_tx_ac(self, tx_ac):
         """return chromosomal accession for given transcript accession (and
         the primary_assembly and aln_method setting used to
         instantiate this EasyVariantMapper)
 
         """
         alt_acs = [e['alt_ac'] 
-                   for e in  self.hdp.get_tx_mapping_options(tx_ac)
+                   for e in self.hdp.get_tx_mapping_options(tx_ac)
                    if e['alt_aln_method'] == self.alt_aln_method
                    and e['alt_ac'] in self.primary_assembly_accessions]
         if len(alt_acs) > 1:
