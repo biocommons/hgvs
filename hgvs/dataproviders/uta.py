@@ -9,6 +9,7 @@ import urlparse
 #TODO: make dynamic import with importlib
 import psycopg2
 import psycopg2.extras
+import psycopg2.pool
 from bioutils.digests import seq_md5
 
 from hgvs.dataproviders.interface import Interface
@@ -23,7 +24,7 @@ pg_schema = 'uta_20140210'
 logger = logging.getLogger(__name__)
 
 
-def connect(db_url=default_db_url):
+def connect(db_url=default_db_url, pooling=False):
     """
     Connect to a UTA database instance and return a UTA interface instance.
 
@@ -51,13 +52,16 @@ def connect(db_url=default_db_url):
     if url.scheme == 'sqlite':
         conn = UTA_sqlite(url)
     elif url.scheme == 'postgresql':
-        conn = UTA_postgresql(url)
+        if pooling:
+            conn = UTA_postgresql_pool(url)
+        else:
+            conn = UTA_postgresql(url)
     else:
         # fell through connection scheme cases
         raise RuntimeError("{url.scheme} in {db_url} is not currently supported".format(
             url=url, db_url=db_url))
 
-    conn.db_url = db_url
+    # conn.db_url = db_url
     return conn
 
 
@@ -128,10 +132,13 @@ class UTABase(Interface):
         self._check_schema_version('1')
 
 
+    def _execute(self, cur, sql, *args):
+        cur.execute(sql, *args)
+
     @lru_cache(maxsize=1)
     def data_version(self):
         cur = self._get_cursor()
-        cur.execute("select * from meta where key = 'schema_version'")
+        self._execute(cur, "select * from meta where key = 'schema_version'")
         return cur.fetchone()['value']
 
 
@@ -152,7 +159,7 @@ class UTABase(Interface):
         """
         md5 = seq_md5(seq)
         cur = self._get_cursor()
-        cur.execute(self.sql['acs_for_protein_md5'], [md5])
+        self._execute(cur, self.sql['acs_for_protein_md5'], [md5])
         return [r['ac'] for r in cur.fetchall()] + ['MD5_' + md5]
 
 
@@ -174,7 +181,7 @@ class UTABase(Interface):
 
         """
         cur = self._get_cursor()
-        cur.execute(self.sql['gene_info'], [gene])
+        self._execute(cur, self.sql['gene_info'], [gene])
         return cur.fetchone()
 
 
@@ -222,7 +229,7 @@ class UTABase(Interface):
 
         """
         cur = self._get_cursor()
-        cur.execute(self.sql['tx_exons'], [tx_ac, alt_ac, alt_aln_method])
+        self._execute(cur, self.sql['tx_exons'], [tx_ac, alt_ac, alt_aln_method])
         r = cur.fetchall()
         if len(r) == 0:
             return None
@@ -239,7 +246,7 @@ class UTABase(Interface):
         :type gene: str
         """
         cur = self._get_cursor()
-        cur.execute(self.sql['tx_for_gene'], [gene])
+        self._execute(cur, self.sql['tx_for_gene'], [gene])
         return cur.fetchall()
 
 
@@ -254,7 +261,7 @@ class UTABase(Interface):
         :param int end_i: 3' bound of region
         """
         cur = self._get_cursor()
-        cur.execute(self.sql['tx_for_region'], [alt_ac, alt_aln_method, start_i, end_i])
+        self._execute(cur, self.sql['tx_for_region'], [alt_ac, alt_aln_method, start_i, end_i])
         return cur.fetchall()
 
 
@@ -277,7 +284,7 @@ class UTABase(Interface):
 
         """
         cur = self._get_cursor()
-        cur.execute(self.sql['tx_identity_info'], [tx_ac])
+        self._execute(cur, self.sql['tx_identity_info'], [tx_ac])
         return cur.fetchone()
 
 
@@ -305,7 +312,7 @@ class UTABase(Interface):
 
         """
         cur = self._get_cursor()
-        cur.execute(self.sql['tx_info'], [tx_ac, alt_ac, alt_aln_method])
+        self._execute(cur, self.sql['tx_info'], [tx_ac, alt_ac, alt_aln_method])
         return cur.fetchone()
 
 
@@ -317,7 +324,7 @@ class UTABase(Interface):
         :type ac: str
         """
         cur = self._get_cursor()
-        cur.execute(self.sql['tx_seq'], [ac])
+        self._execute(cur, self.sql['tx_seq'], [ac])
         try:
             return cur.fetchone()['seq']
         except TypeError:
@@ -352,7 +359,7 @@ class UTABase(Interface):
 
         """
         cur = self._get_cursor()
-        cur.execute(self.sql['tx_mapping_options'],[tx_ac])
+        self._execute(cur, self.sql['tx_mapping_options'],[tx_ac])
         r = cur.fetchall()
         return r
 
@@ -415,6 +422,41 @@ class UTA_postgresql(UTABase):
         cur = self._con.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur.execute('set search_path = ' + pg_schema)
         return cur
+
+
+class UTA_postgresql_pool(UTABase):
+    def __init__(self, url):
+        self.db_url = url.geturl()
+
+        host = url.hostname
+        port = url.port or 5432
+        database = url.path[1:]
+        user = url.username
+        password = url.password
+
+        logger.info('connecting to ' + self.db_url)
+        logger.debug('connection params: host={host}, port={port}, database={database}, user={user}, password={pw}'.format(
+            host=host, port=port, database=database, user=user,
+            pw='' if password is None else '***'))
+        # self._con = psycopg2.connect(host=host, port=port, database=database, user=user, password=password)
+        self.pool = psycopg2.pool.SimpleConnectionPool(1, 10, host=host, port=port, database=database, user=user, password=password)
+        super(UTA_postgresql_pool, self).__init__()
+
+        # remap sqlite's ? placeholders to psycopg2's %s
+        self.sql = {k: v.replace('?', '%s') for k, v in self.sql.iteritems()}
+
+    def _execute(self, cur, sql, *args):
+        cur.execute('set search_path = ' + pg_schema + '; ' + sql, *args)
+
+    def _get_cursor(self):
+        con = self.pool.getconn()
+        try:
+            cur = con.cursor(cursor_factory=psycopg2.extras.DictCursor)
+            # cur.execute('set search_path = ' + pg_schema)
+            return cur
+        finally:
+            self.pool.putconn(con)
+
 
 
 
