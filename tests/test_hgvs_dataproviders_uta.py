@@ -98,6 +98,10 @@ class Test_hgvs_dataproviders_uta_UTA_default(unittest.TestCase, UTA_Base):
         self.hdp = hgvs.dataproviders.uta.connect()
         return self
 
+class Test_hgvs_dataproviders_uta_UTA_default_with_pooling(unittest.TestCase, UTA_Base):
+    def setUp(self):
+        self.hdp = hgvs.dataproviders.uta.connect(pooling=True)
+        return self
 
 if __name__ == '__main__':
     unittest.main()
