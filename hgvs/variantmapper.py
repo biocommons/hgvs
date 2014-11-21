@@ -42,20 +42,29 @@ class VariantMapper(object):
                 filename=upframe.filename,
                 lineno=upframe.lineno + 1)
 
+
     @staticmethod
     def _replace_T(edit):
-        edit.ref = edit.ref.replace('T', 'U')
-        edit.alt = edit.alt.replace('T', 'U')
-        edit.ref = edit.ref.replace('t', 'u')
-        edit.alt = edit.alt.replace('t', 'u')
+        if isinstance(edit, hgvs.edit.NARefAlt):
+            if edit.ref:
+                edit.ref = edit.ref.replace('T', 'U').replace('t', 'u')
+            if edit.alt:
+                edit.alt = edit.alt.replace('T', 'U').replace('t', 'u')
+        elif isinstance(edit, hgvs.edit.Dup):
+            if edit.seq:
+                edit.seq = edit.seq.replace('T', 'U').replace('t', 'u')
         return edit
 
     @staticmethod
     def _replace_U(edit):
-        edit.ref = edit.ref.replace('U', 'T')
-        edit.alt = edit.alt.replace('U', 'T')
-        edit.ref = edit.ref.replace('u', 't')
-        edit.alt = edit.alt.replace('u', 't')
+        if isinstance(edit, hgvs.edit.NARefAlt):
+            if edit.ref:
+                edit.ref = edit.ref.replace('U', 'T').replace('u', 't')
+            if edit.alt:
+                edit.alt = edit.alt.replace('U', 'T').replace('u', 't')
+        elif isinstance(edit, hgvs.edit.Dup):
+            if edit.seq:
+                edit.seq = edit.seq.replace('T', 'U').replace('t', 'u')
         return edit
 
     def g_to_c(self, var_g, tx_ac, alt_aln_method='splign'):
@@ -183,7 +192,7 @@ class VariantMapper(object):
             edit_r = self._replace_T(edit_type(edit=var_c.posedit.edit))
 
         else:
-            raise NotImplemented('Only NARefAlt/Dup types are currently implemented')
+            raise NotImplementedError('Only NARefAlt/Dup types are currently implemented')
 
         var_r = hgvs.variant.SequenceVariant(ac=var_c.ac,
                                              type='r',
@@ -212,7 +221,7 @@ class VariantMapper(object):
             edit_type = type(var_r.posedit.edit)
             edit_c = self._replace_U(edit_type(edit=var_r.posedit.edit))
         else:
-            raise NotImplemented('Only NARefAlt types are currently implemented')
+            raise NotImplementedError('Only NARefAlt types are currently implemented')
 
         var_c = hgvs.variant.SequenceVariant(ac=var_r.ac,
                                              type='c',
@@ -361,7 +370,7 @@ class VariantMapper(object):
                     seq = reverse_complement(edit_in.seq)
                 )
         else:
-            raise NotImplemented('Only NARefAlt/Dup types are currently implemented')
+            raise NotImplementedError('Only NARefAlt/Dup types are currently implemented')
         return edit_out
 
 
