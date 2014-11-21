@@ -102,6 +102,7 @@ class VariantMapper(object):
 
         pos_r = tm.g_to_r( var_g.posedit.pos )
         edit_r = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
+        edit_r = self._replace_T(type(edit_r)(edit=edit_r))
         var_r = hgvs.variant.SequenceVariant(ac=tx_ac,
                                              type='r',
                                              posedit=hgvs.posedit.PosEdit( pos_r, edit_r ) )
