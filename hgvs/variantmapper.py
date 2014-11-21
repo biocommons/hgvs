@@ -42,6 +42,21 @@ class VariantMapper(object):
                 filename=upframe.filename,
                 lineno=upframe.lineno + 1)
 
+    @staticmethod
+    def _replace_T(edit):
+        edit.ref = edit.ref.replace('T', 'U')
+        edit.alt = edit.alt.replace('T', 'U')
+        edit.ref = edit.ref.replace('t', 'u')
+        edit.alt = edit.alt.replace('t', 'u')
+        return edit
+
+    @staticmethod
+    def _replace_U(edit):
+        edit.ref = edit.ref.replace('U', 'T')
+        edit.alt = edit.alt.replace('U', 'T')
+        edit.ref = edit.ref.replace('u', 't')
+        edit.alt = edit.alt.replace('u', 't')
+        return edit
 
     def g_to_c(self, var_g, tx_ac, alt_aln_method='splign'):
         """Given a genomic (g.) parsed HGVS variant, return a transcript (c.) variant on the specified transcript using
@@ -163,7 +178,9 @@ class VariantMapper(object):
 
         # not necessary to check strand
         if isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_c.posedit.edit, hgvs.edit.Dup):
-            edit_r = var_c.posedit.edit
+            edit_type = type(var_c.posedit.edit)
+            edit_r = self._replace_T(edit_type(edit=var_c.posedit.edit))
+
         else:
             raise NotImplemented('Only NARefAlt/Dup types are currently implemented')
 
@@ -191,7 +208,8 @@ class VariantMapper(object):
 
         # not necessary to check strand
         if isinstance(var_r.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_r.posedit.edit, hgvs.edit.Dup):
-            edit_c = var_r.posedit.edit
+            edit_type = type(var_r.posedit.edit)
+            edit_c = self._replace_U(edit_type(edit=var_r.posedit.edit))
         else:
             raise NotImplemented('Only NARefAlt types are currently implemented')
 

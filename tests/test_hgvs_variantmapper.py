@@ -58,6 +58,8 @@ class Test_VariantMapper(unittest.TestCase):
 
         self.assertFalse(failures, "conversions not failing: {}".format(failures))
 
+
+
     def test_gc_invalid_input_nm_accession(self):
         hgvs_g = 'NC_000007.13:g.36561662C>T'
         var_g = self.hp.parse_hgvs_variant(hgvs_g)
