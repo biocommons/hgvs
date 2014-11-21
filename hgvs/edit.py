@@ -255,7 +255,7 @@ class AAExt(Edit, recordtype.recordtype('AAExt', [('ref',None),('alt',None), ('a
 class Dup( Edit, recordtype.recordtype('Dup', [('seq',None),('uncertain',False)]) ):
 
     def __init__(self, seq=None, uncertain=False, edit=None):
-        if not edit:
+        if edit:
             seq = edit.seq
             uncertain = edit.uncertain
         super(Dup, self).__init__(seq=seq, uncertain=uncertain)
