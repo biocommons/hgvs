@@ -33,6 +33,13 @@ class NARefAlt( Edit, recordtype.recordtype('NARefAlt', [('ref',None),('alt',Non
     :ivar uncertain: boolean indicating whether the variant is uncertain/undetermined
     """
 
+    def __init__(self, ref=None, alt=None, uncertain=False, edit=None):
+        if edit:
+            ref = edit.ref
+            alt = edit.alt
+            uncertain = edit.uncertain
+        super(NARefAlt, self).__init__(ref=ref, alt=alt, uncertain=uncertain)
+
     @property
     def ref_s(self):
         """
@@ -246,6 +253,12 @@ class AAExt(Edit, recordtype.recordtype('AAExt', [('ref',None),('alt',None), ('a
 
 
 class Dup( Edit, recordtype.recordtype('Dup', [('seq',None),('uncertain',False)]) ):
+
+    def __init__(self, seq=None, uncertain=False, edit=None):
+        if not edit:
+            seq = edit.seq
+            uncertain = edit.uncertain
+        super(Dup, self).__init__(seq=seq, uncertain=uncertain)
 
     def __str__(self):
         return 'dup' + (self.seq or '')
