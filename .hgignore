@@ -50,6 +50,7 @@ ve
 virtualenv-*
 virtualenv.py
 workspace
+.eggs/**
 
 syntax: regexp
 (.*/)?\#[^/]*\#$

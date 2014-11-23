@@ -43,6 +43,30 @@ class VariantMapper(object):
                 lineno=upframe.lineno + 1)
 
 
+    @staticmethod
+    def _replace_T(edit):
+        if isinstance(edit, hgvs.edit.NARefAlt):
+            if edit.ref:
+                edit.ref = edit.ref.replace('T', 'U').replace('t', 'u')
+            if edit.alt:
+                edit.alt = edit.alt.replace('T', 'U').replace('t', 'u')
+        elif isinstance(edit, hgvs.edit.Dup):
+            if edit.seq:
+                edit.seq = edit.seq.replace('T', 'U').replace('t', 'u')
+        return edit
+
+    @staticmethod
+    def _replace_U(edit):
+        if isinstance(edit, hgvs.edit.NARefAlt):
+            if edit.ref:
+                edit.ref = edit.ref.replace('U', 'T').replace('u', 't')
+            if edit.alt:
+                edit.alt = edit.alt.replace('U', 'T').replace('u', 't')
+        elif isinstance(edit, hgvs.edit.Dup):
+            if edit.seq:
+                edit.seq = edit.seq.replace('T', 'U').replace('t', 'u')
+        return edit
+
     def g_to_c(self, var_g, tx_ac, alt_aln_method='splign'):
         """Given a genomic (g.) parsed HGVS variant, return a transcript (c.) variant on the specified transcript using
         the specified alignment method (default is 'splign' from NCBI).
@@ -87,6 +111,7 @@ class VariantMapper(object):
 
         pos_r = tm.g_to_r( var_g.posedit.pos )
         edit_r = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
+        edit_r = self._replace_T(type(edit_r)(edit=edit_r))
         var_r = hgvs.variant.SequenceVariant(ac=tx_ac,
                                              type='r',
                                              posedit=hgvs.posedit.PosEdit( pos_r, edit_r ) )
@@ -154,7 +179,6 @@ class VariantMapper(object):
         :raises hgvs.exceptions.HGVSInvalidVariantError: if var_c is not of type 'c'
 
         """
-
         if not (var_c.type == 'c'):
             raise hgvs.exceptions.HGVSInvalidVariantError('Expected a cDNA (c.); got ' + str(var_c))
 
@@ -163,13 +187,15 @@ class VariantMapper(object):
 
         # not necessary to check strand
         if isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_c.posedit.edit, hgvs.edit.Dup):
-            edit_r = var_c.posedit.edit
+            edit_type = type(var_c.posedit.edit)
+            edit_r = self._replace_T(edit_type(edit=var_c.posedit.edit))
+
         else:
-            raise NotImplemented('Only NARefAlt/Dup types are currently implemented')
+            raise NotImplementedError('Only NARefAlt/Dup types are currently implemented')
 
         var_r = hgvs.variant.SequenceVariant(ac=var_c.ac,
                                              type='r',
-                                             posedit=hgvs.posedit.PosEdit( pos_r, edit_r ) )
+                                             posedit=hgvs.posedit.PosEdit( pos_r, edit_r ))
         return var_r
 
 
@@ -191,13 +217,14 @@ class VariantMapper(object):
 
         # not necessary to check strand
         if isinstance(var_r.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_r.posedit.edit, hgvs.edit.Dup):
-            edit_c = var_r.posedit.edit
+            edit_type = type(var_r.posedit.edit)
+            edit_c = self._replace_U(edit_type(edit=var_r.posedit.edit))
         else:
-            raise NotImplemented('Only NARefAlt types are currently implemented')
+            raise NotImplementedError('Only NARefAlt types are currently implemented')
 
         var_c = hgvs.variant.SequenceVariant(ac=var_r.ac,
                                              type='c',
-                                             posedit=hgvs.posedit.PosEdit( pos_c, edit_c ) )
+                                             posedit=hgvs.posedit.PosEdit( pos_c, edit_c ))
         return var_c
 
 
@@ -335,7 +362,7 @@ class VariantMapper(object):
                     seq = reverse_complement(edit_in.seq)
                 )
         else:
-            raise NotImplemented('Only NARefAlt/Dup types are currently implemented')
+            raise NotImplementedError('Only NARefAlt/Dup types are currently implemented')
         return edit_out
 
 
