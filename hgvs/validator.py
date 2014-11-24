@@ -23,11 +23,11 @@ SEQ_ERROR_MSG = 'Variant reference does not agree with reference sequence'
 class Validator(object):
     """invoke intrinsic and extrinsic validation"""
     def __init__(self, hdp):
-        self.ivr = IntrinsicValidator()
-        self.evr = ExtrinsicValidator(hdp)
+        self._ivr = IntrinsicValidator()
+        self._evr = ExtrinsicValidator(hdp)
 
     def validate(self, var):
-        return self.ivr.validate(var) and self.evr.validate(var)
+        return self._ivr.validate(var) and self._evr.validate(var)
 
 
 class IntrinsicValidator(object):
@@ -102,10 +102,11 @@ class ExtrinsicValidator():
 
     def _ref_is_valid(self, var):
         if var.posedit.edit.ref is not None:
+            # use reference sequence of original variant, even if later converted (eg c_to_r)
+            var_ref_seq = var.posedit.edit.ref
             var_x = self.hm.c_to_r(var) if var.type == 'c' else var
-            # fetch uses interbase coordinates
-            seq = self._fetch_seq(var_x.ac, var_x.posedit.pos.start.base - 1, var_x.posedit.pos.end.base)
-            if seq != var_x.posedit.edit.ref:
+            ref_seq = self._fetch_seq(var_x.ac, var_x.posedit.pos.start.base - 1, var_x.posedit.pos.end.base)
+            if ref_seq != var_ref_seq:
                 raise HGVSValidationError(str(var) + ': ' + SEQ_ERROR_MSG)
         return True
 

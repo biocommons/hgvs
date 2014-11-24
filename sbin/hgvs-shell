@@ -23,6 +23,8 @@ vm = variantmapper = hgvs.variantmapper.VariantMapper( hdp )
 evm = easyvariantmapper = hgvs.variantmapper.EasyVariantMapper( hdp,
                                                                 primary_assembly = 'GRCh37',
                                                                 alt_aln_method = alt_aln_method )
+hv = hgvs.validator.Validator(hdp)
+
 
 hgvs_g = 'NC_000001.10:g.156100564_156104193insG'
 #hgvs_g = 'NC_000001.10:g.156104193A>G'
