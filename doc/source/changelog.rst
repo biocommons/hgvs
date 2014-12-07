@@ -12,26 +12,26 @@ under development
 0.3.2 (2014-07-12)
 ------------------
 
-* `#194 <https://bitbucket.org/hgvs/hgvs/issue/194/>`_: fix bug when reverse complementing nucleotides parsed from unicode
+* `#194 <https://bitbucket.org/biocommons/hgvs/issue/194/>`_: fix bug when reverse complementing nucleotides parsed from unicode
 
 0.3.1 (2014-07-12)
 ------------------
 
-* `#193 <https://bitbucket.org/hgvs/hgvs/issue/193/>`_: fix lookup table for NC_000014.8 (was .10)
-* `#192 <https://bitbucket.org/hgvs/hgvs/issue/192/>`_: deprecated VariantMapper cache_transcripts param and replaced with always-on lru cache in uta data provider
+* `#193 <https://bitbucket.org/biocommons/hgvs/issue/193/>`_: fix lookup table for NC_000014.8 (was .10)
+* `#192 <https://bitbucket.org/biocommons/hgvs/issue/192/>`_: deprecated VariantMapper cache_transcripts param and replaced with always-on lru cache in uta data provider
 
 
 0.3.0 (2014-06-19)
 ------------------
 
-* `#103 <https://bitbucket.org/hgvs/hgvs/issue/103/>`_: significantly updated documentation
-* `#162 <https://bitbucket.org/hgvs/hgvs/issue/162/>`_: provide simplified mapping interface, EasyVariantMapper
-* `#171 <https://bitbucket.org/hgvs/hgvs/issue/171/>`_: integrate the data provider interface into hgvs, obsoleting bdi.  See hgvs.dataproviders.*
-* `#177 <https://bitbucket.org/hgvs/hgvs/issue/177/>`_: rename mapping functions to x_to_y (dropping "hgvs" prefix)
-* `#180 <https://bitbucket.org/hgvs/hgvs/issue/180/>`_: made set_uncertain an internal method (_set_uncertain)
-* `#181 <https://bitbucket.org/hgvs/hgvs/issue/181/>`_: renamed hgvs.hgvsmapper.HGVSMapper to hgvs.variantmapper.VariantMapper
-* `#184 <https://bitbucket.org/hgvs/hgvs/issue/184/>`_: rename HGVSPosition.seqref to ac
-* `#185 <https://bitbucket.org/hgvs/hgvs/issue/185/>`_: enable validator to use HDPI to fetch sequence data; mfdb now required only for genomic sequences
+* `#103 <https://bitbucket.org/biocommons/hgvs/issue/103/>`_: significantly updated documentation
+* `#162 <https://bitbucket.org/biocommons/hgvs/issue/162/>`_: provide simplified mapping interface, EasyVariantMapper
+* `#171 <https://bitbucket.org/biocommons/hgvs/issue/171/>`_: integrate the data provider interface into hgvs, obsoleting bdi.  See hgvs.dataproviders.*
+* `#177 <https://bitbucket.org/biocommons/hgvs/issue/177/>`_: rename mapping functions to x_to_y (dropping "hgvs" prefix)
+* `#180 <https://bitbucket.org/biocommons/hgvs/issue/180/>`_: made set_uncertain an internal method (_set_uncertain)
+* `#181 <https://bitbucket.org/biocommons/hgvs/issue/181/>`_: renamed hgvs.hgvsmapper.HGVSMapper to hgvs.variantmapper.VariantMapper
+* `#184 <https://bitbucket.org/biocommons/hgvs/issue/184/>`_: rename HGVSPosition.seqref to ac
+* `#185 <https://bitbucket.org/biocommons/hgvs/issue/185/>`_: enable validator to use HDPI to fetch sequence data; mfdb now required only for genomic sequences
 * Makefile: print machine info during testing to calibrate/debug timing probs
 * moved hgvs/data to hgvs/_data to emphasize it is internal and avoid tab completion on it
 * remove unused args from VariantMapper.c_to_p()
@@ -48,21 +48,21 @@ under development
 0.2.2 (2014-06-12)
 ------------------
 
-* `#103 <https://bitbucket.org/hgvs/hgvs/issue/103/>`_: significantly updated documentation
-* `#142 <https://bitbucket.org/hgvs/hgvs/issue/142/>`_: added BIC test cases
-* `#167 <https://bitbucket.org/hgvs/hgvs/issue/167/>`_: disable the any_variant rule because it is confusing
-* `#179 <https://bitbucket.org/hgvs/hgvs/issue/179/>`_: added quick and extra tags to tests; updated Makefile to support make test, test-quick, test-extra; removed test_hgvs_parser_real (but kept gcp version)
+* `#103 <https://bitbucket.org/biocommons/hgvs/issue/103/>`_: significantly updated documentation
+* `#142 <https://bitbucket.org/biocommons/hgvs/issue/142/>`_: added BIC test cases
+* `#167 <https://bitbucket.org/biocommons/hgvs/issue/167/>`_: disable the any_variant rule because it is confusing
+* `#179 <https://bitbucket.org/biocommons/hgvs/issue/179/>`_: added quick and extra tags to tests; updated Makefile to support make test, test-quick, test-extra; removed test_hgvs_parser_real (but kept gcp version)
 * added support for testing models ("models" attr and test-models)
 
 
 0.2.1 (2014-06-11)
 ------------------
 
-* `#157 <https://bitbucket.org/hgvs/hgvs/issue/157/>`_: don't reverse complement numeric "sequences" (as in del26)
-* `#159 <https://bitbucket.org/hgvs/hgvs/issue/159/>`_: Update comment in tests/data/ADRA2B-dbSNP.tsv
-* `#161 <https://bitbucket.org/hgvs/hgvs/issue/161/>`_: transform examples to sphinx doc (+upload)
-* `#167 <https://bitbucket.org/hgvs/hgvs/issue/167/>`_: disable the any_variant rule because it is confusing
-* `#175 <https://bitbucket.org/hgvs/hgvs/issue/175/>`_: added type to NADupN and Copy edit classes
+* `#157 <https://bitbucket.org/biocommons/hgvs/issue/157/>`_: don't reverse complement numeric "sequences" (as in del26)
+* `#159 <https://bitbucket.org/biocommons/hgvs/issue/159/>`_: Update comment in tests/data/ADRA2B-dbSNP.tsv
+* `#161 <https://bitbucket.org/biocommons/hgvs/issue/161/>`_: transform examples to sphinx doc (+upload)
+* `#167 <https://bitbucket.org/biocommons/hgvs/issue/167/>`_: disable the any_variant rule because it is confusing
+* `#175 <https://bitbucket.org/biocommons/hgvs/issue/175/>`_: added type to NADupN and Copy edit classes
 * Added Important Notes section in README.rst
 * Makefile: "test" target should depend on "setup" after all
 * added example for stringification to README.rst
@@ -95,16 +95,16 @@ under development
 0.1.9 (2014-03-05)
 ------------------
 
-* `#40 <https://bitbucket.org/hgvs/hgvs/issue/40/>`_: added additional tests
-* `#114 <https://bitbucket.org/hgvs/hgvs/issue/114/>`_: add test that checks that all rules have been tested - and add tests for rules that were missed!
-* `#135 <https://bitbucket.org/hgvs/hgvs/issue/135/>`_: add more tests; fixed and enabled tests previously commented out
-* `#147 <https://bitbucket.org/hgvs/hgvs/issue/147/>`_: update tests to use updated sqlite test DB
+* `#40 <https://bitbucket.org/biocommons/hgvs/issue/40/>`_: added additional tests
+* `#114 <https://bitbucket.org/biocommons/hgvs/issue/114/>`_: add test that checks that all rules have been tested - and add tests for rules that were missed!
+* `#135 <https://bitbucket.org/biocommons/hgvs/issue/135/>`_: add more tests; fixed and enabled tests previously commented out
+* `#147 <https://bitbucket.org/biocommons/hgvs/issue/147/>`_: update tests to use updated sqlite test DB
 * Added U14680.1 (BIC tx) to grammar test
 * ExtrinsicValidator should not guess about bdi and mfdb sources; instead require caller to specify
 * Fixed an un-handled case for parsing AA frameshifts - short form, e.g. "Ala97fs" (no alt AA).   Added tests.
 * Makefile, setup,py, setup.cfg sync with sibling projects
 * Merged hgvs_using_uta1 into default
-* Merged in extrinsic_validation (pull request `#5 <https://bitbucket.org/hgvs/hgvs/issue/5/>`_)
+* Merged in extrinsic_validation (pull request `#5 <https://bitbucket.org/biocommons/hgvs/issue/5/>`_)
 * Remove redundant test
 * added Validator class that wraps instrinsic and extrinsic validation
 * added bdi accession testing
@@ -143,22 +143,22 @@ under development
 0.1.7 (2014-01-22)
 ------------------
 
-* `#106 <https://bitbucket.org/hgvs/hgvs/issue/106/>`_, `#108 <https://bitbucket.org/hgvs/hgvs/issue/108/>`_: parse uncertain hgvsp/hgvsr; converter produces uncertain hgvsp.
-* `#110 <https://bitbucket.org/hgvs/hgvs/issue/110/>`_, `#111 <https://bitbucket.org/hgvs/hgvs/issue/111/>`_: handle cases of entire gene deletion (p.0?) and stop codon in frame (p.?).   Updated tests.
-* `#65 <https://bitbucket.org/hgvs/hgvs/issue/65/>`_, `#89 <https://bitbucket.org/hgvs/hgvs/issue/89/>`_: can now parse Met1? and ext*N; removed extra fs parsing from delins.
-* `#65 <https://bitbucket.org/hgvs/hgvs/issue/65/>`_: cleanup; AASub can go back to being a subclass of AARefAlt
-* `#65 <https://bitbucket.org/hgvs/hgvs/issue/65/>`_: def_p_pos needs to accept term13 as well as aa13 for ext; tests updated.
-* `#65 <https://bitbucket.org/hgvs/hgvs/issue/65/>`_: fixed an ordering bug; added tests.
-* `#65 <https://bitbucket.org/hgvs/hgvs/issue/65/>`_: fs/ext are now their own pro_edit types; they correspond to their own class objects.    5' extensions and 3' extensions can be parsed.   Tests updated.
-* `#65 <https://bitbucket.org/hgvs/hgvs/issue/65/>`_: should be stringifying * as Ter; fixed code in 2 lines & tests in many.
-* `#65 <https://bitbucket.org/hgvs/hgvs/issue/65/>`_: tighten ext rules; require a number for new start positions.
-* `#90 <https://bitbucket.org/hgvs/hgvs/issue/90/>`_: added dup in hgvsmapper; allowed rev complement util to handle None (was triggering exceptions); added tests for dup.
-* `#91 <https://bitbucket.org/hgvs/hgvs/issue/91/>`_: add extension support for parsing copyN and DupN
-* `#91 <https://bitbucket.org/hgvs/hgvs/issue/91/>`_: make adding default totally extendable by allowing additional imports for the base grammar (default empty list)
-* `#91 <https://bitbucket.org/hgvs/hgvs/issue/91/>`_: simplest implementation of parsing copyN, dupN - added directly to grammar (no extension)
-* `#99 <https://bitbucket.org/hgvs/hgvs/issue/99/>`_: fix aa13t parsing
-* `#99 <https://bitbucket.org/hgvs/hgvs/issue/99/>`_: fix aa13t parsing, take 2; tests pass (including G* test)
-* `#99 <https://bitbucket.org/hgvs/hgvs/issue/99/>`_: re-enable tests related to this issue.
+* `#106 <https://bitbucket.org/biocommons/hgvs/issue/106/>`_, `#108 <https://bitbucket.org/biocommons/hgvs/issue/108/>`_: parse uncertain hgvsp/hgvsr; converter produces uncertain hgvsp.
+* `#110 <https://bitbucket.org/biocommons/hgvs/issue/110/>`_, `#111 <https://bitbucket.org/biocommons/hgvs/issue/111/>`_: handle cases of entire gene deletion (p.0?) and stop codon in frame (p.?).   Updated tests.
+* `#65 <https://bitbucket.org/biocommons/hgvs/issue/65/>`_, `#89 <https://bitbucket.org/biocommons/hgvs/issue/89/>`_: can now parse Met1? and ext*N; removed extra fs parsing from delins.
+* `#65 <https://bitbucket.org/biocommons/hgvs/issue/65/>`_: cleanup; AASub can go back to being a subclass of AARefAlt
+* `#65 <https://bitbucket.org/biocommons/hgvs/issue/65/>`_: def_p_pos needs to accept term13 as well as aa13 for ext; tests updated.
+* `#65 <https://bitbucket.org/biocommons/hgvs/issue/65/>`_: fixed an ordering bug; added tests.
+* `#65 <https://bitbucket.org/biocommons/hgvs/issue/65/>`_: fs/ext are now their own pro_edit types; they correspond to their own class objects.    5' extensions and 3' extensions can be parsed.   Tests updated.
+* `#65 <https://bitbucket.org/biocommons/hgvs/issue/65/>`_: should be stringifying * as Ter; fixed code in 2 lines & tests in many.
+* `#65 <https://bitbucket.org/biocommons/hgvs/issue/65/>`_: tighten ext rules; require a number for new start positions.
+* `#90 <https://bitbucket.org/biocommons/hgvs/issue/90/>`_: added dup in hgvsmapper; allowed rev complement util to handle None (was triggering exceptions); added tests for dup.
+* `#91 <https://bitbucket.org/biocommons/hgvs/issue/91/>`_: add extension support for parsing copyN and DupN
+* `#91 <https://bitbucket.org/biocommons/hgvs/issue/91/>`_: make adding default totally extendable by allowing additional imports for the base grammar (default empty list)
+* `#91 <https://bitbucket.org/biocommons/hgvs/issue/91/>`_: simplest implementation of parsing copyN, dupN - added directly to grammar (no extension)
+* `#99 <https://bitbucket.org/biocommons/hgvs/issue/99/>`_: fix aa13t parsing
+* `#99 <https://bitbucket.org/biocommons/hgvs/issue/99/>`_: fix aa13t parsing, take 2; tests pass (including G* test)
+* `#99 <https://bitbucket.org/biocommons/hgvs/issue/99/>`_: re-enable tests related to this issue.
 * Fixed a bug where del5insT was getting stringified as "5>T"
 * added datum to range checking
 * added datum to range checking
@@ -172,7 +172,7 @@ under development
 * hgvsc_to_hgvsp - ac defaults to None; seems better than forcing the user to pass 'None' as a param if they want the protein accession looked up.
 * iv grammar branch
 * make doc is broken & not used; removing it from make ci-test for now.
-* merged in validator (pull request `#4 <https://bitbucket.org/hgvs/hgvs/issue/4/>`_)
+* merged in validator (pull request `#4 <https://bitbucket.org/biocommons/hgvs/issue/4/>`_)
 * minor change to rebase
 * removed links section from README
 * renamed hgvsvalidator to validator and corresponding test; corrected start-end check added tests
@@ -204,29 +204,29 @@ under development
 0.1.4 (2014-01-11)
 ------------------
 
-* `#97 <https://bitbucket.org/hgvs/hgvs/issue/97/>`_: a bagillion doc updates; branch closed
+* `#97 <https://bitbucket.org/biocommons/hgvs/issue/97/>`_: a bagillion doc updates; branch closed
 
 
 0.1.3 (2014-01-11)
 ------------------
 
-* `#60 <https://bitbucket.org/hgvs/hgvs/issue/60/>`_: 1st stab at grammar tests from the bottom-up (through locations/definite positions).   (See header in test_hgvs_grammar_full.py for details.)   Also added a few error checking tests.
-* `#60 <https://bitbucket.org/hgvs/hgvs/issue/60/>`_: drop None from SequenceVariant (use case - only parsing an edit); grammar update for offset
-* `#60 <https://bitbucket.org/hgvs/hgvs/issue/60/>`_: implement cleanup; distributed remaining items to separate issues.
-* `#73 <https://bitbucket.org/hgvs/hgvs/issue/73/>`_: migrate hgvs to bdi-based protein accession lookup
-* `#90 <https://bitbucket.org/hgvs/hgvs/issue/90/>`_: fixed typo for delins and ins for parsing hgvsp
-* `#92 <https://bitbucket.org/hgvs/hgvs/issue/92/>`_: add a subclass of AARefAlt (AASub) which overrides __str__ to get the representation right; grammar update
-* `#92 <https://bitbucket.org/hgvs/hgvs/issue/92/>`_: fix error in NARefAlt
-* `#93 <https://bitbucket.org/hgvs/hgvs/issue/93/>`_: added *variant* liftover for HGVS projector, with tests
-* `#93 <https://bitbucket.org/hgvs/hgvs/issue/93/>`_: implemented HGVS projector for interval liftover
-* `#96 <https://bitbucket.org/hgvs/hgvs/issue/96/>`_: cleanup and test update
-* `#96 <https://bitbucket.org/hgvs/hgvs/issue/96/>`_: deleting tests/data
-* `#96 <https://bitbucket.org/hgvs/hgvs/issue/96/>`_: fix file
-* `#96 <https://bitbucket.org/hgvs/hgvs/issue/96/>`_: name cleanup
-* `#96 <https://bitbucket.org/hgvs/hgvs/issue/96/>`_: removed nightly test target
-* `#96 <https://bitbucket.org/hgvs/hgvs/issue/96/>`_: short set of real data for gcp parsing
-* `#97 <https://bitbucket.org/hgvs/hgvs/issue/97/>`_: a bagillion doc updates; branch closed
-* `#97 <https://bitbucket.org/hgvs/hgvs/issue/97/>`_: major doc restructuring, cleanup, additions
+* `#60 <https://bitbucket.org/biocommons/hgvs/issue/60/>`_: 1st stab at grammar tests from the bottom-up (through locations/definite positions).   (See header in test_hgvs_grammar_full.py for details.)   Also added a few error checking tests.
+* `#60 <https://bitbucket.org/biocommons/hgvs/issue/60/>`_: drop None from SequenceVariant (use case - only parsing an edit); grammar update for offset
+* `#60 <https://bitbucket.org/biocommons/hgvs/issue/60/>`_: implement cleanup; distributed remaining items to separate issues.
+* `#73 <https://bitbucket.org/biocommons/hgvs/issue/73/>`_: migrate hgvs to bdi-based protein accession lookup
+* `#90 <https://bitbucket.org/biocommons/hgvs/issue/90/>`_: fixed typo for delins and ins for parsing hgvsp
+* `#92 <https://bitbucket.org/biocommons/hgvs/issue/92/>`_: add a subclass of AARefAlt (AASub) which overrides __str__ to get the representation right; grammar update
+* `#92 <https://bitbucket.org/biocommons/hgvs/issue/92/>`_: fix error in NARefAlt
+* `#93 <https://bitbucket.org/biocommons/hgvs/issue/93/>`_: added *variant* liftover for HGVS projector, with tests
+* `#93 <https://bitbucket.org/biocommons/hgvs/issue/93/>`_: implemented HGVS projector for interval liftover
+* `#96 <https://bitbucket.org/biocommons/hgvs/issue/96/>`_: cleanup and test update
+* `#96 <https://bitbucket.org/biocommons/hgvs/issue/96/>`_: deleting tests/data
+* `#96 <https://bitbucket.org/biocommons/hgvs/issue/96/>`_: fix file
+* `#96 <https://bitbucket.org/biocommons/hgvs/issue/96/>`_: name cleanup
+* `#96 <https://bitbucket.org/biocommons/hgvs/issue/96/>`_: removed nightly test target
+* `#96 <https://bitbucket.org/biocommons/hgvs/issue/96/>`_: short set of real data for gcp parsing
+* `#97 <https://bitbucket.org/biocommons/hgvs/issue/97/>`_: a bagillion doc updates; branch closed
+* `#97 <https://bitbucket.org/biocommons/hgvs/issue/97/>`_: major doc restructuring, cleanup, additions
 * A few more basic tests
 * Add parser test which just tries to parse all the cvids (g, c and p) - currently skips unsupported forms.   Also tweaked the r variants in the all cvid file (T should be U).
 * Add some basic intervalmapper tests based on the coverage results
@@ -265,7 +265,7 @@ under development
 0.1.2 (2014-01-05)
 ------------------
 
-* `#85 <https://bitbucket.org/hgvs/hgvs/issue/85/>`_: adapted hgvs to bdi with runtime-selectable UTA connections
+* `#85 <https://bitbucket.org/biocommons/hgvs/issue/85/>`_: adapted hgvs to bdi with runtime-selectable UTA connections
 * updated README with pypi info
 * doc updates
 * now depend on uta and bdi from PyPI (not dependency_links); sync'd Makefile and setup.py with uta; updated test and docs targets
@@ -274,13 +274,13 @@ under development
 0.1.1 (2014-01-03)
 ------------------
 
-* `#64 <https://bitbucket.org/hgvs/hgvs/issue/64/>`_: handle the following: (1) indel crosses stop codon; (2) indel crosses start codon; need to retest on full suite
-* `#64 <https://bitbucket.org/hgvs/hgvs/issue/64/>`_: update 4 tests to reflect p.Met1? behavior for deletions crossing from 5'utr to cds:
-* `#83 <https://bitbucket.org/hgvs/hgvs/issue/83/>`_: cleanup fs* cases where mutalyzer assigns fs*N where N = end of transcript instead of an actual stop codon (expected result is now fs*?)
-* `#83 <https://bitbucket.org/hgvs/hgvs/issue/83/>`_: comment out tests that need review/cleanup (and added comment); fixed tests where expected result was incorrect (still need to check tests w/ no expected result)
-* `#83 <https://bitbucket.org/hgvs/hgvs/issue/83/>`_: fill in intronic variants with expected hgvsp results (p.?) per curators
-* `#84 <https://bitbucket.org/hgvs/hgvs/issue/84/>`_: ext with no stop codons are represented as ext*? - updated tests accordingly
-* `#84 <https://bitbucket.org/hgvs/hgvs/issue/84/>`_: fix expected result
+* `#64 <https://bitbucket.org/biocommons/hgvs/issue/64/>`_: handle the following: (1) indel crosses stop codon; (2) indel crosses start codon; need to retest on full suite
+* `#64 <https://bitbucket.org/biocommons/hgvs/issue/64/>`_: update 4 tests to reflect p.Met1? behavior for deletions crossing from 5'utr to cds:
+* `#83 <https://bitbucket.org/biocommons/hgvs/issue/83/>`_: cleanup fs* cases where mutalyzer assigns fs*N where N = end of transcript instead of an actual stop codon (expected result is now fs*?)
+* `#83 <https://bitbucket.org/biocommons/hgvs/issue/83/>`_: comment out tests that need review/cleanup (and added comment); fixed tests where expected result was incorrect (still need to check tests w/ no expected result)
+* `#83 <https://bitbucket.org/biocommons/hgvs/issue/83/>`_: fill in intronic variants with expected hgvsp results (p.?) per curators
+* `#84 <https://bitbucket.org/biocommons/hgvs/issue/84/>`_: ext with no stop codons are represented as ext*? - updated tests accordingly
+* `#84 <https://bitbucket.org/biocommons/hgvs/issue/84/>`_: fix expected result
 * Turn off dbg
 * Turn off more dbg
 * added *lots* of documentation
@@ -302,12 +302,12 @@ under development
 0.1.0 (2013-12-30)
 ------------------
 
-* `#52 <https://bitbucket.org/hgvs/hgvs/issue/52/>`_: generate syntax/railroad diagrams (in misc/railroad/)
-* `#56 <https://bitbucket.org/hgvs/hgvs/issue/56/>`_: updated tests; fixed fs*N (only one still broken)
-* `#62 <https://bitbucket.org/hgvs/hgvs/issue/62/>`_: synchronized setup files among UTA program components
-* `#66 <https://bitbucket.org/hgvs/hgvs/issue/66/>`_: added support for p.0, p.=, p.?, p.(=), p.(?), with tests
-* `#66 <https://bitbucket.org/hgvs/hgvs/issue/66/>`_: updated grammar for p.0, p.=, p.?, p.(=), p.(?) to reject invalid p.(0), etc.
-* `#72 <https://bitbucket.org/hgvs/hgvs/issue/72/>`_: update hgvs to use bdi (no direct connections to uta anymore)
+* `#52 <https://bitbucket.org/biocommons/hgvs/issue/52/>`_: generate syntax/railroad diagrams (in misc/railroad/)
+* `#56 <https://bitbucket.org/biocommons/hgvs/issue/56/>`_: updated tests; fixed fs*N (only one still broken)
+* `#62 <https://bitbucket.org/biocommons/hgvs/issue/62/>`_: synchronized setup files among UTA program components
+* `#66 <https://bitbucket.org/biocommons/hgvs/issue/66/>`_: added support for p.0, p.=, p.?, p.(=), p.(?), with tests
+* `#66 <https://bitbucket.org/biocommons/hgvs/issue/66/>`_: updated grammar for p.0, p.=, p.?, p.(=), p.(?) to reject invalid p.(0), etc.
+* `#72 <https://bitbucket.org/biocommons/hgvs/issue/72/>`_: update hgvs to use bdi (no direct connections to uta anymore)
 * Close branch jenkins.
 * Convert test input and consumer to use 4-column format
 * Fix extension for frameshift case; update test to get around dupN (trim the N)
@@ -361,7 +361,7 @@ under development
 * got 'make jenkins' target working
 * harmonized with UTA Makefile and setup.py to try to get tests working
 * added biopython to setup.py
-* fixed pro_eq grammar bug mentioned in `#42 <https://bitbucket.org/hgvs/hgvs/issue/42/>`_
+* fixed pro_eq grammar bug mentioned in `#42 <https://bitbucket.org/biocommons/hgvs/issue/42/>`_
 * Updated DNAH11 and NEFL tests.  They run, so I'll mark as complete, but there are errors associated with the proteins
 * hgvsc_to_hgvsp: Fixed a delins bug
 * hgvsc_to_hgvsp: Fixed bug in insertion indexing; improved exception handing
@@ -369,7 +369,7 @@ under development
 * hgvs tests for DNAH11 and NEFL -> note protein not currently working just change if statement
 * initial checkin for jenkins branch; want to test this in the build context
 * Close branch c_to_p
-* Merged in c_to_p (pull request `#3 <https://bitbucket.org/hgvs/hgvs/issue/3/>`_)
+* Merged in c_to_p (pull request `#3 <https://bitbucket.org/biocommons/hgvs/issue/3/>`_)
 * Incorporate AASpecial; tests pass.
 * merge from default
 * merged default into c_to_p
@@ -411,7 +411,7 @@ under development
 * [mq]: grammar-relo
 * added hgvs.stopgap
 * Close branch transcriptmapper
-* Merged in transcriptmapper (pull request `#2 <https://bitbucket.org/hgvs/hgvs/issue/2/>`_)
+* Merged in transcriptmapper (pull request `#2 <https://bitbucket.org/biocommons/hgvs/issue/2/>`_)
 * added TODO for tracking, prior to merging pull request
 * Basic handling of variants in non-coding regions; will return p.= in all cases; this does not handle the case where a 5'utr variant results in the creation of an upstream Met.
 * merged with default, TM bug fixes and more tests
@@ -432,7 +432,7 @@ under development
 * Last cleanup before merging default into here
 * all input/output is hgvs-based. updated tests accordingly
 * Close branch protein-variants
-* Merged in protein-variants (pull request `#1 <https://bitbucket.org/hgvs/hgvs/issue/1/>`_)
+* Merged in protein-variants (pull request `#1 <https://bitbucket.org/biocommons/hgvs/issue/1/>`_)
 * hgvs.edit: fixed and improved fs handling, and added mediocre tests
 * hgvs.utils: added Xaa=X, Ter=*, Sec=U for aa1-to-aa3 & aa3-to-aa1 translation
 * code cleaning

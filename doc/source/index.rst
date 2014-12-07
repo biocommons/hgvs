@@ -6,7 +6,7 @@ hgvs
 
 .. include:: ../description.txt
 
-|build_status| | `Source <https://bitbucket.org/hgvs/hgvs>`_ | `Documentation <http://pythonhosted.org/hgvs/>`_ | `Discuss <https://groups.google.com/forum/#!forum/hgvs-discuss>`_ | `Issues <https://bitbucket.org/hgvs/hgvs/issues?status=new&status=open>`_
+|build_status| | `Source <https://bitbucket.org/hgvs/hgvs>`_ | `Documentation <http://pythonhosted.org/hgvs/>`_ | `Discuss <https://groups.google.com/forum/#!forum/hgvs-discuss>`_ | `Issues <https://bitbucket.org/biocommons/hgvs/issues?status=new&status=open>`_
 
 
 Contents

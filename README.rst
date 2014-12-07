@@ -5,7 +5,7 @@ HGVS -- Tools to Parse, Format, and Map Biological Sequence Variants
 .. `PyPI <https://pypi.python.org/pypi?name=hgvs>`_
 
 | **Use:** |pypi_badge|  |install_status| | `Documentation <http://pythonhosted.org/hgvs/>`_ 
-| **Interact:** `Mailing List <https://groups.google.com/forum/#!forum/hgvs-discuss>`_ | `Report an Issue <https://bitbucket.org/hgvs/hgvs/issues?status=new&status=open>`_
+| **Interact:** `Mailing List <https://groups.google.com/forum/#!forum/hgvs-discuss>`_ | `Report an Issue <https://bitbucket.org/biocommons/hgvs/issues?status=new&status=open>`_
 | **Develop:** `Source <https://bitbucket.org/hgvs/hgvs>`_ (status: |build_status|)
 
 This package provides a Python library to facilitate the use of genome,
@@ -24,7 +24,7 @@ Important Notes
 ---------------
 
 * **You are encouraged to** `browse issues
-  <https://bitbucket.org/hgvs/hgvs/issues>`_. Please report any
+  <https://bitbucket.org/biocommons/hgvs/issues>`_. Please report any
   issues you find.
 * **Use a pip package specification to ensure stay within minor
   releases for API stability.** For example, ``hgvs >=0.3,<0.4``.
@@ -117,7 +117,7 @@ There are `more examples in the documentation <http://pythonhosted.org/hgvs/exam
 Developing and Contributing to HGVS
 -----------------------------------
 
-* Fork the project at https://bitbucket.org/hgvs/hgvs/
+* Fork the project at https://bitbucket.org/biocommons/hgvs/
 
 * Clone the project locally with:
 

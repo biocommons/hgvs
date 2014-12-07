@@ -28,7 +28,7 @@ authors = project + ' Contributors'
 copyright = u'2014, ' + authors
 
 extlinks={
-    'issue': ('https://bitbucket.org/hgvs/hgvs/issue/%s', 'HGVS issue '),
+    'issue': ('https://bitbucket.org/biocommons/hgvs/issue/%s', 'HGVS issue '),
     }
 
 latex_documents = [
