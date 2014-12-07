@@ -138,7 +138,7 @@ accessions.  In order to isolate the hgvs package from the myriad
 choices and tradeoffs, these data are provided through an
 implementation of the (abstract) Data Provider Interface
 (:class:`hgvs.dataproviders.interface`).  A concrete implementation of
-this interface uses `UTA <https://bitbucket.org/invitae/uta>`_, a
+this interface uses `UTA <https://bitbucket.org/biocommons/uta>`_, a
 public archive of transcripts, transcript sequences, and
 transcript-reference sequence alignments.  Invitae provides a public
 UTA instance at ``uta.invitae.com:5432`` (PostgreSQL).  Alternatively,

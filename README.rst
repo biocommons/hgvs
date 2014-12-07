@@ -6,7 +6,7 @@ HGVS -- Tools to Parse, Format, and Map Biological Sequence Variants
 
 | **Use:** |pypi_badge|  |install_status| | `Documentation <http://pythonhosted.org/hgvs/>`_ 
 | **Interact:** `Mailing List <https://groups.google.com/forum/#!forum/hgvs-discuss>`_ | `Report an Issue <https://bitbucket.org/biocommons/hgvs/issues?status=new&status=open>`_
-| **Develop:** `Source <https://bitbucket.org/hgvs/hgvs>`_ (status: |build_status|)
+| **Develop:** `Source <https://bitbucket.org/biocommons/hgvs>`_ (status: |build_status|)
 
 This package provides a Python library to facilitate the use of genome,
 transcript, and protein variants that are represented using the Human
@@ -172,7 +172,7 @@ selects a local instance.  Developers can test connectivity like this:
 
 
 .. _Mutnomen: http://www.hgvs.org/mutnomen/
-.. _UTA: http://bitbucket.org/invitae/uta
+.. _UTA: http://bitbucket.org/biocommons/uta
 .. _Invitae: http://invitae.com/
 
 
@@ -180,8 +180,8 @@ selects a local instance.  Developers can test connectivity like this:
   :target: https://pypi.python.org/pypi?name=hgvs
   :align: middle
 
-.. |build_status| image:: https://drone.io/bitbucket.org/hgvs/hgvs/status.png
-  :target: https://drone.io/bitbucket.org/hgvs/hgvs
+.. |build_status| image:: https://drone.io/bitbucket.org/biocommons/hgvs/status.png
+  :target: https://drone.io/bitbucket.org/biocommons/hgvs
   :align: middle 
 
 .. |install_status| image:: https://travis-ci.org/reece/hgvs-integration-test.png?branch=master

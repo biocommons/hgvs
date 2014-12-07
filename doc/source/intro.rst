@@ -62,7 +62,7 @@ Features of the hgvs Package
   validate variants, separate from syntactic validation provided by
   the grammar.
 * **Extensible data sources**. Mapping and sequence data come from
-  `UTA <https://bitbucket.org/invitae/uta/>`_ by default, but the
+  `UTA <https://bitbucket.org/biocommons/uta/>`_ by default, but the
   package includes a well-defined service interface that enables
   alternative data sources.
 * **Extensive automated tests**. We run extensive automated tests
@@ -121,7 +121,7 @@ Links
 * `HGVS Mutation Nomenclature Recommendations <http://www.hgvs.org/mutnomen/>`_
 * `Human Genome Variation Society (HGVS) <http://www.hgvs.org/>`_
 * `Parsley <https://pypi.python.org/pypi/Parsley>`_
-* `Universal Transcript Archive (UTA) <https://bitbucket.org/invitae/uta/>`_
+* `Universal Transcript Archive (UTA) <https://bitbucket.org/biocommons/uta/>`_
 
 
 References

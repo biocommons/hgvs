@@ -34,7 +34,7 @@ setup(
     name = "hgvs",
     package_data = {'hgvs': ['_data/*']},
     packages = find_packages(),
-    url = 'https://bitbucket.org/hgvs/hgvs',
+    url = 'https://bitbucket.org/biocommons/hgvs',
 
     classifiers = [
         "Development Status :: 3 - Alpha",
@@ -85,7 +85,7 @@ setup(
 )
 
 ## <LICENSE>
-## Copyright 2014 HGVS Contributors (https://bitbucket.org/hgvs/hgvs)
+## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
 ## 
 ## Licensed under the Apache License, Version 2.0 (the "License");
 ## you may not use this file except in compliance with the License.

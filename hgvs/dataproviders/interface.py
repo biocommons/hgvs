@@ -22,7 +22,7 @@ class Interface(object):
     data provider implementation should be a subclass (possibly
     indirect) of this class.
 
-    .. _UTA: http://bitbucket.org/invitae/uta
+    .. _UTA: http://bitbucket.org/biocommons/uta
     .. _Invitae: http://invitae.com/
     """
 
@@ -72,7 +72,7 @@ class Interface(object):
         pass
 
 ## <LICENSE>
-## Copyright 2014 HGVS Contributors (https://bitbucket.org/hgvs/hgvs)
+## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
 ## 
 ## Licensed under the Apache License, Version 2.0 (the "License");
 ## you may not use this file except in compliance with the License.

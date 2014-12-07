@@ -57,3 +57,4 @@ syntax: regexp
 ^examples/.+\.rst
 misc/figures/mapping-tools.svg
 misc/figures/object-diagram.svg
+misc/missing
