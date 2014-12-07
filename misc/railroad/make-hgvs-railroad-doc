@@ -53,7 +53,7 @@ if __name__ == '__main__':
     print(
         'HGVS Railroad Diagram\n'
         '^^^^^^^^^^^^^^^^^^^^^\n\n'
-        '  | Generated from `hgvs (https://bitbucket.org/hgvs/hgvs/) <https://bitbucket.org/hgvs/hgvs/>`_\n'
+        '  | Generated from `hgvs (https://bitbucket.org/biocommons/hgvs/) <https://bitbucket.org/biocommons/hgvs/>`_\n'
         '  | ' + opts.hgvs_version + '\n'
         '  | See the source code for the OMeta-based grammar\n'
         )
