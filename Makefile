@@ -31,6 +31,7 @@ config:
 
 #=> setup
 setup: develop
+#	pip install -r requirements.txt
 
 #=> docs -- make sphinx docs
 docs: setup build_sphinx
@@ -40,12 +41,14 @@ docs: setup build_sphinx
 build_sphinx: develop
 
 #=> develop, bdist, bdist_egg, sdist, upload_docs, etc
-develop: %:
-	#pip install --upgrade setuptools
-	python setup.py $*
+# On Ubuntu 14.04 w/Python 2.7.8, upgrading setuptools (from 2.2 to
+# 7.0) is essential for sphinxcontrib-fulltoc 1.1.
+develop:
+	pip install --upgrade 'setuptools>=7.0'
+	python setup.py $@
 
 bdist bdist_egg build build_sphinx install sdist: %:
-	python setup.py $*
+	python setup.py $@
 
 #=> upload
 upload: upload_pypi
