@@ -74,8 +74,8 @@ setup(
         'hgtools',
         'nose',
         # 'nose-timer', causes errors when installing via pip; cause not investigated
-        'sphinx',
-        'sphinxcontrib-fulltoc',
+        #'sphinx',
+        #'sphinxcontrib-fulltoc',
     ],
 
     tests_require = [
