@@ -24,7 +24,7 @@ pg_schema = 'uta_20140210'
 logger = logging.getLogger(__name__)
 
 
-def connect(db_url=default_db_url, pooling=False):
+def connect(db_url=default_db_url, pooling=False, **kwargs):
     """Connect to a UTA database instance and return a UTA interface instance.
 
     :param db_url: URL for database connection
@@ -60,7 +60,7 @@ def connect(db_url=default_db_url, pooling=False):
         conn = UTA_sqlite(url)
     elif url.scheme == 'postgresql':
         if pooling:
-            conn = UTA_postgresql_pool(url)
+            conn = UTA_postgresql_pool(url, **kwargs)
         else:
             conn = UTA_postgresql(url)
     else:
@@ -423,7 +423,7 @@ class UTA_postgresql(UTABase):
 
 
 class UTA_postgresql_pool(UTABase):
-    def __init__(self, url):
+    def __init__(self, url, minconn=1, maxconn=10):
         self.db_url = url.geturl()
 
         host = url.hostname
@@ -437,7 +437,7 @@ class UTA_postgresql_pool(UTABase):
             host=host, port=port, database=database, user=user,
             pw='' if password is None else '***'))
         # self._con = psycopg2.connect(host=host, port=port, database=database, user=user, password=password)
-        self.pool = psycopg2.pool.ThreadedConnectionPool(1, 10, host=host, port=port, database=database, user=user, password=password)
+        self.pool = psycopg2.pool.ThreadedConnectionPool(minconn, maxconn, host=host, port=port, database=database, user=user, password=password)
         super(UTA_postgresql_pool, self).__init__()
 
         # remap sqlite's ? placeholders to psycopg2's %s
