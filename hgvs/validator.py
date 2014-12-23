@@ -104,9 +104,9 @@ class ExtrinsicValidator():
         var_ref_seq = None
         if var.posedit.edit.type == 'dup':
             var_ref_seq = var.posedit.edit.seq
-        elif var.posedit.edit.ref is not None:
+        else:
             # use reference sequence of original variant, even if later converted (eg c_to_r)
-            var_ref_seq = var.posedit.edit.ref
+            var_ref_seq = getattr(var.posedit.edit, 'ref', None)
 
         if var_ref_seq:
             var_x = self.hm.c_to_r(var) if var.type == 'c' else var
