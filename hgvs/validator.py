@@ -103,7 +103,8 @@ class ExtrinsicValidator():
     def _ref_is_valid(self, var):
         var_ref_seq = None
         if var.posedit.edit.type == 'dup':
-            var_ref_seq = var.posedit.edit.seq
+            # Handle Dup and NADupN objects.
+            var_ref_seq = getattr(var.posedit.edit, 'seq', None)
         else:
             # use reference sequence of original variant, even if later converted (eg c_to_r)
             var_ref_seq = getattr(var.posedit.edit, 'ref', None)
