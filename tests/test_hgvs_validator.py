@@ -99,6 +99,7 @@ class Test_HGVSExtrinsicValidator(unittest.TestCase):
         self.assertTrue(self.validate_ext.validate(self.hp.parse_hgvs_variant('NM_001005405.2:c.-38T>A')))
         self.assertTrue(self.validate_ext.validate(self.hp.parse_hgvs_variant('NM_001005405.2:c.*3C>G')))
         self.assertTrue(self.validate_ext.validate(self.hp.parse_hgvs_variant('NM_001005405.2:c.435_440delCTGCTG')))
+        self.assertTrue(self.validate_ext.validate(self.hp.parse_hgvs_variant('NM_000187.3:c.457dupG')))
         #self.assertTrue(self.validate_ext.validate(self.hp.parse_hgvs_variant('NP_001005405.1:p.Gly2Ser')))
 
         with self.assertRaisesRegexp(HGVSValidationError, hgvs.validator.SEQ_ERROR_MSG):
