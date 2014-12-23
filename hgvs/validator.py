@@ -108,7 +108,7 @@ class ExtrinsicValidator():
             # use reference sequence of original variant, even if later converted (eg c_to_r)
             var_ref_seq = getattr(var.posedit.edit, 'ref', None)
 
-        if var_ref_seq:
+        if var_ref_seq is not None:
             var_x = self.hm.c_to_r(var) if var.type == 'c' else var
             ref_seq = self._fetch_seq(var_x.ac, var_x.posedit.pos.start.base - 1, var_x.posedit.pos.end.base)
             if ref_seq != var_ref_seq:
