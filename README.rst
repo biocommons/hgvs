@@ -1,7 +1,7 @@
 ====================================================================
 HGVS -- Tools to Parse, Format, and Map Biological Sequence Variants
 ====================================================================
-
+ 
 .. `PyPI <https://pypi.python.org/pypi?name=hgvs>`_
 
 | **Use:** |pypi_badge|  |install_status| | `Documentation <http://pythonhosted.org/hgvs/>`_ 
