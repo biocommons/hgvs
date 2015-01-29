@@ -6,6 +6,12 @@ import re
 import unittest
 
 import hgvs.dataproviders.uta
+import hgvs.edit
+import hgvs.location
+import hgvs.posedit
+import hgvs.variantmapper
+import hgvs.variant
+
 
 class UTA_Base(object):
 
@@ -92,7 +98,6 @@ class UTA_Base(object):
         self.assertIsNone( tsi )
 
 
-
 class Test_hgvs_dataproviders_uta_UTA_default(unittest.TestCase, UTA_Base):
     def setUp(self):
         self.hdp = hgvs.dataproviders.uta.connect()
@@ -102,6 +107,31 @@ class Test_hgvs_dataproviders_uta_UTA_default_with_pooling(unittest.TestCase, UT
     def setUp(self):
         self.hdp = hgvs.dataproviders.uta.connect(pooling=True)
         return self
+
+
+class TestUTACache(Test_hgvs_dataproviders_uta_UTA_default):
+    def _create_cdna_variant(self):
+        start = hgvs.location.SimplePosition(118898437)
+        end = hgvs.location.SimplePosition(118898437)
+        iv = hgvs.location.Interval(start=start, end=end)
+        edit = hgvs.edit.NARefAlt(ref='G', alt='T')
+        posedit = hgvs.posedit.PosEdit(pos=iv, edit=edit)
+        genomic_variant = hgvs.variant.SequenceVariant(
+            ac='NC_000011.9',
+            type='g',
+            posedit=posedit,
+        )
+        variantmapper = hgvs.variantmapper.VariantMapper(self.hdp)
+        return variantmapper.g_to_c(genomic_variant, 'NM_001164277.1')
+
+    def test_deterministic_cache_results(self):
+        """
+        Check that identical request to the UTA yields the same results.
+        """
+        var1 = self._create_cdna_variant()
+        var2 = self._create_cdna_variant()
+        self.assertEqual(str(var1), str(var2))
+
 
 if __name__ == '__main__':
     unittest.main()
