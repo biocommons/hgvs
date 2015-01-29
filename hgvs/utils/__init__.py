@@ -12,14 +12,13 @@ def build_tx_cigar(exons, strand):
     if len(exons) == 0:
         return None
 
-    if strand == -1:
-        for i in range(len(exons)):
-            exons[i]['cigar'] = _reverse_cigar(exons[i]['cigar'])
-
     tx_cigar = [exons[0]['cigar']]    # exon 1
     for i in range(1, len(exons)):    # and intron + exon pairs thereafter
+        cigar = exons[i]['cigar']
+        if strand == -1:
+            cigar = _reverse_cigar(cigar)
         tx_cigar += [str(exons[i]['alt_start_i'] - exons[i-1]['alt_end_i']) + 'N',
-                     exons[i]['cigar']]
+                     cigar]
     
     tx_cigar_str = ''.join(tx_cigar)
     
