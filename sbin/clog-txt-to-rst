@@ -1,0 +1,12 @@
+#!/usr/bin/perl
+# rewrite text CHANGELOG as rst
+# use like this:
+# ./sbin/clog-txt-to-rst <CHANGELOG >|doc/source/changelog.rst
+
+while (<>) {
+      s%#(\d+)%`#\1 <https://bitbucket.org/biocommons/hgvs/issue/\1/>`_%g;
+      print;
+}
+
+
+

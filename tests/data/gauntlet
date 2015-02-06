@@ -1,0 +1,126 @@
+# HGVS test variants
+# This file attempts to exercise all components of the HGVS parser (but
+# not in all combinations).
+
+# some negative examples are shown commented out with '#- '
+# These may be used in the future for expected failures
+
+
+############################################################################
+#### TYPES
+AC_01234.5:c.1A>T
+AC_01234.5:g.1A>T
+AC_01234.5:m.1A>T
+AC_01234.5:n.1A>T
+AC_01234.5:r.1a>u
+AC_01234.5:p.Ala1Ser
+
+
+############################################################################
+#### POSITIONS
+#### g. positions (m., n. identical)
+
+# ?
+# 34+?
+# (34+56A>T)
+
+
+
+AC_01234.5:g.1A>T
+AC_01234.5:g.1_22A>T
+
+#- AC_01234.5:g.0A>T
+#- AC_01234.5:g.*1A>T
+
+#### c. positions not covered by g. (r. identical)
+
+
+
+#### p. positions
+
+
+############################################################################
+#### EDITS
+#### g. edits (m., n. identical)
+
+#!unsupported: AC_01234.5:g.1209_4523(12_45)
+#!unsupported: AC_01234.5:g.123TG[4]
+#!unsupported: AC_01234.5:g.123_124[4]
+#!unsupported: AC_01234.5:g.123_678conNG_012232.1:g.9456_10011
+AC_01234.5:g.5dup
+AC_01234.5:g.5dupT
+AC_01234.5:g.7_8dup
+AC_01234.5:g.7_8dupTG
+
+
+# complex -- same allele (maybe)
+#!unsupported: AC_01234.5:c.[76A>T;77G>T]
+#!unsupported: AC_01234.5:c.[76A>C(;)283G>C]
+
+# mosaic and chimeric:
+#!unsupported: AC_01234.5:c.[=/83G>C]
+#!unsupported: AC_01234.5:c.[=//83G>C]
+
+# compound:
+#!unsupported: AC_01234.5:c.[76A>C];[76A>C]
+#!unsupported: AC_01234.5:c.[76A>C];[(76A>C)]
+#!unsupported: AC_01234.5:c.[76A>C];[?]
+#!unsupported: AC_01234.5:c.[76A>C];[=]
+#!unsupported: AC_01234.5:c.[76A>C];[0]
+
+#### c. edits not covered by g. (r. identical)
+
+#### p. edits
+
+
+
+
+AC_01234.5:c.*46T>A
+AC_01234.5:c.-14G>C
+AC_01234.5:c.112_117delinsTG
+AC_01234.5:c.113delinsTACTAGC
+AC_01234.5:c.114_115delinsA
+#!unsupported: AC_01234.5:c.1210-12T(5_9)
+#!unsupported: AC_01234.5:c.1210-12T[5] 
+#!unsupported: AC_01234.5:c.123+74TG(3_6)
+#!unsupported: AC_01234.5:c.203_506inv
+AC_01234.5:c.76A>C
+AC_01234.5:c.76_77delinsTT
+AC_01234.5:c.76_77insT
+AC_01234.5:c.76_78del
+AC_01234.5:c.76_78delACT
+AC_01234.5:c.77_79dup
+AC_01234.5:c.77_79dupCTG
+AC_01234.5:c.88+1G>T
+AC_01234.5:c.89-2A>C
+
+
+#!unsupported: AC_01234.5:g.1209_4523(12_45)
+#!unsupported: AC_01234.5:g.123TG[4]
+#!unsupported: AC_01234.5:g.123_124[4]
+#!unsupported: AC_01234.5:g.123_678conNG_012232.1:g.9456_10011
+AC_01234.5:g.5dup
+AC_01234.5:g.5dupT
+AC_01234.5:g.7_8dup
+AC_01234.5:g.7_8dupTG
+
+
+
+# uncertain:
+#!unsupported: AC_01234.5:c.88-?_923+?del
+#!unsupported: AC_01234.5:c.1032-?_1357+?(3)
+#!unsupported: AC_01234.5:c.1032-?_1357+?[3]
+
+# lax / invitae-isms
+AC_01234.5:c.76_78del3
+#!unsupported: AC_01234.5:c.76_78copy3
+
+
+
+
+############################################################################
+#### NOT SUPPORTED
+
+# t(X;4)(p21.2;q35)(c.857+101_857+102)
+
+
