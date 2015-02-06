@@ -1,0 +1,12 @@
+Contributors are listed in the Mercurial change logs.  From the
+command line:
+
+  hg log --template "{author}\n" | sort -u
+
+Additional contributors are:
+
+  Emily Hare
+  Geoff Nilsen
+  Jody Westbrook
+  John Garcia
+  Kevin Jacobs
