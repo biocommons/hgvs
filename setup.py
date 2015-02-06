@@ -13,7 +13,8 @@ with open('doc/description.txt') as f:
 def version_handler(mgr, options):
     version = mgr.get_current_version()
     if version.endswith('dev'):
-        version += '-' + mgr._invoke('log', '-l1', '-r.', '--template', '{node|short}').strip()
+        # PEP440 compliant version string
+        version = version[0:-3] + '.dev0+' + mgr._invoke('log', '-l1', '-r.', '--template', '{node|short}').strip()
     elif re.match('^\d+\.\d+$', version):
         # StrictVersion considers x.y == x.y.0 and drops the .0 from a
         # repo tag.  Add it back and ensure that it's really a tag for
