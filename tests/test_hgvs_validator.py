@@ -76,13 +76,6 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
         with self.assertRaisesRegexp(HGVSValidationError, hgvs.validator.DEL_ERROR_MSG):
             self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.76_78delACTACAT'))
 
-    def test_sub(self):
-        """Test substitution ref != alt"""
-        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('NC_000007.13:g.36561662C>T')))
-        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.123+54A>T')))
-
-        with self.assertRaisesRegexp(HGVSValidationError, hgvs.validator.SUB_ERROR_MSG):
-            self.validate_int.validate(self.hp.parse_hgvs_variant('NC_000007.13:g.36561662_36561663T>T'))
 
 
 @attr(tags=["validation"])

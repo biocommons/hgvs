@@ -14,7 +14,6 @@ BASE_RANGE_ERROR_MSG = 'base start position must be <= end position'
 OFFSET_RANGE_ERROR_MSG = 'offset start must be <= end position'
 INS_ERROR_MSG = 'insertion length must be 1'
 DEL_ERROR_MSG = 'start and end position range must equal sequence deletion length'
-SUB_ERROR_MSG = 'substitution cannot have the same ref and alt base'
 AC_ERROR_MSG = 'Accession is not present in BDI database'
 SEQ_ERROR_MSG = 'Variant reference does not agree with reference sequence'
 
@@ -40,7 +39,6 @@ class IntrinsicValidator(object):
         self._start_lte_end(var)
         self._ins_length_is_one(var)
         self._del_length(var)
-        self._sub_alt_is_not_ref(var)
         return True
 
     def _start_lte_end(self, var):
@@ -79,11 +77,6 @@ class IntrinsicValidator(object):
                         (var.posedit.pos.start.base + var.posedit.pos.start.offset) + 1) != del_len:
                     raise HGVSValidationError(DEL_ERROR_MSG)
             return True
-
-    def _sub_alt_is_not_ref(self, var):
-        if var.posedit.edit.type == 'identity':
-            if var.posedit.edit.ref == var.posedit.edit.alt:
-                raise HGVSValidationError(SUB_ERROR_MSG)
 
 
 class ExtrinsicValidator():
