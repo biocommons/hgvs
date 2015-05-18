@@ -16,6 +16,7 @@ from hgvs.dataproviders.interface import Interface
 from hgvs.decorators.lru_cache import lru_cache
 
 
+# TODO: implement method to embed schema name in url
 localhost_db_url = 'postgresql://localhost/uta'
 public_db_url = 'postgresql://uta_public:uta_public@uta.invitae.com/uta'
 default_db_url = os.environ.get('UTA_DB_URL', public_db_url)

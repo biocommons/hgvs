@@ -2,10 +2,6 @@
 ## Theme setup
 
 html_theme = 'invitae'
-#html_theme = 'f6'
-#html_theme = 'bootstrap'
-#html_theme = 'sphinx_rtd_theme'
-#html_theme = 'pyramid'
 
 html_theme_path = ['../themes']
 if html_theme == 'sphinx_rtd_theme':
@@ -25,26 +21,15 @@ release = str(hgvs.__version__)
 
 project = u'HGVS'
 authors = project + ' Contributors'
-copyright = u'2014, ' + authors
+copyright = u'2015, ' + authors
 
 extlinks={
     'issue': ('https://bitbucket.org/biocommons/hgvs/issue/%s', 'HGVS issue '),
     }
 
-latex_documents = [
-  ('index', 'HGVS.tex', u'HGVS Documentation', u'HGVS Contributors', 'manual'),
-]
-
 man_pages = [
     ('index', 'uta', u'HGVS Documentation', [u'HGVS Contributors'], 1)
 ]
-
-texinfo_documents = [
-  ('index', 'HGVS', u'HGVS Documentation',
-   u'HGVS Contributors', 'HGVS', 'One line description of project.',
-   'Miscellaneous'),
-]
-
 
 ############################################################################
 ## Boilerplate
@@ -72,3 +57,19 @@ master_doc = 'index'
 pygments_style = 'sphinx'
 source_suffix = '.rst'
 templates_path = ['templates']
+
+## <LICENSE>
+## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
+## 
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+## 
+##     http://www.apache.org/licenses/LICENSE-2.0
+## 
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+## </LICENSE>
