@@ -4,6 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import logging
 import os
 import sqlite3
+import types
 import urlparse
 
 #TODO: make dynamic import with importlib
@@ -16,9 +17,17 @@ from bioutils.digests import seq_md5
 from hgvs.dataproviders.interface import Interface
 from hgvs.decorators.lru_cache import lru_cache
 
-localhost_db_url = 'postgresql://localhost/uta/uta1'
-public_db_url = 'postgresql://uta_public:uta_public@uta.invitae.com/uta/uta_20140210'
-default_db_url = os.environ.get('UTA_DB_URL', public_db_url)
+
+_uta_urls = {
+    # these are provided for developer convenience
+    "local": "postgresql://localhost/uta/uta_20140210",
+    "local-dev": "postgresql://localhost/uta_dev/uta1",
+    "public": "postgresql://uta_public:uta_public@uta.invitae.com/uta/uta_20140210",
+    "public-dev": "postgresql://uta_public:uta_public@uta.invitae.com/uta_dev/uta1",
+    "sqlite-dev": "sqlite:/home/reece/projects/biocommons/hgvs/tests/db/uta-test-1.db",
+}
+
+default_db_url = os.environ.get('UTA_DB_URL', _uta_urls["public"])
 
 
 def connect(db_url=default_db_url, pooling=False):
@@ -62,7 +71,7 @@ def connect(db_url=default_db_url, pooling=False):
         conn = UTA_postgresql(url, pooling)
     else:
         # fell through connection scheme cases
-        raise RuntimeError("{url.scheme} in {url.geturl()} is not currently supported".format(
+        raise RuntimeError("{url.scheme} in {url} is not currently supported".format(
             url=url))
     return conn
 
@@ -136,7 +145,7 @@ class UTABase(Interface):
         self.url = url
         self._connect()
         self._check_schema_version('1')
-        self._logger.info('connected to ' + self.url.geturl())
+        self._logger.info('connected to ' + str(self.url))
 
     def _execute(self, sql, *args):
         cur = self._get_cursor()
@@ -147,7 +156,7 @@ class UTABase(Interface):
         obs_Mm = self.schema_version().split('.')[:2]
         req_Mm = required_version.split('.')[:2]
         if (obs_Mm != req_Mm):
-            raise RuntimeError("Version mismatch: Version {req_Mm} required, but {self.url.geturl()} is version {obs_Mm}".format(
+            raise RuntimeError("Version mismatch: Version {req_Mm} required, but {self.url} is version {obs_Mm}".format(
                 req_Mm = '.'.join(req_Mm), self=self, obs_Mm = '.'.join(obs_Mm)))
         # else no error
 
@@ -397,35 +406,74 @@ class UTA_postgresql(UTABase):
         self.sql = {k: v.replace('?', '%s') for k, v in self.sql.iteritems()}
 
 
+    def _get_cursor(self):
+        """returns a cursor obtained from a single or pooled connection, and
+        sets the postgresql search_path appropriately
+
+        Although connections are threadsafe, cursors are bound to
+        connections and are not threadsafe. Therefore, be sure to not
+        share cursors across threads. Cursors are reaped when they go
+        out of scope, but they may be cleaned up manually with
+        cursor.close(). See the psycopg2 docs for cursor lifetime
+
+        """
+
+        try:
+            conn = self._pool.getconn() if self.pooling else self._conn
+            cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+            return cur
+        finally:
+            if self.pooling:
+                self._pool.putconn(conn)
+
     def _execute(self, sql, *args):
-        conn = self._pool.getconn() if self.pooling else self._conn
-        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cur.execute('set search_path = ' + self.url.schema + '; ' + sql, *args)
+        cur = self._get_cursor()
+        # N.B. The search_path is reset when pooling is used and the
+        # connection is returned with putconn. Therefore, we need to
+        # set it for every execution.
+        cur.execute("set search_path = " + self.url.schema + ";")
         cur.execute(sql, *args)
-        # TODO: if conn gets put'd automatically when out of scope, remove following
-        # what's the right way to handle this?
-        # if self.pooling:
-        #    self._pool.putconn(conn)
         return cur
 
 
 
-class UTA_sqlite(UTABase):
-    def __init__(self, url):
-        super(UTA_sqlite, self).__init__(url)
 
+class UTA_sqlite(UTABase):
+    def _connect(self):
         def _sqlite3_row_dict_factory(cur, row):
             "convert sqlite row to dict"
             return dict((d[0], row[i]) for i, d in enumerate(cur.description))
-
         if not os.path.exists(self.url.path):
             raise IOError(self.url.path + ': Non-existent database file')
         self._conn = sqlite3.connect(self.url.path)
         self._conn.row_factory = _sqlite3_row_dict_factory
-        self._logger.info("connected to " + self.url.path)
 
     def _get_cursor(self):
         return self._conn.cursor()
+
+
+class ParseResult(urlparse.ParseResult):
+    """Subclass of url.ParseResult that adds database and schema methods,
+    and provides stringification.
+
+    """
+
+    def __new__(cls, pr):
+        pr.__class__ = cls
+        return pr
+
+    @property
+    def database(self):
+        path_elems = self.path.split("/")
+        return path_elems[1] if len(path_elems) > 1 else None
+
+    @property
+    def schema(self):
+        path_elems = self.path.split("/")
+        return path_elems[2] if len(path_elems) > 1 else None
+
+    def __str__(self):
+        return self.geturl()
 
 
 def _parse_url(db_url):
@@ -461,14 +509,7 @@ def _parse_url(db_url):
 
     """
 
-    url = urlparse.urlparse(db_url)
-    path = url.path.split('/')[1:3] + [None]  # fill schema as None
-    url.database = path[0]
-    url.schema = path[1] if len(path) > 0 else None
-    return url
-
-
-
+    return ParseResult(urlparse.urlparse(db_url))
 
 
 if __name__ == "__main__":
