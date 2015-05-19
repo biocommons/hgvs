@@ -1,0 +1,9 @@
+This directory contains example scripts for using the hgvs package.  To
+use these examples, please first follow the installation instructions.
+
+.ipynb are IPython notbook examples. Please refer to
+http://ipython.org/ipython-doc/stable/index.html for information on using
+IPython.
+
+Examples in this directory are converted to rst using nbcovert.  See the
+Makefile for details.
