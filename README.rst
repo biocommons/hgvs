@@ -95,8 +95,9 @@ An Example
   ...          primary_assembly='GRCh37', alt_aln_method='splign')
   
   # identify transcripts that overlap this genomic variant
-  >>> evm.relevant_transcripts(var_g)
-  ['NM_001637.3', 'NM_001177506.1', 'NM_001177507.1']
+  >>> transcripts = evm.relevant_transcripts(var_g)
+  >>> sorted(transcripts)
+  ['NM_001177506.1', 'NM_001177507.1', 'NM_001637.3']
 
   # map genomic variant to one of these transcripts
   >>> var_c = evm.g_to_c(var_g, 'NM_001637.3')

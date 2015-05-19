@@ -10,19 +10,15 @@ import urlparse
 import psycopg2
 import psycopg2.extras
 import psycopg2.pool
+
 from bioutils.digests import seq_md5
 
 from hgvs.dataproviders.interface import Interface
 from hgvs.decorators.lru_cache import lru_cache
 
-
-# TODO: implement method to embed schema name in url
-localhost_db_url = 'postgresql://localhost/uta'
-public_db_url = 'postgresql://uta_public:uta_public@uta.invitae.com/uta'
+localhost_db_url = 'postgresql://localhost/uta/uta1'
+public_db_url = 'postgresql://uta_public:uta_public@uta.invitae.com/uta/uta_20140210'
 default_db_url = os.environ.get('UTA_DB_URL', public_db_url)
-pg_schema = 'uta_20140210'
-
-logger = logging.getLogger(__name__)
 
 
 def connect(db_url=default_db_url, pooling=False):
@@ -38,6 +34,10 @@ def connect(db_url=default_db_url, pooling=False):
     When called without an explicit argument, the function default is
     determined by the environment variable UTA_DB_URL if it exists, or
     hgvs.datainterface.uta.public_db_url otherwise.
+
+    >>> hdp = connect()
+    >>> hdp.schema_version()
+    '1'
 
     The format of the db_url is driver://user:pass@host/database (the same
     as that used by SQLAlchemy).  Examples:
@@ -55,24 +55,21 @@ def connect(db_url=default_db_url, pooling=False):
     psycopg2.pool.ThreadedConnectionPool.
     """
 
-    url = urlparse.urlparse(db_url)
-
+    url = _parse_url(db_url)
     if url.scheme == 'sqlite':
         conn = UTA_sqlite(url)
     elif url.scheme == 'postgresql':
-        if pooling:
-            conn = UTA_postgresql_pool(url)
-        else:
-            conn = UTA_postgresql(url)
+        conn = UTA_postgresql(url, pooling)
     else:
         # fell through connection scheme cases
-        raise RuntimeError("{url.scheme} in {db_url} is not currently supported".format(
-            url=url, db_url=db_url))
-
+        raise RuntimeError("{url.scheme} in {url.geturl()} is not currently supported".format(
+            url=url))
     return conn
 
 
 class UTABase(Interface):
+    _logger = logging.getLogger(__name__)
+
     sql = {
         "acs_for_protein_md5": """
             select ac
@@ -135,14 +132,27 @@ class UTABase(Interface):
             """,
     }
 
-    def __init__(self):
+    def __init__(self, url):
+        self.url = url
+        self._connect()
         self._check_schema_version('1')
-
+        self._logger.info('connected to ' + self.url.geturl())
 
     def _execute(self, sql, *args):
         cur = self._get_cursor()
         cur.execute(sql, *args)
         return cur
+
+    def _check_schema_version(self, required_version):
+        obs_Mm = self.schema_version().split('.')[:2]
+        req_Mm = required_version.split('.')[:2]
+        if (obs_Mm != req_Mm):
+            raise RuntimeError("Version mismatch: Version {req_Mm} required, but {self.url.geturl()} is version {obs_Mm}".format(
+                req_Mm = '.'.join(req_Mm), self=self, obs_Mm = '.'.join(obs_Mm)))
+        # else no error
+
+    ############################################################################
+    ## Queries
 
     @lru_cache(maxsize=1)
     def data_version(self):
@@ -152,11 +162,10 @@ class UTABase(Interface):
 
     @lru_cache(maxsize=1)
     def schema_version(self):
-        return self.data_version()
+        cur = self._execute("select * from meta where key = 'schema_version'")
+        return cur.fetchone()['value']
 
 
-    ############################################################################
-    ## Queries
     @lru_cache(maxsize=128)
     def get_acs_for_protein_seq(self, seq):
         """
@@ -358,107 +367,113 @@ class UTABase(Interface):
         alt_aln_method | blat
 
         """
-        cur = self._execute(self.sql['tx_mapping_options'],[tx_ac])
+        cur = self._execute(self.sql['tx_mapping_options'], [tx_ac])
         r = cur.fetchall()
         return r
 
 
 
+class UTA_postgresql(UTABase):
+    def __init__(self, url, pooling=False):
+        self.pooling = pooling
+        super(UTA_postgresql, self).__init__(url)
 
-    ############################################################################
-    ## INTERNAL FUNCTIONS
-    def _check_schema_version(self, required_version):
-        obs_Mm = self.schema_version().split('.')[:2]
-        req_Mm = required_version.split('.')[:2]
-        if (obs_Mm != req_Mm):
-            raise RuntimeError("Version mismatch: Version {req_Mm} required, but {self.db_url} is version {obs_Mm}".format(
-                req_Mm = '.'.join(req_Mm), self=self, obs_Mm = '.'.join(obs_Mm)))
-        # else no error
+    def _connect(self):
+        if self.pooling:
+            self._pool = psycopg2.pool.ThreadedConnectionPool(1, 10,
+                                                              host=self.url.hostname,
+                                                              port=self.url.port,
+                                                              database=self.url.database,
+                                                              user=self.url.username,
+                                                              password=self.url.password)
+        else:
+            self._conn = psycopg2.connect(host=self.url.hostname,
+                                          port=self.url.port,
+                                          database=self.url.database,
+                                          user=self.url.username,
+                                          password=self.url.password)
+
+        # remap sqlite's ? placeholders to psycopg2's %s
+        self.sql = {k: v.replace('?', '%s') for k, v in self.sql.iteritems()}
+
+
+    def _execute(self, sql, *args):
+        conn = self._pool.getconn() if self.pooling else self._conn
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cur.execute('set search_path = ' + self.url.schema + '; ' + sql, *args)
+        cur.execute(sql, *args)
+        # TODO: if conn gets put'd automatically when out of scope, remove following
+        # what's the right way to handle this?
+        # if self.pooling:
+        #    self._pool.putconn(conn)
+        return cur
 
 
 
 class UTA_sqlite(UTABase):
     def __init__(self, url):
+        super(UTA_sqlite, self).__init__(url)
+
         def _sqlite3_row_dict_factory(cur, row):
             "convert sqlite row to dict"
             return dict((d[0], row[i]) for i, d in enumerate(cur.description))
 
-        self.db_url = url.geturl()
-
-        db_path = url.path
-        if not os.path.exists(db_path):
-            raise IOError(db_path + ': Non-existent database file')
-        self._con = sqlite3.connect(db_path)
-        self._con.row_factory = _sqlite3_row_dict_factory
-        logger.info("connected to " + db_path)
-        super(UTA_sqlite, self).__init__()
+        if not os.path.exists(self.url.path):
+            raise IOError(self.url.path + ': Non-existent database file')
+        self._conn = sqlite3.connect(self.url.path)
+        self._conn.row_factory = _sqlite3_row_dict_factory
+        self._logger.info("connected to " + self.url.path)
 
     def _get_cursor(self):
-        return self._con.cursor()
+        return self._conn.cursor()
 
 
-class UTA_postgresql(UTABase):
-    def __init__(self, url):
-        self.db_url = url.geturl()
+def _parse_url(db_url):
+    """parse database connection urls into components
 
-        host = url.hostname
-        port = url.port or 5432
-        database = url.path[1:]
-        user = url.username
-        password = url.password
+    UTA database connection URLs follow that of SQLAlchemy, except
+    that a schema may be optionally specified after the database. The
+    skeleton format is:
 
-        logger.info('connecting to ' + self.db_url)
-        logger.debug('connection params: host={host}, port={port}, database={database}, user={user}, password={pw}'.format(
-            host=host, port=port, database=database, user=user,
-            pw='' if password is None else '***'))
-        self._con = psycopg2.connect(host=host, port=port, database=database, user=user, password=password)
-        super(UTA_postgresql, self).__init__()
+       driver://user:pass@host/database/schema
 
-        # remap sqlite's ? placeholders to psycopg2's %s
-        self.sql = {k: v.replace('?', '%s') for k, v in self.sql.iteritems()}
+    >>> from pprint import pprint
 
-    def _get_cursor(self):
-        cur = self._con.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cur.execute('set search_path = ' + pg_schema)
-        return cur
+    >>> params = _parse_url("driver://user:pass@host:9876/database/schema")
 
+    >>> params.scheme
+    u'driver'
 
-class UTA_postgresql_pool(UTABase):
-    def __init__(self, url):
-        self.db_url = url.geturl()
+    >>> params.hostname
+    u'host'
 
-        host = url.hostname
-        port = url.port or 5432
-        database = url.path[1:]
-        user = url.username
-        password = url.password
+    >>> params.username
+    u'user'
 
-        logger.info('connecting to ' + self.db_url)
-        logger.debug('connection params: host={host}, port={port}, database={database}, user={user}, password={pw}'.format(
-            host=host, port=port, database=database, user=user,
-            pw='' if password is None else '***'))
-        # self._con = psycopg2.connect(host=host, port=port, database=database, user=user, password=password)
-        self.pool = psycopg2.pool.ThreadedConnectionPool(1, 10, host=host, port=port, database=database, user=user, password=password)
-        super(UTA_postgresql_pool, self).__init__()
+    >>> params.password
+    u'pass'
 
-        # remap sqlite's ? placeholders to psycopg2's %s
-        self.sql = {k: v.replace('?', '%s') for k, v in self.sql.iteritems()}
+    >>> params.database
+    u'database'
 
-    def _execute(self, sql, *args):
-        cur = self._get_cursor()
-        cur.execute('set search_path = ' + pg_schema + '; ' + sql, *args)
-        return cur
+    >>> params.schema
+    u'schema'
 
-    def _get_cursor(self):
-        con = self.pool.getconn()
-        try:
-            cur = con.cursor(cursor_factory=psycopg2.extras.DictCursor)
-            # cur.execute('set search_path = ' + pg_schema)
-            return cur
-        finally:
-            self.pool.putconn(con)
+    """
+
+    url = urlparse.urlparse(db_url)
+    path = url.path.split('/')[1:3] + [None]  # fill schema as None
+    url.database = path[0]
+    url.schema = path[1] if len(path) > 0 else None
+    return url
 
 
+
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
 
 
 
