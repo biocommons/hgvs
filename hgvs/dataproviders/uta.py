@@ -385,6 +385,8 @@ class UTABase(Interface):
 class UTA_postgresql(UTABase):
     def __init__(self, url, pooling=False):
         self.pooling = pooling
+        if url.schema is None:
+            raise Exception("No schema name provided in {url}".format(url=url))
         super(UTA_postgresql, self).__init__(url)
 
     def _connect(self):
@@ -470,7 +472,7 @@ class ParseResult(urlparse.ParseResult):
     @property
     def schema(self):
         path_elems = self.path.split("/")
-        return path_elems[2] if len(path_elems) > 1 else None
+        return path_elems[2] if len(path_elems) > 2 else None
 
     def __str__(self):
         return self.geturl()
