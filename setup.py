@@ -1,27 +1,14 @@
-from ez_setup import use_setuptools
-use_setuptools()
-
 from setuptools import setup, find_packages
-
-import re
-
 
 with open('doc/description.txt') as f:
     long_description = f.read()
 
 
 def version_handler(mgr, options):
-    version = mgr.get_current_version()
-    if version.endswith('dev'):
-        # PEP440 compliant version string
-        version = version[0:-3] + '.dev0+' + mgr._invoke('log', '-l1', '-r.', '--template', '{node|short}').strip()
-    elif re.match('^\d+\.\d+$', version):
-        # StrictVersion considers x.y == x.y.0 and drops the .0 from a
-        # repo tag.  Add it back and ensure that it's really a tag for
-        # our parent.
-        version += '.0'
-        assert version in mgr.get_parent_tags('tip')
-    return version
+    # runtime import after setup has installed biocommons.dev
+    import biocommons.dev.hgsupport as hdu
+    return hdu.version_handler(mgr, options)
+
 
 setup(
     license = 'Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)',
@@ -72,11 +59,12 @@ setup(
     ],
 
     setup_requires = [
+        'biocommons.dev',
         'hgtools',
         'nose',
-        # 'nose-timer', causes errors when installing via pip; cause not investigated
-        #'sphinx',
-        #'sphinxcontrib-fulltoc',
+        'sphinx',
+        'sphinxcontrib-fulltoc',
+        'wheel',
     ],
 
     tests_require = [
