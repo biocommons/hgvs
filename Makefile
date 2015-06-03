@@ -8,10 +8,10 @@
 SHELL:=/bin/bash -o pipefail
 SELF:=$(firstword $(MAKEFILE_LIST))
 
-#UTA_DB_URL=postgresql://uta_public:uta_public@uta.invitae.com/uta
+#UTA_DB_URL=postgresql://uta_public:uta_public@uta.invitae.com/uta/uta_20140210
+#UTA_DB_URL=postgresql://localhost/uta/uta_20140210
+#UTA_DB_URL=postgresql://localhost/uta_dev/uta_20140210
 #UTA_DB_URL=sqlite:///tmp/uta-0.0.5.db
-#UTA_DB_URL=postgresql://localhost/uta
-#UTA_DB_URL=postgresql://localhost/uta_dev
 
 ############################################################################
 #= BASIC USAGE
