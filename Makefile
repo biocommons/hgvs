@@ -34,6 +34,7 @@ setup: develop
 #	pip install -r requirements.txt
 
 #=> docs -- make sphinx docs
+.PHONY: docs
 docs: setup build_sphinx
 
 #=> build_sphinx
