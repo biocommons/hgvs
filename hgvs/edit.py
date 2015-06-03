@@ -307,12 +307,20 @@ class Repeat( Edit, recordtype.recordtype('Repeat', [('seq',None),('min',None),(
 
 
 class NACopy(Edit, recordtype.recordtype('NACopy', ['copy', ('uncertain', False)])):
+    """Represent copy number variants (Invitae-specific use)
+
+    This class is intended for Invitae use only and does not represent
+    a standard HGVS concept. The class may be changed, moved, or
+    removed without notice.
+
+    """
 
     def __str__(self):
         s = 'copy{}'.format(self.copy)
         return '('+s+')' if self.uncertain else s
 
     def _set_uncertain(self):
+
         """sets the uncertain flag to True; used primarily by the HGVS grammar
 
         :returns: self
