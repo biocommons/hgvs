@@ -4,7 +4,7 @@ HGVS -- Tools to Parse, Format, and Map Biological Sequence Variants
 
 .. `PyPI <https://pypi.python.org/pypi?name=hgvs>`_
 
-| **Use:** |pypi_badge|  |install_status| | `Documentation <http://pythonhosted.org/hgvs/>`_ 
+| **Use:** |pypi_badge|  |install_status| | `Documentation <http://pythonhosted.org/hgvs/>`_ | `Changelog <http://pythonhosted.org/hgvs/changelog.html>`_
 | **Interact:** `Mailing List <https://groups.google.com/forum/#!forum/hgvs-discuss>`_ | `Report an Issue <https://bitbucket.org/biocommons/hgvs/issues?status=new&status=open>`_
 | **Develop:** `Source <https://bitbucket.org/biocommons/hgvs>`_ (status: |build_status|)
 
