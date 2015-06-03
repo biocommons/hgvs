@@ -3,11 +3,37 @@ ChangeLog
 
 0.4 series
 ==========
-under development
+
+Issues targeted for 0.4 can be seen here:
+https://bitbucket.org/biocommons/hgvs/issues?status=new&status=open&milestone=0.4
 
 
 0.3 series
 ==========
+
+0.3.5 (2015-05-19)
+------------------
+
+* `#219 <https://bitbucket.org/biocommons/hgvs/issue/219/>`_: remove validation requirement that ref != alt
+* `#220 <https://bitbucket.org/biocommons/hgvs/issue/220/>`_: Do not modify cached results when building CIGAR (pkaleta)
+* `#226 <https://bitbucket.org/biocommons/hgvs/issue/226/>`_: support schema names in db urls; standardized search_path handling; merge connection pool and single-threaded client classes
+* added AUTHORS
+
+0.3.4 (unreleased)
+------------------
+
+0.3.3 (2014-08-28)
+------------------
+
+* `#194 <https://bitbucket.org/biocommons/hgvs/issue/194/>`_: fix bug when reverse complementing nucleotides parsed from unicode
+* `#197 <https://bitbucket.org/biocommons/hgvs/issue/197/>`_: use utf-8 coding, unicode, and all py3k __future__ features in all source
+* `#198 <https://bitbucket.org/biocommons/hgvs/issue/198/>`_: documentation improvements
+* `#202 <https://bitbucket.org/biocommons/hgvs/issue/202/>`_: implement mutalyzer comparisons
+* `#203 <https://bitbucket.org/biocommons/hgvs/issue/203/>`_: return HGVSParseError instead of ometa.runtime.ParseError for parsing errors
+* `#205 <https://bitbucket.org/biocommons/hgvs/issue/205/>`_: fix "base" bias for the exact middle of an odd-length intron
+* `#206 <https://bitbucket.org/biocommons/hgvs/issue/206/>`_: make get_tx_for_region return only transcripts with alignment data
+* added flake8 configuration
+* added regression test framework (tests/data/gcp/regression.tsv)
 
 0.3.2 (2014-07-12)
 ------------------
