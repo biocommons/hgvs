@@ -9,6 +9,31 @@ under development
 0.3 series
 ==========
 
+
+0.3.5 (2015-05-19)
+------------------
+
+* #219: remove validation requirement that ref != alt
+* #220: Do not modify cached results when building CIGAR (pkaleta)
+* #226: support schema names in db urls; standardized search_path handling; merge connection pool and single-threaded client classes
+* added AUTHORS
+
+0.3.4 (unreleased)
+------------------
+
+0.3.3 (2014-08-28)
+------------------
+
+* #194: fix bug when reverse complementing nucleotides parsed from unicode
+* #197: use utf-8 coding, unicode, and all py3k __future__ features in all source
+* #198: documentation improvements
+* #202: implement mutalyzer comparisons
+* #203: return HGVSParseError instead of ometa.runtime.ParseError for parsing errors
+* #205: fix "base" bias for the exact middle of an odd-length intron
+* #206: make get_tx_for_region return only transcripts with alignment data
+* added flake8 configuration
+* added regression test framework (tests/data/gcp/regression.tsv)
+
 0.3.2 (2014-07-12)
 ------------------
 
