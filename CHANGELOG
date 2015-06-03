@@ -11,6 +11,13 @@ https://bitbucket.org/biocommons/hgvs/issues?status=new&status=open&milestone=0.
 0.3 series
 ==========
 
+0.3.6 (2015-06-02)
+------------------
+
+* #228: IndexError when schema name is empty
+* #228: updated CHANGELOG
+* hgvs/edit.py: doc string indentation fix
+
 0.3.5 (2015-05-19)
 ------------------
 

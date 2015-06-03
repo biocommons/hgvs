@@ -157,18 +157,17 @@ Using a local/alternative UTA instance
 
 The easiest way to use a UTA instance other than the default is by
 setting UTA_DB_URL.  The format is
-``postgresql://<user>:<pass>@<host>/<db>``. For example:
+``postgresql://<user>:<pass>@<host>/<db>/<schema>``. For example:
 
-   ``postgresql://uta_public:uta_public@uta.invitae.com/uta``
+   ``postgresql://uta_public:uta_public@uta.invitae.com/uta/uta_20140210``
   
 explicitly selects the public database, and 
 
-   ``postgresql://localhost/uta``
+   ``postgresql://localhost/uta/uta_20140210``
  
 selects a local instance.  Developers can test connectivity like this:
 
-   ``$ UTA_DB_URL=postgresql://localhost/uta make test-quick``
-
+   ``$ UTA_DB_URL=postgresql://localhost/uta/uta_20140210 make test-quick``
 
 
 
