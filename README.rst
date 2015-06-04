@@ -1,22 +1,21 @@
-====================================================================
-HGVS -- Tools to Parse, Format, and Map Biological Sequence Variants
-====================================================================
-
-.. `PyPI <https://pypi.python.org/pypi?name=hgvs>`_
-
-| **Use:** |pypi_badge|  |install_status| | `Documentation <http://pythonhosted.org/hgvs/>`_ | `Changelog <http://pythonhosted.org/hgvs/changelog.html>`_
-| **Interact:** `Mailing List <https://groups.google.com/forum/#!forum/hgvs-discuss>`_ | `Report an Issue <https://bitbucket.org/biocommons/hgvs/issues?status=new&status=open>`_
-| **Develop:** `Source <https://bitbucket.org/biocommons/hgvs>`_ (status: |build_status|)
+=============================================================================
+*hgvs* - Python library to parse, format, validate, and map sequence variants
+=============================================================================
 
 This package provides a Python library to facilitate the use of genome,
 transcript, and protein variants that are represented using the Human
-Genome Variation Society (`Mutnomen`_) recommendations.
+Genome Variation Society (`mutnomen`_) recommendations.
+
+| **Learn:** `Documentation`_ | `Changelog`_
+| **Use:** |pypi_badge|  |install_status|
+| **Interact:** `Mailing List`_ | `Report an Issue`_
+| **Develop:** `Source`_ (status: |build_status|)
 
 Citation:
 
 | **A Python Package for Parsing, Validating, Mapping, and Formatting Sequence Variants Using HGVS Nomenclature.**
 | Hart RK, Rico R, Hare E, Garcia J, Westbrook J, Fusaro VA.
-| *Bioinformatics*. 2014 Sep 30. `PubMed <http://www.ncbi.nlm.nih.gov/pubmed/25273102>`_ | `Open Access PDF <http://goo.gl/dq2uoW>`_
+| *Bioinformatics*. 2014 Sep 30. `PubMed <http://www.ncbi.nlm.nih.gov/pubmed/25273102>`_ | `Open Access PDF <http://bioinformatics.oxfordjournals.org/content/31/2/268.full.pdf>`_
 
 ----
 
@@ -41,6 +40,22 @@ Features
   data
 * Extensive automated tests, including those for all variant types and
   "problematic" transcripts
+
+----
+
+Important Notes
+---------------
+
+* **You are encouraged to** `browse issues
+  <https://bitbucket.org/biocommons/hgvs/issues>`_. Please report any
+  issues you find.
+* **Use a pip package specification to ensure stay within minor
+  releases for API stability.** For example, ``hgvs >=0.3,<0.4``.
+* **The default branch is development.** Pulling from default will get
+  you a *development* version.  Release versions are determined by
+  tags; updating to a specific version (*e.g.,* ``hg up -r 0.3.0``)
+  will get you exactly that version as on PyPI.
+
 
 ----
 
@@ -103,28 +118,15 @@ have installation troubles.
 
 There are `more examples in the documentation <http://pythonhosted.org/hgvs/examples.html>`_.
 
-----
 
-Important Notes
----------------
-
-* **You are encouraged to** `browse issues
-  <https://bitbucket.org/biocommons/hgvs/issues>`_. Please report any
-  issues you find.
-* **Use a pip package specification to ensure stay within minor
-  releases for API stability.** For example, ``hgvs >=0.3,<0.4``.
-* **The default branch is development.** Pulling from default will get
-  you a *development* version.  Release versions are determined by
-  tags; updating to a specific version (*e.g.,* ``hg up -r 0.3.0``)
-  will get you exactly that version as on PyPI.
-
-
-
-
-
-.. _Mutnomen: http://www.hgvs.org/mutnomen/
-.. _UTA: http://bitbucket.org/biocommons/uta
-.. _Invitae: http://invitae.com/
+.. _changelog: http://pythonhosted.org/hgvs/changelog.html
+.. _documentation: http://pythonhosted.org/hgvs/
+.. _invitae: http://invitae.com/
+.. _mutnomen: http://www.hgvs.org/mutnomen/
+.. _source: https://bitbucket.org/biocommons/hgvs/
+.. _uta: http://bitbucket.org/biocommons/uta/
+.. _mailing list: https://groups.google.com/forum/#!forum/hgvs-discuss
+.. _report an issue: https://bitbucket.org/biocommons/hgvs/issues?status=new&status=open
 
 
 .. |pypi_badge| image:: https://badge.fury.io/py/hgvs.png
