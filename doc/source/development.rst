@@ -92,3 +92,57 @@ BitBucket, commiting your changes there, then sending a pull request.
 If you have a really worthwhile patch, we'll probably accept a
 diff-formatted patch, but that'll make it harder for us and impossible
 for you to get credit.
+
+
+Developing and Contributing to HGVS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* Fork the project at https://bitbucket.org/biocommons/hgvs/
+
+* Clone the project locally with:
+
+    $ hg clone https://bitbucket.org/<your_username>/hgvs
+
+* Create a virtualenv
+
+    $ mkvirtualenv hgvs
+
+* Prepare your environment
+
+    $ make develop
+
+(The Makefile in hgvs wraps functionality in setup.py, and also
+provides many useful utilitarian rules. Type ``make`` to see a list of
+targets.)
+
+* Code away, then commit and push
+
+    $ hg commit -m 'fixes #141: implements Formatter class'
+
+    $ hg push
+
+* If you'd like to contribute back, submit a pull request on the hgvs
+  web site.
+
+
+
+Using a local/alternative UTA instance
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* Install UTA from a PostgreSQL as described at in the UTA_ README.
+
+* Specify an alternate UTA instance.
+
+The easiest way to use a UTA instance other than the default is by
+setting UTA_DB_URL.  The format is
+``postgresql://<user>:<pass>@<host>/<db>/<schema>``. For example:
+
+   ``postgresql://uta_public:uta_public@uta.invitae.com/uta/uta_20140210``
+  
+explicitly selects the public database, and 
+
+   ``postgresql://localhost/uta/uta_20140210``
+ 
+selects a local instance.  Developers can test connectivity like this:
+
+   ``$ UTA_DB_URL=postgresql://localhost/uta/uta_20140210 make test-quick``

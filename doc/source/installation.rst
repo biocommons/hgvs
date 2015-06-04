@@ -7,6 +7,10 @@ The following instructions were tested on Ubuntu 13.10 (Python 2.7.5+),
 Ubuntu 13.04 (Python 2.7.3), and Ubuntu 12.04 (Python 2.7.3).  Other
 platforms and dependency versions are expected to work but are not tested.
 
+``hgvs`` currently requires PostgreSQL client libraries.  We are
+planning to switch to a REST interface and eliminate this dependency
+in mid-2015. On Ubuntu, try ``sudo apt-get install libpq-dev``.
+
 Optionally, first build a virtualenv::
 
   $ sudo apt-get install python2.7 python2.7-dev libpq-dev mercurial virtualenvwrapper
