@@ -19,21 +19,6 @@ Citation:
 | *Bioinformatics*. 2014 Sep 30. `PubMed <http://www.ncbi.nlm.nih.gov/pubmed/25273102>`_ | `Open Access PDF <http://goo.gl/dq2uoW>`_
 
 ----
-  
-Important Notes
----------------
-
-* **You are encouraged to** `browse issues
-  <https://bitbucket.org/biocommons/hgvs/issues>`_. Please report any
-  issues you find.
-* **Use a pip package specification to ensure stay within minor
-  releases for API stability.** For example, ``hgvs >=0.3,<0.4``.
-* **The default branch is development.** Pulling from default will get
-  you a *development* version.  Release versions are determined by
-  tags; updating to a specific version (*e.g.,* ``hg up -r 0.3.0``)
-  will get you exactly that version as on PyPI.
-
-----
 
 Features
 -------- 
@@ -61,6 +46,11 @@ Features
 
 An Example
 ----------
+
+See `Installation instructions
+<http://pythonhosted.org/hgvs/using_hgvs.html#installation>`_ if you
+have installation troubles.
+
 ::
 
   $ mkvirtualenv hgvs-test
@@ -115,59 +105,20 @@ There are `more examples in the documentation <http://pythonhosted.org/hgvs/exam
 
 ----
 
-Developing and Contributing to HGVS
------------------------------------
+Important Notes
+---------------
 
-* Fork the project at https://bitbucket.org/biocommons/hgvs/
-
-* Clone the project locally with:
-
-    $ hg clone https://bitbucket.org/<your_username>/hgvs
-
-* Create a virtualenv
-
-    $ mkvirtualenv hgvs
-
-* Prepare your environment
-
-    $ make develop
-
-(The Makefile in hgvs wraps functionality in setup.py, and also
-provides many useful utilitarian rules. Type ``make`` to see a list of
-targets.)
-
-* Code away, then commit and push
-
-    $ hg commit -m 'fixes #141: implements Formatter class'
-
-    $ hg push
-
-* If you'd like to contribute back, submit a pull request on the hgvs
-  web site.
+* **You are encouraged to** `browse issues
+  <https://bitbucket.org/biocommons/hgvs/issues>`_. Please report any
+  issues you find.
+* **Use a pip package specification to ensure stay within minor
+  releases for API stability.** For example, ``hgvs >=0.3,<0.4``.
+* **The default branch is development.** Pulling from default will get
+  you a *development* version.  Release versions are determined by
+  tags; updating to a specific version (*e.g.,* ``hg up -r 0.3.0``)
+  will get you exactly that version as on PyPI.
 
 
-----
-
-Using a local/alternative UTA instance
---------------------------------------
-
-* Install UTA from a PostgreSQL as described at in the UTA_ README.
-
-* Specify an alternate UTA instance.
-
-The easiest way to use a UTA instance other than the default is by
-setting UTA_DB_URL.  The format is
-``postgresql://<user>:<pass>@<host>/<db>/<schema>``. For example:
-
-   ``postgresql://uta_public:uta_public@uta.invitae.com/uta/uta_20140210``
-  
-explicitly selects the public database, and 
-
-   ``postgresql://localhost/uta/uta_20140210``
- 
-selects a local instance.  Developers can test connectivity like this:
-
-   ``$ UTA_DB_URL=postgresql://localhost/uta/uta_20140210 make test-quick``
 
 
 
