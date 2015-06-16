@@ -77,6 +77,8 @@ def connect(db_url=default_db_url, pooling=False):
 
 
 class UTABase(Interface):
+    required_version = "1.0"
+
     _logger = logging.getLogger(__name__)
 
     sql = {
@@ -144,7 +146,7 @@ class UTABase(Interface):
     def __init__(self, url):
         self.url = url
         self._connect()
-        self._check_schema_version('1')
+        super(UTABase,self).__init__()
         self._logger.info('connected to ' + str(self.url))
 
     def _execute(self, sql, *args):
@@ -152,13 +154,6 @@ class UTABase(Interface):
         cur.execute(sql, *args)
         return cur
 
-    def _check_schema_version(self, required_version):
-        obs_Mm = self.schema_version().split('.')[:2]
-        req_Mm = required_version.split('.')[:2]
-        if (obs_Mm != req_Mm):
-            raise RuntimeError("Version mismatch: Version {req_Mm} required, but {self.url} is version {obs_Mm}".format(
-                req_Mm = '.'.join(req_Mm), self=self, obs_Mm = '.'.join(obs_Mm)))
-        # else no error
 
     ############################################################################
     ## Queries
