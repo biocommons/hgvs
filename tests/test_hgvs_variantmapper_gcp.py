@@ -125,6 +125,11 @@ class Test_VariantMapper(unittest.TestCase):
 
 
     def _test_gcp_mapping(self, rec):
+        """given one record (row) of g, c, and p (optional) test variants, map
+        g->c, c->g, and c->p and verify equivalence
+
+        """
+
         var_g = self.hp.parse_hgvs_variant(rec['HGVSg'])
         var_c = self.hp.parse_hgvs_variant(rec['HGVSc'])
         var_p = self.hp.parse_hgvs_variant(rec['HGVSp']) if rec['HGVSp'] is not None and rec['HGVSp'] != '' else None
