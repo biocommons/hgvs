@@ -14,8 +14,9 @@ import psycopg2.pool
 
 from bioutils.digests import seq_md5
 
-from hgvs.dataproviders.interface import Interface
-from hgvs.decorators.lru_cache import lru_cache
+from ..dataproviders.interface import Interface
+from ..decorators.lru_cache import lru_cache
+from .ncbi import EutilsSeqSlicerMixin
 
 
 _uta_urls = {
@@ -76,7 +77,7 @@ def connect(db_url=default_db_url, pooling=False):
     return conn
 
 
-class UTABase(Interface):
+class UTABase(Interface, EutilsSeqSlicerMixin):
     required_version = "1.0"
 
     _logger = logging.getLogger(__name__)
