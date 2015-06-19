@@ -16,7 +16,7 @@ from bioutils.digests import seq_md5
 
 from ..dataproviders.interface import Interface
 from ..decorators.lru_cache import lru_cache
-from .ncbi import EutilsSeqSlicerMixin
+from .seqfetcher import SeqFetcher
 
 
 _uta_urls = {
@@ -77,7 +77,7 @@ def connect(db_url=default_db_url, pooling=False):
     return conn
 
 
-class UTABase(Interface, EutilsSeqSlicerMixin):
+class UTABase(Interface, SeqFetcher):
     required_version = "1.0"
 
     _logger = logging.getLogger(__name__)
@@ -331,6 +331,7 @@ class UTABase(Interface, EutilsSeqSlicerMixin):
         return cur.fetchone()
 
 
+    # TODO: Deprecate this function in favor SeqFetcherMixin
     @lru_cache(maxsize=128)
     def get_tx_seq(self, ac):
         """return transcript sequence for supplied accession (ac), or None if not found
