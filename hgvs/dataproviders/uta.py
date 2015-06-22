@@ -142,6 +142,12 @@ class UTABase(Interface, SeqFetcher):
             join seq_anno SA on S.seq_id=SA.seq_id
             where ac=?
             """,
+
+        "tx_similar": """
+            select distinct tx_ac1, tx_ac2, cds_eq, es_fp_eq, cds_es_fp_eq
+            from tx_similarity_v
+            where tx_ac1 = ?
+            """
     }
 
     def __init__(self, url):
@@ -377,6 +383,39 @@ class UTABase(Interface, SeqFetcher):
         r = cur.fetchall()
         return r
 
+    @lru_cache(maxsize=128)
+    def get_similar_transcripts(self, tx_ac):
+        """Return a list of transcripts that are similar to the given
+        transcript, with relevant similarity criteria.
+
+        >> sim_tx = hdp.get_similar_transcripts('NM_001285829.1')
+        >> dict(sim_tx[0])
+        { 'cds_eq': False,
+          'cds_es_fp_eq': False,
+          'es_fp_eq': True,
+          'tx_ac1': 'NM_001285829.1',
+          'tx_ac2': 'ENST00000498907' }
+
+        where:
+        * cds_eq means that the CDS sequences are identical
+        * es_fp_eq means that the full exon structures are identical
+          (i.e., incl. UTR)
+        * cds_es_fp_eq means that the cds-clipped portions of the exon
+          structures are identical (i.e., ecluding. UTR)
+        ("es" = "exon set", "fp" = "fingerprint", "eq" = "equal")
+
+        "exon structure" refers to the start and end coordinates on a
+        specified reference sequence. Thus, having the same exon
+        structure means that the transcripts are defined on the same
+        reference sequence and have the same exon spans on that
+        sequence.
+
+        """
+
+        cur = self._execute(self.sql['tx_similar'], [tx_ac])
+        r = cur.fetchall()
+        return r
+
 
 
 class UTA_postgresql(UTABase):
@@ -406,6 +445,7 @@ class UTA_postgresql(UTABase):
 
 
     def _get_cursor(self):
+
         """returns a cursor obtained from a single or pooled connection, and
         sets the postgresql search_path appropriately
 
