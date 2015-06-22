@@ -4,16 +4,10 @@ with open('doc/description.txt') as f:
     long_description = f.read()
 
 
-def version_handler(mgr, options):
-    # runtime import after setup has installed biocommons.dev
-    import biocommons.dev.hgsupport as hdu
-    return hdu.version_handler(mgr, options)
-
-
 setup(
     license = 'Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)',
     long_description = long_description,
-    use_vcs_version = {'version_handler': version_handler},
+    use_scm_version = True,
     zip_safe = True,
 
     author = 'HGVS Contributors',
@@ -52,7 +46,7 @@ setup(
     install_requires = [
         'psycopg2',
         'biopython',
-        'bioutils',
+        'bioutils>=0.0.6',
         'multifastadb',
         'parsley',
         'recordtype',
@@ -60,7 +54,7 @@ setup(
 
     setup_requires = [
         'biocommons.dev',
-        'hgtools',
+        'setuptools_scm',
         'nose',
         'sphinx',
         'sphinxcontrib-fulltoc',
