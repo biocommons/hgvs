@@ -8,13 +8,15 @@ hgvs.normalizer
 
 import hgvs.parser
 import hgvs.dataproviders.uta
-import hgvs.variantmapper
 import hgvs.validator
 import hgvs.posedit
 import hgvs.location
 
 from hgvs.exceptions import HGVSDataNotAvailableError, HGVSValidationError, HGVSNormalizationError
 
+
+from collections import namedtuple
+from itertools   import chain
 
 
 
@@ -25,128 +27,148 @@ class Normalizer(object):
     def __init__(self, hdp, direction=3, fill=True):
         assert direction==3 or direction==5, "The shuffling direction should be 3 (3' most) or 5 (5' most)."
         self.hdp = hdp
-        self.hm  = hgvs.variantmapper.VariantMapper(self.hdp)
         self.direction = direction      #shuffling direction
         self.fill = fill                #fill in nucleotides or strip nucleotides for delins and dup
     
+
     
-    
-    
-    def _get_ref_context(self, var):
-        """Get reference sequence around the variant using dynamic window size
-        """
-        var_x = self.hm.c_to_r(var) if var.type == 'c' else var
-        #var start
-        start = var_x.posedit.pos.start.base
-        #var length
-        length = var_x.posedit.pos.end.base - var_x.posedit.pos.start.base + 1
+    #Code of the normalization utilities were imported from vgraph
+    #https://github.com/bioinformed/vgraph
+    def _trim_common_suffixes(self, strs, min_len=0):
+        '''trim common suffixes'''
         
-        #Get reference sequence. The default window size is three times of the
-        #var length, which is left and right extend by the var length.
-        left_pos = start - length
-        right_pos = start + length + length - 1
-        reference = self._fetch_seq(var_x.type, var_x.ac, left_pos, right_pos)
-        base = left_pos if left_pos > 1 else 1
+        if len(strs) < 2:
+            return 0, strs
         
-        #Extend the reference window if the edge of the window locates in homopolymers or repeats
-        if self.direction == 3:
-            #For 3' end
-            while True:
-                left_pos = right_pos + 1
-                right_pos = left_pos + length - 1
-                tmp_seq = self._fetch_seq(var_x.type, var_x.ac, left_pos, right_pos)
-                if tmp_seq == '': break
-                tmp_seq_len = len(tmp_seq)
-                ref_len = len(reference)
-                i=0
-                while i < tmp_seq_len:
-                    if reference[ref_len-tmp_seq_len+i : ref_len] == tmp_seq[0 : tmp_seq_len-i]:
-                        break
-                    i += 1
-                if i == tmp_seq_len: break
-                reference = reference + tmp_seq[0 : tmp_seq_len-i]
-                right_pos = left_pos + tmp_seq_len - i - 1
-        if self.direction == 5:
-            #For 5' end
-            while True:
-                right_pos = left_pos - 1
-                left_pos = right_pos - length + 1
-                tmp_seq = self._fetch_seq(var_x.type, var_x.ac, left_pos, right_pos)
-                if tmp_seq == '': break
-                tmp_seq_len = len(tmp_seq)
-                i=0
-                while i < tmp_seq_len:
-                    if reference[0 : tmp_seq_len-i] == tmp_seq[i : tmp_seq_len]:
-                        break
-                    i += 1
-                if i == tmp_seq_len: break
-                reference = tmp_seq[i : tmp_seq_len] + reference
-                left_pos = right_pos - tmp_seq_len + i + 1
-            base = right_pos + 1 if right_pos + 1 > 1 else 1
+        rev_strs = [ s[::-1] for s in strs ]
         
-        return list(reference), base
-    
-    
-    
-    
-    
-    
-    
-    def _build_alignment(self, var, reference, base):
-        """Reconstruct the variant sequence against the reference sequence
-        """
-        input = reference[::]
-        if var.posedit.edit.type != 'dup':
-            pos = var.posedit.pos.start.base - base
-        else:
-            pos = var.posedit.pos.end.base - base
+        trimmed, rev_strs = self._trim_common_prefixes(rev_strs, min_len)
         
-        if var.posedit.edit.type == 'sub' or var.posedit.edit.type == 'delins':
-            ref_len = var.posedit.pos.end.base - var.posedit.pos.start.base + 1
-            alt_len = len(var.posedit.edit.alt)
-            #validate whether the ref of the var is the same as the reference sequence
-            if var.posedit.edit.ref_s is not None and var.posedit.edit.ref != ''.join(reference[pos : pos+ref_len]):
-                raise HGVSValidationError(str(var) + ': ' + hgvs.validator.SEQ_ERROR_MSG)
-            #reconstruct the variant alignment
-            if alt_len == ref_len:
-                input[pos : pos+ref_len] = list(var.posedit.edit.alt)
-            elif alt_len < ref_len:
-                input[pos : pos+ref_len] = ['-'] * (ref_len - alt_len) + list(var.posedit.edit.alt)
-            elif alt_len > ref_len:
-                input[pos : pos+ref_len] = list(var.posedit.edit.alt)
-                reference[pos : pos+1] = ['-'] * (alt_len - ref_len) + reference[pos : pos+1]
+        if trimmed:
+            strs = [ s[::-1] for s in rev_strs ]
+        
+        return trimmed, strs
+    
+    
+    def _trim_common_prefixes(self, strs, min_len=0):
+        '''trim common prefixes'''
+        
+        trimmed = 0
+        
+        if len(strs) > 1:
+            s1 = min(strs)
+            s2 = max(strs)
             
-        elif var.posedit.edit.type == 'del':
-            ref_len = var.posedit.edit.ref_n
-            if ref_len is None:
-                ref_len = var.posedit.pos.end.base - var.posedit.pos.start.base + 1
-            #validate whether the ref of the var is the same as the reference sequence
-            if var.posedit.edit.ref_s is not None and var.posedit.edit.ref_s != ''.join(reference[pos : pos+ref_len]):
-                raise HGVSValidationError(str(var) + ': ' + hgvs.validator.SEQ_ERROR_MSG)
-            #reconstruct the variant alignment
-            input[pos : pos+ref_len] = ['-'] * ref_len
-            
-        elif var.posedit.edit.type == 'ins':
-            alt_len = len(var.posedit.edit.alt)
-            input[pos : pos+1] = input[pos : pos+1] + list(var.posedit.edit.alt)
-            reference[pos : pos+1] = reference[pos :pos+1] + ['-'] * alt_len
+            for i in range(len(s1) - min_len):
+                if s1[i] != s2[i]:
+                    break
+                trimmed = i + 1
         
-        elif var.posedit.edit.type == 'dup':
-            dup_len = var.posedit.pos.end.base - var.posedit.pos.start.base + 1
-            if var.posedit.edit.seq is not None and var.posedit.edit.seq != '' and var.posedit.edit.seq != ''.join(reference[pos-dup_len+1 : pos+1]):
-                raise HGVSValidationError(str(var) + ': ' + hgvs.validator.SEQ_ERROR_MSG)
-            input[pos : pos+1] = input[pos : pos+1] + reference[pos-dup_len+1 : pos+1]
-            reference[pos : pos+1] = reference[pos :pos+1] + ['-'] * dup_len
+        if trimmed > 0:
+            strs = [ s[trimmed:] for s in strs ]
         
-        return input
+        return trimmed, strs
     
+    
+    
+    def _normalize_alleles_left(self, ref, start, stop, alleles, bound, ref_step, shuffle=True):
+        '''Normalize loci by removing extraneous reference padding'''
+        
+        normalized_alleles = namedtuple('shuffled_alleles', 'start stop alleles')
+        
+        if len(alleles) < 2 or start <= 0 or stop <= 0:
+            return normalized_alleles(start, stop, alleles)
+        
+        # STEP 1: Trim common suffix
+        trimmed, alleles = self._trim_common_suffixes(alleles)
+        stop -= trimmed
+        
+        # STEP 2: Trim common prefix
+        trimmed, alleles = self._trim_common_prefixes(alleles)
+        start += trimmed
+        
+        #assert bound <= start,'start={:d}, left bound={:d}'.format(start, bound)
+        
+        # STEP 3: While a null allele exists, left shuffle by prepending alleles
+        #         with reference and trimming common suffixes
+        while shuffle and '' in alleles and start > bound:
+            step = min(ref_step, start - bound)
+            
+            r = ref[start-step : start].upper()
+            new_alleles = [ r+a for a in alleles ]
+            
+            trimmed, new_alleles = self._trim_common_suffixes(new_alleles)
+            
+            if not trimmed:
+                break
+            
+            start -= trimmed
+            stop  -= trimmed
+            
+            if trimmed == step:
+                alleles = new_alleles
+            else:
+                left    = step - trimmed
+                alleles = [ a[left:] for a in new_alleles ]
+                break
+        
+        return normalized_alleles(start, stop, tuple(alleles))
+    
+    
+    def _normalize_alleles_right(self, ref, start, stop, alleles, bound, ref_step, shuffle=True):
+        '''Normalize loci by removing extraneous reference padding'''
+        
+        normalized_alleles = namedtuple('shuffled_alleles', 'start stop alleles')
+        
+        chrom_stop = len(ref)
+        
+        if len(alleles) < 2 or stop >= chrom_stop:
+            return normalized_alleles(start, stop, alleles)
+        
+        # STEP 1: Trim common prefix
+        trimmed, alleles = self._trim_common_prefixes(alleles)
+        start += trimmed
+        
+        # STEP 2: Trim common suffix
+        trimmed, alleles = self._trim_common_suffixes(alleles)
+        stop -= trimmed
+        
+        #assert bound >= stop,'stop={:d}, right bound={:d}'.format(stop, bound)
+        
+        # STEP 3: While a null allele exists, right shuffle by appending alleles
+        #         with reference and trimming common prefixes
+        while shuffle and '' in alleles and stop < bound:
+            step = min(ref_step, bound - stop)
+            
+            r = ref[stop:stop+step].upper()
+            new_alleles = [ a+r for a in alleles ]
+            
+            trimmed, new_alleles = self._trim_common_prefixes(new_alleles)
+            
+            if not trimmed:
+                break
+            
+            start += trimmed
+            stop  += trimmed
+            
+            if trimmed == step:
+                alleles = new_alleles
+            else:
+                left    = step - trimmed
+                alleles = [ a[:-left] for a in new_alleles ]
+                break
+        
+        return normalized_alleles(start, stop, tuple(alleles))
+    #End of code from vgraph
     
     
     
     
     
     def _fetch_seq(self, type, ac, start, end):
-        """Fetch reference sequence from hgvs data provider
+        """Fetch reference sequence from hgvs data provider.
+           
+           The start posotion is 0 and the interval is half open
         """
         try:
             if type == 'r' or type == 'c' or type == 'n':
@@ -164,72 +186,114 @@ class Normalizer(object):
         except TypeError:
             raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
         
-        start = start - 1 if start >= 1 else 0
+        start = start if start >= 0 else 0
         end = end if end <= len(seq) else len(seq)
         return seq[start:end]
     
     
     
     
-    def _right_shuffle(self, input, reference):
-        """Shuffling variants to 3' most position
+    def _get_ref_alt(self, var):
+        """Get reference allele and alternative allele of the variant
         """
-        i = 0
-        while i < len(input)-1:
-            if input[i] == '-':
-                end = i + 1
-                while end < len(input) and input[end] == input[i]:
-                    end += 1
-                if end == len(input):
-                    break
-                j = 0
-                while end + j < len(input) and input[end + j] == reference[i + j]:
-                    j += 1
-                if j == 0:
-                    i = end
-                    continue
-                tmp = input[end : end+j]
-                input[i+j : end+j] = input[i : end]
-                input[i : i+j] = tmp
-                i = end + j
-            else:
-                i += 1
-        i = 0
-        while i < len(reference)-1:
-            if reference[i] == '-':
-                end = i + 1
-                while end < len(reference) and reference[end] == reference[i]:
-                    end += 1
-                if end == len(reference):
-                    break
-                j = 0
-                while end + j < len(reference) and reference[end + j] == input[i + j]:
-                    j += 1
-                if j == 0:
-                    i = end
-                    continue
-                tmp = reference[end : end+j]
-                reference[i+j : end+j] = reference[i : end]
-                reference[i : i+j] = tmp
-                i = end + j
-            else:
-                i += 1
         
-        return input, reference
+        #Get reference allele
+        if var.posedit.edit.type == 'ins':
+            ref = ''
+        elif var.posedit.edit.type == 'dup':
+            if var.posedit.edit.seq:
+                ref = self._fetch_seq(var.type, var.ac, var.posedit.pos.start.base-1, var.posedit.pos.end.base)
+                #validate whether the ref of the var is the same as the reference sequence
+                if var.posedit.edit.seq != ref:
+                    raise HGVSValidationError(str(var) + ': ' + hgvs.validator.SEQ_ERROR_MSG)
+            ref = ''
+        else:
+            ref = self._fetch_seq(var.type, var.ac, var.posedit.pos.start.base-1, var.posedit.pos.end.base)
+            #validate whether the ref of the var is the same as the reference sequence
+            if var.posedit.edit.ref_s is not None and var.posedit.edit.ref != '' and var.posedit.edit.ref != ref:
+                raise HGVSValidationError(str(var) + ': ' + hgvs.validator.SEQ_ERROR_MSG)
+        ref = ref.encode('ascii')
+        
+        #Get alternative allele
+        if var.posedit.edit.type == 'sub' or var.posedit.edit.type == 'delins' or var.posedit.edit.type == 'ins':
+            alt = var.posedit.edit.alt
+        elif var.posedit.edit.type == 'del':
+            alt = ''
+        elif var.posedit.edit.type == 'dup':
+            alt = var.posedit.edit.seq or self._fetch_seq(var.type, var.ac, var.posedit.pos.start.base-1, var.posedit.pos.end.base)
+        elif var.posedit.edit.type == 'inv':
+            alt = ref[::-1]
+        alt = alt.encode('ascii')
+        
+        return ref, alt
     
     
     
     
     
-    def _left_shuffle(self, input, reference):
-        """Shuffling variants to 5' most position
+    def _normalize_alleles(self, var):
+        """Normalize the variant until it could not be shuffled
         """
-        input.reverse()
-        reference.reverse()
-        input, reference = self._right_shuffle(input, reference)
-        reference.reverse()
-        input.reverse()
-        return input, reference
+        
+        ref, alt = self._get_ref_alt(var)
+        
+        win_size = max(len(ref), len(alt)) * 2
+        
+        if self.direction == 3:
+            if var.posedit.edit.type == 'ins':
+                base  = var.posedit.pos.start.base
+                start = 1
+                stop  = 1
+            elif var.posedit.edit.type == 'dup':
+                base  = var.posedit.pos.end.base
+                start = 1
+                stop  = 1
+            else:
+                base  = var.posedit.pos.start.base
+                start = 0
+                stop  = var.posedit.pos.end.base - base + 1
+            
+            while True:
+                ref_seq = self._fetch_seq(var.type, var.ac, base - 1, base -1 + win_size)
+                if ref_seq == '':
+                    break
+                orig_start, orig_stop = start, stop
+                start, stop, (ref, alt) = self._normalize_alleles_right(ref_seq, start, stop, (ref, alt), len(ref_seq), 1)
+                if stop < len(ref_seq):
+                    break
+                #if stop at the end of the window, try to extend the shuffling to the right
+                base += start - orig_start
+                stop -= start - orig_start
+                start = orig_start
+            
+        elif self.direction == 5:
+            if var.posedit.edit.type == 'ins':
+                base  = var.posedit.pos.end.base - win_size + 1
+                start = win_size - 1
+                stop  = win_size - 1
+            elif var.posedit.edit.type == 'dup':
+                base  = var.posedit.pos.end.base - win_size + 1
+                start = win_size
+                stop  = win_size
+            else:
+                base  = var.posedit.pos.end.base - win_size + 1
+                start = var.posedit.pos.start.base - base
+                stop  = win_size
+            
+            while True:
+                ref_seq = self._fetch_seq(var.type, var.ac, base - 1, base -1 + win_size)
+                if ref_seq == '':
+                    break
+                orig_start, orig_stop = start, stop
+                start, stop, (ref, alt) = self._normalize_alleles_left(ref_seq, start, stop, (ref, alt), 0, 1)
+                if start > 0:
+                    break
+                #if stop at the end of the window, try to extend the shuffling to the left
+                base -= orig_stop - stop
+                start += orig_stop - stop
+                stop = orig_stop
+        
+        return base + start, base + stop, (ref, alt)
     
     
     
@@ -243,62 +307,18 @@ class Normalizer(object):
         if var.posedit.uncertain:
             return var
         
-        reference, base = self._get_ref_context(var)
-        input = self._build_alignment(var, reference, base)
-        if self.direction == 3:
-            input, reference = self._right_shuffle(input, reference)
-        elif self.direction == 5:
-            input, reference = self._left_shuffle(input, reference)
+        start, end, (ref, alt) = self._normalize_alleles(var)
         
-        #Remove positions that both input and reference are null
-        i = 0
-        while i < len(reference):
-            if input[i] == '-' and reference[i] == '-':
-                del input[i]
-                del reference[i]
-                if i == 0:
-                    base += 1
-            else:
-                i += 1
-        
-        
-        #Left trim of common base pairs
-        start = 0
-        while start < len(reference) and input[start] == reference[start]:
-            start += 1
-        
-        #Right trim of common base pairs
-        end = len(reference) - 1
-        while end >= start and input[end] == reference[end]:
-            end -= 1
-        
-        #ref and alt are identity
-        if start > end:
-            return var
-        
-        ref = reference[start : end + 1]
-        alt = input[start : end + 1]
-        while len(ref) != 0 and ref[0] == '-':
-            del ref[0]
-        while len(ref) != 0 and ref[len(ref) - 1] == '-':
-            del ref[len(ref) - 1]
-        while len(alt) != 0 and alt[0] == '-':
-            del alt[0]
-        while len(alt) != 0 and alt[len(alt) - 1] == '-':
-            del alt[len(alt) - 1]
-        
-        ref = ''.join(ref)
-        alt = ''.join(alt)
         ref_len = len(ref)
         alt_len = len(alt)
         
         
         #Generate normalized variant        
         if alt_len == ref_len:
-            ref_start = base + start
-            ref_end   = base + end
+            ref_start = start
+            ref_end   = end - 1
             #substitution
-            if start == end:
+            if start == end - 1:
                 edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
             #delins
             else:
@@ -307,8 +327,8 @@ class Normalizer(object):
                 else:
                     edit = hgvs.edit.NARefAlt(ref='', alt=alt)
         elif alt_len < ref_len:
-            ref_start = base + start
-            ref_end   = base + end
+            ref_start = start
+            ref_end   = end - 1
             #del
             if alt_len == 0:
                 if self.fill:
@@ -324,23 +344,32 @@ class Normalizer(object):
         elif alt_len > ref_len:
             #ins or dup
             if ref_len == 0:
+                left_seq  = self._fetch_seq(var.type, var.ac, start-alt_len-1, end-1) if self.direction == 3 else ''
+                right_seq = self._fetch_seq(var.type, var.ac, start-1, start+alt_len-1) if self.direction == 5 else ''
                 #dup
-                if alt == ''.join(reference[start-alt_len : start]):
-                    ref_start = base + start - alt_len
-                    ref_end   = base + start - 1
+                if alt == left_seq:
+                    ref_start = start - alt_len
+                    ref_end   = end - 1
+                    if self.fill:
+                        edit = hgvs.edit.Dup(seq=alt)
+                    else:
+                        edit = hgvs.edit.Dup(seq='')
+                elif alt == right_seq:
+                    ref_start = start
+                    ref_end   = start + alt_len - 1
                     if self.fill:
                         edit = hgvs.edit.Dup(seq=alt)
                     else:
                         edit = hgvs.edit.Dup(seq='')
                 #ins
                 else:
-                    ref_start = base + start -1
-                    ref_end   = ref_start + 1
+                    ref_start = start - 1
+                    ref_end   = end
                     edit = hgvs.edit.NARefAlt(ref=None, alt=alt)
             #delins
             else:
-                ref_start = base + start
-                ref_end = ref_start + ref_len -1
+                ref_start = start
+                ref_end   = end -1
                 if self.fill:
                     edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
                 else:
@@ -363,9 +392,9 @@ class Normalizer(object):
 
 if __name__ == '__main__':
     hgvsparser = hgvs.parser.Parser()
-    var = hgvsparser.parse_hgvs_variant('NM_001166478.1:c.31del')
+    var = hgvsparser.parse_hgvs_variant('NM_001166478.1:c.30_31insT')
     hdp = hgvs.dataproviders.uta.connect()
-    norm = Normalizer(hdp, direction=3)
+    norm = Normalizer(hdp, direction=5)
     res  = norm.normalize(var)
     print(str(var) + '    =>    ' + str(res))
 

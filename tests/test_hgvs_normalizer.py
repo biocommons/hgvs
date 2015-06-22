@@ -32,13 +32,15 @@ class Test_HGVSNormalizer(unittest.TestCase):
         self.assertEqual( str(self.norm.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.36_37insTC')))  ,'NM_001166478.1:c.36_37dupCT')
         self.assertEqual( str(self.norm.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.35_36dup')))  ,'NM_001166478.1:c.36_37dupCT')
         self.assertEqual( str(self.norm.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.2_7delinsTTTAGA')))  ,'NM_001166478.1:c.3_4delGAinsTT')
+        self.assertEqual( str(self.norm.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.30_31insT')))  ,'NM_001166478.1:c.35dupT')
         
         #5' shuffling
-        self.assertEqual( str(self.norm5.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.31del')))  ,'NM_001166478.1:c.31delT')
-        self.assertEqual( str(self.norm5.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.35_36insT')))  ,'NM_001166478.1:c.30_31insT')
-        self.assertEqual( str(self.norm5.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.36_37insTC')))  ,'NM_001166478.1:c.34_35insTC')
-        self.assertEqual( str(self.norm5.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.35_36dup')))  ,'NM_001166478.1:c.34_35insTC')
-        self.assertEqual( str(self.norm5.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.2_7delinsTTTAGA')))  ,'NM_001166478.1:c.2_7delATGAAGinsTTTAGA')
+        self.assertEqual( str(self.norm5.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.34del')))  ,'NM_001166478.1:c.31delT')
+        self.assertEqual( str(self.norm5.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.35_36insT')))  ,'NM_001166478.1:c.31dupT')
+        self.assertEqual( str(self.norm5.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.36_37insTC')))  ,'NM_001166478.1:c.35_36dupTC')
+        self.assertEqual( str(self.norm5.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.35_36dup')))  ,'NM_001166478.1:c.35_36dupTC')
+        self.assertEqual( str(self.norm5.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.2_7delinsTTTAGA')))  ,'NM_001166478.1:c.3_4delGAinsTT')
+        self.assertEqual( str(self.norm5.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.30_31insT')))  ,'NM_001166478.1:c.31dupT')
         
         #No fill
         self.assertEqual( str(self.normf.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.31del')))  ,'NM_001166478.1:c.35del')
@@ -46,6 +48,7 @@ class Test_HGVSNormalizer(unittest.TestCase):
         self.assertEqual( str(self.normf.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.36_37insTC')))  ,'NM_001166478.1:c.36_37dup')
         self.assertEqual( str(self.normf.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.35_36dup')))  ,'NM_001166478.1:c.36_37dup')
         self.assertEqual( str(self.normf.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.2_7delinsTTTAGA')))  ,'NM_001166478.1:c.3_4delinsTT')
+        self.assertEqual( str(self.normf.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.30_31insT')))  ,'NM_001166478.1:c.35dup')
     
 
 
