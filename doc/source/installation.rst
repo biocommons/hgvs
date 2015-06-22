@@ -7,9 +7,15 @@ The following instructions were tested on Ubuntu 13.10 (Python 2.7.5+),
 Ubuntu 13.04 (Python 2.7.3), and Ubuntu 12.04 (Python 2.7.3).  Other
 platforms and dependency versions are expected to work but are not tested.
 
-``hgvs`` currently requires PostgreSQL client libraries.  We are
+``hgvs`` currently requires PostgreSQL client libraries.  (We are
 planning to switch to a REST interface and eliminate this dependency
-in mid-2015. On Ubuntu, try ``sudo apt-get install libpq-dev``.
+in mid-2015.)  On Ubuntu, try::
+
+  apt-get install libpq-dev
+
+On a Mac with homebrew::
+
+  brew install postgresql
 
 Optionally, first build a virtualenv::
 
