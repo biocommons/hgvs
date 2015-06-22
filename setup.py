@@ -50,6 +50,7 @@ setup(
         'multifastadb',
         'parsley',
         'recordtype',
+        'requests',
     ],
 
     setup_requires = [
