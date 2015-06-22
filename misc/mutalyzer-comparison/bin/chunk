@@ -1,0 +1,22 @@
+#!/usr/bin/perl
+
+my $chunk_size = 50000;
+
+print("truncate reece.snp_hgvs;\n");
+
+my $open = 0;
+
+while (<>) {
+    if (not $open) {
+	print("COPY reece.snp_hgvs FROM STDIN;\n");
+	$open = 1
+    }
+ 
+   print;
+ 
+   if ($. % $chunk_size == 0) {
+	print("\\.\n");
+	$open = 0;
+	print("\\echo $.\n");
+    }
+}
