@@ -23,7 +23,7 @@ _uta_urls = {
     # these are provided for developer convenience
     "local": "postgresql://localhost/uta/uta_20140210",
     "local-dev": "postgresql://localhost/uta_dev/uta1",
-    "public": "postgresql://uta_public:uta_public@uta.invitae.com/uta/uta_20140210",
+    "public": "postgresql://uta_public:uta_public@uta.invitae.com/uta/uta_20150623",
     "public-dev": "postgresql://uta_public:uta_public@uta.invitae.com/uta_dev/uta1",
     "sqlite-dev": "sqlite:/home/reece/projects/biocommons/hgvs/tests/db/uta-test-1.db",
 }
