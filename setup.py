@@ -50,11 +50,10 @@ setup(
         'multifastadb',
         'parsley',
         'recordtype',
-        'requests',
+        'requests>=1.0.0',
     ],
 
     setup_requires = [
-        'biocommons.dev',
         'setuptools_scm',
         'nose',
         'sphinx',
