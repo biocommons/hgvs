@@ -47,7 +47,7 @@ def connect(db_url=default_db_url, pooling=False):
 
     >>> hdp = connect()
     >>> hdp.schema_version()
-    '1'
+    '1.1'
 
     The format of the db_url is driver://user:pass@host/database (the same
     as that used by SQLAlchemy).  Examples:
@@ -492,6 +492,11 @@ class UTA_postgresql(UTABase):
 
 
 class UTA_sqlite(UTABase):
+    # TODO: implement mocks (issue #237) The current sqlite db was
+    # based on schema v1. No tests currently use 1.1 features from
+    # sqlite, so we override the required_version here.
+    required_version = "1"
+
     def _connect(self):
         def _sqlite3_row_dict_factory(cur, row):
             "convert sqlite row to dict"
