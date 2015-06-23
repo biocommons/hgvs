@@ -47,7 +47,7 @@ class Interface(object):
         if av[0] == rv[0] and av[1] >= rv[1]:
             return True
 
-        raise RuntimeError("Incompatible versions: {k} requires version {rv}, but {self.url} provides version {av}".format(
+        raise RuntimeError("Incompatible versions: {k} requires schema version {rv}, but {self.url} provides version {av}".format(
             k = type(self).__name__, self = self, rv = self.required_version, av = self.schema_version()))
 
 
