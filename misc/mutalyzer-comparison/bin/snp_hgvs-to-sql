@@ -1,0 +1,13 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+while (<>) {
+    next unless s/^INSERT INTO `SNP_HGVS` VALUES //;
+    s/\),\(/\n/g;
+    s/\(//;
+    s/'//g;
+    s/,/\t/g;
+    print;
+}
