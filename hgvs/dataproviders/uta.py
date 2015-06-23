@@ -78,7 +78,7 @@ def connect(db_url=default_db_url, pooling=False):
 
 
 class UTABase(Interface, SeqFetcher):
-    required_version = "1.0"
+    required_version = "1.1"
 
     _logger = logging.getLogger(__name__)
 
@@ -147,7 +147,11 @@ class UTABase(Interface, SeqFetcher):
             select distinct tx_ac1, tx_ac2, cds_eq, es_fp_eq, cds_es_fp_eq
             from tx_similarity_v
             where tx_ac1 = ?
-            """
+            """,
+    
+        "tx_to_pro": """
+            select * from preferred_accession where tx_ac = ?
+            """,
     }
 
     def __init__(self, url):
@@ -416,6 +420,16 @@ class UTABase(Interface, SeqFetcher):
         r = cur.fetchall()
         return r
 
+    def get_pro_ac_for_tx_ac(self, tx_ac):
+        """Return the (single) preferred protein accession for a given transcript
+        accession, or None if not found."""
+
+        cur = self._execute(self.sql['tx_to_pro'], [tx_ac])
+        r = cur.fetchall()
+        try:
+            return r[0]['pro_ac']
+        except IndexError:
+            return None
 
 
 class UTA_postgresql(UTABase):
