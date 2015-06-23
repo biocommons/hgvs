@@ -14,8 +14,11 @@ import hgvs.location
 
 from hgvs.exceptions import HGVSDataNotAvailableError, HGVSValidationError, HGVSNormalizationError
 
+try:
+    from vgraph.norm import normalize_alleles
+except ImportError:
+    from hgvs.utils.norm import normalize_alleles
 
-from collections import namedtuple
 
 
 
@@ -31,137 +34,6 @@ class Normalizer(object):
         self.cross     = cross          #whether allow the shuffling to cross the exon-intron boundary
         self.fill      = fill           #fill in nucleotides or strip nucleotides for delins and dup
         self.mapping   = mapping        #transcript mapping method
-    
-
-    
-    #Code of the normalization utilities were imported from vgraph
-    #https://github.com/bioinformed/vgraph
-    def _trim_common_suffixes(self, strs, min_len=0):
-        '''trim common suffixes'''
-        
-        if len(strs) < 2:
-            return 0, strs
-        
-        rev_strs = [ s[::-1] for s in strs ]
-        
-        trimmed, rev_strs = self._trim_common_prefixes(rev_strs, min_len)
-        
-        if trimmed:
-            strs = [ s[::-1] for s in rev_strs ]
-        
-        return trimmed, strs
-    
-    
-    def _trim_common_prefixes(self, strs, min_len=0):
-        '''trim common prefixes'''
-        
-        trimmed = 0
-        
-        if len(strs) > 1:
-            s1 = min(strs)
-            s2 = max(strs)
-            
-            for i in range(len(s1) - min_len):
-                if s1[i] != s2[i]:
-                    break
-                trimmed = i + 1
-        
-        if trimmed > 0:
-            strs = [ s[trimmed:] for s in strs ]
-        
-        return trimmed, strs
-    
-    
-    
-    def _normalize_alleles_left(self, ref, start, stop, alleles, bound, ref_step, shuffle=True):
-        '''Normalize loci by removing extraneous reference padding'''
-        
-        normalized_alleles = namedtuple('shuffled_alleles', 'start stop alleles')
-        
-        if len(alleles) < 2 or start <= 0 or stop <= 0:
-            return normalized_alleles(start, stop, alleles)
-        
-        # STEP 1: Trim common suffix
-        trimmed, alleles = self._trim_common_suffixes(alleles)
-        stop -= trimmed
-        
-        # STEP 2: Trim common prefix
-        trimmed, alleles = self._trim_common_prefixes(alleles)
-        start += trimmed
-        
-        #assert bound <= start,'start={:d}, left bound={:d}'.format(start, bound)
-        
-        # STEP 3: While a null allele exists, left shuffle by prepending alleles
-        #         with reference and trimming common suffixes
-        while shuffle and '' in alleles and start > bound:
-            step = min(ref_step, start - bound)
-            
-            r = ref[start-step : start].upper()
-            new_alleles = [ r+a for a in alleles ]
-            
-            trimmed, new_alleles = self._trim_common_suffixes(new_alleles)
-            
-            if not trimmed:
-                break
-            
-            start -= trimmed
-            stop  -= trimmed
-            
-            if trimmed == step:
-                alleles = new_alleles
-            else:
-                left    = step - trimmed
-                alleles = [ a[left:] for a in new_alleles ]
-                break
-        
-        return normalized_alleles(start, stop, tuple(alleles))
-    
-    
-    def _normalize_alleles_right(self, ref, start, stop, alleles, bound, ref_step, shuffle=True):
-        '''Normalize loci by removing extraneous reference padding'''
-        
-        normalized_alleles = namedtuple('shuffled_alleles', 'start stop alleles')
-        
-        chrom_stop = len(ref)
-        
-        if len(alleles) < 2 or stop >= chrom_stop:
-            return normalized_alleles(start, stop, alleles)
-        
-        # STEP 1: Trim common prefix
-        trimmed, alleles = self._trim_common_prefixes(alleles)
-        start += trimmed
-        
-        # STEP 2: Trim common suffix
-        trimmed, alleles = self._trim_common_suffixes(alleles)
-        stop -= trimmed
-        
-        #assert bound >= stop,'stop={:d}, right bound={:d}'.format(stop, bound)
-        
-        # STEP 3: While a null allele exists, right shuffle by appending alleles
-        #         with reference and trimming common prefixes
-        while shuffle and '' in alleles and stop < bound:
-            step = min(ref_step, bound - stop)
-            
-            r = ref[stop:stop+step].upper()
-            new_alleles = [ a+r for a in alleles ]
-            
-            trimmed, new_alleles = self._trim_common_prefixes(new_alleles)
-            
-            if not trimmed:
-                break
-            
-            start += trimmed
-            stop  += trimmed
-            
-            if trimmed == step:
-                alleles = new_alleles
-            else:
-                left    = step - trimmed
-                alleles = [ a[:-left] for a in new_alleles ]
-                break
-        
-        return normalized_alleles(start, stop, tuple(alleles))
-    #End of code from vgraph
     
     
     
@@ -302,7 +174,7 @@ class Normalizer(object):
                 if ref_seq == '':
                     break
                 orig_start, orig_stop = start, stop
-                start, stop, (ref, alt) = self._normalize_alleles_right(ref_seq, start, stop, (ref, alt), len(ref_seq), win_size)
+                start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt), len(ref_seq), win_size, False)
                 if stop < len(ref_seq) or start == orig_start:
                     break
                 #if stop at the end of the window, try to extend the shuffling to the right
@@ -329,7 +201,7 @@ class Normalizer(object):
                 if ref_seq == '':
                     break
                 orig_start, orig_stop = start, stop
-                start, stop, (ref, alt) = self._normalize_alleles_left(ref_seq, start, stop, (ref, alt), 0, win_size)
+                start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt), 0, win_size, True)
                 if start > 0 or stop == orig_stop:
                     break
                 #if stop at the end of the window, try to extend the shuffling to the left
