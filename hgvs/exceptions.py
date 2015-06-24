@@ -19,6 +19,9 @@ class HGVSValidationError(HGVSError):
 class HGVSDataNotAvailableError(HGVSError):
     pass
 
+class HGVSNormalizationError(HGVSError):
+    pass
+
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
