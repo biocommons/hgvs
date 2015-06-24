@@ -12,7 +12,7 @@ import hgvs.validator
 import hgvs.posedit
 import hgvs.location
 
-from hgvs.exceptions import HGVSDataNotAvailableError, HGVSValidationError, HGVSNormalizationError
+from hgvs.exceptions import HGVSDataNotAvailableError, HGVSValidationError, HGVSUnsupportedNormalizationError
 
 try:
     from vgraph.norm import normalize_alleles
@@ -26,14 +26,21 @@ class Normalizer(object):
     """Perform variant normalization
     """
     
-    def __init__(self, hdp, direction=3, cross=True, fill=True, mapping='splign'):
+    def __init__(self, hdp, direction=3, cross=True, fill=True, alt_aln_method='splign'):
+        """Initialize and configure the normalizer
+
+        :param hdp: HGVS Data Provider Interface-compliant instance (see :class:`hgvs.dataproviders.interface.Interface`)
+        :param direction: shuffling direction
+        :param cross: whether allow the shuffling to cross the exon-intron boundary
+        :param fill: fill in nucleotides or strip nucleotides for delins and dup
+        :param alt_aln_method: sequence alignment method (e.g., splign, blat)
+        """
         assert direction==3 or direction==5, "The shuffling direction should be 3 (3' most) or 5 (5' most)."
-        assert mapping=='splign' or mapping=='blat', "The mapping method should be splign or blat."
         self.hdp = hdp
-        self.direction = direction      #shuffling direction
-        self.cross     = cross          #whether allow the shuffling to cross the exon-intron boundary
-        self.fill      = fill           #fill in nucleotides or strip nucleotides for delins and dup
-        self.mapping   = mapping        #transcript mapping method
+        self.direction = direction
+        self.cross     = cross
+        self.fill      = fill
+        self.alt_aln_method = alt_aln_method
     
     
     
@@ -48,26 +55,32 @@ class Normalizer(object):
             else:
                 #Get genomic sequence access number for this transcript
                 map_info = self.hdp.get_tx_mapping_options(var.ac)
-                map_info = [ item for item in map_info if item['alt_aln_method'] == self.mapping ]
+                map_info = [ item for item in map_info if item['alt_aln_method'] == self.alt_aln_method ]
                 alt_ac   = map_info[0]['alt_ac']
                 
                 #Get exon info
-                exon_info = self.hdp.get_tx_exons(var.ac, alt_ac, self.mapping)
+                exon_info = self.hdp.get_tx_exons(var.ac, alt_ac, self.alt_aln_method)
                 exon_starts = [ exon['tx_start_i'] for exon in exon_info ]
                 exon_ends   = [ exon['tx_end_i'] for exon in exon_info ]
                 exon_starts.sort()
                 exon_ends.sort()
                 
                 #Find the end pos of the exon where the var locates
-                for end in exon_ends:
+                for end_i, end in enumerate(exon_ends):
                     if var.posedit.pos.end.base <= end:
                         break
                 #Find the start pos of the exon where the var locates
                 start = None
-                for pos in exon_starts:
+                start_i = None
+                for i, pos in enumerate(exon_starts):
                     if var.posedit.pos.start.base < pos:
                         break
                     start = pos
+                    start_i = i
+                
+                #If the variant spans the exon-intron boundary, raise an error
+                if start_i != end_i:
+                    raise HGVSUnsupportedNormalizationError("Unsupported normalization of variants spanning the exon-intron boundary")
                 
                 return start, end
             
@@ -92,15 +105,9 @@ class Normalizer(object):
             if type == 'r' or type == 'c' or type == 'n':
                 seq = self.hdp.get_tx_seq(ac)
                 
-            elif type == 'g':
+            elif type == 'g' or type == 'm':
                 raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
-                
-            elif type == 'p':
-                raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
-                
-            elif type == 'm':
-                raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
-                
+            
         except TypeError:
             raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
         
@@ -140,6 +147,8 @@ class Normalizer(object):
             alt = var.posedit.edit.seq or self._fetch_seq(var.type, var.ac, var.posedit.pos.start.base-1, var.posedit.pos.end.base, boundary)
         elif var.posedit.edit.type == 'inv':
             alt = ref[::-1]
+        elif var.posedit.edit.type == 'identity':
+            alt = ref
         alt = alt.encode('ascii')
         
         return ref, alt
@@ -222,6 +231,18 @@ class Normalizer(object):
         
         if var.posedit.uncertain:
             return var
+        
+        if var.type == 'p':
+            raise HGVSUnsupportedNormalizationError("Unsupported normalization of protein level variants")
+        if isinstance(var.posedit.pos.start, hgvs.location.BaseOffsetPosition) and var.posedit.pos.start.offset != 0:
+            raise HGVSUnsupportedNormalizationError("Unsupported normalization of intron variants at CDS and transcript level")
+        if isinstance(var.posedit.pos.end, hgvs.location.BaseOffsetPosition) and var.posedit.pos.end.offset != 0:
+            raise HGVSUnsupportedNormalizationError("Unsupported normalization of intron variants at CDS and transcript level")
+        if isinstance(var.posedit.pos.start, hgvs.location.BaseOffsetPosition) and var.posedit.pos.start.base < 0:
+            raise HGVSUnsupportedNormalizationError("Unsupported normalization of UTR variants at CDS and transcript level")
+        if isinstance(var.posedit.pos.end, hgvs.location.BaseOffsetPosition) and var.posedit.pos.end.base < 0:
+            raise HGVSUnsupportedNormalizationError("Unsupported normalization of UTR variants at CDS and transcript level")
+        
         
         bound_s, bound_e = self._get_boundary(var)
         boundary = (bound_s, bound_e)
