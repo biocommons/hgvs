@@ -50,7 +50,7 @@ class SeqFetcher(object):
 
     _ac_dispatch = [
         {'re': re.compile('^ENS[TP]\d+'), 'fetcher': _fetch_seq_ensembl},
-        {'re': re.compile('^(?:N[CGPRTW]|AC|GL)_|^U\d+'), 'fetcher': _fetch_seq_ncbi},
+        {'re': re.compile('^(?:N[MCGPRTW]|AC|GL)_|^U\d+'), 'fetcher': _fetch_seq_ncbi},
         ]
 
     def fetch_seq(self, ac, start_i=None, end_i=None):
