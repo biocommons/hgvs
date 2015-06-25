@@ -7,12 +7,13 @@ from nose.plugins.attrib import attr
 
 from hgvs.exceptions import HGVSUnsupportedNormalizationError
 import hgvs.dataproviders.uta
+import hgvs.dataproviders.seqfetcher
 import hgvs.variantmapper
 import hgvs.parser
 import hgvs.normalizer
 
 hdp = hgvs.dataproviders.uta.connect()
-
+hsf = hgvs.dataproviders.seqfetcher.SeqFetcher()
 
 @attr(tags=["normalization"])
 class Test_HGVSNormalizer(unittest.TestCase):
@@ -20,11 +21,11 @@ class Test_HGVSNormalizer(unittest.TestCase):
 
     def setUp(self):
         self.hp = hgvs.parser.Parser()
-        self.norm   = hgvs.normalizer.Normalizer(hdp)
-        self.norm5  = hgvs.normalizer.Normalizer(hdp, direction=5)
-        self.normf  = hgvs.normalizer.Normalizer(hdp, direction=3, fill=False)
-        self.normc  = hgvs.normalizer.Normalizer(hdp, direction=3, cross=False)
-        self.norm5c = hgvs.normalizer.Normalizer(hdp, direction=5, cross=False)
+        self.norm   = hgvs.normalizer.Normalizer(hdp, hsf)
+        self.norm5  = hgvs.normalizer.Normalizer(hdp, hsf, direction=5)
+        self.normf  = hgvs.normalizer.Normalizer(hdp, hsf, direction=3, fill=False)
+        self.normc  = hgvs.normalizer.Normalizer(hdp, hsf, direction=3, cross=False)
+        self.norm5c = hgvs.normalizer.Normalizer(hdp, hsf, direction=5, cross=False)
 
     def test_c_normalizer(self):
         """Test normalizer for variant type c."""
@@ -58,6 +59,33 @@ class Test_HGVSNormalizer(unittest.TestCase):
         self.assertEqual( str(self.normc.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.59delG')))  ,'NM_001166478.1:c.60delG')
         self.assertEqual( str(self.norm5c.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.61delG')))  ,'NM_001166478.1:c.61delG')
         self.assertRaises(HGVSUnsupportedNormalizationError, self.normc.normalize, self.hp.parse_hgvs_variant('NM_001166478.1:c.59_61del'))
+    
+    
+    def test_g_normalizer(self):
+        """Test normalizer for variant type g."""
+        #3' shuffling
+        self.assertEqual( str(self.norm.normalize(self.hp.parse_hgvs_variant('NC_000006.11:g.49917122_49917123insA')))  ,'NC_000006.11:g.49917127dupA')
+        self.assertEqual( str(self.norm.normalize(self.hp.parse_hgvs_variant('NC_000006.11:g.49917121_49917122insGA')))  ,'NC_000006.11:g.49917122_49917123dupGA')
+        self.assertEqual( str(self.norm.normalize(self.hp.parse_hgvs_variant('NC_000006.11:g.49917122_49917123dup')))  ,'NC_000006.11:g.49917122_49917123dupGA')
+        self.assertEqual( str(self.norm.normalize(self.hp.parse_hgvs_variant('NC_000006.11:g.49917122_49917123dupGA')))  ,'NC_000006.11:g.49917122_49917123dupGA')
+        self.assertEqual( str(self.norm.normalize(self.hp.parse_hgvs_variant('NC_000006.11:g.49917098delC')))  ,'NC_000006.11:g.49917099delC')
+        self.assertEqual( str(self.norm.normalize(self.hp.parse_hgvs_variant('NC_000006.11:g.49917151_49917156delinsTCTAAA')))  ,'NC_000006.11:g.49917154_49917155delTCinsAA')
+        
+        #5' shuffling
+        self.assertEqual( str(self.norm5.normalize(self.hp.parse_hgvs_variant('NC_000006.11:g.49917122_49917123insA')))  ,'NC_000006.11:g.49917123dupA')
+        self.assertEqual( str(self.norm5.normalize(self.hp.parse_hgvs_variant('NC_000006.11:g.49917121_49917122insGA')))  ,'NC_000006.11:g.49917121_49917122dupAG')
+        self.assertEqual( str(self.norm5.normalize(self.hp.parse_hgvs_variant('NC_000006.11:g.49917122_49917123dup')))  ,'NC_000006.11:g.49917121_49917122dupAG')
+        self.assertEqual( str(self.norm5.normalize(self.hp.parse_hgvs_variant('NC_000006.11:g.49917122_49917123dupGA')))  ,'NC_000006.11:g.49917121_49917122dupAG')
+        self.assertEqual( str(self.norm5.normalize(self.hp.parse_hgvs_variant('NC_000006.11:g.49917099delC')))  ,'NC_000006.11:g.49917098delC')
+        self.assertEqual( str(self.norm5.normalize(self.hp.parse_hgvs_variant('NC_000006.11:g.49917151_49917156delinsTCTAAA')))  ,'NC_000006.11:g.49917154_49917155delTCinsAA')
+        
+        #No fill
+        self.assertEqual( str(self.normf.normalize(self.hp.parse_hgvs_variant('NC_000006.11:g.49917122_49917123insA')))  ,'NC_000006.11:g.49917127dup')
+        self.assertEqual( str(self.normf.normalize(self.hp.parse_hgvs_variant('NC_000006.11:g.49917121_49917122insGA')))  ,'NC_000006.11:g.49917122_49917123dup')
+        self.assertEqual( str(self.normf.normalize(self.hp.parse_hgvs_variant('NC_000006.11:g.49917122_49917123dup')))  ,'NC_000006.11:g.49917122_49917123dup')
+        self.assertEqual( str(self.normf.normalize(self.hp.parse_hgvs_variant('NC_000006.11:g.49917122_49917123dupGA')))  ,'NC_000006.11:g.49917122_49917123dup')
+        self.assertEqual( str(self.normf.normalize(self.hp.parse_hgvs_variant('NC_000006.11:g.49917098delC')))  ,'NC_000006.11:g.49917099del')
+        self.assertEqual( str(self.normf.normalize(self.hp.parse_hgvs_variant('NC_000006.11:g.49917151_49917156delinsTCTAAA')))  ,'NC_000006.11:g.49917154_49917155delinsAA')
     
 
 
