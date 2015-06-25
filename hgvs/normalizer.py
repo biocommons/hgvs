@@ -8,11 +8,13 @@ hgvs.normalizer
 
 import hgvs.parser
 import hgvs.dataproviders.uta
+import hgvs.dataproviders.seqfetcher
 import hgvs.validator
 import hgvs.posedit
 import hgvs.location
 
 from hgvs.exceptions import HGVSDataNotAvailableError, HGVSValidationError, HGVSUnsupportedNormalizationError
+from requests.exceptions import HTTPError
 
 try:
     from vgraph.norm import normalize_alleles
@@ -22,14 +24,16 @@ except ImportError:
 
 
 
+
 class Normalizer(object):
     """Perform variant normalization
     """
     
-    def __init__(self, hdp, direction=3, cross=True, fill=True, alt_aln_method='splign'):
+    def __init__(self, hdp, hsf, direction=3, cross=True, fill=True, alt_aln_method='splign'):
         """Initialize and configure the normalizer
 
         :param hdp: HGVS Data Provider Interface-compliant instance (see :class:`hgvs.dataproviders.interface.Interface`)
+        :param hsf: HGVS Data Provider SeqFetcher instance (see :class:`hgvs.dataproviders.seqfetcher.SeqFetcher`)
         :param direction: shuffling direction
         :param cross: whether allow the shuffling to cross the exon-intron boundary
         :param fill: fill in nucleotides or strip nucleotides for delins and dup
@@ -37,6 +41,7 @@ class Normalizer(object):
         """
         assert direction==3 or direction==5, "The shuffling direction should be 3 (3' most) or 5 (5' most)."
         self.hdp = hdp
+        self.hsf = hsf
         self.direction = direction
         self.cross     = cross
         self.fill      = fill
@@ -49,40 +54,43 @@ class Normalizer(object):
         """Get the position of exon-intron boundary for current variant
         """
         try:
-            if self.cross:
-                seq = self.hdp.get_tx_seq(var.ac)
-                return 0, len(seq)
+            if var.type == 'c' or var.type == 'r' or var.type == 'n':
+                if self.cross:
+                    return 0, float('inf')
+                else:
+                    #Get genomic sequence access number for this transcript
+                    map_info = self.hdp.get_tx_mapping_options(var.ac)
+                    map_info = [ item for item in map_info if item['alt_aln_method'] == self.alt_aln_method ]
+                    alt_ac   = map_info[0]['alt_ac']
+                    
+                    #Get exon info
+                    exon_info = self.hdp.get_tx_exons(var.ac, alt_ac, self.alt_aln_method)
+                    exon_starts = [ exon['tx_start_i'] for exon in exon_info ]
+                    exon_ends   = [ exon['tx_end_i'] for exon in exon_info ]
+                    exon_starts.sort()
+                    exon_ends.sort()
+                    
+                    #Find the end pos of the exon where the var locates
+                    for end_i, end in enumerate(exon_ends):
+                        if var.posedit.pos.end.base <= end:
+                            break
+                    #Find the start pos of the exon where the var locates
+                    start = None
+                    start_i = None
+                    for i, pos in enumerate(exon_starts):
+                        if var.posedit.pos.start.base < pos:
+                            break
+                        start = pos
+                        start_i = i
+                    
+                    #If the variant spans the exon-intron boundary, raise an error
+                    if start_i != end_i:
+                        raise HGVSUnsupportedNormalizationError("Unsupported normalization of variants spanning the exon-intron boundary")
+                    
+                    return start, end
             else:
-                #Get genomic sequence access number for this transcript
-                map_info = self.hdp.get_tx_mapping_options(var.ac)
-                map_info = [ item for item in map_info if item['alt_aln_method'] == self.alt_aln_method ]
-                alt_ac   = map_info[0]['alt_ac']
-                
-                #Get exon info
-                exon_info = self.hdp.get_tx_exons(var.ac, alt_ac, self.alt_aln_method)
-                exon_starts = [ exon['tx_start_i'] for exon in exon_info ]
-                exon_ends   = [ exon['tx_end_i'] for exon in exon_info ]
-                exon_starts.sort()
-                exon_ends.sort()
-                
-                #Find the end pos of the exon where the var locates
-                for end_i, end in enumerate(exon_ends):
-                    if var.posedit.pos.end.base <= end:
-                        break
-                #Find the start pos of the exon where the var locates
-                start = None
-                start_i = None
-                for i, pos in enumerate(exon_starts):
-                    if var.posedit.pos.start.base < pos:
-                        break
-                    start = pos
-                    start_i = i
-                
-                #If the variant spans the exon-intron boundary, raise an error
-                if start_i != end_i:
-                    raise HGVSUnsupportedNormalizationError("Unsupported normalization of variants spanning the exon-intron boundary")
-                
-                return start, end
+                #For variant type of g and m etc.
+                return 0, float('inf')
             
         except TypeError:
             raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=var.ac))
@@ -101,17 +109,18 @@ class Normalizer(object):
         if start >= end:
             return ''
         
-        try:
-            if type == 'r' or type == 'c' or type == 'n':
+        if type == 'c' or type == 'r' or type == 'n':
+            try:
                 seq = self.hdp.get_tx_seq(ac)
-                
-            elif type == 'g' or type == 'm':
+                return seq[start:end]
+            except TypeError:
                 raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
-            
-        except TypeError:
-            raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
-        
-        return seq[start:end]
+        else:
+            try:
+                return self.hsf.fetch_seq(ac, start, end)
+            except HTTPError:
+                raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
+    
     
     
     
@@ -333,7 +342,8 @@ if __name__ == '__main__':
     hgvsparser = hgvs.parser.Parser()
     var = hgvsparser.parse_hgvs_variant('NM_001166478.1:c.61delG')
     hdp = hgvs.dataproviders.uta.connect()
-    norm = Normalizer(hdp, direction=5, cross=False)
+    hsf = hgvs.dataproviders.seqfetcher.SeqFetcher()
+    norm = Normalizer(hdp, hsf, direction=5, cross=False)
     res  = norm.normalize(var)
     print(str(var) + '    =>    ' + str(res))
 
