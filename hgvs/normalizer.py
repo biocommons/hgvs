@@ -60,11 +60,15 @@ class Normalizer(object):
                 else:
                     #Get genomic sequence access number for this transcript
                     map_info = self.hdp.get_tx_mapping_options(var.ac)
+                    if not map_info:
+                        raise HGVSDataNotAvailableError("No mapping info available for {ac}".format(ac=var.ac))
                     map_info = [ item for item in map_info if item['alt_aln_method'] == self.alt_aln_method ]
                     alt_ac   = map_info[0]['alt_ac']
                     
                     #Get exon info
                     exon_info = self.hdp.get_tx_exons(var.ac, alt_ac, self.alt_aln_method)
+                    if not exon_info:
+                        raise HGVSDataNotAvailableError("No exon structure available for {ac}".format(ac=var.ac))
                     exon_starts = [ exon['tx_start_i'] for exon in exon_info ]
                     exon_ends   = [ exon['tx_end_i'] for exon in exon_info ]
                     exon_starts.sort()
@@ -114,7 +118,10 @@ class Normalizer(object):
                 seq = self.hdp.get_tx_seq(ac)
                 return seq[start:end]
             except TypeError:
-                raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
+                try:
+                    return self.hsf.fetch_seq(ac, start, end)
+                except HTTPError:
+                    raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
         else:
             try:
                 return self.hsf.fetch_seq(ac, start, end)
