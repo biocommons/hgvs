@@ -16,15 +16,16 @@ from bioutils.digests import seq_md5
 
 from ..dataproviders.interface import Interface
 from ..decorators.lru_cache import lru_cache
+from ..exceptions import HGVSDataNotAvailableError
 from .seqfetcher import SeqFetcher
 
-
 _uta_urls = {
-    # these are provided for developer convenience
+    # these named urls are provided for developer convenience
+    # expect them to change or disappear without notice
     "local": "postgresql://localhost/uta/uta_20140210",
     "local-dev": "postgresql://localhost/uta_dev/uta1",
-    "public": "postgresql://uta_public:uta_public@uta.invitae.com/uta/uta_20150623",
-    "public-dev": "postgresql://uta_public:uta_public@uta.invitae.com/uta_dev/uta1",
+    "public": "postgresql://uta_public:uta_public@uta.biocommons.org/uta_dev/uta_20150623",
+    "public-dev": "postgresql://uta_public:uta_public@uta.biocommons.org/uta_dev/uta1",
     "sqlite-dev": "sqlite:/home/reece/projects/biocommons/hgvs/tests/db/uta-test-1.db",
 }
 
@@ -53,7 +54,7 @@ def connect(db_url=default_db_url, pooling=False):
     as that used by SQLAlchemy).  Examples:
 
     A remote public postgresql database:
-        postgresql://uta_public:uta_public@uta.invitae.com/uta'
+        postgresql://uta_public:uta_public@uta.biocommons.org/uta'
 
     A local postgresql database:
         postgresql://localhost/uta
@@ -454,9 +455,19 @@ class UTA_postgresql(UTABase):
                                           user=self.url.username,
                                           password=self.url.password)
 
+        self._ensure_schema_exists()
+
         # remap sqlite's ? placeholders to psycopg2's %s
         self.sql = {k: v.replace('?', '%s') for k, v in self.sql.iteritems()}
 
+    def _ensure_schema_exists(self):
+        # N.B. On AWS RDS, information_schema.schemata always returns zero rows
+        cur = self._execute("select exists(SELECT 1 FROM pg_namespace WHERE nspname = %s)",
+                            [self.url.schema])
+        if cur.fetchone()[0]:
+            return
+        raise HGVSDataNotAvailableError("specified schema ({}) does not exist (url={})".format(
+            self.url.schema, self.url))
 
     def _get_cursor(self):
 
