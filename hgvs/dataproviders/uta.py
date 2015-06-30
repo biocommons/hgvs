@@ -16,15 +16,16 @@ from bioutils.digests import seq_md5
 
 from ..dataproviders.interface import Interface
 from ..decorators.lru_cache import lru_cache
+from ..exceptions import HGVSDataNotAvailableError
 from .seqfetcher import SeqFetcher
 
-
 _uta_urls = {
-    # these are provided for developer convenience
+    # these named urls are provided for developer convenience
+    # expect them to change or disappear without notice
     "local": "postgresql://localhost/uta/uta_20140210",
     "local-dev": "postgresql://localhost/uta_dev/uta1",
-    "public": "postgresql://uta_public:uta_public@uta.invitae.com/uta/uta_20140210",
-    "public-dev": "postgresql://uta_public:uta_public@uta.invitae.com/uta_dev/uta1",
+    "public": "postgresql://anonymous:anonymous@uta.biocommons.org/uta_dev/uta_20150623",
+    "public-dev": "postgresql://anonymous:anonymous@uta.biocommons.org/uta_dev/uta1",
     "sqlite-dev": "sqlite:/home/reece/projects/biocommons/hgvs/tests/db/uta-test-1.db",
 }
 
@@ -47,13 +48,13 @@ def connect(db_url=default_db_url, pooling=False):
 
     >>> hdp = connect()
     >>> hdp.schema_version()
-    '1'
+    '1.1'
 
     The format of the db_url is driver://user:pass@host/database (the same
     as that used by SQLAlchemy).  Examples:
 
     A remote public postgresql database:
-        postgresql://uta_public:uta_public@uta.invitae.com/uta'
+        postgresql://anonymous:anonymous@uta.biocommons.org/uta'
 
     A local postgresql database:
         postgresql://localhost/uta
@@ -78,7 +79,7 @@ def connect(db_url=default_db_url, pooling=False):
 
 
 class UTABase(Interface, SeqFetcher):
-    required_version = "1.0"
+    required_version = "1.1"
 
     _logger = logging.getLogger(__name__)
 
@@ -141,6 +142,16 @@ class UTABase(Interface, SeqFetcher):
             from seq S
             join seq_anno SA on S.seq_id=SA.seq_id
             where ac=?
+            """,
+
+        "tx_similar": """
+            select distinct tx_ac1, tx_ac2, cds_eq, es_fp_eq, cds_es_fp_eq
+            from tx_similarity_v
+            where tx_ac1 = ?
+            """,
+    
+        "tx_to_pro": """
+            select * from preferred_accession where tx_ac = ?
             """,
     }
 
@@ -377,6 +388,49 @@ class UTABase(Interface, SeqFetcher):
         r = cur.fetchall()
         return r
 
+    @lru_cache(maxsize=128)
+    def get_similar_transcripts(self, tx_ac):
+        """Return a list of transcripts that are similar to the given
+        transcript, with relevant similarity criteria.
+
+        >> sim_tx = hdp.get_similar_transcripts('NM_001285829.1')
+        >> dict(sim_tx[0])
+        { 'cds_eq': False,
+          'cds_es_fp_eq': False,
+          'es_fp_eq': True,
+          'tx_ac1': 'NM_001285829.1',
+          'tx_ac2': 'ENST00000498907' }
+
+        where:
+        * cds_eq means that the CDS sequences are identical
+        * es_fp_eq means that the full exon structures are identical
+          (i.e., incl. UTR)
+        * cds_es_fp_eq means that the cds-clipped portions of the exon
+          structures are identical (i.e., ecluding. UTR)
+        ("es" = "exon set", "fp" = "fingerprint", "eq" = "equal")
+
+        "exon structure" refers to the start and end coordinates on a
+        specified reference sequence. Thus, having the same exon
+        structure means that the transcripts are defined on the same
+        reference sequence and have the same exon spans on that
+        sequence.
+
+        """
+
+        cur = self._execute(self.sql['tx_similar'], [tx_ac])
+        r = cur.fetchall()
+        return r
+
+    def get_pro_ac_for_tx_ac(self, tx_ac):
+        """Return the (single) preferred protein accession for a given transcript
+        accession, or None if not found."""
+
+        cur = self._execute(self.sql['tx_to_pro'], [tx_ac])
+        r = cur.fetchall()
+        try:
+            return r[0]['pro_ac']
+        except IndexError:
+            return None
 
 
 class UTA_postgresql(UTABase):
@@ -401,11 +455,22 @@ class UTA_postgresql(UTABase):
                                           user=self.url.username,
                                           password=self.url.password)
 
+        self._ensure_schema_exists()
+
         # remap sqlite's ? placeholders to psycopg2's %s
         self.sql = {k: v.replace('?', '%s') for k, v in self.sql.iteritems()}
 
+    def _ensure_schema_exists(self):
+        # N.B. On AWS RDS, information_schema.schemata always returns zero rows
+        cur = self._execute("select exists(SELECT 1 FROM pg_namespace WHERE nspname = %s)",
+                            [self.url.schema])
+        if cur.fetchone()[0]:
+            return
+        raise HGVSDataNotAvailableError("specified schema ({}) does not exist (url={})".format(
+            self.url.schema, self.url))
 
     def _get_cursor(self):
+
         """returns a cursor obtained from a single or pooled connection, and
         sets the postgresql search_path appropriately
 
@@ -438,6 +503,11 @@ class UTA_postgresql(UTABase):
 
 
 class UTA_sqlite(UTABase):
+    # TODO: implement mocks (issue #237) The current sqlite db was
+    # based on schema v1. No tests currently use 1.1 features from
+    # sqlite, so we override the required_version here.
+    required_version = "1"
+
     def _connect(self):
         def _sqlite3_row_dict_factory(cur, row):
             "convert sqlite row to dict"
