@@ -137,7 +137,7 @@ The easiest way to use a UTA instance other than the default is by
 setting UTA_DB_URL.  The format is
 ``postgresql://<user>:<pass>@<host>/<db>/<schema>``. For example:
 
-   ``postgresql://uta_public:uta_public@uta.biocommons.org/uta/uta_20140210``
+   ``postgresql://anonymous:anonymous@uta.biocommons.org/uta/uta_20140210``
   
 explicitly selects the public database, and 
 
