@@ -24,8 +24,8 @@ _uta_urls = {
     # expect them to change or disappear without notice
     "local": "postgresql://localhost/uta/uta_20140210",
     "local-dev": "postgresql://localhost/uta_dev/uta1",
-    "public": "postgresql://uta_public:uta_public@uta.biocommons.org/uta_dev/uta_20150623",
-    "public-dev": "postgresql://uta_public:uta_public@uta.biocommons.org/uta_dev/uta1",
+    "public": "postgresql://anonymous:anonymous@uta.biocommons.org/uta_dev/uta_20150623",
+    "public-dev": "postgresql://anonymous:anonymous@uta.biocommons.org/uta_dev/uta1",
     "sqlite-dev": "sqlite:/home/reece/projects/biocommons/hgvs/tests/db/uta-test-1.db",
 }
 
@@ -54,7 +54,7 @@ def connect(db_url=default_db_url, pooling=False):
     as that used by SQLAlchemy).  Examples:
 
     A remote public postgresql database:
-        postgresql://uta_public:uta_public@uta.biocommons.org/uta'
+        postgresql://anonymous:anonymous@uta.biocommons.org/uta'
 
     A local postgresql database:
         postgresql://localhost/uta
