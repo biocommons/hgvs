@@ -64,7 +64,7 @@ class VariantMapper(object):
                 edit.alt = edit.alt.replace('U', 'T').replace('u', 't')
         elif isinstance(edit, hgvs.edit.Dup):
             if edit.seq:
-                edit.seq = edit.seq.replace('T', 'U').replace('t', 'u')
+                edit.seq = edit.seq.replace('T', 'U').replace('u', 't')
         return edit
 
     def g_to_c(self, var_g, tx_ac, alt_aln_method='splign'):
