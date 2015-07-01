@@ -5,7 +5,7 @@ import unittest
 
 from nose.plugins.attrib import attr
 
-from hgvs.exceptions import HGVSUnsupportedNormalizationError
+from hgvs.exceptions import HGVSUnspportedOperationError
 import hgvs.dataproviders.uta
 import hgvs.dataproviders.seqfetcher
 import hgvs.variantmapper
@@ -60,7 +60,7 @@ class Test_HGVSNormalizer(unittest.TestCase):
         #Around exon-intron boundary
         self.assertEqual( str(self.normc.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.59delG')))  ,'NM_001166478.1:c.60delG')
         self.assertEqual( str(self.norm5c.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.61delG')))  ,'NM_001166478.1:c.61delG')
-        self.assertRaises(HGVSUnsupportedNormalizationError, self.normc.normalize, self.hp.parse_hgvs_variant('NM_001166478.1:c.59_61del'))
+        self.assertRaises(HGVSUnspportedOperationError, self.normc.normalize, self.hp.parse_hgvs_variant('NM_001166478.1:c.59_61del'))
         
         #UTR variants
         self.assertEqual( str(self.norm.normalize(self.hp.parse_hgvs_variant('NM_000051.3:c.-5_-4insA')))  ,'NM_000051.3:c.-3dupA')
