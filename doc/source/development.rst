@@ -146,3 +146,5 @@ explicitly selects the public database, and
 selects a local instance.  Developers can test connectivity like this:
 
    ``$ UTA_DB_URL=postgresql://localhost/uta/uta_20140210 make test-quick``
+
+See hgvs/dataproviders/uta.py for current UTA database URLs.
