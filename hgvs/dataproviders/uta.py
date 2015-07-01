@@ -22,11 +22,12 @@ from .seqfetcher import SeqFetcher
 _uta_urls = {
     # these named urls are provided for developer convenience
     # expect them to change or disappear without notice
-    "local": "postgresql://localhost/uta/uta_20140210",
-    "local-dev": "postgresql://localhost/uta_dev/uta1",
-    "public": "postgresql://anonymous:anonymous@uta.biocommons.org/uta_dev/uta_20150623",
-    "public-dev": "postgresql://anonymous:anonymous@uta.biocommons.org/uta_dev/uta1",
-    "sqlite-dev": "sqlite:/home/reece/projects/biocommons/hgvs/tests/db/uta-test-1.db",
+    "local": "postgresql://localhost/uta/uta_20150623",
+    "local-dev": "postgresql://localhost/uta_dev/uta_1_1",
+    "public": "postgresql://anonymous:anonymous@uta.biocommons.org/uta/uta_20150623",
+    "public-dev": "postgresql://anonymous:anonymous@uta.biocommons.org/uta_dev/uta_1_1",
+    "public-stg": "postgresql://anonymous:anonymous@uta.biocommons.org/uta_stg/uta_20150623",
+    # INOP: "sqlite-dev": "sqlite:/home/reece/projects/biocommons/hgvs/tests/db/uta-test-1.db",
 }
 
 default_db_url = os.environ.get('UTA_DB_URL', _uta_urls["public"])
