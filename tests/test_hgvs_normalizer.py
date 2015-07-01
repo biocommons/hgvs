@@ -7,13 +7,11 @@ from nose.plugins.attrib import attr
 
 from hgvs.exceptions import HGVSUnspportedOperationError
 import hgvs.dataproviders.uta
-import hgvs.dataproviders.seqfetcher
 import hgvs.variantmapper
 import hgvs.parser
 import hgvs.normalizer
 
 hdp = hgvs.dataproviders.uta.connect()
-hsf = hgvs.dataproviders.seqfetcher.SeqFetcher()
 
 @attr(tags=["normalization"])
 class Test_HGVSNormalizer(unittest.TestCase):
@@ -21,11 +19,11 @@ class Test_HGVSNormalizer(unittest.TestCase):
 
     def setUp(self):
         self.hp = hgvs.parser.Parser()
-        self.norm   = hgvs.normalizer.Normalizer(hdp, hsf, direction=3, cross=True)
-        self.norm5  = hgvs.normalizer.Normalizer(hdp, hsf, direction=5, cross=True)
-        self.normf  = hgvs.normalizer.Normalizer(hdp, hsf, direction=3, cross=True, fill=False)
-        self.normc  = hgvs.normalizer.Normalizer(hdp, hsf, direction=3, cross=False)
-        self.norm5c = hgvs.normalizer.Normalizer(hdp, hsf, direction=5, cross=False)
+        self.norm   = hgvs.normalizer.Normalizer(hdp, direction=3, cross=True)
+        self.norm5  = hgvs.normalizer.Normalizer(hdp, direction=5, cross=True)
+        self.normf  = hgvs.normalizer.Normalizer(hdp, direction=3, cross=True, fill=False)
+        self.normc  = hgvs.normalizer.Normalizer(hdp, direction=3, cross=False)
+        self.norm5c = hgvs.normalizer.Normalizer(hdp, direction=5, cross=False)
 
     def test_c_normalizer(self):
         """Test normalizer for variant type c."""

@@ -13,7 +13,10 @@ import hgvs.validator
 import hgvs.posedit
 import hgvs.location
 
-from hgvs.exceptions import HGVSDataNotAvailableError, HGVSValidationError, HGVSNormalizationError, HGVSUnspportedOperationError
+from hgvs.exceptions import HGVSDataNotAvailableError
+from hgvs.exceptions import HGVSValidationError
+from hgvs.exceptions import HGVSNormalizationError
+from hgvs.exceptions import HGVSUnspportedOperationError
 from requests.exceptions import HTTPError
 
 try:
@@ -39,7 +42,7 @@ class Normalizer(object):
         :param fill: fill in nucleotides or strip nucleotides for delins and dup
         :param alt_aln_method: sequence alignment method (e.g., splign, blat)
         """
-        assert direction==3 or direction==5, "The shuffling direction should be 3 (3' most) or 5 (5' most)."
+        assert direction == 3 or direction == 5, "The shuffling direction should be 3 (3' most) or 5 (5' most)."
         self.hdp = hdp
         self.direction = direction
         self.cross     = cross
@@ -145,7 +148,7 @@ class Normalizer(object):
                     raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=var.ac))
             else:
                 try:
-                    return self.hsf.fetch_seq(var.ac, start, end)
+                    return self.hdp.fetch_seq(var.ac, start, end)
                 except HTTPError:
                     raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=var.ac))
         else:
