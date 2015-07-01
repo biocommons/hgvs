@@ -22,7 +22,7 @@ class HGVSDataNotAvailableError(HGVSError):
 class HGVSNormalizationError(HGVSError):
     pass
 
-class HGVSUnsupportedNormalizationError(HGVSError):
+class HGVSUnspportedOperationError(HGVSError):
     pass
 
 ## <LICENSE>
