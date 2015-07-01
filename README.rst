@@ -54,7 +54,9 @@ Important Notes
 * **The default branch is development.** Pulling from default will get
   you a *development* version.  Release versions are determined by
   tags; updating to a specific version (*e.g.,* ``hg up -r 0.3.0``)
-  will get you exactly that version as on PyPI.
+  will get you exactly that version as on PyPI.  If you implement a
+  new feature, please create an issue first and work in a feature
+  branch named like '44-normalization'.
 
 
 ----
