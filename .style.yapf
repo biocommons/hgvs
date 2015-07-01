@@ -1,0 +1,6 @@
+[style]
+based_on_style = pep8
+spaces_before_comment = 4
+column_limit = 120
+split_before_logical_operator = True
+split_before_named_assigns = True
