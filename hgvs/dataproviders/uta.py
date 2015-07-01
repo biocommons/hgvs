@@ -14,25 +14,28 @@ import psycopg2.pool
 
 from bioutils.digests import seq_md5
 
+import hgvs
 from ..dataproviders.interface import Interface
 from ..decorators.lru_cache import lru_cache
 from ..exceptions import HGVSDataNotAvailableError
 from .seqfetcher import SeqFetcher
 
+# TODO: Update URLs when UTA instances are renamed
 _uta_urls = {
     # these named urls are provided for developer convenience
     # expect them to change or disappear without notice
-    "local": "postgresql://localhost/uta/uta_20140210",
-    "local-dev": "postgresql://localhost/uta_dev/uta1",
+    "local": "postgresql://localhost/uta/uta_20150623",
+    "local-dev": "postgresql://localhost/uta_dev/uta_1_1",
     "public": "postgresql://anonymous:anonymous@uta.biocommons.org/uta_dev/uta_20150623",
-    "public-dev": "postgresql://anonymous:anonymous@uta.biocommons.org/uta_dev/uta1",
-    "sqlite-dev": "sqlite:/home/reece/projects/biocommons/hgvs/tests/db/uta-test-1.db",
+    "public-dev": "postgresql://anonymous:anonymous@uta.biocommons.org/uta_dev/uta_20150623",
+    # INOP: "sqlite-dev": "sqlite:/home/reece/projects/biocommons/hgvs/tests/db/uta-test-1.db",
 }
+# use public instance for released (x.y.z versions), otherwise dev
+# this is necessary because there is still some co-dependency between the uta and hgvs projects
+_url_key = 'public' if hgvs._is_released_version else 'public-dev'
+_default_db_url = os.environ.get('UTA_DB_URL', _uta_urls[_url_key])
 
-default_db_url = os.environ.get('UTA_DB_URL', _uta_urls["public"])
-
-
-def connect(db_url=default_db_url, pooling=False):
+def connect(db_url=_default_db_url, pooling=False):
     """Connect to a UTA database instance and return a UTA interface instance.
 
     :param db_url: URL for database connection

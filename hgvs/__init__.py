@@ -2,14 +2,18 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import pkg_resources
+import re
 import warnings
+
+_is_released_version = False
 
 try:
     __version__ = pkg_resources.get_distribution('hgvs').version
+    if re.match('^\d+\.\d+\.\d+$', __version__) is not None:
+        _is_released_version = True
 except pkg_resources.DistributionNotFound as e:
     warnings.warn("can't get __version__ because %s package isn't installed" % __package__,Warning)
     __version__ = None
-
 
 # Make sure we're showing DeprecationWarnings
 warnings.filterwarnings('default','',DeprecationWarning)
