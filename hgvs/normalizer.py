@@ -34,7 +34,6 @@ class Normalizer(object):
         """Initialize and configure the normalizer
 
         :param hdp: HGVS Data Provider Interface-compliant instance (see :class:`hgvs.dataproviders.interface.Interface`)
-        :param hsf: HGVS Data Provider SeqFetcher instance (see :class:`hgvs.dataproviders.seqfetcher.SeqFetcher`)
         :param direction: shuffling direction
         :param cross: whether allow the shuffling to cross the exon-intron boundary
         :param fill: fill in nucleotides or strip nucleotides for delins and dup
