@@ -1,0 +1,10 @@
+<?xml version="1.0" standalone="no"?>
+<svg width="190" height="116" viewBox="-8 -86 190 116 " xmlns="http://www.w3.org/2000/svg" version="1.1">
+<defs><style type="text/css">.terminal_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.terminal_text{fill:black;font-family:Verdana,Sans-serif;text-anchor:middle;font-size:14px;}.symbol_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.symbol_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-style:italic;text-anchor:middle;font-size:14px;}.path{fill:none;stroke:black;stroke-width:2;}.rule_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-size:14px;}.rule_path_edge{fill:none;stroke:black;stroke-width:3;}</style></defs>
+<text class="rule_text" x="0" y="-64" >num:</text>
+<rect class="symbol_rect" x="54" y="-14" width="66" height="28" rx="1" />
+<text class="symbol_text" x="87" y="4" >digit</text>
+<path class="path" d="M54 0 L30 0 M42 0 Q30 0 30 -12 L30 -36 Q30 -48 42 -48 L132 -48 Q144 -48 144 -36 L144 -12 Q144 0 132 0 L120 0 L144 0" />
+<path class="path" d="M0 0 L30 0 M174 0 L144 0" />
+<path class="rule_path_edge" d="M0 -6 L0 6 M174 -6 L174 6" />
+</svg>
