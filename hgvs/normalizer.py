@@ -8,13 +8,12 @@ hgvs.normalizer
 
 import hgvs.parser
 import hgvs.dataproviders.uta
-import hgvs.dataproviders.seqfetcher
 import hgvs.variantmapper
 import hgvs.validator
 import hgvs.posedit
 import hgvs.location
 
-from hgvs.exceptions import HGVSDataNotAvailableError, HGVSValidationError, HGVSNormalizationError, HGVSUnsupportedNormalizationError
+from hgvs.exceptions import HGVSDataNotAvailableError, HGVSValidationError, HGVSNormalizationError, HGVSUnspportedOperationError
 from requests.exceptions import HTTPError
 
 try:
@@ -31,7 +30,7 @@ class Normalizer(object):
     """Perform variant normalization
     """
     
-    def __init__(self, hdp=None, hsf=None, direction=3, cross=False, fill=True, alt_aln_method='splign'):
+    def __init__(self, hdp=None, direction=3, cross=False, fill=True, alt_aln_method='splign'):
         """Initialize and configure the normalizer
 
         :param hdp: HGVS Data Provider Interface-compliant instance (see :class:`hgvs.dataproviders.interface.Interface`)
@@ -43,7 +42,6 @@ class Normalizer(object):
         """
         assert direction==3 or direction==5, "The shuffling direction should be 3 (3' most) or 5 (5' most)."
         self.hdp = hdp
-        self.hsf = hsf
         self.direction = direction
         self.cross     = cross
         self.fill      = fill
@@ -97,7 +95,7 @@ class Normalizer(object):
                             break
                     
                     if i != j:
-                        raise HGVSUnsupportedNormalizationError("Unsupported normalization of variants spanning the exon-intron boundary")
+                        raise HGVSUnspportedOperationError("Unsupported normalization of variants spanning the exon-intron boundary")
                     
                     left  = exon_starts[i]
                     right = exon_ends[i]
@@ -107,14 +105,14 @@ class Normalizer(object):
                     elif var.posedit.pos.start.base -1 >= cds_start:
                         left = max(left, cds_start)
                     else:
-                        raise HGVSUnsupportedNormalizationError("Unsupported normalization of variants spanning the UTR-exon boundary")
+                        raise HGVSUnspportedOperationError("Unsupported normalization of variants spanning the UTR-exon boundary")
                     
                     if var.posedit.pos.start.base - 1 >= cds_end:
                         left = max(left, cds_end)
                     elif var.posedit.pos.end.base -1 < cds_end:
                         right = min(right, cds_end)
                     else:
-                        raise HGVSUnsupportedNormalizationError("Unsupported normalization of variants spanning the exon-UTR boundary")
+                        raise HGVSUnspportedOperationError("Unsupported normalization of variants spanning the exon-UTR boundary")
                     
                     return left, right
             else:
@@ -138,24 +136,21 @@ class Normalizer(object):
         if start >= end:
             return ''
         
-        if var.type == 'c' or var.type == 'r' or var.type == 'n':
-            if self.hdp is not None:
+        
+        if self.hdp is not None:
+            if var.type == 'c' or var.type == 'r' or var.type == 'n':
                 try:
                     seq = self.hdp.get_tx_seq(var.ac)
                     return seq[start:end]
                 except TypeError:
                     raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=var.ac))
             else:
-                raise HGVSNormalizationError("hgvs data provider must be specified when normalizing CDS and transcripts variants")
-        else:
-            if self.hsf is not None:
                 try:
                     return self.hsf.fetch_seq(var.ac, start, end)
                 except HTTPError:
                     raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=var.ac))
-            else:
-                raise HGVSNormalizationError("hgvs data fetcher must be specified when normalizing genomic variants")
-    
+        else:
+            raise HGVSNormalizationError("hgvs data provider must be specified when normalizing variants")
     
     
     
@@ -272,7 +267,7 @@ class Normalizer(object):
     
     
     def normalize(self, var):
-        """Perform variants canonicalization
+        """Perform variants normalization
         """
         assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
         
@@ -282,12 +277,14 @@ class Normalizer(object):
         type = var.type
         
         if type == 'p':
-            raise HGVSUnsupportedNormalizationError("Unsupported normalization of protein level variants")
+            raise HGVSUnspportedOperationError("Unsupported normalization of protein level variants")
         if isinstance(var.posedit.pos.start, hgvs.location.BaseOffsetPosition) and var.posedit.pos.start.base != 0 and var.posedit.pos.start.offset != 0:
-            raise HGVSUnsupportedNormalizationError("Unsupported normalization of intron variants at CDS and transcript level")
+            raise HGVSUnspportedOperationError("Unsupported normalization of intron variants at CDS and transcript level")
         if isinstance(var.posedit.pos.end, hgvs.location.BaseOffsetPosition) and var.posedit.pos.end.base != 0 and var.posedit.pos.end.offset != 0:
-            raise HGVSUnsupportedNormalizationError("Unsupported normalization of intron variants at CDS and transcript level")
+            raise HGVSUnspportedOperationError("Unsupported normalization of intron variants at CDS and transcript level")
         
+        #For c. variants normalization, first convert to r. variants and perform normalization at the r. level
+        #then convert the normalized r. variant back to c. variant at the end.
         if type == 'c':
             var = self.hm.c_to_r(var)
             
@@ -390,8 +387,7 @@ if __name__ == '__main__':
     hgvsparser = hgvs.parser.Parser()
     var = hgvsparser.parse_hgvs_variant('NM_001166478.1:c.61delG')
     hdp = hgvs.dataproviders.uta.connect()
-    hsf = hgvs.dataproviders.seqfetcher.SeqFetcher()
-    norm = Normalizer(hdp, hsf, direction=5, cross=False)
+    norm = Normalizer(hdp, direction=5, cross=False)
     res  = norm.normalize(var)
     print(str(var) + '    =>    ' + str(res))
 
