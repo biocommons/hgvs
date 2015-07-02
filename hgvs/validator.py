@@ -5,7 +5,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 hgvs.hgvsvalidator
 """
 
-from hgvs.exceptions import HGVSValidationError, HGVSDataNotAvailableError
+from .exceptions import HGVSValidationError, HGVSUnsupportedOperationError
+
 import hgvs.parser
 import hgvs.variantmapper
 
@@ -15,7 +16,7 @@ OFFSET_RANGE_ERROR_MSG = 'offset start must be <= end position'
 INS_ERROR_MSG = 'insertion length must be 1'
 DEL_ERROR_MSG = 'start and end position range must equal sequence deletion length'
 AC_ERROR_MSG = 'Accession is not present in BDI database'
-SEQ_ERROR_MSG = 'Variant reference does not agree with reference sequence'
+SEQ_ERROR_MSG = 'Variant reference ({var_ref_seq}) does not agree with reference sequence ({ref_seq})'
 
 
 
@@ -100,25 +101,17 @@ class ExtrinsicValidator():
             var_ref_seq = getattr(var.posedit.edit, 'seq', None)
         else:
             # use reference sequence of original variant, even if later converted (eg c_to_r)
+            if var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0:
+                raise HGVSUnsupportedOperationError("Cannot validate sequence of an intronic variant ({})".format(str(var)))
             var_ref_seq = getattr(var.posedit.edit, 'ref', None)
 
         if var_ref_seq is not None:
             var_x = self.hm.c_to_r(var) if var.type == 'c' else var
-            ref_seq = self._fetch_seq(var_x.ac, var_x.posedit.pos.start.base - 1, var_x.posedit.pos.end.base)
+            ref_seq = self.hdp.fetch_seq(var_x.ac, var_x.posedit.pos.start.base - 1, var_x.posedit.pos.end.base)
             if ref_seq != var_ref_seq:
-                raise HGVSValidationError(str(var) + ': ' + SEQ_ERROR_MSG)
+                raise HGVSValidationError(str(var) + ': ' + SEQ_ERROR_MSG.format(ref_seq=ref_seq, var_ref_seq=var_ref_seq))
+
         return True
-
-    def _fetch_seq(self, ac, start_i, end_i):
-        """fetch 0-based, right-open subsequence [start_i,end_i) of specified accession
-        first using the hdpi instance.
-
-        :raises: hgvs.exceptions.HGVSDataNotAvailableError if couldn't get sequence
-        """
-        try:
-            return self.hdp.get_tx_seq(ac)[start_i:end_i]
-        except TypeError:
-            raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
 
 
 

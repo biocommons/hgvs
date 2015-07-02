@@ -7,32 +7,39 @@ import sqlite3
 import types
 import urlparse
 
-#TODO: make dynamic import with importlib
 import psycopg2
 import psycopg2.extras
 import psycopg2.pool
 
 from bioutils.digests import seq_md5
 
+import hgvs
 from ..dataproviders.interface import Interface
+from ..decorators import deprecated
 from ..decorators.lru_cache import lru_cache
-from ..exceptions import HGVSDataNotAvailableError
+from ..exceptions import HGVSError, HGVSDataNotAvailableError
 from .seqfetcher import SeqFetcher
 
+# TODO: Update URLs when UTA instances are renamed
+_current_version = 'uta_20150623'
 _uta_urls = {
     # these named urls are provided for developer convenience
     # expect them to change or disappear without notice
-    "local": "postgresql://localhost/uta/uta_20140210",
-    "local-dev": "postgresql://localhost/uta_dev/uta1",
-    "public": "postgresql://anonymous:anonymous@uta.biocommons.org/uta_dev/uta_20150623",
-    "public-dev": "postgresql://anonymous:anonymous@uta.biocommons.org/uta_dev/uta1",
-    "sqlite-dev": "sqlite:/home/reece/projects/biocommons/hgvs/tests/db/uta-test-1.db",
+    "local": "postgresql://localhost/uta/" + _current_version,
+    "local-dev": "postgresql://localhost/uta_dev/" + _current_version,
+    "public": "postgresql://anonymous:anonymous@uta.biocommons.org/uta_dev/" + _current_version,
+    "public-dev": "postgresql://anonymous:anonymous@uta.biocommons.org/uta_dev/" + _current_version,
+    # INOP: "sqlite-dev": "sqlite:/home/reece/projects/biocommons/hgvs/tests/db/uta-test-1.db",
 }
+# use public instance for released (x.y.z versions), otherwise dev
+# this is necessary because there is still some co-dependency between the uta and hgvs projects
+_url_key = 'public' if hgvs._is_released_version else 'public-dev'
+_default_db_url = os.environ.get('UTA_DB_URL', _uta_urls[_url_key])
 
-default_db_url = os.environ.get('UTA_DB_URL', _uta_urls["public"])
+logger = logging.getLogger(__name__)
 
 
-def connect(db_url=default_db_url, pooling=False):
+def connect(db_url=_default_db_url, pooling=False):
     """Connect to a UTA database instance and return a UTA interface instance.
 
     :param db_url: URL for database connection
@@ -80,8 +87,6 @@ def connect(db_url=default_db_url, pooling=False):
 
 class UTABase(Interface, SeqFetcher):
     required_version = "1.1"
-
-    _logger = logging.getLogger(__name__)
 
     sql = {
         "acs_for_protein_md5": """
@@ -159,7 +164,7 @@ class UTABase(Interface, SeqFetcher):
         self.url = url
         self._connect()
         super(UTABase,self).__init__()
-        self._logger.info('connected to ' + str(self.url))
+        logger.info('connected to ' + str(self.url))
 
     def _execute(self, sql, *args):
         cur = self._get_cursor()
@@ -260,11 +265,11 @@ class UTABase(Interface, SeqFetcher):
 
         """
         cur = self._execute(self.sql['tx_exons'], [tx_ac, alt_ac, alt_aln_method])
-        r = cur.fetchall()
-        if len(r) == 0:
-            return None
-        else:
-            return r
+        rows = cur.fetchall()
+        if len(rows) == 0:
+            raise HGVSDataNotAvailableError("No tx_exons for (tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})".format(
+                tx_ac=tx_ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method))
+        return rows
 
 
     @lru_cache(maxsize=128)
@@ -312,6 +317,7 @@ class UTABase(Interface, SeqFetcher):
 
         """
         cur = self._execute(self.sql['tx_identity_info'], [tx_ac])
+        # TODO: Should this raise HGVSDataNotAvailableError?
         return cur.fetchone()
 
 
@@ -339,22 +345,15 @@ class UTABase(Interface, SeqFetcher):
 
         """
         cur = self._execute(self.sql['tx_info'], [tx_ac, alt_ac, alt_aln_method])
-        return cur.fetchone()
-
-
-    # TODO: Deprecate this function in favor SeqFetcherMixin
-    @lru_cache(maxsize=128)
-    def get_tx_seq(self, ac):
-        """return transcript sequence for supplied accession (ac), or None if not found
-
-        :param ac: transcript accession with version (e.g., 'NM_000051.3')
-        :type ac: str
-        """
-        cur = self._execute(self.sql['tx_seq'], [ac])
-        try:
-            return cur.fetchone()['seq']
-        except TypeError:
-            return None
+        rows = cur.fetchall()
+        if len(rows) == 0:
+            raise HGVSDataNotAvailableError("No tx_info for (tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})".format(
+                tx_ac=tx_ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method))
+        elif len(rows) == 1:
+            return rows[0]
+        else:
+            raise HGVSError("Multiple ({n}) replies for tx_info(tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})".format(
+                n=len(rows), tx_ac=tx_ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method))
 
 
     @lru_cache(maxsize=128)
@@ -385,8 +384,8 @@ class UTABase(Interface, SeqFetcher):
 
         """
         cur = self._execute(self.sql['tx_mapping_options'], [tx_ac])
-        r = cur.fetchall()
-        return r
+        rows = cur.fetchall()
+        return rows
 
     @lru_cache(maxsize=128)
     def get_similar_transcripts(self, tx_ac):
@@ -418,19 +417,77 @@ class UTABase(Interface, SeqFetcher):
         """
 
         cur = self._execute(self.sql['tx_similar'], [tx_ac])
-        r = cur.fetchall()
-        return r
+        rows = cur.fetchall()
+        return rows
 
+    @lru_cache(maxsize=128)
     def get_pro_ac_for_tx_ac(self, tx_ac):
         """Return the (single) preferred protein accession for a given transcript
         accession, or None if not found."""
 
         cur = self._execute(self.sql['tx_to_pro'], [tx_ac])
-        r = cur.fetchall()
+        rows = cur.fetchall()
         try:
-            return r[0]['pro_ac']
+            return rows[0]['pro_ac']
         except IndexError:
             return None
+
+
+    # Sequence fetching
+    # -----------------
+    # UTA stored a subset of relevant sequences in
+    # the postgresql database, but that's impractical for large
+    # sequences (genome scale) and is difficult to maintain.
+    # The design goal is to migrate from the get_tx_seq() method to
+    # externalize all sequence fetching.  See
+    # TODO: Externalize sequence fetching (https://bitbucket.org/biocommons/hgvs/issue/236/)
+    #
+    # For the 0.4.0 release, we'll enable a a new method, fetch_seq(),
+    # and deprecate get_tx_seq(). get_tx_seq() will be removed in a
+    # subsequent major inteface update.  fetch_seq() itself will wrap
+    # get_tx_seq() and SeqFetcher.fetch_seq() now, but is expected to
+    # be entirely replaced by a more complete sequence database.
+    # See https://bitbucket.org/biocommons/hgvs/issue/240/
+
+    @lru_cache(maxsize=128)
+    def fetch_seq(self, ac, start_i=None, end_i=None):
+        """Fetches sequence by accession, optionally bounded by [start_i,end_i).
+        See SeqFetcher.fetch_seq() for details and examples.
+
+        This function tries _get_tx_seq() (because it's usually
+        faster), and then SeqFetcher.fetch_seq().
+        """
+
+        if any(ac.startswith(pfx) for pfx in ['NM_','NR_','ENST']):
+            try:
+                seq = self._get_tx_seq(ac)[start_i:end_i]
+                logger.debug("fetched {ac} from UTA".format(ac=ac))
+                return seq
+            except HGVSDataNotAvailableError:
+                pass
+        # if ac not matching or on HGVSDataNotAvailableError...
+        seq = super(UTABase, self).fetch_seq(ac, start_i, end_i)
+        logger.debug("fetched {ac} with SeqFetcher".format(ac=ac))
+        return seq
+
+    # TODO: Remove get_tx_seq() in 0.5.0
+    @deprecated(use_instead="fetch_seq(...)")
+    def get_tx_seq(self, ac):
+        """DEPRECATED: will be removed in 0.5.0"""
+        return self._get_tx_seq(ac)
+
+    def _get_tx_seq(self, ac):
+        """return transcript sequence for supplied accession (ac), or None if not found
+
+        :param ac: transcript accession with version (e.g., 'NM_000051.3')
+        :type ac: str
+        """
+        cur = self._execute(self.sql['tx_seq'], [ac])
+        try:
+            return cur.fetchone()['seq']
+        except TypeError:
+            raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
+
 
 
 class UTA_postgresql(UTABase):
@@ -553,8 +610,6 @@ def _parse_url(db_url):
     skeleton format is:
 
        driver://user:pass@host/database/schema
-
-    >>> from pprint import pprint
 
     >>> params = _parse_url("driver://user:pass@host:9876/database/schema")
 
