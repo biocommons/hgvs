@@ -5,6 +5,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 hgvs.normalizer
 """
 
+import copy
 
 import hgvs.parser
 import hgvs.dataproviders.uta
@@ -23,10 +24,6 @@ try:
     from vgraph.norm import normalize_alleles
 except ImportError:
     from hgvs.utils.norm import normalize_alleles
-
-import copy
-
-
 
 
 class Normalizer(object):
@@ -127,39 +124,20 @@ class Normalizer(object):
     
     
     
-    def _fetch_seq(self, var, start, end, boundary):
+    def _fetch_bounded_seq(self, var, start, end, boundary):
         """Fetch reference sequence from hgvs data provider.
-           
-           The start posotion is 0 and the interval is half open
+
+        The start posotion is 0 and the interval is half open
         """
-        
+
         start = start if start >= boundary[0] else boundary[0]
         end   = end   if end <= boundary[1] else boundary[1]
         if start >= end:
             return ''
-        
-        
-        if self.hdp is not None:
-            if var.type == 'c' or var.type == 'r' or var.type == 'n':
-                try:
-                    seq = self.hdp.get_tx_seq(var.ac)
-                    return seq[start:end]
-                except TypeError:
-                    raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=var.ac))
-            else:
-                try:
-                    return self.hdp.fetch_seq(var.ac, start, end)
-                except HTTPError:
-                    raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=var.ac))
-        else:
-            raise HGVSNormalizationError("hgvs data provider must be specified when normalizing variants")
-    
-    
-    
-    
-    
-    
-    
+
+        return self.hdp.fetch_seq(var.ac, start, end)
+
+
     def _get_ref_alt(self, var, boundary):
         """Get reference allele and alternative allele of the variant
         """
@@ -169,38 +147,31 @@ class Normalizer(object):
             ref = ''
         elif var.posedit.edit.type == 'dup':
             if var.posedit.edit.seq:
-                ref = self._fetch_seq(var, var.posedit.pos.start.base-1, var.posedit.pos.end.base, boundary)
+                ref = self._fetch_bounded_seq(var, var.posedit.pos.start.base-1, var.posedit.pos.end.base, boundary)
                 #validate whether the ref of the var is the same as the reference sequence
                 if var.posedit.edit.seq != ref:
                     raise HGVSValidationError(str(var) + ': ' + hgvs.validator.SEQ_ERROR_MSG)
             ref = ''
         else:
-            ref = self._fetch_seq(var, var.posedit.pos.start.base-1, var.posedit.pos.end.base, boundary)
+            ref = self._fetch_bounded_seq(var, var.posedit.pos.start.base-1, var.posedit.pos.end.base, boundary)
             #validate whether the ref of the var is the same as the reference sequence
             if var.posedit.edit.ref_s is not None and var.posedit.edit.ref != '' and var.posedit.edit.ref != ref:
                 raise HGVSValidationError(str(var) + ': ' + hgvs.validator.SEQ_ERROR_MSG)
-        ref = ref.encode('ascii')
-        
+
         #Get alternative allele
         if var.posedit.edit.type == 'sub' or var.posedit.edit.type == 'delins' or var.posedit.edit.type == 'ins':
             alt = var.posedit.edit.alt
         elif var.posedit.edit.type == 'del':
             alt = ''
         elif var.posedit.edit.type == 'dup':
-            alt = var.posedit.edit.seq or self._fetch_seq(var, var.posedit.pos.start.base-1, var.posedit.pos.end.base, boundary)
+            alt = var.posedit.edit.seq or self._fetch_bounded_seq(var, var.posedit.pos.start.base-1, var.posedit.pos.end.base, boundary)
         elif var.posedit.edit.type == 'inv':
             alt = ref[::-1]
         elif var.posedit.edit.type == 'identity':
             alt = ref
-        alt = alt.encode('ascii')
-        
+
         return ref, alt
-    
-    
-    
-    
-    
-    
+
     def _normalize_alleles(self, var, boundary):
         """Normalize the variant until it could not be shuffled
         """
@@ -223,11 +194,11 @@ class Normalizer(object):
                 stop   = var.posedit.pos.end.base - base + 1
             
             while True:
-                ref_seq = self._fetch_seq(var, base - 1, base -1 + win_size, boundary)
+                ref_seq = self._fetch_bounded_seq(var, base - 1, base -1 + win_size, boundary)
                 if ref_seq == '':
                     break
                 orig_start, orig_stop = start, stop
-                start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt), len(ref_seq), win_size, False)
+                start, stop, (ref, alt) = normalize_alleles(ref_seq.encode('ascii'), start, stop, (ref.encode('ascii'), alt.encode('ascii')), len(ref_seq), win_size, False)
                 if stop < len(ref_seq) or start == orig_start:
                     break
                 #if stop at the end of the window, try to extend the shuffling to the right
@@ -250,11 +221,11 @@ class Normalizer(object):
                 stop  = var.posedit.pos.end.base - base + 1
             
             while True:
-                ref_seq = self._fetch_seq(var, base - 1, base -1 + win_size, boundary)
+                ref_seq = self._fetch_bounded_seq(var, base - 1, base -1 + win_size, boundary)
                 if ref_seq == '':
                     break
                 orig_start, orig_stop = start, stop
-                start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt), 0, win_size, True)
+                start, stop, (ref, alt) = normalize_alleles(ref_seq.encode('ascii'), start, stop, (ref.encode('ascii'), alt.encode('ascii')), 0, win_size, True)
                 if start > 0 or stop == orig_stop:
                     break
                 #if stop at the end of the window, try to extend the shuffling to the left
@@ -263,11 +234,7 @@ class Normalizer(object):
                 stop   = orig_stop
         
         return base + start, base + stop, (ref, alt)
-    
-    
-    
-    
-    
+
     def normalize(self, var):
         """Perform variants normalization
         """
@@ -285,8 +252,9 @@ class Normalizer(object):
         if isinstance(var.posedit.pos.end, hgvs.location.BaseOffsetPosition) and var.posedit.pos.end.base != 0 and var.posedit.pos.end.offset != 0:
             raise HGVSUnspportedOperationError("Unsupported normalization of intron variants at CDS and transcript level")
         
-        #For c. variants normalization, first convert to r. variants and perform normalization at the r. level
-        #then convert the normalized r. variant back to c. variant at the end.
+        # For c. variants normalization, first convert to r. variants
+        # and perform normalization at the r. level then convert the
+        # normalized r. variant back to c. variant at the end.
         if type == 'c':
             var = self.hm.c_to_r(var)
             
@@ -302,7 +270,7 @@ class Normalizer(object):
         alt_len = len(alt)
         
         
-        #Generate normalized variant        
+        # Generate normalized variant
         if alt_len == ref_len:
             ref_start = start
             ref_end   = end - 1
@@ -333,8 +301,8 @@ class Normalizer(object):
         elif alt_len > ref_len:
             #ins or dup
             if ref_len == 0:
-                left_seq  = self._fetch_seq(var, start-alt_len-1, end-1, boundary) if self.direction == 3 else ''
-                right_seq = self._fetch_seq(var, start-1, start+alt_len-1, boundary) if self.direction == 5 else ''
+                left_seq  = self._fetch_bounded_seq(var, start-alt_len-1, end-1, boundary) if self.direction == 3 else ''
+                right_seq = self._fetch_bounded_seq(var, start-1, start+alt_len-1, boundary) if self.direction == 5 else ''
                 #dup
                 if alt == left_seq:
                     ref_start = start - alt_len
