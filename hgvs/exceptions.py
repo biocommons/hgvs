@@ -4,6 +4,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 class HGVSError(Exception):
     pass
 
+class HGVSInternalError(Exception):
+    pass
+
 class HGVSParseError(HGVSError):
     pass
 

@@ -5,6 +5,7 @@ import os
 import re
 import unittest
 
+from hgvs.exceptions import HGVSDataNotAvailableError
 import hgvs.dataproviders.uta
 import hgvs.edit
 import hgvs.location
@@ -46,16 +47,16 @@ class UTA_Base(object):
         self.assertEqual( 3, len(tx_exons) )
 
     def test_get_tx_exons_invalid_tx_ac(self):
-        tx_exons = self.hdp.get_tx_exons('NM_999999.9','NC_000003.11', 'splign')
-        self.assertIsNone( tx_exons )
+        with self.assertRaises(HGVSDataNotAvailableError):
+            self.hdp.get_tx_exons('NM_999999.9','NC_000003.11', 'splign')
 
     def test_get_tx_exons_invalid_alt_ac(self):
-        tx_exons = self.hdp.get_tx_exons('NM_000551.3','NC_000999.9', 'splign')
-        self.assertIsNone( tx_exons )
+        with self.assertRaises(HGVSDataNotAvailableError):
+            self.hdp.get_tx_exons('NM_000551.3','NC_000999.9', 'splign')
 
     def test_get_tx_exons_invalid_alt_aln_method(self):
-        tx_exons = self.hdp.get_tx_exons('NM_000551.3','NC_000999.9', 'best')
-        self.assertIsNone( tx_exons )
+        with self.assertRaises(HGVSDataNotAvailableError):
+            self.hdp.get_tx_exons('NM_000551.3','NC_000999.9', 'best')
 
     def test_get_tx_for_gene(self):
         tig = self.hdp.get_tx_for_gene('VHL')
@@ -65,7 +66,6 @@ class UTA_Base(object):
         tig = self.hdp.get_tx_for_gene('GENE')
         self.assertEqual( 0, len(tig) )
 
-
     def test_get_tx_info(self):
         tx_info = self.hdp.get_tx_info('NM_000051.3', 'AC_000143.1', 'splign')
         self.assertEqual( 385, tx_info['cds_start_i'])
@@ -73,8 +73,8 @@ class UTA_Base(object):
         self.assertEqual( 'AC_000143.1', tx_info['alt_ac'])
 
     def test_get_tx_info_invalid_tx_ac(self):
-        tx_info = self.hdp.get_tx_info('NM_999999.9', 'AC_000143.1', 'splign')
-        self.assertIsNone( tx_info )
+        with self.assertRaises(HGVSDataNotAvailableError):
+            self.hdp.get_tx_info('NM_999999.9', 'AC_000143.1', 'splign')
 
     def test_get_tx_mapping_options(self):
         tx_mapping_options = self.hdp.get_tx_mapping_options('NM_000551.3')
@@ -87,15 +87,15 @@ class UTA_Base(object):
         self.assertEqual( tx_info_options, [] )
 
     def test_get_tx_seq(self):
-        tsi = self.hdp.get_tx_seq('NM_000551.3')
+        tsi = self.hdp._get_tx_seq('NM_000551.3')
         seq = tsi
         self.assertEqual( 4560, len(seq) )
         self.assertTrue( seq.startswith('cctcgcctccgttacaacgg'.upper()) )
         self.assertTrue( seq.endswith('aaaggaaatag'.upper()) )
 
     def test_get_tx_seq_invalid_ac(self):
-        tsi = self.hdp.get_tx_seq('NM_999999.9')
-        self.assertIsNone( tsi )
+        with self.assertRaises(HGVSDataNotAvailableError):
+            self.hdp._get_tx_seq('NM_999999.9')
 
 
 class Test_hgvs_dataproviders_uta_UTA_default(unittest.TestCase, UTA_Base):
