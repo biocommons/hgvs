@@ -2,12 +2,12 @@ import re
 
 import requests
 
-from ..decorators.lru_cache import lru_cache
+from ..exceptions import HGVSDataNotAvailableError
+from ..decorators import lru_cache
 
 
 # TODO: Move this fetching to the eutils package, which provides
 # throttling.
-@lru_cache(maxsize=100)
 def _fetch_seq_ensembl(ac, start_i=None, end_i=None):
     """Fetch the specified sequence slice from Ensembl using the public
     REST interface.
@@ -39,7 +39,6 @@ def _fetch_seq_ensembl(ac, start_i=None, end_i=None):
     return seq if (start_i is None or end_i is None) else seq[start_i:end_i]
 
 
-@lru_cache(maxsize=100)
 def _fetch_seq_ncbi(ac, start_i=None, end_i=None):
     """Fetch sequences from NCBI using the eutils interface.  
 
@@ -76,40 +75,44 @@ def _fetch_seq_ncbi(ac, start_i=None, end_i=None):
     return ''.join(resp.content.splitlines()[1:])
 
 
-class SeqFetcher(object):
-    """Provides fetch_seq() method to fetch sequences from NCBI eutils and
-    Ensembl REST interfaces. This class is primarily intended as a
-    mixin for HGVS data providers that doen't otherwise have access to
-    sequence data.
+@lru_cache(maxsize=20)
+def fetch_seq(ac, start_i=None, end_i=None):
+    """return a subsequence of the given accession for the
+    interbase interval [start_i,end_i)
 
-    >>> sf = SeqFetcher()
+    Fetches sequences from NCBI eutils and Ensembl REST interfaces
+    (currently).  This class is primarily intended as a mixin for HGVS
+    data providers that doen't otherwise have access to sequence data.
 
     Without an interval, the full sequence is returned::
 
-    >>> len(sf.fetch_seq('NP_056374.2'))
+    >>> len(fetch_seq('NP_056374.2'))
     1596
 
     Therefore, it's preferable to provide the interval rather than
     using Python slicing sequence on the delivered sequence::
 
-    >>> sf.fetch_seq('NP_056374.2',0,10)   # This!
+    >>> fetch_seq('NP_056374.2',0,10)   # This!
     'MESRETLSSS'
 
-    >>> sf.fetch_seq('NP_056374.2')[0:10]  # Not this!
+    >>> fetch_seq('NP_056374.2')[0:10]  # Not this!
     'MESRETLSSS'
 
-    >>> sf.fetch_seq('NP_056374.2',0,10) == sf.fetch_seq('NP_056374.2')[0:10]
+    >>> fetch_seq('NP_056374.2',0,10) == fetch_seq('NP_056374.2')[0:10]
     True
 
     Providing intervals is especially important for large sequences::
 
-    >>> sf.fetch_seq('NC_000001.10',2000000,2000030)
+    >>> fetch_seq('NC_000001.10',2000000,2000030)
     'ATCACACGTGCAGGAACCCTTTTCCAAAGG'
+
+    This call will pull back 30 bases plus overhead; without the
+    interval, one would receive 250MB of chr1 plus overhead.
 
     Essentially any RefSeq, Genbank, BIC, or Ensembl sequence may be
     fetched:
 
-    >> [(ac,sf.fetch_seq(ac,0,25))
+    >> [(ac,fetch_seq(ac,0,25))
     ... for ac in ['NG_032072.1', 'NW_003571030.1', 'NT_113901.1', 'NC_000001.10', 'NP_056374.2', 'GL000191.1', 'KB663603.1',
     ...            'ENST00000288602', 'ENSP00000288602']]
     [('NG_032072.1', 'AAAATTAAATTAAAATAAATAAAAA'),
@@ -122,6 +125,16 @@ class SeqFetcher(object):
      ('ENST00000288602', u'CGCCTCCCTTCCCCCTCCCCGCCCG'),
      ('ENSP00000288602', u'MAALSGGGGGGAEPGQALFNGDMEP')]
 
+    >>> fetch_seq('NM_9.9')
+    Traceback (most recent call last):
+       ...
+    HGVSDataNotAvailableError: No sequence available for NM_9.9
+
+    >>> fetch_seq('QQ01234')
+    Traceback (most recent call last):
+       ...
+    HGVSDataNotAvailableError: No fetcher for accessions like QQ01234
+
     """
 
     _ac_dispatch = [
@@ -129,10 +142,28 @@ class SeqFetcher(object):
         {'re': re.compile('^ENS[TP]\d+'), 'fetcher': _fetch_seq_ensembl},
         ]
 
-    def fetch_seq(self, ac, start_i=None, end_i=None):
-        """return a subsequence of the given accession for the
-        interbase interval [start_i,end_i)"""
-        for drec in self._ac_dispatch:
-            if drec['re'].match(ac):
+    for drec in _ac_dispatch:
+        if drec['re'].match(ac):
+            try:
                 return drec['fetcher'](ac, start_i, end_i)
-        raise Exception("No sequence fetcher identified for " + ac)
+            except requests.HTTPError:
+                raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
+    raise HGVSDataNotAvailableError("No fetcher for accessions like {}".format(ac))
+
+
+class SeqFetcher(object):
+    """This class is intended primarily as a mixin for HGVS data providers
+    that doen't otherwise have access to sequence data.  It uses the
+    fetch_seq() function in this module to fetch sequences from
+    several sources; see that function for details.
+
+    >>> sf = SeqFetcher()
+
+    >>> sf.fetch_seq('NP_056374.2',0,10)
+    'MESRETLSSS'
+
+    """
+
+    def fetch_seq(self, ac, start_i=None, end_i=None):
+        """See fetch_seq() *function* in this module for details"""
+        return fetch_seq(ac, start_i, end_i)
