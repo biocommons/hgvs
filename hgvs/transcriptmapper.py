@@ -54,6 +54,10 @@ class TranscriptMapper(object):
         else:
             # this covers the identity cases r <-> c
             self.tx_identity_info = hdp.get_tx_identity_info(self.tx_ac)
+            if self.tx_identity_info is None:
+                raise HGVSError("TranscriptMapper(tx_ac={self.tx_ac}, "
+                                "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
+                                "No transcript identity info".format(self=self))
             self.cds_start_i = self.tx_identity_info['cds_start_i']
             self.cds_end_i = self.tx_identity_info['cds_end_i']
             self.tgt_len = sum(self.tx_identity_info['lengths'])
