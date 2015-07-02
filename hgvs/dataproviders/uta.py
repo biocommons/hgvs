@@ -466,7 +466,7 @@ class UTABase(Interface, SeqFetcher):
             except HGVSDataNotAvailableError:
                 pass
         # if ac not matching or on HGVSDataNotAvailableError...
-        seq = super(SeqFetcher, self).fetch_seq(ac, start_i, end_i)
+        seq = super(UTABase, self).fetch_seq(ac, start_i, end_i)
         logger.debug("fetched {ac} with SeqFetcher".format(ac=ac))
         return seq
 
