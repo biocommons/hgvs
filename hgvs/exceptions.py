@@ -4,6 +4,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 class HGVSError(Exception):
     pass
 
+class HGVSInternalError(Exception):
+    pass
+
 class HGVSParseError(HGVSError):
     pass
 
@@ -19,11 +22,9 @@ class HGVSValidationError(HGVSError):
 class HGVSDataNotAvailableError(HGVSError):
     pass
 
-class HGVSNormalizationError(HGVSError):
+class HGVSUnsupportedOperationError(HGVSError):
     pass
 
-class HGVSUnspportedOperationError(HGVSError):
-    pass
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
