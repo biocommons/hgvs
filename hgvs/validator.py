@@ -104,21 +104,11 @@ class ExtrinsicValidator():
 
         if var_ref_seq is not None:
             var_x = self.hm.c_to_r(var) if var.type == 'c' else var
-            ref_seq = self._fetch_seq(var_x.ac, var_x.posedit.pos.start.base - 1, var_x.posedit.pos.end.base)
+            ref_seq = self.hdp.fetch_seq(var_x.ac, var_x.posedit.pos.start.base - 1, var_x.posedit.pos.end.base)
             if ref_seq != var_ref_seq:
                 raise HGVSValidationError(str(var) + ': ' + SEQ_ERROR_MSG)
+
         return True
-
-    def _fetch_seq(self, ac, start_i, end_i):
-        """fetch 0-based, right-open subsequence [start_i,end_i) of specified accession
-        first using the hdpi instance.
-
-        :raises: hgvs.exceptions.HGVSDataNotAvailableError if couldn't get sequence
-        """
-        try:
-            return self.hdp.get_tx_seq(ac)[start_i:end_i]
-        except TypeError:
-            raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
 
 
 
