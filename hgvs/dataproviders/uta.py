@@ -468,6 +468,7 @@ class UTABase(Interface, SeqFetcher):
         # if ac not matching or on HGVSDataNotAvailableError...
         seq = super(UTABase, self).fetch_seq(ac, start_i, end_i)
         logger.debug("fetched {ac} with SeqFetcher".format(ac=ac))
+        assert seq is not None
         return seq
 
     # TODO: Remove get_tx_seq() in 0.5.0
@@ -483,10 +484,10 @@ class UTABase(Interface, SeqFetcher):
         :type ac: str
         """
         cur = self._execute(self.sql['tx_seq'], [ac])
-        try:
-            return cur.fetchone()['seq']
-        except TypeError:
-            raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
+        row = cur.fetchone()
+        if row and row['seq'] is not None:
+            return row['seq']
+        raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
 
 
 
