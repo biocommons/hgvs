@@ -11,7 +11,6 @@ import hgvs.variantmapper
 import hgvs.parser
 import hgvs.validator
 
-db_dir = ['tests/data/sample_data']
 hdp = hgvs.dataproviders.uta.connect()
 
 
@@ -87,17 +86,22 @@ class Test_HGVSExtrinsicValidator(unittest.TestCase):
         self.validate_ext = hgvs.validator.ExtrinsicValidator(hdp)
 
     def test_valid_ref(self):
-        """Test if reference seqeuence is valid. Uses sample_data in tests directory"""
-        self.assertTrue(self.validate_ext.validate(self.hp.parse_hgvs_variant('NM_001005405.2:c.6C>A')))
-        self.assertTrue(self.validate_ext.validate(self.hp.parse_hgvs_variant('NM_001005405.2:c.-38T>A')))
-        self.assertTrue(self.validate_ext.validate(self.hp.parse_hgvs_variant('NM_001005405.2:c.*3C>G')))
-        self.assertTrue(self.validate_ext.validate(self.hp.parse_hgvs_variant('NM_001005405.2:c.435_440delCTGCTG')))
-        self.assertTrue(self.validate_ext.validate(self.hp.parse_hgvs_variant('NM_000187.3:c.457dupG')))
-        self.assertTrue(self.validate_ext.validate(self.hp.parse_hgvs_variant('NM_000151.3:c.379_380dup2')))
-        #self.assertTrue(self.validate_ext.validate(self.hp.parse_hgvs_variant('NP_001005405.1:p.Gly2Ser')))
+        """Test variants with valid reference seqeuences."""
+        hgvs_variants = [ 'NM_001005405.2:c.6C>A',
+                          'NM_001005405.2:c.-38T>A','NM_001005405.2:c.*3C>G',
+                          'NM_001005405.2:c.435_440delCTGCTG',
+                          'NM_000187.3:c.457dupG', 'NM_000151.3:c.379_380dup2',
+                          'NR_002728.3:r.55A>U']
+        for var in [self.hp.parse_hgvs_variant(h) for h in hgvs_variants]:
+            self.assertTrue(self.validate_ext.validate(var))
 
-        with self.assertRaises(HGVSValidationError):
-            self.validate_ext.validate(self.hp.parse_hgvs_variant('NM_001005405.2:c.435_440delCTGCT'))
+    def test_invalid_ref(self):
+        """Test variants with invalid reference sequences."""
+        hgvs_variants = ['NM_001005405.2:c.435_440delCTGCT', 'NR_002728.3:r.55C>U']
+
+        for var in [self.hp.parse_hgvs_variant(h) for h in hgvs_variants]:
+            with self.assertRaises(HGVSValidationError):
+                self.validate_ext.validate(var)
 
 
 if __name__ == '__main__':
