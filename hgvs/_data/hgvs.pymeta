@@ -237,14 +237,21 @@ aa1_seq = <aa1+>
 aa3_seq = <aa3+>
 
 # A single 1-or-3 letter amino acid
-dna = :x ?(x in 'ACGTacgt') -> x
-rna = :x ?(x in 'ACGUacgu') -> x
+dna4 = :x ?(x in 'ACGTacgt') -> x
+rna4 = :x ?(x in 'ACGUacgu') -> x
+dna5 = :x ?(x in 'ACGTacgtNn') -> x
+rna5 = :x ?(x in 'ACGUacguNn') -> x
+dna_iupac = :x ?(x in 'ACGTRYMKWSBDHVNacgtrymkwsbdhvn') -> x
+rna_iupac = :x ?(x in 'ACGURYMKWSBDHVNacgurymkwsbdhvn') -> x
+na_iupac = :x ?(x in 'ACGTURYMKWSBDHVNacgturymkwsbdhvn') -> x
+dna = dna_iupac
+rna = rna_iupac
 aat13 = aat3 | aat1
 aat3 = term3 | aa3
 aat1 = term1 | aa1
 aa13 = aa3 | aa1
-aa1 = :x ?(x in 'ACDEFGHIKLMNPQRSTVWY') -> x
-aa3 = 'Ala'|'Cys'|'Asp'|'Glu'|'Phe'|'Gly'|'His'|'Ile'|'Lys'|'Leu'|'Met'|'Asn'|'Pro'|'Gln'|'Arg'|'Ser'|'Thr'|'Val'|'Trp'|'Tyr'
+aa1 = :x ?(x in 'ACDEFGHIKLMNPQRSTVWYBZXU') -> x
+aa3 = 'Ala'|'Cys'|'Asp'|'Glu'|'Phe'|'Gly'|'His'|'Ile'|'Lys'|'Leu'|'Met'|'Asn'|'Pro'|'Gln'|'Arg'|'Ser'|'Thr'|'Val'|'Trp'|'Tyr' | 'Asx' | 'Glx' | 'Xaa' | 'Sec'
 term13 = term3 | term1
 term1 = :x ?(x in 'X*') -> x
 term3 = 'Ter'
