@@ -21,7 +21,7 @@ from ..exceptions import HGVSError, HGVSDataNotAvailableError
 from .seqfetcher import SeqFetcher
 
 # TODO: Update URLs when UTA instances are renamed
-_current_version = 'uta_20150623'
+_current_version = 'uta_20150702'
 _uta_urls = {
     # these named urls are provided for developer convenience
     # expect them to change or disappear without notice
@@ -156,7 +156,7 @@ class UTABase(Interface, SeqFetcher):
             """,
     
         "tx_to_pro": """
-            select * from preferred_accession where tx_ac = ?
+            select * from associated_accessions where tx_ac = ?
             """,
     }
 
@@ -422,7 +422,7 @@ class UTABase(Interface, SeqFetcher):
 
     @lru_cache(maxsize=128)
     def get_pro_ac_for_tx_ac(self, tx_ac):
-        """Return the (single) preferred protein accession for a given transcript
+        """Return the (single) associated protein accession for a given transcript
         accession, or None if not found."""
 
         cur = self._execute(self.sql['tx_to_pro'], [tx_ac])
