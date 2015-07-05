@@ -78,7 +78,6 @@ class UTA_Base(object):
 
     def test_get_tx_mapping_options(self):
         tx_mapping_options = self.hdp.get_tx_mapping_options('NM_000551.3')
-        self.assertEqual( 4, len(tx_mapping_options) )
         self.assertIn( ['NM_000551.3', 'NC_000003.11', 'splign'], tx_mapping_options )
         self.assertIn( ['NM_000551.3', 'NC_000003.11', 'blat']  , tx_mapping_options )
 
