@@ -25,18 +25,18 @@ _current_version = 'uta_20150702'
 _uta_urls = {
     # these named urls are provided for developer convenience
     # expect them to change or disappear without notice
-    "local": "postgresql://localhost/uta/" + _current_version,
-    "local-dev": "postgresql://localhost/uta_dev/" + _current_version,
+    "local": "postgresql://anonymous:anonymous@localhost/uta/" + _current_version,
+    "local-dev": "postgresql://anonymous:anonymous@localhost/uta_dev/" + _current_version,
     "public": "postgresql://anonymous:anonymous@uta.biocommons.org/uta_dev/" + _current_version,
     "public-dev": "postgresql://anonymous:anonymous@uta.biocommons.org/uta_dev/" + _current_version,
     # INOP: "sqlite-dev": "sqlite:/home/reece/projects/biocommons/hgvs/tests/db/uta-test-1.db",
 }
 # use public instance for released (x.y.z versions), otherwise dev
 # this is necessary because there is still some co-dependency between the uta and hgvs projects
-_url_key = 'public' if hgvs._is_released_version else 'public-dev'
+_url_key = os.environ.get('_UTA_URL_KEY', 'public' if hgvs._is_released_version else 'public-dev')
 _default_db_url = os.environ.get('UTA_DB_URL', _uta_urls[_url_key])
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def connect(db_url=_default_db_url, pooling=False):
@@ -73,7 +73,7 @@ def connect(db_url=_default_db_url, pooling=False):
     psycopg2.pool.ThreadedConnectionPool.
     """
 
-    logger.debug('connecting to ' + str(db_url) + '...')
+    _logger.debug('connecting to ' + str(db_url) + '...')
     url = _parse_url(db_url)
     if url.scheme == 'sqlite':
         conn = UTA_sqlite(url)
@@ -165,7 +165,7 @@ class UTABase(Interface, SeqFetcher):
         self.url = url
         self._connect()
         super(UTABase,self).__init__()
-        logger.info('connected to ' + str(self.url))
+        _logger.info('connected to ' + str(self.url))
 
     def _execute(self, sql, *args):
         cur = self._get_cursor()
@@ -461,13 +461,13 @@ class UTABase(Interface, SeqFetcher):
         if any(ac.startswith(pfx) for pfx in ['NM_','NR_','ENST']):
             try:
                 seq = self._get_tx_seq(ac)[start_i:end_i]
-                logger.debug("fetched {ac} from UTA".format(ac=ac))
+                _logger.debug("fetched {ac} from UTA".format(ac=ac))
                 return seq
             except HGVSDataNotAvailableError:
                 pass
         # if ac not matching or on HGVSDataNotAvailableError...
         seq = super(UTABase, self).fetch_seq(ac, start_i, end_i)
-        logger.debug("fetched {ac} with SeqFetcher".format(ac=ac))
+        _logger.debug("fetched {ac} with SeqFetcher".format(ac=ac))
         assert seq is not None
         return seq
 
