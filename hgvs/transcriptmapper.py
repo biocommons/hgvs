@@ -9,7 +9,6 @@ import hgvs.posedit
 import hgvs.variant
 
 from hgvs.exceptions import HGVSError
-from hgvs.decorators.deprecated import deprecated
 from hgvs.utils import build_tx_cigar
 
 
@@ -223,32 +222,6 @@ class TranscriptMapper(object):
     def c_to_g(self, c_interval):
         """convert a transcript CDS (c.) interval to a genomic (g.) interval"""
         return self.r_to_g(self.c_to_r(c_interval))
-
-
-
-    ############################################################################
-    ## DEPRECATED METHODS
-    @deprecated(use_instead='g_to_c(...)')
-    def hgvsg_to_hgvsc(self,*args,**kwargs):
-        return self.g_to_c(*args,**kwargs)
-    @deprecated(use_instead='g_to_r(...)')
-    def hgvsg_to_hgvsr(self,*args,**kwargs):
-        return self.g_to_r(*args,**kwargs)
-    @deprecated(use_instead='r_to_g(...)')
-    def hgvsr_to_hgvsg(self,*args,**kwargs):
-        return self.r_to_g(*args,**kwargs)
-    @deprecated(use_instead='c_to_g(...)')
-    def hgvsc_to_hgvsg(self,*args,**kwargs):
-        return self.c_to_g(*args,**kwargs)
-    @deprecated(use_instead='c_to_r(...)')
-    def hgvsc_to_hgvsr(self,*args,**kwargs):
-        return self.c_to_r(*args,**kwargs)
-    @deprecated(use_instead='r_to_c(...)')
-    def hgvsr_to_hgvsc(self,*args,**kwargs):
-        return self.r_to_c(*args,**kwargs)
-    @deprecated(use_instead='c_to_p(...)')
-    def hgvsc_to_hgvsp(self,*args,**kwargs):
-        return self.c_to_p(*args,**kwargs)
 
 
 

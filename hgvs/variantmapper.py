@@ -2,7 +2,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import copy
-import warnings
 
 from Bio.Seq import Seq
 from bioutils.accessions import primary_assembly_accessions
@@ -17,11 +16,7 @@ import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
 import hgvs.utils.altseqbuilder as altseqbuilder
 import hgvs.variant
 
-from hgvs.decorators.deprecated import deprecated
 from hgvs.decorators.lru_cache import lru_cache
-
-
-UNSET = None
 
 
 class VariantMapper(object):
@@ -32,30 +27,6 @@ class VariantMapper(object):
 
     def __init__(self, hdp):
         self.hdp = hdp
-
-    @staticmethod
-    def _replace_T(edit):
-        if isinstance(edit, hgvs.edit.NARefAlt):
-            if edit.ref:
-                edit.ref = edit.ref.replace('T', 'U').replace('t', 'u')
-            if edit.alt:
-                edit.alt = edit.alt.replace('T', 'U').replace('t', 'u')
-        elif isinstance(edit, hgvs.edit.Dup):
-            if edit.seq:
-                edit.seq = edit.seq.replace('T', 'U').replace('t', 'u')
-        return edit
-
-    @staticmethod
-    def _replace_U(edit):
-        if isinstance(edit, hgvs.edit.NARefAlt):
-            if edit.ref:
-                edit.ref = edit.ref.replace('U', 'T').replace('u', 't')
-            if edit.alt:
-                edit.alt = edit.alt.replace('U', 'T').replace('u', 't')
-        elif isinstance(edit, hgvs.edit.Dup):
-            if edit.seq:
-                edit.seq = edit.seq.replace('U', 'T').replace('u', 't')
-        return edit
 
     def g_to_c(self, var_g, tx_ac, alt_aln_method='splign'):
         """Given a genomic (g.) parsed HGVS variant, return a transcript (c.) variant on the specified transcript using
@@ -220,7 +191,6 @@ class VariantMapper(object):
 
 
     # TODO: c_to_p needs refactoring
-    # TODO: data prep belongs in the data interface
     def c_to_p(self, var_c, pro_ac=None):
         """
         Converts a c. SequenceVariant to a p. SequenceVariant on the specified protein accession
@@ -288,37 +258,6 @@ class VariantMapper(object):
         return var_p
 
 
-    ############################################################################
-    ## DEPRECATED METHODS
-
-    @deprecated(use_instead='g_to_c(...)')
-    def hgvsg_to_hgvsc(self, *args, **kwargs):
-        return self.g_to_c(*args, **kwargs)
-
-    @deprecated(use_instead='g_to_r(...)')
-    def hgvsg_to_hgvsr(self, *args, **kwargs):
-        return self.g_to_r(*args, **kwargs)
-
-    @deprecated(use_instead='r_to_g(...)')
-    def hgvsr_to_hgvsg(self, *args, **kwargs):
-        return self.r_to_g(*args, **kwargs)
-
-    @deprecated(use_instead='c_to_g(...)')
-    def hgvsc_to_hgvsg(self, *args, **kwargs):
-        return self.c_to_g(*args, **kwargs)
-
-    @deprecated(use_instead='c_to_r(...)')
-    def hgvsc_to_hgvsr(self, *args, **kwargs):
-        return self.c_to_r(*args, **kwargs)
-
-    @deprecated(use_instead='r_to_c(...)')
-    def hgvsr_to_hgvsc(self, *args, **kwargs):
-        return self.r_to_c(*args, **kwargs)
-
-    @deprecated(use_instead='c_to_p(...)')
-    def hgvsc_to_hgvsp(self, *args, **kwargs):
-        return self.c_to_p(*args, **kwargs)
-
 
     ############################################################################
     ## Internal methods
@@ -332,6 +271,29 @@ class VariantMapper(object):
         return hgvs.transcriptmapper.TranscriptMapper(self.hdp, tx_ac=tx_ac, alt_ac=alt_ac,
                                                       alt_aln_method=alt_aln_method)
 
+    @staticmethod
+    def _replace_T(edit):
+        if isinstance(edit, hgvs.edit.NARefAlt):
+            if edit.ref:
+                edit.ref = edit.ref.replace('T', 'U').replace('t', 'u')
+            if edit.alt:
+                edit.alt = edit.alt.replace('T', 'U').replace('t', 'u')
+        elif isinstance(edit, hgvs.edit.Dup):
+            if edit.seq:
+                edit.seq = edit.seq.replace('T', 'U').replace('t', 'u')
+        return edit
+
+    @staticmethod
+    def _replace_U(edit):
+        if isinstance(edit, hgvs.edit.NARefAlt):
+            if edit.ref:
+                edit.ref = edit.ref.replace('U', 'T').replace('u', 't')
+            if edit.alt:
+                edit.alt = edit.alt.replace('U', 'T').replace('u', 't')
+        elif isinstance(edit, hgvs.edit.Dup):
+            if edit.seq:
+                edit.seq = edit.seq.replace('U', 'T').replace('u', 't')
+        return edit
 
     @staticmethod
     def _convert_edit_check_strand(strand, edit_in):
