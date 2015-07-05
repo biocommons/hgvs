@@ -30,18 +30,8 @@ class VariantMapper(object):
     All methods require and return objects of type :class:`hgvs.variant.SequenceVariant`.
     """
 
-    # TODO 0.4.0: cache_transcripts was deprecated in 0.3.x; remove in 0.4.0
-    def __init__(self, hdp, cache_transcripts=UNSET):
+    def __init__(self, hdp):
         self.hdp = hdp
-        if cache_transcripts != UNSET:
-            import inspect
-            upframe = inspect.getframeinfo(inspect.currentframe().f_back)
-            warnings.warn_explicit(
-                'VariantMapper cache_transcripts parameter is deprecated and will be removed in a future version',
-                category=DeprecationWarning,
-                filename=upframe.filename,
-                lineno=upframe.lineno + 1)
-
 
     @staticmethod
     def _replace_T(edit):
@@ -404,20 +394,11 @@ class EasyVariantMapper(VariantMapper):
     transcripts.
     """
 
-    # TODO 0.4.0: cache_transcripts was deprecated in 0.3.x; remove in 0.4.0
-    def __init__(self, hdp, primary_assembly='GRCh37', alt_aln_method='splign', cache_transcripts=UNSET):
+    def __init__(self, hdp, primary_assembly='GRCh37', alt_aln_method='splign'):
         super(EasyVariantMapper, self).__init__(hdp=hdp)
         self.primary_assembly = primary_assembly
         self.alt_aln_method = alt_aln_method
         self.primary_assembly_accessions = set(primary_assembly_accessions[primary_assembly])
-        if cache_transcripts != UNSET:
-            import inspect
-            upframe = inspect.getframeinfo(inspect.currentframe().f_back)
-            warnings.warn_explicit(
-                'VariantMapper cache_transcripts parameter is deprecated and will be removed in a future version',
-                category=DeprecationWarning,
-                filename=upframe.filename,
-                lineno=upframe.lineno + 1)
 
     def g_to_c(self, var_g, tx_ac): 
         return super(EasyVariantMapper, self).g_to_c(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
