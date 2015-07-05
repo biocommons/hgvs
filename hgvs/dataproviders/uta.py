@@ -73,6 +73,7 @@ def connect(db_url=_default_db_url, pooling=False):
     psycopg2.pool.ThreadedConnectionPool.
     """
 
+    logger.debug('connecting to ' + str(db_url) + '...')
     url = _parse_url(db_url)
     if url.scheme == 'sqlite':
         conn = UTA_sqlite(url)
@@ -177,8 +178,7 @@ class UTABase(Interface, SeqFetcher):
 
     @lru_cache(maxsize=1)
     def data_version(self):
-        cur = self._execute("select * from meta where key = 'schema_version'")
-        return cur.fetchone()['value']
+        return self.url.schema
 
 
     @lru_cache(maxsize=1)
