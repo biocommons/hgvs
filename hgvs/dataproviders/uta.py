@@ -20,11 +20,13 @@ from ..decorators.lru_cache import lru_cache
 from ..exceptions import HGVSError, HGVSDataNotAvailableError
 from .seqfetcher import SeqFetcher
 
-# TODO: Update URLs when UTA instances are renamed
-_current_version = 'uta_20150702'
+# Default and common URLs for UTA connections
+# These named urls are provided for developer convenience expect them
+# to change or disappear without notice.
+# All users may set UTA_DB_URL to explicitly select a host, database, or schema
+# INTERNAL USE ONLY: Developers may set _UTA_URL_KEY to select a named URL
+_current_version = 'uta_20150704'
 _uta_urls = {
-    # these named urls are provided for developer convenience
-    # expect them to change or disappear without notice
     "local": "postgresql://anonymous:anonymous@localhost/uta/" + _current_version,
     "local-dev": "postgresql://anonymous:anonymous@localhost/uta_dev/" + _current_version,
     "public": "postgresql://anonymous:anonymous@uta.biocommons.org/uta_dev/" + _current_version,
