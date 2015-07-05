@@ -9,7 +9,12 @@ class PosEdit( recordtype.recordtype( 'PosEdit', [('pos',None),('edit',None),('u
     """
     
     def __str__(self):
-        rv = str(self.edit) if self.pos is None else '{self.pos}{self.edit}'.format(self=self)
+        if self.edit and self.edit.type.startswith('mos_'):
+            rv = '[=/{self.edit}]'.format(self=self) if self.pos is None else '[=/{self.pos}{self.edit}]'.format(self=self)
+        elif self.edit and self.edit.type.startswith('chi_'):
+            rv = '[=//{self.edit}]'.format(self=self) if self.pos is None else '[=//{self.pos}{self.edit}]'.format(self=self)
+        else:
+            rv = str(self.edit) if self.pos is None else '{self.pos}{self.edit}'.format(self=self)
         if self.uncertain:
             if self.edit in ['0','']:
                 rv = rv + '?'
