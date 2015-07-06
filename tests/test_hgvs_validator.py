@@ -26,7 +26,7 @@ class Test_HGVSValidator(unittest.TestCase):
         self.assertTrue(self.vr.validate(self.hp.parse_hgvs_variant('NM_001005405.2:c.6C>A')))
 
 
-@attr(tags=["quick","validation"])
+@attr(tags=["quick", "validation"])
 class Test_HGVSIntrinsicValidator(unittest.TestCase):
     """Tests for internal validation"""
 
@@ -67,14 +67,14 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
     def test_del_length(self):
         """Test if del length agrees with position range"""
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.76_78delACT')))
-        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.123+54_123+55delTA')))  # <-- haha "delta"
+        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.123+54_123+55delTA'))
+                        )    # <-- haha "delta"
 
         with self.assertRaisesRegexp(HGVSValidationError, hgvs.validator.DEL_ERROR_MSG):
             self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.76_78del'))
 
         with self.assertRaisesRegexp(HGVSValidationError, hgvs.validator.DEL_ERROR_MSG):
             self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.76_78delACTACAT'))
-
 
 
 @attr(tags=["validation"])
@@ -87,11 +87,9 @@ class Test_HGVSExtrinsicValidator(unittest.TestCase):
 
     def test_valid_ref(self):
         """Test variants with valid reference seqeuences."""
-        hgvs_variants = [ 'NM_001005405.2:c.6C>A',
-                          'NM_001005405.2:c.-38T>A','NM_001005405.2:c.*3C>G',
-                          'NM_001005405.2:c.435_440delCTGCTG',
-                          'NM_000187.3:c.457dupG', 'NM_000151.3:c.379_380dup2',
-                          'NR_002728.3:r.55A>U']
+        hgvs_variants = ['NM_001005405.2:c.6C>A', 'NM_001005405.2:c.-38T>A', 'NM_001005405.2:c.*3C>G',
+                         'NM_001005405.2:c.435_440delCTGCTG', 'NM_000187.3:c.457dupG', 'NM_000151.3:c.379_380dup2',
+                         'NR_002728.3:r.55A>U']
         for var in [self.hp.parse_hgvs_variant(h) for h in hgvs_variants]:
             self.assertTrue(self.validate_ext.validate(var))
 

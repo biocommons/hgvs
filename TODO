@@ -2,3 +2,36 @@
 
 Actionable issues are at https://bitbucket.org/biocommons/hgvs/issues.
 This file is intended for ideas that need fleshing out.
+
+* before release
+** release notes w/deprecations
+** yapf
+** sq-dq
+** evm normalize=True
+** drop c_to_n, n_to_c?
+** normalize: separate fill, rewrite, and shuffle
+** tests: expected value first
+
+** 0.4.0 deprecations / 0.5.0 obsolescence
+- primary_assembly -> assembly
+- consider var_x -> var
+
+
+* 0.5.0 aspirations
+** complex variants (compound, phased, mosaic, chimeric)
+
+
+* Transcript Mapper simplification
+** Intervals should probably be of one of two types: simple and complex.
+All mapping functions should accept and return one of those types.
+
+** Eliminate duplicate code.
+
+* Variant mapper simplification
+** to_g() method for n,c,r variants?
+
+* Separate code that fetches data from code that uses it.
+E.g., TranscriptMapper fetches data and performs the mappings.
+Consider initializing with fetch *results* instead.
+
+* Merge VariantMapper and EasyVariantMapper

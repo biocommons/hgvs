@@ -9,8 +9,8 @@
 import re
 
 cpuinfo_tags = ['processor', 'model name', 'cpu MHz', 'cache size', 'cpu cores', 'bogomips']
-cpuinfo_block_re = re.compile(".+?".join([ "^{t}\s+:\s+([^\n]+)".format(t=t) for t in cpuinfo_tags ]),
-                              flags=re.MULTILINE+re.DOTALL)
+cpuinfo_block_re = re.compile(".+?".join(["^{t}\s+:\s+([^\n]+)".format(t=t) for t in cpuinfo_tags]),
+                              flags=re.MULTILINE + re.DOTALL)
 print("\t".join(cpuinfo_tags))
-for m in cpuinfo_block_re.finditer(open('/proc/cpuinfo','r').read()):
+for m in cpuinfo_block_re.finditer(open('/proc/cpuinfo', 'r').read()):
     print("\t".join(m.groups()))

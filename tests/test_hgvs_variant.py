@@ -7,11 +7,12 @@ from nose.plugins.attrib import attr
 
 import hgvs.variant
 
-@attr(tags=["quick","models"])
+
+@attr(tags=["quick", "models"])
 class Test_SequenceVariant(unittest.TestCase):
     def test_SequenceVariant(self):
-        var = hgvs.variant.SequenceVariant(ac='AC',type='B',posedit='1234DE>FG')
-        self.assertEqual( str(var) , 'AC:B.1234DE>FG' )
+        var = hgvs.variant.SequenceVariant(ac='AC', type='B', posedit='1234DE>FG')
+        self.assertEqual(str(var), 'AC:B.1234DE>FG')
 
 
 if __name__ == '__main__':

@@ -8,6 +8,7 @@ from nose.plugins.attrib import attr
 import hgvs.exceptions
 import hgvs.intervalmapper
 
+
 @attr(tags=["quick"])
 class Test_IntervalMapper(unittest.TestCase):
     longMessage = True
@@ -20,7 +21,7 @@ class Test_IntervalMapper(unittest.TestCase):
 
     def test_interval_invalid_start_gt_end(self):
         with self.assertRaises(hgvs.exceptions.HGVSInvalidIntervalError):
-            interval = hgvs.intervalmapper.Interval(4,3)
+            interval = hgvs.intervalmapper.Interval(4, 3)
 
     def test_intervalpair_valid_match(self):
         self._check_valid_intervalpair(3, 4, 6, 7)
@@ -69,20 +70,15 @@ class Test_IntervalMapper(unittest.TestCase):
 
     @staticmethod
     def _build_mock_intervalmapper():
-        iv1 = [hgvs.intervalmapper.Interval(1, 5),
-               hgvs.intervalmapper.Interval(5, 6),
-               hgvs.intervalmapper.Interval(6, 10)
-        ]
+        iv1 = [hgvs.intervalmapper.Interval(1, 5), hgvs.intervalmapper.Interval(5, 6),
+               hgvs.intervalmapper.Interval(6, 10)]
 
-        iv2 = [hgvs.intervalmapper.Interval(1, 5),
-               hgvs.intervalmapper.Interval(5, 5),
-               hgvs.intervalmapper.Interval(5, 9)
-        ]
+        iv2 = [hgvs.intervalmapper.Interval(1, 5), hgvs.intervalmapper.Interval(5, 5),
+               hgvs.intervalmapper.Interval(5, 9)]
 
         ivp = [hgvs.intervalmapper.IntervalPair(iv1[i], iv2[i]) for i in xrange(len(iv1))]
         ivm = hgvs.intervalmapper.IntervalMapper(ivp)
         return ivm
-
 
 
 if __name__ == '__main__':

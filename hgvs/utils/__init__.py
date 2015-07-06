@@ -11,6 +11,7 @@ def build_tx_cigar(exons, strand):
     resulting CIGAR is also in transcript order. 
     """
     cigarelem_re = re.compile('\d+[=DIMNX]')
+
     def _reverse_cigar(c):
         return ''.join(reversed(cigarelem_re.findall(c)))
 
@@ -23,18 +24,14 @@ def build_tx_cigar(exons, strand):
     else:
         cigars = [e['cigar'] for e in exons]
 
-    tx_cigar = [cigars[0]]           # exon 1
-    for i in range(1, len(cigars)):  # and intron + exon pairs thereafter
+    tx_cigar = [cigars[0]]    # exon 1
+    for i in range(1, len(cigars)):    # and intron + exon pairs thereafter
         intron = str(exons[i]['alt_start_i'] - exons[i - 1]['alt_end_i']) + 'N'
         tx_cigar += [intron, cigars[i]]
-    
+
     tx_cigar_str = ''.join(tx_cigar)
-    
+
     return tx_cigar_str
-
-
-
-
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

@@ -12,12 +12,11 @@ try:
     if re.match('^\d+\.\d+\.\d+$', __version__) is not None:
         _is_released_version = True
 except pkg_resources.DistributionNotFound as e:
-    warnings.warn("can't get __version__ because %s package isn't installed" % __package__,Warning)
+    warnings.warn("can't get __version__ because %s package isn't installed" % __package__, Warning)
     __version__ = None
 
 # Make sure we're showing DeprecationWarnings
-warnings.filterwarnings('default','',DeprecationWarning)
-
+warnings.filterwarnings('default', '', DeprecationWarning)
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

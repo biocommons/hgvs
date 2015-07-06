@@ -17,14 +17,15 @@ from hgvs.location import CDS_START, CDS_END
 
 DBG = False
 
-class AltTranscriptData(recordtype.recordtype('AltTranscriptData', [
-        'transcript_sequence', 'aa_sequence', 'cds_start', 'cds_stop', 'protein_accession',
-        ('is_frameshift', False), ('variant_start_aa', None), ('frameshift_start', None), ('is_substitution', False),
-        ('is_ambiguous', False)])):
 
+class AltTranscriptData(recordtype.recordtype('AltTranscriptData', [
+    'transcript_sequence', 'aa_sequence', 'cds_start', 'cds_stop', 'protein_accession', ('is_frameshift', False),
+    ('variant_start_aa', None), ('frameshift_start', None), ('is_substitution', False), ('is_ambiguous', False)
+])):
     @classmethod
     def create_for_variant_inserter(cls, seq, cds_start, cds_stop, is_frameshift, variant_start_aa, accession,
-                                    is_substitution=False, is_ambiguous=False):
+                                    is_substitution=False,
+                                    is_ambiguous=False):
         """Create a variant sequence using inputs from VariantInserter
         :param seq: DNA sequence wiith variant incorporated
         :type seq: str or list
@@ -49,8 +50,8 @@ class AltTranscriptData(recordtype.recordtype('AltTranscriptData', [
             if isinstance(seq, basestring):
                 seq = list(seq)
             seq_cds = seq[cds_start - 1:]
-            if len(seq_cds) % 3 != 0:   # padding so biopython won't complain during the conversion
-                seq_cds.extend(['N']*((3-len(seq_cds) % 3) % 3))
+            if len(seq_cds) % 3 != 0:    # padding so biopython won't complain during the conversion
+                seq_cds.extend(['N'] * ((3 - len(seq_cds) % 3) % 3))
             seq_cds = ''.join(seq_cds)
             seq_aa = str(Seq(seq_cds).translate())
             stop_pos = seq_aa.find("*")
@@ -60,8 +61,10 @@ class AltTranscriptData(recordtype.recordtype('AltTranscriptData', [
             seq_aa = []
 
         alt_data = AltTranscriptData(''.join(seq), seq_aa, cds_start, cds_stop, accession,
-                                     is_frameshift=is_frameshift, variant_start_aa=variant_start_aa,
-                                     is_substitution=is_substitution, is_ambiguous=is_ambiguous)
+                                     is_frameshift=is_frameshift,
+                                     variant_start_aa=variant_start_aa,
+                                     is_substitution=is_substitution,
+                                     is_ambiguous=is_ambiguous)
 
         return alt_data
 
@@ -86,7 +89,7 @@ class AltSeqBuilder(object):
         self._var_c = var_c
         self._transcript_data = transcript_data
         if DBG:
-            print( transcript_data.transcript_sequence )
+            print(transcript_data.transcript_sequence)
 
         # check reference for special characteristics
         self._ref_has_multiple_stops = self._transcript_data.aa_sequence.count("*") > 1
@@ -104,12 +107,13 @@ class AltSeqBuilder(object):
         NOT_CDS = "not_cds_variant"
         WHOLE_GENE_DELETED = "whole_gene_deleted"
 
-        type_map = {hgvs.edit.NARefAlt: self._incorporate_delins,
-                    hgvs.edit.Dup: self._incorporate_dup,
-                    hgvs.edit.Repeat: self._incorporate_repeat,
-                    NOT_CDS: self._create_alt_equals_ref_noncds,
-                    WHOLE_GENE_DELETED: self._create_no_protein
-                    }
+        type_map = {
+            hgvs.edit.NARefAlt: self._incorporate_delins,
+            hgvs.edit.Dup: self._incorporate_dup,
+            hgvs.edit.Repeat: self._incorporate_repeat,
+            NOT_CDS: self._create_alt_equals_ref_noncds,
+            WHOLE_GENE_DELETED: self._create_no_protein
+        }
 
         # TODO - loop over each allele rather than assume only 1 variant; return a list for now
         alt_data = []
@@ -130,7 +134,7 @@ class AltSeqBuilder(object):
                 edit_type = WHOLE_GENE_DELETED
             else:
                 edit_type = NOT_CDS
-        else:   # should never get here
+        else:    # should never get here
             raise ValueError("value_location = {}".format(variant_location))
 
         try:
@@ -142,7 +146,7 @@ class AltSeqBuilder(object):
         this_alt_data = self._get_frameshift_start(this_alt_data)
         alt_data.append(this_alt_data)
         if DBG:
-            print( this_alt_data.transcript_sequence )
+            print(this_alt_data.transcript_sequence)
 
         return alt_data
 
@@ -161,7 +165,7 @@ class AltSeqBuilder(object):
         elif self._var_c.posedit.pos.start.offset != 0 or self._var_c.posedit.pos.end.offset != 0:
             # leave out anything intronic for now
             result = self.INTRON
-        else:   # anything else that contains an exon
+        else:    # anything else that contains an exon
             result = self.EXON
         return result
 
@@ -181,40 +185,38 @@ class AltSeqBuilder(object):
     #
     #     return (same_start and (pos_offset or neg_offset)) or (same_start_plus_1 and pm_offset)
 
-
     def _incorporate_delins(self):
         """Incorporate delins"""
         seq, cds_start, cds_stop, start, end = self._setup_incorporate()
 
         ref = self._var_c.posedit.edit.ref
         alt = self._var_c.posedit.edit.alt
-        ref_length = end - start if ref is not None else 0  # can't just get from ref since ref isn't always known
+        ref_length = end - start if ref is not None else 0    # can't just get from ref since ref isn't always known
         alt_length = len(self._var_c.posedit.edit.alt) if self._var_c.posedit.edit.alt is not None else 0
         net_base_change = alt_length - ref_length
         cds_stop += net_base_change
 
         # incorporate the variant into the sequence (depending on the type)
         is_substitution = False
-        if ref is not None and alt is not None:     # delins or SNP
+        if ref is not None and alt is not None:    # delins or SNP
             seq[start:end] = list(alt)
             if len(ref) == 1 and len(alt) == 1:
                 is_substitution = True
-        elif ref is not None:                       # deletion
+        elif ref is not None:    # deletion
             del seq[start:end]
-        else:                                       # insertion
+        else:    # insertion
             seq[start + 1:start + 1] = list(alt)    # insertion in list before python list index
 
         if DBG:
-            print( "net base change: {}".format(net_base_change) )
+            print("net base change: {}".format(net_base_change))
         is_frameshift = net_base_change % 3 != 0
         # use max of mod 3 value and 1 (in event that indel starts in the 5'utr range)
         variant_start_aa = max(int(math.ceil((self._var_c.posedit.pos.start.base) / 3.0)), 1)
 
-        alt_data = AltTranscriptData.create_for_variant_inserter(seq, cds_start, cds_stop,
-                                                                 is_frameshift, variant_start_aa,
-                                                                 self._transcript_data.protein_accession,
-                                                                 is_substitution=is_substitution,
-                                                                 is_ambiguous=self._ref_has_multiple_stops)
+        alt_data = AltTranscriptData.create_for_variant_inserter(
+            seq, cds_start, cds_stop, is_frameshift, variant_start_aa, self._transcript_data.protein_accession,
+            is_substitution=is_substitution,
+            is_ambiguous=self._ref_has_multiple_stops)
         return alt_data
 
     def _incorporate_dup(self):
@@ -223,12 +225,12 @@ class AltSeqBuilder(object):
 
         dup_seq = seq[start:end]
         seq[end:end] = dup_seq
-        
+
         is_frameshift = len(dup_seq) % 3 != 0
         variant_start_aa = int(math.ceil((self._var_c.posedit.pos.end.base + 1) / 3.0))
 
-        alt_data = AltTranscriptData.create_for_variant_inserter(seq, cds_start, cds_stop,
-                                                                 is_frameshift, variant_start_aa,
+        alt_data = AltTranscriptData.create_for_variant_inserter(seq, cds_start, cds_stop, is_frameshift,
+                                                                 variant_start_aa,
                                                                  self._transcript_data.protein_accession,
                                                                  is_ambiguous=self._ref_has_multiple_stops)
         return alt_data
@@ -254,14 +256,14 @@ class AltSeqBuilder(object):
         for pos in (self._var_c.posedit.pos.start, self._var_c.posedit.pos.end):
             # list is zero-based; seq pos is 1-based
             if pos.datum == CDS_START:
-                if pos.base < 0:                  # 5' UTR
+                if pos.base < 0:    # 5' UTR
                     result = cds_start - 1
-                else:                             # cds/intron
+                else:    # cds/intron
                     if pos.offset <= 0:
                         result = (cds_start - 1) + pos.base - 1
                     else:
                         result = (cds_start - 1) + pos.base
-            elif pos.datum == CDS_END:            # 3' UTR
+            elif pos.datum == CDS_END:    # 3' UTR
                 result = cds_stop + pos.base - 1
             else:
                 raise NotImplementedError("Unsupported/unexpected location")
@@ -272,27 +274,21 @@ class AltSeqBuilder(object):
         end += 1
 
         if DBG:
-            print( "len seq:{} cds_start:{} cds_stop:{} start:{} end:{}".format(len(seq), cds_start, cds_stop, start, end) )
+            print("len seq:{} cds_start:{} cds_stop:{} start:{} end:{}".format(len(seq), cds_start, cds_stop, start,
+                                                                               end))
         return seq, cds_start, cds_stop, start, end
 
     def _create_alt_equals_ref_noncds(self):
         """Create an alt seq that matches the reference (for non-cds variants)"""
-        alt_data = AltTranscriptData.create_for_variant_inserter(list(self._transcript_data.transcript_sequence),
-                                                                 self._transcript_data.cds_start,
-                                                                 self._transcript_data.cds_stop,
-                                                                 False,
-                                                                 None,
-                                                                 self._transcript_data.protein_accession,
-                                                                 is_ambiguous=True)
+        alt_data = AltTranscriptData.create_for_variant_inserter(
+            list(self._transcript_data.transcript_sequence), self._transcript_data.cds_start,
+            self._transcript_data.cds_stop, False, None, self._transcript_data.protein_accession,
+            is_ambiguous=True)
         return alt_data
 
     def _create_no_protein(self):
         """Create a no-protein result"""
-        alt_data = AltTranscriptData.create_for_variant_inserter([],
-                                                                 None,
-                                                                 None,
-                                                                 False,
-                                                                 None,
+        alt_data = AltTranscriptData.create_for_variant_inserter([], None, None, False, None,
                                                                  self._transcript_data.protein_accession,
                                                                  is_ambiguous=False)
         return alt_data
@@ -308,12 +304,11 @@ class AltSeqBuilder(object):
         # TODO - implement for 2+ variants
 
         if DBG:
-            print( "is_frameshift:{}".format(variant_data.is_frameshift) )
-            print( "variant_start_aa:{}".format(variant_data.variant_start_aa) )
+            print("is_frameshift:{}".format(variant_data.is_frameshift))
+            print("variant_start_aa:{}".format(variant_data.variant_start_aa))
         if variant_data.is_frameshift:
             variant_data.frameshift_start = variant_data.variant_start_aa
         return variant_data
-
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

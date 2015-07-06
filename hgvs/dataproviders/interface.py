@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import abc
 
+
 class Interface(object):
     """Variant mapping and validation requires access to external data,
     specifically exon structures, transcript alignments, and protein
@@ -47,9 +48,12 @@ class Interface(object):
         if av[0] == rv[0] and av[1] >= rv[1]:
             return True
 
-        raise RuntimeError("Incompatible versions: {k} requires schema version {rv}, but {self.url} provides version {av}".format(
-            k = type(self).__name__, self = self, rv = self.required_version, av = self.schema_version()))
-
+        raise RuntimeError(
+            "Incompatible versions: {k} requires schema version {rv}, but {self.url} provides version {av}".format(
+                k=type(self).__name__,
+                self=self,
+                rv=self.required_version,
+                av=self.schema_version()))
 
     # required_version: what version of the remote schema is required
     # by the subclass? This value is compared to the result of
@@ -64,7 +68,6 @@ class Interface(object):
     def schema_version(self):
         pass
 
-
     @abc.abstractmethod
     def get_tx_exons(self, tx_ac, alt_ac, alt_aln_method):
         pass
@@ -74,7 +77,7 @@ class Interface(object):
         pass
 
     @abc.abstractmethod
-    def get_tx_seq(self,ac):
+    def get_tx_seq(self, ac):
         pass
 
     @abc.abstractmethod
@@ -96,8 +99,6 @@ class Interface(object):
     @abc.abstractmethod
     def get_tx_identity_info(self, tx_ac):
         pass
-
-
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

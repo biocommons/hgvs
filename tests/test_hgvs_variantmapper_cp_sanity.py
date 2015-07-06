@@ -257,10 +257,8 @@ class TestHgvsCToP(unittest.TestCase):
     # uncertainties in dups/dels (i.e. hgvs tags with ?)
 
 
-
 if __name__ == '__main__':
     unittest.main()
-
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
