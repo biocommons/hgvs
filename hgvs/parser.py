@@ -13,6 +13,7 @@ import hgvs.location
 import hgvs.posedit
 import hgvs.variant
 
+
 class Parser(object):
     """Provides comprehensive parsing of HGVS varaint strings (*i.e.*,
     variants represented according to the Human Genome Variation
@@ -70,34 +71,36 @@ class Parser(object):
 
     __default_grammar_fn = resource_filename(__name__, '_data/hgvs.pymeta')
 
-    def __init__(self,grammar_fn=__default_grammar_fn):
+    def __init__(self, grammar_fn=__default_grammar_fn):
         self._grammar_fn = grammar_fn
-        self._grammar = parsley.makeGrammar(open(grammar_fn,'r').read(),{'hgvs': hgvs, 'bioutils': bioutils})
+        self._grammar = parsley.makeGrammar(open(grammar_fn, 'r').read(), {'hgvs': hgvs, 'bioutils': bioutils})
 
         # define function attributes for each grammar rule, prefixed with 'parse_'
         # e.g., Parser.parse_c_interval('26+2_57-3') -> Interval(...)
         #TODO: exclude built-in rules
-        self.rules = [ m.replace('rule_','')
-                       for m in dir(self._grammar._grammarClass)
-                       if m.startswith('rule_') ]
+        self.rules = [m.replace('rule_', '') for m in dir(self._grammar._grammarClass) if m.startswith('rule_')]
         for rule_name in self.rules:
             att_name = 'parse_' + rule_name
             rule_fxn = self.__make_parse_rule_function(rule_name)
-            self.__setattr__(att_name,rule_fxn)
+            self.__setattr__(att_name, rule_fxn)
 
-    def __make_parse_rule_function(self,rule_name):
+    def __make_parse_rule_function(self, rule_name):
         # http://docs.python.org/2/reference/datamodel.html#object.__getattr__
         """
         This function returns a function that takes a string and returns the parsing result.
         """
+
         def rule_fxn(s):
             try:
                 return self._grammar(s).__getattr__(rule_name)()
             except ometa.runtime.ParseError as exc:
-                raise hgvs.exceptions.HGVSParseError, hgvs.exceptions.HGVSParseError("{s}: char {exc.position}: {reason}".format(s=s, exc=exc, reason=exc.formatReason()))
+                raise hgvs.exceptions.HGVSParseError, hgvs.exceptions.HGVSParseError(
+                    "{s}: char {exc.position}: {reason}".format(s=s,
+                                                                exc=exc,
+                                                                reason=exc.formatReason()))
+
         rule_fxn.func_doc = "parse string s using `%s' rule" % rule_name
         return rule_fxn
-
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

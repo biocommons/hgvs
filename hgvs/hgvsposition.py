@@ -3,7 +3,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import recordtype
 
-class HGVSPosition( recordtype.recordtype('HGVSPosition', ['ac','type','pos']) ):
+
+class HGVSPosition(recordtype.recordtype('HGVSPosition', ['ac', 'type', 'pos'])):
     """
     HGVSPosition -- Represent partial HGVS tags that refer to a position without alleles
     
@@ -12,9 +13,9 @@ class HGVSPosition( recordtype.recordtype('HGVSPosition', ['ac','type','pos']) )
     :param str pos: sequence position
     
     """
+
     def __str__(self):
         return '{self.ac}:{self.type}.{self.pos}'.format(self=self)
-
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

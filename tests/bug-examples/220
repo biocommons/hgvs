@@ -3,8 +3,7 @@
 # Original bug script from Piotr Kaleta (pkaleta)
 
 # The essential issue is that build_cigar_string overwrites cached
-# data. 
-
+# data.
 
 import hgvs.dataproviders.uta
 import hgvs.location
@@ -20,12 +19,10 @@ def create_genomic_variant():
     iv = hgvs.location.Interval(start=start, end=end)
     edit = hgvs.edit.NARefAlt(ref='G', alt='T')
     posedit = hgvs.posedit.PosEdit(pos=iv, edit=edit)
-    genomic_variant = hgvs.variant.SequenceVariant(
-        ac='NC_000011.9',
-        type='g',
-        posedit=posedit,
-    )
+    genomic_variant = hgvs.variant.SequenceVariant(ac='NC_000011.9', type='g', posedit=posedit, )
     return genomic_variant
+
+
 gvar = create_genomic_variant()
 
 hdp = hgvs.dataproviders.uta.connect()
@@ -40,7 +37,6 @@ should return consistent results. It doesn't.""")
 for _ in range(4):
     variantmapper = hgvs.variantmapper.VariantMapper(hdp)
     print(variantmapper.g_to_c(gvar, 'NM_001164277.1'))
-
 
 # As of 1b1d5ff268e3 (Feb 2015), one gets:
 # (default-2.7)snafu$ ./tests/bug-examples/220 

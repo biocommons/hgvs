@@ -7,8 +7,9 @@ import requests
 
 from hgvs.dataproviders.seqfetcher import SeqFetcher
 
-def _wrapper(s,line_length=100):
-    return (s[i:i+line_length] for i in range(0,len(s),line_length))
+
+def _wrapper(s, line_length=100):
+    return (s[i:i + line_length] for i in range(0, len(s), line_length))
 
 
 if __name__ == "__main__":
@@ -23,6 +24,6 @@ if __name__ == "__main__":
             seq = sf.fetch_seq(ac)
         except requests.exceptions.HTTPError:
             logger.error(ac + ": lookup failed")
-        with open("{}.fa".format(ac),"w") as fh:
+        with open("{}.fa".format(ac), "w") as fh:
             fh.write(">" + ac + "\n" + "\n".join(_wrapper(seq)) + "\n")
-        logging.info("fetched & wrote {} (length={})".format(ac,len(seq)))
+        logging.info("fetched & wrote {} (length={})".format(ac, len(seq)))

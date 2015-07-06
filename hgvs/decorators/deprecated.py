@@ -21,18 +21,18 @@ class deprecated(object):
 
     '''
 
-    def __init__(self,use_instead=None):
+    def __init__(self, use_instead=None):
         # only warn once per caller location and function
         self.seen = collections.Counter()
         self.use_instead = use_instead
 
-    def __call__(self,func):
+    def __call__(self, func):
         msg = "Call to deprecated function {}".format(func.__name__)
         if self.use_instead:
-            msg += '; use '+self.use_instead+' instead'
+            msg += '; use ' + self.use_instead + ' instead'
 
         def wrapper(*args, **kwargs):
-            fingerprint = (func.__name__,func.func_code.co_filename,func.func_code.co_firstlineno)
+            fingerprint = (func.__name__, func.func_code.co_filename, func.func_code.co_firstlineno)
             if fingerprint not in self.seen:
                 warnings.warn_explicit(
                     msg,
@@ -41,7 +41,8 @@ class deprecated(object):
                     lineno=func.func_code.co_firstlineno + 1)
             self.seen.update([fingerprint])
             return func(*args, **kwargs)
+
         wrapper.__doc__ = "Deprecated"
         if self.use_instead:
-            wrapper.__doc__ += '; use '+self.use_instead+' instead'
+            wrapper.__doc__ += '; use ' + self.use_instead + ' instead'
         return wrapper

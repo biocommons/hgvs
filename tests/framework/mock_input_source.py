@@ -5,8 +5,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import unicodecsv as csv
 
-class MockInputSource():
 
+class MockInputSource():
     def __init__(self, in_file):
         self._mock_data = self._read_input(in_file)
 
@@ -20,20 +20,20 @@ class MockInputSource():
         result = None
         data = self._mock_data.get(ac)
         if data:
-            result = {'ord': 1,
-                      't_start_i': 0,
-                      't_end_i': data['cds_end_i'] - data['cds_start_i'],
-                      't_seq_a': data['transcript_sequence']
+            result = {
+                'ord': 1,
+                't_start_i': 0,
+                't_end_i': data['cds_end_i'] - data['cds_start_i'],
+                't_seq_a': data['transcript_sequence']
             }
 
         return [result]
 
-    def fetch_transcript_info(self,ac):
+    def fetch_transcript_info(self, ac):
         result = None
         data = self._mock_data.get(ac)
-        if data:     # interbase coordinates
-            result = {'cds_start_i': data['cds_start_i'],
-                      'cds_end_i': data['cds_end_i']}
+        if data:    # interbase coordinates
+            result = {'cds_start_i': data['cds_start_i'], 'cds_end_i': data['cds_end_i']}
         return result
 
     def get_tx_identity_info(self, ac):
@@ -70,9 +70,11 @@ class MockInputSource():
         with open(in_file, 'r') as f:
             reader = csv.DictReader(f, delimiter=str('\t'))
             for row in reader:
-                result[row['accession']] = {'transcript_sequence': row['transcript_sequence'],
-                                                   'cds_start_i': int(row['cds_start_i']),
-                                                   'cds_end_i': int(row['cds_end_i'])}
+                result[row['accession']] = {
+                    'transcript_sequence': row['transcript_sequence'],
+                    'cds_start_i': int(row['cds_start_i']),
+                    'cds_end_i': int(row['cds_end_i'])
+                }
 
         return result
 

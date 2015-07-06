@@ -21,15 +21,14 @@ class Test_VariantMapper(unittest.TestCase):
         # From garcia.tsv:
         hgvs_g = 'NC_000007.13:g.36561662C>T'
         hgvs_c = 'NM_001637.3:c.1582G>A'
-        hgvs_p = 'NP_001628.1:p.(Gly528Arg)'  # from Mutalyzer
+        hgvs_p = 'NP_001628.1:p.(Gly528Arg)'    # from Mutalyzer
 
         var_g = self.hp.parse_hgvs_variant(hgvs_g)
-        var_c = self.vm.g_to_c( var_g, 'NM_001637.3' )
-        var_p = self.vm.c_to_p( var_c )
+        var_c = self.vm.g_to_c(var_g, 'NM_001637.3')
+        var_p = self.vm.c_to_p(var_c)
 
-        self.assertEqual( str(var_c) , hgvs_c )
-        self.assertEqual( str(var_p) , hgvs_p )
-
+        self.assertEqual(str(var_c), hgvs_c)
+        self.assertEqual(str(var_p), hgvs_p)
 
     def test_gcrp_invalid_input_type(self):
         hgvs_g = 'NC_000007.13:g.36561662C>T'
@@ -38,14 +37,15 @@ class Test_VariantMapper(unittest.TestCase):
         var_g = self.hp.parse_hgvs_variant(hgvs_g)
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
 
-        cases = {'gc': (self.vm.g_to_c, (var_c, 'NM_001637.3')),
-                 'gr': (self.vm.g_to_n, (var_c, 'NM_001637.3')),
-                 'rg': (self.vm.n_to_g, (var_c, 'NM_001637.3')),
-                 'cg': (self.vm.c_to_g, (var_g, 'NM_001637.3')),
-                 'cr': (self.vm.c_to_n, (var_g,)),
-                 'rc': (self.vm.n_to_c, (var_g,)),
-                 'cp': (self.vm.c_to_p, (var_g, None)),
-                 }
+        cases = {
+            'gc': (self.vm.g_to_c, (var_c, 'NM_001637.3')),
+            'gr': (self.vm.g_to_n, (var_c, 'NM_001637.3')),
+            'rg': (self.vm.n_to_g, (var_c, 'NM_001637.3')),
+            'cg': (self.vm.c_to_g, (var_g, 'NM_001637.3')),
+            'cr': (self.vm.c_to_n, (var_g, )),
+            'rc': (self.vm.n_to_c, (var_g, )),
+            'cp': (self.vm.c_to_p, (var_g, None)),
+        }
 
         failures = []
         for key in cases:
@@ -58,8 +58,6 @@ class Test_VariantMapper(unittest.TestCase):
 
         self.assertFalse(failures, "conversions not failing: {}".format(failures))
 
-
-
     def test_gc_invalid_input_nm_accession(self):
         hgvs_g = 'NC_000007.13:g.36561662C>T'
         var_g = self.hp.parse_hgvs_variant(hgvs_g)
@@ -67,21 +65,19 @@ class Test_VariantMapper(unittest.TestCase):
             var_p = self.vm.c_to_p(var_g, 'NM_999999.1')
 
 
-
 @attr(tags=["quick"])
 class Test_EasyVariantMapper(unittest.TestCase):
     def setUp(self):
         self.hdp = hgvs.dataproviders.uta.connect()
-        self.evm = hgvs.variantmapper.EasyVariantMapper(self.hdp,primary_assembly='GRCh37', alt_aln_method='splign')
+        self.evm = hgvs.variantmapper.EasyVariantMapper(self.hdp, primary_assembly='GRCh37', alt_aln_method='splign')
         self.hgvs = {
             'g': 'NC_000007.13:g.36561662C>T',
             'c': 'NM_001637.3:c.1582G>A',
-            'n': 'NM_001637.3:n.1983G>A',  # treat as non-coding, relative to tx start
+            'n': 'NM_001637.3:n.1983G>A',    # treat as non-coding, relative to tx start
             'p': 'NP_001628.1:p.(Gly528Arg)'
         }
         hp = hgvs.parser.Parser()
-        self.var = { k:hp.parse_hgvs_variant(v) for k,v in self.hgvs.iteritems() }
-
+        self.var = {k: hp.parse_hgvs_variant(v) for k, v in self.hgvs.iteritems()}
 
     def test_c_to_g(self):
         self.assertEqual(self.hgvs['g'], str(self.evm.c_to_g(self.var['c'])))
@@ -97,7 +93,6 @@ class Test_EasyVariantMapper(unittest.TestCase):
 
     def test_c_to_p(self):
         self.assertEqual(self.hgvs['p'], str(self.evm.c_to_p(self.var['c'])))
-
 
 
 if __name__ == '__main__':

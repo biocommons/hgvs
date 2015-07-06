@@ -9,6 +9,7 @@ from ..decorators import lru_cache
 # TODO: Consider using eutils to get request throttling.
 # N.B. >> used (rather than >>>) to not incur web requests during testing
 
+
 def _fetch_seq_ensembl(ac, start_i=None, end_i=None):
     """Fetch the specified sequence slice from Ensembl using the public
     REST interface.
@@ -139,9 +140,11 @@ def fetch_seq(ac, start_i=None, end_i=None):
     """
 
     _ac_dispatch = [
-        {'re': re.compile('^(?:AC|N[CGMPRTW])_|^[A-L]\w\d|^U\d'), 'fetcher': _fetch_seq_ncbi},
-        {'re': re.compile('^ENS[TP]\d+'), 'fetcher': _fetch_seq_ensembl},
-        ]
+        {'re': re.compile('^(?:AC|N[CGMPRTW])_|^[A-L]\w\d|^U\d'),
+         'fetcher': _fetch_seq_ncbi},
+        {'re': re.compile('^ENS[TP]\d+'),
+         'fetcher': _fetch_seq_ensembl},
+    ]
 
     for drec in _ac_dispatch:
         if drec['re'].match(ac):

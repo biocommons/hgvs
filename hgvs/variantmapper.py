@@ -18,6 +18,7 @@ import hgvs.variant
 
 from hgvs.decorators.lru_cache import lru_cache
 
+
 class VariantMapper(object):
     """Maps HGVS variants to and from g., n., r., c., and p. representations.
     All methods require and return objects of type :class:`hgvs.variant.SequenceVariant`.
@@ -68,9 +69,7 @@ class VariantMapper(object):
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
         pos_n = tm.g_to_n(var_g.posedit.pos)
         edit_n = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
-        var_n = hgvs.variant.SequenceVariant(ac=tx_ac,
-                                             type='n',
-                                             posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
+        var_n = hgvs.variant.SequenceVariant(ac=tx_ac, type='n', posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
         return var_n
 
     def n_to_g(self, var_n, alt_ac, alt_aln_method='splign'):
@@ -91,11 +90,8 @@ class VariantMapper(object):
         tm = self._fetch_TranscriptMapper(tx_ac=var_n.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         pos_g = tm.n_to_g(var_n.posedit.pos)
         edit_g = self._convert_edit_check_strand(tm.strand, var_n.posedit.edit)
-        var_g = hgvs.variant.SequenceVariant(ac=alt_ac,
-                                             type='g',
-                                             posedit=hgvs.posedit.PosEdit(pos_g, edit_g) )
+        var_g = hgvs.variant.SequenceVariant(ac=alt_ac, type='g', posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
         return var_g
-
 
     # ############################################################################
     # g <-> c
@@ -112,17 +108,13 @@ class VariantMapper(object):
 
         """
 
-        
-
         if not (var_g.type == 'g'):
             raise hgvs.exceptions.HGVSInvalidVariantError('Expected a g. variant; got ' + str(var_g))
 
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
         pos_c = tm.g_to_c(var_g.posedit.pos)
         edit_c = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
-        var_c = hgvs.variant.SequenceVariant(ac=tx_ac,
-                                             type='c',
-                                             posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
+        var_c = hgvs.variant.SequenceVariant(ac=tx_ac, type='c', posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
         return var_c
 
     def c_to_g(self, var_c, alt_ac, alt_aln_method='splign'):
@@ -146,11 +138,8 @@ class VariantMapper(object):
         pos_g = tm.c_to_g(var_c.posedit.pos)
         edit_g = self._convert_edit_check_strand(tm.strand, var_c.posedit.edit)
 
-        var_g = hgvs.variant.SequenceVariant(ac=alt_ac,
-                                             type='g',
-                                             posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
+        var_g = hgvs.variant.SequenceVariant(ac=alt_ac, type='g', posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
         return var_g
-
 
     # ############################################################################
     # c <-> n
@@ -179,9 +168,7 @@ class VariantMapper(object):
         else:
             raise NotImplementedError('Only NARefAlt/Dup types are currently implemented')
 
-        var_n = hgvs.variant.SequenceVariant(ac=var_c.ac,
-                                             type='n',
-                                             posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
+        var_n = hgvs.variant.SequenceVariant(ac=var_c.ac, type='n', posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
         return var_n
 
     def n_to_c(self, var_n):
@@ -207,11 +194,8 @@ class VariantMapper(object):
         else:
             raise NotImplementedError('Only NARefAlt types are currently implemented')
 
-        var_c = hgvs.variant.SequenceVariant(ac=var_n.ac,
-                                             type='c',
-                                             posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
+        var_c = hgvs.variant.SequenceVariant(ac=var_n.ac, type='c', posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
         return var_c
-
 
     # ############################################################################
     # c -> p
@@ -228,9 +212,8 @@ class VariantMapper(object):
         """
 
         class RefTranscriptData(recordtype.recordtype('RefTranscriptData',
-                                                      ['transcript_sequence', 'aa_sequence',
-                                                       'cds_start', 'cds_stop', 'protein_accession'])):
-
+                                                      ['transcript_sequence', 'aa_sequence', 'cds_start', 'cds_stop',
+                                                       'protein_accession'])):
             @classmethod
             def setup_transcript_data(cls, hdp, tx_ac, pro_ac):
                 """helper for generating RefTranscriptData from for c_to_p"""
@@ -254,11 +237,9 @@ class VariantMapper(object):
 
                 if pro_ac is None:
                     # get_acs... will always return at least the MD5_ accession
-                    pro_ac = (hdp.get_pro_ac_for_tx_ac(tx_ac)
-                              or hdp.get_acs_for_protein_seq(protein_seq)[0])
-    
-                transcript_data = RefTranscriptData(tx_seq, protein_seq, cds_start,
-                                                    cds_stop, pro_ac)
+                    pro_ac = (hdp.get_pro_ac_for_tx_ac(tx_ac) or hdp.get_acs_for_protein_seq(protein_seq)[0])
+
+                transcript_data = RefTranscriptData(tx_seq, protein_seq, cds_start, cds_stop, pro_ac)
 
                 return transcript_data
 
@@ -282,8 +263,6 @@ class VariantMapper(object):
 
         return var_p
 
-
-
     ############################################################################
     ## Internal methods
 
@@ -293,7 +272,9 @@ class VariantMapper(object):
         Get a new TranscriptMapper for the given transcript accession (ac),
         possibly caching the result.
         """
-        return hgvs.transcriptmapper.TranscriptMapper(self.hdp, tx_ac=tx_ac, alt_ac=alt_ac,
+        return hgvs.transcriptmapper.TranscriptMapper(self.hdp,
+                                                      tx_ac=tx_ac,
+                                                      alt_ac=alt_ac,
                                                       alt_aln_method=alt_aln_method)
 
     @staticmethod
@@ -336,22 +317,15 @@ class VariantMapper(object):
                     ref = edit_in.ref
                 except (ValueError, TypeError):
                     ref = reverse_complement(edit_in.ref)
-                edit_out = hgvs.edit.NARefAlt(
-                    ref = ref,
-                    alt = reverse_complement(edit_in.alt),
-                )
+                edit_out = hgvs.edit.NARefAlt(ref=ref, alt=reverse_complement(edit_in.alt), )
         elif isinstance(edit_in, hgvs.edit.Dup):
             if strand == 1:
                 edit_out = copy.deepcopy(edit_in)
             else:
-                edit_out = hgvs.edit.Dup(
-                    seq = reverse_complement(edit_in.seq)
-                )
+                edit_out = hgvs.edit.Dup(seq=reverse_complement(edit_in.seq))
         else:
             raise NotImplementedError('Only NARefAlt/Dup types are currently implemented')
         return edit_out
-
-
 
 
 class EasyVariantMapper(VariantMapper):
@@ -387,35 +361,33 @@ class EasyVariantMapper(VariantMapper):
         self.alt_aln_method = alt_aln_method
         self.primary_assembly_accessions = set(primary_assembly_accessions[primary_assembly])
 
-    def g_to_c(self, var_g, tx_ac): 
+    def g_to_c(self, var_g, tx_ac):
         return super(EasyVariantMapper, self).g_to_c(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
 
-    def g_to_n(self, var_g, tx_ac): 
+    def g_to_n(self, var_g, tx_ac):
         return super(EasyVariantMapper, self).g_to_n(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
 
-    def c_to_g(self, var_c): 
+    def c_to_g(self, var_c):
         alt_ac = self._alt_ac_for_tx_ac(var_c.ac)
         return super(EasyVariantMapper, self).c_to_g(var_c, alt_ac, alt_aln_method=self.alt_aln_method)
 
-    def n_to_g(self, var_n): 
+    def n_to_g(self, var_n):
         alt_ac = self._alt_ac_for_tx_ac(var_n.ac)
         return super(EasyVariantMapper, self).n_to_g(var_n, alt_ac, alt_aln_method=self.alt_aln_method)
 
-    def c_to_n(self, var_c): 
+    def c_to_n(self, var_c):
         return super(EasyVariantMapper, self).c_to_n(var_c)
 
-    def n_to_c(self, var_n): 
+    def n_to_c(self, var_n):
         return super(EasyVariantMapper, self).n_to_c(var_n)
 
-    def c_to_p(self, var_c): 
+    def c_to_p(self, var_c):
         return super(EasyVariantMapper, self).c_to_p(var_c)
 
     def relevant_transcripts(self, var_g):
         """return list of transcripts accessions (strings) for given variant,
         selected by genomic overlap"""
-        tx = self.hdp.get_tx_for_region(var_g.ac,
-                                        self.alt_aln_method,
-                                        var_g.posedit.pos.start.base,
+        tx = self.hdp.get_tx_for_region(var_g.ac, self.alt_aln_method, var_g.posedit.pos.start.base,
                                         var_g.posedit.pos.end.base)
         return [e['tx_ac'] for e in tx]
 
@@ -425,20 +397,20 @@ class EasyVariantMapper(VariantMapper):
         instantiate this EasyVariantMapper)
 
         """
-        alt_acs = [e['alt_ac'] 
-                   for e in self.hdp.get_tx_mapping_options(tx_ac)
-                   if e['alt_aln_method'] == self.alt_aln_method
-                   and e['alt_ac'] in self.primary_assembly_accessions]
+        alt_acs = [e['alt_ac'] for e in self.hdp.get_tx_mapping_options(tx_ac)
+                   if e['alt_aln_method'] == self.alt_aln_method and e['alt_ac'] in self.primary_assembly_accessions]
         if len(alt_acs) > 1:
             raise hgvs.exceptions.HGVSError("Multiple chromosomal alignments for {tx_ac} in {pa}"
                                             "using {am} (likely paralog or pseudoautosomal region)".format(
-                                                tx_ac=tx_ac, pa=self.primary_assembly, am=self.alt_aln_method))
+                                                tx_ac=tx_ac,
+                                                pa=self.primary_assembly,
+                                                am=self.alt_aln_method))
         if len(alt_acs) == 0:
             raise hgvs.exceptions.HGVSError("No alignments for {tx_ac} in {pa} using {am}".format(
-                tx_ac=tx_ac, pa=self.primary_assembly, am=self.alt_aln_method))
-        return alt_acs[0]       # exactly one remains
-
-
+                tx_ac=tx_ac,
+                pa=self.primary_assembly,
+                am=self.alt_aln_method))
+        return alt_acs[0]    # exactly one remains
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
