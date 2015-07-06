@@ -16,6 +16,7 @@ import recordtype
 
 from bioutils.sequences import aa_to_aa1, aa1_to_aa3
 
+from hgvs.decorators import deprecated
 from hgvs.exceptions import HGVSError
 
 
@@ -253,15 +254,15 @@ class AAExt(Edit, recordtype.recordtype('AAExt', [('ref', None), ('alt', None), 
         return 'ext'
 
 
-class Dup(Edit, recordtype.recordtype('Dup', [('seq', None), ('uncertain', False)])):
-    def __init__(self, seq=None, uncertain=False, edit=None):
+class Dup(Edit, recordtype.recordtype('Dup', [('ref', None), ('uncertain', False)])):
+    def __init__(self, ref=None, uncertain=False, edit=None):
         if edit:
-            seq = edit.seq
+            ref = edit.ref
             uncertain = edit.uncertain
-        super(Dup, self).__init__(seq=seq, uncertain=uncertain)
+        super(Dup, self).__init__(ref=ref, uncertain=uncertain)
 
     def __str__(self):
-        return 'dup' + (self.seq or '')
+        return 'dup' + (self.ref or '')
 
     def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
@@ -279,15 +280,20 @@ class Dup(Edit, recordtype.recordtype('Dup', [('seq', None), ('uncertain', False
         """
         return 'dup'
 
+    @property
+    @deprecated("use ref property instead")
+    def seq(self):
+        return self.ref
 
-class Repeat(Edit, recordtype.recordtype('Repeat', [('seq', None), ('min', None), ('max', None),
+
+class Repeat(Edit, recordtype.recordtype('Repeat', [('ref', None), ('min', None), ('max', None),
                                                     ('uncertain', False)])):
     def __str__(self):
         if self.min > self.max:
             raise HGVSError('Repeat min count must be less than or equal to max count')
         if self.min == self.max:
-            return '{self.seq}[{self.min}]'.format(self=self)
-        return '{self.seq}({self.min}_{self.max})'.format(self=self)
+            return '{self.ref}[{self.min}]'.format(self=self)
+        return '{self.ref}({self.min}_{self.max})'.format(self=self)
 
     def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
@@ -304,6 +310,11 @@ class Repeat(Edit, recordtype.recordtype('Repeat', [('seq', None), ('min', None)
         :returns: edit type (str)
         """
         return 'repeat'
+
+    @property
+    @deprecated("use ref property instead")
+    def seq(self):
+        return self.ref
 
 
 class NACopy(Edit, recordtype.recordtype('NACopy', ['copy', ('uncertain', False)])):

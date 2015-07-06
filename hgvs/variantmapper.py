@@ -272,26 +272,16 @@ class VariantMapper(object):
 
     @staticmethod
     def _replace_T(edit):
+        edit.ref = edit.ref.replace('T', 'U').replace('t', 'u')
         if isinstance(edit, hgvs.edit.NARefAlt):
-            if edit.ref:
-                edit.ref = edit.ref.replace('T', 'U').replace('t', 'u')
-            if edit.alt:
-                edit.alt = edit.alt.replace('T', 'U').replace('t', 'u')
-        elif isinstance(edit, hgvs.edit.Dup):
-            if edit.seq:
-                edit.seq = edit.seq.replace('T', 'U').replace('t', 'u')
+            edit.alt = edit.alt.replace('T', 'U').replace('t', 'u')
         return edit
 
     @staticmethod
     def _replace_U(edit):
+        edit.ref = edit.ref.replace('U', 'T').replace('u', 't')
         if isinstance(edit, hgvs.edit.NARefAlt):
-            if edit.ref:
-                edit.ref = edit.ref.replace('U', 'T').replace('u', 't')
-            if edit.alt:
-                edit.alt = edit.alt.replace('U', 'T').replace('u', 't')
-        elif isinstance(edit, hgvs.edit.Dup):
-            if edit.seq:
-                edit.seq = edit.seq.replace('U', 'T').replace('u', 't')
+            edit.alt = edit.alt.replace('U', 'T').replace('u', 't')
         return edit
 
     @staticmethod
@@ -315,7 +305,7 @@ class VariantMapper(object):
             if strand == 1:
                 edit_out = copy.deepcopy(edit_in)
             else:
-                edit_out = hgvs.edit.Dup(seq=reverse_complement(edit_in.seq))
+                edit_out = hgvs.edit.Dup(ref=reverse_complement(edit_in.ref))
         else:
             raise NotImplementedError('Only NARefAlt/Dup types are currently implemented')
         return edit_out
