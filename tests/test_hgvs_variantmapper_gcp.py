@@ -148,7 +148,6 @@ class Test_VariantMapper(unittest.TestCase):
         if var_x.type == 'c':
             var_x_test = self.hm.g_to_c(var_g, var_x.ac)
         elif var_x.type == 'n':
-            sys.stderr.write(rec['HGVSg'] + "...\n")
             var_x_test = self.hm.g_to_n(var_g, var_x.ac)
         self.assertEquals(_rm_del_seq(str(var_x)), _rm_del_seq(str(var_x_test)),
                           msg="%s != %s (%s; HGVSg=%s)" % (str(var_x_test),str(var_x),rec['id'],rec['HGVSg']))
