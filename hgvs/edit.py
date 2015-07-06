@@ -316,6 +316,11 @@ class Repeat(Edit, recordtype.recordtype('Repeat', [('ref', None), ('min', None)
     def seq(self):
         return self.ref
 
+    @property
+    @deprecated("use ref property instead")
+    def seq(self):
+        return self.ref
+
 
 class NACopy(Edit, recordtype.recordtype('NACopy', ['copy', ('uncertain', False)])):
     """Represent copy number variants (Invitae-specific use)
