@@ -87,7 +87,7 @@ class ExtrinsicValidator():
 
     def __init__(self, hdp):
         self.hdp = hdp
-        self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
+        self.vm = hgvs.variantmapper.VariantMapper(self.hdp)
 
     def validate(self, var):
         assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
@@ -106,7 +106,7 @@ class ExtrinsicValidator():
             var_ref_seq = getattr(var.posedit.edit, 'ref', None)
 
         if var_ref_seq is not None:
-            var_x = self.hm.c_to_n(var) if var.type == 'c' else var
+            var_x = self.vm.c_to_n(var) if var.type == 'c' else var
             ref_seq = self.hdp.fetch_seq(var_x.ac, var_x.posedit.pos.start.base - 1, var_x.posedit.pos.end.base)
             if ref_seq != var_ref_seq:
                 raise HGVSValidationError(str(var) + ': ' + SEQ_ERROR_MSG.format(ref_seq=ref_seq, var_ref_seq=var_ref_seq))
