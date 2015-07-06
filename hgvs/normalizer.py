@@ -263,10 +263,7 @@ class Normalizer(object):
         # and perform normalization at the r. level then convert the
         # normalized r. variant back to c. variant at the end.
         if type == 'c':
-            var = self.hm.c_to_r(var)
-
-        if var.type == 'r':
-            var.posedit.edit = hgvs.variantmapper.VariantMapper._replace_U(var.posedit.edit)
+            var = self.hm.c_to_n(var)
 
         bound_s, bound_e = self._get_boundary(var)
         boundary = (bound_s, bound_e)
@@ -339,16 +336,13 @@ class Normalizer(object):
                 else:
                     edit = hgvs.edit.NARefAlt(ref='', alt=alt)
 
-        if type == 'r':
-            edit = hgvs.variantmapper.VariantMapper._replace_T(edit)
-
         var_norm = copy.deepcopy(var)
         var_norm.posedit.edit = edit
         var_norm.posedit.pos.start.base = ref_start
         var_norm.posedit.pos.end.base = ref_end
 
         if type == 'c':
-            var_norm = self.hm.r_to_c(var_norm)
+            var_norm = self.hm.n_to_c(var_norm)
 
         return var_norm
 

@@ -20,23 +20,25 @@ from ..decorators.lru_cache import lru_cache
 from ..exceptions import HGVSError, HGVSDataNotAvailableError
 from .seqfetcher import SeqFetcher
 
-# TODO: Update URLs when UTA instances are renamed
-_current_version = 'uta_20150623'
+# Default and common URLs for UTA connections
+# These named urls are provided for developer convenience expect them
+# to change or disappear without notice.
+# All users may set UTA_DB_URL to explicitly select a host, database, or schema
+# INTERNAL USE ONLY: Developers may set _UTA_URL_KEY to select a named URL
+_current_version = 'uta_20150704'
 _uta_urls = {
-    # these named urls are provided for developer convenience
-    # expect them to change or disappear without notice
-    "local": "postgresql://localhost/uta/" + _current_version,
-    "local-dev": "postgresql://localhost/uta_dev/" + _current_version,
+    "local": "postgresql://anonymous:anonymous@localhost/uta/" + _current_version,
+    "local-dev": "postgresql://anonymous:anonymous@localhost/uta_dev/" + _current_version,
     "public": "postgresql://anonymous:anonymous@uta.biocommons.org/uta_dev/" + _current_version,
     "public-dev": "postgresql://anonymous:anonymous@uta.biocommons.org/uta_dev/" + _current_version,
     # INOP: "sqlite-dev": "sqlite:/home/reece/projects/biocommons/hgvs/tests/db/uta-test-1.db",
 }
 # use public instance for released (x.y.z versions), otherwise dev
 # this is necessary because there is still some co-dependency between the uta and hgvs projects
-_url_key = 'public' if hgvs._is_released_version else 'public-dev'
+_url_key = os.environ.get('_UTA_URL_KEY', 'public' if hgvs._is_released_version else 'public-dev')
 _default_db_url = os.environ.get('UTA_DB_URL', _uta_urls[_url_key])
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def connect(db_url=_default_db_url, pooling=False):
@@ -73,6 +75,7 @@ def connect(db_url=_default_db_url, pooling=False):
     psycopg2.pool.ThreadedConnectionPool.
     """
 
+    _logger.debug('connecting to ' + str(db_url) + '...')
     url = _parse_url(db_url)
     if url.scheme == 'sqlite':
         conn = UTA_sqlite(url)
@@ -80,8 +83,7 @@ def connect(db_url=_default_db_url, pooling=False):
         conn = UTA_postgresql(url, pooling)
     else:
         # fell through connection scheme cases
-        raise RuntimeError("{url.scheme} in {url} is not currently supported".format(
-            url=url))
+        raise RuntimeError("{url.scheme} in {url} is not currently supported".format(url=url))
     return conn
 
 
@@ -94,26 +96,22 @@ class UTABase(Interface, SeqFetcher):
             from seq_anno
             where seq_id=?
             """,
-
         "gene_info": """
             select *
             from gene
             where hgnc=?
             """,
-
         "tx_exons": """
             select *
             from tx_exon_aln_v
             where tx_ac=? and alt_ac=? and alt_aln_method=?
             order by alt_start_i
             """,
-
         "tx_for_gene": """
             select hgnc, cds_start_i, cds_end_i, tx_ac, alt_ac, alt_aln_method
             from transcript T
             join exon_set ES on T.ac=ES.tx_ac where alt_aln_method != 'transcript' and hgnc=?
             """,
-
         "tx_for_region": """
             select tx_ac,alt_ac,alt_strand,alt_aln_method,min(start_i) as start_i,max(end_i) as end_i
             from exon_set ES
@@ -123,69 +121,59 @@ class UTABase(Interface, SeqFetcher):
             group by tx_ac,alt_ac,alt_strand,alt_aln_method
             having max(end_i)>? and min(start_i)<?
             """,
-
         "tx_identity_info": """
             select distinct(tx_ac), alt_ac, alt_aln_method, cds_start_i, cds_end_i, lengths, hgnc
             from tx_def_summary_v
             where tx_ac=?
             """,
-
         "tx_info": """
             select hgnc, cds_start_i, cds_end_i, tx_ac, alt_ac, alt_aln_method
             from transcript T
             join exon_set ES on T.ac=ES.tx_ac
             where tx_ac=? and alt_ac=? and alt_aln_method=?
             """,
-
         "tx_mapping_options": """
             select distinct tx_ac,alt_ac,alt_aln_method
             from tx_exon_aln_v where tx_ac=? and exon_aln_id is not NULL
             """,
-
         "tx_seq": """
             select seq
             from seq S
             join seq_anno SA on S.seq_id=SA.seq_id
             where ac=?
             """,
-
         "tx_similar": """
             select distinct tx_ac1, tx_ac2, cds_eq, es_fp_eq, cds_es_fp_eq
             from tx_similarity_v
             where tx_ac1 = ?
             """,
-    
         "tx_to_pro": """
-            select * from preferred_accession where tx_ac = ?
+            select * from associated_accessions where tx_ac = ?
             """,
     }
 
     def __init__(self, url):
         self.url = url
         self._connect()
-        super(UTABase,self).__init__()
-        logger.info('connected to ' + str(self.url))
+        super(UTABase, self).__init__()
+        _logger.info('connected to ' + str(self.url))
 
     def _execute(self, sql, *args):
         cur = self._get_cursor()
         cur.execute(sql, *args)
         return cur
 
-
     ############################################################################
     ## Queries
 
     @lru_cache(maxsize=1)
     def data_version(self):
-        cur = self._execute("select * from meta where key = 'schema_version'")
-        return cur.fetchone()['value']
-
+        return self.url.schema
 
     @lru_cache(maxsize=1)
     def schema_version(self):
         cur = self._execute("select * from meta where key = 'schema_version'")
         return cur.fetchone()['value']
-
 
     @lru_cache(maxsize=128)
     def get_acs_for_protein_seq(self, seq):
@@ -198,7 +186,6 @@ class UTABase(Interface, SeqFetcher):
         md5 = seq_md5(seq)
         cur = self._execute(self.sql['acs_for_protein_md5'], [md5])
         return [r['ac'] for r in cur.fetchall()] + ['MD5_' + md5]
-
 
     @lru_cache(maxsize=128)
     def get_gene_info(self, gene):
@@ -219,7 +206,6 @@ class UTABase(Interface, SeqFetcher):
         """
         cur = self._execute(self.sql['gene_info'], [gene])
         return cur.fetchone()
-
 
     @lru_cache(maxsize=128)
     def get_tx_exons(self, tx_ac, alt_ac, alt_aln_method):
@@ -267,10 +253,12 @@ class UTABase(Interface, SeqFetcher):
         cur = self._execute(self.sql['tx_exons'], [tx_ac, alt_ac, alt_aln_method])
         rows = cur.fetchall()
         if len(rows) == 0:
-            raise HGVSDataNotAvailableError("No tx_exons for (tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})".format(
-                tx_ac=tx_ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method))
+            raise HGVSDataNotAvailableError(
+                "No tx_exons for (tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})".format(
+                    tx_ac=tx_ac,
+                    alt_ac=alt_ac,
+                    alt_aln_method=alt_aln_method))
         return rows
-
 
     @lru_cache(maxsize=128)
     def get_tx_for_gene(self, gene):
@@ -282,7 +270,6 @@ class UTABase(Interface, SeqFetcher):
         """
         cur = self._execute(self.sql['tx_for_gene'], [gene])
         return cur.fetchall()
-
 
     @lru_cache(maxsize=128)
     def get_tx_for_region(self, alt_ac, alt_aln_method, start_i, end_i):
@@ -296,7 +283,6 @@ class UTABase(Interface, SeqFetcher):
         """
         cur = self._execute(self.sql['tx_for_region'], [alt_ac, alt_aln_method, start_i, end_i])
         return cur.fetchall()
-
 
     @lru_cache(maxsize=128)
     def get_tx_identity_info(self, tx_ac):
@@ -319,7 +305,6 @@ class UTABase(Interface, SeqFetcher):
         cur = self._execute(self.sql['tx_identity_info'], [tx_ac])
         # TODO: Should this raise HGVSDataNotAvailableError?
         return cur.fetchone()
-
 
     @lru_cache(maxsize=128)
     def get_tx_info(self, tx_ac, alt_ac, alt_aln_method):
@@ -347,14 +332,20 @@ class UTABase(Interface, SeqFetcher):
         cur = self._execute(self.sql['tx_info'], [tx_ac, alt_ac, alt_aln_method])
         rows = cur.fetchall()
         if len(rows) == 0:
-            raise HGVSDataNotAvailableError("No tx_info for (tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})".format(
-                tx_ac=tx_ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method))
+            raise HGVSDataNotAvailableError(
+                "No tx_info for (tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})".format(
+                    tx_ac=tx_ac,
+                    alt_ac=alt_ac,
+                    alt_aln_method=alt_aln_method))
         elif len(rows) == 1:
             return rows[0]
         else:
-            raise HGVSError("Multiple ({n}) replies for tx_info(tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})".format(
-                n=len(rows), tx_ac=tx_ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method))
-
+            raise HGVSError(
+                "Multiple ({n}) replies for tx_info(tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})".format(
+                    n=len(rows),
+                    tx_ac=tx_ac,
+                    alt_ac=alt_ac,
+                    alt_aln_method=alt_aln_method))
 
     @lru_cache(maxsize=128)
     def get_tx_mapping_options(self, tx_ac):
@@ -422,7 +413,7 @@ class UTABase(Interface, SeqFetcher):
 
     @lru_cache(maxsize=128)
     def get_pro_ac_for_tx_ac(self, tx_ac):
-        """Return the (single) preferred protein accession for a given transcript
+        """Return the (single) associated protein accession for a given transcript
         accession, or None if not found."""
 
         cur = self._execute(self.sql['tx_to_pro'], [tx_ac])
@@ -431,7 +422,6 @@ class UTABase(Interface, SeqFetcher):
             return rows[0]['pro_ac']
         except IndexError:
             return None
-
 
     # Sequence fetching
     # -----------------
@@ -458,16 +448,17 @@ class UTABase(Interface, SeqFetcher):
         faster), and then SeqFetcher.fetch_seq().
         """
 
-        if any(ac.startswith(pfx) for pfx in ['NM_','NR_','ENST']):
+        if any(ac.startswith(pfx) for pfx in ['NM_', 'NR_', 'ENST']):
             try:
                 seq = self._get_tx_seq(ac)[start_i:end_i]
-                logger.debug("fetched {ac} from UTA".format(ac=ac))
+                _logger.debug("fetched {ac} from UTA".format(ac=ac))
                 return seq
             except HGVSDataNotAvailableError:
                 pass
         # if ac not matching or on HGVSDataNotAvailableError...
         seq = super(UTABase, self).fetch_seq(ac, start_i, end_i)
-        logger.debug("fetched {ac} with SeqFetcher".format(ac=ac))
+        _logger.debug("fetched {ac} with SeqFetcher".format(ac=ac))
+        assert seq is not None
         return seq
 
     # TODO: Remove get_tx_seq() in 0.5.0
@@ -483,11 +474,10 @@ class UTABase(Interface, SeqFetcher):
         :type ac: str
         """
         cur = self._execute(self.sql['tx_seq'], [ac])
-        try:
-            return cur.fetchone()['seq']
-        except TypeError:
-            raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
-
+        row = cur.fetchone()
+        if row and row['seq'] is not None:
+            return row['seq']
+        raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
 
 
 class UTA_postgresql(UTABase):
@@ -519,15 +509,13 @@ class UTA_postgresql(UTABase):
 
     def _ensure_schema_exists(self):
         # N.B. On AWS RDS, information_schema.schemata always returns zero rows
-        cur = self._execute("select exists(SELECT 1 FROM pg_namespace WHERE nspname = %s)",
-                            [self.url.schema])
+        cur = self._execute("select exists(SELECT 1 FROM pg_namespace WHERE nspname = %s)", [self.url.schema])
         if cur.fetchone()[0]:
             return
         raise HGVSDataNotAvailableError("specified schema ({}) does not exist (url={})".format(
             self.url.schema, self.url))
 
     def _get_cursor(self):
-
         """returns a cursor obtained from a single or pooled connection, and
         sets the postgresql search_path appropriately
 
@@ -557,8 +545,6 @@ class UTA_postgresql(UTABase):
         return cur
 
 
-
-
 class UTA_sqlite(UTABase):
     # TODO: implement mocks (issue #237) The current sqlite db was
     # based on schema v1. No tests currently use 1.1 features from
@@ -569,6 +555,7 @@ class UTA_sqlite(UTABase):
         def _sqlite3_row_dict_factory(cur, row):
             "convert sqlite row to dict"
             return dict((d[0], row[i]) for i, d in enumerate(cur.description))
+
         if not os.path.exists(self.url.path):
             raise IOError(self.url.path + ': Non-existent database file')
         self._conn = sqlite3.connect(self.url.path)
@@ -639,8 +626,6 @@ def _parse_url(db_url):
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
-
-
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

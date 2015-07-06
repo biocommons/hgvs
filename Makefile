@@ -133,7 +133,7 @@ cleaner: clean
 #=> cleanest: above, and remove the virtualenv, .orig, and .bak files
 cleanest: cleaner
 	find . \( -name \*.orig -o -name \*.bak -o -name \*.rej \) -print0 | xargs -0r /bin/rm -v
-	/bin/rm -fr .eggs distribute-* *.egg *.egg-info *.tar.gz nosetests.xml cover __pycache__
+	/bin/rm -fr distribute-* *.egg *.egg-info *.tar.gz nosetests.xml cover __pycache__
 	make -C examples $@
 #=> pristine: above, and delete anything unknown to mercurial
 pristine: cleanest

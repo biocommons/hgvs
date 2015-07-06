@@ -32,8 +32,8 @@ import unicodecsv as csv
 
 import hgvs.parser
 
-class TestGrammarFull(unittest.TestCase):
 
+class TestGrammarFull(unittest.TestCase):
     def setUp(self):
         self.p = hgvs.parser.Parser()
         self.grammar = self.p._grammar
@@ -48,7 +48,7 @@ class TestGrammarFull(unittest.TestCase):
             for row in reader:
                 rules_tested.add(row['Func'])
 
-        rules_all= set()
+        rules_all = set()
         grammar_fn = pkg_resources.resource_filename(__name__, '../hgvs/_data/hgvs.pymeta')
         for line in open(grammar_fn, 'r'):
             if len(line) > 0 and line[0] != '#' and line[0].isalpha():
@@ -84,16 +84,15 @@ class TestGrammarFull(unittest.TestCase):
                     try:
                         actual_result = unicode(function_to_test())
                         if not is_valid or (expected_result != actual_result):
-                            print( "expected: {} actual:{}".format(expected_result, actual_result) )
+                            print("expected: {} actual:{}".format(expected_result, actual_result))
                             fail_cases.append(row_str)
                     except Exception as e:
                         if is_valid:
-                            print( "expected: {} Exception: {}".format(expected_result, e) )
+                            print("expected: {} Exception: {}".format(expected_result, e))
                             fail_cases.append(row_str)
 
         # everything should have passed - report whatever failed
         self.assertTrue(len(fail_cases) == 0, pprint.pprint(fail_cases))
-
 
     def _split_inputs(self, in_string, intype):
         DELIM = '|'
@@ -101,7 +100,7 @@ class TestGrammarFull(unittest.TestCase):
             inputs = in_string.split(DELIM)
         elif intype == 'string':
             inputs = list(in_string)
-        else:   # intype == 'one'
+        else:    # intype == 'one'
             inputs = [in_string]
         inputs = [x if x != 'None' else None for x in inputs]
         return inputs
@@ -109,7 +108,6 @@ class TestGrammarFull(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

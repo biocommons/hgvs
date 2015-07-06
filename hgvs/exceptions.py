@@ -1,23 +1,30 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+
 class HGVSError(Exception):
     pass
+
 
 class HGVSInternalError(Exception):
     pass
 
+
 class HGVSParseError(HGVSError):
     pass
+
 
 class HGVSInvalidIntervalError(HGVSError):
     pass
 
+
 class HGVSInvalidVariantError(HGVSError):
     pass
 
+
 class HGVSValidationError(HGVSError):
     pass
+
 
 class HGVSDataNotAvailableError(HGVSError):
     pass
@@ -26,6 +33,9 @@ class HGVSNormalizationError(HGVSError):
     pass
 
 class HGVSUnspportedOperationError(HGVSError):
+    pass
+
+class HGVSUnsupportedOperationError(HGVSError):
     pass
 
 ## <LICENSE>

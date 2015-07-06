@@ -3,6 +3,8 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import logging
+
 import IPython
 
 import hgvs.dataproviders.uta
@@ -10,6 +12,7 @@ import hgvs.parser
 import hgvs.variantmapper
 import hgvs.validator
 
+logging.basicConfig(level=logging.DEBUG)
 
 alt_aln_method = 'splign'
 hgvs_g = 'NC_000007.13:g.36561662C>T'
@@ -19,12 +22,11 @@ hgvs_p = 'NP_001628.1:p.(Gly528Arg)'
 hdp = hgvs.dataproviders.uta.connect()
 
 hp = hgvsparser = hgvs.parser.Parser()
-vm = variantmapper = hgvs.variantmapper.VariantMapper( hdp )
-evm = easyvariantmapper = hgvs.variantmapper.EasyVariantMapper( hdp,
-                                                                primary_assembly = 'GRCh37',
-                                                                alt_aln_method = alt_aln_method )
+vm = variantmapper = hgvs.variantmapper.VariantMapper(hdp)
+evm = easyvariantmapper = hgvs.variantmapper.EasyVariantMapper(hdp,
+                                                               primary_assembly='GRCh37',
+                                                               alt_aln_method=alt_aln_method)
 hv = hgvs.validator.Validator(hdp)
-
 
 hgvs_g = 'NC_000001.10:g.156100564_156104193insG'
 #hgvs_g = 'NC_000001.10:g.156104193A>G'
@@ -34,12 +36,11 @@ var_g = hgvsparser.parse_hgvs_variant(hgvs_g)
 var_c = hgvsparser.parse_hgvs_variant(hgvs_c)
 var_p = hgvsparser.parse_hgvs_variant(hgvs_p)
 
-var_g_to_c = variantmapper.g_to_c( var_g, var_c.ac )
-var_g_to_r = variantmapper.g_to_r(var_g, var_c.ac, 'splign')
+var_g_to_c = variantmapper.g_to_c(var_g, var_c.ac)
+var_g_to_n = variantmapper.g_to_n(var_g, var_c.ac, 'splign')
 #var_c_to_g = variantmapper.c_to_g( var_c, ref )
 
 IPython.embed()
-
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

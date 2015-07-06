@@ -13,6 +13,7 @@ import hgvs.dataproviders.uta
 import hgvs.variantmapper
 import hgvs.parser
 
+
 def gcp_file_reader(fn):
     rdr = csv.DictReader(open(fn, 'r'), delimiter=str('\t'))
     for rec in rdr:
@@ -22,7 +23,6 @@ def gcp_file_reader(fn):
 
 
 class TestHgvsCToPReal(unittest.TestCase):
-
     def setUp(self):
         self.hdp = hgvs.dataproviders.uta.connect()
         self._hm = hgvs.variantmapper.VariantMapper(self.hdp)
@@ -53,12 +53,12 @@ class TestHgvsCToPReal(unittest.TestCase):
     def _run_comparison(self, rec, out):
         (row_id, hgvsg, hgvsc, hgvsp_expected) = (rec['id'], rec['HGVSg'], rec['HGVSc'], rec['HGVSp'])
 
-        hgvsc = self._dup_regex.sub('dup', hgvsc) # cleanup dupN
+        hgvsc = self._dup_regex.sub('dup', hgvsc)    # cleanup dupN
 
         if not row_id.startswith("#") and hgvsc and hgvsp_expected:
             try:
                 var_c = self._hp.parse_hgvs_variant(hgvsc)
-                var_p = self._hm.c_to_p(var_c,  hgvsp_expected.split(':')[0]) # hack until p.?, p.= etc parse
+                var_p = self._hm.c_to_p(var_c, hgvsp_expected.split(':')[0])    # hack until p.?, p.= etc parse
                 hgvsp_actual = str(var_p)
 
                 if hgvsp_expected != hgvsp_actual:
@@ -69,10 +69,10 @@ class TestHgvsCToPReal(unittest.TestCase):
             except Exception as e:
                 self._append_fail(out, row_id, hgvsg, hgvsc, hgvsp_expected, "NO_OUTPUT_EXCEPTION", e.message)
 
-
     def _append_fail(self, out, row_id, hgvsg, hgvsc, hgvsp_expected, hgvsp_actual, msg):
         self._failed.append((row_id, hgvsg, hgvsc, hgvsp_expected, hgvsp_actual, msg))
         out.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(row_id, hgvsg, hgvsc, hgvsp_expected, hgvsp_actual, msg))
+
 
 if __name__ == '__main__':
     unittest.main()
