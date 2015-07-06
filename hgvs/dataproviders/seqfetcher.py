@@ -5,9 +5,10 @@ import requests
 from ..exceptions import HGVSDataNotAvailableError
 from ..decorators import lru_cache
 
+# TODO: Move sequence fetching to another package.
+# TODO: Consider using eutils to get request throttling.
+# N.B. >> used (rather than >>>) to not incur web requests during testing
 
-# TODO: Move this fetching to the eutils package, which provides
-# throttling.
 def _fetch_seq_ensembl(ac, start_i=None, end_i=None):
     """Fetch the specified sequence slice from Ensembl using the public
     REST interface.
@@ -17,16 +18,16 @@ def _fetch_seq_ensembl(ac, start_i=None, end_i=None):
     accept intervals, so the entire sequence is returned and sliced
     locally.
 
-    >>> len(_fetch_seq_ensembl('ENSP00000288602'))
+    >> len(_fetch_seq_ensembl('ENSP00000288602'))
     766
 
-    >>> _fetch_seq_ensembl('ENSP00000288602',0,10)
+    >> _fetch_seq_ensembl('ENSP00000288602',0,10)
     u'MAALSGGGGG'
 
-    >>> _fetch_seq_ensembl('ENSP00000288602')[0:10]
+    >> _fetch_seq_ensembl('ENSP00000288602')[0:10]
     u'MAALSGGGGG'
 
-    >>> _fetch_seq_ensembl('ENSP00000288602',0,10) == _fetch_seq_ensembl('ENSP00000288602')[0:10]
+    >> _fetch_seq_ensembl('ENSP00000288602',0,10) == _fetch_seq_ensembl('ENSP00000288602')[0:10]
     True
 
     """
@@ -47,19 +48,19 @@ def _fetch_seq_ncbi(ac, start_i=None, end_i=None):
     which might greatly reduce payload sizes (especially with
     chromosome-scale sequences).
 
-    >>> len(_fetch_seq_ncbi('NP_056374.2'))
+    >> len(_fetch_seq_ncbi('NP_056374.2'))
     1596
 
     Pass the desired interval rather than using Python's [] slice
     operator.
 
-    >>> _fetch_seq_ncbi('NP_056374.2',0,10)
+    >> _fetch_seq_ncbi('NP_056374.2',0,10)
     'MESRETLSSS'
 
-    >>> _fetch_seq_ncbi('NP_056374.2')[0:10]
+    >> _fetch_seq_ncbi('NP_056374.2')[0:10]
     'MESRETLSSS'
 
-    >>> _fetch_seq_ncbi('NP_056374.2',0,10) == _fetch_seq_ncbi('NP_056374.2')[0:10]
+    >> _fetch_seq_ncbi('NP_056374.2',0,10) == _fetch_seq_ncbi('NP_056374.2')[0:10]
     True
 
     """
@@ -86,24 +87,24 @@ def fetch_seq(ac, start_i=None, end_i=None):
 
     Without an interval, the full sequence is returned::
 
-    >>> len(fetch_seq('NP_056374.2'))
+    >> len(fetch_seq('NP_056374.2'))
     1596
 
     Therefore, it's preferable to provide the interval rather than
     using Python slicing sequence on the delivered sequence::
 
-    >>> fetch_seq('NP_056374.2',0,10)   # This!
+    >> fetch_seq('NP_056374.2',0,10)   # This!
     'MESRETLSSS'
 
-    >>> fetch_seq('NP_056374.2')[0:10]  # Not this!
+    >> fetch_seq('NP_056374.2')[0:10]  # Not this!
     'MESRETLSSS'
 
-    >>> fetch_seq('NP_056374.2',0,10) == fetch_seq('NP_056374.2')[0:10]
+    >> fetch_seq('NP_056374.2',0,10) == fetch_seq('NP_056374.2')[0:10]
     True
 
     Providing intervals is especially important for large sequences::
 
-    >>> fetch_seq('NC_000001.10',2000000,2000030)
+    >> fetch_seq('NC_000001.10',2000000,2000030)
     'ATCACACGTGCAGGAACCCTTTTCCAAAGG'
 
     This call will pull back 30 bases plus overhead; without the
@@ -125,12 +126,12 @@ def fetch_seq(ac, start_i=None, end_i=None):
      ('ENST00000288602', u'CGCCTCCCTTCCCCCTCCCCGCCCG'),
      ('ENSP00000288602', u'MAALSGGGGGGAEPGQALFNGDMEP')]
 
-    >>> fetch_seq('NM_9.9')
+    >> fetch_seq('NM_9.9')
     Traceback (most recent call last):
        ...
     HGVSDataNotAvailableError: No sequence available for NM_9.9
 
-    >>> fetch_seq('QQ01234')
+    >> fetch_seq('QQ01234')
     Traceback (most recent call last):
        ...
     HGVSDataNotAvailableError: No fetcher for accessions like QQ01234
@@ -157,9 +158,9 @@ class SeqFetcher(object):
     fetch_seq() function in this module to fetch sequences from
     several sources; see that function for details.
 
-    >>> sf = SeqFetcher()
+    >> sf = SeqFetcher()
 
-    >>> sf.fetch_seq('NP_056374.2',0,10)
+    >> sf.fetch_seq('NP_056374.2',0,10)
     'MESRETLSSS'
 
     """

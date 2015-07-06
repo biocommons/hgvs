@@ -59,15 +59,20 @@
 ############################################################################
 ## HGVS Sequence Variant
 
-hgvs_variant = c_variant | r_variant | gmn_variant | p_variant
+hgvs_variant = g_variant | m_variant | c_variant | n_variant  | r_variant | p_variant
 
-g_variant   = gmn_variant
-m_variant   = gmn_variant
-n_variant   = gmn_variant
-gmn_variant = accn:ac ':' gmn_type:type '.' gmn_posedit:posedit -> hgvs.variant.SequenceVariant(ac,type,posedit)
-c_variant   = accn:ac ':'      'c':type '.'   c_posedit:posedit -> hgvs.variant.SequenceVariant(ac,type,posedit)
-p_variant   = accn:ac ':'      'p':type '.'   p_posedit:posedit -> hgvs.variant.SequenceVariant(ac,type,posedit)
+g_variant   = gm_variant
+m_variant   = gm_variant
+gm_variant = accn:ac ':' gm_type:type '.' gm_posedit:posedit -> hgvs.variant.SequenceVariant(ac,type,posedit)
+
+c_variant   = cn_variant
+n_variant   = cn_variant
+cn_variant = accn:ac ':' cn_type:type '.' cn_posedit:posedit -> hgvs.variant.SequenceVariant(ac,type,posedit)
+
 r_variant   = accn:ac ':'      'r':type '.'   r_posedit:posedit -> hgvs.variant.SequenceVariant(ac,type,posedit)
+
+p_variant   = accn:ac ':'      'p':type '.'   p_posedit:posedit -> hgvs.variant.SequenceVariant(ac,type,posedit)
+
 
 # any_variant is intended for lax parsing around ':' and '.' components
 # Disabling in response to issue #167. The SequenceVariant object returned below is significantly
@@ -78,25 +83,35 @@ r_variant   = accn:ac ':'      'r':type '.'   r_posedit:posedit -> hgvs.variant.
 ############################################################################
 ## HGVS Edit (without accession); e.g., c.76+3A>T
 
-g_edit   = gmn_edit
-m_edit   = gmn_edit
-n_edit   = gmn_edit
-gmn_edit = gmn_type:type '.' gmn_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
-c_edit   = 'c':type '.'   c_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
+g_edit   = gm_edit
+m_edit   = gm_edit
+gm_edit = gm_type:type '.' gm_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
+
+n_edit   = cn_edit
+c_edit   = cn_edit
+cn_edit = cn_type:type '.' cn_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
+
 p_edit   = 'p':type '.'   p_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
+
 r_edit   = 'r':type '.'   r_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
+
 
 
 ############################################################################
 ## HGVS Position -- e.g., NM_01234.5:c.22+6 (without an edit)
 
-hgvs_position     = gmn_hgvs_position | r_hgvs_position | c_hgvs_position | p_hgvs_position
-g_hgvs_position   = gmn_hgvs_position
-m_hgvs_position   = gmn_hgvs_position
-n_hgvs_position   = gmn_hgvs_position
-gmn_hgvs_position = accn:ac ':' gmn_type:type '.' gmn_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac, type, pos)
-c_hgvs_position   = accn:ac ':' 'c':type      '.'   c_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac, type, pos)
+hgvs_position     = gm_hgvs_position | cn_hgvs_position | r_hgvs_position | p_hgvs_position
+
+g_hgvs_position   = gm_hgvs_position
+m_hgvs_position   = gm_hgvs_position
+gm_hgvs_position = accn:ac ':' gm_type:type '.' gm_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac, type, pos)
+
+c_hgvs_position   = cn_hgvs_position
+n_hgvs_position   = cn_hgvs_position
+cn_hgvs_position = accn:ac ':' cn_type:type '.' cn_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac, type, pos)
+
 p_hgvs_position   = accn:ac ':' 'p':type      '.'   p_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac, type, pos)
+
 r_hgvs_position   = accn:ac ':' 'r':type      '.'   r_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac, type, pos)
 
 
@@ -105,13 +120,17 @@ r_hgvs_position   = accn:ac ':' 'r':type      '.'   r_interval:pos -> hgvs.hgvsp
 
 # any_posedit = g_posedit | m_posedit | n_posedit | c_posedit | r_posedit | p_posedit 
 
-g_posedit   = gmn_posedit
-m_posedit   = gmn_posedit
-n_posedit   = gmn_posedit
-gmn_posedit = gmn_interval:pos dna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit)
-c_posedit   = c_interval:pos dna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit)
+g_posedit   = gm_posedit
+m_posedit   = gm_posedit
+gm_posedit = gm_interval:pos dna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit)
+
+n_posedit   = cn_posedit
+c_posedit   = cn_posedit
+cn_posedit  = cn_interval:pos dna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit)
+
 r_posedit   = (r_interval:pos rna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit))
    | ('(' r_interval:pos rna_edit:edit ')' -> hgvs.posedit.PosEdit(pos=pos,edit=edit, uncertain=True))
+
 p_posedit   = (p_interval:pos pro_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit))
    | ('(' p_interval:pos pro_edit:edit ')' -> hgvs.posedit.PosEdit(pos=pos,edit=edit, uncertain=True))
    | p_posedit_special
@@ -170,44 +189,59 @@ pro_ext    = aat13?:alt ext:(aaterm, length) -> hgvs.edit.AAExt(ref='',alt=biout
 # Much of the complexity below is to handle the combinations of various
 # location syntax and uncertainty
 
+
 # potentially indefinite/uncertain intervals
-g_interval = gmn_interval
-m_interval = gmn_interval
-n_interval = gmn_interval
-gmn_interval = def_gmn_interval | '(' def_gmn_interval:iv ')' -> iv._set_uncertain()
+g_interval = gm_interval
+m_interval = gm_interval
+gm_interval = def_gm_interval | '(' def_gm_interval:iv ')' -> iv._set_uncertain()
+
+c_interval = cn_interval
+n_interval = cn_interval
+cn_interval = def_c_interval | '(' def_c_interval:iv ')' -> iv._set_uncertain()
+
 r_interval = def_r_interval | '(' def_r_interval:iv ')' -> iv._set_uncertain()
-c_interval = def_c_interval | '(' def_c_interval:iv ')' -> iv._set_uncertain()
+
 p_interval = def_p_interval | '(' def_p_interval:iv ')' -> iv._set_uncertain()
 
+
 # definite intervals
-def_g_interval = def_gmn_interval
-def_m_interval = def_gmn_interval
-def_n_interval = def_gmn_interval
-def_gmn_interval = ( gmn_pos:start '_' gmn_pos:end -> hgvs.location.Interval(start,end)) | (gmn_pos:start -> hgvs.location.Interval(start,start))
+def_g_interval = def_gm_interval
+def_m_interval = def_gm_interval
+def_gm_interval = ( gm_pos:start '_' gm_pos:end -> hgvs.location.Interval(start,end)) | (gm_pos:start -> hgvs.location.Interval(start,start))
+
+def_c_interval = def_cn_interval
+def_n_interval = def_cn_interval
+def_cn_interval = (c_pos:start '_' c_pos:end -> hgvs.location.Interval(start,end)) | (c_pos:start -> hgvs.location.Interval(start,start))
+
 def_r_interval = (r_pos:start '_' r_pos:end -> hgvs.location.Interval(start,end)) | (r_pos:start -> hgvs.location.Interval(start,start))
-def_c_interval = (c_pos:start '_' c_pos:end -> hgvs.location.Interval(start,end)) | (c_pos:start -> hgvs.location.Interval(start,start))
+
 def_p_interval = (p_pos:start '_' p_pos:end -> hgvs.location.Interval(start,end)) | (p_pos:start -> hgvs.location.Interval(start,start))
 
+
 # potentially indefinite/uncertain positions
-g_pos = gmn_pos
-m_pos = gmn_pos
-n_pos = gmn_pos
+g_pos = gm_pos
+m_pos = gm_pos
+gm_pos = def_gm_pos #| '(' def_gm_pos:pos ')' -> pos._set_uncertain()
+
 #individual coords may not be uncertain (see interval, which may be)
-gmn_pos = def_gmn_pos #| '(' def_gmn_pos:pos ')' -> pos._set_uncertain()
 r_pos = def_r_pos #| '(' def_r_pos:pos ')' -> pos._set_uncertain()
 c_pos = def_c_pos #| '(' def_c_pos:pos ')' -> pos._set_uncertain()
+n_pos = def_n_pos #| '(' def_n_pos:pos ')' -> pos._set_uncertain()
 p_pos = def_p_pos #| '(' def_p_pos:pos ')' -> pos._set_uncertain()
 
 # definite positions
-def_g_pos = def_gmn_pos
-def_m_pos = def_gmn_pos
-def_n_pos = def_gmn_pos
-def_gmn_pos = (num|'?'->None):pos -> hgvs.location.SimplePosition(pos)
-def_r_pos = base:b offset:o -> hgvs.location.BaseOffsetPosition(b,o,datum=hgvs.location.SEQ_START)
-def_c_pos = base:b offset:o -> hgvs.location.BaseOffsetPosition(b,o,datum=hgvs.location.CDS_START)
-       | '*' num:b offset:o -> hgvs.location.BaseOffsetPosition(b,o,datum=hgvs.location.CDS_END)
-def_p_pos = (term13|aa13):aa num:pos -> hgvs.location.AAPosition(pos,bioutils.sequences.aa_to_aa1(aa))
+def_g_pos = def_gm_pos
+def_m_pos = def_gm_pos
+def_gm_pos = (num|'?'->None):pos -> hgvs.location.SimplePosition(pos)
 
+def_c_pos = def_cn_pos
+def_n_pos = def_cn_pos
+def_cn_pos = base:b offset:o -> hgvs.location.BaseOffsetPosition(b,o,datum=hgvs.location.CDS_START)
+       | '*' num:b offset:o -> hgvs.location.BaseOffsetPosition(b,o,datum=hgvs.location.CDS_END)
+
+def_r_pos = base:b offset:o -> hgvs.location.BaseOffsetPosition(b,o,datum=hgvs.location.SEQ_START)
+
+def_p_pos = (term13|aa13):aa num:pos -> hgvs.location.AAPosition(pos,bioutils.sequences.aa_to_aa1(aa))
 
 
 ############################################################################
@@ -216,7 +250,9 @@ def_p_pos = (term13|aa13):aa num:pos -> hgvs.location.AAPosition(pos,bioutils.se
 # rules, '1' = 1-letter AA, '3' = 3-letter, '13' = 1 or 3, and 't' =
 # includes terminator codon.  '_seq' refers to a sequence of any of these.
 
-gmn_type = :x ?(x in 'gmn') -> x
+gm_type = :x ?(x in 'gm') -> x
+cn_type = :x ?(x in 'cn') -> x
+
 
 # AA fs/ext
 fs = 'fs' (aa13_fs | -> None):n -> n

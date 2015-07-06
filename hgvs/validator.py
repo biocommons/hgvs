@@ -46,7 +46,7 @@ class IntrinsicValidator(object):
         if var.type == 'g':
             if var.posedit.pos.start.base > var.posedit.pos.end.base:
                 raise HGVSValidationError(BASE_RANGE_ERROR_MSG)
-        if var.type in ['c', 'r', 'p']:
+        if var.type in 'cmnp':
             if var.posedit.pos.start.base > var.posedit.pos.end.base:
                 raise HGVSValidationError(BASE_RANGE_ERROR_MSG)
             elif var.posedit.pos.start.base == var.posedit.pos.end.base:
@@ -61,7 +61,7 @@ class IntrinsicValidator(object):
             if var.type == 'g':
                 if (var.posedit.pos.end.base - var.posedit.pos.start.base) != 1:
                     raise HGVSValidationError(INS_ERROR_MSG)
-            if var.type in ['c', 'r', 'p']:
+            if var.type in 'cmnp':
                 if ((var.posedit.pos.end.base + var.posedit.pos.end.offset) -
                         (var.posedit.pos.start.base + var.posedit.pos.start.offset)) != 1:
                     raise HGVSValidationError(INS_ERROR_MSG)
@@ -73,7 +73,7 @@ class IntrinsicValidator(object):
             if var.type == 'g':
                 if (var.posedit.pos.end.base - var.posedit.pos.start.base + 1) != del_len:
                     raise HGVSValidationError(DEL_ERROR_MSG)
-            if var.type in ['c', 'r', 'p']:
+            if var.type in 'cmnp':
                 if ((var.posedit.pos.end.base + var.posedit.pos.end.offset) -
                         (var.posedit.pos.start.base + var.posedit.pos.start.offset) + 1) != del_len:
                     raise HGVSValidationError(DEL_ERROR_MSG)
@@ -100,13 +100,13 @@ class ExtrinsicValidator():
             # Handle Dup and NADupN objects.
             var_ref_seq = getattr(var.posedit.edit, 'seq', None)
         else:
-            # use reference sequence of original variant, even if later converted (eg c_to_r)
+            # use reference sequence of original variant, even if later converted (eg c_to_n)
             if var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0:
                 raise HGVSUnsupportedOperationError("Cannot validate sequence of an intronic variant ({})".format(str(var)))
             var_ref_seq = getattr(var.posedit.edit, 'ref', None)
 
         if var_ref_seq is not None:
-            var_x = self.hm.c_to_r(var) if var.type == 'c' else var
+            var_x = self.hm.c_to_n(var) if var.type == 'c' else var
             ref_seq = self.hdp.fetch_seq(var_x.ac, var_x.posedit.pos.start.base - 1, var_x.posedit.pos.end.base)
             if ref_seq != var_ref_seq:
                 raise HGVSValidationError(str(var) + ': ' + SEQ_ERROR_MSG.format(ref_seq=ref_seq, var_ref_seq=var_ref_seq))

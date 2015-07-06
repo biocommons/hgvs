@@ -141,10 +141,10 @@ class Test_transcriptmapper(unittest.TestCase):
 
     def run_cases(self, tm, test_cases):
         for test_case in test_cases:
-            self.assertEquals(tm.g_to_r(test_case['g']), test_case['r'])
-            self.assertEquals(tm.r_to_g(test_case['r']), test_case['g'])
-            self.assertEquals(tm.r_to_c(test_case['r']), test_case['c'])
-            self.assertEquals(tm.c_to_r(test_case['c']), test_case['r'])
+            self.assertEquals(tm.g_to_n(test_case['g']), test_case['r'])
+            self.assertEquals(tm.n_to_g(test_case['r']), test_case['g'])
+            self.assertEquals(tm.n_to_c(test_case['r']), test_case['c'])
+            self.assertEquals(tm.c_to_n(test_case['c']), test_case['r'])
             self.assertEquals(tm.g_to_c(test_case['g']), test_case['c'])
             self.assertEquals(tm.c_to_g(test_case['c']), test_case['g'])
 
@@ -253,22 +253,22 @@ if __name__ == '__main__':
     #    ## The coords of this indel via NW alignment differ from those at
     #    ## NCBI, but are the same canonicalized variant.  Nothing to do
     #    ## about that short of running Splign ourselves.
-    #    #self.assertEqual(tm.r_to_g(1972, 1972), (150548891, 150548891))
-    #    #self.assertEqual(tm.r_to_g(1972, 1973), (150548890, 150548891))
-    #    #self.assertEqual(tm.r_to_g(1972, 1974), (150548890, 150548891))
-    #    #self.assertEqual(tm.r_to_g(1972, 1975), (150548890, 150548891))
-    #    #self.assertEqual(tm.r_to_g(1972, 1976), (150548890, 150548891))
-    #    #self.assertEqual(tm.r_to_g(1972, 1977), (150548890, 150548891))
-    #    #self.assertEqual(tm.r_to_g(1972, 1978), (150548889, 150548891))
+    #    #self.assertEqual(tm.n_to_g(1972, 1972), (150548891, 150548891))
+    #    #self.assertEqual(tm.n_to_g(1972, 1973), (150548890, 150548891))
+    #    #self.assertEqual(tm.n_to_g(1972, 1974), (150548890, 150548891))
+    #    #self.assertEqual(tm.n_to_g(1972, 1975), (150548890, 150548891))
+    #    #self.assertEqual(tm.n_to_g(1972, 1976), (150548890, 150548891))
+    #    #self.assertEqual(tm.n_to_g(1972, 1977), (150548890, 150548891))
+    #    #self.assertEqual(tm.n_to_g(1972, 1978), (150548889, 150548891))
     #    #
-    #    #self.assertEqual(tm.g_to_r(150548891, 150548891), (1972, 1972, 0, 0))
-    #    #self.assertEqual(tm.g_to_r(150548890, 150548891), (1972, 1973, 0, 0))
-    #    #self.assertEqual(tm.g_to_r(150548889, 150548891), (1972, 1978, 0, 0))
+    #    #self.assertEqual(tm.g_to_n(150548891, 150548891), (1972, 1972, 0, 0))
+    #    #self.assertEqual(tm.g_to_n(150548890, 150548891), (1972, 1973, 0, 0))
+    #    #self.assertEqual(tm.g_to_n(150548889, 150548891), (1972, 1978, 0, 0))
     #    #
     #    ## around cds_start (208) and cds_end (1024), mindful of *non-coding* ins (4I)
     #    ## i.e., we *don't* need to account for the 4nt insertion here
-    #    #self.assertEquals(tm.r_to_c(208, 1024), (0, 1024 - 208, 0, 0))
-    #    #self.assertEquals(tm.c_to_r(0, 1024 - 208), (208, 1024, 0, 0))
+    #    #self.assertEquals(tm.n_to_c(208, 1024), (0, 1024 - 208, 0, 0))
+    #    #self.assertEquals(tm.c_to_n(0, 1024 - 208), (208, 1024, 0, 0))
     #    #self.assertEquals(tm.g_to_c(150552214 - 208, 150552214 - 208), (0, 0, 0, 0))
     #    #self.assertEquals(tm.c_to_g(0, 0), (150552214 - 208, 150552214 - 208))
     #    ## cds_end is in 2nd exon
