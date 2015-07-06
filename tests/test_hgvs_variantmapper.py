@@ -39,11 +39,11 @@ class Test_VariantMapper(unittest.TestCase):
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
 
         cases = {'gc': (self.vm.g_to_c, (var_c, 'NM_001637.3')),
-                 'gr': (self.vm.g_to_r, (var_c, 'NM_001637.3')),
-                 'rg': (self.vm.r_to_g, (var_c, 'NM_001637.3')),
+                 'gr': (self.vm.g_to_n, (var_c, 'NM_001637.3')),
+                 'rg': (self.vm.n_to_g, (var_c, 'NM_001637.3')),
                  'cg': (self.vm.c_to_g, (var_g, 'NM_001637.3')),
-                 'cr': (self.vm.c_to_r, (var_g,)),
-                 'rc': (self.vm.r_to_c, (var_g,)),
+                 'cr': (self.vm.c_to_n, (var_g,)),
+                 'rc': (self.vm.n_to_c, (var_g,)),
                  'cp': (self.vm.c_to_p, (var_g, None)),
                  }
 
@@ -76,7 +76,7 @@ class Test_EasyVariantMapper(unittest.TestCase):
         self.hgvs = {
             'g': 'NC_000007.13:g.36561662C>T',
             'c': 'NM_001637.3:c.1582G>A',
-            'r': 'NM_001637.3:r.1983G>A',
+            'n': 'NM_001637.3:n.1983G>A',  # treat as non-coding, relative to tx start
             'p': 'NP_001628.1:p.(Gly528Arg)'
         }
         hp = hgvs.parser.Parser()
@@ -86,14 +86,14 @@ class Test_EasyVariantMapper(unittest.TestCase):
     def test_c_to_g(self):
         self.assertEqual(self.hgvs['g'], str(self.evm.c_to_g(self.var['c'])))
 
-    def test_c_to_r(self):
-        self.assertEqual(self.hgvs['r'], str(self.evm.c_to_r(self.var['c'])))
+    def test_c_to_n(self):
+        self.assertEqual(self.hgvs['n'], str(self.evm.c_to_n(self.var['c'])))
 
     def test_g_to_c(self):
         self.assertEqual(self.hgvs['c'], str(self.evm.g_to_c(self.var['g'], self.var['c'].ac)))
 
-    def test_g_to_r(self):
-        self.assertEqual(self.hgvs['r'], str(self.evm.g_to_r(self.var['g'], self.var['r'].ac)))
+    def test_g_to_n(self):
+        self.assertEqual(self.hgvs['n'], str(self.evm.g_to_n(self.var['g'], self.var['n'].ac)))
 
     def test_c_to_p(self):
         self.assertEqual(self.hgvs['p'], str(self.evm.c_to_p(self.var['c'])))
