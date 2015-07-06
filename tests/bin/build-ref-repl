@@ -1,0 +1,69 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+"""Builds reference replacement test sets"""
+
+
+import logging
+import pprint
+
+import hgvs.dataproviders.uta
+import hgvs.parser
+import hgvs.variantmapper
+import hgvs.validator
+
+logging.basicConfig(level=logging.DEBUG)
+
+hdp = hgvs.dataproviders.uta.connect()
+hp = hgvsparser = hgvs.parser.Parser()
+vm = variantmapper = hgvs.variantmapper.VariantMapper(hdp)
+evm = easyvariantmapper = hgvs.variantmapper.EasyVariantMapper(hdp,
+                                                               primary_assembly='GRCh37',
+                                                               alt_aln_method='splign')
+
+def vset(hs):
+    v = evm._replace_reference_sequence(hp.parse_hgvs_variant(hs))
+    return {'n': str(v), 'g': str(evm.n_to_g(v)), 'c': str(evm.n_to_c(v))}
+
+
+n_vars = [
+    # ADRB2    │ NM_000024.5 │  239 │ 1481 │ NC_000005.9  │  1 │ 148206155,148208197 | 284=1X32=1X1724=
+    # cseq = hdp.fetch_seq('NM_000024.5')
+    # gseq = hdp.fetch_seq('NC_000005.9',148206155,148208197)
+    # cseq[280:290] = 'CAATAGAAGC'
+    # gseq[280:290] = 'CAATGGAAGC'
+    #                      ^ @285
+    # These variants are in and around the first sub: 
+    'NM_000024.5:n.281C>N', 'NM_000024.5:n.282A>N', 'NM_000024.5:n.283A>N', 'NM_000024.5:n.284T>N',
+    'NM_000024.5:n.285A>N', 'NM_000024.5:n.286G>N', 'NM_000024.5:n.287A>N', 'NM_000024.5:n.288A>N',
+    'NM_000024.5:n.289G>N', 'NM_000024.5:n.290C>N',
+
+    'NM_000024.5:n.285_286insNN',
+    'NM_000024.5:n.284_286delNNN',
+    'NM_000024.5:n.284_286delNNNinsNNNN',
+    'NM_000024.5:n.284_286delinsNNNN',
+    'NM_000024.5:n.285dupA',
+
+    # IFNA16   │ NM_002173.2 │    6 │  576 │ NC_000009.11 │ -1 │  21216371, 21217310 | 691=2X246=
+    # cseq = hdp.fetch_seq('NM_002173.2')
+    # gseq = reverse_complement(hdp.fetch_seq('NC_000009.11',21216371,21217310))
+    # cseq[685:695] = 'AAATTTCAAA'
+    # gseq[685:695] = 'AAATTTTCAA'
+    #                        ^^ @ i[691,693)
+    # These variants are in and around the 2X substitution
+    'NM_002173.2:n.686A>N', 'NM_002173.2:n.687A>N', 'NM_002173.2:n.688A>N', 'NM_002173.2:n.689T>N',
+    'NM_002173.2:n.690T>N', 'NM_002173.2:n.691T>N', 'NM_002173.2:n.692C>N', 'NM_002173.2:n.693A>N',
+    'NM_002173.2:n.694A>N', 'NM_002173.2:n.695A>N',
+
+    'NM_002173.2:n.691_693insNN',
+    'NM_002173.2:n.690_693delNNNN',
+    'NM_002173.2:n.691_693delNNNNinsNN',
+    'NM_002173.2:n.691_693delinsNN',
+    'NM_002173.2:n.691_693dup',
+    ]
+
+
+pprint.pprint([vset(hs) for hs in n_vars])
+    
