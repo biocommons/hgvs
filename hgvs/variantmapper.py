@@ -157,17 +157,13 @@ class VariantMapper(object):
 
         if not (var_c.type == 'c'):
             raise hgvs.exceptions.HGVSInvalidVariantError('Expected a cDNA (c.); got ' + str(var_c))
-
         tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=var_c.ac, alt_aln_method='transcript')
         pos_n = tm.c_to_n(var_c.posedit.pos)
-
-        # not necessary to check strand
         if isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_c.posedit.edit, hgvs.edit.Dup):
             edit_type = type(var_c.posedit.edit)
-            edit_n = self._replace_T(edit_type(edit=var_c.posedit.edit))
+            edit_n = copy.deepcopy(var_c.posedit.edit)
         else:
             raise NotImplementedError('Only NARefAlt/Dup types are currently implemented')
-
         var_n = hgvs.variant.SequenceVariant(ac=var_c.ac, type='n', posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
         return var_n
 
@@ -184,16 +180,13 @@ class VariantMapper(object):
 
         if not (var_n.type == 'n'):
             raise hgvs.exceptions.HGVSInvalidVariantError('Expected n. variant; got ' + str(var_n))
-
         tm = self._fetch_TranscriptMapper(tx_ac=var_n.ac, alt_ac=var_n.ac, alt_aln_method='transcript')
         pos_c = tm.n_to_c(var_n.posedit.pos)
-
-        # not necessary to check strand
         if isinstance(var_n.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_n.posedit.edit, hgvs.edit.Dup):
             edit_type = type(var_n.posedit.edit)
+            edit_c = copy.deepcopy(var_n.posedit.edit)
         else:
             raise NotImplementedError('Only NARefAlt types are currently implemented')
-
         var_c = hgvs.variant.SequenceVariant(ac=var_n.ac, type='c', posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
         return var_c
 
