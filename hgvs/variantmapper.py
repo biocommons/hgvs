@@ -261,30 +261,33 @@ class VariantMapper(object):
     ############################################################################
     ## Internal methods
     
-    def _update_reference_sequence(self, var):
+    def _replace_reference(self, var):
         """fetch reference sequence for variant and update (in-place) if necessary"""
     
         if var.type not in 'cgmnr':
             raise HGVSUnsupportedOperationError("Can only update references for type c, g, m, n, r")
 
+        if var.posedit.edit.type == 'ins':
+            # insertions have no reference sequence (zero-width), so return as-is
+            return var
+        
         if ((isinstance(var.posedit.pos.start, hgvs.location.BaseOffsetPosition) and var.posedit.pos.start.offset != 0) or
             (isinstance(var.posedit.pos.end, hgvs.location.BaseOffsetPosition) and var.posedit.pos.end.offset != 0)):
             _logger.info("Can't update reference sequence for intronic variant {}".format(var))
+            return var
 
+        # For c. variants, we need coords on underlying sequences
+        if var.type == 'c':
+            tm = self._fetch_TranscriptMapper(tx_ac=var.ac, alt_ac=var.ac, alt_aln_method='transcript')
+            pos = tm.c_to_n(var.posedit.pos)
         else:
-            seq = self.hdp.fetch_seq(var.ac, var.posedit.pos.start.base - 1, var.posedit.pos.end.base)
-            edit = var.posedit.edit
+            pos = var.posedit.pos
+        seq = self.hdp.fetch_seq(var.ac, pos.start.base - 1, pos.end.base)
 
-            if isinstance(edit, hgvs.edit.NARefAlt):
-                if edit.ref != seq:
-                    _logger.debug("Replaced reference sequence in {var} with {seq}".format(var=var, seq=seq))
-                    edit.ref = seq
-            elif isinstance(edit, hgvs.edit.Dup):
-                if edit.seq != seq:
-                    _logger.debug("Replaced reference sequence in {var} with {seq}".format(var=var, seq=seq))
-                    edit.seq = seq
-            else:
-                assert False, "Shouldn't ever get here"
+        edit = var.posedit.edit
+        if edit.ref != seq:
+            _logger.debug("Replaced reference sequence in {var} with {seq}".format(var=var, seq=seq))
+            edit.ref = seq
 
         return var
 
@@ -367,55 +370,53 @@ class EasyVariantMapper(VariantMapper):
     transcripts.
     """
 
-    def __init__(self, hdp, primary_assembly='GRCh37', alt_aln_method='splign', auto_correct_ref=True):
+    def __init__(self, hdp, primary_assembly='GRCh37', alt_aln_method='splign', replace_reference=True):
         super(EasyVariantMapper, self).__init__(hdp=hdp)
         self.primary_assembly = primary_assembly
         self.alt_aln_method = alt_aln_method
         self.primary_assembly_accessions = set(primary_assembly_accessions[primary_assembly])
-        self.auto_correct_ref = auto_correct_ref
+        self.replace_reference = replace_reference
 
     def g_to_c(self, var_g, tx_ac):
         var_out = super(EasyVariantMapper, self).g_to_c(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
-        if self.auto_correct_ref:
-            self._update_reference_sequence(var_out)
+        if self.replace_reference:
+            self._replace_reference(var_out)
         return var_out
 
     def g_to_n(self, var_g, tx_ac):
         var_out = super(EasyVariantMapper, self).g_to_n(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
-        if self.auto_correct_ref:
-            self._update_reference_sequence(var_out)
+        if self.replace_reference:
+            self._replace_reference(var_out)
         return var_out
 
     def c_to_g(self, var_c):
         alt_ac = self._alt_ac_for_tx_ac(var_c.ac)
         var_out = super(EasyVariantMapper, self).c_to_g(var_c, alt_ac, alt_aln_method=self.alt_aln_method)
-        if self.auto_correct_ref:
-            self._update_reference_sequence(var_out)
+        if self.replace_reference:
+            self._replace_reference(var_out)
         return var_out
 
     def n_to_g(self, var_n):
         alt_ac = self._alt_ac_for_tx_ac(var_n.ac)
         var_out = super(EasyVariantMapper, self).n_to_g(var_n, alt_ac, alt_aln_method=self.alt_aln_method)
-        if self.auto_correct_ref:
-            self._update_reference_sequence(var_out)
+        if self.replace_reference:
+            self._replace_reference(var_out)
         return var_out
 
     def c_to_n(self, var_c):
         var_out = super(EasyVariantMapper, self).c_to_n(var_c)
-        if self.auto_correct_ref:
-            self._update_reference_sequence(var_out)
+        if self.replace_reference:
+            self._replace_reference(var_out)
         return var_out
 
     def n_to_c(self, var_n):
         var_out = super(EasyVariantMapper, self).n_to_c(var_n)
-        if self.auto_correct_ref:
-            self._update_reference_sequence(var_out)
+        if self.replace_reference:
+            self._replace_reference(var_out)
         return var_out
 
     def c_to_p(self, var_c):
         var_out = super(EasyVariantMapper, self).c_to_p(var_c)
-        if self.auto_correct_ref:
-            self._update_reference_sequence(var_out)
         return var_out
 
     def relevant_transcripts(self, var_g):
