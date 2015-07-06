@@ -195,9 +195,9 @@ class Normalizer(object):
                 if ref_seq == '':
                     break
                 orig_start, orig_stop = start, stop
-                start, stop, (ref, alt) = normalize_alleles(ref_seq.encode('ascii'), start, stop,
-                                                            (ref.encode('ascii'),
-                                                             alt.encode('ascii')), len(ref_seq), win_size, False)
+                start, stop, (ref, alt) = normalize_alleles(ref_seq.encode('ascii'), start, stop, (ref.encode('ascii'),
+                                                                                                   alt.encode('ascii')),
+                                                            len(ref_seq), win_size, False)
                 if stop < len(ref_seq) or start == orig_start:
                     break
                 #if stop at the end of the window, try to extend the shuffling to the right
@@ -224,9 +224,9 @@ class Normalizer(object):
                 if ref_seq == '':
                     break
                 orig_start, orig_stop = start, stop
-                start, stop, (ref, alt) = normalize_alleles(ref_seq.encode('ascii'), start, stop,
-                                                            (ref.encode('ascii'),
-                                                             alt.encode('ascii')), 0, win_size, True)
+                start, stop, (ref, alt) = normalize_alleles(ref_seq.encode('ascii'), start, stop, (ref.encode('ascii'),
+                                                                                                   alt.encode('ascii')),
+                                                            0, win_size, True)
                 if start > 0 or stop == orig_stop:
                     break
                 #if stop at the end of the window, try to extend the shuffling to the left
