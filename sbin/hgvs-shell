@@ -40,7 +40,7 @@ var_c = hgvsparser.parse_hgvs_variant(hgvs_c)
 var_p = hgvsparser.parse_hgvs_variant(hgvs_p)
 
 var_g_to_c = variantmapper.g_to_c( var_g, var_c.ac )
-var_g_to_r = variantmapper.g_to_r(var_g, var_c.ac, 'splign')
+var_g_to_n = variantmapper.g_to_n(var_g, var_c.ac, 'splign')
 #var_c_to_g = variantmapper.c_to_g( var_c, ref )
 
 IPython.embed()

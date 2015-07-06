@@ -18,19 +18,91 @@ import hgvs.variant
 
 from hgvs.decorators.lru_cache import lru_cache
 
-
 class VariantMapper(object):
-    """
-    Maps HGVS variants to and from g., r., c., and p. representations.
+    """Maps HGVS variants to and from g., n., r., c., and p. representations.
     All methods require and return objects of type :class:`hgvs.variant.SequenceVariant`.
+
+    g --acgtatgcac--gtctagacgt--      --acgtatgcac--gtctagacgt--      --acgtatgcac--gtctagacgt--
+            \     \/     /                  \     \/     /                  \     \/     /      
+    c  --acgtATGCACGTCTAGacgt--     n  --acgtatgcacgtctagacgt--     r  --acguaugcacgucuagacgu-- 
+            |1           |               1                               1
+    p        MetHisValTer
+
+    g <-> c, n, r projections are similar in that c, n, and r variants
+    may use intronic coordinates. There are two essential differences
+    that distinguish the three intermediate sequences::
+
+    1) In n and r variants, position 1 is the sequence start; in c
+    variants, 1 is the transcription start site.
+    2) In n and c variants, sequences are DNA; in r. variants,
+    sequences are RNA.
+
+    Therefore, this this code uses g<->n as the core transformation
+    between genomic and c, n, and r variants: All c<->g and r<->g
+    transformations use n<->g after accounting for the above
+    differences. For example, c->g accounts for the transcription
+    start site offset, then calls n->g.
+
     """
 
     def __init__(self, hdp):
         self.hdp = hdp
 
+    # ############################################################################
+    # g <-> n
+    def g_to_n(self, var_g, tx_ac, alt_aln_method='splign'):
+        """Given a parsed g. variant, return a n. variant on the specified
+        transcript using the specified alignment method (default is
+        'splign' from NCBI).
+
+        :param hgvs.variant.SequenceVariant var_g: a variant object
+        :param str tx_ac: a transcript accession (e.g., NM_012345.6 or ENST012345678)
+        :param str alt_aln_method: the alignment method; valid values depend on data source
+        :returns: variant object (:class:`hgvs.variant.SequenceVariant`) using transcript (n.) coordinates
+        :raises hgvs.exceptions.HGVSInvalidVariantError: if var_g is not of type 'g'
+
+        """
+
+        if not (var_g.type == 'g'):
+            raise hgvs.exceptions.HGVSInvalidVariantError('Expected a g. variant; got ' + str(var_g))
+        tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
+        pos_n = tm.g_to_n(var_g.posedit.pos)
+        edit_n = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
+        var_n = hgvs.variant.SequenceVariant(ac=tx_ac,
+                                             type='n',
+                                             posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
+        return var_n
+
+    def n_to_g(self, var_n, alt_ac, alt_aln_method='splign'):
+        """Given a parsed n. variant, return a g. variant on the specified
+        transcript using the specified alignment method (default is
+        'splign' from NCBI).
+
+        :param hgvs.variant.SequenceVariant var_n: a variant object
+        :param str alt_ac: a reference sequence accession (e.g., NC_000001.11)
+        :param str alt_aln_method: the alignment method; valid values depend on data source
+        :returns: variant object (:class:`hgvs.variant.SequenceVariant`)
+        :raises hgvs.exceptions.HGVSInvalidVariantError: if var_n is not of type 'n'
+
+        """
+
+        if not (var_n.type == 'n'):
+            raise hgvs.exceptions.HGVSInvalidVariantError('Expected a n. variant; got ' + str(var_n))
+        tm = self._fetch_TranscriptMapper(tx_ac=var_n.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
+        pos_g = tm.n_to_g(var_n.posedit.pos)
+        edit_g = self._convert_edit_check_strand(tm.strand, var_n.posedit.edit)
+        var_g = hgvs.variant.SequenceVariant(ac=alt_ac,
+                                             type='g',
+                                             posedit=hgvs.posedit.PosEdit(pos_g, edit_g) )
+        return var_g
+
+
+    # ############################################################################
+    # g <-> c
     def g_to_c(self, var_g, tx_ac, alt_aln_method='splign'):
-        """Given a genomic (g.) parsed HGVS variant, return a transcript (c.) variant on the specified transcript using
-        the specified alignment method (default is 'splign' from NCBI).
+        """Given a parsed g. variant, return a c. variant on the specified
+        transcript using the specified alignment method (default is
+        'splign' from NCBI).
 
         :param hgvs.variant.SequenceVariant var_g: a variant object
         :param str tx_ac: a transcript accession (e.g., NM_012345.6 or ENST012345678)
@@ -40,11 +112,12 @@ class VariantMapper(object):
 
         """
 
+        
+
         if not (var_g.type == 'g'):
-            raise hgvs.exceptions.HGVSInvalidVariantError('Expected a genomic (g.) variant; got ' + str(var_g))
+            raise hgvs.exceptions.HGVSInvalidVariantError('Expected a g. variant; got ' + str(var_g))
 
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
-
         pos_c = tm.g_to_c(var_g.posedit.pos)
         edit_c = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
         var_c = hgvs.variant.SequenceVariant(ac=tx_ac,
@@ -52,62 +125,10 @@ class VariantMapper(object):
                                              posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
         return var_c
 
-
-    def g_to_r(self, var_g, tx_ac, alt_aln_method='splign'):
-        """Given a genomic (g.) parsed HGVS variant, return a transcript (r.) variant on the specified transcript using
-        the specified alignment method (default is 'splign' from NCBI).
-
-        :param hgvs.variant.SequenceVariant var_g: a variant object
-        :param str tx_ac: a transcript accession (e.g., NM_012345.6 or ENST012345678)
-        :param str alt_aln_method: the alignment method; valid values depend on data source
-        :returns: variant object (:class:`hgvs.variant.SequenceVariant`) using transcript (r.) coordinates
-        :raises hgvs.exceptions.HGVSInvalidVariantError: if var_g is not of type 'g'
-
-        """
-
-        if not (var_g.type == 'g'):
-            raise hgvs.exceptions.HGVSInvalidVariantError('Expected a genomic (g.); got ' + str(var_g))
-
-        tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
-
-        pos_r = tm.g_to_r(var_g.posedit.pos)
-        edit_r = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
-        edit_r = self._replace_T(type(edit_r)(edit=edit_r))
-        var_r = hgvs.variant.SequenceVariant(ac=tx_ac,
-                                             type='r',
-                                             posedit=hgvs.posedit.PosEdit(pos_r, edit_r))
-        return var_r
-
-
-    def r_to_g(self, var_r, alt_ac, alt_aln_method='splign'):
-        """Given an RNA (r.) parsed HGVS variant, return a genomic (g.) variant on the specified transcript using
-        the specified alignment method (default is 'splign' from NCBI).
-
-        :param hgvs.variant.SequenceVariant var_r: a variant object
-        :param str alt_ac: a reference sequence accession (e.g., NC_000001.11)
-        :param str alt_aln_method: the alignment method; valid values depend on data source
-        :returns: variant object (:class:`hgvs.variant.SequenceVariant`)
-        :raises hgvs.exceptions.HGVSInvalidVariantError: if var_r is not of type 'r'
-
-        """
-
-        if not (var_r.type == 'r'):
-            raise hgvs.exceptions.HGVSInvalidVariantError('Expected a RNA (r.); got ' + str(var_r))
-
-        tm = self._fetch_TranscriptMapper(tx_ac=var_r.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
-
-        pos_g = tm.r_to_g(var_r.posedit.pos)
-        edit_g = self._convert_edit_check_strand(tm.strand, var_r.posedit.edit)
-
-        var_g = hgvs.variant.SequenceVariant(ac=alt_ac,
-                                             type='g',
-                                             posedit=hgvs.posedit.PosEdit(pos_g, edit_g) )
-        return var_g
-
-    
     def c_to_g(self, var_c, alt_ac, alt_aln_method='splign'):
-        """Given a cDNA (c.) parsed HGVS variant, return a genomic (g.) variant on the specified transcript using
-        the specified alignment method (default is 'splign' from NCBI).
+        """Given a parsed c. variant, return a g. variant on the specified
+        transcript using the specified alignment method (default is
+        'splign' from NCBI).
 
         :param hgvs.variant.SequenceVariant var_c: a variant object
         :param str alt_ac: a reference sequence accession (e.g., NC_000001.11)
@@ -131,9 +152,13 @@ class VariantMapper(object):
         return var_g
 
 
-    def c_to_r(self, var_c):
-        """Given a cDNA (c.) parsed HGVS variant, return a RNA (r.) variant on the specified transcript using
-        the specified alignment method (default is 'transcript' indicating a self alignment).
+    # ############################################################################
+    # c <-> n
+    # TODO: Identify use case for this code
+    def c_to_n(self, var_c):
+        """Given a parsed c. variant, return a n. variant on the specified
+        transcript using the specified alignment method (default is
+        'transcript' indicating a self alignment).
 
         :param hgvs.variant.SequenceVariant var_c: a variant object
         :returns: variant object (:class:`hgvs.variant.SequenceVariant`)
@@ -145,51 +170,51 @@ class VariantMapper(object):
             raise hgvs.exceptions.HGVSInvalidVariantError('Expected a cDNA (c.); got ' + str(var_c))
 
         tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=var_c.ac, alt_aln_method='transcript')
-        pos_r = tm.c_to_r(var_c.posedit.pos)
+        pos_n = tm.c_to_n(var_c.posedit.pos)
 
         # not necessary to check strand
         if isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_c.posedit.edit, hgvs.edit.Dup):
             edit_type = type(var_c.posedit.edit)
-            edit_r = self._replace_T(edit_type(edit=var_c.posedit.edit))
-
+            edit_n = self._replace_T(edit_type(edit=var_c.posedit.edit))
         else:
             raise NotImplementedError('Only NARefAlt/Dup types are currently implemented')
 
-        var_r = hgvs.variant.SequenceVariant(ac=var_c.ac,
-                                             type='r',
-                                             posedit=hgvs.posedit.PosEdit(pos_r, edit_r))
-        return var_r
+        var_n = hgvs.variant.SequenceVariant(ac=var_c.ac,
+                                             type='n',
+                                             posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
+        return var_n
 
+    def n_to_c(self, var_n):
+        """Given a parsed n. variant, return a c. variant on the specified
+        transcript using the specified alignment method (default is
+        'transcript' indicating a self alignment).
 
-    def r_to_c(self, var_r):
-        """Given an RNA (r.) parsed HGVS variant, return a cDNA (c.) variant on the specified transcript using
-        the specified alignment method (default is 'transcript' indicating a self alignment).
-
-        :param hgvs.variant.SequenceVariant var_r: a variant object
+        :param hgvs.variant.SequenceVariant var_n: a variant object
         :returns: variant object (:class:`hgvs.variant.SequenceVariant`)
-        :raises hgvs.exceptions.HGVSInvalidVariantError: if var_r is not of type 'r'
+        :raises hgvs.exceptions.HGVSInvalidVariantError: if var_n is not of type 'n'
 
         """
 
-        if not (var_r.type == 'r'):
-            raise hgvs.exceptions.HGVSInvalidVariantError('Expected RNA (r.); got ' + str(var_r))
+        if not (var_n.type == 'n'):
+            raise hgvs.exceptions.HGVSInvalidVariantError('Expected n. variant; got ' + str(var_n))
 
-        tm = self._fetch_TranscriptMapper(tx_ac=var_r.ac, alt_ac=var_r.ac, alt_aln_method='transcript')
-        pos_c = tm.r_to_c(var_r.posedit.pos)
+        tm = self._fetch_TranscriptMapper(tx_ac=var_n.ac, alt_ac=var_n.ac, alt_aln_method='transcript')
+        pos_c = tm.n_to_c(var_n.posedit.pos)
 
         # not necessary to check strand
-        if isinstance(var_r.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_r.posedit.edit, hgvs.edit.Dup):
-            edit_type = type(var_r.posedit.edit)
-            edit_c = self._replace_U(edit_type(edit=var_r.posedit.edit))
+        if isinstance(var_n.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_n.posedit.edit, hgvs.edit.Dup):
+            edit_type = type(var_n.posedit.edit)
         else:
             raise NotImplementedError('Only NARefAlt types are currently implemented')
 
-        var_c = hgvs.variant.SequenceVariant(ac=var_r.ac,
+        var_c = hgvs.variant.SequenceVariant(ac=var_n.ac,
                                              type='c',
                                              posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
         return var_c
 
 
+    # ############################################################################
+    # c -> p
     # TODO: c_to_p needs refactoring
     def c_to_p(self, var_c, pro_ac=None):
         """
@@ -340,12 +365,12 @@ class EasyVariantMapper(VariantMapper):
     * The primary assembly and alignment method are used to
       automatically select an appropriate chromosomal reference
       sequence when mapping from a transcript to a genome (i.e.,
-      c_to_g(...) and r_to_g(...)).
+      c_to_g(...) and n_to_g(...)).
 
     * A new method, relevant_trancripts(g_variant), returns a list of
       transcript accessions available for the specified variant. These
       accessions are candidates mapping from genomic to trancript
-      coordinates (i.e., g_to_c(...) and g_to_r(...)).
+      coordinates (i.e., g_to_c(...) and g_to_n(...)).
 
     [tests occur in module doc (rather than in method doc) to use a
     single db connection]
@@ -365,22 +390,22 @@ class EasyVariantMapper(VariantMapper):
     def g_to_c(self, var_g, tx_ac): 
         return super(EasyVariantMapper, self).g_to_c(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
 
-    def g_to_r(self, var_g, tx_ac): 
-        return super(EasyVariantMapper, self).g_to_r(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
+    def g_to_n(self, var_g, tx_ac): 
+        return super(EasyVariantMapper, self).g_to_n(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
 
     def c_to_g(self, var_c): 
         alt_ac = self._alt_ac_for_tx_ac(var_c.ac)
         return super(EasyVariantMapper, self).c_to_g(var_c, alt_ac, alt_aln_method=self.alt_aln_method)
 
-    def r_to_g(self, var_r): 
-        alt_ac = self._alt_ac_for_tx_ac(var_r.ac)
-        return super(EasyVariantMapper, self).r_to_g(var_r, alt_ac, alt_aln_method=self.alt_aln_method)
+    def n_to_g(self, var_n): 
+        alt_ac = self._alt_ac_for_tx_ac(var_n.ac)
+        return super(EasyVariantMapper, self).n_to_g(var_n, alt_ac, alt_aln_method=self.alt_aln_method)
 
-    def c_to_r(self, var_c): 
-        return super(EasyVariantMapper, self).c_to_r(var_c)
+    def c_to_n(self, var_c): 
+        return super(EasyVariantMapper, self).c_to_n(var_c)
 
-    def r_to_c(self, var_r): 
-        return super(EasyVariantMapper, self).r_to_c(var_r)
+    def n_to_c(self, var_n): 
+        return super(EasyVariantMapper, self).n_to_c(var_n)
 
     def c_to_p(self, var_c): 
         return super(EasyVariantMapper, self).c_to_p(var_c)
