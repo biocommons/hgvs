@@ -21,7 +21,7 @@ try:
 except ImportError:
     from .utils.norm import normalize_alleles
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class Normalizer(object):
@@ -53,19 +53,19 @@ class Normalizer(object):
                 if self.cross:
                     return 0, float('inf')
                 else:
-                    #Get genomic sequence access number for this transcript
+                    # Get genomic sequence access number for this transcript
                     map_info = self.hdp.get_tx_mapping_options(var.ac)
                     if not map_info:
                         raise HGVSDataNotAvailableError("No mapping info available for {ac}".format(ac=var.ac))
                     map_info = [item for item in map_info if item['alt_aln_method'] == self.alt_aln_method]
                     alt_ac = map_info[0]['alt_ac']
 
-                    #Get tx info
+                    # Get tx info
                     tx_info = self.hdp.get_tx_info(var.ac, alt_ac, self.alt_aln_method)
                     cds_start = tx_info['cds_start_i']
                     cds_end = tx_info['cds_end_i']
 
-                    #Get exon info
+                    # Get exon info
                     exon_info = self.hdp.get_tx_exons(var.ac, alt_ac, self.alt_aln_method)
                     if not exon_info:
                         raise HGVSDataNotAvailableError("No exon structure available for {ac}".format(ac=var.ac))
@@ -74,7 +74,7 @@ class Normalizer(object):
                     exon_starts.sort()
                     exon_ends.sort()
 
-                    #Find the end pos of the exon where the var locates
+                    # Find the end pos of the exon where the var locates
                     left = 0
                     right = float('inf')
 
@@ -115,7 +115,7 @@ class Normalizer(object):
 
                     return left, right
             else:
-                #For variant type of g and m etc.
+                # For variant type of g and m etc.
                 return 0, float('inf')
 
         except TypeError:
@@ -138,29 +138,29 @@ class Normalizer(object):
         """Get reference allele and alternative allele of the variant
         """
 
-        #Get reference allele
+        # Get reference allele
         if var.posedit.edit.type == 'ins':
             ref = ''
         elif var.posedit.edit.type == 'dup':
-            if var.posedit.edit.seq:
+            if var.posedit.edit.ref:
                 ref = self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, boundary)
-                #validate whether the ref of the var is the same as the reference sequence
-                if var.posedit.edit.seq != ref:
+                # validate whether the ref of the var is the same as the reference sequence
+                if var.posedit.edit.ref != ref:
                     raise HGVSValidationError(str(var) + ': ' + hgvs.validator.SEQ_ERROR_MSG)
             ref = ''
         else:
             ref = self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, boundary)
-            #validate whether the ref of the var is the same as the reference sequence
+            # validate whether the ref of the var is the same as the reference sequence
             if var.posedit.edit.ref_s is not None and var.posedit.edit.ref != '' and var.posedit.edit.ref != ref:
                 raise HGVSValidationError(str(var) + ': ' + hgvs.validator.SEQ_ERROR_MSG)
 
-        #Get alternative allele
+        # Get alternative allele
         if var.posedit.edit.type == 'sub' or var.posedit.edit.type == 'delins' or var.posedit.edit.type == 'ins':
             alt = var.posedit.edit.alt
         elif var.posedit.edit.type == 'del':
             alt = ''
         elif var.posedit.edit.type == 'dup':
-            alt = var.posedit.edit.seq or self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1,
+            alt = var.posedit.edit.ref or self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1,
                                                                   var.posedit.pos.end.base, boundary)
         elif var.posedit.edit.type == 'inv':
             alt = ref[::-1]
@@ -200,7 +200,7 @@ class Normalizer(object):
                                                             len(ref_seq), win_size, False)
                 if stop < len(ref_seq) or start == orig_start:
                     break
-                #if stop at the end of the window, try to extend the shuffling to the right
+                # if stop at the end of the window, try to extend the shuffling to the right
                 base += start - orig_start
                 stop -= start - orig_start
                 start = orig_start
@@ -229,7 +229,7 @@ class Normalizer(object):
                                                             0, win_size, True)
                 if start > 0 or stop == orig_stop:
                     break
-                #if stop at the end of the window, try to extend the shuffling to the left
+                # if stop at the end of the window, try to extend the shuffling to the left
                 base -= orig_stop - stop
                 start += orig_stop - stop
                 stop = orig_stop
@@ -276,10 +276,10 @@ class Normalizer(object):
         if alt_len == ref_len:
             ref_start = start
             ref_end = end - 1
-            #substitution
+            # substitution
             if start == end - 1:
                 edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
-            #delins
+            # delins
             else:
                 if self.fill:
                     edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
@@ -288,46 +288,46 @@ class Normalizer(object):
         elif alt_len < ref_len:
             ref_start = start
             ref_end = end - 1
-            #del
+            # del
             if alt_len == 0:
                 if self.fill:
                     edit = hgvs.edit.NARefAlt(ref=ref, alt=None)
                 else:
                     edit = hgvs.edit.NARefAlt(ref='', alt=None)
-            #delins
+            # delins
             else:
                 if self.fill:
                     edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
                 else:
                     edit = hgvs.edit.NARefAlt(ref='', alt=alt)
         elif alt_len > ref_len:
-            #ins or dup
+            # ins or dup
             if ref_len == 0:
                 left_seq = self._fetch_bounded_seq(var, start - alt_len - 1, end - 1,
                                                    boundary) if self.direction == 3 else ''
                 right_seq = self._fetch_bounded_seq(var, start - 1, start + alt_len - 1,
                                                     boundary) if self.direction == 5 else ''
-                #dup
+                # dup
                 if alt == left_seq:
                     ref_start = start - alt_len
                     ref_end = end - 1
                     if self.fill:
-                        edit = hgvs.edit.Dup(seq=alt)
+                        edit = hgvs.edit.Dup(ref=alt)
                     else:
-                        edit = hgvs.edit.Dup(seq='')
+                        edit = hgvs.edit.Dup(ref='')
                 elif alt == right_seq:
                     ref_start = start
                     ref_end = start + alt_len - 1
                     if self.fill:
-                        edit = hgvs.edit.Dup(seq=alt)
+                        edit = hgvs.edit.Dup(ref=alt)
                     else:
-                        edit = hgvs.edit.Dup(seq='')
-                #ins
+                        edit = hgvs.edit.Dup(ref='')
+                # ins
                 else:
                     ref_start = start - 1
                     ref_end = end
                     edit = hgvs.edit.NARefAlt(ref=None, alt=alt)
-            #delins
+            # delins
             else:
                 ref_start = start
                 ref_end = end - 1
@@ -354,6 +354,7 @@ if __name__ == '__main__':
     norm = Normalizer(hdp, direction=5, cross=False)
     res = norm.normalize(var)
     print(str(var) + '    =>    ' + str(res))
+
 
 ## <LICENSE>
 ## Copyright 2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

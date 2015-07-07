@@ -5,12 +5,16 @@ This file is intended for ideas that need fleshing out.
 
 * before release
 ** release notes w/deprecations
-** yapf
 ** sq-dq
 ** evm normalize=True
 ** drop c_to_n, n_to_c?
 ** normalize: separate fill, rewrite, and shuffle
 ** tests: expected value first
+** validate with fetch_seq
+** trial load GRCh38
+** dup seq -> ref?
+** standardize var_x over x_var
+
 
 ** 0.4.0 deprecations / 0.5.0 obsolescence
 - primary_assembly -> assembly
@@ -20,18 +24,45 @@ This file is intended for ideas that need fleshing out.
 * 0.5.0 aspirations
 ** complex variants (compound, phased, mosaic, chimeric)
 
-
-* Transcript Mapper simplification
-** Intervals should probably be of one of two types: simple and complex.
+** Transcript Mapper simplification
+*** Intervals should probably be of one of two types: simple and complex.
 All mapping functions should accept and return one of those types.
 
-** Eliminate duplicate code.
+*** Eliminate duplicate code.
 
-* Variant mapper simplification
-** to_g() method for n,c,r variants?
+** Merge VariantMapper and EasyVariantMapper
 
-* Separate code that fetches data from code that uses it.
+** Dup.seq -> Dup.ref
+
+** SeqDB
+
+** Use sequence assertions exclusively internally
+i.e., seq, start, end, alt
+from which derive human HGVS expressions
+
+
+
+* Ideas
+
+** snake diagram
+
+** shared biocommons exceptions
+
+** Separate code that fetches data from code that uses it.
 E.g., TranscriptMapper fetches data and performs the mappings.
 Consider initializing with fetch *results* instead.
 
-* Merge VariantMapper and EasyVariantMapper
+** Make AA positions more like NA
+
+** VariantTool(hdp, assy, aln_method)
+validate
+var_x_to_y (x_to_y)
+var_to_y (to_y)
+replace_reference
+normalize -> shuffle, rewrite, replace ref
+lift_to
+pos_x_to_y
+describe_region(cvar) -> e.g., {'start': 'exon 5', 'end': "3' UTR", 'span': 'exon 5..3' UTR'}
+extractor(ac, interval, alt) -> var
+as_vcf_ref_alt(var) -> ac, start, end, ref, alt
+variant_equality
