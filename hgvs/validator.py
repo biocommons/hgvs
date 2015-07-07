@@ -96,7 +96,7 @@ class ExtrinsicValidator():
         var_ref_seq = None
         if var.posedit.edit.type == 'dup':
             # Handle Dup and NADupN objects.
-            var_ref_seq = getattr(var.posedit.edit, 'seq', None)
+            var_ref_seq = getattr(var.posedit.edit, 'ref', None)
         else:
             # use reference sequence of original variant, even if later converted (eg c_to_n)
             if var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0:
