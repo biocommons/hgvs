@@ -2,6 +2,8 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 """
 hgvs.normalizer
+
+# TODO: Remove validation
 """
 
 import copy
@@ -16,15 +18,21 @@ import hgvs.variantmapper
 
 from .exceptions import HGVSDataNotAvailableError, HGVSValidationError, HGVSUnsupportedOperationError
 
-try:
-    from vgraph.norm import normalize_alleles
-except ImportError:
-    from .utils.norm import normalize_alleles
-
 _logger = logging.getLogger(__name__)
 
-# TODO: pull ascii stuff in to wrapper
-# TODO: Remove validation
+try:
+    from vgraph.norm import normalize_alleles as _normalize_alleles_vgraph
+    def normalize_alleles(ref, start, stop, alleles, bound, ref_step, left, shuffle=True):
+        """wraps vgraph.norm.normalize_alleles to pass ascii-encoded strings"""
+        return _normalize_alleles_vgraph(ref.encode('ascii'),
+                                         start, stop,
+                                         [a.encode('ascii') for a in alleles],
+                                         bound, ref_step, left, shuffle)
+    _logger.debug("Using normalize_alleles from vgraph (https://github.com/bioinformed/vgraph)")
+except ImportError:
+    from .utils.norm import normalize_alleles
+    _logger.debug("Using built-in normalize_alleles")
+
 
 class Normalizer(object):
     """Perform variant normalization
@@ -278,8 +286,7 @@ class Normalizer(object):
                 if ref_seq == '':
                     break
                 orig_start, orig_stop = start, stop
-                start, stop, (ref, alt) = normalize_alleles(ref_seq.encode('ascii'), start, stop, (ref.encode('ascii'),
-                                                                                                   alt.encode('ascii')),
+                start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt),
                                                             len(ref_seq), win_size, False)
                 if stop < len(ref_seq) or start == orig_start:
                     break
@@ -307,8 +314,7 @@ class Normalizer(object):
                 if ref_seq == '':
                     break
                 orig_start, orig_stop = start, stop
-                start, stop, (ref, alt) = normalize_alleles(ref_seq.encode('ascii'), start, stop, (ref.encode('ascii'),
-                                                                                                   alt.encode('ascii')),
+                start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt),
                                                             0, win_size, True)
                 if start > 0 or stop == orig_stop:
                     break
