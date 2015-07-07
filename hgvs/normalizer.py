@@ -14,7 +14,7 @@ import hgvs.posedit
 import hgvs.validator
 import hgvs.variantmapper
 
-from .exceptions import HGVSDataNotAvailableError, HGVSValidationError, HGVSUnspportedOperationError
+from .exceptions import HGVSDataNotAvailableError, HGVSValidationError, HGVSUnsupportedOperationError
 
 try:
     from vgraph.norm import normalize_alleles
@@ -23,6 +23,8 @@ except ImportError:
 
 _logger = logging.getLogger(__name__)
 
+# TODO: Fill should be elsewhere (e.g., formatter option)
+# TODO: Remove validation
 
 class Normalizer(object):
     """Perform variant normalization
@@ -44,6 +46,118 @@ class Normalizer(object):
         self.fill = fill
         self.alt_aln_method = alt_aln_method
         self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
+
+
+    def normalize(self, var):
+        """Perform variants normalization
+        """
+        assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
+
+        if var.posedit.uncertain:
+            return var
+
+        type = var.type
+
+        if type == 'p':
+            raise HGVSUnsupportedOperationError("Unsupported normalization of protein level variants")
+
+        # For c. variants normalization, first convert to n. variant
+        # and perform normalization at the n. level, then convert the
+        # normalized n. variant back to c. variant.
+        if type == 'c':
+            var = self.hm.c_to_n(var)
+
+        if var.type in 'nr':
+            if var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0:
+                raise HGVSUnsupportedOperationError(
+                    "Normalization of intronic variants is not supported")
+
+        # g, m, n, r sequences all use sequence start as the datum
+        # That's an essential assumption herein
+        # (this is why we may have converted from c to n above)
+        assert var.type in 'gmnr', "Internal Error: variant must be of type g, m, n, r"
+
+        bound_s, bound_e = self._get_boundary(var)
+        boundary = (bound_s, bound_e)
+        start, end, (ref, alt) = self._normalize_alleles(var, boundary)
+
+        ref_len = len(ref)
+        alt_len = len(alt)
+
+        # Generate normalized variant
+        if alt_len == ref_len:
+            ref_start = start
+            ref_end = end - 1
+            # substitution
+            if start == end - 1:
+                edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
+            # delins
+            else:
+                if self.fill:
+                    edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
+                else:
+                    edit = hgvs.edit.NARefAlt(ref='', alt=alt)
+        elif alt_len < ref_len:
+            ref_start = start
+            ref_end = end - 1
+            # del
+            if alt_len == 0:
+                if self.fill:
+                    edit = hgvs.edit.NARefAlt(ref=ref, alt=None)
+                else:
+                    edit = hgvs.edit.NARefAlt(ref='', alt=None)
+            # delins
+            else:
+                if self.fill:
+                    edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
+                else:
+                    edit = hgvs.edit.NARefAlt(ref='', alt=alt)
+        elif alt_len > ref_len:
+            # ins or dup
+            if ref_len == 0:
+                left_seq = self._fetch_bounded_seq(var, start - alt_len - 1, end - 1,
+                                                   boundary) if self.direction == 3 else ''
+                right_seq = self._fetch_bounded_seq(var, start - 1, start + alt_len - 1,
+                                                    boundary) if self.direction == 5 else ''
+                # dup
+                if alt == left_seq:
+                    ref_start = start - alt_len
+                    ref_end = end - 1
+                    if self.fill:
+                        edit = hgvs.edit.Dup(ref=alt)
+                    else:
+                        edit = hgvs.edit.Dup(ref='')
+                elif alt == right_seq:
+                    ref_start = start
+                    ref_end = start + alt_len - 1
+                    if self.fill:
+                        edit = hgvs.edit.Dup(ref=alt)
+                    else:
+                        edit = hgvs.edit.Dup(ref='')
+                # ins
+                else:
+                    ref_start = start - 1
+                    ref_end = end
+                    edit = hgvs.edit.NARefAlt(ref=None, alt=alt)
+            # delins
+            else:
+                ref_start = start
+                ref_end = end - 1
+                if self.fill:
+                    edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
+                else:
+                    edit = hgvs.edit.NARefAlt(ref='', alt=alt)
+
+        var_norm = copy.deepcopy(var)
+        var_norm.posedit.edit = edit
+        var_norm.posedit.pos.start.base = ref_start
+        var_norm.posedit.pos.end.base = ref_end
+
+        if type == 'c':
+            var_norm = self.hm.n_to_c(var_norm)
+
+        return var_norm
+
 
     def _get_boundary(self, var):
         """Get the position of exon-intron boundary for current variant
@@ -91,8 +205,8 @@ class Normalizer(object):
                             break
 
                     if i != j:
-                        raise HGVSUnspportedOperationError(
-                            "Unsupported normalization of variants spanning the exon-intron boundary")
+                        raise HGVSUnsupportedOperationError(
+                            "Unsupported normalization of variants spanning the exon-intron boundary ({var})".format(var=var))
 
                     left = exon_starts[i]
                     right = exon_ends[i]
@@ -102,16 +216,16 @@ class Normalizer(object):
                     elif var.posedit.pos.start.base - 1 >= cds_start:
                         left = max(left, cds_start)
                     else:
-                        raise HGVSUnspportedOperationError(
-                            "Unsupported normalization of variants spanning the UTR-exon boundary")
+                        raise HGVSUnsupportedOperationError(
+                            "Unsupported normalization of variants spanning the UTR-exon boundary ({var})".format(var=var))
 
                     if var.posedit.pos.start.base - 1 >= cds_end:
                         left = max(left, cds_end)
                     elif var.posedit.pos.end.base - 1 < cds_end:
                         right = min(right, cds_end)
                     else:
-                        raise HGVSUnspportedOperationError(
-                            "Unsupported normalization of variants spanning the exon-UTR boundary")
+                        raise HGVSUnsupportedOperationError(
+                            "Unsupported normalization of variants spanning the exon-UTR boundary ({var})".format(var=var))
 
                     return left, right
             else:
