@@ -91,21 +91,17 @@ class Normalizer(object):
         alt_len = len(alt)
 
         # Generate normalized variant
-        if alt_len == ref_len:
+        if alt_len <= ref_len:
             ref_start = start
             ref_end = end - 1
-            edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
-        elif alt_len < ref_len:
-            ref_start = start
-            ref_end = end - 1
-            # TODO: collapse these cases
-            if alt_len == 0:
-                edit = hgvs.edit.NARefAlt(ref=ref, alt=None)
-            else:
-                edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
+            edit = hgvs.edit.NARefAlt(ref=ref,
+                                      alt=None if alt_len == 0 else alt)
         elif alt_len > ref_len:
             # ins or dup
             if ref_len == 0:
+                # TODO: investigate whether left and right dup cases are really used.
+                # I suspect that n_a has already shuffled in specified direction
+                # and that there's only one case.
                 left_seq = self._fetch_bounded_seq(var, start - alt_len - 1, end - 1,
                                                    boundary) if self.direction == 3 else ''
                 right_seq = self._fetch_bounded_seq(var, start - 1, start + alt_len - 1,
@@ -325,87 +321,6 @@ class Normalizer(object):
 
         return base + start, base + stop, (ref, alt)
 
-    def normalize(self, var):
-        """Perform variants normalization
-        """
-        assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
-
-        if var.posedit.uncertain:
-            return var
-
-        type = var.type
-
-        if type == 'p':
-            raise HGVSUnspportedOperationError("Unsupported normalization of protein level variants")
-        if isinstance(
-            var.posedit.pos.start,
-            hgvs.location.BaseOffsetPosition) and var.posedit.pos.start.base != 0 and var.posedit.pos.start.offset != 0:
-            raise HGVSUnspportedOperationError(
-                "Unsupported normalization of intron variants at CDS and transcript level")
-        if isinstance(
-            var.posedit.pos.end,
-            hgvs.location.BaseOffsetPosition) and var.posedit.pos.end.base != 0 and var.posedit.pos.end.offset != 0:
-            raise HGVSUnspportedOperationError(
-                "Unsupported normalization of intron variants at CDS and transcript level")
-
-        # For c. variants normalization, first convert to r. variants
-        # and perform normalization at the r. level then convert the
-        # normalized r. variant back to c. variant at the end.
-        if type == 'c':
-            var = self.hm.c_to_n(var)
-
-        bound_s, bound_e = self._get_boundary(var)
-        boundary = (bound_s, bound_e)
-        start, end, (ref, alt) = self._normalize_alleles(var, boundary)
-
-        ref_len = len(ref)
-        alt_len = len(alt)
-
-        # Generate normalized variant
-        if alt_len <= ref_len:
-            ref_start = start
-            ref_end = end - 1
-            edit = hgvs.edit.NARefAlt(ref=ref,
-                                      alt=None if alt_len == 0 else alt)
-        elif alt_len > ref_len:
-            # ins or dup
-            if ref_len == 0:
-                # TODO: investigate whether left and right dup cases are really used.
-                # I suspect that n_a has already shuffled in specified direction
-                # and that there's only one case.
-                left_seq = self._fetch_bounded_seq(var, start - alt_len - 1, end - 1,
-                                                   boundary) if self.direction == 3 else ''
-                right_seq = self._fetch_bounded_seq(var, start - 1, start + alt_len - 1,
-                                                    boundary) if self.direction == 5 else ''
-                # dup
-                if alt == left_seq:
-                    ref_start = start - alt_len
-                    ref_end = end - 1
-                    edit = hgvs.edit.Dup(ref=alt)
-                elif alt == right_seq:
-                    ref_start = start
-                    ref_end = start + alt_len - 1
-                    edit = hgvs.edit.Dup(ref=alt)
-                # ins
-                else:
-                    ref_start = start - 1
-                    ref_end = end
-                    edit = hgvs.edit.NARefAlt(ref=None, alt=alt)
-            # delins
-            else:
-                ref_start = start
-                ref_end = end - 1
-                edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
-
-        var_norm = copy.deepcopy(var)
-        var_norm.posedit.edit = edit
-        var_norm.posedit.pos.start.base = ref_start
-        var_norm.posedit.pos.end.base = ref_end
-
-        if type == 'c':
-            var_norm = self.hm.n_to_c(var_norm)
-
-        return var_norm
 
 
 if __name__ == '__main__':
