@@ -162,78 +162,74 @@ class Normalizer(object):
     def _get_boundary(self, var):
         """Get the position of exon-intron boundary for current variant
         """
-        try:
-            if var.type == 'r' or var.type == 'n':
-                if self.cross:
-                    return 0, float('inf')
-                else:
-                    # Get genomic sequence access number for this transcript
-                    map_info = self.hdp.get_tx_mapping_options(var.ac)
-                    if not map_info:
-                        raise HGVSDataNotAvailableError("No mapping info available for {ac}".format(ac=var.ac))
-                    map_info = [item for item in map_info if item['alt_aln_method'] == self.alt_aln_method]
-                    alt_ac = map_info[0]['alt_ac']
-
-                    # Get tx info
-                    tx_info = self.hdp.get_tx_info(var.ac, alt_ac, self.alt_aln_method)
-                    cds_start = tx_info['cds_start_i']
-                    cds_end = tx_info['cds_end_i']
-
-                    # Get exon info
-                    exon_info = self.hdp.get_tx_exons(var.ac, alt_ac, self.alt_aln_method)
-                    if not exon_info:
-                        raise HGVSDataNotAvailableError("No exon structure available for {ac}".format(ac=var.ac))
-                    exon_starts = [exon['tx_start_i'] for exon in exon_info]
-                    exon_ends = [exon['tx_end_i'] for exon in exon_info]
-                    exon_starts.sort()
-                    exon_ends.sort()
-
-                    # Find the end pos of the exon where the var locates
-                    left = 0
-                    right = float('inf')
-
-                    for i in range(0, len(exon_starts)):
-                        if var.posedit.pos.start.base - 1 >= exon_starts[
-                            i
-                        ] and var.posedit.pos.start.base - 1 < exon_ends[i]:
-                            break
-
-                    for j in range(0, len(exon_starts)):
-                        if var.posedit.pos.end.base - 1 >= exon_starts[j] and var.posedit.pos.end.base - 1 < exon_ends[
-                            j
-                        ]:
-                            break
-
-                    if i != j:
-                        raise HGVSUnsupportedOperationError(
-                            "Unsupported normalization of variants spanning the exon-intron boundary ({var})".format(var=var))
-
-                    left = exon_starts[i]
-                    right = exon_ends[i]
-
-                    if var.posedit.pos.end.base - 1 < cds_start:
-                        right = min(right, cds_start)
-                    elif var.posedit.pos.start.base - 1 >= cds_start:
-                        left = max(left, cds_start)
-                    else:
-                        raise HGVSUnsupportedOperationError(
-                            "Unsupported normalization of variants spanning the UTR-exon boundary ({var})".format(var=var))
-
-                    if var.posedit.pos.start.base - 1 >= cds_end:
-                        left = max(left, cds_end)
-                    elif var.posedit.pos.end.base - 1 < cds_end:
-                        right = min(right, cds_end)
-                    else:
-                        raise HGVSUnsupportedOperationError(
-                            "Unsupported normalization of variants spanning the exon-UTR boundary ({var})".format(var=var))
-
-                    return left, right
-            else:
-                # For variant type of g and m etc.
+        if var.type == 'r' or var.type == 'n':
+            if self.cross:
                 return 0, float('inf')
+            else:
+                # Get genomic sequence access number for this transcript
+                # TODO: #239: add filter options to get_tx_mapping_options
+                map_info = self.hdp.get_tx_mapping_options(var.ac)
+                if not map_info:
+                    raise HGVSDataNotAvailableError("No mapping info available for {ac}".format(ac=var.ac))
+                map_info = [item for item in map_info if item['alt_aln_method'] == self.alt_aln_method]
+                alt_ac = map_info[0]['alt_ac']
 
-        except TypeError:
-            raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=var.ac))
+                # Get tx info
+                tx_info = self.hdp.get_tx_info(var.ac, alt_ac, self.alt_aln_method)
+                cds_start = tx_info['cds_start_i']
+                cds_end = tx_info['cds_end_i']
+
+                # Get exon info
+                exon_info = self.hdp.get_tx_exons(var.ac, alt_ac, self.alt_aln_method)
+                exon_starts = [exon['tx_start_i'] for exon in exon_info]
+                exon_ends = [exon['tx_end_i'] for exon in exon_info]
+                exon_starts.sort()
+                exon_ends.sort()
+
+                # Find the end pos of the exon where the var locates
+                left = 0
+                right = float('inf')
+
+                for i in range(0, len(exon_starts)):
+                    if var.posedit.pos.start.base - 1 >= exon_starts[
+                        i
+                    ] and var.posedit.pos.start.base - 1 < exon_ends[i]:
+                        break
+
+                for j in range(0, len(exon_starts)):
+                    if var.posedit.pos.end.base - 1 >= exon_starts[j] and var.posedit.pos.end.base - 1 < exon_ends[
+                        j
+                    ]:
+                        break
+
+                if i != j:
+                    raise HGVSUnsupportedOperationError(
+                        "Unsupported normalization of variants spanning the exon-intron boundary ({var})".format(var=var))
+
+                left = exon_starts[i]
+                right = exon_ends[i]
+
+                if var.posedit.pos.end.base - 1 < cds_start:
+                    right = min(right, cds_start)
+                elif var.posedit.pos.start.base - 1 >= cds_start:
+                    left = max(left, cds_start)
+                else:
+                    raise HGVSUnsupportedOperationError(
+                        "Unsupported normalization of variants spanning the UTR-exon boundary ({var})".format(var=var))
+
+                if var.posedit.pos.start.base - 1 >= cds_end:
+                    left = max(left, cds_end)
+                elif var.posedit.pos.end.base - 1 < cds_end:
+                    right = min(right, cds_end)
+                else:
+                    raise HGVSUnsupportedOperationError(
+                        "Unsupported normalization of variants spanning the exon-UTR boundary ({var})".format(var=var))
+
+                return left, right
+        else:
+            # For variant type of g and m etc.
+            return 0, float('inf')
+
 
     def _fetch_bounded_seq(self, var, start, end, boundary):
         """Fetch reference sequence from hgvs data provider.
