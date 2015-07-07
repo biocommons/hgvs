@@ -23,7 +23,7 @@ except ImportError:
 
 _logger = logging.getLogger(__name__)
 
-# TODO: Fill should be elsewhere (e.g., formatter option)
+# TODO: pull ascii stuff in to wrapper
 # TODO: Remove validation
 
 class Normalizer(object):
@@ -356,27 +356,17 @@ class Normalizer(object):
         alt_len = len(alt)
 
         # Generate normalized variant
-        if alt_len == ref_len:
+        if alt_len <= ref_len:
             ref_start = start
             ref_end = end - 1
-            # substitution
-            if start == end - 1:
-                edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
-            # delins
-            else:
-                edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
-        elif alt_len < ref_len:
-            ref_start = start
-            ref_end = end - 1
-            # del
-            if alt_len == 0:
-                edit = hgvs.edit.NARefAlt(ref=ref, alt=None)
-            # delins
-            else:
-                edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
+            edit = hgvs.edit.NARefAlt(ref=ref,
+                                      alt=None if alt_len == 0 else alt)
         elif alt_len > ref_len:
             # ins or dup
             if ref_len == 0:
+                # TODO: investigate whether left and right dup cases are really used.
+                # I suspect that n_a has already shuffled in specified direction
+                # and that there's only one case.
                 left_seq = self._fetch_bounded_seq(var, start - alt_len - 1, end - 1,
                                                    boundary) if self.direction == 3 else ''
                 right_seq = self._fetch_bounded_seq(var, start - 1, start + alt_len - 1,
