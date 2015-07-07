@@ -30,20 +30,18 @@ class Normalizer(object):
     """Perform variant normalization
     """
 
-    def __init__(self, hdp=None, direction=3, cross=False, fill=True, alt_aln_method='splign'):
+    def __init__(self, hdp=None, direction=3, cross=False, alt_aln_method='splign'):
         """Initialize and configure the normalizer
 
         :param hdp: HGVS Data Provider Interface-compliant instance (see :class:`hgvs.dataproviders.interface.Interface`)
         :param direction: shuffling direction
         :param cross: whether allow the shuffling to cross the exon-intron boundary
-        :param fill: fill in nucleotides or strip nucleotides for delins and dup
         :param alt_aln_method: sequence alignment method (e.g., splign, blat)
         """
         assert direction == 3 or direction == 5, "The shuffling direction should be 3 (3' most) or 5 (5' most)."
         self.hdp = hdp
         self.direction = direction
         self.cross = cross
-        self.fill = fill
         self.alt_aln_method = alt_aln_method
         self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
 
@@ -88,30 +86,15 @@ class Normalizer(object):
         if alt_len == ref_len:
             ref_start = start
             ref_end = end - 1
-            # substitution
-            if start == end - 1:
-                edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
-            # delins
-            else:
-                if self.fill:
-                    edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
-                else:
-                    edit = hgvs.edit.NARefAlt(ref='', alt=alt)
+            edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
         elif alt_len < ref_len:
             ref_start = start
             ref_end = end - 1
-            # del
+            # TODO: collapse these cases
             if alt_len == 0:
-                if self.fill:
-                    edit = hgvs.edit.NARefAlt(ref=ref, alt=None)
-                else:
-                    edit = hgvs.edit.NARefAlt(ref='', alt=None)
-            # delins
+                edit = hgvs.edit.NARefAlt(ref=ref, alt=None)
             else:
-                if self.fill:
-                    edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
-                else:
-                    edit = hgvs.edit.NARefAlt(ref='', alt=alt)
+                edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
         elif alt_len > ref_len:
             # ins or dup
             if ref_len == 0:
@@ -123,17 +106,11 @@ class Normalizer(object):
                 if alt == left_seq:
                     ref_start = start - alt_len
                     ref_end = end - 1
-                    if self.fill:
-                        edit = hgvs.edit.Dup(ref=alt)
-                    else:
-                        edit = hgvs.edit.Dup(ref='')
+                    edit = hgvs.edit.Dup(ref=alt)
                 elif alt == right_seq:
                     ref_start = start
                     ref_end = start + alt_len - 1
-                    if self.fill:
-                        edit = hgvs.edit.Dup(ref=alt)
-                    else:
-                        edit = hgvs.edit.Dup(ref='')
+                    edit = hgvs.edit.Dup(ref=alt)
                 # ins
                 else:
                     ref_start = start - 1
@@ -143,10 +120,7 @@ class Normalizer(object):
             else:
                 ref_start = start
                 ref_end = end - 1
-                if self.fill:
-                    edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
-                else:
-                    edit = hgvs.edit.NARefAlt(ref='', alt=alt)
+                edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
 
         var_norm = copy.deepcopy(var)
         var_norm.posedit.edit = edit
@@ -190,16 +164,15 @@ class Normalizer(object):
                 left = 0
                 right = float('inf')
 
+                # TODO: #239: implement methods to find tx regions
                 for i in range(0, len(exon_starts)):
-                    if var.posedit.pos.start.base - 1 >= exon_starts[
-                        i
-                    ] and var.posedit.pos.start.base - 1 < exon_ends[i]:
+                    if (var.posedit.pos.start.base - 1 >= exon_starts[i]
+                        and var.posedit.pos.start.base - 1 < exon_ends[i]):
                         break
 
                 for j in range(0, len(exon_starts)):
-                    if var.posedit.pos.end.base - 1 >= exon_starts[j] and var.posedit.pos.end.base - 1 < exon_ends[
-                        j
-                    ]:
+                    if (var.posedit.pos.end.base - 1 >= exon_starts[j]
+                        and var.posedit.pos.end.base - 1 < exon_ends[j]):
                         break
 
                 if i != j:
@@ -391,25 +364,16 @@ class Normalizer(object):
                 edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
             # delins
             else:
-                if self.fill:
-                    edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
-                else:
-                    edit = hgvs.edit.NARefAlt(ref='', alt=alt)
+                edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
         elif alt_len < ref_len:
             ref_start = start
             ref_end = end - 1
             # del
             if alt_len == 0:
-                if self.fill:
-                    edit = hgvs.edit.NARefAlt(ref=ref, alt=None)
-                else:
-                    edit = hgvs.edit.NARefAlt(ref='', alt=None)
+                edit = hgvs.edit.NARefAlt(ref=ref, alt=None)
             # delins
             else:
-                if self.fill:
-                    edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
-                else:
-                    edit = hgvs.edit.NARefAlt(ref='', alt=alt)
+                edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
         elif alt_len > ref_len:
             # ins or dup
             if ref_len == 0:
@@ -421,17 +385,11 @@ class Normalizer(object):
                 if alt == left_seq:
                     ref_start = start - alt_len
                     ref_end = end - 1
-                    if self.fill:
-                        edit = hgvs.edit.Dup(ref=alt)
-                    else:
-                        edit = hgvs.edit.Dup(ref='')
+                    edit = hgvs.edit.Dup(ref=alt)
                 elif alt == right_seq:
                     ref_start = start
                     ref_end = start + alt_len - 1
-                    if self.fill:
-                        edit = hgvs.edit.Dup(ref=alt)
-                    else:
-                        edit = hgvs.edit.Dup(ref='')
+                    edit = hgvs.edit.Dup(ref=alt)
                 # ins
                 else:
                     ref_start = start - 1
@@ -441,10 +399,7 @@ class Normalizer(object):
             else:
                 ref_start = start
                 ref_end = end - 1
-                if self.fill:
-                    edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
-                else:
-                    edit = hgvs.edit.NARefAlt(ref='', alt=alt)
+                edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
 
         var_norm = copy.deepcopy(var)
         var_norm.posedit.edit = edit

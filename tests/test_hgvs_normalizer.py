@@ -22,7 +22,6 @@ class Test_HGVSNormalizer(unittest.TestCase):
         self.hp = hgvs.parser.Parser()
         self.norm = hgvs.normalizer.Normalizer(hdp, direction=3, cross=True)
         self.norm5 = hgvs.normalizer.Normalizer(hdp, direction=5, cross=True)
-        self.normf = hgvs.normalizer.Normalizer(hdp, direction=3, cross=True, fill=False)
         self.normc = hgvs.normalizer.Normalizer(hdp, direction=3, cross=False)
         self.norm5c = hgvs.normalizer.Normalizer(hdp, direction=5, cross=False)
 
@@ -63,20 +62,6 @@ class Test_HGVSNormalizer(unittest.TestCase):
                          'NM_001166478.1:c.59delG')
         self.assertEqual(str(self.norm5.normalize(self.hp.parse_hgvs_variant('NM_000051.3:c.14_15insT'))),
                          'NM_000051.3:c.14dupT')
-
-        #No fill
-        self.assertEqual(str(self.normf.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.31del'))),
-                         'NM_001166478.1:c.35del')
-        self.assertEqual(str(self.normf.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.35_36insT'))),
-                         'NM_001166478.1:c.35dup')
-        self.assertEqual(str(self.normf.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.36_37insTC'))),
-                         'NM_001166478.1:c.36_37dup')
-        self.assertEqual(str(self.normf.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.35_36dup'))),
-                         'NM_001166478.1:c.36_37dup')
-        self.assertEqual(str(self.normf.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.2_7delinsTTTAGA'))),
-                         'NM_001166478.1:c.3_4delinsTT')
-        self.assertEqual(str(self.normf.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.30_31insT'))),
-                         'NM_001166478.1:c.35dup')
 
         #Around exon-intron boundary
         self.assertEqual(str(self.normc.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.59delG'))),
@@ -141,20 +126,6 @@ class Test_HGVSNormalizer(unittest.TestCase):
                          'NC_000006.11:g.49917098delC')
         self.assertEqual(str(self.norm5.normalize(self.hp.parse_hgvs_variant(
             'NC_000006.11:g.49917151_49917156delinsTCTAAA'))), 'NC_000006.11:g.49917154_49917155delTCinsAA')
-
-        #No fill
-        self.assertEqual(str(self.normf.normalize(self.hp.parse_hgvs_variant('NC_000006.11:g.49917122_49917123insA'))),
-                         'NC_000006.11:g.49917127dup')
-        self.assertEqual(str(self.normf.normalize(self.hp.parse_hgvs_variant('NC_000006.11:g.49917121_49917122insGA'))),
-                         'NC_000006.11:g.49917122_49917123dup')
-        self.assertEqual(str(self.normf.normalize(self.hp.parse_hgvs_variant('NC_000006.11:g.49917122_49917123dup'))),
-                         'NC_000006.11:g.49917122_49917123dup')
-        self.assertEqual(str(self.normf.normalize(self.hp.parse_hgvs_variant('NC_000006.11:g.49917122_49917123dupGA'))),
-                         'NC_000006.11:g.49917122_49917123dup')
-        self.assertEqual(str(self.normf.normalize(self.hp.parse_hgvs_variant('NC_000006.11:g.49917098delC'))),
-                         'NC_000006.11:g.49917099del')
-        self.assertEqual(str(self.normf.normalize(self.hp.parse_hgvs_variant(
-            'NC_000006.11:g.49917151_49917156delinsTCTAAA'))), 'NC_000006.11:g.49917154_49917155delinsAA')
 
 
 if __name__ == '__main__':
