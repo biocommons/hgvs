@@ -55,7 +55,7 @@ upload_all: upload_pypi upload_docs;
 
 #=> upload_*: upload to named pypi service (requires config in ~/.pypirc)
 upload_%:
-	python setup.py bdist_egg sdist upload -r $*
+	python setup.py bdist_egg bdist_wheel sdist upload -r $*
 
 #=> upload_docs: upload documentation to pythonhosted
 upload_docs: %:
