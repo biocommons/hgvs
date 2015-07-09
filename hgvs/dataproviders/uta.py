@@ -303,8 +303,13 @@ class UTABase(Interface, SeqFetcher):
 
         """
         cur = self._execute(self.sql['tx_identity_info'], [tx_ac])
-        # TODO: Should this raise HGVSDataNotAvailableError?
-        return cur.fetchone()
+        rows = cur.fetchall()
+        if len(rows) == 0:
+            raise HGVSDataNotAvailableError(
+                "No transcript definition for (tx_ac={tx_ac})".format(
+                    tx_ac=tx_ac))
+        return rows[0]
+
 
     @lru_cache(maxsize=128)
     def get_tx_info(self, tx_ac, alt_ac, alt_aln_method):
