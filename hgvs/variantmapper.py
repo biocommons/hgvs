@@ -260,17 +260,17 @@ class VariantMapper(object):
 
     ############################################################################
     ## Internal methods
-    
+
     def _replace_reference(self, var):
         """fetch reference sequence for variant and update (in-place) if necessary"""
-    
+
         if var.type not in 'cgmnr':
             raise HGVSUnsupportedOperationError("Can only update references for type c, g, m, n, r")
 
         if var.posedit.edit.type == 'ins':
             # insertions have no reference sequence (zero-width), so return as-is
             return var
-        
+
         if ((isinstance(var.posedit.pos.start, hgvs.location.BaseOffsetPosition) and var.posedit.pos.start.offset != 0) or
             (isinstance(var.posedit.pos.end, hgvs.location.BaseOffsetPosition) and var.posedit.pos.end.offset != 0)):
             _logger.info("Can't update reference sequence for intronic variant {}".format(var))
@@ -446,6 +446,7 @@ class EasyVariantMapper(VariantMapper):
                 pa=self.primary_assembly,
                 am=self.alt_aln_method))
         return alt_acs[0]    # exactly one remains
+
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
