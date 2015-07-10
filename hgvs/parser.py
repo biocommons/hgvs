@@ -7,6 +7,7 @@ import bioutils.sequences
 import ometa.runtime
 import parsley
 
+from .exceptions import HGVSParseError
 import hgvs.edit
 import hgvs.hgvsposition
 import hgvs.location
@@ -94,7 +95,7 @@ class Parser(object):
             try:
                 return self._grammar(s).__getattr__(rule_name)()
             except ometa.runtime.ParseError as exc:
-                raise hgvs.exceptions.HGVSParseError, hgvs.exceptions.HGVSParseError(
+                raise HGVSParseError(
                     "{s}: char {exc.position}: {reason}".format(s=s,
                                                                 exc=exc,
                                                                 reason=exc.formatReason()))
