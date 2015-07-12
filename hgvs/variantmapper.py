@@ -21,6 +21,7 @@ from hgvs.decorators.lru_cache import lru_cache
 
 _logger = logging.getLogger(__name__)
 
+
 class VariantMapper(object):
     """Maps HGVS variants to and from g., n., r., c., and p. representations.
     All methods require and return objects of type :class:`hgvs.variant.SequenceVariant`.
@@ -50,7 +51,6 @@ class VariantMapper(object):
 
     def __init__(self, hdp):
         self.hdp = hdp
-
 
     # ############################################################################
     # g <-> n
@@ -162,10 +162,10 @@ class VariantMapper(object):
             raise HGVSInvalidVariantError('Expected a cDNA (c.); got ' + str(var_c))
         tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=var_c.ac, alt_aln_method='transcript')
         pos_n = tm.c_to_n(var_c.posedit.pos)
-        if isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_c.posedit.edit, hgvs.edit.Dup):
+        if isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_c.posedit.edit, hgvs.edit.Dup) or isinstance(var_c.posedit.edit, hgvs.edit.NADupN) or isinstance(var_c.posedit.edit, hgvs.edit.Inv):
             edit_n = copy.deepcopy(var_c.posedit.edit)
         else:
-            raise HGVSUnsupportedOperationError('Only NARefAlt/Dup types are currently implemented')
+            raise HGVSUnsupportedOperationError('Only NARefAlt/Dup/NADupN/Inv types are currently implemented')
         var_n = hgvs.variant.SequenceVariant(ac=var_c.ac, type='n', posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
         return var_n
 
@@ -184,13 +184,12 @@ class VariantMapper(object):
             raise HGVSInvalidVariantError('Expected n. variant; got ' + str(var_n))
         tm = self._fetch_TranscriptMapper(tx_ac=var_n.ac, alt_ac=var_n.ac, alt_aln_method='transcript')
         pos_c = tm.n_to_c(var_n.posedit.pos)
-        if isinstance(var_n.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_n.posedit.edit, hgvs.edit.Dup):
+        if isinstance(var_n.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_n.posedit.edit, hgvs.edit.Dup) or isinstance(var_n.posedit.edit, hgvs.edit.NADupN) or isinstance(var_n.posedit.edit, hgvs.edit.Inv):
             edit_c = copy.deepcopy(var_n.posedit.edit)
         else:
-            raise HGVSUnsupportedOperationError('Only NARefAlt types are currently implemented')
+            raise HGVSUnsupportedOperationError('Only NARefAlt/Dup/NADupN/Inv types are currently implemented')
         var_c = hgvs.variant.SequenceVariant(ac=var_n.ac, type='c', posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
         return var_c
-
 
     # ############################################################################
     # c -> p
@@ -260,19 +259,22 @@ class VariantMapper(object):
 
     ############################################################################
     ## Internal methods
-    
+
     def _replace_reference(self, var):
         """fetch reference sequence for variant and update (in-place) if necessary"""
-    
+
         if var.type not in 'cgmnr':
             raise HGVSUnsupportedOperationError("Can only update references for type c, g, m, n, r")
 
         if var.posedit.edit.type == 'ins':
             # insertions have no reference sequence (zero-width), so return as-is
             return var
-        
-        if ((isinstance(var.posedit.pos.start, hgvs.location.BaseOffsetPosition) and var.posedit.pos.start.offset != 0) or
-            (isinstance(var.posedit.pos.end, hgvs.location.BaseOffsetPosition) and var.posedit.pos.end.offset != 0)):
+        if var.posedit.edit.type == 'con':
+            # conversions have no reference sequence (zero-width), so return as-is
+            return var
+
+        if ((isinstance(var.posedit.pos.start, hgvs.location.BaseOffsetPosition) and var.posedit.pos.start.offset != 0)
+            or (isinstance(var.posedit.pos.end, hgvs.location.BaseOffsetPosition) and var.posedit.pos.end.offset != 0)):
             _logger.info("Can't update reference sequence for intronic variant {}".format(var))
             return var
 
@@ -338,8 +340,20 @@ class VariantMapper(object):
                 edit_out = copy.deepcopy(edit_in)
             else:
                 edit_out = hgvs.edit.Dup(ref=reverse_complement(edit_in.ref))
+        elif isinstance(edit_in, hgvs.edit.NADupN):
+            edit_out = copy.deepcopy(edit_in)
+        elif isinstance(edit_in, hgvs.edit.Inv):
+            if strand == 1:
+                edit_out = copy.deepcopy(edit_in)
+            else:
+                try:
+                    int(edit_in.ref)
+                    ref = edit_in.ref
+                except (ValueError, TypeError):
+                    ref = reverse_complement(edit_in.ref)
+                edit_out = hgvs.edit.Inv(ref=ref)
         else:
-            raise NotImplementedError('Only NARefAlt/Dup types are currently implemented')
+            raise NotImplementedError('Only NARefAlt/Dup/NADupN/Inv types are currently implemented')
         return edit_out
 
 
@@ -436,16 +450,66 @@ class EasyVariantMapper(VariantMapper):
                    if e['alt_aln_method'] == self.alt_aln_method and e['alt_ac'] in self.primary_assembly_accessions]
         if len(alt_acs) > 1:
             raise HGVSError("Multiple chromosomal alignments for {tx_ac} in {pa}"
-                                            "using {am} (likely paralog or pseudoautosomal region)".format(
-                                                tx_ac=tx_ac,
-                                                pa=self.primary_assembly,
-                                                am=self.alt_aln_method))
+                            "using {am} (likely paralog or pseudoautosomal region)".format(
+                                tx_ac=tx_ac,
+                                pa=self.primary_assembly,
+                                am=self.alt_aln_method))
         if len(alt_acs) == 0:
             raise HGVSDataNotAvailableError("No alignments for {tx_ac} in {pa} using {am}".format(
                 tx_ac=tx_ac,
                 pa=self.primary_assembly,
                 am=self.alt_aln_method))
         return alt_acs[0]    # exactly one remains
+
+    def _get_context(self, var, margin=10):
+        """UNSUPPORTED. DO NOT USE IN PRODUCTION.
+
+        Given a variant, return a dictionary of sequence contexts.
+        WARNING: sequence context will be wrong if it overlaps an
+        intron/exon boundary
+
+        """
+
+        def _get_context(v):
+            bounds = (v.posedit.pos.start.base - margin, v.posedit.pos.end.base + margin)
+            return {
+                'span': "{}.{}_{}".format(v.type, *bounds),
+                'seq': self.hdp.fetch_seq(v.ac, bounds[0] - 1, bounds[1]),
+                'var': v
+            }
+
+        assert var.type in 'gcn'
+
+        if var.type == 'g':
+            g_var = var
+            n_var = self.g_to_n(g_var)
+            c_var = self.n_to_c(n_var)
+        elif var.type == 'c':
+            c_var = var
+            n_var = self.c_to_n(c_var)
+            g_var = self.n_to_g(n_var)
+        elif var.type == 'n':
+            n_var = var
+            c_var = self.n_to_c(n_var)
+            g_var = self.n_to_g(n_var)
+
+        assert n_var.posedit.pos.start.offset == n_var.posedit.pos.end.offset == 0, "intronic context not supported"
+
+        c_bounds = (c_var.posedit.pos.start.base - margin, c_var.posedit.pos.end.base + margin)
+        g_bounds = (g_var.posedit.pos.start.base - margin, g_var.posedit.pos.end.base + margin)
+        n_bounds = (n_var.posedit.pos.start.base - margin, n_var.posedit.pos.end.base + margin)
+
+        c_span = "{}.{}_{}".format('c', *c_bounds)
+        g_span = "{}.{}_{}".format('g', *g_bounds)
+        n_span = "{}.{}_{}".format('n', *n_bounds)
+
+        g_seq = self.hdp.fetch_seq(g_var.ac, g_bounds[0] - 1, g_bounds[1])
+        n_seq = self.hdp.fetch_seq(n_var.ac, n_bounds[0] - 1, n_bounds[1])
+
+        return {
+            'g': {'seq': g_seq, 'span': g_span, 'var': g_var},
+            'n': {'seq': n_seq, 'span': "{} ({})".format(n_span, c_span), 'var': "{} ({})".format(n_var, c_var)},
+        }
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
