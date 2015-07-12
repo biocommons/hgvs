@@ -162,10 +162,10 @@ class VariantMapper(object):
             raise HGVSInvalidVariantError('Expected a cDNA (c.); got ' + str(var_c))
         tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=var_c.ac, alt_aln_method='transcript')
         pos_n = tm.c_to_n(var_c.posedit.pos)
-        if isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_c.posedit.edit, hgvs.edit.Dup):
+        if isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_c.posedit.edit, hgvs.edit.Dup) or isinstance(var_c.posedit.edit, hgvs.edit.NADupN) or isinstance(var_c.posedit.edit, hgvs.edit.Inv):
             edit_n = copy.deepcopy(var_c.posedit.edit)
         else:
-            raise HGVSUnsupportedOperationError('Only NARefAlt/Dup types are currently implemented')
+            raise HGVSUnsupportedOperationError('Only NARefAlt/Dup/NADupN/Inv types are currently implemented')
         var_n = hgvs.variant.SequenceVariant(ac=var_c.ac, type='n', posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
         return var_n
 
@@ -184,10 +184,10 @@ class VariantMapper(object):
             raise HGVSInvalidVariantError('Expected n. variant; got ' + str(var_n))
         tm = self._fetch_TranscriptMapper(tx_ac=var_n.ac, alt_ac=var_n.ac, alt_aln_method='transcript')
         pos_c = tm.n_to_c(var_n.posedit.pos)
-        if isinstance(var_n.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_n.posedit.edit, hgvs.edit.Dup):
+        if isinstance(var_n.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_n.posedit.edit, hgvs.edit.Dup) or isinstance(var_n.posedit.edit, hgvs.edit.NADupN) or isinstance(var_n.posedit.edit, hgvs.edit.Inv):
             edit_c = copy.deepcopy(var_n.posedit.edit)
         else:
-            raise HGVSUnsupportedOperationError('Only NARefAlt types are currently implemented')
+            raise HGVSUnsupportedOperationError('Only NARefAlt/Dup/NADupN/Inv types are currently implemented')
         var_c = hgvs.variant.SequenceVariant(ac=var_n.ac, type='c', posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
         return var_c
 
@@ -269,6 +269,9 @@ class VariantMapper(object):
         if var.posedit.edit.type == 'ins':
             # insertions have no reference sequence (zero-width), so return as-is
             return var
+        if var.posedit.edit.type == 'con':
+            # conversions have no reference sequence (zero-width), so return as-is
+            return var
 
         if ((isinstance(var.posedit.pos.start, hgvs.location.BaseOffsetPosition) and var.posedit.pos.start.offset != 0)
             or (isinstance(var.posedit.pos.end, hgvs.location.BaseOffsetPosition) and var.posedit.pos.end.offset != 0)):
@@ -337,8 +340,20 @@ class VariantMapper(object):
                 edit_out = copy.deepcopy(edit_in)
             else:
                 edit_out = hgvs.edit.Dup(ref=reverse_complement(edit_in.ref))
+        elif isinstance(edit_in, hgvs.edit.NADupN):
+            edit_out = copy.deepcopy(edit_in)
+        elif isinstance(edit_in, hgvs.edit.Inv):
+            if strand == 1:
+                edit_out = copy.deepcopy(edit_in)
+            else:
+                try:
+                    int(edit_in.ref)
+                    ref = edit_in.ref
+                except (ValueError, TypeError):
+                    ref = reverse_complement(edit_in.ref)
+                edit_out = hgvs.edit.Inv(ref=ref)
         else:
-            raise NotImplementedError('Only NARefAlt/Dup types are currently implemented')
+            raise NotImplementedError('Only NARefAlt/Dup/NADupN/Inv types are currently implemented')
         return edit_out
 
 

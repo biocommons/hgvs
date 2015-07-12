@@ -16,7 +16,7 @@ import hgvs.posedit
 import hgvs.validator
 import hgvs.variantmapper
 
-from .exceptions import HGVSDataNotAvailableError, HGVSValidationError, HGVSUnsupportedOperationError
+from hgvs.exceptions import HGVSDataNotAvailableError, HGVSValidationError, HGVSUnsupportedOperationError
 
 _logger = logging.getLogger(__name__)
 
@@ -64,7 +64,9 @@ class Normalizer(object):
         type = var.type
 
         if type == 'p':
-            raise HGVSUnsupportedOperationError("Unsupported normalization of protein level variants")
+            raise HGVSUnsupportedOperationError("Unsupported normalization of protein level variants: {0}".format(var))
+        if var.posedit.edit.type == 'con':
+            raise HGVSUnsupportedOperationError("Unsupported normalization of conversion variants: {0}",format(var))
 
         # For c. variants normalization, first convert to n. variant
         # and perform normalization at the n. level, then convert the
@@ -89,34 +91,53 @@ class Normalizer(object):
         alt_len = len(alt)
 
         # Generate normalized variant
-        if alt_len <= ref_len:
+        if alt_len == ref_len:
+            ref_start = start
+            ref_end   = end - 1
+            # inversion
+            if ref_len > 1 and ref == alt[::-1]:
+                edit = hgvs.edit.Inv(ref=ref)
+            # substitution or delins
+            else:
+                edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
+        if alt_len < ref_len:
+            # del or delins
             ref_start = start
             ref_end = end - 1
             edit = hgvs.edit.NARefAlt(ref=ref, alt=None if alt_len == 0 else alt)
         elif alt_len > ref_len:
             # ins or dup
             if ref_len == 0:
-                # TODO: investigate whether left and right dup cases are really used.
-                # I suspect that n_a has already shuffled in specified direction
-                # and that there's only one case.
-                left_seq = self._fetch_bounded_seq(var, start - alt_len - 1, end - 1,
-                                                   boundary) if self.direction == 3 else ''
-                right_seq = self._fetch_bounded_seq(var, start - 1, start + alt_len - 1,
-                                                    boundary) if self.direction == 5 else ''
-                # dup
-                if alt == left_seq:
-                    ref_start = start - alt_len
-                    ref_end = end - 1
-                    edit = hgvs.edit.Dup(ref=alt)
-                elif alt == right_seq:
-                    ref_start = start
-                    ref_end = start + alt_len - 1
-                    edit = hgvs.edit.Dup(ref=alt)
-                # ins
+                if self.direction == 3:
+                    adj_seq = self._fetch_bounded_seq(var, start - alt_len - 1, end - 1, boundary)
                 else:
+                    adj_seq = self._fetch_bounded_seq(var, start - 1, start + alt_len - 1, boundary)
+                n = self._dupN(adj_seq, alt, self.direction)
+                # ins
+                if n == 0:
                     ref_start = start - 1
                     ref_end = end
                     edit = hgvs.edit.NARefAlt(ref=None, alt=alt)
+                # dup
+                elif n == 1:
+                    if self.direction == 3:
+                        ref_start = start - alt_len
+                        ref_end = end - 1
+                        edit = hgvs.edit.Dup(ref=alt)
+                    else:
+                        ref_start = start
+                        ref_end = start + alt_len - 1
+                        edit = hgvs.edit.Dup(ref=alt)
+                # dupN
+                elif n > 1:
+                    if self.direction == 3:
+                        ref_start = start - int(alt_len / n)
+                        ref_end = end - 1
+                        edit = hgvs.edit.NADupN(n=n)
+                    else:
+                        ref_start = start
+                        ref_end = start + int(alt_len / n) - 1
+                        edit = hgvs.edit.NADupN(n=n)
             # delins
             else:
                 ref_start = start
@@ -230,7 +251,10 @@ class Normalizer(object):
                 if var.posedit.edit.ref != ref:
                     raise HGVSValidationError(str(var) + ': ' + hgvs.validator.SEQ_ERROR_MSG)
             ref = ''
+        elif var.posedit.edit.type == 'dupn':
+            ref = self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, boundary)
         else:
+            #For NARefAlt and Inv
             ref = self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, boundary)
             # validate whether the ref of the var is the same as the reference sequence
             if var.posedit.edit.ref_s is not None and var.posedit.edit.ref != '' and var.posedit.edit.ref != ref:
@@ -244,6 +268,8 @@ class Normalizer(object):
         elif var.posedit.edit.type == 'dup':
             alt = var.posedit.edit.ref or self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1,
                                                                   var.posedit.pos.end.base, boundary)
+        elif var.posedit.edit.type == 'dupn':
+            alt = ref * int(var.posedit.edit.n)
         elif var.posedit.edit.type == 'inv':
             alt = ref[::-1]
         elif var.posedit.edit.type == 'identity':
@@ -314,13 +340,34 @@ class Normalizer(object):
                 stop = orig_stop
 
         return base + start, base + stop, (ref, alt)
+    
+    def _dupN(self, adj_seq, alt, direction):
+        """Determine the number of duplicates. Return 0 if it is not a dup
+        """
+        
+        seq_len = len(adj_seq)
+        alt_len = len(alt)
+        for n in range(1, alt_len + 1):
+            if alt_len % n:
+                continue
+            if direction == 3:
+                start = seq_len - int(alt_len / n)
+                end   = seq_len
+            else:
+                start = 0
+                end   = int(alt_len / n)
+            if start < 0:
+                start = 0
+            if adj_seq[start : end] * n == alt:
+                return n
+        return 0
 
 
 if __name__ == '__main__':
     hgvsparser = hgvs.parser.Parser()
-    var = hgvsparser.parse_hgvs_variant('NM_001166478.1:c.61delG')
+    var = hgvsparser.parse_hgvs_variant('NM_001166478.1:c.36_37insTCTCTC')
     hdp = hgvs.dataproviders.uta.connect()
-    norm = Normalizer(hdp, direction=5, cross=False)
+    norm = Normalizer(hdp, direction=5, cross=True)
     res = norm.normalize(var)
     print(str(var) + '    =>    ' + str(res))
 
