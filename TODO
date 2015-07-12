@@ -4,35 +4,21 @@ Actionable issues are at https://bitbucket.org/biocommons/hgvs/issues.
 This file is intended for ideas that need fleshing out.
 
 * before release
-** ref, alt = '' or None?, document it!
-** validate with fetch_seq
-** evm normalize=True
-** normalize: separate fill, rewrite, and shuffle
-** convenience import: import hgvs -> parser, evm, VM, 
-
 ** release notes w/deprecations
-** implement better logging
-** relative imports
-** s/2014/2015/g
-** standardize var_x over x_var
 ** sq-dq
+** evm normalize=True
+** drop c_to_n, n_to_c?
+** normalize: separate fill, rewrite, and shuffle
 ** tests: expected value first
-
+** validate with fetch_seq
 ** trial load GRCh38
+** dup seq -> ref?
+** standardize var_x over x_var
 
-** docs:
-- differences between cgmnrp
-- changelog
-
-** 239: exon finder uses:
-- vince
-- normalization
-- intervalmapper
 
 ** 0.4.0 deprecations / 0.5.0 obsolescence
 - primary_assembly -> assembly
 - consider var_x -> var
-
 
 
 * 0.5.0 aspirations
@@ -46,15 +32,17 @@ All mapping functions should accept and return one of those types.
 
 ** Merge VariantMapper and EasyVariantMapper
 
+** Dup.seq -> Dup.ref
+
 ** SeqDB
-
-
-
-* Ideas
 
 ** Use sequence assertions exclusively internally
 i.e., seq, start, end, alt
 from which derive human HGVS expressions
+
+
+
+* Ideas
 
 ** snake diagram
 
@@ -78,16 +66,3 @@ describe_region(cvar) -> e.g., {'start': 'exon 5', 'end': "3' UTR", 'span': 'exo
 extractor(ac, interval, alt) -> var
 as_vcf_ref_alt(var) -> ac, start, end, ref, alt
 variant_equality
-gcn context
-
-** parse and add gene name
-
-** fill/strip/replace/validate ref
-
-** 3 tiers: sequence assertion, HGVS ref alt, HGVS logical (dup, repeat, inv)
-
-** Use pyinter for intervals
-
-** support py3
-
-** BUG: grammar: ins must require interval

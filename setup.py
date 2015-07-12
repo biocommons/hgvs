@@ -3,19 +3,22 @@ from setuptools import setup, find_packages
 with open('doc/description.txt') as f:
     long_description = f.read()
 
+
 setup(
-    license='Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)',
-    long_description=long_description,
-    use_scm_version=True,
-    zip_safe=True,
-    author='HGVS Contributors',
-    author_email='reecehart+hgvs@gmail.com',
-    description="""HGVS Parser, Formatter, Mapper, Validator""",
-    name="hgvs",
-    package_data={'hgvs': ['_data/*']},
-    packages=find_packages(),
-    url='https://bitbucket.org/biocommons/hgvs',
-    classifiers=[
+    license = 'Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)',
+    long_description = long_description,
+    use_scm_version = True,
+    zip_safe = True,
+
+    author = 'HGVS Contributors',
+    author_email = 'reecehart+hgvs@gmail.com',
+    description = """HGVS Parser, Formatter, Mapper, Validator""",
+    name = "hgvs",
+    package_data = {'hgvs': ['_data/*']},
+    packages = find_packages(),
+    url = 'https://bitbucket.org/biocommons/hgvs',
+
+    classifiers = [
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "Intended Audience :: Healthcare Industry",
@@ -28,7 +31,8 @@ setup(
         "Topic :: Scientific/Engineering :: Bio-Informatics",
         "Topic :: Scientific/Engineering :: Medical Science Apps.",
     ],
-    keywords=[
+
+    keywords = [
         'bioinformatics',
         'computational biology',
         'genome variants',
@@ -38,7 +42,8 @@ setup(
         'genomics',
         'hgvs',
     ],
-    install_requires=[
+
+    install_requires = [
         'psycopg2',
         'biopython',
         'bioutils>=0.0.6',
@@ -47,17 +52,20 @@ setup(
         'recordtype',
         'requests>=1.0.0',
     ],
-    setup_requires=[
+
+    setup_requires = [
         'setuptools_scm',
         'nose',
         'sphinx',
         'sphinxcontrib-fulltoc',
         'wheel',
     ],
-    tests_require=[
+
+    tests_require = [
         'coverage',
         'unicodecsv',
-    ], )
+    ],
+)
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

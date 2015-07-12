@@ -16,18 +16,18 @@ import hgvs.posedit
 import hgvs.validator
 import hgvs.variantmapper
 
-from hgvs.exceptions import HGVSDataNotAvailableError, HGVSValidationError, HGVSUnsupportedOperationError
+from .exceptions import HGVSDataNotAvailableError, HGVSValidationError, HGVSUnsupportedOperationError
 
 _logger = logging.getLogger(__name__)
 
 try:
     from vgraph.norm import normalize_alleles as _normalize_alleles_vgraph
-
     def normalize_alleles(ref, start, stop, alleles, bound, ref_step, left, shuffle=True):
         """wraps vgraph.norm.normalize_alleles to pass ascii-encoded strings"""
-        return _normalize_alleles_vgraph(ref.encode('ascii'), start, stop, [a.encode('ascii') for a in alleles], bound,
-                                         ref_step, left, shuffle)
-
+        return _normalize_alleles_vgraph(ref.encode('ascii'),
+                                         start, stop,
+                                         [a.encode('ascii') for a in alleles],
+                                         bound, ref_step, left, shuffle)
     _logger.debug("Using normalize_alleles from vgraph (https://github.com/bioinformed/vgraph)")
 except ImportError:
     from .utils.norm import normalize_alleles
@@ -53,6 +53,7 @@ class Normalizer(object):
         self.alt_aln_method = alt_aln_method
         self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
 
+
     def normalize(self, var):
         """Perform variants normalization
         """
@@ -64,9 +65,7 @@ class Normalizer(object):
         type = var.type
 
         if type == 'p':
-            raise HGVSUnsupportedOperationError("Unsupported normalization of protein level variants: {0}".format(var))
-        if var.posedit.edit.type == 'con':
-            raise HGVSUnsupportedOperationError("Unsupported normalization of conversion variants: {0}",format(var))
+            raise HGVSUnsupportedOperationError("Unsupported normalization of protein level variants")
 
         # For c. variants normalization, first convert to n. variant
         # and perform normalization at the n. level, then convert the
@@ -76,7 +75,8 @@ class Normalizer(object):
 
         if var.type in 'nr':
             if var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0:
-                raise HGVSUnsupportedOperationError("Normalization of intronic variants is not supported")
+                raise HGVSUnsupportedOperationError(
+                    "Normalization of intronic variants is not supported")
 
         # g, m, n, r sequences all use sequence start as the datum
         # That's an essential assumption herein
@@ -91,53 +91,35 @@ class Normalizer(object):
         alt_len = len(alt)
 
         # Generate normalized variant
-        if alt_len == ref_len:
-            ref_start = start
-            ref_end   = end - 1
-            # inversion
-            if ref_len > 1 and ref == alt[::-1]:
-                edit = hgvs.edit.Inv(ref=ref)
-            # substitution or delins
-            else:
-                edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
-        if alt_len < ref_len:
-            # del or delins
+        if alt_len <= ref_len:
             ref_start = start
             ref_end = end - 1
-            edit = hgvs.edit.NARefAlt(ref=ref, alt=None if alt_len == 0 else alt)
+            edit = hgvs.edit.NARefAlt(ref=ref,
+                                      alt=None if alt_len == 0 else alt)
         elif alt_len > ref_len:
             # ins or dup
             if ref_len == 0:
-                if self.direction == 3:
-                    adj_seq = self._fetch_bounded_seq(var, start - alt_len - 1, end - 1, boundary)
-                else:
-                    adj_seq = self._fetch_bounded_seq(var, start - 1, start + alt_len - 1, boundary)
-                n = self._dupN(adj_seq, alt, self.direction)
+                # TODO: investigate whether left and right dup cases are really used.
+                # I suspect that n_a has already shuffled in specified direction
+                # and that there's only one case.
+                left_seq = self._fetch_bounded_seq(var, start - alt_len - 1, end - 1,
+                                                   boundary) if self.direction == 3 else ''
+                right_seq = self._fetch_bounded_seq(var, start - 1, start + alt_len - 1,
+                                                    boundary) if self.direction == 5 else ''
+                # dup
+                if alt == left_seq:
+                    ref_start = start - alt_len
+                    ref_end = end - 1
+                    edit = hgvs.edit.Dup(ref=alt)
+                elif alt == right_seq:
+                    ref_start = start
+                    ref_end = start + alt_len - 1
+                    edit = hgvs.edit.Dup(ref=alt)
                 # ins
-                if n == 0:
+                else:
                     ref_start = start - 1
                     ref_end = end
                     edit = hgvs.edit.NARefAlt(ref=None, alt=alt)
-                # dup
-                elif n == 1:
-                    if self.direction == 3:
-                        ref_start = start - alt_len
-                        ref_end = end - 1
-                        edit = hgvs.edit.Dup(ref=alt)
-                    else:
-                        ref_start = start
-                        ref_end = start + alt_len - 1
-                        edit = hgvs.edit.Dup(ref=alt)
-                # dupN
-                elif n > 1:
-                    if self.direction == 3:
-                        ref_start = start - int(alt_len / n)
-                        ref_end = end - 1
-                        edit = hgvs.edit.NADupN(n=n)
-                    else:
-                        ref_start = start
-                        ref_end = start + int(alt_len / n) - 1
-                        edit = hgvs.edit.NADupN(n=n)
             # delins
             else:
                 ref_start = start
@@ -153,6 +135,7 @@ class Normalizer(object):
             var_norm = self.hm.n_to_c(var_norm)
 
         return var_norm
+
 
     def _get_boundary(self, var):
         """Get the position of exon-intron boundary for current variant
@@ -187,18 +170,18 @@ class Normalizer(object):
 
                 # TODO: #239: implement methods to find tx regions
                 for i in range(0, len(exon_starts)):
-                    if (var.posedit.pos.start.base - 1 >= exon_starts[i] and
-                        var.posedit.pos.start.base - 1 < exon_ends[i]):
+                    if (var.posedit.pos.start.base - 1 >= exon_starts[i]
+                        and var.posedit.pos.start.base - 1 < exon_ends[i]):
                         break
 
                 for j in range(0, len(exon_starts)):
-                    if (var.posedit.pos.end.base - 1 >= exon_starts[j] and var.posedit.pos.end.base - 1 < exon_ends[j]):
+                    if (var.posedit.pos.end.base - 1 >= exon_starts[j]
+                        and var.posedit.pos.end.base - 1 < exon_ends[j]):
                         break
 
                 if i != j:
                     raise HGVSUnsupportedOperationError(
-                        "Unsupported normalization of variants spanning the exon-intron boundary ({var})".format(
-                            var=var))
+                        "Unsupported normalization of variants spanning the exon-intron boundary ({var})".format(var=var))
 
                 left = exon_starts[i]
                 right = exon_ends[i]
@@ -223,6 +206,7 @@ class Normalizer(object):
         else:
             # For variant type of g and m etc.
             return 0, float('inf')
+
 
     def _fetch_bounded_seq(self, var, start, end, boundary):
         """Fetch reference sequence from hgvs data provider.
@@ -251,10 +235,7 @@ class Normalizer(object):
                 if var.posedit.edit.ref != ref:
                     raise HGVSValidationError(str(var) + ': ' + hgvs.validator.SEQ_ERROR_MSG)
             ref = ''
-        elif var.posedit.edit.type == 'dupn':
-            ref = self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, boundary)
         else:
-            #For NARefAlt and Inv
             ref = self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, boundary)
             # validate whether the ref of the var is the same as the reference sequence
             if var.posedit.edit.ref_s is not None and var.posedit.edit.ref != '' and var.posedit.edit.ref != ref:
@@ -268,8 +249,6 @@ class Normalizer(object):
         elif var.posedit.edit.type == 'dup':
             alt = var.posedit.edit.ref or self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1,
                                                                   var.posedit.pos.end.base, boundary)
-        elif var.posedit.edit.type == 'dupn':
-            alt = ref * int(var.posedit.edit.n)
         elif var.posedit.edit.type == 'inv':
             alt = ref[::-1]
         elif var.posedit.edit.type == 'identity':
@@ -303,8 +282,8 @@ class Normalizer(object):
                 if ref_seq == '':
                     break
                 orig_start, orig_stop = start, stop
-                start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt), len(ref_seq), win_size,
-                                                            False)
+                start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt),
+                                                            len(ref_seq), win_size, False)
                 if stop < len(ref_seq) or start == orig_start:
                     break
                 # if stop at the end of the window, try to extend the shuffling to the right
@@ -331,7 +310,8 @@ class Normalizer(object):
                 if ref_seq == '':
                     break
                 orig_start, orig_stop = start, stop
-                start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt), 0, win_size, True)
+                start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt),
+                                                            0, win_size, True)
                 if start > 0 or stop == orig_stop:
                     break
                 # if stop at the end of the window, try to extend the shuffling to the left
@@ -340,36 +320,17 @@ class Normalizer(object):
                 stop = orig_stop
 
         return base + start, base + stop, (ref, alt)
-    
-    def _dupN(self, adj_seq, alt, direction):
-        """Determine the number of duplicates. Return 0 if it is not a dup
-        """
-        
-        seq_len = len(adj_seq)
-        alt_len = len(alt)
-        for n in range(1, alt_len + 1):
-            if alt_len % n:
-                continue
-            if direction == 3:
-                start = seq_len - int(alt_len / n)
-                end   = seq_len
-            else:
-                start = 0
-                end   = int(alt_len / n)
-            if start < 0:
-                start = 0
-            if adj_seq[start : end] * n == alt:
-                return n
-        return 0
+
 
 
 if __name__ == '__main__':
     hgvsparser = hgvs.parser.Parser()
-    var = hgvsparser.parse_hgvs_variant('NM_001166478.1:c.36_37insTCTCTC')
+    var = hgvsparser.parse_hgvs_variant('NM_001166478.1:c.61delG')
     hdp = hgvs.dataproviders.uta.connect()
-    norm = Normalizer(hdp, direction=5, cross=True)
+    norm = Normalizer(hdp, direction=5, cross=False)
     res = norm.normalize(var)
     print(str(var) + '    =>    ' + str(res))
+
 
 ## <LICENSE>
 ## Copyright 2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

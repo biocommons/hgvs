@@ -145,7 +145,7 @@ class Test_VariantMapper(unittest.TestCase):
         self.assertEquals(_rm_del_seq(str(var_x)), _rm_del_seq(str(var_x_test)),
                           msg="%s != %s (%s; HGVSg=%s)" % (str(var_x_test), str(var_x), rec['id'], rec['HGVSg']))
 
-        # c,n -> g
+        # c -> g
         if var_x.type == 'c':
             var_g_test = self.hm.c_to_g(var_x, var_g.ac)
         elif var_x.type == 'n':

@@ -65,6 +65,9 @@ class Test_VariantMapper(unittest.TestCase):
             var_p = self.vm.c_to_p(var_g, 'NM_999999.1')
 
 
+
+
+
 class Test_RefReplacement(unittest.TestCase):
     test_cases = [
         # These casese attempt to test reference update in four dimensions:
@@ -72,6 +75,7 @@ class Test_RefReplacement(unittest.TestCase):
         # - major mapping paths: c<->n, c<->g, n<->g
         # - variant class: sub, del, ins, delins, dup
         # - strand: +/-
+
         # ADRB2    │ NM_000024.5 │  239 │ 1481 │ NC_000005.9  │  1 │ 148206155,148208197 | 284=1X32=1X1724=
         # cseq = hdp.fetch_seq('NM_000024.5')
         # gseq = hdp.fetch_seq('NC_000005.9',148206155,148208197)
@@ -79,60 +83,25 @@ class Test_RefReplacement(unittest.TestCase):
         # gseq[280:290] = 'CAATGGAAGC'
         #                      ^ @ n.285
         # These variants are in and around the first sub: 
-        {u'c': 'NM_000024.5:c.42C>N',
-         u'g': 'NC_000005.9:g.148206436C>N',
-         u'n': u'NM_000024.5:n.281C>N'},
-        {u'c': 'NM_000024.5:c.43A>N',
-         u'g': 'NC_000005.9:g.148206437A>N',
-         u'n': u'NM_000024.5:n.282A>N'},
-        {u'c': 'NM_000024.5:c.44A>N',
-         u'g': 'NC_000005.9:g.148206438A>N',
-         u'n': u'NM_000024.5:n.283A>N'},
-        {u'c': 'NM_000024.5:c.45T>N',
-         u'g': 'NC_000005.9:g.148206439T>N',
-         u'n': u'NM_000024.5:n.284T>N'},
-        {u'c': 'NM_000024.5:c.46A>N',
-         u'g': 'NC_000005.9:g.148206440G>N',
-         u'n': u'NM_000024.5:n.285A>N'},    # ref repl
-        {u'c': 'NM_000024.5:c.47G>N',
-         u'g': 'NC_000005.9:g.148206441G>N',
-         u'n': u'NM_000024.5:n.286G>N'},
-        {u'c': 'NM_000024.5:c.48A>N',
-         u'g': 'NC_000005.9:g.148206442A>N',
-         u'n': u'NM_000024.5:n.287A>N'},
-        {u'c': 'NM_000024.5:c.49A>N',
-         u'g': 'NC_000005.9:g.148206443A>N',
-         u'n': u'NM_000024.5:n.288A>N'},
-        {u'c': 'NM_000024.5:c.50G>N',
-         u'g': 'NC_000005.9:g.148206444G>N',
-         u'n': u'NM_000024.5:n.289G>N'},
-        {u'c': 'NM_000024.5:c.51C>N',
-         u'g': 'NC_000005.9:g.148206445C>N',
-         u'n': u'NM_000024.5:n.290C>N'},
+        {u'c': 'NM_000024.5:c.42C>N',  u'g': 'NC_000005.9:g.148206436C>N',  u'n': u'NM_000024.5:n.281C>N'},
+        {u'c': 'NM_000024.5:c.43A>N',  u'g': 'NC_000005.9:g.148206437A>N',  u'n': u'NM_000024.5:n.282A>N'},
+        {u'c': 'NM_000024.5:c.44A>N',  u'g': 'NC_000005.9:g.148206438A>N',  u'n': u'NM_000024.5:n.283A>N'},
+        {u'c': 'NM_000024.5:c.45T>N',  u'g': 'NC_000005.9:g.148206439T>N',  u'n': u'NM_000024.5:n.284T>N'},
+        {u'c': 'NM_000024.5:c.46A>N',  u'g': 'NC_000005.9:g.148206440G>N',  u'n': u'NM_000024.5:n.285A>N'}, # ref repl
+        {u'c': 'NM_000024.5:c.47G>N',  u'g': 'NC_000005.9:g.148206441G>N',  u'n': u'NM_000024.5:n.286G>N'},
+        {u'c': 'NM_000024.5:c.48A>N',  u'g': 'NC_000005.9:g.148206442A>N',  u'n': u'NM_000024.5:n.287A>N'},
+        {u'c': 'NM_000024.5:c.49A>N',  u'g': 'NC_000005.9:g.148206443A>N',  u'n': u'NM_000024.5:n.288A>N'},
+        {u'c': 'NM_000024.5:c.50G>N',  u'g': 'NC_000005.9:g.148206444G>N',  u'n': u'NM_000024.5:n.289G>N'},
+        {u'c': 'NM_000024.5:c.51C>N',  u'g': 'NC_000005.9:g.148206445C>N',  u'n': u'NM_000024.5:n.290C>N'},
+
         # ins, del, delins, dup:
-        {
-            u'c': 'NM_000024.5:c.46_47insNN',
-            u'g': 'NC_000005.9:g.148206440_148206441insNN',
-            u'n': 'NM_000024.5:n.285_286insNN'
-        },
-        {
-            u'c': 'NM_000024.5:c.45_47delTAG',
-            u'g': 'NC_000005.9:g.148206439_148206441delTGG',
-            u'n': 'NM_000024.5:n.284_286delTAG'
-        },
-        {
-            u'c': 'NM_000024.5:c.45_47delTAGinsNNNN',
-            u'g': 'NC_000005.9:g.148206439_148206441delTGGinsNNNN',
-            u'n': 'NM_000024.5:n.284_286delTAGinsNNNN'
-        },
-        {
-            u'c': 'NM_000024.5:c.45_47delTAGinsNNNN',
-            u'g': 'NC_000005.9:g.148206439_148206441delTGGinsNNNN',
-            u'n': 'NM_000024.5:n.284_286delTAGinsNNNN'
-        },
-        {u'c': 'NM_000024.5:c.46dupA',
-         u'g': 'NC_000005.9:g.148206440dupG',
-         u'n': 'NM_000024.5:n.285dupA'},
+        {u'c': 'NM_000024.5:c.46_47insNN',  u'g': 'NC_000005.9:g.148206440_148206441insNN',  u'n': 'NM_000024.5:n.285_286insNN'},
+        {u'c': 'NM_000024.5:c.45_47delTAG',  u'g': 'NC_000005.9:g.148206439_148206441delTGG',  u'n': 'NM_000024.5:n.284_286delTAG'},
+        {u'c': 'NM_000024.5:c.45_47delTAGinsNNNN',  u'g': 'NC_000005.9:g.148206439_148206441delTGGinsNNNN',  u'n': 'NM_000024.5:n.284_286delTAGinsNNNN'},
+        {u'c': 'NM_000024.5:c.45_47delTAGinsNNNN',  u'g': 'NC_000005.9:g.148206439_148206441delTGGinsNNNN',  u'n': 'NM_000024.5:n.284_286delTAGinsNNNN'},
+        {u'c': 'NM_000024.5:c.46dupA',  u'g': 'NC_000005.9:g.148206440dupG',  u'n': 'NM_000024.5:n.285dupA'},
+
+
         # IFNA16   │ NM_002173.2 │    6 │  576 │ NC_000009.11 │ -1 │  21216371, 21217310 | 691=2X246=
         # cseq = hdp.fetch_seq('NM_002173.2')
         # gseq = reverse_complement(hdp.fetch_seq('NC_000009.11',21216371,21217310))
@@ -140,63 +109,25 @@ class Test_RefReplacement(unittest.TestCase):
         # gseq[685:695] = 'AAATTTTCAA'
         #                        ^^ @ n.692_693
         # These variants are in and around the 2X substitution
-        {u'c': 'NM_002173.2:c.*110A>N',
-         u'g': 'NC_000009.11:g.21216625T>N',
-         u'n': u'NM_002173.2:n.686A>N'},
-        {u'c': 'NM_002173.2:c.*111A>N',
-         u'g': 'NC_000009.11:g.21216624T>N',
-         u'n': u'NM_002173.2:n.687A>N'},
-        {u'c': 'NM_002173.2:c.*112A>N',
-         u'g': 'NC_000009.11:g.21216623T>N',
-         u'n': u'NM_002173.2:n.688A>N'},
-        {u'c': 'NM_002173.2:c.*113T>N',
-         u'g': 'NC_000009.11:g.21216622A>N',
-         u'n': u'NM_002173.2:n.689T>N'},
-        {u'c': 'NM_002173.2:c.*114T>N',
-         u'g': 'NC_000009.11:g.21216621A>N',
-         u'n': u'NM_002173.2:n.690T>N'},
-        {u'c': 'NM_002173.2:c.*115T>N',
-         u'g': 'NC_000009.11:g.21216620A>N',
-         u'n': u'NM_002173.2:n.691T>N'},
-        {u'c': 'NM_002173.2:c.*116C>N',
-         u'g': 'NC_000009.11:g.21216619A>N',
-         u'n': u'NM_002173.2:n.692C>N'},    # ref repl
-        {u'c': 'NM_002173.2:c.*117A>N',
-         u'g': 'NC_000009.11:g.21216618G>N',
-         u'n': u'NM_002173.2:n.693A>N'},    # ref repl
-        {u'c': 'NM_002173.2:c.*118A>N',
-         u'g': 'NC_000009.11:g.21216617T>N',
-         u'n': u'NM_002173.2:n.694A>N'},
-        {u'c': 'NM_002173.2:c.*119A>N',
-         u'g': 'NC_000009.11:g.21216616T>N',
-         u'n': u'NM_002173.2:n.695A>N'},
+        {u'c': 'NM_002173.2:c.*110A>N',  u'g': 'NC_000009.11:g.21216625T>N',  u'n': u'NM_002173.2:n.686A>N'},
+        {u'c': 'NM_002173.2:c.*111A>N',  u'g': 'NC_000009.11:g.21216624T>N',  u'n': u'NM_002173.2:n.687A>N'},
+        {u'c': 'NM_002173.2:c.*112A>N',  u'g': 'NC_000009.11:g.21216623T>N',  u'n': u'NM_002173.2:n.688A>N'},
+        {u'c': 'NM_002173.2:c.*113T>N',  u'g': 'NC_000009.11:g.21216622A>N',  u'n': u'NM_002173.2:n.689T>N'},
+        {u'c': 'NM_002173.2:c.*114T>N',  u'g': 'NC_000009.11:g.21216621A>N',  u'n': u'NM_002173.2:n.690T>N'},
+        {u'c': 'NM_002173.2:c.*115T>N',  u'g': 'NC_000009.11:g.21216620A>N',  u'n': u'NM_002173.2:n.691T>N'},
+        {u'c': 'NM_002173.2:c.*116C>N',  u'g': 'NC_000009.11:g.21216619A>N',  u'n': u'NM_002173.2:n.692C>N'}, # ref repl
+        {u'c': 'NM_002173.2:c.*117A>N',  u'g': 'NC_000009.11:g.21216618G>N',  u'n': u'NM_002173.2:n.693A>N'}, # ref repl
+        {u'c': 'NM_002173.2:c.*118A>N',  u'g': 'NC_000009.11:g.21216617T>N',  u'n': u'NM_002173.2:n.694A>N'},
+        {u'c': 'NM_002173.2:c.*119A>N',  u'g': 'NC_000009.11:g.21216616T>N',  u'n': u'NM_002173.2:n.695A>N'},
+
         # ins, del, delins, dup:
-        {
-            u'c': 'NM_002173.2:c.*115_*117insNN',
-            u'g': 'NC_000009.11:g.21216618_21216620insNN',
-            u'n': 'NM_002173.2:n.691_693insNN'
-        },
-        {
-            u'c': 'NM_002173.2:c.*114_*117delTTCA',
-            u'g': 'NC_000009.11:g.21216618_21216621delGAAA',
-            u'n': 'NM_002173.2:n.690_693delTTCA'
-        },
-        {
-            u'c': 'NM_002173.2:c.*115_*117delTCAinsNN',
-            u'g': 'NC_000009.11:g.21216618_21216620delGAAinsNN',
-            u'n': 'NM_002173.2:n.691_693delTCAinsNN'
-        },
-        {
-            u'c': 'NM_002173.2:c.*115_*117delTCAinsNN',
-            u'g': 'NC_000009.11:g.21216618_21216620delGAAinsNN',
-            u'n': 'NM_002173.2:n.691_693delTCAinsNN'
-        },
-        {
-            u'c': 'NM_002173.2:c.*115_*117dupTCA',
-            u'g': 'NC_000009.11:g.21216618_21216620dupGAA',
-            u'n': 'NM_002173.2:n.691_693dupTCA'
-        },
+        {u'c': 'NM_002173.2:c.*115_*117insNN',  u'g': 'NC_000009.11:g.21216618_21216620insNN',  u'n': 'NM_002173.2:n.691_693insNN'},
+        {u'c': 'NM_002173.2:c.*114_*117delTTCA',  u'g': 'NC_000009.11:g.21216618_21216621delGAAA',  u'n': 'NM_002173.2:n.690_693delTTCA'},
+        {u'c': 'NM_002173.2:c.*115_*117delTCAinsNN',  u'g': 'NC_000009.11:g.21216618_21216620delGAAinsNN',  u'n': 'NM_002173.2:n.691_693delTCAinsNN'},
+        {u'c': 'NM_002173.2:c.*115_*117delTCAinsNN',  u'g': 'NC_000009.11:g.21216618_21216620delGAAinsNN',  u'n': 'NM_002173.2:n.691_693delTCAinsNN'},
+        {u'c': 'NM_002173.2:c.*115_*117dupTCA',  u'g': 'NC_000009.11:g.21216618_21216620dupGAA',  u'n': 'NM_002173.2:n.691_693dupTCA'},
     ]
+
 
     def setUp(self):
         def _parse_rec(rec):
