@@ -252,7 +252,7 @@ class Normalizer(object):
                     raise HGVSValidationError(str(var) + ': ' + hgvs.validator.SEQ_ERROR_MSG)
             ref = ''
         elif var.posedit.edit.type == 'dupn':
-            ref = self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, boundary)
+            ref = ''
         else:
             #For NARefAlt and Inv
             ref = self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, boundary)
@@ -269,7 +269,8 @@ class Normalizer(object):
             alt = var.posedit.edit.ref or self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1,
                                                                   var.posedit.pos.end.base, boundary)
         elif var.posedit.edit.type == 'dupn':
-            alt = ref * int(var.posedit.edit.n)
+            alt = self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, boundary)
+            alt *= int(var.posedit.edit.n)
         elif var.posedit.edit.type == 'inv':
             alt = ref[::-1]
         elif var.posedit.edit.type == 'identity':
