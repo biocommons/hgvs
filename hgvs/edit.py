@@ -374,10 +374,10 @@ class NADupN(Edit, recordtype.recordtype('NADupN', ['n', ('uncertain', False)]))
         return 'dup'
 
 
-class Inv( Edit, recordtype.recordtype('Inv', [('ref', None), ('uncertain', False)]) ):
+class Inv(Edit, recordtype.recordtype('Inv', [('ref', None), ('uncertain', False)])):
     """Inversion
     """
-    
+
     def __init__(self, ref=None, uncertain=False, edit=None):
         if edit:
             ref = edit.ref
@@ -394,7 +394,7 @@ class Inv( Edit, recordtype.recordtype('Inv', [('ref', None), ('uncertain', Fals
         """
         self.uncertain = True
         return self
-    
+
     @property
     def ref_n(self):
         """
@@ -405,7 +405,6 @@ class Inv( Edit, recordtype.recordtype('Inv', [('ref', None), ('uncertain', Fals
             return int(self.ref)
         except ValueError:
             return None
-    
 
     @property
     def type(self):
@@ -416,16 +415,16 @@ class Inv( Edit, recordtype.recordtype('Inv', [('ref', None), ('uncertain', Fals
         return 'inv'
 
 
-
-class Con( Edit, recordtype.recordtype('Con', [('from_ac', None), ('from_type', None), ('from_pos', None), ('uncertain', False)]) ):
+class Con(Edit, recordtype.recordtype('Con', [('from_ac', None), ('from_type', None), ('from_pos', None),
+                                              ('uncertain', False)])):
     """Conversion
     """
-    
+
     def __init__(self, from_ac=None, from_type=None, from_pos=None, uncertain=False, edit=None):
         if edit:
-            from_ac   = edit.from_ac
+            from_ac = edit.from_ac
             from_type = edit.from_type
-            from_pos  = edit.from_pos
+            from_pos = edit.from_pos
             uncertain = edit.uncertain
         super(Con, self).__init__(from_ac=from_ac, from_type=from_type, from_pos=from_pos, uncertain=uncertain)
 
@@ -433,8 +432,8 @@ class Con( Edit, recordtype.recordtype('Con', [('from_ac', None), ('from_type', 
         if self.from_ac and self.from_type and self.from_pos:
             s = 'con{self.from_ac}:{self.from_type}.{self.from_pos}'.format(self=self)
         else:
-            s= 'con'
-        return '('+s+')' if self.uncertain else s
+            s = 'con'
+        return '(' + s + ')' if self.uncertain else s
 
     def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
@@ -443,7 +442,6 @@ class Con( Edit, recordtype.recordtype('Con', [('from_ac', None), ('from_type', 
         """
         self.uncertain = True
         return self
-    
 
     @property
     def type(self):
@@ -454,9 +452,7 @@ class Con( Edit, recordtype.recordtype('Con', [('from_ac', None), ('from_type', 
         return 'con'
 
 
-
-class MosaicVariant( Edit, recordtype.recordtype('MosaicVariant', [('ref_alt', None), ('uncertain', False)]) ):
-    
+class MosaicVariant(Edit, recordtype.recordtype('MosaicVariant', [('ref_alt', None), ('uncertain', False)])):
     def __init__(self, ref_alt=None, uncertain=False, edit=None):
         if edit:
             ref_alt = edit.ref_alt
@@ -465,7 +461,6 @@ class MosaicVariant( Edit, recordtype.recordtype('MosaicVariant', [('ref_alt', N
 
     def __str__(self):
         return str(self.ref_alt)
-    
 
     def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
@@ -474,7 +469,6 @@ class MosaicVariant( Edit, recordtype.recordtype('MosaicVariant', [('ref_alt', N
         """
         self.uncertain = True
         return self
-    
 
     @property
     def type(self):
@@ -485,11 +479,7 @@ class MosaicVariant( Edit, recordtype.recordtype('MosaicVariant', [('ref_alt', N
         return 'mos_' + self.ref_alt.type if self.ref_alt else 'mos_'
 
 
-
-
-
-class ChimericVariant( Edit, recordtype.recordtype('ChimericVariant', [('ref_alt', None), ('uncertain', False)]) ):
-    
+class ChimericVariant(Edit, recordtype.recordtype('ChimericVariant', [('ref_alt', None), ('uncertain', False)])):
     def __init__(self, ref_alt=None, uncertain=False, edit=None):
         if edit:
             ref_alt = edit.ref_alt
@@ -498,7 +488,6 @@ class ChimericVariant( Edit, recordtype.recordtype('ChimericVariant', [('ref_alt
 
     def __str__(self):
         return str(self.ref_alt)
-    
 
     def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
@@ -507,7 +496,6 @@ class ChimericVariant( Edit, recordtype.recordtype('ChimericVariant', [('ref_alt
         """
         self.uncertain = True
         return self
-    
 
     @property
     def type(self):
@@ -518,18 +506,9 @@ class ChimericVariant( Edit, recordtype.recordtype('ChimericVariant', [('ref_alt
         return 'chi_' + self.ref_alt.type if self.ref_alt else 'chi_'
 
 
-
-
-
-
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
-
-
-
-
-
 
 # 
 # class ComplexVariant( Edit, recordtype.recordtype('ComplexVariant', ['edits','rel'], default=None) ):
@@ -539,13 +518,6 @@ if __name__ == "__main__":
 # class CompoundVariant( Edit, recordtype.recordtype('CompoundVariant', ['edits'], default=None) ):
 #     def __str__(self):
 #         return ';'.join( [ '['+e+']' for e in self.edits ] )
-
-
-
-
-
-
-
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

@@ -22,12 +22,12 @@ _logger = logging.getLogger(__name__)
 
 try:
     from vgraph.norm import normalize_alleles as _normalize_alleles_vgraph
+
     def normalize_alleles(ref, start, stop, alleles, bound, ref_step, left, shuffle=True):
         """wraps vgraph.norm.normalize_alleles to pass ascii-encoded strings"""
-        return _normalize_alleles_vgraph(ref.encode('ascii'),
-                                         start, stop,
-                                         [a.encode('ascii') for a in alleles],
-                                         bound, ref_step, left, shuffle)
+        return _normalize_alleles_vgraph(ref.encode('ascii'), start, stop, [a.encode('ascii') for a in alleles], bound,
+                                         ref_step, left, shuffle)
+
     _logger.debug("Using normalize_alleles from vgraph (https://github.com/bioinformed/vgraph)")
 except ImportError:
     from .utils.norm import normalize_alleles
@@ -53,7 +53,6 @@ class Normalizer(object):
         self.alt_aln_method = alt_aln_method
         self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
 
-
     def normalize(self, var):
         """Perform variants normalization
         """
@@ -75,8 +74,7 @@ class Normalizer(object):
 
         if var.type in 'nr':
             if var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0:
-                raise HGVSUnsupportedOperationError(
-                    "Normalization of intronic variants is not supported")
+                raise HGVSUnsupportedOperationError("Normalization of intronic variants is not supported")
 
         # g, m, n, r sequences all use sequence start as the datum
         # That's an essential assumption herein
@@ -94,8 +92,7 @@ class Normalizer(object):
         if alt_len <= ref_len:
             ref_start = start
             ref_end = end - 1
-            edit = hgvs.edit.NARefAlt(ref=ref,
-                                      alt=None if alt_len == 0 else alt)
+            edit = hgvs.edit.NARefAlt(ref=ref, alt=None if alt_len == 0 else alt)
         elif alt_len > ref_len:
             # ins or dup
             if ref_len == 0:
@@ -136,7 +133,6 @@ class Normalizer(object):
 
         return var_norm
 
-
     def _get_boundary(self, var):
         """Get the position of exon-intron boundary for current variant
         """
@@ -170,18 +166,18 @@ class Normalizer(object):
 
                 # TODO: #239: implement methods to find tx regions
                 for i in range(0, len(exon_starts)):
-                    if (var.posedit.pos.start.base - 1 >= exon_starts[i]
-                        and var.posedit.pos.start.base - 1 < exon_ends[i]):
+                    if (var.posedit.pos.start.base - 1 >= exon_starts[i] and
+                        var.posedit.pos.start.base - 1 < exon_ends[i]):
                         break
 
                 for j in range(0, len(exon_starts)):
-                    if (var.posedit.pos.end.base - 1 >= exon_starts[j]
-                        and var.posedit.pos.end.base - 1 < exon_ends[j]):
+                    if (var.posedit.pos.end.base - 1 >= exon_starts[j] and var.posedit.pos.end.base - 1 < exon_ends[j]):
                         break
 
                 if i != j:
                     raise HGVSUnsupportedOperationError(
-                        "Unsupported normalization of variants spanning the exon-intron boundary ({var})".format(var=var))
+                        "Unsupported normalization of variants spanning the exon-intron boundary ({var})".format(
+                            var=var))
 
                 left = exon_starts[i]
                 right = exon_ends[i]
@@ -206,7 +202,6 @@ class Normalizer(object):
         else:
             # For variant type of g and m etc.
             return 0, float('inf')
-
 
     def _fetch_bounded_seq(self, var, start, end, boundary):
         """Fetch reference sequence from hgvs data provider.
@@ -282,8 +277,8 @@ class Normalizer(object):
                 if ref_seq == '':
                     break
                 orig_start, orig_stop = start, stop
-                start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt),
-                                                            len(ref_seq), win_size, False)
+                start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt), len(ref_seq), win_size,
+                                                            False)
                 if stop < len(ref_seq) or start == orig_start:
                     break
                 # if stop at the end of the window, try to extend the shuffling to the right
@@ -310,8 +305,7 @@ class Normalizer(object):
                 if ref_seq == '':
                     break
                 orig_start, orig_stop = start, stop
-                start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt),
-                                                            0, win_size, True)
+                start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt), 0, win_size, True)
                 if start > 0 or stop == orig_stop:
                     break
                 # if stop at the end of the window, try to extend the shuffling to the left
@@ -322,7 +316,6 @@ class Normalizer(object):
         return base + start, base + stop, (ref, alt)
 
 
-
 if __name__ == '__main__':
     hgvsparser = hgvs.parser.Parser()
     var = hgvsparser.parse_hgvs_variant('NM_001166478.1:c.61delG')
@@ -330,7 +323,6 @@ if __name__ == '__main__':
     norm = Normalizer(hdp, direction=5, cross=False)
     res = norm.normalize(var)
     print(str(var) + '    =>    ' + str(res))
-
 
 ## <LICENSE>
 ## Copyright 2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

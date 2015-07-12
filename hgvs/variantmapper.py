@@ -21,6 +21,7 @@ from hgvs.decorators.lru_cache import lru_cache
 
 _logger = logging.getLogger(__name__)
 
+
 class VariantMapper(object):
     """Maps HGVS variants to and from g., n., r., c., and p. representations.
     All methods require and return objects of type :class:`hgvs.variant.SequenceVariant`.
@@ -50,7 +51,6 @@ class VariantMapper(object):
 
     def __init__(self, hdp):
         self.hdp = hdp
-
 
     # ############################################################################
     # g <-> n
@@ -191,7 +191,6 @@ class VariantMapper(object):
         var_c = hgvs.variant.SequenceVariant(ac=var_n.ac, type='c', posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
         return var_c
 
-
     # ############################################################################
     # c -> p
     # TODO: c_to_p needs refactoring
@@ -271,8 +270,8 @@ class VariantMapper(object):
             # insertions have no reference sequence (zero-width), so return as-is
             return var
 
-        if ((isinstance(var.posedit.pos.start, hgvs.location.BaseOffsetPosition) and var.posedit.pos.start.offset != 0) or
-            (isinstance(var.posedit.pos.end, hgvs.location.BaseOffsetPosition) and var.posedit.pos.end.offset != 0)):
+        if ((isinstance(var.posedit.pos.start, hgvs.location.BaseOffsetPosition) and var.posedit.pos.start.offset != 0)
+            or (isinstance(var.posedit.pos.end, hgvs.location.BaseOffsetPosition) and var.posedit.pos.end.offset != 0)):
             _logger.info("Can't update reference sequence for intronic variant {}".format(var))
             return var
 
@@ -436,10 +435,10 @@ class EasyVariantMapper(VariantMapper):
                    if e['alt_aln_method'] == self.alt_aln_method and e['alt_ac'] in self.primary_assembly_accessions]
         if len(alt_acs) > 1:
             raise HGVSError("Multiple chromosomal alignments for {tx_ac} in {pa}"
-                                            "using {am} (likely paralog or pseudoautosomal region)".format(
-                                                tx_ac=tx_ac,
-                                                pa=self.primary_assembly,
-                                                am=self.alt_aln_method))
+                            "using {am} (likely paralog or pseudoautosomal region)".format(
+                                tx_ac=tx_ac,
+                                pa=self.primary_assembly,
+                                am=self.alt_aln_method))
         if len(alt_acs) == 0:
             raise HGVSDataNotAvailableError("No alignments for {tx_ac} in {pa} using {am}".format(
                 tx_ac=tx_ac,
@@ -458,10 +457,11 @@ class EasyVariantMapper(VariantMapper):
 
         def _get_context(v):
             bounds = (v.posedit.pos.start.base - margin, v.posedit.pos.end.base + margin)
-            return {'span': "{}.{}_{}".format(v.type, *bounds),
-                    'seq': self.hdp.fetch_seq(v.ac, bounds[0] - 1, bounds[1]),
-                    'var': v
-                    }
+            return {
+                'span': "{}.{}_{}".format(v.type, *bounds),
+                'seq': self.hdp.fetch_seq(v.ac, bounds[0] - 1, bounds[1]),
+                'var': v
+            }
 
         assert var.type in 'gcn'
 
@@ -495,8 +495,6 @@ class EasyVariantMapper(VariantMapper):
             'g': {'seq': g_seq, 'span': g_span, 'var': g_var},
             'n': {'seq': n_seq, 'span': "{} ({})".format(n_span, c_span), 'var': "{} ({})".format(n_var, c_var)},
         }
-
-
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

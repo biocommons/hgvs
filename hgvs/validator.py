@@ -16,8 +16,8 @@ DEL_ERROR_MSG = 'Length implied by coordinates ({span_len})  must equal sequence
 AC_ERROR_MSG = 'Accession is not present in BDI database'
 SEQ_ERROR_MSG = 'Variant reference ({var_ref_seq}) does not agree with reference sequence ({ref_seq})'
 
-
 # TODO: #249: redisign validation interface for greater flexibility
+
 
 class Validator(object):
     """invoke intrinsic and extrinsic validation"""
