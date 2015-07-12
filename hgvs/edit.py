@@ -374,163 +374,17 @@ class NADupN(Edit, recordtype.recordtype('NADupN', ['n', ('uncertain', False)]))
         return 'dup'
 
 
-class Inv( Edit, recordtype.recordtype('Inv', [('ref', None), ('uncertain', False)]) ):
-    """Inversion
-    """
-    
-    def __init__(self, ref=None, uncertain=False, edit=None):
-        if edit:
-            ref = edit.ref
-            uncertain = edit.uncertain
-        super(Inv, self).__init__(ref=ref, uncertain=uncertain)
-
-    def __str__(self):
-        return 'inv' + (self.ref or '')
-
-    def _set_uncertain(self):
-        """sets the uncertain flag to True; used primarily by the HGVS grammar
-
-        :returns: self
-        """
-        self.uncertain = True
-        return self
-    
-    @property
-    def ref_n(self):
-        """
-        returns an integer, either from the `seq` instance variable if it's a number,
-        or None otherwise
-        """
-        try:
-            return int(self.ref)
-        except ValueError:
-            return None
-    
-
-    @property
-    def type(self):
-        """return the type of this Edit
-
-        :returns: edit type (str)
-        """
-        return 'inv'
-
-
-
-class Con( Edit, recordtype.recordtype('Con', [('from_ac', None), ('from_type', None), ('from_pos', None), ('uncertain', False)]) ):
-    """Conversion
-    """
-    
-    def __init__(self, from_ac=None, from_type=None, from_pos=None, uncertain=False, edit=None):
-        if edit:
-            from_ac   = edit.from_ac
-            from_type = edit.from_type
-            from_pos  = edit.from_pos
-            uncertain = edit.uncertain
-        super(Con, self).__init__(from_ac=from_ac, from_type=from_type, from_pos=from_pos, uncertain=uncertain)
-
-    def __str__(self):
-        if self.from_ac and self.from_type and self.from_pos:
-            s = 'con{self.from_ac}:{self.from_type}.{self.from_pos}'.format(self=self)
-        else:
-            s= 'con'
-        return '('+s+')' if self.uncertain else s
-
-    def _set_uncertain(self):
-        """sets the uncertain flag to True; used primarily by the HGVS grammar
-
-        :returns: self
-        """
-        self.uncertain = True
-        return self
-    
-
-    @property
-    def type(self):
-        """return the type of this Edit
-
-        :returns: edit type (str)
-        """
-        return 'con'
-
-
-
-class MosaicVariant( Edit, recordtype.recordtype('MosaicVariant', [('ref_alt', None), ('uncertain', False)]) ):
-    
-    def __init__(self, ref_alt=None, uncertain=False, edit=None):
-        if edit:
-            ref_alt = edit.ref_alt
-            uncertain = edit.uncertain
-        super(MosaicVariant, self).__init__(ref_alt=ref_alt, uncertain=uncertain)
-
-    def __str__(self):
-        return str(self.ref_alt)
-    
-
-    def _set_uncertain(self):
-        """sets the uncertain flag to True; used primarily by the HGVS grammar
-
-        :returns: self
-        """
-        self.uncertain = True
-        return self
-    
-
-    @property
-    def type(self):
-        """return the type of this Edit
-
-        :returns: edit type (str)
-        """
-        return 'mos_' + self.ref_alt.type if self.ref_alt else 'mos_'
-
-
-
-
-
-class ChimericVariant( Edit, recordtype.recordtype('ChimericVariant', [('ref_alt', None), ('uncertain', False)]) ):
-    
-    def __init__(self, ref_alt=None, uncertain=False, edit=None):
-        if edit:
-            ref_alt = edit.ref_alt
-            uncertain = edit.uncertain
-        super(ChimericVariant, self).__init__(ref_alt=ref_alt, uncertain=uncertain)
-
-    def __str__(self):
-        return str(self.ref_alt)
-    
-
-    def _set_uncertain(self):
-        """sets the uncertain flag to True; used primarily by the HGVS grammar
-
-        :returns: self
-        """
-        self.uncertain = True
-        return self
-    
-
-    @property
-    def type(self):
-        """return the type of this Edit
-
-        :returns: edit type (str)
-        """
-        return 'chi_' + self.ref_alt.type if self.ref_alt else 'chi_'
-
-
-
-
-
-
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
 
-
-
-
-
-
+# class Inv( Edit, recordtype.recordtype('Inv', [], default=None) ):
+#     def __str__(self):
+#         return ''
+# 
+# class Con( Edit, recordtype.recordtype('Con', ['con'], default=None) ):
+#     def __str__(self):
+#         return self.con
 # 
 # class ComplexVariant( Edit, recordtype.recordtype('ComplexVariant', ['edits','rel'], default=None) ):
 #     def __str__(self):
@@ -539,13 +393,14 @@ if __name__ == "__main__":
 # class CompoundVariant( Edit, recordtype.recordtype('CompoundVariant', ['edits'], default=None) ):
 #     def __str__(self):
 #         return ';'.join( [ '['+e+']' for e in self.edits ] )
-
-
-
-
-
-
-
+# 
+# class MosaicVariant( Edit, recordtype.recordtype('Edit', ['edit'], default=None) ):
+#     def __str__(self):
+#         return '[=/{self.edit}]'.format(self=self)
+# 
+# class ChimericVariant( Edit, recordtype.recordtype('Edit', ['edit'], default=None) ):
+#     def __str__(self):
+#         return '[=//{self.edit}]'.format(self=self)
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
