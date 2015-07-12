@@ -122,14 +122,30 @@ r_hgvs_position   = accn:ac ':' 'r':type      '.'   r_interval:pos -> hgvs.hgvsp
 
 g_posedit   = gm_posedit
 m_posedit   = gm_posedit
-gm_posedit = gm_interval:pos dna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit)
+gm_posedit = (gm_interval:pos dna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit))
+   | ('[=/' gm_interval:pos dna_mos:edit ']' -> hgvs.posedit.PosEdit(pos=pos,edit=edit))
+   | ('[' gm_interval:pos0 <dna*> '=/' gm_interval:pos dna_mos:edit ']' -> hgvs.posedit.PosEdit(pos=pos,edit=edit))
+   | ('[=//' gm_interval:pos dna_chi:edit ']' -> hgvs.posedit.PosEdit(pos=pos,edit=edit))
+   | ('[' gm_interval:pos0 <dna*> '=//' gm_interval:pos dna_chi:edit ']' -> hgvs.posedit.PosEdit(pos=pos,edit=edit))
 
 n_posedit   = cn_posedit
 c_posedit   = cn_posedit
-cn_posedit  = cn_interval:pos dna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit)
+cn_posedit   = (cn_interval:pos dna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit))
+   | ('[=/' cn_interval:pos dna_mos:edit ']' -> hgvs.posedit.PosEdit(pos=pos,edit=edit))
+   | ('[' cn_interval:pos0 <dna*> '=/' cn_interval:pos dna_mos:edit ']' -> hgvs.posedit.PosEdit(pos=pos,edit=edit))
+   | ('[=//' cn_interval:pos dna_chi:edit ']' -> hgvs.posedit.PosEdit(pos=pos,edit=edit))
+   | ('[' cn_interval:pos0 <dna*> '=//' cn_interval:pos dna_chi:edit ']' -> hgvs.posedit.PosEdit(pos=pos,edit=edit))
 
 r_posedit   = (r_interval:pos rna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit))
    | ('(' r_interval:pos rna_edit:edit ')' -> hgvs.posedit.PosEdit(pos=pos,edit=edit, uncertain=True))
+   | ('[=/' r_interval:pos rna_mos:edit ']' -> hgvs.posedit.PosEdit(pos=pos,edit=edit))
+   | ('([=/' r_interval:pos rna_mos:edit '])' -> hgvs.posedit.PosEdit(pos=pos,edit=edit, uncertain=True))
+   | ('[' r_interval:pos0 <dna*> '=/' r_interval:pos rna_mos:edit ']' -> hgvs.posedit.PosEdit(pos=pos,edit=edit))
+   | ('([' r_interval:pos0 <dna*> '=/' r_interval:pos rna_mos:edit '])' -> hgvs.posedit.PosEdit(pos=pos,edit=edit, uncertain=True))
+   | ('[=//' r_interval:pos rna_chi:edit ']' -> hgvs.posedit.PosEdit(pos=pos,edit=edit))
+   | ('([=//' r_interval:pos rna_chi:edit '])' -> hgvs.posedit.PosEdit(pos=pos,edit=edit, uncertain=True))
+   | ('[' r_interval:pos0 <dna*> '=//' r_interval:pos rna_chi:edit ']' -> hgvs.posedit.PosEdit(pos=pos,edit=edit))
+   | ('([' r_interval:pos0 <dna*> '=//' r_interval:pos rna_chi:edit '])' -> hgvs.posedit.PosEdit(pos=pos,edit=edit, uncertain=True))
 
 p_posedit   = (p_interval:pos pro_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit))
    | ('(' p_interval:pos pro_edit:edit ')' -> hgvs.posedit.PosEdit(pos=pos,edit=edit, uncertain=True))
@@ -150,12 +166,16 @@ p_posedit_special =
 ## "_mu" = "maybe uncertain"
 
 dna_edit_mu = dna_edit | '(' dna_edit:edit ')' -> edit._set_uncertain()
-dna_edit   = dna_dupN | dna_subst | dna_delins | dna_ins | dna_del | dna_dup | dna_copy
+dna_edit   = dna_dupN | dna_subst | dna_delins | dna_ins | dna_del | dna_dup | dna_inv | dna_con | dna_copy
 dna_subst  = dna:ref '>' dna:alt      -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
 dna_delins = 'del' (<num>|<dna*>):ref 'ins' <dna+>:alt  -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
 dna_del    = 'del' (<num>|<dna*>):ref -> hgvs.edit.NARefAlt(ref=ref,alt=None)
 dna_ins    = 'ins' <dna+>:alt         -> hgvs.edit.NARefAlt(ref=None,alt=alt)
 dna_dup    = 'dup' <dna*>:ref         -> hgvs.edit.Dup(ref=ref)
+dna_inv    = 'inv' (<num>|<dna*>):ref -> hgvs.edit.Inv(ref=ref)
+dna_con    = 'con' hgvs_position:pos  -> hgvs.edit.Con(from_ac=pos.ac, from_type=pos.type, from_pos=pos.pos)
+dna_mos    = dna_edit:edit            -> hgvs.edit.MosaicVariant(ref_alt=edit)
+dna_chi    = dna_edit:edit            -> hgvs.edit.ChimericVariant(ref_alt=edit)
 # internal
 dna_copy = 'copy' num:n -> hgvs.edit.NACopy(copy=n)
 dna_dupN = 'dup' num:n -> hgvs.edit.NADupN(n=n)
@@ -166,12 +186,16 @@ dna_dupN = 'dup' num:n -> hgvs.edit.NADupN(n=n)
 # 		     | <dna+>:ref '(' num:min '_' num:max ')' -> Repeat(ref=ref, min=min, max=max)
 
 rna_edit_mu = rna_edit | '(' rna_edit:edit ')' -> edit._set_uncertain()
-rna_edit   = rna_subst | rna_delins | rna_ins | rna_del | rna_dup
+rna_edit   = rna_subst | rna_delins | rna_ins | rna_del | rna_dup | rna_inv | rna_con
 rna_subst  = rna:ref '>' rna:alt             -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
 rna_delins = 'del' (<num>|<rna*>):ref 'ins' <rna+>:alt  -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
 rna_del    = 'del' (<num>|<rna*>):ref        -> hgvs.edit.NARefAlt(ref=ref,alt=None)
 rna_ins    = 'ins' <rna+>:alt                -> hgvs.edit.NARefAlt(ref=None,alt=alt)
 rna_dup    = 'dup' <rna*>:ref                -> hgvs.edit.Dup(ref=ref)
+rna_inv    = 'inv' (<num>|<rna*>):ref        -> hgvs.edit.Inv(ref=ref)
+rna_con    = 'con' hgvs_position:pos         -> hgvs.edit.Con(from_ac=pos.ac, from_type=pos.type, from_pos=pos.pos)
+rna_mos    = rna_edit:edit                   -> hgvs.edit.MosaicVariant(ref_alt=edit)
+rna_chi    = rna_edit:edit                   -> hgvs.edit.ChimericVariant(ref_alt=edit)
 
 pro_edit_mu = pro_edit | '(' pro_edit:edit ')' -> edit._set_uncertain()
 pro_edit   = pro_fs | pro_ext | pro_subst | pro_delins | pro_ins | pro_del | pro_dup

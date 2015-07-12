@@ -6,6 +6,7 @@ import unittest
 from nose.plugins.attrib import attr
 
 import hgvs.edit
+import hgvs.location
 from hgvs.exceptions import HGVSError
 
 
@@ -86,6 +87,32 @@ class Test_Edit(unittest.TestCase):
         with self.assertRaises(HGVSError):
             edit = str(hgvs.edit.Repeat('CAG', 34, 12))
 
+    def test_Inv(self):
+        self.assertEqual(str(hgvs.edit.Inv()), 'inv')
+        self.assertEqual(str(hgvs.edit.Inv('AGCT')), 'invAGCT')
+        self.assertEqual(str(hgvs.edit.Inv('100')), 'inv100')
+        # edit types
+        self.assertEqual(str(hgvs.edit.Inv().type), 'inv')
+
+    def test_Con(self):
+        start = hgvs.location.BaseOffsetPosition(base=61,offset=-6,datum=hgvs.location.CDS_START)
+        end   = hgvs.location.BaseOffsetPosition(base=22,datum=hgvs.location.CDS_END)
+        pos   = hgvs.location.Interval(start=start,end=end)
+        self.assertEqual( str(hgvs.edit.Con('NM_001166478.1', 'c', pos)), 'conNM_001166478.1:c.61-6_*22')
+        # edit types
+        self.assertEqual( str(hgvs.edit.Con('NM_001166478.1', 'c', pos).type), 'con')
+
+    def test_MosaicVariant(self):
+        ref_alt = hgvs.edit.NARefAlt(ref='G', alt='C', uncertain=False)
+        self.assertEqual( str(hgvs.edit.MosaicVariant(ref_alt)), 'G>C')
+        # edit types
+        self.assertEqual( str(hgvs.edit.MosaicVariant(ref_alt).type), 'mos_sub')
+
+    def test_ChimericVariant(self):
+        ref_alt = hgvs.edit.NARefAlt(ref='G', alt='C', uncertain=False)
+        self.assertEqual( str(hgvs.edit.ChimericVariant(ref_alt)), 'G>C')
+        # edit types
+        self.assertEqual( str(hgvs.edit.ChimericVariant(ref_alt).type), 'chi_sub')
 
 if __name__ == '__main__':
     unittest.main()
