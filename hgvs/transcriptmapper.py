@@ -33,13 +33,13 @@ class TranscriptMapper(object):
         if self.alt_aln_method != 'transcript':
             self.tx_info = hdp.get_tx_info(self.tx_ac, self.alt_ac, self.alt_aln_method)
             if self.tx_info is None:
-                raise HGVSError("TranscriptMapper(tx_ac={self.tx_ac}, "
+                raise HGVSDataNotAvailableError("TranscriptMapper(tx_ac={self.tx_ac}, "
                                 "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
                                 "No transcript info".format(self=self))
 
             self.tx_exons = hdp.get_tx_exons(self.tx_ac, self.alt_ac, self.alt_aln_method)
             if self.tx_exons is None:
-                raise HGVSError("TranscriptMapper(tx_ac={self.tx_ac}, "
+                raise HGVSDataNotAvailableError("TranscriptMapper(tx_ac={self.tx_ac}, "
                                 "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
                                 "No transcript exons".format(self=self))
 

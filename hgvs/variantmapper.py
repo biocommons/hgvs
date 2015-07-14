@@ -260,17 +260,17 @@ class VariantMapper(object):
 
     ############################################################################
     ## Internal methods
-    
+
     def _replace_reference(self, var):
         """fetch reference sequence for variant and update (in-place) if necessary"""
-    
+
         if var.type not in 'cgmnr':
             raise HGVSUnsupportedOperationError("Can only update references for type c, g, m, n, r")
 
         if var.posedit.edit.type == 'ins':
             # insertions have no reference sequence (zero-width), so return as-is
             return var
-        
+
         if ((isinstance(var.posedit.pos.start, hgvs.location.BaseOffsetPosition) and var.posedit.pos.start.offset != 0) or
             (isinstance(var.posedit.pos.end, hgvs.location.BaseOffsetPosition) and var.posedit.pos.end.offset != 0)):
             _logger.info("Can't update reference sequence for intronic variant {}".format(var))
@@ -446,6 +446,57 @@ class EasyVariantMapper(VariantMapper):
                 pa=self.primary_assembly,
                 am=self.alt_aln_method))
         return alt_acs[0]    # exactly one remains
+
+    def _get_context(self, var, margin=10):
+        """UNSUPPORTED. DO NOT USE IN PRODUCTION.
+
+        Given a variant, return a dictionary of sequence contexts.
+        WARNING: sequence context will be wrong if it overlaps an
+        intron/exon boundary
+
+        """
+
+        def _get_context(v):
+            bounds = (v.posedit.pos.start.base - margin, v.posedit.pos.end.base + margin)
+            return {'span': "{}.{}_{}".format(v.type, *bounds),
+                    'seq': self.hdp.fetch_seq(v.ac, bounds[0] - 1, bounds[1]),
+                    'var': v
+                    }
+
+        assert var.type in 'gcn'
+
+        if var.type == 'g':
+            g_var = var
+            n_var = self.g_to_n(g_var)
+            c_var = self.n_to_c(n_var)
+        elif var.type == 'c':
+            c_var = var
+            n_var = self.c_to_n(c_var)
+            g_var = self.n_to_g(n_var)
+        elif var.type == 'n':
+            n_var = var
+            c_var = self.n_to_c(n_var)
+            g_var = self.n_to_g(n_var)
+
+        assert n_var.posedit.pos.start.offset == n_var.posedit.pos.end.offset == 0, "intronic context not supported"
+
+        c_bounds = (c_var.posedit.pos.start.base - margin, c_var.posedit.pos.end.base + margin)
+        g_bounds = (g_var.posedit.pos.start.base - margin, g_var.posedit.pos.end.base + margin)
+        n_bounds = (n_var.posedit.pos.start.base - margin, n_var.posedit.pos.end.base + margin)
+
+        c_span = "{}.{}_{}".format('c', *c_bounds)
+        g_span = "{}.{}_{}".format('g', *g_bounds)
+        n_span = "{}.{}_{}".format('n', *n_bounds)
+
+        g_seq = self.hdp.fetch_seq(g_var.ac, g_bounds[0] - 1, g_bounds[1])
+        n_seq = self.hdp.fetch_seq(n_var.ac, n_bounds[0] - 1, n_bounds[1])
+
+        return {
+            'g': {'seq': g_seq, 'span': g_span, 'var': g_var},
+            'n': {'seq': n_seq, 'span': "{} ({})".format(n_span, c_span), 'var': "{} ({})".format(n_var, c_var)},
+        }
+
+
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
