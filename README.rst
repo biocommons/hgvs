@@ -145,3 +145,4 @@ There are `more examples in the documentation <http://pythonhosted.org/hgvs/exam
   :align: middle
 
 .. http://badge.fury.io/for/py/uta
+
