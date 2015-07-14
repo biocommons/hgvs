@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 """
 hgvs.normalizer
 
-# TODO: Remove validation
+# TODO (MW): Move validation to validitor.py (as separate feature)
 """
 
 import copy
@@ -99,9 +99,12 @@ class Normalizer(object):
         elif alt_len > ref_len:
             # ins or dup
             if ref_len == 0:
-                # TODO: investigate whether left and right dup cases are really used.
-                # I suspect that n_a has already shuffled in specified direction
-                # and that there's only one case.
+                # TODO (MW): Investigate whether left and right dup
+                # cases are really used.  I suspect that n_a has
+                # already shuffled in the specified direction and that
+                # we can collapse these cases; i.e., if we shuffled
+                # left (5'), then look right, and if we shuffled right
+                # (3'), then look left.
                 left_seq = self._fetch_bounded_seq(var, start - alt_len - 1, end - 1,
                                                    boundary) if self.direction == 3 else ''
                 right_seq = self._fetch_bounded_seq(var, start - 1, start + alt_len - 1,
@@ -168,7 +171,7 @@ class Normalizer(object):
                 left = 0
                 right = float('inf')
 
-                # TODO: #239: implement methods to find tx regions
+                # TODO: #242: implement methods to find tx regions
                 for i in range(0, len(exon_starts)):
                     if (var.posedit.pos.start.base - 1 >= exon_starts[i]
                         and var.posedit.pos.start.base - 1 < exon_ends[i]):
