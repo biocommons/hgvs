@@ -7,8 +7,7 @@ import unittest
 
 from nose.plugins.attrib import attr
 
-from parsley import ParseError
-
+from hgvs.exceptions import HGVSParseError
 import hgvs.parser
 
 
@@ -24,7 +23,7 @@ class Test_Position(unittest.TestCase):
             var = var.strip()
             if var.startswith('#') or var == '':
                 continue
-            v = self.parser._grammar(var).hgvs_variant()
+            v = self.parser.parse_hgvs_variant(var)
             self.assertEqual(var, str(v), 'parse-format roundtrip failed:' + pprint.pformat(v.posedit))
 
     @attr(tags=["quick"])
@@ -34,7 +33,7 @@ class Test_Position(unittest.TestCase):
             var, msg = var.strip().split('\t')
             if var.startswith('#') or var == '':
                 continue
-            with self.assertRaises(ParseError):
+            with self.assertRaises(HGVSParseError):
                 self.parser.parse_hgvs_variant(var)
                 self.assertTrue(False, msg='expected HGVSParseError: %s (%s)' % (var, msg))
 

@@ -67,13 +67,9 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
     def test_del_length(self):
         """Test if del length agrees with position range"""
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.76_78delACT')))
-        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.123+54_123+55delTA'))
-                        )    # <-- haha "delta"
-
-        with self.assertRaisesRegexp(HGVSValidationError, hgvs.validator.DEL_ERROR_MSG):
-            self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.76_78del'))
-
-        with self.assertRaisesRegexp(HGVSValidationError, hgvs.validator.DEL_ERROR_MSG):
+        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.123+54_123+55delTA')))
+        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.76_78del')))
+        with self.assertRaises(HGVSValidationError):
             self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.76_78delACTACAT'))
 
 

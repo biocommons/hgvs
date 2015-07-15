@@ -12,10 +12,12 @@ import hgvs.variantmapper
 BASE_RANGE_ERROR_MSG = 'base start position must be <= end position'
 OFFSET_RANGE_ERROR_MSG = 'offset start must be <= end position'
 INS_ERROR_MSG = 'insertion length must be 1'
-DEL_ERROR_MSG = 'start and end position range must equal sequence deletion length'
+DEL_ERROR_MSG = 'Length implied by coordinates ({span_len})  must equal sequence deletion length ({del_len})'
 AC_ERROR_MSG = 'Accession is not present in BDI database'
 SEQ_ERROR_MSG = 'Variant reference ({var_ref_seq}) does not agree with reference sequence ({ref_seq})'
 
+
+# TODO: #249: redisign validation interface for greater flexibility
 
 class Validator(object):
     """invoke intrinsic and extrinsic validation"""
@@ -66,16 +68,22 @@ class IntrinsicValidator(object):
             return True
 
     def _del_length(self, var):
-        if var.posedit.edit.type == 'del':
-            del_len = len(var.posedit.edit.ref)
-            if var.type == 'g':
-                if (var.posedit.pos.end.base - var.posedit.pos.start.base + 1) != del_len:
-                    raise HGVSValidationError(DEL_ERROR_MSG)
-            if var.type in 'cmnp':
-                if ((var.posedit.pos.end.base + var.posedit.pos.end.offset) -
-                    (var.posedit.pos.start.base + var.posedit.pos.start.offset) + 1) != del_len:
-                    raise HGVSValidationError(DEL_ERROR_MSG)
-            return True
+        if var.posedit.edit.type in ['del', 'delins']:
+            ref_len = var.posedit.edit.ref_n
+            if ref_len is None:
+                return True
+
+            if var.type in 'cnr':
+                assert ((var.posedit.pos.start.offset == var.posedit.pos.end.offset == 0) or
+                        (var.posedit.pos.start.base == var.posedit.pos.end.base))
+                span_len = ((var.posedit.pos.end.base + var.posedit.pos.end.offset) -
+                            (var.posedit.pos.start.base + var.posedit.pos.start.offset) + 1)
+            else:
+                span_len = var.posedit.pos.end.base - var.posedit.pos.start.base + 1
+
+            if span_len != ref_len:
+                raise HGVSValidationError(DEL_ERROR_MSG.format(span_len=span_len, del_len=ref_len))
+        return True
 
 
 class ExtrinsicValidator():
@@ -96,7 +104,7 @@ class ExtrinsicValidator():
         var_ref_seq = None
         if var.posedit.edit.type == 'dup':
             # Handle Dup and NADupN objects.
-            var_ref_seq = getattr(var.posedit.edit, 'seq', None)
+            var_ref_seq = getattr(var.posedit.edit, 'ref', None)
         else:
             # use reference sequence of original variant, even if later converted (eg c_to_n)
             if var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0:
