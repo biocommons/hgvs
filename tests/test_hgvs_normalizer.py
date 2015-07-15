@@ -28,6 +28,8 @@ class Test_HGVSNormalizer(unittest.TestCase):
     def test_c_normalizer(self):
         """Test normalizer for variant type c."""
         #3' shuffling
+        self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.18_24inv'))),
+                         'NM_001166478.1:c.19_23invCTCTT')
         self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.31del'))),
                          'NM_001166478.1:c.35delT')
         self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.35_36insT'))),
@@ -42,10 +44,14 @@ class Test_HGVSNormalizer(unittest.TestCase):
                          'NM_001166478.1:c.35dupT')
         self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.59delG'))),
                          'NM_001166478.1:c.61delG')
+        self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.36_37insTCTCTC'))),
+                         'NM_001166478.1:c.36_37dup3')
         self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant('NM_000051.3:c.14_15insT'))),
                          'NM_000051.3:c.15dupT')
 
         #5' shuffling
+        self.assertEqual(str(self.norm5.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.18_24inv'))),
+                         'NM_001166478.1:c.19_23invCTCTT')
         self.assertEqual(str(self.norm5.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.34del'))),
                          'NM_001166478.1:c.31delT')
         self.assertEqual(str(self.norm5.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.35_36insT'))),
@@ -60,6 +66,8 @@ class Test_HGVSNormalizer(unittest.TestCase):
                          'NM_001166478.1:c.31dupT')
         self.assertEqual(str(self.norm5.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.61delG'))),
                          'NM_001166478.1:c.59delG')
+        self.assertEqual(str(self.norm5.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.36_37insTCTCTC'))),
+                         'NM_001166478.1:c.35_36dup3')
         self.assertEqual(str(self.norm5.normalize(self.hp.parse_hgvs_variant('NM_000051.3:c.14_15insT'))),
                          'NM_000051.3:c.14dupT')
 
