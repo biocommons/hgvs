@@ -30,6 +30,14 @@ class HGVSDataNotAvailableError(HGVSError):
     pass
 
 
+class HGVSNormalizationError(HGVSError):
+    pass
+
+
+class HGVSUnspportedOperationError(HGVSError):
+    pass
+
+
 class HGVSUnsupportedOperationError(HGVSError):
     pass
 
