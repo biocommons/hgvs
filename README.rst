@@ -121,6 +121,27 @@ have installation troubles.
 
 There are `more examples in the documentation <http://pythonhosted.org/hgvs/examples.html>`_.
 
+----
+
+Contributing
+------------
+
+The hgvs package is intended to be a community project that
+facilitates the reliable use of sequence variants.  Code and
+documentation contributions are appreciated!  Contributions are more
+likely to be quickly incorporated if they:
+
+* are submitted against the default branch head (or close to
+  it);
+* are made via pull requests;
+* are in a named branch, named like <issue#>-meaningful-name;
+* are narrowly focused on the bug/feature described by the issue
+* have discrete commits with good log messages;
+* have tests;
+* are formatted code with yapf;
+* are generally consistent with the (loose) style of the current code
+  with respect to variable naming, etc.
+
 
 .. _changelog: http://pythonhosted.org/hgvs/changelog.html
 .. _documentation: http://pythonhosted.org/hgvs/
