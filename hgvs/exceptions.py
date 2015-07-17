@@ -6,7 +6,7 @@ class HGVSError(Exception):
     pass
 
 
-class HGVSInternalError(Exception):
+class HGVSInternalError(HGVSError):
     pass
 
 
