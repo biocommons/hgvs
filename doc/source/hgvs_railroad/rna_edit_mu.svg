@@ -1,0 +1,19 @@
+<?xml version="1.0" standalone="no"?>
+<svg width="344" height="132" viewBox="-8 -58 344 132 " xmlns="http://www.w3.org/2000/svg" version="1.1">
+<defs><style type="text/css">.terminal_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.terminal_text{fill:black;font-family:Verdana,Sans-serif;text-anchor:middle;font-size:14px;}.symbol_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.symbol_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-style:italic;text-anchor:middle;font-size:14px;}.path{fill:none;stroke:black;stroke-width:2;}.rule_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-size:14px;}.rule_path_edge{fill:none;stroke:black;stroke-width:3;}</style></defs>
+<text class="rule_text" x="0" y="-36" >rna_edit_mu:</text>
+<rect class="symbol_rect" x="66" y="-14" width="96" height="28" rx="1" />
+<text class="symbol_text" x="114" y="4" >rna_edit</text>
+<rect class="terminal_rect" x="66" y="30" width="26" height="28" rx="28" />
+<text class="terminal_text" x="79" y="48" >(</text>
+<rect class="symbol_rect" x="116" y="30" width="96" height="28" rx="1" />
+<text class="symbol_text" x="164" y="48" >rna_edit</text>
+<rect class="terminal_rect" x="236" y="30" width="26" height="28" rx="28" />
+<text class="terminal_text" x="249" y="48" >)</text>
+<path class="path" d="M92 44 L116 44" />
+<path class="path" d="M212 44 L236 44" />
+<path class="path" d="M30 0 L66 0 M30 0 Q42 0 42 12 M298 0 L162 0 M298 0 Q286 0 286 12" />
+<path class="path" d="M54 44 L66 44 M54 44 Q42 44 42 32 L42 12 M274 44 L262 44 M274 44 Q286 44 286 32 L286 12" />
+<path class="path" d="M0 0 L30 0 M328 0 L298 0" />
+<path class="rule_path_edge" d="M0 -6 L0 6 M328 -6 L328 6" />
+</svg>
