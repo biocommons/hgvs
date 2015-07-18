@@ -2,8 +2,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 """
 hgvs.normalizer
-
-# TODO (MW): Move validation to validitor.py (as separate feature)
 """
 
 import copy
@@ -16,7 +14,7 @@ import hgvs.posedit
 import hgvs.validator
 import hgvs.variantmapper
 
-from .exceptions import HGVSDataNotAvailableError, HGVSValidationError, HGVSUnsupportedOperationError
+from hgvs.exceptions import HGVSDataNotAvailableError, HGVSValidationError, HGVSUnsupportedOperationError
 
 _logger = logging.getLogger(__name__)
 
@@ -99,22 +97,18 @@ class Normalizer(object):
         elif alt_len > ref_len:
             # ins or dup
             if ref_len == 0:
-                # TODO (MW): Investigate whether left and right dup
-                # cases are really used.  I suspect that n_a has
-                # already shuffled in the specified direction and that
-                # we can collapse these cases; i.e., if we shuffled
-                # left (5'), then look right, and if we shuffled right
-                # (3'), then look left.
-                left_seq = self._fetch_bounded_seq(var, start - alt_len - 1, end - 1,
-                                                   boundary) if self.direction == 3 else ''
-                right_seq = self._fetch_bounded_seq(var, start - 1, start + alt_len - 1,
-                                                    boundary) if self.direction == 5 else ''
+                if self.direction == 3
+                    adj_seq = self._fetch_bounded_seq(var, start - alt_len - 1, end - 1,
+                                                      boundary)
+                else:
+                    adj_seq = self._fetch_bounded_seq(var, start - 1, start + alt_len - 1,
+                                                      boundary)
                 # dup
-                if alt == left_seq:
+                if self.direction == 3 and alt == adj_seq:
                     ref_start = start - alt_len
                     ref_end = end - 1
                     edit = hgvs.edit.Dup(ref=alt)
-                elif alt == right_seq:
+                elif self.direction == 5 and alt == adj_seq:
                     ref_start = start
                     ref_end = start + alt_len - 1
                     edit = hgvs.edit.Dup(ref=alt)
@@ -229,20 +223,14 @@ class Normalizer(object):
         """
 
         # Get reference allele
-        if var.posedit.edit.type == 'ins':
-            ref = ''
-        elif var.posedit.edit.type == 'dup':
-            if var.posedit.edit.ref:
-                ref = self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, boundary)
-                # validate whether the ref of the var is the same as the reference sequence
-                if var.posedit.edit.ref != ref:
-                    raise HGVSValidationError(str(var) + ': ' + hgvs.validator.SEQ_ERROR_MSG)
+        if var.posedit.edit.type == 'ins' or var.posedit.edit.type == 'dup':
             ref = ''
         else:
-            ref = self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, boundary)
-            # validate whether the ref of the var is the same as the reference sequence
-            if var.posedit.edit.ref_s is not None and var.posedit.edit.ref != '' and var.posedit.edit.ref != ref:
-                raise HGVSValidationError(str(var) + ': ' + hgvs.validator.SEQ_ERROR_MSG)
+            #For NARefAlt
+            if var.posedit.edit.ref_s is None or var.posedit.edit.ref == '':
+                ref = self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, boundary)
+            else:
+                ref = var.posedit.edit.ref
 
         # Get alternative allele
         if var.posedit.edit.type == 'sub' or var.posedit.edit.type == 'delins' or var.posedit.edit.type == 'ins':
