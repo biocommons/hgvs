@@ -52,6 +52,10 @@ class ComplexVariant(recordtype.recordtype('ComplexVariant', ['variants', 'phase
 
     def __setitem__(self, i, value):
         self.variants[i] = value
+    
+    def __iter__(self):
+        for var in self.variants:
+            yield var
 
     def __len__(self):
         return len(self.variants)
@@ -118,6 +122,11 @@ class ComplexVariant(recordtype.recordtype('ComplexVariant', ['variants', 'phase
         return len(set(var.type for var in self.variants if var.type)) == 1
     
     @property
+    def all_same_pos(self):
+        """Return True if all variants have same position, otherwise False."""
+        return len(set(var.posedit.pos for var in self.variants if var.posedit.pos)) == 1
+    
+    @property
     def ac(self):
         if self.all_same_ac:
             return self.variants[0].ac
@@ -131,7 +140,7 @@ class ComplexVariant(recordtype.recordtype('ComplexVariant', ['variants', 'phase
     @property
     def posedit(self):
         posedits = [var.posedit for var in self.variants]
-        return hgvs.posedit.PosEditSet(posedits)
+        return hgvs.posedit.PosEditSet(posedits, self.uncertain)
 
 
 
@@ -151,8 +160,8 @@ class MosaicVariant(ComplexVariant):
     represents a compound variant.
     """
     
-    def __init__(self, variants, uncertain=False):
-        super(MosaicVariant, self).__init__(variants, None, uncertain)
+    def __init__(self, variants):
+        super(MosaicVariant, self).__init__(variants, None)
         self.separator = '/'
 
 
@@ -162,8 +171,8 @@ class ChimericVariant(ComplexVariant):
     represents a compound variant.
     """
     
-    def __init__(self, variants, uncertain=False):
-        super(ChimericVariant, self).__init__(variants, None, uncertain)
+    def __init__(self, variants):
+        super(ChimericVariant, self).__init__(variants, None)
         self.separator = '//'
 
 

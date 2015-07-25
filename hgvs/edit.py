@@ -254,6 +254,38 @@ class AAExt(Edit, recordtype.recordtype('AAExt', [('ref', None), ('alt', None), 
         return 'ext'
 
 
+class Ident(Edit, recordtype.recordtype('Ident', [('ref', None), ('uncertain', False)])):
+    def __init__(self, ref=None, uncertain=False, edit=None):
+        if edit:
+            ref = edit.ref
+            uncertain = edit.uncertain
+        super(Ident, self).__init__(ref=ref, uncertain=uncertain)
+    
+    def __str__(self):
+        s = self.ref + '=' if self.ref else '='
+        return '(' + s + ')' if self.uncertain else s
+    
+    def _set_uncertain(self):
+        """sets the uncertain flag to True; used primarily by the HGVS grammar
+
+        :returns: self
+        """
+        self.uncertain = True
+        return self
+    
+    @property
+    def ref_s(self):
+        return self.ref if (isinstance(self.ref, basestring) and self.ref and self.ref[0] in 'ACGTUN') else None
+    
+    @property
+    def type(self):
+        """return the type of this Edit
+
+        :returns: edit type (str)
+        """
+        return 'identity'
+
+
 class Dup(Edit, recordtype.recordtype('Dup', [('ref', None), ('uncertain', False)])):
     def __init__(self, ref=None, uncertain=False, edit=None):
         if edit:
