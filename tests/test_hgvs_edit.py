@@ -71,6 +71,10 @@ class Test_Edit(unittest.TestCase):
         self.assertEqual(str(hgvs.edit.AAExt('A', 'V', None, -10).type), 'ext')
         self.assertEqual(str(hgvs.edit.AAExt('A', None, None, -5).type), 'ext')
 
+    def test_Ident(self):
+        self.assertEqual(str(hgvs.edit.Ident('A')), 'A=')
+        self.assertEqual(str(hgvs.edit.Ident()), '=')
+    
     def test_Dup(self):
         self.assertEqual(str(hgvs.edit.Dup()), 'dup')
         self.assertEqual(str(hgvs.edit.Dup('T')), 'dupT')
