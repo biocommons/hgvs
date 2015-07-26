@@ -24,6 +24,9 @@ class Test_HGVSValidator(unittest.TestCase):
     def test_wrapper(self):
         """Test that validator wrapper is working"""
         self.assertTrue(self.vr.validate(self.hp.parse_hgvs_variant('NM_001005405.2:c.6C>A')))
+        self.assertTrue(self.vr.validate(self.hp.parse_hgvs_variant('NM_001166478.1:c.[15C>A;31T>G;59G>C];[31del;35_36insT]')))
+        self.assertTrue(self.vr.validate(self.hp.parse_hgvs_variant('NM_001166478.1:c.[31=/31T>G]')))
+        self.assertTrue(self.vr.validate(self.hp.parse_hgvs_variant('NM_001166478.1:c.[=//31T>G]')))
 
 
 @attr(tags=["quick", "validation"])
