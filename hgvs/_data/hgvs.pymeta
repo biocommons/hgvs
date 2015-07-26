@@ -130,7 +130,7 @@ n_mosaic  = cn_mosaic
 cn_mosaic = accn:ac ':' cn_type:type '.[' cn_mosaic_posedits:posedit_list ']'
                 -> hgvs.variant.MosaicVariant([hgvs.variant.SequenceVariant(ac,type,posedit) for posedit in posedit_list])
 
-r_mosaic  = accn:ac ':' r_type:type '.[' r_mosaic_posedits:posedit_list ']'
+r_mosaic  = accn:ac ':' 'r':type '.[' r_mosaic_posedits:posedit_list ']'
                 -> hgvs.variant.MosaicVariant([hgvs.variant.SequenceVariant(ac,type,posedit) for posedit in posedit_list])
 
 
@@ -150,7 +150,7 @@ n_chimeric  = cn_chimeric
 cn_chimeric = accn:ac ':' cn_type:type '.[' cn_chimeric_posedits:posedit_list ']'
                 -> hgvs.variant.ChimericVariant([hgvs.variant.SequenceVariant(ac,type,posedit) for posedit in posedit_list])
 
-r_chimeric  = accn:ac ':' r_type:type '.[' r_chimeric_posedits:posedit_list ']'
+r_chimeric  = accn:ac ':' 'r':type '.[' r_chimeric_posedits:posedit_list ']'
                 -> hgvs.variant.ChimericVariant([hgvs.variant.SequenceVariant(ac,type,posedit) for posedit in posedit_list])
 
 
