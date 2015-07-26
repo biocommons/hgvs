@@ -267,7 +267,7 @@ r_chimeric_posedits  = r_posedit:edit '//' r_chimeric_posedits:set -> hgvs.posed
 ## "_mu" = "maybe uncertain"
 
 dna_edit_mu = dna_edit | '(' dna_edit:edit ')' -> edit._set_uncertain()
-dna_edit   = dna_ident | dna_subst | dna_delins | dna_ins | dna_del | dna_dup | dna_inv | dna_con | dna_copy | dna_dupN 
+dna_edit   = dna_dupN | dna_ident | dna_subst | dna_delins | dna_ins | dna_del | dna_dup | dna_inv | dna_con | dna_copy
 dna_ident  = <dna*>:ref '='           -> hgvs.edit.Ident(ref=ref)
 dna_subst  = dna:ref '>' dna:alt      -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
 dna_delins = 'del' (<num>|<dna*>):ref 'ins' <dna+>:alt  -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
