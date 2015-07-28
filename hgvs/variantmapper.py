@@ -55,6 +55,15 @@ class VariantMapper(object):
     # ############################################################################
     # g <-> n
     def g_to_n(self, var_g, tx_ac, alt_aln_method='splign'):
+        if isinstance(var_g, hgvs.variant.SequenceVariant):
+            return self._g_to_n(var_g, tx_ac, alt_aln_method)
+        else:
+            vars = copy.deepcopy(var)
+            for i in range(0, len(var)):
+                vars[i] = self._g_to_n(var[i], tx_ac, alt_aln_method)
+            return vars
+    
+    def _g_to_n(self, var_g, tx_ac, alt_aln_method='splign'):
         """Given a parsed g. variant, return a n. variant on the specified
         transcript using the specified alignment method (default is
         'splign' from NCBI).
@@ -76,6 +85,15 @@ class VariantMapper(object):
         return var_n
 
     def n_to_g(self, var_n, alt_ac, alt_aln_method='splign'):
+        if isinstance(var_n, hgvs.variant.SequenceVariant):
+            return self._n_to_g(var_n, alt_ac, alt_aln_method)
+        else:
+            vars = copy.deepcopy(var)
+            for i in range(0, len(var)):
+                vars[i] = self._n_to_g(var_n, alt_ac, alt_aln_method)
+            return vars
+    
+    def _n_to_g(self, var_n, alt_ac, alt_aln_method='splign'):
         """Given a parsed n. variant, return a g. variant on the specified
         transcript using the specified alignment method (default is
         'splign' from NCBI).
@@ -99,6 +117,15 @@ class VariantMapper(object):
     # ############################################################################
     # g <-> c
     def g_to_c(self, var_g, tx_ac, alt_aln_method='splign'):
+        if isinstance(var_g, hgvs.variant.SequenceVariant):
+            return self._g_to_c(var_g, tx_ac, alt_aln_method)
+        else:
+            vars = copy.deepcopy(var)
+            for i in range(0, len(var)):
+                vars[i] = self._g_to_c(var_g, tx_ac, alt_aln_method)
+            return vars
+    
+    def _g_to_c(self, var_g, tx_ac, alt_aln_method='splign'):
         """Given a parsed g. variant, return a c. variant on the specified
         transcript using the specified alignment method (default is
         'splign' from NCBI).
@@ -121,6 +148,15 @@ class VariantMapper(object):
         return var_c
 
     def c_to_g(self, var_c, alt_ac, alt_aln_method='splign'):
+        if isinstance(var_c, hgvs.variant.SequenceVariant):
+            return self._c_to_g(var_c, alt_ac, alt_aln_method)
+        else:
+            vars = copy.deepcopy(var)
+            for i in range(0, len(var)):
+                vars[i] = self._c_to_g(var_c, alt_ac, alt_aln_method)
+            return vars
+    
+    def _c_to_g(self, var_c, alt_ac, alt_aln_method='splign'):
         """Given a parsed c. variant, return a g. variant on the specified
         transcript using the specified alignment method (default is
         'splign' from NCBI).
@@ -148,6 +184,15 @@ class VariantMapper(object):
     # c <-> n
     # TODO: Identify use case for this code
     def c_to_n(self, var_c):
+        if isinstance(var_c, hgvs.variant.SequenceVariant):
+            return self._c_to_n(var_c)
+        else:
+            vars = copy.deepcopy(var)
+            for i in range(0, len(var)):
+                vars[i] = self._c_to_n(var_c)
+            return vars
+    
+    def _c_to_n(self, var_c):
         """Given a parsed c. variant, return a n. variant on the specified
         transcript using the specified alignment method (default is
         'transcript' indicating a self alignment).
@@ -170,6 +215,15 @@ class VariantMapper(object):
         return var_n
 
     def n_to_c(self, var_n):
+        if isinstance(var_n, hgvs.variant.SequenceVariant):
+            return self._n_to_c(var_n)
+        else:
+            vars = copy.deepcopy(var)
+            for i in range(0, len(var)):
+                vars[i] = self._n_to_c(var_n)
+            return vars
+    
+    def _n_to_c(self, var_n):
         """Given a parsed n. variant, return a c. variant on the specified
         transcript using the specified alignment method (default is
         'transcript' indicating a self alignment).
@@ -195,6 +249,15 @@ class VariantMapper(object):
     # c -> p
     # TODO: c_to_p needs refactoring
     def c_to_p(self, var_c, pro_ac=None):
+        if isinstance(var_c, hgvs.variant.SequenceVariant):
+            return self._c_to_p(var_c, pro_ac)
+        else:
+            vars = copy.deepcopy(var)
+            for i in range(0, len(var)):
+                vars[i] = self._c_to_p(var_c, pro_ac)
+            return vars
+    
+    def _c_to_p(self, var_c, pro_ac=None):
         """
         Converts a c. SequenceVariant to a p. SequenceVariant on the specified protein accession
         Author: Rudy Rico
@@ -259,8 +322,16 @@ class VariantMapper(object):
 
     ############################################################################
     ## Internal methods
-
+    
     def _replace_reference(self, var):
+        if isinstance(var, hgvs.variant.SequenceVariant):
+            return self._replace_reference_for_simple_var(var)
+        else:
+            for i in range(0, len(var)):
+                var[i] = self._replace_reference_for_simple_var(var[i])
+            return var
+
+    def _replace_reference_for_simple_var(self, var):
         """fetch reference sequence for variant and update (in-place) if necessary"""
 
         if var.type not in 'cgmnr':
