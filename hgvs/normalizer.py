@@ -49,14 +49,24 @@ class Normalizer(object):
         self.cross = cross
         self.alt_aln_method = alt_aln_method
         self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
-
-
+    
+    
     def normalize(self, var):
-        """Perform variants normalization
+        if isinstance(var, hgvs.variant.SequenceVariant):
+            return self.hgvs_normalize(var)
+        else:
+            vars = copy.deepcopy(var)
+            for i in range(0, len(var)):
+                vars[i] = self.hgvs_normalize(var[i])
+            return vars
+
+
+    def hgvs_normalize(self, var):
+        """Perform sequence variants normalization for single variant
         """
         assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
 
-        if var.posedit.uncertain:
+        if var.posedit.uncertain or var.posedit.pos is None:
             return var
 
         type = var.type
@@ -65,6 +75,12 @@ class Normalizer(object):
             raise HGVSUnsupportedOperationError("Unsupported normalization of protein level variants: {0}".format(var))
         if var.posedit.edit.type == 'con':
             raise HGVSUnsupportedOperationError("Unsupported normalization of conversion variants: {0}",format(var))
+        
+        if var.posedit.edit.type == 'identity':
+            var_norm = copy.deepcopy(var)
+            var_norm.posedit.pos = None
+            return var_norm
+        
 
         # For c. variants normalization, first convert to n. variant
         # and perform normalization at the n. level, then convert the

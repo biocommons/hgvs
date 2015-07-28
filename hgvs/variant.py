@@ -35,9 +35,10 @@ class ComplexVariant(recordtype.recordtype('ComplexVariant', ['variants', 'phase
     variant in the list
     """
     
+    separator = ''
+    
     def __init__(self, variants, phases, uncertain=False):
         super(ComplexVariant, self).__init__(variants, phases, uncertain)
-        self.separator = ''
         if not self.all_same_type:
             raise HGVSInvalidVariantError("ComplexVariant does not support variants "
                                           "with different types.")
@@ -109,7 +110,6 @@ class ComplexVariant(recordtype.recordtype('ComplexVariant', ['variants', 'phase
         self.uncertain = True
         return self
     
-    
     @property
     def all_same_ac(self):
         """Return True if all variants have same accession or no accession, otherwise False."""
@@ -149,9 +149,10 @@ class CompoundVariant(ComplexVariant):
     represents a compound variant.
     """
     
+    separator = ';'
+    
     def __init__(self, variants, phases, uncertain=False):
         super(CompoundVariant, self).__init__(variants, phases, uncertain)
-        self.separator = ';'
 
 
 
@@ -160,9 +161,10 @@ class MosaicVariant(ComplexVariant):
     represents a compound variant.
     """
     
+    separator = '/'
+    
     def __init__(self, variants):
         super(MosaicVariant, self).__init__(variants, None)
-        self.separator = '/'
 
 
 
@@ -171,9 +173,10 @@ class ChimericVariant(ComplexVariant):
     represents a compound variant.
     """
     
+    separator = '//'
+    
     def __init__(self, variants):
         super(ChimericVariant, self).__init__(variants, None)
-        self.separator = '//'
 
 
 
