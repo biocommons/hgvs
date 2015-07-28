@@ -58,9 +58,9 @@ class VariantMapper(object):
         if isinstance(var_g, hgvs.variant.SequenceVariant):
             return self._g_to_n(var_g, tx_ac, alt_aln_method)
         else:
-            vars = copy.deepcopy(var)
-            for i in range(0, len(var)):
-                vars[i] = self._g_to_n(var[i], tx_ac, alt_aln_method)
+            vars = copy.deepcopy(var_g)
+            for i in range(0, len(var_g)):
+                vars[i] = self._g_to_n(var_g[i], tx_ac, alt_aln_method)
             return vars
     
     def _g_to_n(self, var_g, tx_ac, alt_aln_method='splign'):
@@ -88,9 +88,9 @@ class VariantMapper(object):
         if isinstance(var_n, hgvs.variant.SequenceVariant):
             return self._n_to_g(var_n, alt_ac, alt_aln_method)
         else:
-            vars = copy.deepcopy(var)
-            for i in range(0, len(var)):
-                vars[i] = self._n_to_g(var_n, alt_ac, alt_aln_method)
+            vars = copy.deepcopy(var_n)
+            for i in range(0, len(var_n)):
+                vars[i] = self._n_to_g(var_n[i], alt_ac, alt_aln_method)
             return vars
     
     def _n_to_g(self, var_n, alt_ac, alt_aln_method='splign'):
@@ -120,9 +120,9 @@ class VariantMapper(object):
         if isinstance(var_g, hgvs.variant.SequenceVariant):
             return self._g_to_c(var_g, tx_ac, alt_aln_method)
         else:
-            vars = copy.deepcopy(var)
-            for i in range(0, len(var)):
-                vars[i] = self._g_to_c(var_g, tx_ac, alt_aln_method)
+            vars = copy.deepcopy(var_g)
+            for i in range(0, len(var_g)):
+                vars[i] = self._g_to_c(var_g[i], tx_ac, alt_aln_method)
             return vars
     
     def _g_to_c(self, var_g, tx_ac, alt_aln_method='splign'):
@@ -151,9 +151,9 @@ class VariantMapper(object):
         if isinstance(var_c, hgvs.variant.SequenceVariant):
             return self._c_to_g(var_c, alt_ac, alt_aln_method)
         else:
-            vars = copy.deepcopy(var)
-            for i in range(0, len(var)):
-                vars[i] = self._c_to_g(var_c, alt_ac, alt_aln_method)
+            vars = copy.deepcopy(var_c)
+            for i in range(0, len(var_c)):
+                vars[i] = self._c_to_g(var_c[i], alt_ac, alt_aln_method)
             return vars
     
     def _c_to_g(self, var_c, alt_ac, alt_aln_method='splign'):
@@ -187,9 +187,9 @@ class VariantMapper(object):
         if isinstance(var_c, hgvs.variant.SequenceVariant):
             return self._c_to_n(var_c)
         else:
-            vars = copy.deepcopy(var)
-            for i in range(0, len(var)):
-                vars[i] = self._c_to_n(var_c)
+            vars = copy.deepcopy(var_c)
+            for i in range(0, len(var_c)):
+                vars[i] = self._c_to_n(var_c[i])
             return vars
     
     def _c_to_n(self, var_c):
@@ -218,9 +218,9 @@ class VariantMapper(object):
         if isinstance(var_n, hgvs.variant.SequenceVariant):
             return self._n_to_c(var_n)
         else:
-            vars = copy.deepcopy(var)
-            for i in range(0, len(var)):
-                vars[i] = self._n_to_c(var_n)
+            vars = copy.deepcopy(var_n)
+            for i in range(0, len(var_n)):
+                vars[i] = self._n_to_c(var_n[i])
             return vars
     
     def _n_to_c(self, var_n):
@@ -252,9 +252,9 @@ class VariantMapper(object):
         if isinstance(var_c, hgvs.variant.SequenceVariant):
             return self._c_to_p(var_c, pro_ac)
         else:
-            vars = copy.deepcopy(var)
-            for i in range(0, len(var)):
-                vars[i] = self._c_to_p(var_c, pro_ac)
+            vars = copy.deepcopy(var_c)
+            for i in range(0, len(var_c)):
+                vars[i] = self._c_to_p(var_c[i], pro_ac)
             return vars
     
     def _c_to_p(self, var_c, pro_ac=None):
