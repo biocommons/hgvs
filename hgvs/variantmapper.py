@@ -162,7 +162,7 @@ class VariantMapper(object):
             raise HGVSInvalidVariantError('Expected a cDNA (c.); got ' + str(var_c))
         tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=var_c.ac, alt_aln_method='transcript')
         pos_n = tm.c_to_n(var_c.posedit.pos)
-        if isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_c.posedit.edit, hgvs.edit.Dup) or isinstance(var_c.posedit.edit, hgvs.edit.NADupN) or isinstance(var_c.posedit.edit, hgvs.edit.Inv):
+        if isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_c.posedit.edit, hgvs.edit.Ident) or isinstance(var_c.posedit.edit, hgvs.edit.Dup) or isinstance(var_c.posedit.edit, hgvs.edit.NADupN) or isinstance(var_c.posedit.edit, hgvs.edit.Inv):
             edit_n = copy.deepcopy(var_c.posedit.edit)
         else:
             raise HGVSUnsupportedOperationError('Only NARefAlt/Dup/NADupN/Inv types are currently implemented')
@@ -184,7 +184,7 @@ class VariantMapper(object):
             raise HGVSInvalidVariantError('Expected n. variant; got ' + str(var_n))
         tm = self._fetch_TranscriptMapper(tx_ac=var_n.ac, alt_ac=var_n.ac, alt_aln_method='transcript')
         pos_c = tm.n_to_c(var_n.posedit.pos)
-        if isinstance(var_n.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_n.posedit.edit, hgvs.edit.Dup) or isinstance(var_n.posedit.edit, hgvs.edit.NADupN) or isinstance(var_n.posedit.edit, hgvs.edit.Inv):
+        if isinstance(var_n.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_n.posedit.edit, hgvs.edit.Ident) or isinstance(var_n.posedit.edit, hgvs.edit.Dup) or isinstance(var_n.posedit.edit, hgvs.edit.NADupN) or isinstance(var_n.posedit.edit, hgvs.edit.Inv):
             edit_c = copy.deepcopy(var_n.posedit.edit)
         else:
             raise HGVSUnsupportedOperationError('Only NARefAlt/Dup/NADupN/Inv types are currently implemented')
@@ -352,6 +352,8 @@ class VariantMapper(object):
                 except (ValueError, TypeError):
                     ref = reverse_complement(edit_in.ref)
                 edit_out = hgvs.edit.Inv(ref=ref)
+        elif isinstance(edit_in, hgvs.edit.Ident):
+            edit_out = copy.deepcopy(edit_in)
         else:
             raise NotImplementedError('Only NARefAlt/Dup/NADupN/Inv types are currently implemented')
         return edit_out
