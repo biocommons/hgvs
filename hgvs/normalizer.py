@@ -11,7 +11,6 @@ import hgvs.dataproviders.uta
 import hgvs.location
 import hgvs.parser
 import hgvs.posedit
-import hgvs.validator
 import hgvs.variantmapper
 
 from hgvs.exceptions import HGVSDataNotAvailableError, HGVSValidationError, HGVSUnsupportedOperationError
@@ -63,7 +62,9 @@ class Normalizer(object):
         type = var.type
 
         if type == 'p':
-            raise HGVSUnsupportedOperationError("Unsupported normalization of protein level variants")
+            raise HGVSUnsupportedOperationError("Unsupported normalization of protein level variants: {0}".format(var))
+        if var.posedit.edit.type == 'con':
+            raise HGVSUnsupportedOperationError("Unsupported normalization of conversion variants: {0}",format(var))
 
         # For c. variants normalization, first convert to n. variant
         # and perform normalization at the n. level, then convert the
@@ -73,8 +74,7 @@ class Normalizer(object):
 
         if var.type in 'nr':
             if var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0:
-                raise HGVSUnsupportedOperationError(
-                    "Normalization of intronic variants is not supported")
+                raise HGVSUnsupportedOperationError("Normalization of intronic variants is not supported")
 
         # g, m, n, r sequences all use sequence start as the datum
         # That's an essential assumption herein
@@ -89,34 +89,53 @@ class Normalizer(object):
         alt_len = len(alt)
 
         # Generate normalized variant
-        if alt_len <= ref_len:
+        if alt_len == ref_len:
+            ref_start = start
+            ref_end   = end - 1
+            # inversion
+            if ref_len > 1 and ref == alt[::-1]:
+                edit = hgvs.edit.Inv(ref=ref)
+            # substitution or delins
+            else:
+                edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
+        if alt_len < ref_len:
+            # del or delins
             ref_start = start
             ref_end = end - 1
-            edit = hgvs.edit.NARefAlt(ref=ref,
-                                      alt=None if alt_len == 0 else alt)
+            edit = hgvs.edit.NARefAlt(ref=ref, alt=None if alt_len == 0 else alt)
         elif alt_len > ref_len:
             # ins or dup
             if ref_len == 0:
-                if self.direction == 3
-                    adj_seq = self._fetch_bounded_seq(var, start - alt_len - 1, end - 1,
-                                                      boundary)
+                if self.direction == 3:
+                    adj_seq = self._fetch_bounded_seq(var, start - alt_len - 1, end - 1, boundary)
                 else:
-                    adj_seq = self._fetch_bounded_seq(var, start - 1, start + alt_len - 1,
-                                                      boundary)
-                # dup
-                if self.direction == 3 and alt == adj_seq:
-                    ref_start = start - alt_len
-                    ref_end = end - 1
-                    edit = hgvs.edit.Dup(ref=alt)
-                elif self.direction == 5 and alt == adj_seq:
-                    ref_start = start
-                    ref_end = start + alt_len - 1
-                    edit = hgvs.edit.Dup(ref=alt)
+                    adj_seq = self._fetch_bounded_seq(var, start - 1, start + alt_len - 1, boundary)
+                n = self._dupN(adj_seq, alt, self.direction)
                 # ins
-                else:
+                if n == 0:
                     ref_start = start - 1
                     ref_end = end
                     edit = hgvs.edit.NARefAlt(ref=None, alt=alt)
+                # dup
+                elif n == 1:
+                    if self.direction == 3:
+                        ref_start = start - alt_len
+                        ref_end = end - 1
+                        edit = hgvs.edit.Dup(ref=alt)
+                    else:
+                        ref_start = start
+                        ref_end = start + alt_len - 1
+                        edit = hgvs.edit.Dup(ref=alt)
+                # dupN
+                elif n > 1:
+                    if self.direction == 3:
+                        ref_start = start - int(alt_len / n)
+                        ref_end = end - 1
+                        edit = hgvs.edit.NADupN(n=n)
+                    else:
+                        ref_start = start
+                        ref_end = start + int(alt_len / n) - 1
+                        edit = hgvs.edit.NADupN(n=n)
             # delins
             else:
                 ref_start = start
@@ -223,10 +242,10 @@ class Normalizer(object):
         """
 
         # Get reference allele
-        if var.posedit.edit.type == 'ins' or var.posedit.edit.type == 'dup':
+        if var.posedit.edit.type == 'ins' or var.posedit.edit.type == 'dup' or var.posedit.edit.type == 'dupn':
             ref = ''
         else:
-            #For NARefAlt
+            #For NARefAlt and Inv
             if var.posedit.edit.ref_s is None or var.posedit.edit.ref == '':
                 ref = self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, boundary)
             else:
@@ -240,12 +259,16 @@ class Normalizer(object):
         elif var.posedit.edit.type == 'dup':
             alt = var.posedit.edit.ref or self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1,
                                                                   var.posedit.pos.end.base, boundary)
+        elif var.posedit.edit.type == 'dupn':
+            alt = self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, boundary)
+            alt *= int(var.posedit.edit.n)
         elif var.posedit.edit.type == 'inv':
             alt = ref[::-1]
         elif var.posedit.edit.type == 'identity':
             alt = ref
 
         return ref, alt
+    
 
     def _normalize_alleles(self, var, boundary):
         """Normalize the variant until it could not be shuffled
@@ -311,6 +334,29 @@ class Normalizer(object):
                 stop = orig_stop
 
         return base + start, base + stop, (ref, alt)
+    
+    
+    def _dupN(self, adj_seq, alt, direction):
+        """Determine the number of duplicates. Return 0 if it is not a dup
+        """
+        
+        seq_len = len(adj_seq)
+        alt_len = len(alt)
+        for n in range(1, alt_len + 1):
+            if alt_len % n:
+                continue
+            if direction == 3:
+                start = seq_len - int(alt_len / n)
+                end   = seq_len
+            else:
+                start = 0
+                end   = int(alt_len / n)
+            if start < 0:
+                start = 0
+            if adj_seq[start : end] * n == alt:
+                return n
+        return 0
+
 
 
 
