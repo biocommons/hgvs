@@ -55,13 +55,10 @@ class VariantMapper(object):
     # ############################################################################
     # g <-> n
     def g_to_n(self, var_g, tx_ac, alt_aln_method='splign'):
-        if isinstance(var_g, hgvs.variant.SequenceVariant):
-            return self._g_to_n(var_g, tx_ac, alt_aln_method)
-        else:
-            vars = copy.deepcopy(var_g)
-            for i in range(0, len(var_g)):
-                vars[i] = self._g_to_n(var_g[i], tx_ac, alt_aln_method)
-            return vars
+        vars = copy.deepcopy(var_g)
+        for i in range(0, len(var_g)):
+            vars[i] = self._g_to_n(var_g[i], tx_ac, alt_aln_method)
+        return vars
     
     def _g_to_n(self, var_g, tx_ac, alt_aln_method='splign'):
         """Given a parsed g. variant, return a n. variant on the specified
@@ -85,13 +82,10 @@ class VariantMapper(object):
         return var_n
 
     def n_to_g(self, var_n, alt_ac, alt_aln_method='splign'):
-        if isinstance(var_n, hgvs.variant.SequenceVariant):
-            return self._n_to_g(var_n, alt_ac, alt_aln_method)
-        else:
-            vars = copy.deepcopy(var_n)
-            for i in range(0, len(var_n)):
-                vars[i] = self._n_to_g(var_n[i], alt_ac, alt_aln_method)
-            return vars
+        vars = copy.deepcopy(var_n)
+        for i in range(0, len(var_n)):
+            vars[i] = self._n_to_g(var_n[i], alt_ac, alt_aln_method)
+        return vars
     
     def _n_to_g(self, var_n, alt_ac, alt_aln_method='splign'):
         """Given a parsed n. variant, return a g. variant on the specified
@@ -117,13 +111,10 @@ class VariantMapper(object):
     # ############################################################################
     # g <-> c
     def g_to_c(self, var_g, tx_ac, alt_aln_method='splign'):
-        if isinstance(var_g, hgvs.variant.SequenceVariant):
-            return self._g_to_c(var_g, tx_ac, alt_aln_method)
-        else:
-            vars = copy.deepcopy(var_g)
-            for i in range(0, len(var_g)):
-                vars[i] = self._g_to_c(var_g[i], tx_ac, alt_aln_method)
-            return vars
+        vars = copy.deepcopy(var_g)
+        for i in range(0, len(var_g)):
+            vars[i] = self._g_to_c(var_g[i], tx_ac, alt_aln_method)
+        return vars
     
     def _g_to_c(self, var_g, tx_ac, alt_aln_method='splign'):
         """Given a parsed g. variant, return a c. variant on the specified
@@ -148,13 +139,10 @@ class VariantMapper(object):
         return var_c
 
     def c_to_g(self, var_c, alt_ac, alt_aln_method='splign'):
-        if isinstance(var_c, hgvs.variant.SequenceVariant):
-            return self._c_to_g(var_c, alt_ac, alt_aln_method)
-        else:
-            vars = copy.deepcopy(var_c)
-            for i in range(0, len(var_c)):
-                vars[i] = self._c_to_g(var_c[i], alt_ac, alt_aln_method)
-            return vars
+        vars = copy.deepcopy(var_c)
+        for i in range(0, len(var_c)):
+            vars[i] = self._c_to_g(var_c[i], alt_ac, alt_aln_method)
+        return vars
     
     def _c_to_g(self, var_c, alt_ac, alt_aln_method='splign'):
         """Given a parsed c. variant, return a g. variant on the specified
@@ -184,13 +172,10 @@ class VariantMapper(object):
     # c <-> n
     # TODO: Identify use case for this code
     def c_to_n(self, var_c):
-        if isinstance(var_c, hgvs.variant.SequenceVariant):
-            return self._c_to_n(var_c)
-        else:
-            vars = copy.deepcopy(var_c)
-            for i in range(0, len(var_c)):
-                vars[i] = self._c_to_n(var_c[i])
-            return vars
+        vars = copy.deepcopy(var_c)
+        for i in range(0, len(var_c)):
+            vars[i] = self._c_to_n(var_c[i])
+        return vars
     
     def _c_to_n(self, var_c):
         """Given a parsed c. variant, return a n. variant on the specified
@@ -215,13 +200,10 @@ class VariantMapper(object):
         return var_n
 
     def n_to_c(self, var_n):
-        if isinstance(var_n, hgvs.variant.SequenceVariant):
-            return self._n_to_c(var_n)
-        else:
-            vars = copy.deepcopy(var_n)
-            for i in range(0, len(var_n)):
-                vars[i] = self._n_to_c(var_n[i])
-            return vars
+        vars = copy.deepcopy(var_n)
+        for i in range(0, len(var_n)):
+            vars[i] = self._n_to_c(var_n[i])
+        return vars
     
     def _n_to_c(self, var_n):
         """Given a parsed n. variant, return a c. variant on the specified
@@ -249,13 +231,10 @@ class VariantMapper(object):
     # c -> p
     # TODO: c_to_p needs refactoring
     def c_to_p(self, var_c, pro_ac=None):
-        if isinstance(var_c, hgvs.variant.SequenceVariant):
-            return self._c_to_p(var_c, pro_ac)
-        else:
-            vars = copy.deepcopy(var_c)
-            for i in range(0, len(var_c)):
-                vars[i] = self._c_to_p(var_c[i], pro_ac)
-            return vars
+        vars = copy.deepcopy(var_c)
+        for i in range(0, len(var_c)):
+            vars[i] = self._c_to_p(var_c[i], pro_ac)
+        return vars
     
     def _c_to_p(self, var_c, pro_ac=None):
         """
@@ -324,14 +303,11 @@ class VariantMapper(object):
     ## Internal methods
     
     def _replace_reference(self, var):
-        if isinstance(var, hgvs.variant.SequenceVariant):
-            return self._replace_reference_for_simple_var(var)
-        else:
-            for i in range(0, len(var)):
-                var[i] = self._replace_reference_for_simple_var(var[i])
-            return var
+        for i in range(0, len(var)):
+            var[i] = self._replace_reference_for_sequence_variant(var[i])
+        return var
 
-    def _replace_reference_for_simple_var(self, var):
+    def _replace_reference_for_sequence_variant(self, var):
         """fetch reference sequence for variant and update (in-place) if necessary"""
 
         if var.type not in 'cgmnr':

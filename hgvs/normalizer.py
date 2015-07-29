@@ -52,16 +52,13 @@ class Normalizer(object):
     
     
     def normalize(self, var):
-        if isinstance(var, hgvs.variant.SequenceVariant):
-            return self.hgvs_normalize(var)
-        else:
-            vars = copy.deepcopy(var)
-            for i in range(0, len(var)):
-                vars[i] = self.hgvs_normalize(var[i])
-            return vars
+        vars = copy.deepcopy(var)
+        for i in range(0, len(var)):
+            vars[i] = self.sequence_variant_normalize(var[i])
+        return vars
 
 
-    def hgvs_normalize(self, var):
+    def sequence_variant_normalize(self, var):
         """Perform sequence variants normalization for single variant
         """
         assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
