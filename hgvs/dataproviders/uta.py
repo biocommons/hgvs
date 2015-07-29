@@ -143,7 +143,7 @@ class UTABase(Interface, SeqFetcher):
             where ac=?
             """,
         "tx_similar": """
-            select distinct tx_ac1, tx_ac2, cds_eq, es_fp_eq, cds_es_fp_eq
+            select *
             from tx_similarity_v
             where tx_ac1 = ?
             """,
@@ -506,6 +506,7 @@ class UTA_postgresql(UTABase):
                                           database=self.url.database,
                                           user=self.url.username,
                                           password=self.url.password)
+            self._conn.autocommit = True
 
         self._ensure_schema_exists()
 
@@ -534,6 +535,7 @@ class UTA_postgresql(UTABase):
 
         try:
             conn = self._pool.getconn() if self.pooling else self._conn
+            conn.autocommit = True
             cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
             return cur
         finally:
