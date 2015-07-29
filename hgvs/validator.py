@@ -28,16 +28,12 @@ class Validator(object):
         self._evr = ExtrinsicValidator(hdp)
 
     def validate(self, var):
-        if isinstance(var, hgvs.variant.SequenceVariant):
-            return self._ivr.validate(var) and self._evr.validate(var)
-        else:
-            for v in var:
-                self._ivr.validate(v)
-                self._evr.validate(v)
-            if isinstance(var, hgvs.variant.MosaicVariant) or isinstance(var, hgvs.variant.ChimericVariant):
-                if not var.all_same_pos:
-                    raise HGVSValidationError(POS_ERROR_MSG)
-            return True
+        for v in var:
+            self._ivr.validate(v) and self._evr.validate(v)
+        if isinstance(var, hgvs.variant.MosaicVariant) or isinstance(var, hgvs.variant.ChimericVariant):
+            if not var.all_same_pos:
+                raise HGVSValidationError(POS_ERROR_MSG)
+        return True
 
 
 class IntrinsicValidator(object):

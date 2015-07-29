@@ -20,6 +20,26 @@ class SequenceVariant(recordtype.recordtype('SequenceVariant', ['ac', 'type', 'p
             return '{self.ac}:{self.type}.{self.posedit}'.format(self=self)
         else:
             return '{self.type}.{self.posedit}'.format(self=self)
+    
+    def __getitem__(self, i):
+        if i == 0 or i == -1:
+            return self
+        else:
+            raise IndexError('list index out of range')
+
+    def __setitem__(self, i, value):
+        if i == 0 or i == -1:
+            self.ac = value.ac
+            self.type = value.type
+            self.posedit = value.posedit
+        else:
+            raise IndexError('list index out of range')
+    
+    def __iter__(self):
+        yield self
+    
+    def __len__(self):
+        return 1
 
 
 
