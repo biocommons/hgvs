@@ -160,7 +160,7 @@ class ComplexVariant(recordtype.recordtype('ComplexVariant', ['variants', 'phase
     @property
     def posedit(self):
         posedits = [var.posedit for var in self.variants]
-        return hgvs.posedit.PosEditSet(posedits, self.uncertain)
+        return hgvs.posedit.PosEdits(posedits, self.uncertain)
 
 
 
