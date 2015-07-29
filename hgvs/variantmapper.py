@@ -79,7 +79,7 @@ class VariantMapper(object):
         if not (var_g.type == 'g'):
             raise HGVSInvalidVariantError('Expected a g. variant; got ' + str(var_g))
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
-        pos_n = tm.g_to_n(var_g.posedit.pos)
+        pos_n = tm.g_to_n(var_g.posedit.pos) if var_g.posedit.pos else None
         edit_n = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
         var_n = hgvs.variant.SequenceVariant(ac=tx_ac, type='n', posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
         return var_n
@@ -109,7 +109,7 @@ class VariantMapper(object):
         if not (var_n.type == 'n'):
             raise HGVSInvalidVariantError('Expected a n. variant; got ' + str(var_n))
         tm = self._fetch_TranscriptMapper(tx_ac=var_n.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
-        pos_g = tm.n_to_g(var_n.posedit.pos)
+        pos_g = tm.n_to_g(var_n.posedit.pos) if var_n.posedit.pos else None
         edit_g = self._convert_edit_check_strand(tm.strand, var_n.posedit.edit)
         var_g = hgvs.variant.SequenceVariant(ac=alt_ac, type='g', posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
         return var_g
@@ -142,7 +142,7 @@ class VariantMapper(object):
             raise HGVSInvalidVariantError('Expected a g. variant; got ' + str(var_g))
 
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
-        pos_c = tm.g_to_c(var_g.posedit.pos)
+        pos_c = tm.g_to_c(var_g.posedit.pos) if var_g.posedit.pos else None
         edit_c = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
         var_c = hgvs.variant.SequenceVariant(ac=tx_ac, type='c', posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
         return var_c
@@ -174,7 +174,7 @@ class VariantMapper(object):
 
         tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
 
-        pos_g = tm.c_to_g(var_c.posedit.pos)
+        pos_g = tm.c_to_g(var_c.posedit.pos) if var_c.posedit.pos else None
         edit_g = self._convert_edit_check_strand(tm.strand, var_c.posedit.edit)
 
         var_g = hgvs.variant.SequenceVariant(ac=alt_ac, type='g', posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
@@ -206,7 +206,7 @@ class VariantMapper(object):
         if not (var_c.type == 'c'):
             raise HGVSInvalidVariantError('Expected a cDNA (c.); got ' + str(var_c))
         tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=var_c.ac, alt_aln_method='transcript')
-        pos_n = tm.c_to_n(var_c.posedit.pos)
+        pos_n = tm.c_to_n(var_c.posedit.pos) if var_c.posedit.pos else None
         if isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_c.posedit.edit, hgvs.edit.Ident) or isinstance(var_c.posedit.edit, hgvs.edit.Dup) or isinstance(var_c.posedit.edit, hgvs.edit.NADupN) or isinstance(var_c.posedit.edit, hgvs.edit.Inv):
             edit_n = copy.deepcopy(var_c.posedit.edit)
         else:
@@ -237,7 +237,7 @@ class VariantMapper(object):
         if not (var_n.type == 'n'):
             raise HGVSInvalidVariantError('Expected n. variant; got ' + str(var_n))
         tm = self._fetch_TranscriptMapper(tx_ac=var_n.ac, alt_ac=var_n.ac, alt_aln_method='transcript')
-        pos_c = tm.n_to_c(var_n.posedit.pos)
+        pos_c = tm.n_to_c(var_n.posedit.pos) if var_n.posedit.pos else None
         if isinstance(var_n.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_n.posedit.edit, hgvs.edit.Ident) or isinstance(var_n.posedit.edit, hgvs.edit.Dup) or isinstance(var_n.posedit.edit, hgvs.edit.NADupN) or isinstance(var_n.posedit.edit, hgvs.edit.Inv):
             edit_c = copy.deepcopy(var_n.posedit.edit)
         else:
@@ -336,6 +336,9 @@ class VariantMapper(object):
 
         if var.type not in 'cgmnr':
             raise HGVSUnsupportedOperationError("Can only update references for type c, g, m, n, r")
+        
+        if var.posedit.pos is None:
+            return var
 
         if var.posedit.edit.type == 'ins':
             # insertions have no reference sequence (zero-width), so return as-is
