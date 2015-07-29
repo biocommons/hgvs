@@ -28,7 +28,7 @@ class PosEdit(recordtype.recordtype('PosEdit', [('pos', None), ('edit', None), (
         return self
 
 
-class PosEditSet:
+class PosEdits:
     """
     represents a list of PosEdit for ComplexVariant
     """
@@ -53,7 +53,7 @@ class PosEditSet:
         return len(self.posedits)
     
     def __add__(self, set):
-        return PosEditSet(self.posedits + set.posedits, self.uncertain)
+        return PosEdits(self.posedits + set.posedits, self.uncertain)
     
     @property
     def pos(self):

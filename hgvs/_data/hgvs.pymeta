@@ -225,37 +225,37 @@ p_posedit_special =
 ############################################################################
 ## PosEdits -- a list of PosEdit
 
-gm_compound_posedits = gm_posedit:edit ';' gm_compound_posedits:set -> hgvs.posedit.PosEditSet([edit]) + set
-                     | gm_posedit:edit '(;)' gm_compound_posedits:set -> hgvs.posedit.PosEditSet([edit], True) + set
-                     | gm_posedit:edit -> hgvs.posedit.PosEditSet([edit])
+gm_compound_posedits = gm_posedit:edit ';' gm_compound_posedits:set -> hgvs.posedit.PosEdits([edit]) + set
+                     | gm_posedit:edit '(;)' gm_compound_posedits:set -> hgvs.posedit.PosEdits([edit], True) + set
+                     | gm_posedit:edit -> hgvs.posedit.PosEdits([edit])
 
-cn_compound_posedits = cn_posedit:edit ';' cn_compound_posedits:set -> hgvs.posedit.PosEditSet([edit]) + set
-                     | cn_posedit:edit '(;)' cn_compound_posedits:set -> hgvs.posedit.PosEditSet([edit], True) + set
-                     | cn_posedit:edit -> hgvs.posedit.PosEditSet([edit])
+cn_compound_posedits = cn_posedit:edit ';' cn_compound_posedits:set -> hgvs.posedit.PosEdits([edit]) + set
+                     | cn_posedit:edit '(;)' cn_compound_posedits:set -> hgvs.posedit.PosEdits([edit], True) + set
+                     | cn_posedit:edit -> hgvs.posedit.PosEdits([edit])
 
-r_compound_posedits  = r_posedit:edit ';' r_compound_posedits:set -> hgvs.posedit.PosEditSet([edit]) + set
-                     | r_posedit:edit '(;)' r_compound_posedits:set -> hgvs.posedit.PosEditSet([edit], True) + set
-                     | r_posedit:edit -> hgvs.posedit.PosEditSet([edit])
-
-
-gm_mosaic_posedits   = gm_posedit:edit '/' gm_mosaic_posedits:set -> hgvs.posedit.PosEditSet([edit]) + set
-                     | gm_posedit:edit -> hgvs.posedit.PosEditSet([edit])
-
-cn_mosaic_posedits   = cn_posedit:edit '/' cn_mosaic_posedits:set -> hgvs.posedit.PosEditSet([edit]) + set
-                     | cn_posedit:edit -> hgvs.posedit.PosEditSet([edit])
-
-r_mosaic_posedits    = r_posedit:edit '/' r_mosaic_posedits:set -> hgvs.posedit.PosEditSet([edit]) + set
-                     | r_posedit:edit -> hgvs.posedit.PosEditSet([edit])
+r_compound_posedits  = r_posedit:edit ';' r_compound_posedits:set -> hgvs.posedit.PosEdits([edit]) + set
+                     | r_posedit:edit '(;)' r_compound_posedits:set -> hgvs.posedit.PosEdits([edit], True) + set
+                     | r_posedit:edit -> hgvs.posedit.PosEdits([edit])
 
 
-gm_chimeric_posedits = gm_posedit:edit '//' gm_chimeric_posedits:set -> hgvs.posedit.PosEditSet([edit]) + set
-                     | gm_posedit:edit -> hgvs.posedit.PosEditSet([edit])
+gm_mosaic_posedits   = gm_posedit:edit '/' gm_mosaic_posedits:set -> hgvs.posedit.PosEdits([edit]) + set
+                     | gm_posedit:edit -> hgvs.posedit.PosEdits([edit])
 
-cn_chimeric_posedits = cn_posedit:edit '//' cn_chimeric_posedits:set -> hgvs.posedit.PosEditSet([edit]) + set
-                     | cn_posedit:edit -> hgvs.posedit.PosEditSet([edit])
+cn_mosaic_posedits   = cn_posedit:edit '/' cn_mosaic_posedits:set -> hgvs.posedit.PosEdits([edit]) + set
+                     | cn_posedit:edit -> hgvs.posedit.PosEdits([edit])
 
-r_chimeric_posedits  = r_posedit:edit '//' r_chimeric_posedits:set -> hgvs.posedit.PosEditSet([edit]) + set
-                     | r_posedit:edit -> hgvs.posedit.PosEditSet([edit])
+r_mosaic_posedits    = r_posedit:edit '/' r_mosaic_posedits:set -> hgvs.posedit.PosEdits([edit]) + set
+                     | r_posedit:edit -> hgvs.posedit.PosEdits([edit])
+
+
+gm_chimeric_posedits = gm_posedit:edit '//' gm_chimeric_posedits:set -> hgvs.posedit.PosEdits([edit]) + set
+                     | gm_posedit:edit -> hgvs.posedit.PosEdits([edit])
+
+cn_chimeric_posedits = cn_posedit:edit '//' cn_chimeric_posedits:set -> hgvs.posedit.PosEdits([edit]) + set
+                     | cn_posedit:edit -> hgvs.posedit.PosEdits([edit])
+
+r_chimeric_posedits  = r_posedit:edit '//' r_chimeric_posedits:set -> hgvs.posedit.PosEdits([edit]) + set
+                     | r_posedit:edit -> hgvs.posedit.PosEdits([edit])
 
 
 
