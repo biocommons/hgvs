@@ -55,6 +55,9 @@ class PosEdits:
     def __add__(self, set):
         return PosEdits(self.posedits + set.posedits, self.uncertain)
     
+    def __str__(self):
+        return ','.join([str(posedit) for posedit in self.posedits])
+    
     @property
     def pos(self):
         return [posedit.pos for posedit in self.posedits]
