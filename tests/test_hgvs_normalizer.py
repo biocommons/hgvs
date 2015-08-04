@@ -134,6 +134,15 @@ class Test_HGVSNormalizer(unittest.TestCase):
                          'NC_000006.11:g.49917098delC')
         self.assertEqual(str(self.norm5.normalize(self.hp.parse_hgvs_variant(
             'NC_000006.11:g.49917151_49917156delinsTCTAAA'))), 'NC_000006.11:g.49917154_49917155delTCinsAA')
+    
+    def test_normalize_complex_variant(self):
+        """Test normalizer for CompoundVariant, MosaicVariant and ChimericVariant"""
+        self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.[31del;36_37insTC];[30_31insT;59delG]'))),
+                         'NM_001166478.1:c.[35delT;36_37dupCT];[35dupT;61delG]')
+        self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.[31=/31del]'))),
+                         'NM_001166478.1:c.[=/35delT]')
+        self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant('NM_001166478.1:c.[=//31del]'))),
+                         'NM_001166478.1:c.[=//35delT]')
 
 
 if __name__ == '__main__':

@@ -197,6 +197,9 @@ dna_ins	insU	False	one
 dna_inv	inv6|invACGT	True	list	
 dna_inv	invACGU|invACGT6	False	list	
 dna_subst	A>C|A>G|A>T|C>G|C>T|G>T	True	list	
+dna_con	conNM_001166478.1:c.61-6_*22	True	one	
+dna_inv	invAGCT|inv100	True	list	
+dna_ident	=|T=	True	list	
 pro_del	del	True	one
 pro_del	delA|delAla|del3	False	list
 pro_delins	delinsAfs|delinsAfs*|delinsAfs*9|delinsAfs*?	False	list	delinsAlafs|delinsAlafs*|delinsAlafs*9|delinsAlafs*?
@@ -251,9 +254,12 @@ rna_inv	inv6|invACGU	True	list
 rna_inv	invACGT|invACGU6	False	list	
 rna_subst	A>C|A>G|A>U|C>G|C>U|G>U	True	list	
 rna_subst	A>T	False	one	
+rna_con	conNM_001166478.1:c.61-6_*22	True	one	
+rna_inv	invAGCU|inv100	True	list	
+rna_ident	=|U=	True	list	
 
 ############################################################
-## PosEdits
+## PosEdit
 #n:n_posedit	10A>T	True	one	
 c_posedit	1*T>A|(1_10A>C)	False	list	
 c_posedit	76+3A>T|*1T>A|5G>T|1_10A>C|(1_10)A>C|1_2delAAinsC	True	list	
@@ -278,6 +284,18 @@ p_posedit_special	=|(=)|0?|0|?	True	list
 r_posedit	(5G>U)|(1_10A>C)|((1_10)A>C)|(1_2delAAinsC)	True	list	
 r_posedit	5G>T|(1_10A>C|1_10A>C)	False	list
 r_posedit	5G>U|1_10A>C|(1_10)A>C|1_2delAAinsC	True	list	
+
+############################################################
+## PosEdits
+gm_compound_posedits	76A>T;1T>A;5G>T;1_10A>C;(1_10)A>C;1_2delAAinsC	True	one	76A>T,1T>A,5G>T,1_10A>C,(1_10)A>C,1_2delAAinsC
+cn_compound_posedits	76+3A>T(;)*1T>A(;)5G>T(;)1_10A>C(;)(1_10)A>C(;)1_2delAAinsC	True	one	76+3A>T,*1T>A,5G>T,1_10A>C,(1_10)A>C,1_2delAAinsC
+r_compound_posedits	76A>U;1U>A;5G>U;1_10A>C;(1_10)A>C;1_2delAAinsC	True	one	76A>U,1U>A,5G>U,1_10A>C,(1_10)A>C,1_2delAAinsC
+gm_mosaic_posedits	76A>T/1T>A/5G>T/1_10A>C/(1_10)A>C/1_2delAAinsC	True	one	76A>T,1T>A,5G>T,1_10A>C,(1_10)A>C,1_2delAAinsC
+cn_mosaic_posedits	76+3A>T/*1T>A/5G>T/1_10A>C/(1_10)A>C/1_2delAAinsC	True	one	76+3A>T,*1T>A,5G>T,1_10A>C,(1_10)A>C,1_2delAAinsC
+r_mosaic_posedits	76A>U/1U>A/5G>U/1_10A>C/(1_10)A>C/1_2delAAinsC	True	one	76A>U,1U>A,5G>U,1_10A>C,(1_10)A>C,1_2delAAinsC
+gm_chimeric_posedits	76A>T//1T>A//5G>T//1_10A>C//(1_10)A>C//1_2delAAinsC	True	one	76A>T,1T>A,5G>T,1_10A>C,(1_10)A>C,1_2delAAinsC
+cn_chimeric_posedits	76+3A>T//*1T>A//5G>T//1_10A>C//(1_10)A>C//1_2delAAinsC	True	one	76+3A>T,*1T>A,5G>T,1_10A>C,(1_10)A>C,1_2delAAinsC
+r_chimeric_posedits	76A>U//1U>A//5G>U//1_10A>C//(1_10)A>C//1_2delAAinsC	True	one	76A>U,1U>A,5G>U,1_10A>C,(1_10)A>C,1_2delAAinsC
 
 ############################################################
 ## HGVS Position
@@ -319,7 +337,7 @@ c_variant	AC_01234.5:c.1A>T	True	one
 cn_variant	AC_01234.5:c.1A>T	True	one	
 g_variant	AC_01234.5:g.1A>T	True	one	
 gm_variant	AC_01234.5:g.1A>T	True	one	
-hgvs_variant	AC_01234.5:c.1A>T|AC_01234.5:r.1A>U|AC_01234.5:g.1A>T|AC_01234.5:p.Ala1Ser	True	list	
+sequence_variant	AC_01234.5:c.1A>T|AC_01234.5:r.1A>U|AC_01234.5:g.1A>T|AC_01234.5:p.Ala1Ser	True	list	
 m_variant	AC_01234.5:m.1A>T	True	one	
 n_variant	AC_01234.5:c.1A>T	True	one	
 p_variant	AC_01234.5:p.Ala1Ser|AC_01234.5:p.Phe2_Ala4del|AC_01234.5:p.Phe2_Ala3insGlnGln|AC_01234.5:p.Cys9_Val10delinsArgGluThr	True	list	
@@ -343,3 +361,40 @@ dna_edit	copy1|copy2|copy3|dup3|dup55	True	list
 g_variant	NC_000014.8:g.88401076_88459508copy4	True	one
 n_variant	NM_000352.3:c.2557_2694copy2	True	one     
 n_variant	NM_015702.2:c.307_324dup18	True	one     
+
+############################################################
+## Compound Variant
+compound_variant	NM_001166478.1:g.[31del;36_37insTC];[30_31insT;59delG]|NM_001166478.1:c.[31+3del;36_37insTC];[30_31insT;59delG]	True	list
+gm_compound	NM_001166478.1:g.[31del;36_37insTC];[30_31insT;59delG]	True	one	
+g_compound	NM_001166478.1:g.[31del;36_37insTC];[30_31insT;59delG]	True	one		
+m_compound	AC:m.[31del;36_37insTC];[30_31insT;59delG]	True	one	
+cn_compound	NM_001166478.1:c.[31+3del;36_37insTC];[30_31insT;59delG]	True	one	
+c_compound	NM_001166478.1:c.[31+3del;36_37insTC];[30_31insT;59delG]	True	one	
+n_compound	NM_001166478.1:n.[31+3del;36_37insTC];[30_31insT;59delG]	True	one	
+r_compound	NM_001166478.1:r.[31del;36_37insUC];[30_31insU;59delG]	True	one	
+
+############################################################
+## Mosaic Variant
+mosaic_variant	NM_001166478.1:g.[31=/31delT]|NM_001166478.1:c.[31=/31-4delT]|NM_001166478.1:r.[31=/31delU]	True	list	
+gm_mosaic	NM_001166478.1:g.[31=/31delT]	True	one	
+g_mosaic	NM_001166478.1:g.[31=/31delT]	True	one	
+m_mosaic	AC:m.[31=/31delT]	True	one	
+cn_mosaic	NM_001166478.1:c.[31=/31-4delT]	True	one	
+c_mosaic	NM_001166478.1:c.[31=/31-4delT]	True	one
+n_mosaic	NM_001166478.1:n.[31=/31-4delT]	True	one
+r_mosaic	NM_001166478.1:r.[31=/31delU]	True	one	
+
+############################################################
+## Mosaic Variant
+chimeric_variant	NM_001166478.1:g.[31=//31delT]|NM_001166478.1:c.[31=//31-4delT]|NM_001166478.1:r.[31=//31delU]	True	list	
+gm_chimeric	NM_001166478.1:g.[31=//31delT]	True	one	
+g_chimeric	NM_001166478.1:g.[31=//31delT]	True	one	
+m_chimeric	AC:m.[31=//31delT]	True	one	
+cn_chimeric	NM_001166478.1:c.[31=//31-4delT]	True	one	
+c_chimeric	NM_001166478.1:c.[31=//31-4delT]	True	one	
+n_chimeric	NM_001166478.1:n.[31=//31-4delT]	True	one	
+r_chimeric	NM_001166478.1:r.[31=//31delU]	True	one	
+
+############################################################
+## HGVS Variant
+hgvs_variant	AC_01234.5:c.1A>T|NM_001166478.1:g.[31del;36_37insTC];[30_31insT;59delG]|NM_001166478.1:g.[31=/31delT]	True	list	
