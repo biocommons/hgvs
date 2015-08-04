@@ -15,6 +15,7 @@ INS_ERROR_MSG = 'insertion length must be 1'
 DEL_ERROR_MSG = 'Length implied by coordinates ({span_len})  must equal sequence deletion length ({del_len})'
 AC_ERROR_MSG = 'Accession is not present in BDI database'
 SEQ_ERROR_MSG = 'Variant reference ({var_ref_seq}) does not agree with reference sequence ({ref_seq})'
+POS_ERROR_MSG = 'The position of all the edits should be the same for mosaic variant and chimeric variant'
 
 
 # TODO: #249: redisign validation interface for greater flexibility
@@ -27,7 +28,12 @@ class Validator(object):
         self._evr = ExtrinsicValidator(hdp)
 
     def validate(self, var):
-        return self._ivr.validate(var) and self._evr.validate(var)
+        for v in var:
+            self._ivr.validate(v) and self._evr.validate(v)
+        if isinstance(var, hgvs.variant.MosaicVariant) or isinstance(var, hgvs.variant.ChimericVariant):
+            if not var.all_same_pos:
+                raise HGVSValidationError(POS_ERROR_MSG)
+        return True
 
 
 class IntrinsicValidator(object):
@@ -46,7 +52,7 @@ class IntrinsicValidator(object):
         if var.type == 'g':
             if var.posedit.pos.start.base > var.posedit.pos.end.base:
                 raise HGVSValidationError(BASE_RANGE_ERROR_MSG)
-        if var.type in 'cmnp':
+        if var.type in 'cmnp' and var.posedit.pos:
             if var.posedit.pos.start.base > var.posedit.pos.end.base:
                 raise HGVSValidationError(BASE_RANGE_ERROR_MSG)
             elif var.posedit.pos.start.base == var.posedit.pos.end.base:
@@ -107,10 +113,13 @@ class ExtrinsicValidator():
             var_ref_seq = getattr(var.posedit.edit, 'ref', None)
         else:
             # use reference sequence of original variant, even if later converted (eg c_to_n)
-            if var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0:
+            if var.posedit.pos and (var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0):
                 raise HGVSUnsupportedOperationError(
                     "Cannot validate sequence of an intronic variant ({})".format(str(var)))
             var_ref_seq = getattr(var.posedit.edit, 'ref', None)
+        
+        if var_ref_seq == '':
+            var_ref_seq = None
 
         if var_ref_seq is not None:
             var_x = self.vm.c_to_n(var) if var.type == 'c' else var

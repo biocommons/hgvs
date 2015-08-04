@@ -55,6 +55,12 @@ class VariantMapper(object):
     # ############################################################################
     # g <-> n
     def g_to_n(self, var_g, tx_ac, alt_aln_method='splign'):
+        vars = copy.deepcopy(var_g)
+        for i in range(0, len(var_g)):
+            vars[i] = self._g_to_n(var_g[i], tx_ac, alt_aln_method)
+        return vars
+    
+    def _g_to_n(self, var_g, tx_ac, alt_aln_method='splign'):
         """Given a parsed g. variant, return a n. variant on the specified
         transcript using the specified alignment method (default is
         'splign' from NCBI).
@@ -70,12 +76,18 @@ class VariantMapper(object):
         if not (var_g.type == 'g'):
             raise HGVSInvalidVariantError('Expected a g. variant; got ' + str(var_g))
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
-        pos_n = tm.g_to_n(var_g.posedit.pos)
+        pos_n = tm.g_to_n(var_g.posedit.pos) if var_g.posedit.pos else None
         edit_n = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
         var_n = hgvs.variant.SequenceVariant(ac=tx_ac, type='n', posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
         return var_n
 
     def n_to_g(self, var_n, alt_ac, alt_aln_method='splign'):
+        vars = copy.deepcopy(var_n)
+        for i in range(0, len(var_n)):
+            vars[i] = self._n_to_g(var_n[i], alt_ac, alt_aln_method)
+        return vars
+    
+    def _n_to_g(self, var_n, alt_ac, alt_aln_method='splign'):
         """Given a parsed n. variant, return a g. variant on the specified
         transcript using the specified alignment method (default is
         'splign' from NCBI).
@@ -91,7 +103,7 @@ class VariantMapper(object):
         if not (var_n.type == 'n'):
             raise HGVSInvalidVariantError('Expected a n. variant; got ' + str(var_n))
         tm = self._fetch_TranscriptMapper(tx_ac=var_n.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
-        pos_g = tm.n_to_g(var_n.posedit.pos)
+        pos_g = tm.n_to_g(var_n.posedit.pos) if var_n.posedit.pos else None
         edit_g = self._convert_edit_check_strand(tm.strand, var_n.posedit.edit)
         var_g = hgvs.variant.SequenceVariant(ac=alt_ac, type='g', posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
         return var_g
@@ -99,6 +111,12 @@ class VariantMapper(object):
     # ############################################################################
     # g <-> c
     def g_to_c(self, var_g, tx_ac, alt_aln_method='splign'):
+        vars = copy.deepcopy(var_g)
+        for i in range(0, len(var_g)):
+            vars[i] = self._g_to_c(var_g[i], tx_ac, alt_aln_method)
+        return vars
+    
+    def _g_to_c(self, var_g, tx_ac, alt_aln_method='splign'):
         """Given a parsed g. variant, return a c. variant on the specified
         transcript using the specified alignment method (default is
         'splign' from NCBI).
@@ -115,12 +133,18 @@ class VariantMapper(object):
             raise HGVSInvalidVariantError('Expected a g. variant; got ' + str(var_g))
 
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
-        pos_c = tm.g_to_c(var_g.posedit.pos)
+        pos_c = tm.g_to_c(var_g.posedit.pos) if var_g.posedit.pos else None
         edit_c = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
         var_c = hgvs.variant.SequenceVariant(ac=tx_ac, type='c', posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
         return var_c
 
     def c_to_g(self, var_c, alt_ac, alt_aln_method='splign'):
+        vars = copy.deepcopy(var_c)
+        for i in range(0, len(var_c)):
+            vars[i] = self._c_to_g(var_c[i], alt_ac, alt_aln_method)
+        return vars
+    
+    def _c_to_g(self, var_c, alt_ac, alt_aln_method='splign'):
         """Given a parsed c. variant, return a g. variant on the specified
         transcript using the specified alignment method (default is
         'splign' from NCBI).
@@ -138,7 +162,7 @@ class VariantMapper(object):
 
         tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
 
-        pos_g = tm.c_to_g(var_c.posedit.pos)
+        pos_g = tm.c_to_g(var_c.posedit.pos) if var_c.posedit.pos else None
         edit_g = self._convert_edit_check_strand(tm.strand, var_c.posedit.edit)
 
         var_g = hgvs.variant.SequenceVariant(ac=alt_ac, type='g', posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
@@ -148,6 +172,12 @@ class VariantMapper(object):
     # c <-> n
     # TODO: Identify use case for this code
     def c_to_n(self, var_c):
+        vars = copy.deepcopy(var_c)
+        for i in range(0, len(var_c)):
+            vars[i] = self._c_to_n(var_c[i])
+        return vars
+    
+    def _c_to_n(self, var_c):
         """Given a parsed c. variant, return a n. variant on the specified
         transcript using the specified alignment method (default is
         'transcript' indicating a self alignment).
@@ -161,8 +191,8 @@ class VariantMapper(object):
         if not (var_c.type == 'c'):
             raise HGVSInvalidVariantError('Expected a cDNA (c.); got ' + str(var_c))
         tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=var_c.ac, alt_aln_method='transcript')
-        pos_n = tm.c_to_n(var_c.posedit.pos)
-        if isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_c.posedit.edit, hgvs.edit.Dup) or isinstance(var_c.posedit.edit, hgvs.edit.NADupN) or isinstance(var_c.posedit.edit, hgvs.edit.Inv):
+        pos_n = tm.c_to_n(var_c.posedit.pos) if var_c.posedit.pos else None
+        if isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_c.posedit.edit, hgvs.edit.Ident) or isinstance(var_c.posedit.edit, hgvs.edit.Dup) or isinstance(var_c.posedit.edit, hgvs.edit.NADupN) or isinstance(var_c.posedit.edit, hgvs.edit.Inv):
             edit_n = copy.deepcopy(var_c.posedit.edit)
         else:
             raise HGVSUnsupportedOperationError('Only NARefAlt/Dup/NADupN/Inv types are currently implemented')
@@ -170,6 +200,12 @@ class VariantMapper(object):
         return var_n
 
     def n_to_c(self, var_n):
+        vars = copy.deepcopy(var_n)
+        for i in range(0, len(var_n)):
+            vars[i] = self._n_to_c(var_n[i])
+        return vars
+    
+    def _n_to_c(self, var_n):
         """Given a parsed n. variant, return a c. variant on the specified
         transcript using the specified alignment method (default is
         'transcript' indicating a self alignment).
@@ -183,8 +219,8 @@ class VariantMapper(object):
         if not (var_n.type == 'n'):
             raise HGVSInvalidVariantError('Expected n. variant; got ' + str(var_n))
         tm = self._fetch_TranscriptMapper(tx_ac=var_n.ac, alt_ac=var_n.ac, alt_aln_method='transcript')
-        pos_c = tm.n_to_c(var_n.posedit.pos)
-        if isinstance(var_n.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_n.posedit.edit, hgvs.edit.Dup) or isinstance(var_n.posedit.edit, hgvs.edit.NADupN) or isinstance(var_n.posedit.edit, hgvs.edit.Inv):
+        pos_c = tm.n_to_c(var_n.posedit.pos) if var_n.posedit.pos else None
+        if isinstance(var_n.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_n.posedit.edit, hgvs.edit.Ident) or isinstance(var_n.posedit.edit, hgvs.edit.Dup) or isinstance(var_n.posedit.edit, hgvs.edit.NADupN) or isinstance(var_n.posedit.edit, hgvs.edit.Inv):
             edit_c = copy.deepcopy(var_n.posedit.edit)
         else:
             raise HGVSUnsupportedOperationError('Only NARefAlt/Dup/NADupN/Inv types are currently implemented')
@@ -195,6 +231,12 @@ class VariantMapper(object):
     # c -> p
     # TODO: c_to_p needs refactoring
     def c_to_p(self, var_c, pro_ac=None):
+        vars = copy.deepcopy(var_c)
+        for i in range(0, len(var_c)):
+            vars[i] = self._c_to_p(var_c[i], pro_ac)
+        return vars
+    
+    def _c_to_p(self, var_c, pro_ac=None):
         """
         Converts a c. SequenceVariant to a p. SequenceVariant on the specified protein accession
         Author: Rudy Rico
@@ -259,12 +301,20 @@ class VariantMapper(object):
 
     ############################################################################
     ## Internal methods
-
+    
     def _replace_reference(self, var):
+        for i in range(0, len(var)):
+            var[i] = self._replace_reference_for_sequence_variant(var[i])
+        return var
+
+    def _replace_reference_for_sequence_variant(self, var):
         """fetch reference sequence for variant and update (in-place) if necessary"""
 
         if var.type not in 'cgmnr':
             raise HGVSUnsupportedOperationError("Can only update references for type c, g, m, n, r")
+        
+        if var.posedit.pos is None:
+            return var
 
         if var.posedit.edit.type == 'ins':
             # insertions have no reference sequence (zero-width), so return as-is
@@ -352,6 +402,8 @@ class VariantMapper(object):
                 except (ValueError, TypeError):
                     ref = reverse_complement(edit_in.ref)
                 edit_out = hgvs.edit.Inv(ref=ref)
+        elif isinstance(edit_in, hgvs.edit.Ident):
+            edit_out = copy.deepcopy(edit_in)
         else:
             raise NotImplementedError('Only NARefAlt/Dup/NADupN/Inv types are currently implemented')
         return edit_out

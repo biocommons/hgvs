@@ -31,6 +31,9 @@ class SimplePosition(recordtype.recordtype('SimplePosition', field_names=[('base
         self.validate()
         s = '?' if self.base is None else str(self.base)
         return '(' + s + ')' if self.uncertain else s
+    
+    def __hash__(self):
+        return hash(self.__str__())
 
     @property
     def is_uncertain(self):
@@ -96,6 +99,9 @@ class BaseOffsetPosition(recordtype.recordtype(
         offset_str = ('+?' if self.offset is None else '' if self.offset == 0 else '%+d' % self.offset)
         pos = base_str + offset_str
         return '(' + pos + ')' if self.uncertain else pos
+    
+    def __hash__(self):
+        return hash(self.__str__())
 
     def _set_uncertain(self):
         "mark this location as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"
@@ -121,6 +127,9 @@ class AAPosition(recordtype.recordtype('AAPosition', field_names=[('base', None)
         aa = '?' if self.aa is None else aa1_to_aa3(self.aa)
         s = aa + pos
         return '(' + s + ')' if self.uncertain else s
+    
+    def __hash__(self):
+        return hash(self.__str__())
 
     @property
     def pos(self):
@@ -149,6 +158,9 @@ class Interval(recordtype.recordtype('Interval', field_names=['start', ('end', N
             return str(self.start)
         iv = str(self.start) + '_' + str(self.end)
         return '(' + iv + ')' if self.uncertain else iv
+    
+    def __hash__(self):
+        return hash(self.__str__())
 
     def _set_uncertain(self):
         "mark this interval as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"

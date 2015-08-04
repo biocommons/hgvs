@@ -29,6 +29,23 @@ class Test_VariantMapper(unittest.TestCase):
 
         self.assertEqual(str(var_c), hgvs_c)
         self.assertEqual(str(var_p), hgvs_p)
+    
+    def test_VariantMapper_for_complex_variants(self):
+        compound_c = 'NM_000495.4:c.[1117C>T;4994_5001del]'
+        mosaic_c   = 'NM_000495.4:c.[=/1117C>T]'
+        chimeric_c = 'NM_000495.4:c.[=//1117C>T]'
+        
+        var_compound_c = self.hp.parse_hgvs_variant(compound_c)
+        var_mosaic_c   = self.hp.parse_hgvs_variant(mosaic_c)
+        var_chimeric_c = self.hp.parse_hgvs_variant(chimeric_c)
+        
+        var_compound_g = self.vm.c_to_g(var_compound_c, 'NC_000023.10')
+        var_mosaic_g   = self.vm.c_to_g(var_mosaic_c, 'NC_000023.10')
+        var_chimeric_g = self.vm.c_to_g(var_chimeric_c, 'NC_000023.10')
+        
+        self.assertEqual(str(var_compound_g), 'NC_000023.10:g.[107829929C>T;107939544_107939551del]')
+        self.assertEqual(str(var_mosaic_g),   'NC_000023.10:g.[=/107829929C>T]')
+        self.assertEqual(str(var_chimeric_g), 'NC_000023.10:g.[=//107829929C>T]')
 
     def test_gcrp_invalid_input_type(self):
         hgvs_g = 'NC_000007.13:g.36561662C>T'

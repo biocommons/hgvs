@@ -4,7 +4,7 @@
 # This file describes an OMeta grammar for a subset of the HGVS variant
 # specification.  The subset is limited to is limited to those rules
 # that define sequence variants precisely.  It does not current cover
-# rules for translocations or conversions.
+# rules for translocations.
  
 # * HGVS Sequence Variants -- fully-specified variants 
 # The basic structure of a HGVS sequence variant is:
@@ -49,17 +49,22 @@
 #
 
 ## MISSING FEATURES
-# * LATER: posedits structure for chimeric, mosaic, compound variants, multiallelic variants
 # * LATER: gene name
 # * WONTFIX: translocations: intentionally omitted
-# * WONTFIX: conversions: intentionally omitted
 # * WONTFIX: insertions not specified by a sequence (e.g., ins22 isn't specific)
+
+
+############################################################################
+## HGVS Variant
+
+hgvs_variant = sequence_variant | compound_variant | mosaic_variant | chimeric_variant
+
 
 
 ############################################################################
 ## HGVS Sequence Variant
 
-hgvs_variant = g_variant | m_variant | c_variant | n_variant  | r_variant | p_variant
+sequence_variant = g_variant | m_variant | c_variant | n_variant  | r_variant | p_variant
 
 g_variant   = gm_variant
 m_variant   = gm_variant
@@ -78,6 +83,76 @@ p_variant   = accn:ac ':'      'p':type '.'   p_posedit:posedit -> hgvs.variant.
 # Disabling in response to issue #167. The SequenceVariant object returned below is significantly
 # unlike those returned by parsing proper HGVS variants that it is confusing.
 # any_variant = accn:ac ':' letter:type '.' <anything+>:posedit -> hgvs.variant.SequenceVariant(ac,type,posedit)
+
+
+
+############################################################################
+## HGVS Compound Variant
+
+compound_variant = g_compound | m_compound | c_compound | n_compound  | r_compound
+
+g_compound  = gm_compound
+m_compound  = gm_compound
+gm_compound = accn:ac ':' gm_type:type '.[' gm_compound_posedits:posedit_list1 '];[' gm_compound_posedits:posedit_list2 ']'
+                  -> hgvs.variant.CompoundVariant([hgvs.variant.SequenceVariant(ac,type,posedit) for posedit in (posedit_list1 + posedit_list2)],
+                                                  [hgvs.variant.PHASE1] * len(posedit_list1) + [hgvs.variant.PHASE2] * len(posedit_list2), posedit_list1.uncertain)
+            | accn:ac ':' gm_type:type '.[' gm_compound_posedits:posedit_list ']'
+                  -> hgvs.variant.CompoundVariant([hgvs.variant.SequenceVariant(ac,type,posedit) for posedit in posedit_list], None, posedit_list.uncertain)
+
+c_compound  = cn_compound
+n_compound  = cn_compound
+cn_compound = accn:ac ':' cn_type:type '.[' cn_compound_posedits:posedit_list1 '];[' cn_compound_posedits:posedit_list2 ']'
+                  -> hgvs.variant.CompoundVariant([hgvs.variant.SequenceVariant(ac,type,posedit) for posedit in (posedit_list1 + posedit_list2)],
+                                                  [hgvs.variant.PHASE1] * len(posedit_list1) + [hgvs.variant.PHASE2] * len(posedit_list2), posedit_list1.uncertain)
+            | accn:ac ':' cn_type:type '.[' cn_compound_posedits:posedit_list ']'
+                  -> hgvs.variant.CompoundVariant([hgvs.variant.SequenceVariant(ac,type,posedit) for posedit in posedit_list], None, posedit_list.uncertain)
+
+r_compound  = accn:ac ':' 'r':type '.[' r_compound_posedits:posedit_list1 '];[' r_compound_posedits:posedit_list2 ']'
+                  -> hgvs.variant.CompoundVariant([hgvs.variant.SequenceVariant(ac,type,posedit) for posedit in (posedit_list1 + posedit_list2)],
+                                                  [hgvs.variant.PHASE1] * len(posedit_list1) + [hgvs.variant.PHASE2] * len(posedit_list2), posedit_list1.uncertain)
+            | accn:ac ':' 'r':type '.[' r_compound_posedits:posedit_list ']'
+                  -> hgvs.variant.CompoundVariant([hgvs.variant.SequenceVariant(ac,type,posedit) for posedit in posedit_list], None, posedit_list.uncertain)
+
+
+
+############################################################################
+## HGVS Mosaic Variant
+
+mosaic_variant = g_mosaic | m_mosaic | c_mosaic | n_mosaic  | r_mosaic
+
+g_mosaic  = gm_mosaic
+m_mosaic  = gm_mosaic
+gm_mosaic = accn:ac ':' gm_type:type '.[' gm_mosaic_posedits:posedit_list ']'
+                -> hgvs.variant.MosaicVariant([hgvs.variant.SequenceVariant(ac,type,posedit) for posedit in posedit_list])
+
+c_mosaic  = cn_mosaic
+n_mosaic  = cn_mosaic
+cn_mosaic = accn:ac ':' cn_type:type '.[' cn_mosaic_posedits:posedit_list ']'
+                -> hgvs.variant.MosaicVariant([hgvs.variant.SequenceVariant(ac,type,posedit) for posedit in posedit_list])
+
+r_mosaic  = accn:ac ':' 'r':type '.[' r_mosaic_posedits:posedit_list ']'
+                -> hgvs.variant.MosaicVariant([hgvs.variant.SequenceVariant(ac,type,posedit) for posedit in posedit_list])
+
+
+
+############################################################################
+## HGVS Chimeric Variant
+
+chimeric_variant = g_chimeric | m_chimeric | c_chimeric | n_chimeric  | r_chimeric
+
+g_chimeric  = gm_chimeric
+m_chimeric  = gm_chimeric
+gm_chimeric = accn:ac ':' gm_type:type '.[' gm_chimeric_posedits:posedit_list ']'
+                -> hgvs.variant.ChimericVariant([hgvs.variant.SequenceVariant(ac,type,posedit) for posedit in posedit_list])
+
+c_chimeric  = cn_chimeric
+n_chimeric  = cn_chimeric
+cn_chimeric = accn:ac ':' cn_type:type '.[' cn_chimeric_posedits:posedit_list ']'
+                -> hgvs.variant.ChimericVariant([hgvs.variant.SequenceVariant(ac,type,posedit) for posedit in posedit_list])
+
+r_chimeric  = accn:ac ':' 'r':type '.[' r_chimeric_posedits:posedit_list ']'
+                -> hgvs.variant.ChimericVariant([hgvs.variant.SequenceVariant(ac,type,posedit) for posedit in posedit_list])
+
 
 
 ############################################################################
@@ -116,20 +191,24 @@ r_hgvs_position   = accn:ac ':' 'r':type      '.'   r_interval:pos -> hgvs.hgvsp
 
 
 ############################################################################
-## PosEdits -- position + edit objects
+## PosEdit -- position + edit objects
 
 # any_posedit = g_posedit | m_posedit | n_posedit | c_posedit | r_posedit | p_posedit 
 
-g_posedit   = gm_posedit
-m_posedit   = gm_posedit
+g_posedit  = gm_posedit
+m_posedit  = gm_posedit
 gm_posedit = gm_interval:pos dna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit)
+           | dna_edit:edit -> hgvs.posedit.PosEdit(pos=None,edit=edit)
 
 n_posedit   = cn_posedit
 c_posedit   = cn_posedit
 cn_posedit  = cn_interval:pos dna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit)
+            | dna_edit:edit -> hgvs.posedit.PosEdit(pos=None,edit=edit)
 
 r_posedit   = (r_interval:pos rna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit))
-   | ('(' r_interval:pos rna_edit:edit ')' -> hgvs.posedit.PosEdit(pos=pos,edit=edit, uncertain=True))
+            | ('(' r_interval:pos rna_edit:edit ')' -> hgvs.posedit.PosEdit(pos=pos,edit=edit, uncertain=True))
+            | (rna_edit:edit -> hgvs.posedit.PosEdit(pos=None,edit=edit))
+            | ('(' rna_edit:edit ')' -> hgvs.posedit.PosEdit(pos=None,edit=edit, uncertain=True))
 
 p_posedit   = (p_interval:pos pro_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit))
    | ('(' p_interval:pos pro_edit:edit ')' -> hgvs.posedit.PosEdit(pos=pos,edit=edit, uncertain=True))
@@ -142,6 +221,44 @@ p_posedit_special =
 	| '?':x -> hgvs.posedit.PosEdit(pos=None,edit='',uncertain=True)
 
 
+
+############################################################################
+## PosEdits -- a list of PosEdit
+
+gm_compound_posedits = gm_posedit:edit ';' gm_compound_posedits:set -> hgvs.posedit.PosEdits([edit]) + set
+                     | gm_posedit:edit '(;)' gm_compound_posedits:set -> hgvs.posedit.PosEdits([edit], True) + set
+                     | gm_posedit:edit -> hgvs.posedit.PosEdits([edit])
+
+cn_compound_posedits = cn_posedit:edit ';' cn_compound_posedits:set -> hgvs.posedit.PosEdits([edit]) + set
+                     | cn_posedit:edit '(;)' cn_compound_posedits:set -> hgvs.posedit.PosEdits([edit], True) + set
+                     | cn_posedit:edit -> hgvs.posedit.PosEdits([edit])
+
+r_compound_posedits  = r_posedit:edit ';' r_compound_posedits:set -> hgvs.posedit.PosEdits([edit]) + set
+                     | r_posedit:edit '(;)' r_compound_posedits:set -> hgvs.posedit.PosEdits([edit], True) + set
+                     | r_posedit:edit -> hgvs.posedit.PosEdits([edit])
+
+
+gm_mosaic_posedits   = gm_posedit:edit '/' gm_mosaic_posedits:set -> hgvs.posedit.PosEdits([edit]) + set
+                     | gm_posedit:edit -> hgvs.posedit.PosEdits([edit])
+
+cn_mosaic_posedits   = cn_posedit:edit '/' cn_mosaic_posedits:set -> hgvs.posedit.PosEdits([edit]) + set
+                     | cn_posedit:edit -> hgvs.posedit.PosEdits([edit])
+
+r_mosaic_posedits    = r_posedit:edit '/' r_mosaic_posedits:set -> hgvs.posedit.PosEdits([edit]) + set
+                     | r_posedit:edit -> hgvs.posedit.PosEdits([edit])
+
+
+gm_chimeric_posedits = gm_posedit:edit '//' gm_chimeric_posedits:set -> hgvs.posedit.PosEdits([edit]) + set
+                     | gm_posedit:edit -> hgvs.posedit.PosEdits([edit])
+
+cn_chimeric_posedits = cn_posedit:edit '//' cn_chimeric_posedits:set -> hgvs.posedit.PosEdits([edit]) + set
+                     | cn_posedit:edit -> hgvs.posedit.PosEdits([edit])
+
+r_chimeric_posedits  = r_posedit:edit '//' r_chimeric_posedits:set -> hgvs.posedit.PosEdits([edit]) + set
+                     | r_posedit:edit -> hgvs.posedit.PosEdits([edit])
+
+
+
 ############################################################################
 ## Edits -- sequence-specific operations at a position
 ## subst, delins, del, and ins are represented using two classes, NARefAlt
@@ -150,7 +267,8 @@ p_posedit_special =
 ## "_mu" = "maybe uncertain"
 
 dna_edit_mu = dna_edit | '(' dna_edit:edit ')' -> edit._set_uncertain()
-dna_edit   = dna_dupN | dna_subst | dna_delins | dna_ins | dna_del | dna_dup | dna_inv | dna_con | dna_copy
+dna_edit   = dna_dupN | dna_ident | dna_subst | dna_delins | dna_ins | dna_del | dna_dup | dna_inv | dna_con | dna_copy
+dna_ident  = <dna*>:ref '='           -> hgvs.edit.Ident(ref=ref)
 dna_subst  = dna:ref '>' dna:alt      -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
 dna_delins = 'del' (<num>|<dna*>):ref 'ins' <dna+>:alt  -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
 dna_del    = 'del' (<num>|<dna*>):ref -> hgvs.edit.NARefAlt(ref=ref,alt=None)
@@ -168,7 +286,8 @@ dna_dupN = 'dup' num:n -> hgvs.edit.NADupN(n=n)
 # 		     | <dna+>:ref '(' num:min '_' num:max ')' -> Repeat(ref=ref, min=min, max=max)
 
 rna_edit_mu = rna_edit | '(' rna_edit:edit ')' -> edit._set_uncertain()
-rna_edit   = rna_subst | rna_delins | rna_ins | rna_del | rna_dup | rna_inv | rna_con
+rna_edit   = rna_ident | rna_subst | rna_delins | rna_ins | rna_del | rna_dup | rna_inv | rna_con
+rna_ident  = <rna*>:ref '='                  -> hgvs.edit.Ident(ref=ref)
 rna_subst  = rna:ref '>' rna:alt             -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
 rna_delins = 'del' (<num>|<rna*>):ref 'ins' <rna+>:alt  -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
 rna_del    = 'del' (<num>|<rna*>):ref        -> hgvs.edit.NARefAlt(ref=ref,alt=None)
