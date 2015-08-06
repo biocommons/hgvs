@@ -18,55 +18,40 @@ class Client:
             url = 'http://' + url
         self.prefix = url + '/hgvs/v' + str(api_version) + '/'
 
+
+    def _get_response(self, url):
+        try:
+            res = urllib2.urlopen(url)
+            return json.load(res)
+        except urllib2.HTTPError:
+            raise HGVSDataNotAvailableError(url)
+
+
     @lru_cache(maxsize=1)
     def data_version(self):
         url = self.prefix + 'data_version'
-        
-        try:
-            res = urllib2.urlopen(url)
-            res = json.load(res)
-        except urllib2.HTTPError as e:
-            raise HGVSDataNotAvailableError(e.geturl())
-        
+        res = self._get_response(url)
         return res['data_version']
 
 
     @lru_cache(maxsize=1)
     def schema_version(self):
         url = self.prefix + 'schema_version'
-        
-        try:
-            res = urllib2.urlopen(url)
-            res = json.load(res)
-        except urllib2.HTTPError as e:
-            raise HGVSDataNotAvailableError(e.geturl())
-        
+        res = self._get_response(url)
         return res['schema_version']
 
 
     @lru_cache(maxsize=128)
     def get_tx_exons(self, tx_ac, alt_ac, alt_aln_method):
         url = '{0}tx_exons?tx_ac={1}&alt_ac={2}&alt_aln_method={3}'.format(self.prefix, tx_ac, alt_ac, alt_aln_method)
-        
-        try:
-            res = urllib2.urlopen(url)
-            res = json.load(res)
-        except urllib2.HTTPError as e:
-            raise HGVSDataNotAvailableError(e.geturl())
-        
+        res = self._get_response(url)
         return res
 
 
     @lru_cache(maxsize=128)
     def get_tx_info(self, tx_ac, alt_ac, alt_aln_method):
         url = '{0}tx_info?tx_ac={1}&alt_ac={2}&alt_aln_method={3}'.format(self.prefix, tx_ac, alt_ac, alt_aln_method)
-        
-        try:
-            res = urllib2.urlopen(url)
-            res = json.load(res)
-        except urllib2.HTTPError as e:
-            raise HGVSDataNotAvailableError(e.geturl())
-        
+        res = self._get_response(url)
         return res
 
 
@@ -76,116 +61,62 @@ class Client:
             url = '{0}sequence?ac={1}&start={2}&end={3}'.format(self.prefix, ac, start_i, end_i)
         else:
             url = '{0}sequence?ac={1}'.format(self.prefix, ac)
-        
-        try:
-            res = urllib2.urlopen(url)
-            res = json.load(res)
-        except urllib2.HTTPError as e:
-            raise HGVSDataNotAvailableError(e.geturl())
-        
+        res = self._get_response(url)
         return res['seq']
 
 
     @lru_cache(maxsize=128)
     def get_tx_for_gene(self, gene):
         url = '{0}tx_for_gene?gene={1}'.format(self.prefix, gene)
-        
-        try:
-            res = urllib2.urlopen(url)
-            res = json.load(res)
-        except urllib2.HTTPError as e:
-            raise HGVSDataNotAvailableError(e.geturl())
-        
+        res = self._get_response(url)
         return res
 
 
     @lru_cache(maxsize=128)
     def get_tx_for_region(self, alt_ac, alt_aln_method, start_i, end_i):
         url = '{0}tx_for_region?alt_ac={1}&alt_aln_method={2}&start={3}&end={4}'.format(self.prefix, alt_ac, alt_aln_method, start_i, end_i)
-        
-        try:
-            res = urllib2.urlopen(url)
-            res = json.load(res)
-        except urllib2.HTTPError as e:
-            raise HGVSDataNotAvailableError(e.geturl())
-        
+        res = self._get_response(url)
         return res
 
     @lru_cache(maxsize=128)
     def get_acs_for_protein_seq(self, seq):
         url = '{0}acs_for_protein_seq?seq={1}'.format(self.prefix, seq)
-        
-        try:
-            res = urllib2.urlopen(url)
-            res = json.load(res)
-        except urllib2.HTTPError as e:
-            raise HGVSDataNotAvailableError(e.geturl())
-        
+        res = self._get_response(url)
         return [item['ac'] for item in res]
 
 
     @lru_cache(maxsize=128)
     def get_gene_info(self, gene):
         url = '{0}gene_info?gene={1}'.format(self.prefix, gene)
-        
-        try:
-            res = urllib2.urlopen(url)
-            res = json.load(res)
-        except urllib2.HTTPError as e:
-            raise HGVSDataNotAvailableError(e.geturl())
-        
+        res = self._get_response(url)
         return res
 
 
     @lru_cache(maxsize=128)
     def get_tx_mapping_options(self, tx_ac):
         url = '{0}tx_mapping_options?tx_ac={1}'.format(self.prefix, tx_ac)
-        
-        try:
-            res = urllib2.urlopen(url)
-            res = json.load(res)
-        except urllib2.HTTPError as e:
-            raise HGVSDataNotAvailableError(e.geturl())
-        
+        res = self._get_response(url)
         return res
 
 
     @lru_cache(maxsize=128)
     def get_tx_identity_info(self, tx_ac):
         url = '{0}tx_identity_info?tx_ac={1}'.format(self.prefix, tx_ac)
-        
-        try:
-            res = urllib2.urlopen(url)
-            res = json.load(res)
-        except urllib2.HTTPError as e:
-            raise HGVSDataNotAvailableError(e.geturl())
-        
+        res = self._get_response(url)
         return res
 
 
     @lru_cache(maxsize=128)
     def get_similar_transcripts(self, tx_ac):
         url = '{0}similar_transcripts?tx_ac={1}'.format(self.prefix, tx_ac)
-        
-        try:
-            res = urllib2.urlopen(url)
-            res = json.load(res)
-        except urllib2.HTTPError as e:
-            raise HGVSDataNotAvailableError(e.geturl())
-        
+        res = self._get_response(url)
         return res
 
 
     @lru_cache(maxsize=128)
     def get_pro_ac_for_tx_ac(self, tx_ac):
         url = '{0}pro_ac_for_tx_ac?tx_ac={1}'.format(self.prefix, tx_ac)
-        
-        try:
-            res = urllib2.urlopen(url)
-            res = json.load(res)
-        except urllib2.HTTPError as e:
-            raise HGVSDataNotAvailableError(e.geturl())
-        
+        res = self._get_response(url)
         return res['pro_ac']
 
 
