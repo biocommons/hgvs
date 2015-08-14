@@ -25,7 +25,7 @@ from .seqfetcher import SeqFetcher
 # to change or disappear without notice.
 # All users may set UTA_DB_URL to explicitly select a host, database, or schema
 # INTERNAL USE ONLY: Developers may set _UTA_URL_KEY to select a named URL
-_current_version = 'uta_20150704'
+_current_version = 'uta_20150813'
 _uta_urls = {
     "local": "postgresql://anonymous:anonymous@localhost/uta/" + _current_version,
     "local-dev": "postgresql://anonymous:anonymous@localhost/uta_dev/" + _current_version,
