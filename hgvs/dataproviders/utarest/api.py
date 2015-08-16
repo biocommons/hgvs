@@ -8,13 +8,13 @@ from flask_restful import reqparse
 from flask_restful import fields
 from flask_restful import marshal
 
-from hgvs.dataproviders.server import rest
+from hgvs.dataproviders.utarest import server
 
 import hgvs.dataproviders.uta
 from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError
 
 
-@rest.before_request
+@server.before_request
 def before_request():
     g.dp = hgvs.dataproviders.uta.connect()
 
