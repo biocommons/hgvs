@@ -4,12 +4,14 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from hgvs.decorators.lru_cache import lru_cache
 from hgvs.exceptions import HGVSDataNotAvailableError
+from hgvs.dataproviders.interface import Interface
+
 
 import urllib2
 import json
 
 
-class Client:
+class Client(Interface):
     """REST client to the UTA database
     """
 

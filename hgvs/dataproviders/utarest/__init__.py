@@ -6,14 +6,14 @@ from flask import jsonify
 from flask import make_response
 from flask_restful import Api
 
-rest = Flask(__name__)
-apis = Api(rest)
+server = Flask(__name__)
+apis = Api(server)
 
-import hgvs.dataproviders.server.api
-import hgvs.dataproviders.server.uri
+import hgvs.dataproviders.utarest.api
+import hgvs.dataproviders.utarest.uri
 
 
-@rest.errorhandler(404)
+@server.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
 
