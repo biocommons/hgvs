@@ -45,14 +45,14 @@ class Client(Interface):
 
     @lru_cache(maxsize=128)
     def get_tx_exons(self, tx_ac, alt_ac, alt_aln_method):
-        url = '{0}tx_exons?tx_ac={1}&alt_ac={2}&alt_aln_method={3}'.format(self.prefix, tx_ac, alt_ac, alt_aln_method)
+        url = '{prefix}tx_exons?tx_ac={tx_ac}&alt_ac={alt_ac}&alt_aln_method={alt_aln_method}'.format(prefix=self.prefix, tx_ac=tx_ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         res = self._get_response(url)
         return res
 
 
     @lru_cache(maxsize=128)
     def get_tx_info(self, tx_ac, alt_ac, alt_aln_method):
-        url = '{0}tx_info?tx_ac={1}&alt_ac={2}&alt_aln_method={3}'.format(self.prefix, tx_ac, alt_ac, alt_aln_method)
+        url = '{prefix}tx_info?tx_ac={tx_ac}&alt_ac={alt_ac}&alt_aln_method={alt_aln_method}'.format(prefix=self.prefix, tx_ac=tx_ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         res = self._get_response(url)
         return res
 
@@ -60,69 +60,69 @@ class Client(Interface):
     @lru_cache(maxsize=128)
     def fetch_seq(self, ac, start_i=None, end_i=None):
         if start_i and end_i:
-            url = '{0}sequence?ac={1}&start={2}&end={3}'.format(self.prefix, ac, start_i, end_i)
+            url = '{prefix}sequence?ac={ac}&start={start}&end={end}'.format(prefix=self.prefix, ac=ac, start=start_i, end=end_i)
         else:
-            url = '{0}sequence?ac={1}'.format(self.prefix, ac)
+            url = '{prefix}sequence?ac={ac}'.format(prefix=self.prefix, ac=ac)
         res = self._get_response(url)
         return res['seq']
     
     @lru_cache(maxsize=128)
     def get_tx_seq(self, ac):
-        url = '{0}sequence?ac={1}'.format(self.prefix, ac)
+        url = '{prefix}sequence?ac={ac}'.format(prefix=self.prefix, ac=ac)
         res = self._get_response(url)
         return res
 
     @lru_cache(maxsize=128)
     def get_tx_for_gene(self, gene):
-        url = '{0}tx_for_gene?gene={1}'.format(self.prefix, gene)
+        url = '{prefix}tx_for_gene?gene={gene}'.format(prefix=self.prefix, gene=gene)
         res = self._get_response(url)
         return res
 
 
     @lru_cache(maxsize=128)
     def get_tx_for_region(self, alt_ac, alt_aln_method, start_i, end_i):
-        url = '{0}tx_for_region?alt_ac={1}&alt_aln_method={2}&start={3}&end={4}'.format(self.prefix, alt_ac, alt_aln_method, start_i, end_i)
+        url = '{prefix}tx_for_region?alt_ac={alt_ac}&alt_aln_method={alt_aln_method}&start={start}&end={end}'.format(prefix=self.prefix, alt_ac=alt_ac, alt_aln_method=alt_aln_method, start=start_i, end=end_i)
         res = self._get_response(url)
         return res
 
     @lru_cache(maxsize=128)
     def get_acs_for_protein_seq(self, seq):
-        url = '{0}acs_for_protein_seq?seq={1}'.format(self.prefix, seq)
+        url = '{prefix}acs_for_protein_seq?seq={seq}'.format(prefix=self.prefix, seq=seq)
         res = self._get_response(url)
         return [item['ac'] for item in res]
 
 
     @lru_cache(maxsize=128)
     def get_gene_info(self, gene):
-        url = '{0}gene_info?gene={1}'.format(self.prefix, gene)
+        url = '{prefix}gene_info?gene={gene}'.format(prefix=self.prefix, gene=gene)
         res = self._get_response(url)
         return res
 
 
     @lru_cache(maxsize=128)
     def get_tx_mapping_options(self, tx_ac):
-        url = '{0}tx_mapping_options?tx_ac={1}'.format(self.prefix, tx_ac)
+        url = '{prefix}tx_mapping_options?tx_ac={ac}'.format(prefix=self.prefix, ac=tx_ac)
         res = self._get_response(url)
         return res
 
 
     @lru_cache(maxsize=128)
     def get_tx_identity_info(self, tx_ac):
-        url = '{0}tx_identity_info?tx_ac={1}'.format(self.prefix, tx_ac)
+        url = '{prefix}tx_identity_info?tx_ac={ac}'.format(prefix=self.prefix, ac=tx_ac)
         res = self._get_response(url)
         return res
 
 
     @lru_cache(maxsize=128)
     def get_similar_transcripts(self, tx_ac):
-        url = '{0}similar_transcripts?tx_ac={1}'.format(self.prefix, tx_ac)
+        url = '{prefix}similar_transcripts?tx_ac={ac}'.format(prefix=self.prefix, ac=tx_ac)
         res = self._get_response(url)
         return res
 
 
     @lru_cache(maxsize=128)
     def get_pro_ac_for_tx_ac(self, tx_ac):
-        url = '{0}pro_ac_for_tx_ac?tx_ac={1}'.format(self.prefix, tx_ac)
+        url = '{prefix}pro_ac_for_tx_ac?tx_ac={ac}'.format(prefix=self.prefix, ac=tx_ac)
         res = self._get_response(url)
         return res['pro_ac']
 
