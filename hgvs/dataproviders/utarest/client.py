@@ -65,7 +65,12 @@ class Client(Interface):
             url = '{0}sequence?ac={1}'.format(self.prefix, ac)
         res = self._get_response(url)
         return res['seq']
-
+    
+    @lru_cache(maxsize=128)
+    def get_tx_seq(self, ac):
+        url = '{0}sequence?ac={1}'.format(self.prefix, ac)
+        res = self._get_response(url)
+        return res
 
     @lru_cache(maxsize=128)
     def get_tx_for_gene(self, gene):
