@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from hgvs.dataproviders.utarest import apis
-from hgvs.dataproviders.utarest import api
+from hgvs.dataproviders.utarest.server import apis
+from hgvs.dataproviders.utarest.server import api
 
 api_version = '0'
 
