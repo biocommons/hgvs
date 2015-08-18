@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 
 from hgvs.decorators.lru_cache import lru_cache
+from hgvs.decorators import deprecated
 from hgvs.exceptions import HGVSDataNotAvailableError
 from hgvs.dataproviders.interface import Interface
 
@@ -59,7 +60,7 @@ class Client(Interface):
 
     @lru_cache(maxsize=128)
     def fetch_seq(self, ac, start_i=None, end_i=None):
-        if start_i and end_i:
+        if start_i is not None and end_i is not None:
             url = '{prefix}sequence?ac={ac}&start={start}&end={end}'.format(prefix=self.prefix, ac=ac, start=start_i, end=end_i)
         else:
             url = '{prefix}sequence?ac={ac}'.format(prefix=self.prefix, ac=ac)
@@ -67,10 +68,16 @@ class Client(Interface):
         return res['seq']
     
     @lru_cache(maxsize=128)
-    def get_tx_seq(self, ac):
+    def _get_tx_seq(self, ac):
         url = '{prefix}sequence?ac={ac}'.format(prefix=self.prefix, ac=ac)
         res = self._get_response(url)
-        return res
+        return res['seq']
+    
+    # TODO: Remove get_tx_seq() in 0.5.0
+    @deprecated(use_instead="fetch_seq(...)")
+    def get_tx_seq(self, ac):
+        """DEPRECATED: will be removed in 0.5.0"""
+        return self._get_tx_seq(ac)
 
     @lru_cache(maxsize=128)
     def get_tx_for_gene(self, gene):

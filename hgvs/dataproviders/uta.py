@@ -14,11 +14,13 @@ import psycopg2.pool
 from bioutils.digests import seq_md5
 
 import hgvs
-from ..dataproviders.interface import Interface
-from ..decorators import deprecated
-from ..decorators.lru_cache import lru_cache
-from ..exceptions import HGVSError, HGVSDataNotAvailableError
-from .seqfetcher import SeqFetcher
+from hgvs.dataproviders.interface import Interface
+from hgvs.dataproviders.seqfetcher import SeqFetcher
+from hgvs.dataproviders.utarest.client import Client
+from hgvs.decorators import deprecated
+from hgvs.decorators.lru_cache import lru_cache
+from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError
+
 
 # Default and common URLs for UTA connections
 # These named urls are provided for developer convenience expect them
@@ -31,6 +33,8 @@ _uta_urls = {
     "local-dev": "postgresql://anonymous:anonymous@localhost/uta_dev/" + _current_version,
     "public": "postgresql://anonymous:anonymous@uta.biocommons.org/uta_dev/" + _current_version,
     "public-dev": "postgresql://anonymous:anonymous@uta.biocommons.org/uta_dev/" + _current_version,
+    "local-rest": "http://127.0.0.1:5000",
+    "public-rest": "http://api.biocommons.org",
     # INOP: "sqlite-dev": "sqlite:/home/reece/projects/biocommons/hgvs/tests/db/uta-test-1.db",
 }
 # use public instance for released (x.y.z versions), otherwise dev
@@ -69,7 +73,10 @@ def connect(db_url=_default_db_url, pooling=False):
         postgresql://localhost/uta
 
     A local SQLite database:
-      sqlite:////tmp/uta-0.0.6.db
+        sqlite:////tmp/uta-0.0.6.db
+    
+    A remote public REST server:
+        http://api.biocommons.org'
 
     For postgresql db_urls, pooling=True causes connect to use a
     psycopg2.pool.ThreadedConnectionPool.
@@ -81,6 +88,8 @@ def connect(db_url=_default_db_url, pooling=False):
         conn = UTA_sqlite(url)
     elif url.scheme == 'postgresql':
         conn = UTA_postgresql(url, pooling)
+    elif url.scheme == 'http' or url.scheme == 'https':
+        conn = Client(db_url)
     else:
         # fell through connection scheme cases
         raise RuntimeError("{url.scheme} in {url} is not currently supported".format(url=url))
