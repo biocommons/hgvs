@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import os
 
 from flask import g
 from flask_restful import Resource
@@ -14,9 +15,14 @@ import hgvs.dataproviders.uta
 from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError
 
 
+# The UTA_DB_SOURCE tells the url that is used to get the UTA data for 
+# the REST server interface.
+_default_db_url = os.environ.get('UTA_DB_SOURCE', "postgresql://anonymous:anonymous@localhost/uta/")
+
+
 @server.before_request
 def before_request():
-    g.dp = hgvs.dataproviders.uta.connect()
+    g.dp = hgvs.dataproviders.uta.connect(db_url=_default_db_url)
 
 
 
