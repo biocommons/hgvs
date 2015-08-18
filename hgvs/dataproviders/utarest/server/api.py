@@ -15,9 +15,9 @@ import hgvs.dataproviders.uta
 from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError
 
 
-# The UTA_DB_SOURCE tells the url that is used to get the UTA data for 
-# the REST server interface.
-_default_db_url = os.environ.get('UTA_DB_SOURCE', hgvs.dataproviders.uta._uta_urls['local'])
+_default_db_url = os.environ.get('UTA_DB_URL', hgvs.dataproviders.uta._uta_urls['public'])
+if _default_db_url.startswith('http://') or _default_db_url.startswith('https://'):
+    _default_db_url = hgvs.dataproviders.uta._uta_urls['public']
 
 
 
