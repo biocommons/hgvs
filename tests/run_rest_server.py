@@ -1,2 +1,2 @@
-from hgvs.dataproviders.utarest import server
-server.run()
+from hgvs.dataproviders.utarest.server import Server
+Server.run()
