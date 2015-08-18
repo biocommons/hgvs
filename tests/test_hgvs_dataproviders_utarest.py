@@ -9,7 +9,7 @@ from multiprocessing import Process
 
 from hgvs.exceptions import HGVSDataNotAvailableError
 from hgvs.dataproviders.utarest.client import Client
-from hgvs.dataproviders.utarest import server
+from hgvs.dataproviders.utarest.server import Server
 
 
 class Test_UTA_REST(unittest.TestCase):
@@ -101,7 +101,7 @@ class Test_UTA_REST(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    p = Process(target=server.run, args=())
+    p = Process(target=Server.run, args=())
     p.daemon = True
     p.start()
     unittest.main()
