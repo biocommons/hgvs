@@ -6,3 +6,4 @@ Reference Manual
 
   grammar
   modules
+  rest
