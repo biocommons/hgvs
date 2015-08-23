@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
+
+"""Tests uta REST server and client"""
+
+
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 
 import os
 import re
+import sys
+import time
 import unittest
 from multiprocessing import Process
 
@@ -13,8 +19,16 @@ from hgvs.dataproviders.utarest.server import Server
 
 
 class Test_UTA_REST(unittest.TestCase):
-    def setUp(self):
-        self.hdp = Client('127.0.0.1:5000')
+    @classmethod
+    def setUpClass(cls):
+        port = 17000
+        p = Process(target=Server.run, kwargs={'port': port})
+        p.daemon = True
+        p.start()
+        time.sleep(3)
+
+        cls.hdp = Client('127.0.0.1:'+str(port))
+
 
     def test_get_acs_for_protein_seq(self):
         exp = ['NP_001005405.1', 'MD5_8fc09b1d9a38a8c55176a0fa922df227']
@@ -62,7 +76,7 @@ class Test_UTA_REST(unittest.TestCase):
 
     def test_get_tx_for_gene(self):
         tig = self.hdp.get_tx_for_gene('VHL')
-        self.assertEqual(9, len(tig))
+        self.assertEqual(11, len(tig))
 
     def test_get_tx_for_gene_invalid_gene(self):
         tig = self.hdp.get_tx_for_gene('GENE')
@@ -87,8 +101,8 @@ class Test_UTA_REST(unittest.TestCase):
         tx_info_options = self.hdp.get_tx_mapping_options('NM_999999.9')
         self.assertEqual(tx_info_options, [])
 
-    def test_fetch_seq(self):
-        tsi = self.hdp.fetch_seq('NM_000551.3')
+    def test_get_tx_seq(self):
+        tsi = self.hdp._get_tx_seq('NM_000551.3')
         seq = tsi
         self.assertEqual(4560, len(seq))
         self.assertTrue(seq.startswith('cctcgcctccgttacaacgg'.upper()))
@@ -96,14 +110,11 @@ class Test_UTA_REST(unittest.TestCase):
 
     def test_get_tx_seq_invalid_ac(self):
         with self.assertRaises(HGVSDataNotAvailableError):
-            self.hdp.get_tx_seq('NM_999999.9')
+            self.hdp._get_tx_seq('NM_999999.9')
 
 
 
 if __name__ == '__main__':
-    p = Process(target=Server.run, args=())
-    p.daemon = True
-    p.start()
     unittest.main()
 
 ## <LICENSE>
