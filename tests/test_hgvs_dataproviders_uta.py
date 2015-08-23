@@ -61,7 +61,7 @@ class UTA_Base(object):
 
     def test_get_tx_for_gene(self):
         tig = self.hdp.get_tx_for_gene('VHL')
-        self.assertEqual(11, len(tig))
+        self.assertEqual(9, len(tig))
 
     def test_get_tx_for_gene_invalid_gene(self):
         tig = self.hdp.get_tx_for_gene('GENE')
