@@ -16,6 +16,8 @@ class Client(Interface):
     """REST client to the UTA database
     """
 
+    # TODO: get self url from http header inspection so that service
+    # is easily relocatable
     def __init__(self, url='api.biocommons.org', api_version=0):
         if url.find('://') == -1:
             url = 'http://' + url
