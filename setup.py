@@ -12,7 +12,7 @@ setup(
 
     author = 'HGVS Contributors',
     author_email = 'reecehart+hgvs@gmail.com',
-    description = """HGVS Parser, Formatter, Mapper, Validator""",
+    description = """HGVS Parser, Formatter, Mapper, Validator, Normalizer""",
     name = "hgvs",
     package_data = {'hgvs': ['_data/*']},
     packages = find_packages(),
@@ -65,6 +65,13 @@ setup(
         'coverage',
         'unicodecsv',
     ],
+
+    extras_require = {
+        'rest_server': [
+            'Flask',
+            'flask-restful',
+        ],
+    },
 )
 
 ## <LICENSE>
