@@ -1,24 +1,33 @@
 # -*- coding: utf-8 -*-
 
-"""Tests uta postgresql client"""
+"""Tests uta REST server and client"""
 
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os
 import re
+import time
 import unittest
+from multiprocessing import Process
 
 from hgvs.exceptions import HGVSDataNotAvailableError
-import hgvs.dataproviders.uta
-import hgvs.edit
-import hgvs.location
-import hgvs.posedit
-import hgvs.variantmapper
-import hgvs.variant
+from hgvs.dataproviders.utarest.client import Client
+from hgvs.dataproviders.utarest.server import Server
 
 
-class UTA_Base(object):
+class Test_UTA_REST(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        port = 17000
+        p = Process(target=Server.run, kwargs={'port': port})
+        p.daemon = True
+        p.start()
+        time.sleep(3)
+
+        cls.hdp = Client('127.0.0.1:'+str(port))
+
+
     def test_get_acs_for_protein_seq(self):
         exp = ['NP_001005405.1', 'MD5_8fc09b1d9a38a8c55176a0fa922df227']
         s = """
@@ -83,8 +92,13 @@ class UTA_Base(object):
 
     def test_get_tx_mapping_options(self):
         tx_mapping_options = self.hdp.get_tx_mapping_options('NM_000551.3')
-        self.assertIn(['NM_000551.3', 'NC_000003.11', 'splign'], tx_mapping_options)
-        self.assertIn(['NM_000551.3', 'NC_000003.11', 'blat'], tx_mapping_options)
+
+        FIXME: INTENTIONAL BREAKAGE HERE
+        the hdp must return a list of items, not a dict
+        (even though a dict would be better :-( )
+
+        self.assertIn({'tx_ac': 'NM_000551.3', 'alt_ac': 'NC_000003.11', 'alt_aln_method': 'splign'}, tx_mapping_options)
+        self.assertIn({'tx_ac': 'NM_000551.3', 'alt_ac': 'NC_000003.11', 'alt_aln_method': 'blat'}, tx_mapping_options)
 
     def test_get_tx_mapping_options_invalid(self):
         tx_info_options = self.hdp.get_tx_mapping_options('NM_999999.9')
@@ -102,53 +116,22 @@ class UTA_Base(object):
             self.hdp._get_tx_seq('NM_999999.9')
 
 
-class Test_hgvs_dataproviders_uta_UTA_default(unittest.TestCase, UTA_Base):
-    def setUp(self):
-        self.hdp = hgvs.dataproviders.uta.connect()
-        return self
-
-
-class Test_hgvs_dataproviders_uta_UTA_default_with_pooling(unittest.TestCase, UTA_Base):
-    def setUp(self):
-        self.hdp = hgvs.dataproviders.uta.connect(pooling=True)
-        return self
-
-
-class TestUTACache(Test_hgvs_dataproviders_uta_UTA_default):
-    def _create_cdna_variant(self):
-        start = hgvs.location.SimplePosition(118898437)
-        end = hgvs.location.SimplePosition(118898437)
-        iv = hgvs.location.Interval(start=start, end=end)
-        edit = hgvs.edit.NARefAlt(ref='G', alt='T')
-        posedit = hgvs.posedit.PosEdit(pos=iv, edit=edit)
-        genomic_variant = hgvs.variant.SequenceVariant(ac='NC_000011.9', type='g', posedit=posedit, )
-        variantmapper = hgvs.variantmapper.VariantMapper(self.hdp)
-        return variantmapper.g_to_c(genomic_variant, 'NM_001164277.1')
-
-    def test_deterministic_cache_results(self):
-        """
-        Check that identical request to the UTA yields the same results.
-        """
-        var1 = self._create_cdna_variant()
-        var2 = self._create_cdna_variant()
-        self.assertEqual(str(var1), str(var2))
-
 
 if __name__ == '__main__':
     unittest.main()
 
-    ## <LICENSE>
-    ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
-    ## 
-    ## Licensed under the Apache License, Version 2.0 (the "License");
-    ## you may not use this file except in compliance with the License.
-    ## You may obtain a copy of the License at
-    ## 
-    ##     http://www.apache.org/licenses/LICENSE-2.0
-    ## 
-    ## Unless required by applicable law or agreed to in writing, software
-    ## distributed under the License is distributed on an "AS IS" BASIS,
-    ## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    ## See the License for the specific language governing permissions and
-    ## limitations under the License.
-    ## </LICENSE>
+## <LICENSE>
+## Copyright 2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
+## 
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+## 
+##     http://www.apache.org/licenses/LICENSE-2.0
+## 
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+## </LICENSE>
