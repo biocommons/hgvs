@@ -34,10 +34,11 @@ import hgvs.parser
 
 
 class TestGrammarFull(unittest.TestCase):
-    def setUp(self):
-        self.p = hgvs.parser.Parser()
-        self.grammar = self.p._grammar
-        self._test_fn = os.path.join(os.path.dirname(__file__), 'data', 'grammar_test.tsv')
+    @classmethod
+    def setUpClass(cls):
+        cls.p = hgvs.parser.Parser()
+        cls.grammar = cls.p._grammar
+        cls._test_fn = os.path.join(os.path.dirname(__file__), 'data', 'grammar_test.tsv')
 
     def test_parser_test_completeness(self):
 

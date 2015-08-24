@@ -18,12 +18,13 @@ hdp = hgvs.dataproviders.uta.connect()
 class Test_HGVSNormalizer(unittest.TestCase):
     """Tests for normalizer"""
 
-    def setUp(self):
-        self.hp = hgvs.parser.Parser()
-        self.norm = hgvs.normalizer.Normalizer(hdp, direction=3, cross=True)
-        self.norm5 = hgvs.normalizer.Normalizer(hdp, direction=5, cross=True)
-        self.normc = hgvs.normalizer.Normalizer(hdp, direction=3, cross=False)
-        self.norm5c = hgvs.normalizer.Normalizer(hdp, direction=5, cross=False)
+    @classmethod
+    def setUpClass(cls):
+        cls.hp = hgvs.parser.Parser()
+        cls.norm = hgvs.normalizer.Normalizer(hdp, direction=3, cross=True)
+        cls.norm5 = hgvs.normalizer.Normalizer(hdp, direction=5, cross=True)
+        cls.normc = hgvs.normalizer.Normalizer(hdp, direction=3, cross=False)
+        cls.norm5c = hgvs.normalizer.Normalizer(hdp, direction=5, cross=False)
 
     def test_c_normalizer(self):
         """Test normalizer for variant type c."""

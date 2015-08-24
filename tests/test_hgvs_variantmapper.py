@@ -12,10 +12,11 @@ import hgvs.variantmapper
 
 @attr(tags=["quick"])
 class Test_VariantMapper(unittest.TestCase):
-    def setUp(self):
-        self.hdp = hgvs.dataproviders.uta.connect()
-        self.vm = hgvs.variantmapper.VariantMapper(self.hdp)
-        self.hp = hgvs.parser.Parser()
+    @classmethod
+    def setUpClass(cls):
+        cls.hdp = hgvs.dataproviders.uta.connect()
+        cls.vm = hgvs.variantmapper.VariantMapper(cls.hdp)
+        cls.hp = hgvs.parser.Parser()
 
     def test_VariantMapper_quick(self):
         # From garcia.tsv:
@@ -129,15 +130,16 @@ class Test_RefReplacement(unittest.TestCase):
     ]
 
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         def _parse_rec(rec):
-            rec['pv'] = {x: self.hp.parse_hgvs_variant(rec[x]) for x in 'cgn'}
+            rec['pv'] = {x: cls.hp.parse_hgvs_variant(rec[x]) for x in 'cgn'}
             return rec
 
-        self.hdp = hgvs.dataproviders.uta.connect()
-        self.evm = hgvs.variantmapper.EasyVariantMapper(self.hdp, primary_assembly='GRCh37', alt_aln_method='splign')
-        self.hp = hgvs.parser.Parser()
-        self.tests = [_parse_rec(rec) for rec in self.test_cases]
+        cls.hdp = hgvs.dataproviders.uta.connect()
+        cls.evm = hgvs.variantmapper.EasyVariantMapper(cls.hdp, primary_assembly='GRCh37', alt_aln_method='splign')
+        cls.hp = hgvs.parser.Parser()
+        cls.tests = [_parse_rec(rec) for rec in cls.test_cases]
 
     def test_replace_reference_sequence(self):
         """Replacing reference sequence in parsed variants"""
@@ -154,17 +156,18 @@ class Test_RefReplacement(unittest.TestCase):
 
 @attr(tags=["quick"])
 class Test_EasyVariantMapper(unittest.TestCase):
-    def setUp(self):
-        self.hdp = hgvs.dataproviders.uta.connect()
-        self.evm = hgvs.variantmapper.EasyVariantMapper(self.hdp, primary_assembly='GRCh37', alt_aln_method='splign')
-        self.hgvs = {
+    @classmethod
+    def setUpClass(cls):
+        cls.hdp = hgvs.dataproviders.uta.connect()
+        cls.evm = hgvs.variantmapper.EasyVariantMapper(cls.hdp, primary_assembly='GRCh37', alt_aln_method='splign')
+        cls.hgvs = {
             'g': 'NC_000007.13:g.36561662C>T',
             'c': 'NM_001637.3:c.1582G>A',
             'n': 'NM_001637.3:n.1983G>A',    # treat as non-coding, relative to tx start
             'p': 'NP_001628.1:p.(Gly528Arg)'
         }
         hp = hgvs.parser.Parser()
-        self.var = {k: hp.parse_hgvs_variant(v) for k, v in self.hgvs.iteritems()}
+        cls.var = {k: hp.parse_hgvs_variant(v) for k, v in cls.hgvs.iteritems()}
 
     def test_c_to_g(self):
         self.assertEqual(self.hgvs['g'], str(self.evm.c_to_g(self.var['c'])))

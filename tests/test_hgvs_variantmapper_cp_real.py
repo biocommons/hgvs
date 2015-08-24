@@ -23,11 +23,12 @@ def gcp_file_reader(fn):
 
 
 class TestHgvsCToPReal(unittest.TestCase):
-    def setUp(self):
-        self.hdp = hgvs.dataproviders.uta.connect()
-        self._hm = hgvs.variantmapper.VariantMapper(self.hdp)
-        self._hp = hgvs.parser.Parser()
-        self._failed = []
+    @classmethod
+    def setUpClass(cls):
+        cls.hdp = hgvs.dataproviders.uta.connect()
+        cls._hm = hgvs.variantmapper.VariantMapper(cls.hdp)
+        cls._hp = hgvs.parser.Parser()
+        cls._failed = []
 
     def test_c_to_p_ext(self):
         infilename = 'ext.tsv'
