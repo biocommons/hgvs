@@ -14,8 +14,9 @@ import hgvs.parser
 class Test_Position(unittest.TestCase):
     longMessage = True
 
-    def setUp(self):
-        self.parser = hgvs.parser.Parser()
+    @classmethod
+    def setUpClass(cls):
+        cls.parser = hgvs.parser.Parser()
 
     def test_parser_gauntlet(self):
         fn = os.path.join(os.path.dirname(__file__), 'data', 'gauntlet')

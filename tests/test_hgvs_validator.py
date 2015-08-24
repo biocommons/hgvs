@@ -17,9 +17,10 @@ hdp = hgvs.dataproviders.uta.connect()
 class Test_HGVSValidator(unittest.TestCase):
     """Validator wrapper class tests (most testing is handled by the component classes)"""
 
-    def setUp(self):
-        self.hp = hgvs.parser.Parser()
-        self.vr = hgvs.validator.Validator(hdp)
+    @classmethod
+    def setUp(cls):
+        cls.hp = hgvs.parser.Parser()
+        cls.vr = hgvs.validator.Validator(hdp)
 
     def test_wrapper(self):
         """Test that validator wrapper is working"""
@@ -30,9 +31,10 @@ class Test_HGVSValidator(unittest.TestCase):
 class Test_HGVSIntrinsicValidator(unittest.TestCase):
     """Tests for internal validation"""
 
-    def setUp(self):
-        self.hp = hgvs.parser.Parser()
-        self.validate_int = hgvs.validator.IntrinsicValidator()
+    @classmethod
+    def setUpClass(cls):
+        cls.hp = hgvs.parser.Parser()
+        cls.validate_int = hgvs.validator.IntrinsicValidator()
 
     def test_start_lte_end(self):
         """Test if start position is less <= end position"""
@@ -77,9 +79,10 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
 class Test_HGVSExtrinsicValidator(unittest.TestCase):
     """Tests for external validation"""
 
-    def setUp(self):
-        self.hp = hgvs.parser.Parser()
-        self.validate_ext = hgvs.validator.ExtrinsicValidator(hdp)
+    @classmethod
+    def setUpClass(cls):
+        cls.hp = hgvs.parser.Parser()
+        cls.validate_ext = hgvs.validator.ExtrinsicValidator(hdp)
 
     def test_valid_ref(self):
         """Test variants with valid reference seqeuences."""

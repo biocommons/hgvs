@@ -17,8 +17,9 @@ from hgvs.transcriptmapper import TranscriptMapper
 class Test_transcriptmapper(unittest.TestCase):
     ref = 'GRCh37.p10'
 
-    def setUp(self):
-        self.hdp = hgvs.dataproviders.uta.connect()
+    @classmethod
+    def setUp(cls):
+        cls.hdp = hgvs.dataproviders.uta.connect()
 
     def test_transcriptmapper_failures(self):
         self.assertRaises(HGVSError, TranscriptMapper, self.hdp,
