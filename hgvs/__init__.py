@@ -56,6 +56,8 @@ import pkg_resources
 import re
 import warnings
 
+from .config import global_config
+
 _is_released_version = False
 
 try:
