@@ -30,9 +30,9 @@ REST interface API reference
 |                          |                            |                              |                                                          |                                         |
 |                          |                            |                              |                                                          |                                         |
 +--------------------------+----------------------------+------------------------------+----------------------------------------------------------+-----------------------------------------+
-| tx_exons                 | - ac                       | - tes_exon_set_id            | `http://api.biocommons.org/hgvs/v0/tx_exons?tx_ac=NM\    | return transcript exon info for         |
-|                          |                            | - aes_exon_set_id            | _199425.2&alt_ac=NC_000020.10&alt_aln\                   | supplied accession.                     |
-|                          |                            | - tx_ac                      | _method=splign`                                          |                                         |
+| tx_exons                 | - tx_ac                    | - tes_exon_set_id            | `http://api.biocommons.org/hgvs/v0/tx_exons?tx_ac=NM\    | return transcript exon info for         |
+|                          | - alt_ac                   | - aes_exon_set_id            | _199425.2&alt_ac=NC_000020.10&alt_aln\                   | supplied accession.                     |
+|                          | - alt_aln_method           | - tx_ac                      | _method=splign`                                          |                                         |
 |                          |                            | - alt_ac                     |                                                          |                                         |
 |                          |                            | - alt_strand                 |                                                          |                                         |
 |                          |                            | - alt_aln_method             |                                                          |                                         |
@@ -49,8 +49,8 @@ REST interface API reference
 |                          |                            |                              |                                                          |                                         |
 +--------------------------+----------------------------+------------------------------+----------------------------------------------------------+-----------------------------------------+
 | tx_info                  | - tx_ac                    | - alt_aln_method             | `http://api.biocommons.org/hgvs/v0/tx_info?tx_ac=\       | return a single transcript info for     |
-|                          |                            | - cds_start_i                | NM_199425.2&alt_ac=NC_000020.10&alt_aln_\                | supplied accession.                     |
-|                          |                            | - alt_ac                     | method=splign`                                           |                                         |
+|                          | - alt_ac                   | - cds_start_i                | NM_199425.2&alt_ac=NC_000020.10&alt_aln_\                | supplied accession.                     |
+|                          | - alt_aln_method           | - alt_ac                     | method=splign`                                           |                                         |
 |                          |                            | - cds_end_i                  |                                                          |                                         |
 |                          |                            | - tx_ac                      |                                                          |                                         |
 |                          |                            | - hgnc                       |                                                          |                                         |
@@ -83,9 +83,9 @@ REST interface API reference
 |                          |                            |                              |                                                          |                                         |
 +--------------------------+----------------------------+------------------------------+----------------------------------------------------------+-----------------------------------------+
 | tx_for_region            | - alt_ac                   | - alt_aln_method             | `http://api.biocommons.org/hgvs/v0/tx_for_region?alt_\   | return transcripts that overlap given   |
-|                          |                            | - start_i                    | ac=NC_000020.10&alt_aln_method=splign&start\             | region.                                 |
-|                          |                            | - alt_ac                     | =100000&end=200000`                                      |                                         |
-|                          |                            | - tx_ac                      |                                                          |                                         |
+|                          | - alt_aln_method           | - start_i                    | ac=NC_000020.10&alt_aln_method=splign&start\             | region.                                 |
+|                          | - start                    | - alt_ac                     | =100000&end=200000`                                      |                                         |
+|                          | - end                      | - tx_ac                      |                                                          |                                         |
 |                          |                            | - end_i                      |                                                          |                                         |
 |                          |                            | - alt_strand                 |                                                          |                                         |
 |                          |                            |                              |                                                          |                                         |
