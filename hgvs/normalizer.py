@@ -50,16 +50,9 @@ class Normalizer(object):
         self.cross = cross
         self.alt_aln_method = alt_aln_method
         self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
-    
-    
+
+
     def normalize(self, var):
-        vars = copy.deepcopy(var)
-        for i in range(0, len(var)):
-            vars[i] = self.sequence_variant_normalize(var[i])
-        return vars
-
-
-    def sequence_variant_normalize(self, var):
         """Perform sequence variants normalization for single variant
         """
         assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
