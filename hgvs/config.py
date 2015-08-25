@@ -43,6 +43,8 @@ class Config(object):
     def __getattr__(self, k):
         return ConfigGroup(self._cp[k])
 
+    __getitem__ = __getattr__
+
     def _read_file(self, flo):
         self._cp.read_file(flo)
 
@@ -56,10 +58,14 @@ class ConfigGroup(object):
 
     def __getattr__(self, k):
         return _val_xform(self.__dict__['_section'][k])
-    
+
+    __getitem__ = __getattr__
+
     def __setattr__(self, k, v):
         logger.info(str(self.__class__.__name__) + '.__setattr__({k}, ...)'.format(k=k))
         self.__dict__['_section'][k] = str(v)
+
+    __setitem__ = __setattr__
 
 
 def _name_xform(o):
