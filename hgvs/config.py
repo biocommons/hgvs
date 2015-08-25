@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 
 class Config(object):
-    def __init__(self, extended_interpolation=False):
+    def __init__(self, extended_interpolation=True):
         if extended_interpolation:
             cp = ConfigParser(interpolation=ExtendedInterpolation())
         else:
