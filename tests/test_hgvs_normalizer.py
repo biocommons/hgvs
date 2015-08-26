@@ -21,10 +21,10 @@ class Test_HGVSNormalizer(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.hp = hgvs.parser.Parser()
-        cls.norm = hgvs.normalizer.Normalizer(hdp, direction=3, cross=True)
-        cls.norm5 = hgvs.normalizer.Normalizer(hdp, direction=5, cross=True)
-        cls.normc = hgvs.normalizer.Normalizer(hdp, direction=3, cross=False)
-        cls.norm5c = hgvs.normalizer.Normalizer(hdp, direction=5, cross=False)
+        cls.norm = hgvs.normalizer.Normalizer(hdp, shuffle_direction=3, cross_boundaries=True)
+        cls.norm5 = hgvs.normalizer.Normalizer(hdp, shuffle_direction=5, cross_boundaries=True)
+        cls.normc = hgvs.normalizer.Normalizer(hdp, shuffle_direction=3, cross_boundaries=False)
+        cls.norm5c = hgvs.normalizer.Normalizer(hdp, shuffle_direction=5, cross_boundaries=False)
 
     def test_c_normalizer(self):
         """Test normalizer for variant type c."""
