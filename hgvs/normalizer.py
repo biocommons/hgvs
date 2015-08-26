@@ -58,11 +58,11 @@ class Normalizer(object):
 
 
     def normalize(self, var):
-        """Perform variants normalization
+        """Perform sequence variants normalization for single variant
         """
         assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
 
-        if var.posedit.uncertain:
+        if var.posedit.uncertain or var.posedit.pos is None:
             return var
 
         type = var.type
@@ -71,6 +71,12 @@ class Normalizer(object):
             raise HGVSUnsupportedOperationError("Unsupported normalization of protein level variants: {0}".format(var))
         if var.posedit.edit.type == 'con':
             raise HGVSUnsupportedOperationError("Unsupported normalization of conversion variants: {0}",format(var))
+        
+        if var.posedit.edit.type == 'identity':
+            var_norm = copy.deepcopy(var)
+            var_norm.posedit.pos = None
+            return var_norm
+        
 
         # For c. variants normalization, first convert to n. variant
         # and perform normalization at the n. level, then convert the
@@ -281,7 +287,7 @@ class Normalizer(object):
         """
 
         ref, alt = self._get_ref_alt(var, boundary)
-        win_size = max(len(ref), len(alt)) * 3
+        win_size = hgvs.global_config.normalizer.window_size
 
         if self.shuffle_direction == 3:
             if var.posedit.edit.type == 'ins':
@@ -298,7 +304,7 @@ class Normalizer(object):
                 stop = var.posedit.pos.end.base - base + 1
 
             while True:
-                ref_seq = self._fetch_bounded_seq(var, base - 1, base - 1 + win_size, boundary)
+                ref_seq = self._fetch_bounded_seq(var, base - 1, base + stop - 1 + win_size, boundary)
                 if ref_seq == '':
                     break
                 orig_start, orig_stop = start, stop
@@ -313,20 +319,24 @@ class Normalizer(object):
 
         elif self.shuffle_direction == 5:
             if var.posedit.edit.type == 'ins':
-                base = max(var.posedit.pos.end.base - win_size + 1, boundary[0] + 1)
+                base = max(var.posedit.pos.start.base - win_size, 1)
                 start = var.posedit.pos.end.base - base
                 stop = var.posedit.pos.end.base - base
             elif var.posedit.edit.type == 'dup':
-                base = max(var.posedit.pos.end.base - win_size + 1, boundary[0] + 1)
+                base = max(var.posedit.pos.start.base - win_size, 1)
                 start = var.posedit.pos.end.base - base + 1
                 stop = var.posedit.pos.end.base - base + 1
             else:
-                base = max(var.posedit.pos.end.base - win_size + 1, boundary[0] + 1)
+                base = max(var.posedit.pos.start.base - win_size , 1)
                 start = var.posedit.pos.start.base - base
                 stop = var.posedit.pos.end.base - base + 1
 
             while True:
-                ref_seq = self._fetch_bounded_seq(var, base - 1, base - 1 + win_size, boundary)
+                if base < boundary[0] + 1:
+                    start -= boundary[0] + 1 - base
+                    stop -= boundary[0] + 1 - base
+                    base = boundary[0] + 1
+                ref_seq = self._fetch_bounded_seq(var, base - 1, base + stop - 1, boundary)
                 if ref_seq == '':
                     break
                 orig_start, orig_stop = start, stop
