@@ -52,13 +52,17 @@ BaseOffsetPosition(base=1582, offset=0, datum=1, uncertain=False)
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import logging
 import pkg_resources
 import re
 import warnings
 
 from .config import global_config
 
+logger = logging.getLogger(__name__)
+
 _is_released_version = False
+
 
 try:
     __version__ = pkg_resources.get_distribution('hgvs').version
@@ -70,6 +74,9 @@ except pkg_resources.DistributionNotFound as e:
 
 # Make sure we're showing DeprecationWarnings
 warnings.filterwarnings('default', '', DeprecationWarning)
+
+logger.info("hgvs " + __version__ + "; released: " + str(_is_released_version))
+
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
