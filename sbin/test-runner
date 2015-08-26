@@ -1,0 +1,116 @@
+#!/usr/bin/env python
+# run mapping tests from tsv files with cols id,HGVSg,HGVSc,HGVSp.
+
+# Example:
+# (default-2.7)snafu$ ./sbin/test-runner tests/data/DNAH11-HGMD.tsv
+# HGVSg in	HGVSc in 	HGVSp in	HGVSg (c-to-g)	HGVSc (g-to-c)	HGVSp (c-to-p)	c-to-g eq?	g-to-c eq?	c-to-p eq?
+# NC_000007.13:g.21726874G>A	NM_003777.3:c.5799+1G>A		NC_000007.13:g.21726874G>A	NM_003777.3:c.5799+1G>A	NP_003768.2:p.=	True	True	
+# NC_000007.13:g.21760475G>A	NM_003777.3:c.7287+1G>A		NC_000007.13:g.21760475G>A	NM_003777.3:c.7287+1G>A	NP_003768.2:p.=	True	True
+
+import io, csv, logging, sys
+
+import ometa.runtime
+
+import hgvs.dataproviders.uta
+
+import hgvs.variantmapper as variantmapper
+import hgvs.parser
+
+
+def read_tsv(fn):
+    _in = csv.DictReader(open(fn, 'r'), delimiter='\t')
+    for rec in _in:
+        if rec['id'].startswith('#'):
+            continue
+        yield rec
+
+
+def parse_or_None(hgvsparser, hgvs):
+    try:
+        return hgvsparser.parse_hgvs_variant(hgvs)
+    except ometa.runtime.ParseError:
+        return None
+
+
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.WARN)
+    logger = logging.getLogger(__name__)
+
+    m = 'splign'
+    u1 = hgvs.dataproviders.uta.connect()
+    variantmapper = hgvs.variantmapper.VariantMapper(u1, cache_transcripts=True)
+    hgvsparser = hgvs.parser.Parser()
+
+    def _test1(rec):
+        logger.debug('processing ' + ', '.join([rec['HGVSg'], rec['HGVSc'], rec['HGVSp']]))
+
+        var_g = hgvsparser.parse_hgvs_variant(rec['HGVSg'])
+        var_c = hgvsparser.parse_hgvs_variant(rec['HGVSc'])
+
+        var_c_from_g = variantmapper.g_to_c(var_g, var_c.ac, alt_aln_method='splign')
+        var_g_from_c = variantmapper.c_to_g(var_c, alt_ac=var_g.ac, alt_aln_method='splign')
+
+        hgvs_c_from_g = str(var_c_from_g)
+        hgvs_g_from_c = str(var_g_from_c)
+
+        c_to_g_eq = rec['HGVSg'] == hgvs_g_from_c
+        g_to_c_eq = rec['HGVSc'] == hgvs_c_from_g
+
+        if rec['HGVSp'] == '':
+            c_to_p_eq = ''
+            hgvs_p_from_c = ''
+        else:
+            var_p = hgvsparser.parse_hgvs_variant(rec['HGVSp'])
+            var_p_from_c = variantmapper.c_to_p(var_c, var_p.ac)
+            var_p_from_c.posedit.uncertain = False
+            hgvs_p_from_c = str(var_p_from_c)
+            in_posedit = str(var_p).split(':')[1]
+            out_posedit = hgvs_p_from_c.split(':')[1]
+            c_to_p_eq = in_posedit == out_posedit
+
+        print('\t'.join([
+            rec['HGVSg'],
+            rec['HGVSc'],
+            rec['HGVSp'],
+            hgvs_g_from_c,
+            hgvs_c_from_g,
+            hgvs_p_from_c,
+            str(c_to_g_eq),
+            str(g_to_c_eq),
+            str(c_to_p_eq),
+        ]))
+
+    print('\t'.join([
+        'HGVSg in',
+        'HGVSc in ',
+        'HGVSp in',
+        'HGVSg (c-to-g)',
+        'HGVSc (g-to-c)',
+        'HGVSp (c-to-p)',
+        'c-to-g eq?',
+        'g-to-c eq?',
+        'c-to-p eq?',
+    ]))
+
+    for rec in read_tsv(sys.argv[1]):
+        try:
+            _test1(rec)
+        except Exception as e:
+            logger.exception(e)
+            logger.error(rec)
+
+            ## <LICENSE>
+            ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
+            ## 
+            ## Licensed under the Apache License, Version 2.0 (the "License");
+            ## you may not use this file except in compliance with the License.
+            ## You may obtain a copy of the License at
+            ## 
+            ##     http://www.apache.org/licenses/LICENSE-2.0
+            ## 
+            ## Unless required by applicable law or agreed to in writing, software
+            ## distributed under the License is distributed on an "AS IS" BASIS,
+            ## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+            ## See the License for the specific language governing permissions and
+            ## limitations under the License.
+            ## </LICENSE>

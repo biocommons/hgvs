@@ -1,0 +1,25 @@
+#!/bin/bash
+# generate a changelog for specified revision from hg commit comments
+# 
+# For a set of tags like 0.3.0, 0.2.2, 0.2.1, ...  `changelogger 0.3.0`
+# returns a block of commits for the span 0.3.0..0.2.2 (inclusive,
+# unfortunately) that looks like this:
+#
+#     0.3.0 (2014-06-19)
+#     ------------------
+#     
+#     * README.rst: fixed broken PyPI image link
+#     * updated examples/manuscript-example; other minor changes
+#     * #185: enable validator to use HDPI to fetch sequence data
+#
+
+rev="$1"
+slr=$(hg tags | perl -lane 'print "$l:$F[0]" if defined $l; $l=$F[0];' | grep "^$rev:")
+rev_date=$(hg log -l1 -r "$slr" --template "{date|shortdate}")
+rev_line="$rev ($rev_date)"
+
+
+echo "$rev_line"
+printf -- "-%.0s" $(seq 1 ${#rev_line}); echo; echo
+hg log --template "* {desc}\n" -r "$slr" | cat
+
