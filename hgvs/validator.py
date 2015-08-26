@@ -46,7 +46,7 @@ class IntrinsicValidator(object):
         if var.type == 'g':
             if var.posedit.pos.start.base > var.posedit.pos.end.base:
                 raise HGVSValidationError(BASE_RANGE_ERROR_MSG)
-        if var.type in 'cmnp':
+        if var.type in 'cmnp' and var.posedit.pos:
             if var.posedit.pos.start.base > var.posedit.pos.end.base:
                 raise HGVSValidationError(BASE_RANGE_ERROR_MSG)
             elif var.posedit.pos.start.base == var.posedit.pos.end.base:
@@ -102,15 +102,20 @@ class ExtrinsicValidator():
 
     def _ref_is_valid(self, var):
         var_ref_seq = None
-        if var.posedit.edit.type == 'dup':
-            # Handle Dup and NADupN objects.
-            var_ref_seq = getattr(var.posedit.edit, 'ref', None)
-        else:
-            # use reference sequence of original variant, even if later converted (eg c_to_n)
-            if var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0:
-                raise HGVSUnsupportedOperationError(
-                    "Cannot validate sequence of an intronic variant ({})".format(str(var)))
-            var_ref_seq = getattr(var.posedit.edit, 'ref', None)
+        # use reference sequence of original variant, even if later converted (eg c_to_n)
+        if var.posedit.pos and (var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0):
+            raise HGVSUnsupportedOperationError(
+                "Cannot validate sequence of an intronic variant ({})".format(str(var)))
+        var_ref_seq = getattr(var.posedit.edit, 'ref', None)
+        
+        if var_ref_seq == '':
+            var_ref_seq = None
+        
+        try:
+            int(var_ref_seq)
+            var_ref_seq = None
+        except:
+            pass
 
         if var_ref_seq is not None:
             var_x = self.vm.c_to_n(var) if var.type == 'c' else var
