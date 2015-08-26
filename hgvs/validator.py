@@ -114,7 +114,7 @@ class ExtrinsicValidator():
         try:
             int(var_ref_seq)
             var_ref_seq = None
-        except:
+        except ValueError:
             pass
 
         if var_ref_seq is not None:
