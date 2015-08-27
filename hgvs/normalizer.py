@@ -191,6 +191,8 @@ class Normalizer(object):
                 exon_ends = [exon['tx_end_i'] for exon in exon_info]
                 exon_starts.sort()
                 exon_ends.sort()
+                exon_starts.append(exon_ends[-1])
+                exon_ends.append(float('inf'))
 
                 # Find the end pos of the exon where the var locates
                 left = 0
