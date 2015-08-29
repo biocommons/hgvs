@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import inspect
 import logging
 import os
 import sqlite3
@@ -26,13 +27,15 @@ _default_db_url = os.environ.get('UTA_DB_URL', hgvs.global_config['uta'][_url_ke
 _logger = logging.getLogger(__name__)
 
 
-def connect(db_url=_default_db_url, pooling=False):
+def connect(db_url=_default_db_url, pooling=False, application_name=None):
     """Connect to a UTA database instance and return a UTA interface instance.
 
     :param db_url: URL for database connection
     :type db_url: string
     :param pooling: whether to use connection pooling (postgresql only)
     :type pooling: bool
+    :param application_name: log application name in connection (useful for debugging; PostgreSQL only)
+    :type application_name: str
 
     When called with an explicit db_url argument, that db_url is used for connecting.
 
@@ -65,7 +68,7 @@ def connect(db_url=_default_db_url, pooling=False):
     if url.scheme == 'sqlite':
         conn = UTA_sqlite(url)
     elif url.scheme == 'postgresql':
-        conn = UTA_postgresql(url, pooling)
+        conn = UTA_postgresql(url=url, pooling=pooling, application_name=application_name)
     else:
         # fell through connection scheme cases
         raise RuntimeError("{url.scheme} in {url} is not currently supported".format(url=url))
@@ -471,26 +474,29 @@ class UTABase(Interface, SeqFetcher):
 
 
 class UTA_postgresql(UTABase):
-    def __init__(self, url, pooling=False):
+    def __init__(self, url, pooling=False, application_name=None):
         self.pooling = pooling
+        self.application_name = application_name
         if url.schema is None:
             raise Exception("No schema name provided in {url}".format(url=url))
         super(UTA_postgresql, self).__init__(url)
 
     def _connect(self):
+        if self.application_name is None:
+            st = inspect.stack()
+            self.application_name = os.path.basename(st[-1][1])
+        conn_args = dict(
+            host=self.url.hostname,
+            port=self.url.port,
+            database=self.url.database,
+            user=self.url.username,
+            password=self.url.password,
+            application_name=self.application_name,
+            )
         if self.pooling:
-            self._pool = psycopg2.pool.ThreadedConnectionPool(1, 10,
-                                                              host=self.url.hostname,
-                                                              port=self.url.port,
-                                                              database=self.url.database,
-                                                              user=self.url.username,
-                                                              password=self.url.password)
+            self._pool = psycopg2.pool.ThreadedConnectionPool(1, 10, **conn_args)
         else:
-            self._conn = psycopg2.connect(host=self.url.hostname,
-                                          port=self.url.port,
-                                          database=self.url.database,
-                                          user=self.url.username,
-                                          password=self.url.password)
+            self._conn = psycopg2.connect(**conn_args)
             self._conn.autocommit = True
 
         self._ensure_schema_exists()
