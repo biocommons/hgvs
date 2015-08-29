@@ -58,7 +58,7 @@ setup(
         'setuptools_scm',
         'nose',
         'sphinx',
-        'sphinxcontrib-fulltoc',
+        'sphinxcontrib-fulltoc>=1.1',
         'wheel',
     ],
 
