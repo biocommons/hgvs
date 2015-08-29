@@ -1,0 +1,21 @@
+0.1.5 (2014-01-11)
+##################
+
+*changes since 0.1.4 (2014-01-11)*
+
+Bug Fixes
+$$$$$$$$$
+
+New Features
+$$$$$$$$$$$$
+
+Changes
+$$$$$$$
+
+Security
+$$$$$$$$
+
+Other Changes
+$$$$$$$$$$$$$
+
+* fixed bug in setup.py re: classifiers [`6729b009b244 <https://bitbucket.org/biocommons/hgvs/commits/6729b009b244>`_]

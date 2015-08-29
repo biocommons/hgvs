@@ -1,0 +1,13 @@
+clog format 1
+* 0.3.0 (2014-06-19)
+# changes since 0.3.0a2 (2014-06-13)
+** Bug Fixes
+** New Features
+** Changes
+** Security
+** Other Changes
+> README.rst: fixed broken PyPI image link [ee002723b493]
+> updated examples/manuscript-example; other minor changes [6dad86795fd1]
+> #185: enable validator to use HDPI to fetch sequence data; mfdb now required only for genomic sequences [283858cb6466]
+> setup.cfg: ugh, ditto for with-timer [d1bf32f1c881]
+> setup.cfg: without nose-timer, timer-top-n is unrecognized [e06619cf3c25]

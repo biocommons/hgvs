@@ -1,0 +1,17 @@
+clog format 1
+* 0.2.2 (2014-06-12)
+# changes since 0.2.1 (2014-06-11)
+** Bug Fixes
+** New Features
+** Changes
+** Security
+** Other Changes
+> #103: significantly updated documentation [8dd510f4a72f]
+> #142: added BIC test cases [9dbfa4b75642]
+> added support for testing models ("models" attr and test-models) [87310356da6f]
+> #179: remove timed() (fails on drone.io), and other cleanup [cb4c65576856]
+> #179: moved nose-timer to setup_requires [689e72f28e3b]
+> #179: added quick and extra tags to tests; updated Makefile to support make test, test-quick, test-extra [0307e80d2ea5]
+> #179: cleaned up tests in preparation for binning and timing [06b62e42db38]
+> #167: also remove any_variant from grammar tests [4877733deea3]
+> #179: removed test_hgvs_parser_real (but kept gcp version) [6bd2a2c318ae]

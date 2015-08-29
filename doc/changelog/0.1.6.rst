@@ -1,0 +1,23 @@
+0.1.6 (2014-01-11)
+##################
+
+*changes since 0.1.5 (2014-01-11)*
+
+Bug Fixes
+$$$$$$$$$
+
+New Features
+$$$$$$$$$$$$
+
+Changes
+$$$$$$$
+
+Security
+$$$$$$$$
+
+Other Changes
+$$$$$$$$$$$$$
+
+* updated docs to point back to pythonhosted [`29f9f61b0753 <https://bitbucket.org/biocommons/hgvs/commits/29f9f61b0753>`_]
+* added setuptools to requirements.txt [`22f07d528535 <https://bitbucket.org/biocommons/hgvs/commits/22f07d528535>`_]
+* updated requirements.txt [`038c9117a4b4 <https://bitbucket.org/biocommons/hgvs/commits/038c9117a4b4>`_]

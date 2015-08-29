@@ -1,0 +1,14 @@
+clog format 1
+* 0.0.2 (2013-09-20)
+# changes since 0.0.1 (2013-08-01)
+** Bug Fixes
+** New Features
+** Changes
+** Security
+** Other Changes
+> minor setup.py changes [0cbf380f2966]
+> grammar simplification; added Laros grammar, examples, comments [78d25c203bee]
+> Reverted Lawrence's changes to edit.py (after discussing with him). [89cfd1314f96]
+> Adding some convenience properties to be used in Geneticus. [726fbe05bf0a]
+> updated grammar; added README.rst [03647df20c63]
+> added missing deps to setup.py; switched to plain ole distutils [4e533da60adf]

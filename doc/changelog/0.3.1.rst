@@ -1,0 +1,30 @@
+0.3.1 (2014-07-12)
+##################
+
+*changes since 0.3.0 (2014-06-19)*
+
+Bug Fixes
+$$$$$$$$$
+
+New Features
+$$$$$$$$$$$$
+
+Changes
+$$$$$$$
+
+Security
+$$$$$$$$
+
+Other Changes
+$$$$$$$$$$$$$
+
+* 193: fix lookup table for NC_000014.8 (was .10) [`000017cbe61c <https://bitbucket.org/biocommons/hgvs/commits/000017cbe61c>`_]
+* `#192 <https://bitbucket.org/biocommons/hgvs/issues/192/>`_: deprecated VariantMapper cache_transcripts param and replaced with always-on lru cache in uta data provider [`87e480280d9a <https://bitbucket.org/biocommons/hgvs/commits/87e480280d9a>`_]
+* deprecated cache_transcripts and replaced with always-on lru cache [`a90ab103fc35 <https://bitbucket.org/biocommons/hgvs/commits/a90ab103fc35>`_]
+* updated doc configuration [`679ccecc7e14 <https://bitbucket.org/biocommons/hgvs/commits/679ccecc7e14>`_]
+* updated changelog [`dc052f211a4b <https://bitbucket.org/biocommons/hgvs/commits/dc052f211a4b>`_]
+* `#189 <https://bitbucket.org/biocommons/hgvs/issues/189/>`_: added CHANGELOG (and rst version) to repo [`66d410d2cbc2 <https://bitbucket.org/biocommons/hgvs/commits/66d410d2cbc2>`_]
+* README.rst fix. ReST. Sigh. Again. [`aef50d800435 <https://bitbucket.org/biocommons/hgvs/commits/aef50d800435>`_]
+* README.rst fix. ReST. Sigh. [`6dcee0c42269 <https://bitbucket.org/biocommons/hgvs/commits/6dcee0c42269>`_]
+* README.rst fix [`ae545ae8471a <https://bitbucket.org/biocommons/hgvs/commits/ae545ae8471a>`_]
+* README.rst and Makefile updates [`a872bbdb8c2c <https://bitbucket.org/biocommons/hgvs/commits/a872bbdb8c2c>`_]

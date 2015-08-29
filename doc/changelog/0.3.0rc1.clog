@@ -1,0 +1,27 @@
+clog format 1
+* 0.3.0rc1 (2014-06-13)
+# changes since 0.2.2 (2014-06-12)
+** Bug Fixes
+** New Features
+** Changes
+** Security
+** Other Changes
+> s/InVitae/Invitae/g [3a36666e59fa]
+> #184: rename HGVSPosition.seqref to ac [279cca0b8afe]
+> minor update to README.rst [1835382482c2]
+> standardize exception names with "HGVS" prefix [fd94688a5eaa]
+> remove unused args from VariantMapper.c_to_p [f7f3b649485a]
+> updated README and modules.rst [32bf2b3bca6c]
+> #162: provide simplified mapping interface [d69dcf11b1c6]
+> #181: renamed hgvsmapper test files (to variantmapper) [8c03711a75e7]
+> #181: renamed hgvs.hgvsmapper.HGVSMapper to hgvs.variantmapper.VariantMapper [efaadb936a3f]
+> moved hgvs/data to hgvs/_data to emphasize it is internal and avoid tab completion on it [f2c73cdb1e11]
+> #180: made set_uncertain an internal method (_set_uncertain) [65050ed5210d]
+> replace u1/uta1 references with hdp; update docs [e82770987d29]
+> #177: rename mapping functions to x_to_y (dropping "hgvs" prefix) [82d354244f44]
+> #171: merged changes that integrate the data interface into hgvs, obsoleting bdi [58faae2b73b2]
+> another whack at removing occurrences of "bdi" [465a5ff75416]
+> replaced bdi with hdp when referencing the data provider; tests pass [9b0b1a8ffb14]
+> #171: reintegrate bdi into hgvs (first take, tests pass) [ac921e81e581]
+> rejiggered host-info/machine-info and included uname -a [56bc383903e0]
+> Makefile: print machine info during testing to calibrate/debug timing probs [471c924b6414]

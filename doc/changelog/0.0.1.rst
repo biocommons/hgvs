@@ -1,0 +1,31 @@
+0.0.1 (2013-08-01)
+##################
+
+*changes since  (2013-07-29)*
+
+Bug Fixes
+$$$$$$$$$
+
+New Features
+$$$$$$$$$$$$
+
+Changes
+$$$$$$$
+
+Security
+$$$$$$$$
+
+Other Changes
+$$$$$$$$$$$$$
+
+* added developer notes, logo, sphinx config [`d5c598e196bf <https://bitbucket.org/biocommons/hgvs/commits/d5c598e196bf>`_]
+* added exceptions and fixed/updated tests [`991cc0f35345 <https://bitbucket.org/biocommons/hgvs/commits/991cc0f35345>`_]
+* update dna rules [`dd6cd7fefef6 <https://bitbucket.org/biocommons/hgvs/commits/dd6cd7fefef6>`_]
+* added parser tests [`0978569fc7ca <https://bitbucket.org/biocommons/hgvs/commits/0978569fc7ca>`_]
+* added TODO, developer doc stub, test data [`c0dca933e5f5 <https://bitbucket.org/biocommons/hgvs/commits/c0dca933e5f5>`_]
+* added silly logo [`d9a1423159f4 <https://bitbucket.org/biocommons/hgvs/commits/d9a1423159f4>`_]
+* updated grammar; added variant class; updated parser for new classes [`ad2c90734297 <https://bitbucket.org/biocommons/hgvs/commits/ad2c90734297>`_]
+* added Edit and subclasses, with tests [`4611057bc150 <https://bitbucket.org/biocommons/hgvs/commits/4611057bc150>`_]
+* added invitae doc theme [`3460eef730b1 <https://bitbucket.org/biocommons/hgvs/commits/3460eef730b1>`_]
+* fixed pos,range,cds_pos,cds_range, and s/range/interval, incl. classes and tests [`b25c546d7ab8 <https://bitbucket.org/biocommons/hgvs/commits/b25c546d7ab8>`_]
+* added more location tests [`197fd502b663 <https://bitbucket.org/biocommons/hgvs/commits/197fd502b663>`_]

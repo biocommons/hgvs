@@ -1,0 +1,68 @@
+0.1.9 (2014-03-05)
+##################
+
+*changes since 0.1.8 (2014-01-22)*
+
+Bug Fixes
+$$$$$$$$$
+
+New Features
+$$$$$$$$$$$$
+
+Changes
+$$$$$$$
+
+Security
+$$$$$$$$
+
+Other Changes
+$$$$$$$$$$$$$
+
+* updated package metadata; removed requirements.txt; tests pass [`338d154c6b45 <https://bitbucket.org/biocommons/hgvs/commits/338d154c6b45>`_]
+* cut DNAH11 tests to representative set (apx 80% cut) [`26e2f1388ce6 <https://bitbucket.org/biocommons/hgvs/commits/26e2f1388ce6>`_]
+* added tests from dbSNP for 6 new gene; fixed probs with uncertainty and Ter\d+ in existing tests [`6391491f9353 <https://bitbucket.org/biocommons/hgvs/commits/6391491f9353>`_]
+* added sbin/get-dbsnp-tests-for-gene [`55c50d65a1ec <https://bitbucket.org/biocommons/hgvs/commits/55c50d65a1ec>`_]
+* testing [`5c09a71a5703 <https://bitbucket.org/biocommons/hgvs/commits/5c09a71a5703>`_]
+* cigar intron count fix [`8009b10879a7 <https://bitbucket.org/biocommons/hgvs/commits/8009b10879a7>`_]
+* checking cigar ref tgt orientation [`90e9f44195c3 <https://bitbucket.org/biocommons/hgvs/commits/90e9f44195c3>`_]
+* `#147 <https://bitbucket.org/biocommons/hgvs/issues/147/>`_ - update tests to use updated sqlite test DB [`d9cf51756532 <https://bitbucket.org/biocommons/hgvs/commits/d9cf51756532>`_]
+* use pip installation status as build status since that's what users will experience [`a4c4540de3d2 <https://bitbucket.org/biocommons/hgvs/commits/a4c4540de3d2>`_]
+* `#135 <https://bitbucket.org/biocommons/hgvs/issues/135/>`_ - fix 2 c->p tests where mutalyzer breaks the tie. [`ad377a7af47d <https://bitbucket.org/biocommons/hgvs/commits/ad377a7af47d>`_]
+* `#135 <https://bitbucket.org/biocommons/hgvs/issues/135/>`_ - fix filenames [`5d1a4623c085 <https://bitbucket.org/biocommons/hgvs/commits/5d1a4623c085>`_]
+* `#135 <https://bitbucket.org/biocommons/hgvs/issues/135/>`_ - enable working DNAH11 tests; split by transcript since test is huge otherwise (DB timed out while testing locally).   Failures are commented out. [`57999518c687 <https://bitbucket.org/biocommons/hgvs/commits/57999518c687>`_]
+* `#135 <https://bitbucket.org/biocommons/hgvs/issues/135/>`_ - add NEFL; tests which fall outside mapping range are commented out [`92aa0021bbb7 <https://bitbucket.org/biocommons/hgvs/commits/92aa0021bbb7>`_]
+* fixed DNAH11-dbSNP tests [`28efe5e353da <https://bitbucket.org/biocommons/hgvs/commits/28efe5e353da>`_]
+* upped bdi min version to >=0.1.0 (interface1) [`404afe5fec4e <https://bitbucket.org/biocommons/hgvs/commits/404afe5fec4e>`_]
+* removed accession test from extrinsic validator (sequence lookup covers accession lookup) [`ce9eaffc6ea9 <https://bitbucket.org/biocommons/hgvs/commits/ce9eaffc6ea9>`_]
+* Makefile, setup,py, setup.cfg sync with sibling projects [`58cb99ccb9f9 <https://bitbucket.org/biocommons/hgvs/commits/58cb99ccb9f9>`_]
+* uta0 to uta1 [`5c52da8888ad <https://bitbucket.org/biocommons/hgvs/commits/5c52da8888ad>`_]
+* Close branch hgvs_using_uta1 [`d419ed8b2c0d <https://bitbucket.org/biocommons/hgvs/commits/d419ed8b2c0d>`_]
+* Merged hgvs_using_uta1 into default [`6239e099800a <https://bitbucket.org/biocommons/hgvs/commits/6239e099800a>`_]
+* bug fixes for uta1 integration; all tests pass except for sqlite db test [`91e06b2d0b18 <https://bitbucket.org/biocommons/hgvs/commits/91e06b2d0b18>`_]
+* finished integrating uta1 into hgvs and started updating tests [`78856970e858 <https://bitbucket.org/biocommons/hgvs/commits/78856970e858>`_]
+* `#135 <https://bitbucket.org/biocommons/hgvs/issues/135/>`_- check in the file that's actually fixed [`4acad393e189 <https://bitbucket.org/biocommons/hgvs/commits/4acad393e189>`_]
+* Fixed an un-handled case for parsing AA frameshifts - short form, e.g. "Ala97fs" (no alt AA).   Added tests. [`f6980c6a62ec <https://bitbucket.org/biocommons/hgvs/commits/f6980c6a62ec>`_]
+* `#135 <https://bitbucket.org/biocommons/hgvs/issues/135/>`_ - fixed and enabled tests previously commented out due to  (1) bad p. representation (e.g. p.(Ile30=) instead of p.(=)), (2) old bugs since fixed, (3) actual test errors [used mutalyzer as the tie-breaker - always matched the hgvs code result].    This added >150 tests (mostly group (1)). [`e1223c9a678d <https://bitbucket.org/biocommons/hgvs/commits/e1223c9a678d>`_]
+* Remove redundant test [`61ff65d11de5 <https://bitbucket.org/biocommons/hgvs/commits/61ff65d11de5>`_]
+* Added U14680.1 (BIC tx) to grammar test [`2a04707f59c7 <https://bitbucket.org/biocommons/hgvs/commits/2a04707f59c7>`_]
+* hgvsmapper is updated with uta1 requirements. testing modifications using hgvs-shell [`b0565a4e681a <https://bitbucket.org/biocommons/hgvs/commits/b0565a4e681a>`_]
+* removed codeship badge [`87ed7d61d810 <https://bitbucket.org/biocommons/hgvs/commits/87ed7d61d810>`_]
+* trivial change to tickle codeship build [`6458e8721a54 <https://bitbucket.org/biocommons/hgvs/commits/6458e8721a54>`_]
+* added codeship status badge to README.rst, for testing [`03aaaa871e93 <https://bitbucket.org/biocommons/hgvs/commits/03aaaa871e93>`_]
+* working through updating TM and IM. HM g_to_c appears to work [`9f025a22b39d <https://bitbucket.org/biocommons/hgvs/commits/9f025a22b39d>`_]
+* Close branch extrinsic_validation [`dc150a144789 <https://bitbucket.org/biocommons/hgvs/commits/dc150a144789>`_]
+* Merged in extrinsic_validation (pull request #5)
+* ExtrinsicValidator should not guess about bdi and mfdb sources; instead require caller to specify [`996d5022cbf7 <https://bitbucket.org/biocommons/hgvs/commits/996d5022cbf7>`_]
+* added Validator class that wraps instrinsic and extrinsic validation [`cea99d1309f8 <https://bitbucket.org/biocommons/hgvs/commits/cea99d1309f8>`_]
+* renamed ~Validation to ~Validator to keep with class-as-actor naming scheme [`7c8066a81b99 <https://bitbucket.org/biocommons/hgvs/commits/7c8066a81b99>`_]
+* added creating-a-variant example [`cc8e2b6eba6b <https://bitbucket.org/biocommons/hgvs/commits/cc8e2b6eba6b>`_]
+* first commit [`053dd51c5642 <https://bitbucket.org/biocommons/hgvs/commits/053dd51c5642>`_]
+* updated edit type and tests to include identity for sub e.g., T>T [`245a91e6d473 <https://bitbucket.org/biocommons/hgvs/commits/245a91e6d473>`_]
+* updated external validation using bdi; added identity edit type for sub T>T; added HGVSValidationException class; added sample tests for mfdb [`65726fcb2519 <https://bitbucket.org/biocommons/hgvs/commits/65726fcb2519>`_]
+* fixed bug when falling off transcripts [`dd31b947c8d6 <https://bitbucket.org/biocommons/hgvs/commits/dd31b947c8d6>`_]
+* `#40 <https://bitbucket.org/biocommons/hgvs/issues/40/>`_ - added additional tests [`709c46fd0496 <https://bitbucket.org/biocommons/hgvs/commits/709c46fd0496>`_]
+* added bdi accession testing [`7124ad4bba3e <https://bitbucket.org/biocommons/hgvs/commits/7124ad4bba3e>`_]
+* starting external validation with bdi [`f4f3afda4f4c <https://bitbucket.org/biocommons/hgvs/commits/f4f3afda4f4c>`_]
+* Close branch validator. [`ac499a5655af <https://bitbucket.org/biocommons/hgvs/commits/ac499a5655af>`_]
+* `#40 <https://bitbucket.org/biocommons/hgvs/issues/40/>`_ - 72kb DB contains 7 transcripts and associated data; sanitized test of hgvsg/c/p tags to run using the DB. [`f2dba61def7f <https://bitbucket.org/biocommons/hgvs/commits/f2dba61def7f>`_]
+* `#114 <https://bitbucket.org/biocommons/hgvs/issues/114/>`_ - add test that checks that all rules have been tested - and add tests for rules that were missed! [`7343631ad794 <https://bitbucket.org/biocommons/hgvs/commits/7343631ad794>`_]

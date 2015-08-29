@@ -46,9 +46,9 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinxcontrib.fulltoc',
     ]
-html_favicon = '../static/favicon.ico'
-html_logo = '../static/logo.svg'
-html_static_path = ['../static']
+html_favicon = 'static/favicon.ico'
+html_logo = 'static/logo.svg'
+html_static_path = ['static']
 html_title = '{project} {release}'.format(project = project, release = release)
 intersphinx_mapping = {
     'http://docs.python.org/': None,
