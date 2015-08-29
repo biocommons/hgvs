@@ -1,0 +1,11 @@
+clog format 1
+* 0.1.6 (2014-01-11)
+# changes since 0.1.5 (2014-01-11)
+** Bug Fixes
+** New Features
+** Changes
+** Security
+** Other Changes
+> updated docs to point back to pythonhosted [29f9f61b0753]
+> added setuptools to requirements.txt [22f07d528535]
+> updated requirements.txt [038c9117a4b4]

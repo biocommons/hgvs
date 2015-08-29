@@ -1,0 +1,25 @@
+0.3.0 (2014-06-19)
+##################
+
+*changes since 0.3.0a2 (2014-06-13)*
+
+Bug Fixes
+$$$$$$$$$
+
+New Features
+$$$$$$$$$$$$
+
+Changes
+$$$$$$$
+
+Security
+$$$$$$$$
+
+Other Changes
+$$$$$$$$$$$$$
+
+* README.rst: fixed broken PyPI image link [`ee002723b493 <https://bitbucket.org/biocommons/hgvs/commits/ee002723b493>`_]
+* updated examples/manuscript-example; other minor changes [`6dad86795fd1 <https://bitbucket.org/biocommons/hgvs/commits/6dad86795fd1>`_]
+* `#185 <https://bitbucket.org/biocommons/hgvs/issues/185/>`_: enable validator to use HDPI to fetch sequence data; mfdb now required only for genomic sequences [`283858cb6466 <https://bitbucket.org/biocommons/hgvs/commits/283858cb6466>`_]
+* setup.cfg: ugh, ditto for with-timer [`d1bf32f1c881 <https://bitbucket.org/biocommons/hgvs/commits/d1bf32f1c881>`_]
+* setup.cfg: without nose-timer, timer-top-n is unrecognized [`e06619cf3c25 <https://bitbucket.org/biocommons/hgvs/commits/e06619cf3c25>`_]

@@ -1,0 +1,23 @@
+0.1.2 (2014-01-05)
+##################
+
+*changes since 0.1.1 (2014-01-03)*
+
+Bug Fixes
+$$$$$$$$$
+
+New Features
+$$$$$$$$$$$$
+
+Changes
+$$$$$$$
+
+Security
+$$$$$$$$
+
+Other Changes
+$$$$$$$$$$$$$
+
+* updated README with pypi info [`abff5a9fb149 <https://bitbucket.org/biocommons/hgvs/commits/abff5a9fb149>`_]
+* adapted hgvs to bdi with runtime-selectable UTA connections (`#85 <https://bitbucket.org/biocommons/hgvs/issues/85/>`_) [`03cde394f619 <https://bitbucket.org/biocommons/hgvs/commits/03cde394f619>`_]
+* doc updates [`f5d2789abb9d <https://bitbucket.org/biocommons/hgvs/commits/f5d2789abb9d>`_]

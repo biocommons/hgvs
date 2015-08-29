@@ -1,0 +1,11 @@
+clog format 1
+* 0.1.2 (2014-01-05)
+# changes since 0.1.1 (2014-01-03)
+** Bug Fixes
+** New Features
+** Changes
+** Security
+** Other Changes
+> updated README with pypi info [abff5a9fb149]
+> adapted hgvs to bdi with runtime-selectable UTA connections (#85) [03cde394f619]
+> doc updates [f5d2789abb9d]

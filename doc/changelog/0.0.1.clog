@@ -1,0 +1,20 @@
+0.0.1 (d5c598e196bf): no prior tagged changeset; using first rev
+clog format 1
+* 0.0.1 (2013-08-01)
+# changes since  (2013-07-29)
+** Bug Fixes
+** New Features
+** Changes
+** Security
+** Other Changes
+> added developer notes, logo, sphinx config [d5c598e196bf]
+> added exceptions and fixed/updated tests [991cc0f35345]
+> update dna rules [dd6cd7fefef6]
+> added parser tests [0978569fc7ca]
+> added TODO, developer doc stub, test data [c0dca933e5f5]
+> added silly logo [d9a1423159f4]
+> updated grammar; added variant class; updated parser for new classes [ad2c90734297]
+> added Edit and subclasses, with tests [4611057bc150]
+> added invitae doc theme [3460eef730b1]
+> fixed pos,range,cds_pos,cds_range, and s/range/interval, incl. classes and tests [b25c546d7ab8]
+> added more location tests [197fd502b663]

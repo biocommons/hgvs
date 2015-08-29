@@ -1,0 +1,24 @@
+0.3.6 (2015-06-02)
+##################
+
+*changes since 0.3.5 (2015-05-19)*
+
+Bug Fixes
+$$$$$$$$$
+
+New Features
+$$$$$$$$$$$$
+
+Changes
+$$$$$$$
+
+Security
+$$$$$$$$
+
+Other Changes
+$$$$$$$$$$$$$
+
+* added url for 0.4 issues in CHANGELOG; updated doc/source/changelog.rst [`1fdc5301fb55 <https://bitbucket.org/biocommons/hgvs/commits/1fdc5301fb55>`_]
+* fix `#228 <https://bitbucket.org/biocommons/hgvs/issues/228/>`_: IndexError when schema name is empty [`0aec3861c474 <https://bitbucket.org/biocommons/hgvs/commits/0aec3861c474>`_]
+* doc string indentation fix [`4137623f1f17 <https://bitbucket.org/biocommons/hgvs/commits/4137623f1f17>`_]
+* updated CHANGELOG through 0.3.5 [`6686a802f573 <https://bitbucket.org/biocommons/hgvs/commits/6686a802f573>`_]
