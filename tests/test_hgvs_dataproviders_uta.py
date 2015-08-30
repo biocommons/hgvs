@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+
+"""Tests uta postgresql client"""
+
+
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os
@@ -61,7 +65,7 @@ class UTA_Base(object):
 
     def test_get_tx_for_gene(self):
         tig = self.hdp.get_tx_for_gene('VHL')
-        self.assertEqual(11, len(tig))
+        self.assertEqual(12, len(tig))
 
     def test_get_tx_for_gene_invalid_gene(self):
         tig = self.hdp.get_tx_for_gene('GENE')
@@ -99,15 +103,15 @@ class UTA_Base(object):
 
 
 class Test_hgvs_dataproviders_uta_UTA_default(unittest.TestCase, UTA_Base):
-    def setUp(self):
-        self.hdp = hgvs.dataproviders.uta.connect()
-        return self
+    @classmethod
+    def setUpClass(cls):
+        cls.hdp = hgvs.dataproviders.uta.connect()
 
 
 class Test_hgvs_dataproviders_uta_UTA_default_with_pooling(unittest.TestCase, UTA_Base):
-    def setUp(self):
-        self.hdp = hgvs.dataproviders.uta.connect(pooling=True)
-        return self
+    @classmethod
+    def setUpClass(cls):
+        cls.hdp = hgvs.dataproviders.uta.connect(pooling=True)
 
 
 class TestUTACache(Test_hgvs_dataproviders_uta_UTA_default):

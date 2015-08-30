@@ -1,0 +1,34 @@
+clog format 1
+* 0.1.1 (2014-01-03)
+# changes since 0.1.0 (2013-12-30)
+** Bug Fixes
+** New Features
+** Changes
+** Security
+** Other Changes
+> now depend on uta and bdi from PyPI (not dependency_links); sync'd Makefile and setup.py with uta; updated test and docs targets [18f600badbdc]
+> doc updates [f386497085e9]
+> #64 - update 4 tests to reflect p.Met1? behavior for deletions crossing from 5'utr to cds:
+CVID1000153             NM_000492.3:c.-9_14del23
+CVID1007898             NM_022912.2:c.-1_2delCAT
+CVID6001026             NM_000267.3:c.-14_7del21
+CVID6004098             NM_024649.4:c.-3_37del40 [421b69dfd1b4]
+> #64 - handle the following: (1) indel crosses stop codon; (2) indel crosses start codon; need to retest on full suite [5467d3c99a0f]
+> #84 - fix expected result [4f1182042495]
+> #84 - ext with no stop codons are represented as ext*? - updated tests accordingly [2a0f0cb5e7f4]
+> Turn off more dbg [8c76082f5923]
+> Turn off dbg [60dd09b196d4]
+> #83 - cleanup fs* cases where mutalyzer assigns fs*N where N = end of transcript instead of an actual stop codon (expected result is now fs*?) [02521303a3a6]
+> #83 - fill in intronic variants with expected hgvsp results (p.?) per curators [7ad0ff487b8a]
+> made png and ico logos transparent [ab983c4ad3dd]
+> added *lots* of documentation [d014533f3d74]
+> #83 - comment out tests that need review/cleanup (and added comment); fixed tests where expected result was incorrect (still need to check tests w/ no expected result) [c0c59b89355d]
+> vastly improved sphinx documentation. More to do [73204c0b3bc7]
+> moved sphinx sources to doc/source and updated configs [a5c34c143b9b]
+> updated doc static images [5d9ca6e1ced8]
+> updated hgvs-logo.png per Makefile [6c616aa8a156]
+> logo: rotated, moved to subdir, created favicon [c9e899b8d82a]
+> fix coverage by calling tests via python setup.py nosetest; fix  test name [35ba0862000b]
+> removed test-setup-coverage from Makefile dependencies (put in setup.py instead) [25762cb065f3]
+> updated setup.py "license" attribute [138ffcbc6fd1]
+> s/locusdevelopment/invitae/ [4e0cd43b59f4]

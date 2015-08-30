@@ -7,18 +7,20 @@ hgvs.normalizer
 import copy
 import logging
 
+import hgvs
 import hgvs.dataproviders.uta
 import hgvs.location
 import hgvs.parser
 import hgvs.posedit
 import hgvs.variantmapper
 
-from hgvs.exceptions import HGVSDataNotAvailableError, HGVSValidationError, HGVSUnsupportedOperationError
+from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError
 
 _logger = logging.getLogger(__name__)
 
 try:
     from vgraph.norm import normalize_alleles as _normalize_alleles_vgraph
+
     def normalize_alleles(ref, start, stop, alleles, bound, ref_step, left, shuffle=True):
         """wraps vgraph.norm.normalize_alleles to pass ascii-encoded strings"""
         return _normalize_alleles_vgraph(ref.encode('ascii'),
@@ -35,28 +37,32 @@ class Normalizer(object):
     """Perform variant normalization
     """
 
-    def __init__(self, hdp=None, direction=3, cross=False, alt_aln_method='splign'):
+    def __init__(self, hdp,
+                 cross_boundaries=hgvs.global_config.normalizer.cross_boundaries,
+                 shuffle_direction=hgvs.global_config.normalizer.shuffle_direction,
+                 alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
+                 ):
         """Initialize and configure the normalizer
 
         :param hdp: HGVS Data Provider Interface-compliant instance (see :class:`hgvs.dataproviders.interface.Interface`)
         :param direction: shuffling direction
-        :param cross: whether allow the shuffling to cross the exon-intron boundary
+        :param cross_boundaries: whether allow the shuffling to cross the exon-intron boundary
         :param alt_aln_method: sequence alignment method (e.g., splign, blat)
         """
-        assert direction == 3 or direction == 5, "The shuffling direction should be 3 (3' most) or 5 (5' most)."
+        assert shuffle_direction == 3 or shuffle_direction == 5, "The shuffling direction should be 3 (3' most) or 5 (5' most)."
         self.hdp = hdp
-        self.direction = direction
-        self.cross = cross
+        self.shuffle_direction = shuffle_direction
+        self.cross_boundaries = cross_boundaries
         self.alt_aln_method = alt_aln_method
         self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
 
 
     def normalize(self, var):
-        """Perform variants normalization
+        """Perform sequence variants normalization for single variant
         """
         assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
 
-        if var.posedit.uncertain:
+        if var.posedit.uncertain or var.posedit.pos is None:
             return var
 
         type = var.type
@@ -65,6 +71,12 @@ class Normalizer(object):
             raise HGVSUnsupportedOperationError("Unsupported normalization of protein level variants: {0}".format(var))
         if var.posedit.edit.type == 'con':
             raise HGVSUnsupportedOperationError("Unsupported normalization of conversion variants: {0}",format(var))
+        
+        if var.posedit.edit.type == 'identity':
+            var_norm = copy.deepcopy(var)
+            var_norm.posedit.pos = None
+            return var_norm
+        
 
         # For c. variants normalization, first convert to n. variant
         # and perform normalization at the n. level, then convert the
@@ -106,11 +118,11 @@ class Normalizer(object):
         elif alt_len > ref_len:
             # ins or dup
             if ref_len == 0:
-                if self.direction == 3:
+                if self.shuffle_direction == 3:
                     adj_seq = self._fetch_bounded_seq(var, start - alt_len - 1, end - 1, boundary)
                 else:
                     adj_seq = self._fetch_bounded_seq(var, start - 1, start + alt_len - 1, boundary)
-                n = self._dupN(adj_seq, alt, self.direction)
+                n = self._dupN(adj_seq, alt, self.shuffle_direction)
                 # ins
                 if n == 0:
                     ref_start = start - 1
@@ -118,7 +130,7 @@ class Normalizer(object):
                     edit = hgvs.edit.NARefAlt(ref=None, alt=alt)
                 # dup
                 elif n == 1:
-                    if self.direction == 3:
+                    if self.shuffle_direction == 3:
                         ref_start = start - alt_len
                         ref_end = end - 1
                         edit = hgvs.edit.Dup(ref=alt)
@@ -128,7 +140,7 @@ class Normalizer(object):
                         edit = hgvs.edit.Dup(ref=alt)
                 # dupN
                 elif n > 1:
-                    if self.direction == 3:
+                    if self.shuffle_direction == 3:
                         ref_start = start - int(alt_len / n)
                         ref_end = end - 1
                         edit = hgvs.edit.NADupN(n=n)
@@ -157,7 +169,7 @@ class Normalizer(object):
         """Get the position of exon-intron boundary for current variant
         """
         if var.type == 'r' or var.type == 'n':
-            if self.cross:
+            if self.cross_boundaries:
                 return 0, float('inf')
             else:
                 # Get genomic sequence access number for this transcript
@@ -275,9 +287,9 @@ class Normalizer(object):
         """
 
         ref, alt = self._get_ref_alt(var, boundary)
-        win_size = max(len(ref), len(alt)) * 3
+        win_size = hgvs.global_config.normalizer.window_size
 
-        if self.direction == 3:
+        if self.shuffle_direction == 3:
             if var.posedit.edit.type == 'ins':
                 base = var.posedit.pos.start.base
                 start = 1
@@ -292,7 +304,7 @@ class Normalizer(object):
                 stop = var.posedit.pos.end.base - base + 1
 
             while True:
-                ref_seq = self._fetch_bounded_seq(var, base - 1, base - 1 + win_size, boundary)
+                ref_seq = self._fetch_bounded_seq(var, base - 1, base + stop - 1 + win_size, boundary)
                 if ref_seq == '':
                     break
                 orig_start, orig_stop = start, stop
@@ -305,22 +317,26 @@ class Normalizer(object):
                 stop -= start - orig_start
                 start = orig_start
 
-        elif self.direction == 5:
+        elif self.shuffle_direction == 5:
             if var.posedit.edit.type == 'ins':
-                base = max(var.posedit.pos.end.base - win_size + 1, boundary[0] + 1)
+                base = max(var.posedit.pos.start.base - win_size, 1)
                 start = var.posedit.pos.end.base - base
                 stop = var.posedit.pos.end.base - base
             elif var.posedit.edit.type == 'dup':
-                base = max(var.posedit.pos.end.base - win_size + 1, boundary[0] + 1)
+                base = max(var.posedit.pos.start.base - win_size, 1)
                 start = var.posedit.pos.end.base - base + 1
                 stop = var.posedit.pos.end.base - base + 1
             else:
-                base = max(var.posedit.pos.end.base - win_size + 1, boundary[0] + 1)
+                base = max(var.posedit.pos.start.base - win_size , 1)
                 start = var.posedit.pos.start.base - base
                 stop = var.posedit.pos.end.base - base + 1
 
             while True:
-                ref_seq = self._fetch_bounded_seq(var, base - 1, base - 1 + win_size, boundary)
+                if base < boundary[0] + 1:
+                    start -= boundary[0] + 1 - base
+                    stop -= boundary[0] + 1 - base
+                    base = boundary[0] + 1
+                ref_seq = self._fetch_bounded_seq(var, base - 1, base + stop - 1, boundary)
                 if ref_seq == '':
                     break
                 orig_start, orig_stop = start, stop
@@ -336,7 +352,7 @@ class Normalizer(object):
         return base + start, base + stop, (ref, alt)
     
     
-    def _dupN(self, adj_seq, alt, direction):
+    def _dupN(self, adj_seq, alt, shuffle_direction):
         """Determine the number of duplicates. Return 0 if it is not a dup
         """
         
@@ -345,7 +361,7 @@ class Normalizer(object):
         for n in range(1, alt_len + 1):
             if alt_len % n:
                 continue
-            if direction == 3:
+            if shuffle_direction == 3:
                 start = seq_len - int(alt_len / n)
                 end   = seq_len
             else:
@@ -364,7 +380,7 @@ if __name__ == '__main__':
     hgvsparser = hgvs.parser.Parser()
     var = hgvsparser.parse_hgvs_variant('NM_001166478.1:c.61delG')
     hdp = hgvs.dataproviders.uta.connect()
-    norm = Normalizer(hdp, direction=5, cross=False)
+    norm = Normalizer(hdp, shuffle_direction=5, cross_boundaries=False)
     res = norm.normalize(var)
     print(str(var) + '    =>    ' + str(res))
 

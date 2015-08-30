@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import inspect
 import logging
 import os
 import sqlite3
@@ -20,34 +21,21 @@ from ..decorators.lru_cache import lru_cache
 from ..exceptions import HGVSError, HGVSDataNotAvailableError
 from .seqfetcher import SeqFetcher
 
-# Default and common URLs for UTA connections
-# These named urls are provided for developer convenience expect them
-# to change or disappear without notice.
-# All users may set UTA_DB_URL to explicitly select a host, database, or schema
-# INTERNAL USE ONLY: Developers may set _UTA_URL_KEY to select a named URL
-_current_version = 'uta_20150704'
-_uta_urls = {
-    "local": "postgresql://anonymous:anonymous@localhost/uta/" + _current_version,
-    "local-dev": "postgresql://anonymous:anonymous@localhost/uta_dev/" + _current_version,
-    "public": "postgresql://anonymous:anonymous@uta.biocommons.org/uta_dev/" + _current_version,
-    "public-dev": "postgresql://anonymous:anonymous@uta.biocommons.org/uta_dev/" + _current_version,
-    # INOP: "sqlite-dev": "sqlite:/home/reece/projects/biocommons/hgvs/tests/db/uta-test-1.db",
-}
-# use public instance for released (x.y.z versions), otherwise dev
-# this is necessary because there is still some co-dependency between the uta and hgvs projects
-_url_key = os.environ.get('_UTA_URL_KEY', 'public' if hgvs._is_released_version else 'public-dev')
-_default_db_url = os.environ.get('UTA_DB_URL', _uta_urls[_url_key])
+_url_key = os.environ.get('_UTA_URL_KEY', 'public' if hgvs._is_released_version else 'public_dev')
+_default_db_url = os.environ.get('UTA_DB_URL', hgvs.global_config['uta'][_url_key])
 
 _logger = logging.getLogger(__name__)
 
 
-def connect(db_url=_default_db_url, pooling=False):
+def connect(db_url=_default_db_url, pooling=False, application_name=None):
     """Connect to a UTA database instance and return a UTA interface instance.
 
     :param db_url: URL for database connection
     :type db_url: string
     :param pooling: whether to use connection pooling (postgresql only)
     :type pooling: bool
+    :param application_name: log application name in connection (useful for debugging; PostgreSQL only)
+    :type application_name: str
 
     When called with an explicit db_url argument, that db_url is used for connecting.
 
@@ -80,7 +68,7 @@ def connect(db_url=_default_db_url, pooling=False):
     if url.scheme == 'sqlite':
         conn = UTA_sqlite(url)
     elif url.scheme == 'postgresql':
-        conn = UTA_postgresql(url, pooling)
+        conn = UTA_postgresql(url=url, pooling=pooling, application_name=application_name)
     else:
         # fell through connection scheme cases
         raise RuntimeError("{url.scheme} in {url} is not currently supported".format(url=url))
@@ -143,7 +131,7 @@ class UTABase(Interface, SeqFetcher):
             where ac=?
             """,
         "tx_similar": """
-            select distinct tx_ac1, tx_ac2, cds_eq, es_fp_eq, cds_es_fp_eq
+            select *
             from tx_similarity_v
             where tx_ac1 = ?
             """,
@@ -486,26 +474,30 @@ class UTABase(Interface, SeqFetcher):
 
 
 class UTA_postgresql(UTABase):
-    def __init__(self, url, pooling=False):
+    def __init__(self, url, pooling=False, application_name=None):
         self.pooling = pooling
+        self.application_name = application_name
         if url.schema is None:
             raise Exception("No schema name provided in {url}".format(url=url))
         super(UTA_postgresql, self).__init__(url)
 
     def _connect(self):
+        if self.application_name is None:
+            st = inspect.stack()
+            self.application_name = os.path.basename(st[-1][1])
+        conn_args = dict(
+            host=self.url.hostname,
+            port=self.url.port,
+            database=self.url.database,
+            user=self.url.username,
+            password=self.url.password,
+            application_name=self.application_name,
+            )
         if self.pooling:
-            self._pool = psycopg2.pool.ThreadedConnectionPool(1, 10,
-                                                              host=self.url.hostname,
-                                                              port=self.url.port,
-                                                              database=self.url.database,
-                                                              user=self.url.username,
-                                                              password=self.url.password)
+            self._pool = psycopg2.pool.ThreadedConnectionPool(1, 10, **conn_args)
         else:
-            self._conn = psycopg2.connect(host=self.url.hostname,
-                                          port=self.url.port,
-                                          database=self.url.database,
-                                          user=self.url.username,
-                                          password=self.url.password)
+            self._conn = psycopg2.connect(**conn_args)
+            self._conn.autocommit = True
 
         self._ensure_schema_exists()
 
@@ -534,6 +526,7 @@ class UTA_postgresql(UTABase):
 
         try:
             conn = self._pool.getconn() if self.pooling else self._conn
+            conn.autocommit = True
             cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
             return cur
         finally:

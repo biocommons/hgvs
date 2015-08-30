@@ -10,6 +10,7 @@ This file is intended for ideas that need fleshing out.
 ** normalize: separate fill, rewrite, and shuffle
 ** convenience import: import hgvs -> parser, evm, VM, 
 
+** docs to rtd
 ** release notes w/deprecations
 ** implement better logging
 ** relative imports

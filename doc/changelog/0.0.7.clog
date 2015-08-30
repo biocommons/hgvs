@@ -1,0 +1,11 @@
+clog format 1
+* 0.0.7 (2013-10-11)
+# changes since 0.0.6 (2013-10-11)
+** Bug Fixes
+** New Features
+** Changes
+** Security
+** Other Changes
+> fixed bug in HGVSPosition.__str__ and added HGVSPosition test [f81081840cf7]
+> Making setup.py file pathing absolute [e5eeb0865ca3]
+> Fix for setup.py [2a52842fbe30]

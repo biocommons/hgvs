@@ -178,6 +178,8 @@ r_pos	9-3	True	one
 
 ############################################################
 ## Edits
+dna_con	conAC096506.5	False	list	
+dna_con	conAC096506.5:g.409_1683|conNM_004006.1:c.15_355	True	list	
 dna_del	del5A	False	one	
 dna_del	delA|del5|delAAAA	True	list	
 dna_delins	del5insA	True	one
@@ -192,6 +194,8 @@ dna_edit_mu	(A>C)	True	one
 dna_edit_mu	A>C	True	one	
 dna_ins	insA|insC|insG|insT	True	list	
 dna_ins	insU	False	one	
+dna_inv	inv6|invACGT	True	list	
+dna_inv	invACGU|invACGT6	False	list	
 dna_subst	A>C|A>G|A>T|C>G|C>T|G>T	True	list	
 pro_del	del	True	one
 pro_del	delA|delAla|del3	False	list
@@ -227,6 +231,7 @@ pro_subst	ArgPhe|10ValArg|Val>Arg	False	list
 pro_subst	Arg|Phe	True	list	
 pro_subst	R|F	True	list	Arg|Phe
 pro_subst	Ter|*	True	list	Ter|Ter
+rna_con	conAC096506.5	False	list	
 rna_del	del5A|delT	False	list	
 rna_del	delA|del5|delACGU	True	list	
 rna_delins	del5insU	True	one
@@ -242,6 +247,8 @@ rna_edit_mu	A>C	True	one
 rna_ins	insAA	True	one	
 rna_ins	insA|insC|insG|insU	True	list	
 rna_ins	insT	False	one	
+rna_inv	inv6|invACGU	True	list	
+rna_inv	invACGT|invACGU6	False	list	
 rna_subst	A>C|A>G|A>U|C>G|C>U|G>U	True	list	
 rna_subst	A>T	False	one	
 

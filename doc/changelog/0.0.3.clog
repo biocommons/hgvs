@@ -1,0 +1,19 @@
+clog format 1
+* 0.0.3 (2013-10-10)
+# changes since 0.0.2 (2013-09-20)
+** Bug Fixes
+** New Features
+** Changes
+** Security
+** Other Changes
+> update hgvs.__init__ and sphinx to use version from hgtools [f2d830e286c5]
+> removed home-grown hg versioning in favor of hgtools [910fef03d968]
+> removed virtualenv support and cleaned up Makefile [ec1f38a7f41f]
+> milestone sync; c, gmn, and r types mostly work; some tests broken [69a0a7eb2201]
+> updated variant and added test [089e2f878c3b]
+> updated grammar (more to do) and tests [ef4a0d7a80e8]
+> added hgvs.posedit and tests [04f2ce624929]
+> updated hgvs.edit [0a6fabad28ba]
+> removed CDSInterval (will use Interval for all intervals) [ae090f70445d]
+> fixed typo [4df01057c449]
+> update hgvs.location and tests [de67ed921207]

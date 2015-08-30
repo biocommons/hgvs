@@ -9,6 +9,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import collections
 import difflib
 
+import hgvs
 import hgvs.edit
 import hgvs.exceptions
 import hgvs.location
@@ -319,10 +320,11 @@ class AltSeqToHgvsp(object):
             edit = hgvs.edit.AARefAlt(ref=ref, alt=alt)
         posedit = hgvs.posedit.PosEdit(interval, edit)
         if not (is_ambiguous and start == ''):
-            posedit._set_uncertain()
+            posedit.uncertain = hgvs.global_config.mapping.inferred_p_is_uncertain
         var_p = hgvs.variant.SequenceVariant(acc, 'p', posedit)
 
         return var_p
+
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

@@ -22,12 +22,13 @@ def gcp_file_reader(fn):
 
 
 class TestVariantMapperFast(unittest.TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         sqlite_path = 'sqlite://{}'.format(os.path.join(os.path.dirname(__file__), 'db', 'uta-test-1.db'))
-        self.hdp = hgvs.dataproviders.uta.connect(sqlite_path)
-        self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
-        self.hp = hgvs.parser.Parser()
-        self.failed = []
+        cls.hdp = hgvs.dataproviders.uta.connect(sqlite_path)
+        cls.hm = hgvs.variantmapper.VariantMapper(cls.hdp)
+        cls.hp = hgvs.parser.Parser()
+        cls.failed = []
 
     def test_fast(self):
         for rec in gcp_file_reader('tests/data/sqlite_test_gcp.tsv'):

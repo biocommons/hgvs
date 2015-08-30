@@ -1,0 +1,12 @@
+clog format 1
+* 0.3.2 (2014-07-13)
+# changes since 0.3.1 (2014-07-12)
+** Bug Fixes
+** New Features
+** Changes
+** Security
+** Other Changes
+> #194: fix bug when reverse complementing nucleotides parsed from unicode [77ddb6ac7896]
+> #194: fix bug when reverse complementing nucleotides parsed from unicode [fdb5353593f7]
+> cleaned up CHANGELOG [dfa7b1629ca6]
+> #193: fix lookup table for NC_000014.8 (was .10) [6854cd3ea66b]

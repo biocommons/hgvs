@@ -1,0 +1,63 @@
+0.3.4.dev0 (2015-02-06)
+#######################
+
+*changes since fake (2014-10-18)*
+
+Bug Fixes
+$$$$$$$$$
+
+New Features
+$$$$$$$$$$$$
+
+Changes
+$$$$$$$
+
+Security
+$$$$$$$$
+
+Other Changes
+$$$$$$$$$$$$$
+
+* added AUTHORS; Merged in pkaleta/hgvs (pull request #12) [`3d7530b1ba98 <https://bitbucket.org/biocommons/hgvs/commits/3d7530b1ba98>`_]
+* fix `#220 <https://bitbucket.org/biocommons/hgvs/issues/220/>`_: do not modify exon cigar strings in-place [`7ff3322cb0ec <https://bitbucket.org/biocommons/hgvs/commits/7ff3322cb0ec>`_]
+* updated Piotr's patch to ensure that first CIGAR is also reversed [`ea4ddbe374e9 <https://bitbucket.org/biocommons/hgvs/commits/ea4ddbe374e9>`_]
+* Fix check for null tx_exons. [`5f24ac97540b <https://bitbucket.org/biocommons/hgvs/commits/5f24ac97540b>`_]
+* Do not modify results in the cache. [`43522fea346b <https://bitbucket.org/biocommons/hgvs/commits/43522fea346b>`_]
+* Add test for UTA cache nondeterminism. [`29316f3af08c <https://bitbucket.org/biocommons/hgvs/commits/29316f3af08c>`_]
+* added bug demo script tests/bug-examples/220 [`41be2584271f <https://bitbucket.org/biocommons/hgvs/commits/41be2584271f>`_]
+* use PEP440 version strings in setup.py:version_handler() [`9c6f793f4cb4 <https://bitbucket.org/biocommons/hgvs/commits/9c6f793f4cb4>`_]
+* I learn *again* that bitbucket's editor stupidly uses CRLF line endings, even in an existing file with LF throughout :disappointed: [`1b1d5ff268e3 <https://bitbucket.org/biocommons/hgvs/commits/1b1d5ff268e3>`_]
+* README.rst edited online with Bitbucket [`f93dc73e24dc <https://bitbucket.org/biocommons/hgvs/commits/f93dc73e24dc>`_]
+* closing retired branch from Sasha's connection pool PR [`53ab0b3bfded <https://bitbucket.org/biocommons/hgvs/commits/53ab0b3bfded>`_]
+* Add test for NADupN validation. [`93a1b75deeb2 <https://bitbucket.org/biocommons/hgvs/commits/93a1b75deeb2>`_]
+* Handle NADupN. [`d4147ec99d32 <https://bitbucket.org/biocommons/hgvs/commits/d4147ec99d32>`_]
+* Compare to None. [`150ce4578bbf <https://bitbucket.org/biocommons/hgvs/commits/150ce4578bbf>`_]
+* More concise. [`09e629cc8f8e <https://bitbucket.org/biocommons/hgvs/commits/09e629cc8f8e>`_]
+* Add reference seq validation for dups. [`cf111b851084 <https://bitbucket.org/biocommons/hgvs/commits/cf111b851084>`_]
+* Add test for dup validation. [`5d1ef506617d <https://bitbucket.org/biocommons/hgvs/commits/5d1ef506617d>`_]
+* ability to provide max and min connection to postgres pool [`cc85f630025c <https://bitbucket.org/biocommons/hgvs/commits/cc85f630025c>`_]
+* test to see if sphinx and sphinxcontrib-fulltoc are contributing to drone.io failures (py 2.7.3; local py 2.7.6 works fine) [`869ba68e6543 <https://bitbucket.org/biocommons/hgvs/commits/869ba68e6543>`_]
+* upgrade setuptools during make setup to install issues with dependent packages [`65258010a526 <https://bitbucket.org/biocommons/hgvs/commits/65258010a526>`_]
+* more URL updates [`3e168fca4d2c <https://bitbucket.org/biocommons/hgvs/commits/3e168fca4d2c>`_]
+* updated urls to bitbucket.org/biocommons [`904580ed77e0 <https://bitbucket.org/biocommons/hgvs/commits/904580ed77e0>`_]
+* closing "default" branch created by BitBucket merge into named branch. Argh! [`4d55ab257a05 <https://bitbucket.org/biocommons/hgvs/commits/4d55ab257a05>`_]
+* resolve 217: merged change-t-u-sequence [`7644e4bb8074 <https://bitbucket.org/biocommons/hgvs/commits/7644e4bb8074>`_]
+* resolve 218: merged Sasha's connection pool contribution [`bfe48a2c61bb <https://bitbucket.org/biocommons/hgvs/commits/bfe48a2c61bb>`_]
+* added documentation [`a645d3f1479a <https://bitbucket.org/biocommons/hgvs/commits/a645d3f1479a>`_]
+* minor refactoring and tests for pooling connections [`15f289aab289 <https://bitbucket.org/biocommons/hgvs/commits/15f289aab289>`_]
+* postgres data provider with connection pooling [`a2d75fd087d1 <https://bitbucket.org/biocommons/hgvs/commits/a2d75fd087d1>`_]
+* ExtrinsicValidator: compare DNA ref seq from c. variant (not RNA from mapped r. variant) [`c1b36f7d9d73 <https://bitbucket.org/biocommons/hgvs/commits/c1b36f7d9d73>`_]
+* more fixes for c_to_r and r_to_c [`b13fcdbee51c <https://bitbucket.org/biocommons/hgvs/commits/b13fcdbee51c>`_]
+* fixes for g_to_r [`27165d606ae5 <https://bitbucket.org/biocommons/hgvs/commits/27165d606ae5>`_]
+* fixed variantmapper.c_to_r by replacing T with U and variantmapper.r_to_c by replacing U with T' [`cbc04f833404 <https://bitbucket.org/biocommons/hgvs/commits/cbc04f833404>`_]
+* closing empty branch [`1aa60fdbf500 <https://bitbucket.org/biocommons/hgvs/commits/1aa60fdbf500>`_]
+* formatting update; ignore .ipynb_checkpoints [`b6218d74181f <https://bitbucket.org/biocommons/hgvs/commits/b6218d74181f>`_]
+* fake tag to bring `273464e2dccf <https://bitbucket.org/biocommons/hgvs/commits/273464e2dccf>`_ forward to sidestep fouled-up merge [`d1e414d7f83f <https://bitbucket.org/biocommons/hgvs/commits/d1e414d7f83f>`_]
+* Merged in locusdevelopment/hgvs/default (pull request #6)
+* more fixes for c_to_r and r_to_c [`21b98ffb562f <https://bitbucket.org/biocommons/hgvs/commits/21b98ffb562f>`_]
+* fixes for g_to_r [`fdfc2c0a2d9f <https://bitbucket.org/biocommons/hgvs/commits/fdfc2c0a2d9f>`_]
+* fixed variantmapper.c_to_r by replacing T with U and variantmapper.r_to_c by replacing U with T' [`55fc290358b6 <https://bitbucket.org/biocommons/hgvs/commits/55fc290358b6>`_]
+* minor refactoring and tests for pooling connections [`aad83197f7ff <https://bitbucket.org/biocommons/hgvs/commits/aad83197f7ff>`_]
+* postgres data provider with connection pooling [`73cca1a71861 <https://bitbucket.org/biocommons/hgvs/commits/73cca1a71861>`_]
+* Created new branch connpool-and-tu [`7a7c304855dc <https://bitbucket.org/biocommons/hgvs/commits/7a7c304855dc>`_]
+* Created new branch sasha-201411 [`e524ada259a5 <https://bitbucket.org/biocommons/hgvs/commits/e524ada259a5>`_]

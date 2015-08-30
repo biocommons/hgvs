@@ -1,0 +1,54 @@
+0.3.3 (2014-08-28)
+##################
+
+*changes since 0.3.0 (2014-06-19)*
+
+Bug Fixes
+$$$$$$$$$
+
+New Features
+$$$$$$$$$$$$
+
+Changes
+$$$$$$$
+
+Security
+$$$$$$$$
+
+Other Changes
+$$$$$$$$$$$$$
+
+* closes `#202 <https://bitbucket.org/biocommons/hgvs/issues/202/>`_: implement mutalyzer comparisons [`b21cc8e006c0 <https://bitbucket.org/biocommons/hgvs/commits/b21cc8e006c0>`_]
+* removed debugging line  :cry: [`c3645e5bef77 <https://bitbucket.org/biocommons/hgvs/commits/c3645e5bef77>`_]
+* update repo URL everywhere for move to https://bitbucket.org/hgvs/hgvs [`cb4bf8074274 <https://bitbucket.org/biocommons/hgvs/commits/cb4bf8074274>`_]
+* fixes `#205 <https://bitbucket.org/biocommons/hgvs/issues/205/>`_: intronic offsets measured from wrong "base" position [`7297f8f7f08c <https://bitbucket.org/biocommons/hgvs/commits/7297f8f7f08c>`_]
+* updated .hgignore [`cc058f8677ae <https://bitbucket.org/biocommons/hgvs/commits/cc058f8677ae>`_]
+* added flake8 configuration [`1b8985fbf8d0 <https://bitbucket.org/biocommons/hgvs/commits/1b8985fbf8d0>`_]
+* `#206 <https://bitbucket.org/biocommons/hgvs/issues/206/>`_: make get_tx_for_region return only transcripts with alignment data [`c96b27b21f05 <https://bitbucket.org/biocommons/hgvs/commits/c96b27b21f05>`_]
+* `#205 <https://bitbucket.org/biocommons/hgvs/issues/205/>`_: fix "base" bias for the exact middle of an odd-length intron; added regression test framework (tests/data/gcp/regression.tsv) [`775a06f81cf2 <https://bitbucket.org/biocommons/hgvs/commits/775a06f81cf2>`_]
+* `#203 <https://bitbucket.org/biocommons/hgvs/issues/203/>`_: slight cleanup of parse error formatting [`5f8ae74eeec2 <https://bitbucket.org/biocommons/hgvs/commits/5f8ae74eeec2>`_]
+* `#203 <https://bitbucket.org/biocommons/hgvs/issues/203/>`_: return HGVSParseError instead of ometa.runtime.ParseError for parsing errors [`5434650697b3 <https://bitbucket.org/biocommons/hgvs/commits/5434650697b3>`_]
+* clarify TranscriptMapper exception causes [`e3d30b729591 <https://bitbucket.org/biocommons/hgvs/commits/e3d30b729591>`_]
+* added enst->g mapping/uniquification [`c016f18230c4 <https://bitbucket.org/biocommons/hgvs/commits/c016f18230c4>`_]
+* initial take at experimental cross-origin projector [`5976e8c9b885 <https://bitbucket.org/biocommons/hgvs/commits/5976e8c9b885>`_]
+* `#198 <https://bitbucket.org/biocommons/hgvs/issues/198/>`_: more documentation improvements [`37e6ad197e87 <https://bitbucket.org/biocommons/hgvs/commits/37e6ad197e87>`_]
+* `#198 <https://bitbucket.org/biocommons/hgvs/issues/198/>`_: improve docs with better intro for object representation and mapper classes [`d13418a64c51 <https://bitbucket.org/biocommons/hgvs/commits/d13418a64c51>`_]
+* dropped context manager work; filter for HGVSWarnings only [`99bb1b069b85 <https://bitbucket.org/biocommons/hgvs/commits/99bb1b069b85>`_]
+* [mq]: 166-warnings-initial [`54f3ee87c311 <https://bitbucket.org/biocommons/hgvs/commits/54f3ee87c311>`_]
+* `#197 <https://bitbucket.org/biocommons/hgvs/issues/197/>`_: use utf-8 coding, unicode, and all py3k __future__ features in all source [`ac2ee5081b7c <https://bitbucket.org/biocommons/hgvs/commits/ac2ee5081b7c>`_]
+* `#196 <https://bitbucket.org/biocommons/hgvs/issues/196/>`_: hgvs.utils updates: consolidate accessions, prune redundant code, migrate some functions from mapping code [`e80212af7285 <https://bitbucket.org/biocommons/hgvs/commits/e80212af7285>`_]
+* update CHANGELOG [`47207cbfbef0 <https://bitbucket.org/biocommons/hgvs/commits/47207cbfbef0>`_]
+* `#194 <https://bitbucket.org/biocommons/hgvs/issues/194/>`_: fix bug when reverse complementing nucleotides parsed from unicode [`77ddb6ac7896 <https://bitbucket.org/biocommons/hgvs/commits/77ddb6ac7896>`_]
+* `#194 <https://bitbucket.org/biocommons/hgvs/issues/194/>`_: fix bug when reverse complementing nucleotides parsed from unicode [`fdb5353593f7 <https://bitbucket.org/biocommons/hgvs/commits/fdb5353593f7>`_]
+* cleaned up CHANGELOG [`dfa7b1629ca6 <https://bitbucket.org/biocommons/hgvs/commits/dfa7b1629ca6>`_]
+* `#193 <https://bitbucket.org/biocommons/hgvs/issues/193/>`_: fix lookup table for NC_000014.8 (was .10) [`6854cd3ea66b <https://bitbucket.org/biocommons/hgvs/commits/6854cd3ea66b>`_]
+* 193: fix lookup table for NC_000014.8 (was .10) [`000017cbe61c <https://bitbucket.org/biocommons/hgvs/commits/000017cbe61c>`_]
+* `#192 <https://bitbucket.org/biocommons/hgvs/issues/192/>`_: deprecated VariantMapper cache_transcripts param and replaced with always-on lru cache in uta data provider [`87e480280d9a <https://bitbucket.org/biocommons/hgvs/commits/87e480280d9a>`_]
+* deprecated cache_transcripts and replaced with always-on lru cache [`a90ab103fc35 <https://bitbucket.org/biocommons/hgvs/commits/a90ab103fc35>`_]
+* updated doc configuration [`679ccecc7e14 <https://bitbucket.org/biocommons/hgvs/commits/679ccecc7e14>`_]
+* updated changelog [`dc052f211a4b <https://bitbucket.org/biocommons/hgvs/commits/dc052f211a4b>`_]
+* `#189 <https://bitbucket.org/biocommons/hgvs/issues/189/>`_: added CHANGELOG (and rst version) to repo [`66d410d2cbc2 <https://bitbucket.org/biocommons/hgvs/commits/66d410d2cbc2>`_]
+* README.rst fix. ReST. Sigh. Again. [`aef50d800435 <https://bitbucket.org/biocommons/hgvs/commits/aef50d800435>`_]
+* README.rst fix. ReST. Sigh. [`6dcee0c42269 <https://bitbucket.org/biocommons/hgvs/commits/6dcee0c42269>`_]
+* README.rst fix [`ae545ae8471a <https://bitbucket.org/biocommons/hgvs/commits/ae545ae8471a>`_]
+* README.rst and Makefile updates [`a872bbdb8c2c <https://bitbucket.org/biocommons/hgvs/commits/a872bbdb8c2c>`_]

@@ -10,6 +10,7 @@ from bioutils.sequences import reverse_complement
 import recordtype
 
 from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
+import hgvs
 import hgvs.location
 import hgvs.posedit
 import hgvs.transcriptmapper
@@ -384,7 +385,10 @@ class EasyVariantMapper(VariantMapper):
     transcripts.
     """
 
-    def __init__(self, hdp, primary_assembly='GRCh37', alt_aln_method='splign', replace_reference=True):
+    def __init__(self, hdp,
+                 primary_assembly=hgvs.global_config.mapping.assembly,
+                 alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
+                 replace_reference=hgvs.global_config.mapping.replace_reference):
         super(EasyVariantMapper, self).__init__(hdp=hdp)
         self.primary_assembly = primary_assembly
         self.alt_aln_method = alt_aln_method

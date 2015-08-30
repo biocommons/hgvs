@@ -44,11 +44,12 @@ setup(
     ],
 
     install_requires = [
-        'psycopg2',
         'biopython',
         'bioutils>=0.0.6',
+        'configparser',
         'multifastadb',
         'parsley',
+        'psycopg2',
         'recordtype',
         'requests>=1.0.0',
     ],
@@ -57,7 +58,7 @@ setup(
         'setuptools_scm',
         'nose',
         'sphinx',
-        'sphinxcontrib-fulltoc',
+        'sphinxcontrib-fulltoc>=1.1',
         'wheel',
     ],
 

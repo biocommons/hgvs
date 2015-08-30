@@ -1,0 +1,26 @@
+clog format 1
+* 0.4.0a3 (2015-08-14)
+# changes since 0.4.0a2 (2015-07-29)
+** Bug Fixes
+** New Features
+** Changes
+** Security
+** Other Changes
+> fix test failure with new UTA (slight change in # of avail tx for VHL) [ec62089505ff]
+> added misc/experimental/tx-seq-discrepancies [178379edc623]
+> use uta_20150813 [98f4216e9fa9]
+> added docstring to hgvs/__init__.py [9937f0797375]
+> merged default into 104-complex-variants branch; tests pass [c855d19745e3]
+> Add grammer tests for complex variants [00f848606b12]
+> Rename PosEditSet to PosEdits [5e0578313c6c]
+> Implement iterator method for SequenceVariant so that it could be operated as a list with single value [f84cd965e041]
+> Add test of variantmapper for complex variants [241cda561295]
+> Fix bugs in variantmapper for complex variants [55eae3f91345]
+> Add variantmapper for complex variants [cee609a6b616]
+> Add and test normalizer for complex variants [684a2203b283]
+> Add and test validator for complex variants [9fff02bea789]
+> Add test for the parsing of CompoundVariant, MosaicVariant and ChimericVariant [611d97019d3d]
+> Implement the parsing grammar for CompoundVariant, MosaicVariant and ChimericVariant [2cdf0f514dc5]
+> Close branch 104-complex-variants [067968770991]
+> reopen 104- branch in attempt to enable merge of pull request #19 [0748e4834e6c]
+> Close branch 104-complex-variants [f85246b0360b]

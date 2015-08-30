@@ -13,11 +13,12 @@ import hgvs.projector
 
 
 class TestHgvsProjector(unittest.TestCase):
-    def setUp(self):
-        self.hdp = hgvs.dataproviders.uta.connect()
-        self.alt_ac = 'NC_000001.10'
-        self.alt_aln_method = 'splign'
-        self.hp = hgvs.parser.Parser()
+    @classmethod
+    def setUp(cls):
+        cls.hdp = hgvs.dataproviders.uta.connect()
+        cls.alt_ac = 'NC_000001.10'
+        cls.alt_aln_method = 'splign'
+        cls.hp = hgvs.parser.Parser()
 
     def tst_forward_and_backward(self, v1, v2):
         pj = hgvs.projector.Projector(self.hdp, self.alt_ac, v1.ac, v2.ac, self.alt_aln_method, self.alt_aln_method)

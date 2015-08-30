@@ -1,0 +1,9 @@
+clog format 1
+* 0.0.6 (2013-10-11)
+# changes since 0.0.5 (2013-10-11)
+** Bug Fixes
+** New Features
+** Changes
+** Security
+** Other Changes
+> collapsed grammar cases for c_pos; fixed variant test case typo [334d38da6879]
