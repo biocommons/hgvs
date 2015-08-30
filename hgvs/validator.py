@@ -111,11 +111,12 @@ class ExtrinsicValidator():
         if var_ref_seq == '':
             var_ref_seq = None
         
-        try:
-            int(var_ref_seq)
-            var_ref_seq = None
-        except:
-            pass
+        if var_ref_seq:
+            try:
+                int(var_ref_seq)
+                var_ref_seq = None
+            except ValueError:
+                pass
 
         if var_ref_seq is not None:
             var_x = self.vm.c_to_n(var) if var.type == 'c' else var
