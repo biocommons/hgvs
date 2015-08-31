@@ -319,20 +319,6 @@ class VariantMapper(object):
                                                       alt_aln_method=alt_aln_method)
 
     @staticmethod
-    def _replace_T(edit):
-        edit.ref = edit.ref.replace('T', 'U').replace('t', 'u')
-        if isinstance(edit, hgvs.edit.NARefAlt):
-            edit.alt = edit.alt.replace('T', 'U').replace('t', 'u')
-        return edit
-
-    @staticmethod
-    def _replace_U(edit):
-        edit.ref = edit.ref.replace('U', 'T').replace('u', 't')
-        if isinstance(edit, hgvs.edit.NARefAlt):
-            edit.alt = edit.alt.replace('U', 'T').replace('u', 't')
-        return edit
-
-    @staticmethod
     def _convert_edit_check_strand(strand, edit_in):
         """
         Convert an edit from one type to another, based on the stand and type
