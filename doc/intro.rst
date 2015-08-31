@@ -1,5 +1,5 @@
 Introduction
-------------
+!!!!!!!!!!!!
 
 Genome, transcript, and protein sequence variants are typically
 reported using the `mutation nomenclature ("mutnomen") recommendations
@@ -36,7 +36,7 @@ is routinely used in modern, high-throughput sequencing analysis.
 
 
 Features of the hgvs Package
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 * **Convenient object representation**. Manipulate variants
   conceptually rather than by modifying text strings. :doc:`Classes
@@ -72,7 +72,7 @@ Features of the hgvs Package
 
 
 Current limitations of the hgvs Package
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 * **Some HGVS recommendations are intentionally absent.**. We chose to focus on the subset
   of the HGVS recommendations that are relevant for high-throughput
@@ -90,7 +90,7 @@ Current limitations of the hgvs Package
 
 
 Related tools
-~~~~~~~~~~~~~
+@@@@@@@@@@@@@
 
 * `Mutalyzer <http://www.humgen.nl/mutalyzer.html>`_ provides a web
   interface to variant validation and mapping.
@@ -100,7 +100,7 @@ Related tools
 
 
 Getting Help
-~~~~~~~~~~~~
+@@@@@@@@@@@@
 
 There are several ways to get help with the ``hgvs`` package.
 
@@ -116,7 +116,7 @@ If you have questions about the `HGVS Mutation Nomenclature Recommendations
 
 
 Links
-~~~~~
+@@@@@
 
 * `HGVS Mutation Nomenclature Recommendations <http://www.hgvs.org/mutnomen/>`_
 * `Human Genome Variation Society (HGVS) <http://www.hgvs.org/>`_
@@ -125,7 +125,7 @@ Links
 
 
 References
-~~~~~~~~~~
+@@@@@@@@@@
 
 Describing structural changes by extending HGVS sequence variation nomenclature.
   | Taschner, P. E. M., & den Dunnen, J. T.

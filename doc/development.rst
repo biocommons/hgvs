@@ -1,13 +1,14 @@
 Development
------------
+!!!!!!!!!!!
 
 This section is intended for developers seeking to extend the hgvs
 package.  You should be familiar with the architecture, conventions,
 and basic functionality elsewhere in this documentation.
 
 
+
 Get Cozy with make
-~~~~~~~~~~~~~~~~~~
+@@@@@@@@@@@@@@@@@@
 
 The hgvs package includes a GNU Makefile that aids nearly all
 developer tasks.  It subsumes much of the functionality in setup.py.
@@ -43,7 +44,7 @@ Some of the key targets are:
 
 
 Installation for Development
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 ::
 
@@ -82,7 +83,7 @@ understand the code.
 
 
 Submitting Patches
-~~~~~~~~~~~~~~~~~~
+@@@@@@@@@@@@@@@@@@
 
 Yes! We'll be thrilled to have your contributions!
 
@@ -95,7 +96,7 @@ for you to get credit.
 
 
 Developing and Contributing to HGVS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 * Fork the project at https://bitbucket.org/biocommons/hgvs/
 
@@ -127,7 +128,7 @@ targets.)
 
 
 Using a local/alternative UTA instance
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 * Install UTA from a PostgreSQL as described at in the UTA_ README.
 
@@ -148,3 +149,5 @@ selects a local instance.  Developers can test connectivity like this:
    ``$ UTA_DB_URL=postgresql://localhost/uta/uta_20140210 make test-quick``
 
 See hgvs/dataproviders/uta.py for current UTA database URLs.
+
+.. _uta: http://bitbucket.org/biocommons/uta/

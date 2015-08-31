@@ -1,8 +1,8 @@
 Grammar
--------
+@@@@@@@
 
 Grammar Overview
-^^^^^^^^^^^^^^^^
+################
 
 .. note:: This section is being written.
 
@@ -11,3 +11,8 @@ Grammar Overview
 
 .. include:: hgvs_railroad.rst
 
+
+.. toctree::
+   :hidden:
+
+   hgvs_railroad

@@ -1,24 +1,12 @@
-Overview
-~~~~~~~~
+Key Concepts
+!!!!!!!!!!!!
 
 This section is intended for all users and provides an understanding
 of key concepts and components of the hgvs package.
 
 
-Package Versioning
-..................
-
-The hgvs package uses conventional major-minor-patch versioning of the
-form x.y.z.  Version numbers for released code come directly from the
-repository tag. Therefore, PyPI version 0.1.2 corresponds exactly to
-the repository commit tagged as 0.1.2.  Changes in x.y are likely to
-include API changes; conversely, as is customary in many projects,
-patch-level changes are issued for bug fixes and do NOT incur API
-changes.
-
-
 Variant Object Representation
-.............................
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 HGVS variants are represented using classes that represent elemental
 concepts of an HGVS sequence variant.  Each of the objects contains
@@ -66,9 +54,8 @@ u'NM_001197320.1:c.(281C>T)'
 
 
 
-
 Variant Mapping Tools
-.....................
+@@@@@@@@@@@@@@@@@@@@@
 
 Variant mapping is supported by several modules.  Most users will
 likely be content with :class:`hgvs.variant.EasyVariantMapper`.  For
@@ -130,7 +117,7 @@ to each other.
 
 
 External Data
-.............
+@@@@@@@@@@@@@
 
 Variant mapping and validation requires access to external data,
 specifically exon structures, transcript alignments, and protein

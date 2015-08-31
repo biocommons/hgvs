@@ -1,7 +1,7 @@
 .. _quick_start.rst:
 
 Quick Start
-===========
+!!!!!!!!!!!
 
 This tutorial provides a comprehensive example of how to use the HGVS
 package.  Specifically, we'll:
@@ -31,7 +31,7 @@ because it has an intronic variant to spice up the example.
 
 
 Install ``hgvs``
-----------------
+@@@@@@@@@@@@@@@@
 
 For this demo, you'll need hgvs (of course).  We recommend that you
 install IPython as well.  In a reasonably modern environment, the
@@ -45,7 +45,7 @@ More detailed installation instructions are in :doc:`installation`.
 
 
 Parse the variant
------------------
+@@@@@@@@@@@@@@@@@
 
 To parse variants, we need to create a an instance of the
 :py:class:`hgvs.parser.Parser`.  Since building the grammar is
@@ -82,7 +82,7 @@ Finally, "stringifying" a variant regenerates an HGVS variant:
 
 
 Create an VariantMapper instance
---------------------------------
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 Mapping variants between genomic (g.), transcript (c.), and protein (p.)
 sequences is performed by an instance of :py:class:`hgvs.variantmapper.VariantMapper`. As with
@@ -115,7 +115,7 @@ SequenceVariant(ac=NP_001184249.1, type=p, posedit=Ser94Phe)
 
 
 Map our variant to the genome
------------------------------
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 Mapping between sequences is straightforward:
 
@@ -162,7 +162,7 @@ int
 
 
 Map the genomic variant to another transcript
----------------------------------------------
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 To map our genomic variant to another transcript, we need to provide a
 transcript accession. One way to get those is to ask the data

@@ -51,6 +51,8 @@ virtualenv-*
 virtualenv.py
 workspace
 .eggs/**
+doc/changelog/.tags
+doc/changelog/.tags.mk
 
 syntax: regexp
 (.*/)?\#[^/]*\#$

@@ -379,18 +379,19 @@ class UTABase(Interface, SeqFetcher):
         >> sim_tx = hdp.get_similar_transcripts('NM_001285829.1')
         >> dict(sim_tx[0])
         { 'cds_eq': False,
-          'cds_es_fp_eq': False,
-          'es_fp_eq': True,
-          'tx_ac1': 'NM_001285829.1',
-          'tx_ac2': 'ENST00000498907' }
+        'cds_es_fp_eq': False,
+        'es_fp_eq': True,
+        'tx_ac1': 'NM_001285829.1',
+        'tx_ac2': 'ENST00000498907' }
 
         where:
+
         * cds_eq means that the CDS sequences are identical
         * es_fp_eq means that the full exon structures are identical
           (i.e., incl. UTR)
         * cds_es_fp_eq means that the cds-clipped portions of the exon
           structures are identical (i.e., ecluding. UTR)
-        ("es" = "exon set", "fp" = "fingerprint", "eq" = "equal")
+        * Hint: "es" = "exon set", "fp" = "fingerprint", "eq" = "equal"
 
         "exon structure" refers to the start and end coordinates on a
         specified reference sequence. Thus, having the same exon

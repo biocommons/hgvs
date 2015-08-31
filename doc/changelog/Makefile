@@ -1,11 +1,28 @@
-# Note: You must have biocommons.pytemplate/bin in your PATH
+.PHONY: FORCE
+.DELETE_ON_ERROR:
 
-SHELL:=/bin/bash
+SHELL:=/bin/bash -o pipefail
 
-VTAGS:=$(shell hg tags | cut -f1 -d' ' | grep -E '^[0-9]+\.' | fgrep -v 0.0.0)
+-include .tags.mk
+.tags.mk: .tags
+	perl -ane 'BEGIN {$$\=" "; print "VTAGS="}; print $$F[0] if m/^\d+\.\d+\./' $< >$@.tmp
+	mv $@.tmp $@
+.tags:
+	hg tags >$@.tmp
+	mv $@.tmp $@
 
-default all: $(addsuffix .rst,${VTAGS})
-	make {0.0,0.1,0.2,0.3,0.4}.rst
+XY:=0.4
+XY_RST:=$(addsuffix .rst,${XY})
+XY_VTAGS:=$(filter ${XY}%,${VTAGS})
+XY_VTAGS_RST:=$(addsuffix .rst,${XY_VTAGS})
+
+default all: ${XY_VTAGS_RST} ${XY_RST}
+
+
+${XY_RST}: %.rst:
+	clogger-group-XY $* >$@.tmp
+	mv $@.tmp $@
+
 
 .PRECIOUS: %.clog
 %.clog:
@@ -16,12 +33,10 @@ default all: $(addsuffix .rst,${VTAGS})
 	clogger-fmt \
 		-I '`#{issue_id} <https://bitbucket.org/biocommons/hgvs/issues/{issue_id}/>`_' \
 		-C '`{cset} <https://bitbucket.org/biocommons/hgvs/commits/{cset}>`_' \
+		-M '`milestone {mstone} <https://bitbucket.org/biocommons/hgvs/issues?milestone={mstone}>`_' \
 		<$< >$@.tmp
 	mv $@.tmp $@
 
-0.0.rst 0.1.rst 0.2.rst 0.3.rst 0.4.rst 0.5.rst: %.rst: $(wildcard %.[0-9]*.rst)
-	clogger-group-XY $* >$@.tmp
-	mv $@.tmp $@
 
 
 .PHONY: clean cleaner cleanest
@@ -30,7 +45,7 @@ clean:
 	/bin/rm -f *~
 
 cleaner: clean
-	/bin/rm -f *.rst
+	#/bin/rm -f *.rst
 
 cleanest: cleaner
 	/bin/rm -f *.clog
