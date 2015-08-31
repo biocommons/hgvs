@@ -492,7 +492,7 @@ class UTA_postgresql(UTABase):
             database=self.url.database,
             user=self.url.username,
             password=self.url.password,
-            application_name=self.application_name,
+            application_name=self.application_name + "/" + hgvs.__version__,
             )
         if self.pooling:
             self._pool = psycopg2.pool.ThreadedConnectionPool(1, 10, **conn_args)
