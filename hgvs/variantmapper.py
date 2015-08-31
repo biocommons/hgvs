@@ -12,6 +12,7 @@ import recordtype
 from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
 import hgvs
 import hgvs.location
+import hgvs.normalizer
 import hgvs.posedit
 import hgvs.transcriptmapper
 import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
@@ -24,29 +25,41 @@ _logger = logging.getLogger(__name__)
 
 
 class VariantMapper(object):
-    """Maps HGVS variants to and from g., n., r., c., and p. representations.
-    All methods require and return objects of type :class:`hgvs.variant.SequenceVariant`.
+    """Maps SequenceVariant objects between g., n., r., c., and p. representations.
 
-    g --acgtatgcac--gtctagacgt--      --acgtatgcac--gtctagacgt--      --acgtatgcac--gtctagacgt--
-            \     \/     /                  \     \/     /                  \     \/     /      
-    c  --acgtATGCACGTCTAGacgt--     n  --acgtatgcacgtctagacgt--     r  --acguaugcacgucuagacgu-- 
-            |1           |               1                               1
-    p        MetHisValTer
-
-    g <-> c, n, r projections are similar in that c, n, and r variants
+    g⟷{c,n,r} projections are similar in that c, n, and r variants
     may use intronic coordinates. There are two essential differences
-    that distinguish the three intermediate sequences::
+    that distinguish the three types:
 
-    1) In n and r variants, position 1 is the sequence start; in c
-    variants, 1 is the transcription start site.
-    2) In n and c variants, sequences are DNA; in r. variants,
-    sequences are RNA.
+    * Sequence start: In n and r variants, position 1 is the sequence
+      start; in c variants, 1 is the transcription start site.
+    * Alphabet: In n and c variants, sequences are DNA; in
+      r. variants, sequences are RNA.
+    
+    This differences are summarized in this diagram::
 
-    Therefore, this this code uses g<->n as the core transformation
-    between genomic and c, n, and r variants: All c<->g and r<->g
-    transformations use n<->g after accounting for the above
-    differences. For example, c->g accounts for the transcription
-    start site offset, then calls n->g.
+      g ----acgtatgcac--gtctagacgt----      ----acgtatgcac--gtctagacgt----      ----acgtatgcac--gtctagacgt----
+            \         \/         /              \         \/         /              \         \/         /
+      c      acgtATGCACGTCTAGacgt         n      acgtatgcacgtctagacgt         r      acguaugcacgucuagacgu   
+                 1                               1                                   1
+      p          MetHisValTer
+    
+    The g excerpt and exon structures are identical. The g⟷n
+    transformation, which is the most basic, accounts for the offset
+    of the aligned sequences (shown with "1") and the exon structure.
+    The g⟷c transformation is akin to g⟷n transformation, but
+    requires an addition offset to account for the translation start
+    site (c.1).  The CDS in uppercase. The g⟷c transformation is
+    akin to g⟷n transformation with a change of alphabet.
+
+    Therefore, this this code uses g⟷n as the core transformation
+    between genomic and c, n, and r variants: All c⟷g and r⟷g
+    transformations use n⟷g after accounting for the above
+    differences. For example, c_to_g accounts for the transcription
+    start site offset, then calls n_to_g.
+
+    All methods require and return objects of type
+    :class:`hgvs.variant.SequenceVariant`.
 
     """
 
@@ -54,7 +67,7 @@ class VariantMapper(object):
         self.hdp = hdp
 
     # ############################################################################
-    # g <-> n
+    # g⟷n
     def g_to_n(self, var_g, tx_ac, alt_aln_method='splign'):
         """Given a parsed g. variant, return a n. variant on the specified
         transcript using the specified alignment method (default is
@@ -98,7 +111,7 @@ class VariantMapper(object):
         return var_g
 
     # ############################################################################
-    # g <-> c
+    # g⟷c
     def g_to_c(self, var_g, tx_ac, alt_aln_method='splign'):
         """Given a parsed g. variant, return a c. variant on the specified
         transcript using the specified alignment method (default is
@@ -146,7 +159,7 @@ class VariantMapper(object):
         return var_g
 
     # ############################################################################
-    # c <-> n
+    # c⟷n
     # TODO: Identify use case for this code
     def c_to_n(self, var_c):
         """Given a parsed c. variant, return a n. variant on the specified
@@ -193,7 +206,7 @@ class VariantMapper(object):
         return var_c
 
     # ############################################################################
-    # c -> p
+    # c ⟶ p
     # TODO: c_to_p needs refactoring
     def c_to_p(self, var_c, pro_ac=None):
         """
@@ -306,20 +319,6 @@ class VariantMapper(object):
                                                       alt_aln_method=alt_aln_method)
 
     @staticmethod
-    def _replace_T(edit):
-        edit.ref = edit.ref.replace('T', 'U').replace('t', 'u')
-        if isinstance(edit, hgvs.edit.NARefAlt):
-            edit.alt = edit.alt.replace('T', 'U').replace('t', 'u')
-        return edit
-
-    @staticmethod
-    def _replace_U(edit):
-        edit.ref = edit.ref.replace('U', 'T').replace('u', 't')
-        if isinstance(edit, hgvs.edit.NARefAlt):
-            edit.alt = edit.alt.replace('U', 'T').replace('u', 't')
-        return edit
-
-    @staticmethod
     def _convert_edit_check_strand(strand, edit_in):
         """
         Convert an edit from one type to another, based on the stand and type
@@ -388,54 +387,61 @@ class EasyVariantMapper(VariantMapper):
     def __init__(self, hdp,
                  primary_assembly=hgvs.global_config.mapping.assembly,
                  alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
-                 replace_reference=hgvs.global_config.mapping.replace_reference):
+                 replace_reference=hgvs.global_config.mapping.replace_reference,
+                 normalize=hgvs.global_config.mapping.normalize,
+                 ):
         super(EasyVariantMapper, self).__init__(hdp=hdp)
         self.primary_assembly = primary_assembly
         self.alt_aln_method = alt_aln_method
         self.primary_assembly_accessions = set(primary_assembly_accessions[primary_assembly])
         self.replace_reference = replace_reference
+        self.normalize = normalize
+        self._norm = None
+        if self.normalize:
+            self._norm = hgvs.normalizer.Normalizer(hdp)
 
     def g_to_c(self, var_g, tx_ac):
         var_out = super(EasyVariantMapper, self).g_to_c(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
         if self.replace_reference:
             self._replace_reference(var_out)
-        return var_out
+        return var_out if self._norm is None else self._norm.normalize(var_out)
 
     def g_to_n(self, var_g, tx_ac):
         var_out = super(EasyVariantMapper, self).g_to_n(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
         if self.replace_reference:
             self._replace_reference(var_out)
-        return var_out
+        return var_out if self._norm is None else self._norm.normalize(var_out)
 
     def c_to_g(self, var_c):
         alt_ac = self._alt_ac_for_tx_ac(var_c.ac)
         var_out = super(EasyVariantMapper, self).c_to_g(var_c, alt_ac, alt_aln_method=self.alt_aln_method)
         if self.replace_reference:
             self._replace_reference(var_out)
-        return var_out
+        return var_out if self._norm is None else self._norm.normalize(var_out)
 
     def n_to_g(self, var_n):
         alt_ac = self._alt_ac_for_tx_ac(var_n.ac)
         var_out = super(EasyVariantMapper, self).n_to_g(var_n, alt_ac, alt_aln_method=self.alt_aln_method)
         if self.replace_reference:
             self._replace_reference(var_out)
-        return var_out
+        return var_out if self._norm is None else self._norm.normalize(var_out)
 
     def c_to_n(self, var_c):
         var_out = super(EasyVariantMapper, self).c_to_n(var_c)
         if self.replace_reference:
             self._replace_reference(var_out)
-        return var_out
+        return var_out if self._norm is None else self._norm.normalize(var_out)
 
     def n_to_c(self, var_n):
         var_out = super(EasyVariantMapper, self).n_to_c(var_n)
         if self.replace_reference:
             self._replace_reference(var_out)
-        return var_out
+        return var_out if self._norm is None else self._norm.normalize(var_out)
 
     def c_to_p(self, var_c):
         var_out = super(EasyVariantMapper, self).c_to_p(var_c)
-        return var_out
+        return var_out if self._norm is None else self._norm.normalize(var_out)
+
 
     def relevant_transcripts(self, var_g):
         """return list of transcripts accessions (strings) for given variant,
@@ -514,6 +520,7 @@ class EasyVariantMapper(VariantMapper):
             'g': {'seq': g_seq, 'span': g_span, 'var': g_var},
             'n': {'seq': n_seq, 'span': "{} ({})".format(n_span, c_span), 'var': "{} ({})".format(n_var, c_var)},
         }
+
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

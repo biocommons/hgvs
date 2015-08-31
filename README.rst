@@ -6,7 +6,7 @@ This package provides a Python library to facilitate the use of genome,
 transcript, and protein variants that are represented using the Human
 Genome Variation Society (`mutnomen`_) recommendations.
 
-| **Learn:** `Documentation`_ | `Changelog`_
+| **Learn:** |rtd_badge| `Change Log <changelog>`_
 | **Use:** |pypi_badge|  |install_status|
 | **Interact:** `Mailing List`_ | `Report an Issue`_
 | **Develop:** `Source`_ (status: |build_status|)
@@ -22,20 +22,16 @@ Citation:
 Features
 -------- 
 
-* `A formal grammar <http://pythonhosted.org/hgvs/grammar.html>`_ for HGVS variant names
-* `Classes <http://pythonhosted.org/hgvs/modules.html>`_ that model HGVS
-  concepts such as `Interval
-  <http://pythonhosted.org/hgvs/modules.html#hgvs.location.Interval>`_,
-  intronic offsets (in `BaseOffsetPosition
-  <http://pythonhosted.org/hgvs/modules.html#hgvs.location.BaseOffsetPosition>`_),
-  frameshifts, uncertain positions, and types of variation (`hgvs.edit
-  <http://pythonhosted.org/hgvs/modules.html#module-hgvs.edit>`_)
+* A formal grammar for HGVS variant names
+* Classes that model most variant types (SNVs, indels, dups,
+  inverstions, etc) and concepts (intronic offsets, uncertain
+  positions, intervals).
+* Variant normalizer that rewrites variants in canoncial forms and
+  substitutes reference sequences if reference and transcript
+  sequences differ.
 * Formatters that generate HGVS strings from internal representations
 * Tools to map variants between genome, transcript, and protein sequences
-  (`VariantMapper <http://pythonhosted.org/hgvs/modules.html#hgvs.variantmapper.VariantMapper>`_ and `Projector
-  <http://pythonhosted.org/hgvs/modules.html#hgvs.projector.Projector>`_)
-* Reliable handling of regions reference-transcript discrepancy (requires UTA_)
-* Tools to validate variants (coming soon)
+* Reliable handling of regions reference-transcript discrepancy
 * Pluggable data providers support alternative sources of transcript mapping
   data
 * Extensive automated tests, including those for all variant types and
@@ -65,7 +61,7 @@ An Example
 ----------
 
 See `Installation instructions
-<http://pythonhosted.org/hgvs/using_hgvs.html#installation>`_ if you
+<http://hgvs.readthedocs.org/en/latest/installation.html>`_ if you
 have installation troubles.
 
 ::
@@ -118,8 +114,29 @@ have installation troubles.
   >>> var_c.posedit.pos.start
   BaseOffsetPosition(base=1582, offset=0, datum=1, uncertain=False)
 
+  # variant normalization
+  # rewrite ins as dup (depends on sequence context)
+  >>> import hgvs.normalizer
+  >>> hn = hgvs.normalizer.Normalizer(hdp)
+  >>> hn.normalize(hp.parse_hgvs_variant('NM_001166478.1:c.35_36insT'))
+  SequenceVariant(ac=NM_001166478.1, type=c, posedit=35dupT)
 
-There are `more examples in the documentation <http://pythonhosted.org/hgvs/examples.html>`_.
+  # during mapping, variants are normalized (by default)
+  >>> c1 = hp.parse_hgvs_variant('NM_001166478.1:c.31del')
+  >>> c1
+  SequenceVariant(ac=NM_001166478.1, type=c, posedit=31del)
+  >>> c1n = hn.normalize(c1)
+  >>> c1n
+  SequenceVariant(ac=NM_001166478.1, type=c, posedit=35delT)
+  >>> g = evm.c_to_g(c1)
+  >>> g
+  SequenceVariant(ac=NC_000006.11, type=g, posedit=49917127delA)
+  >>> c2 = evm.g_to_c(g, c1.ac)
+  >>> c2
+  SequenceVariant(ac=NM_001166478.1, type=c, posedit=35delT)
+
+
+There are `more examples in the documentation <http://hgvs.readthedocs.org/en/latest/examples.html>`_.
 
 ----
 
@@ -143,8 +160,8 @@ likely to be quickly incorporated if they:
   with respect to variable naming, etc.
 
 
-.. _changelog: http://pythonhosted.org/hgvs/changelog.html
-.. _documentation: http://pythonhosted.org/hgvs/
+.. _changelog: http://hgvs.readthedocs.org/en/latest/changelog/index.html
+.. _documentation: http://hgvs.readthedocs.org/en/latest/index.html
 .. _invitae: http://invitae.com/
 .. _mutnomen: http://www.hgvs.org/mutnomen/
 .. _source: https://bitbucket.org/biocommons/hgvs/
@@ -152,6 +169,10 @@ likely to be quickly incorporated if they:
 .. _mailing list: https://groups.google.com/forum/#!forum/hgvs-discuss
 .. _report an issue: https://bitbucket.org/biocommons/hgvs/issues?status=new&status=open
 
+
+.. |rtd_badge| image:: https://readthedocs.org/projects/hgvs/badge/?version=latest
+  :target: http://hgvs.readthedocs.org/
+  :align: middle
 
 .. |pypi_badge| image:: https://badge.fury.io/py/hgvs.png
   :target: https://pypi.python.org/pypi?name=hgvs

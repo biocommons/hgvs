@@ -24,11 +24,11 @@ authors = project + ' Contributors'
 copyright = u'2015, ' + authors
 
 extlinks={
-    'issue': ('https://bitbucket.org/biocommons/hgvs/issue/%s', 'HGVS issue '),
+    'issue': ('https://bitbucket.org/biocommons/hgvs/issue/%s', project + ' issue '),
     }
 
 man_pages = [
-    ('index', 'uta', u'HGVS Documentation', [u'HGVS Contributors'], 1)
+    ('index', project, project + u' Documentation', [project + u' Contributors'], 1)
 ]
 
 ############################################################################

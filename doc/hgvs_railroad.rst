@@ -1,12 +1,12 @@
 HGVS Railroad Diagram
-^^^^^^^^^^^^^^^^^^^^^
+#####################
 
   | Generated from `hgvs (https://bitbucket.org/biocommons/hgvs/) <https://bitbucket.org/biocommons/hgvs/>`_
   | c1a058136af7+ default tip
-  | See the source code for the OMeta-based grammar
+  | See the `grammar source <https://bitbucket.org/biocommons/hgvs/src/default/hgvs/_data/hgvs.pymeta>`_
 
 Variants
-~~~~~~~~
+$$$$$$$$
 .. image:: hgvs_railroad/any_variant.svg
   :align: center
 .. image:: hgvs_railroad/c_variant.svg
@@ -28,7 +28,7 @@ Variants
 
 
 Intervals
-~~~~~~~~~
+$$$$$$$$$
 .. image:: hgvs_railroad/c_interval.svg
   :align: center
 .. image:: hgvs_railroad/def_c_interval.svg
@@ -60,7 +60,7 @@ Intervals
 
 
 Localized Edits
-~~~~~~~~~~~~~~~
+$$$$$$$$$$$$$$$
 .. image:: hgvs_railroad/c_posedit.svg
   :align: center
 .. image:: hgvs_railroad/gmn_posedit.svg
@@ -80,7 +80,7 @@ Localized Edits
 
 
 Positions
-~~~~~~~~~
+$$$$$$$$$
 .. image:: hgvs_railroad/c_hgvs_position.svg
   :align: center
 .. image:: hgvs_railroad/c_pos.svg
@@ -128,7 +128,7 @@ Positions
 
 
 Edits (sequence changes)
-~~~~~~~~~~~~~~~~~~~~~~~~
+$$$$$$$$$$$$$$$$$$$$$$$$
 .. image:: hgvs_railroad/c_edit.svg
   :align: center
 .. image:: hgvs_railroad/dna_delins.svg
@@ -188,7 +188,7 @@ Edits (sequence changes)
 
 
 Sequences
-~~~~~~~~~
+$$$$$$$$$
 .. image:: hgvs_railroad/aa13_seq.svg
   :align: center
 .. image:: hgvs_railroad/aa1_seq.svg
@@ -208,7 +208,7 @@ Sequences
 
 
 Residues
-~~~~~~~~
+$$$$$$$$
 .. image:: hgvs_railroad/aa13_ext.svg
   :align: center
 .. image:: hgvs_railroad/aa13_fs.svg
@@ -232,7 +232,7 @@ Residues
 
 
 Remaining rules
-~~~~~~~~~~~~~~~
+$$$$$$$$$$$$$$$
 .. image:: hgvs_railroad/accn.svg
   :align: center
 .. image:: hgvs_railroad/base.svg
