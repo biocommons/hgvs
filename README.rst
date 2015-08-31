@@ -2,14 +2,19 @@
 *hgvs* - Python library to parse, format, validate, and map sequence variants
 =============================================================================
 
+  +------------------------------------------------------------------+
+  | ☺ **2015-08-31**: 0.4.0rc1 was just released. See `Release Notes |
+  | <http://hgvs.readthedocs.org/en/latest/changelog/0.4.0.html>`_   |
+  | for breaking changes and new features. Please report successes   |
+  | and failures via the hgvs-discuss mailing list or by             |
+  | submitting an issue.                                             |
+  +------------------------------------------------------------------+
+
 This package provides a Python library to facilitate the use of genome,
 transcript, and protein variants that are represented using the Human
 Genome Variation Society (`mutnomen`_) recommendations.
 
-| **Learn:** |rtd_badge| `Change Log <changelog>`_
-| **Use:** |pypi_badge|  |install_status|
-| **Interact:** `Mailing List`_ | `Report an Issue`_
-| **Develop:** `Source`_ (status: |build_status|)
+`Source`_ | `Documentation`_ | `Change Log <changelog>`_ | `Mailing List`_ | `Issues`_ | |pypi_badge| |rtd_badge| |build_status|
 
 Citation:
 
@@ -22,13 +27,13 @@ Citation:
 Features
 -------- 
 
-* A formal grammar for HGVS variant names
-* Classes that model most variant types (SNVs, indels, dups,
-  inverstions, etc) and concepts (intronic offsets, uncertain
-  positions, intervals).
-* Variant normalizer that rewrites variants in canoncial forms and
-  substitutes reference sequences if reference and transcript
-  sequences differ.
+* A formal grammar for HGVS variant syntax
+* An easy-to-use object model for most variant types (SNVs, indels,
+  dups, inverstions, etc) and concepts (intronic offsets, uncertain
+  positions, intervals)
+* A variant normalizer that rewrites variants in canoncial forms and
+  substitutes reference sequences (if reference and transcript
+  sequences differ)
 * Formatters that generate HGVS strings from internal representations
 * Tools to map variants between genome, transcript, and protein sequences
 * Reliable handling of regions reference-transcript discrepancy
@@ -167,7 +172,7 @@ likely to be quickly incorporated if they:
 .. _source: https://bitbucket.org/biocommons/hgvs/
 .. _uta: http://bitbucket.org/biocommons/uta/
 .. _mailing list: https://groups.google.com/forum/#!forum/hgvs-discuss
-.. _report an issue: https://bitbucket.org/biocommons/hgvs/issues?status=new&status=open
+.. _issues: https://bitbucket.org/biocommons/hgvs/issues?status=new&status=open
 
 
 .. |rtd_badge| image:: https://readthedocs.org/projects/hgvs/badge/?version=latest
