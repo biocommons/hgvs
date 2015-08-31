@@ -14,7 +14,7 @@ This package provides a Python library to facilitate the use of genome,
 transcript, and protein variants that are represented using the Human
 Genome Variation Society (`mutnomen`_) recommendations.
 
-`Source`_ | `Documentation`_ | `Change Log <changelog>`_ | `Issues <https://bitbucket.org/biocommons/hgvs/issues?status=new&status=open>`_ | `Mailing List`_ | |pypi_badge| |rtd_badge| |build_status|
+`Source`_ | `Documentation`_ | `Change Log <changelog>`_ | `Issues <https://goo.gl/G63aFQ>`_ | `Mailing List`_ | |pypi_badge| |rtd_badge| |build_status|
 
 Citation:
 
