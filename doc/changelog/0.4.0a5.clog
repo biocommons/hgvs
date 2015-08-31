@@ -1,0 +1,13 @@
+clog format: 1; -*-outline-*-
+* 0.4.0a5 (2015-08-30)
+Changes since 0.4.0a4 (2015-08-26). See issues at milestone:0.4.0a5.
+** Special Attention
+** Deprecations
+** Bug Fixes
+** New Features
+** Other Changes
+** Internal and Developer Changes
+*** #263: Trying out a new tag-based changelog mechanism for 0.4.0 and 0.4 series.
+*** #255: variants normalized by EasyVariantMapper by default [1b85d4deabc3]
+*** Enable users to set application_name when connecting [835ac7771909]
+*** Docs significantly overhauled and moved to readthedocs.org with automatic webhook-based building
