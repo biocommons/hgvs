@@ -22,23 +22,16 @@ Citation:
 Features
 -------- 
 
-* `A formal grammar <http://pythonhosted.org/hgvs/grammar.html>`_ for HGVS variant names
-* `Classes <http://pythonhosted.org/hgvs/modules.html>`_ that model HGVS
-  concepts such as `Interval
-  <http://pythonhosted.org/hgvs/modules.html#hgvs.location.Interval>`_,
-  intronic offsets (in `BaseOffsetPosition
-  <http://pythonhosted.org/hgvs/modules.html#hgvs.location.BaseOffsetPosition>`_),
-  frameshifts, uncertain positions, and types of variation (`hgvs.edit
-  <http://pythonhosted.org/hgvs/modules.html#module-hgvs.edit>`_)
-* Variant normalization rewrites variants in canoncial forms and
+* A formal grammar for HGVS variant names
+* Classes that model most variant types (SNVs, indels, dups,
+  inverstions, etc) and concepts (intronic offsets, uncertain
+  positions, intervals).
+* Variant normalizer that rewrites variants in canoncial forms and
   substitutes reference sequences if reference and transcript
   sequences differ.
 * Formatters that generate HGVS strings from internal representations
 * Tools to map variants between genome, transcript, and protein sequences
-  (`VariantMapper <http://pythonhosted.org/hgvs/modules.html#hgvs.variantmapper.VariantMapper>`_ and `Projector
-  <http://pythonhosted.org/hgvs/modules.html#hgvs.projector.Projector>`_)
-* Reliable handling of regions reference-transcript discrepancy (requires UTA_)
-* Tools to validate variants (coming soon)
+* Reliable handling of regions reference-transcript discrepancy
 * Pluggable data providers support alternative sources of transcript mapping
   data
 * Extensive automated tests, including those for all variant types and
@@ -68,7 +61,7 @@ An Example
 ----------
 
 See `Installation instructions
-<http://pythonhosted.org/hgvs/using_hgvs.html#installation>`_ if you
+<http://hgvs.readthedocs.org/en/latest/installation.html>`_ if you
 have installation troubles.
 
 ::
@@ -143,7 +136,7 @@ have installation troubles.
   SequenceVariant(ac=NM_001166478.1, type=c, posedit=35delT)
 
 
-There are `more examples in the documentation <http://pythonhosted.org/hgvs/examples.html>`_.
+There are `more examples in the documentation <http://hgvs.readthedocs.org/en/latest/examples.html>`_.
 
 ----
 
@@ -167,8 +160,8 @@ likely to be quickly incorporated if they:
   with respect to variable naming, etc.
 
 
-.. _changelog: http://pythonhosted.org/hgvs/changelog.html
-.. _documentation: http://pythonhosted.org/hgvs/
+.. _changelog: http://hgvs.readthedocs.org/en/latest/changelog/index.html
+.. _documentation: http://hgvs.readthedocs.org/en/latest/index.html
 .. _invitae: http://invitae.com/
 .. _mutnomen: http://www.hgvs.org/mutnomen/
 .. _source: https://bitbucket.org/biocommons/hgvs/

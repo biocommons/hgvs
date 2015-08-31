@@ -37,8 +37,8 @@ Some of the key targets are:
   :docs:
      Make the sphinx docs in doc/build/html/.
 
-  :upload, upload_docs:
-     Upload package to PyPI or docs to pythonhosted.org.
+  :upload:
+     Upload package to PyPI
 
 
 

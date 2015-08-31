@@ -57,10 +57,6 @@ upload_all: upload_pypi upload_docs;
 upload_%:
 	python setup.py bdist_egg bdist_wheel sdist upload -r $*
 
-#=> upload_docs: upload documentation to pythonhosted
-upload_docs: %:
-	python setup.py $* -r pypi
-
 
 ############################################################################
 #= TESTING
