@@ -14,7 +14,7 @@ This package provides a Python library to facilitate the use of genome,
 transcript, and protein variants that are represented using the Human
 Genome Variation Society (`mutnomen`_) recommendations.
 
-`Source`_ | `Documentation`_ | `Change Log <changelog>`_ | `Mailing List`_ | `openissues`_ | |pypi_badge| |rtd_badge| |build_status|
+`Source`_ | `Documentation`_ | `Change Log <changelog>`_ | `Mailing List`_ | `iss`_ | |pypi_badge| |rtd_badge| |build_status|
 
 Citation:
 
@@ -172,7 +172,7 @@ likely to be quickly incorporated if they:
 .. _source: https://bitbucket.org/biocommons/hgvs/
 .. _uta: http://bitbucket.org/biocommons/uta/
 .. _mailing list: https://groups.google.com/forum/#!forum/hgvs-discuss
-.. _openissues: https://bitbucket.org/biocommons/hgvs/issues?status=new&status=open
+.. _iss: https://bitbucket.org/biocommons/hgvs/issues?status=new&status=open
 
 
 .. |rtd_badge| image:: https://readthedocs.org/projects/hgvs/badge/?version=latest
@@ -192,4 +192,3 @@ likely to be quickly incorporated if they:
   :align: middle
 
 .. http://badge.fury.io/for/py/uta
-
