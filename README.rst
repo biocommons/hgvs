@@ -172,7 +172,7 @@ likely to be quickly incorporated if they:
 .. _source: https://bitbucket.org/biocommons/hgvs/
 .. _uta: http://bitbucket.org/biocommons/uta/
 .. _mailing list: https://groups.google.com/forum/#!forum/hgvs-discuss
-.. _open issues: https://bitbucket.org/biocommons/hgvs/issues?status=new&status=open
+.. _openissues: https://bitbucket.org/biocommons/hgvs/issues?status=new&status=open
 
 
 .. |rtd_badge| image:: https://readthedocs.org/projects/hgvs/badge/?version=latest
