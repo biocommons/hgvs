@@ -24,29 +24,41 @@ _logger = logging.getLogger(__name__)
 
 
 class VariantMapper(object):
-    """Maps HGVS variants to and from g., n., r., c., and p. representations.
-    All methods require and return objects of type :class:`hgvs.variant.SequenceVariant`.
+    """Maps SequenceVariant objects between g., n., r., c., and p. representations.
 
-    g --acgtatgcac--gtctagacgt--      --acgtatgcac--gtctagacgt--      --acgtatgcac--gtctagacgt--
-            \     \/     /                  \     \/     /                  \     \/     /      
-    c  --acgtATGCACGTCTAGacgt--     n  --acgtatgcacgtctagacgt--     r  --acguaugcacgucuagacgu-- 
-            |1           |               1                               1
-    p        MetHisValTer
-
-    g <-> c, n, r projections are similar in that c, n, and r variants
+    g⟷{c,n,r} projections are similar in that c, n, and r variants
     may use intronic coordinates. There are two essential differences
-    that distinguish the three intermediate sequences::
+    that distinguish the three types:
 
-    1) In n and r variants, position 1 is the sequence start; in c
-    variants, 1 is the transcription start site.
-    2) In n and c variants, sequences are DNA; in r. variants,
-    sequences are RNA.
+    * Sequence start: In n and r variants, position 1 is the sequence
+      start; in c variants, 1 is the transcription start site.
+    * Alphabet: In n and c variants, sequences are DNA; in
+      r. variants, sequences are RNA.
+    
+    This differences are summarized in this diagram::
 
-    Therefore, this this code uses g<->n as the core transformation
-    between genomic and c, n, and r variants: All c<->g and r<->g
-    transformations use n<->g after accounting for the above
-    differences. For example, c->g accounts for the transcription
-    start site offset, then calls n->g.
+      g ----acgtatgcac--gtctagacgt----      ----acgtatgcac--gtctagacgt----      ----acgtatgcac--gtctagacgt----
+            \         \/         /              \         \/         /              \         \/         /
+      c      acgtATGCACGTCTAGacgt         n      acgtatgcacgtctagacgt         r      acguaugcacgucuagacgu   
+                 1                               1                                   1
+      p          MetHisValTer
+    
+    The g excerpt and exon structures are identical. The g⟷n
+    transformation, which is the most basic, accounts for the offset
+    of the aligned sequences (shown with "1") and the exon structure.
+    The g⟷c transformation is akin to g⟷n transformation, but
+    requires an addition offset to account for the translation start
+    site (c.1).  The CDS in uppercase. The g⟷c transformation is
+    akin to g⟷n transformation with a change of alphabet.
+
+    Therefore, this this code uses g⟷n as the core transformation
+    between genomic and c, n, and r variants: All c⟷g and r⟷g
+    transformations use n⟷g after accounting for the above
+    differences. For example, c_to_g accounts for the transcription
+    start site offset, then calls n_to_g.
+
+    All methods require and return objects of type
+    :class:`hgvs.variant.SequenceVariant`.
 
     """
 
@@ -54,7 +66,7 @@ class VariantMapper(object):
         self.hdp = hdp
 
     # ############################################################################
-    # g <-> n
+    # g⟷n
     def g_to_n(self, var_g, tx_ac, alt_aln_method='splign'):
         """Given a parsed g. variant, return a n. variant on the specified
         transcript using the specified alignment method (default is
@@ -98,7 +110,7 @@ class VariantMapper(object):
         return var_g
 
     # ############################################################################
-    # g <-> c
+    # g⟷c
     def g_to_c(self, var_g, tx_ac, alt_aln_method='splign'):
         """Given a parsed g. variant, return a c. variant on the specified
         transcript using the specified alignment method (default is
@@ -146,7 +158,7 @@ class VariantMapper(object):
         return var_g
 
     # ############################################################################
-    # c <-> n
+    # c⟷n
     # TODO: Identify use case for this code
     def c_to_n(self, var_c):
         """Given a parsed c. variant, return a n. variant on the specified
@@ -193,7 +205,7 @@ class VariantMapper(object):
         return var_c
 
     # ############################################################################
-    # c -> p
+    # c ⟶ p
     # TODO: c_to_p needs refactoring
     def c_to_p(self, var_c, pro_ac=None):
         """
@@ -514,6 +526,7 @@ class EasyVariantMapper(VariantMapper):
             'g': {'seq': g_seq, 'span': g_span, 'var': g_var},
             'n': {'seq': n_seq, 'span': "{} ({})".format(n_span, c_span), 'var': "{} ({})".format(n_var, c_var)},
         }
+
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
