@@ -12,6 +12,7 @@ import recordtype
 from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
 import hgvs
 import hgvs.location
+import hgvs.normalizer
 import hgvs.posedit
 import hgvs.transcriptmapper
 import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
@@ -400,54 +401,61 @@ class EasyVariantMapper(VariantMapper):
     def __init__(self, hdp,
                  primary_assembly=hgvs.global_config.mapping.assembly,
                  alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
-                 replace_reference=hgvs.global_config.mapping.replace_reference):
+                 replace_reference=hgvs.global_config.mapping.replace_reference,
+                 normalize=hgvs.global_config.mapping.normalize,
+                 ):
         super(EasyVariantMapper, self).__init__(hdp=hdp)
         self.primary_assembly = primary_assembly
         self.alt_aln_method = alt_aln_method
         self.primary_assembly_accessions = set(primary_assembly_accessions[primary_assembly])
         self.replace_reference = replace_reference
+        self.normalize = normalize
+        self._norm = None
+        if self.normalize:
+            self._norm = hgvs.normalizer.Normalizer(hdp)
 
     def g_to_c(self, var_g, tx_ac):
         var_out = super(EasyVariantMapper, self).g_to_c(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
         if self.replace_reference:
             self._replace_reference(var_out)
-        return var_out
+        return var_out if self._norm is None else self._norm.normalize(var_out)
 
     def g_to_n(self, var_g, tx_ac):
         var_out = super(EasyVariantMapper, self).g_to_n(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
         if self.replace_reference:
             self._replace_reference(var_out)
-        return var_out
+        return var_out if self._norm is None else self._norm.normalize(var_out)
 
     def c_to_g(self, var_c):
         alt_ac = self._alt_ac_for_tx_ac(var_c.ac)
         var_out = super(EasyVariantMapper, self).c_to_g(var_c, alt_ac, alt_aln_method=self.alt_aln_method)
         if self.replace_reference:
             self._replace_reference(var_out)
-        return var_out
+        return var_out if self._norm is None else self._norm.normalize(var_out)
 
     def n_to_g(self, var_n):
         alt_ac = self._alt_ac_for_tx_ac(var_n.ac)
         var_out = super(EasyVariantMapper, self).n_to_g(var_n, alt_ac, alt_aln_method=self.alt_aln_method)
         if self.replace_reference:
             self._replace_reference(var_out)
-        return var_out
+        return var_out if self._norm is None else self._norm.normalize(var_out)
 
     def c_to_n(self, var_c):
         var_out = super(EasyVariantMapper, self).c_to_n(var_c)
         if self.replace_reference:
             self._replace_reference(var_out)
-        return var_out
+        return var_out if self._norm is None else self._norm.normalize(var_out)
 
     def n_to_c(self, var_n):
         var_out = super(EasyVariantMapper, self).n_to_c(var_n)
         if self.replace_reference:
             self._replace_reference(var_out)
-        return var_out
+        return var_out if self._norm is None else self._norm.normalize(var_out)
 
     def c_to_p(self, var_c):
         var_out = super(EasyVariantMapper, self).c_to_p(var_c)
-        return var_out
+        return var_out if self._norm is None else self._norm.normalize(var_out)
+
 
     def relevant_transcripts(self, var_g):
         """return list of transcripts accessions (strings) for given variant,

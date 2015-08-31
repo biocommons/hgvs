@@ -6,7 +6,7 @@ This package provides a Python library to facilitate the use of genome,
 transcript, and protein variants that are represented using the Human
 Genome Variation Society (`mutnomen`_) recommendations.
 
-| **Learn:**  | `Changelog`_
+| **Learn:** |rtd_badge| `Change Log <changelog>`_
 | **Use:** |pypi_badge|  |install_status|
 | **Interact:** `Mailing List`_ | `Report an Issue`_
 | **Develop:** `Source`_ (status: |build_status|)
@@ -30,6 +30,9 @@ Features
   <http://pythonhosted.org/hgvs/modules.html#hgvs.location.BaseOffsetPosition>`_),
   frameshifts, uncertain positions, and types of variation (`hgvs.edit
   <http://pythonhosted.org/hgvs/modules.html#module-hgvs.edit>`_)
+* Variant normalization rewrites variants in canoncial forms and
+  substitutes reference sequences if reference and transcript
+  sequences differ.
 * Formatters that generate HGVS strings from internal representations
 * Tools to map variants between genome, transcript, and protein sequences
   (`VariantMapper <http://pythonhosted.org/hgvs/modules.html#hgvs.variantmapper.VariantMapper>`_ and `Projector
@@ -117,6 +120,27 @@ have installation troubles.
   # CDS coordinates use BaseOffsetPosition to support intronic offsets
   >>> var_c.posedit.pos.start
   BaseOffsetPosition(base=1582, offset=0, datum=1, uncertain=False)
+
+  # variant normalization
+  # rewrite ins as dup (depends on sequence context)
+  >>> import hgvs.normalizer
+  >>> hn = hgvs.normalizer.Normalizer(hdp)
+  >>> hn.normalize(hp.parse_hgvs_variant('NM_001166478.1:c.35_36insT'))
+  SequenceVariant(ac=NM_001166478.1, type=c, posedit=35dupT)
+
+  # during mapping, variants are normalized (by default)
+  >>> c1 = hp.parse_hgvs_variant('NM_001166478.1:c.31del')
+  >>> c1
+  SequenceVariant(ac=NM_001166478.1, type=c, posedit=31del)
+  >>> c1n = hn.normalize(c1)
+  >>> c1n
+  SequenceVariant(ac=NM_001166478.1, type=c, posedit=35delT)
+  >>> g = evm.c_to_g(c1)
+  >>> g
+  SequenceVariant(ac=NC_000006.11, type=g, posedit=49917127delA)
+  >>> c2 = evm.g_to_c(g, c1.ac)
+  >>> c2
+  SequenceVariant(ac=NM_001166478.1, type=c, posedit=35delT)
 
 
 There are `more examples in the documentation <http://pythonhosted.org/hgvs/examples.html>`_.
