@@ -41,7 +41,7 @@ build_sphinx: develop
 # On Ubuntu 14.04 w/Python 2.7.8, upgrading setuptools (from 2.2 to
 # 7.0) is essential for sphinxcontrib-fulltoc 1.1.
 develop:
-	pip install --upgrade 'setuptools>=7.0'
+	pip install --upgrade setuptools
 	python setup.py $@
 
 bdist bdist_egg build build_sphinx install sdist: %:
