@@ -17,10 +17,12 @@ Changes since 0.3.7 (2015-06-23). See issues at milestone:0.4.0a1.
 *** No bug fixes in this release. There are `known bugs <https://bitbucket.org/biocommons/hgvs/issues?kind=bug&status=open&status=new>`_ and `other issues <https://bitbucket.org/biocommons/hgvs/issues?status=open&status=new>`_.
 
 ** New Features
-*** The dataprovider interface updated to 1.1 to support two new methods: fetch_seq() to retrieve arbitrary sequences by accession, and get_similar_transcripts() to expose UTA's tx_similarity view.
+*** #233: Added get_similar_transcripts() to data UTA provider to expose UTA's tx_similarity view.
 *** #168: EasyVariantMapper supports replacing the reference sequence during mapping and enabled by default.
 *** #227: Implement initial support for non-coding transcripts.
 *** #230: Allow full IUPAC for NA and AA, with tests. Previously, the grammar admitted only ACGTU. 
+*** #234, #241: Preferentially use transcript-protein accession associations from RefSeq when mapping c. to p. variants. Previously, when multiple protein accessions were associated with a single distinct sequence, the p. accession was arbitrary. 
+*** #236, #240: Added seqfetcher.SeqFetcher to fetch sequences from NCBI & Ensembl
 
 ** Other Changes
 *** #213: Clarify warning message when validating intronic variants.

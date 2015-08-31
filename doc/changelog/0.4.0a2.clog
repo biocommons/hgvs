@@ -6,11 +6,10 @@ Changes since 0.4.0a1 (2015-07-06). See issues at milestone:0.4.0a2.
 *** #248: don't raise validation exception when del sequence is empty [b6c07d329d36]
 *** fix minor bug in HGVSParserError/parsley.ParseError raise and testing [efa93fe29d15]
 ** New Features
-*** #44: Added variant normalization. Thanks to Meng Wang and Kevin Jacobs for contributions. (pull request #17)
+*** #44, #255: Added variant normalization and use during mapping. Thanks to Meng Wang and Kevin Jacobs for contributions. (pull request #17)
 ** Other Changes
 *** use autocommit to prevent transaction overhead and locks [65d69e41716e]
 *** HGVSInternalError now subclasses HGVSError (not Exception) [ff6cd4dc51dc]
 *** Added variant context method to evm (temporary location, but useful for debugging)
 *** #254: Support NADupN and complex (mosaic and chimeric) variants (pull request #18)
 *** #254: Support inversion and conversion variants
-
