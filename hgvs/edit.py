@@ -271,6 +271,10 @@ class Dup(Edit, recordtype.recordtype('Dup', [('ref', None), ('uncertain', False
         """
         self.uncertain = True
         return self
+    
+    @property
+    def ref_s(self):
+        return self.ref if (isinstance(self.ref, basestring) and self.ref and self.ref[0] in 'ACGTUN') else None
 
     @property
     def type(self):
