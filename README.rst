@@ -3,7 +3,7 @@
 =============================================================================
 
   +------------------------------------------------------------------+
-  | ☺ **2015-08-31**: 0.4.0rc1 was just released. See `Release Notes |
+  | ☺ **2015-08-31**: 0.4.0rc2 was just released. See `Release Notes |
   | <http://hgvs.readthedocs.org/en/latest/changelog/0.4.0.html>`_   |
   | for breaking changes and new features. Please report successes   |
   | and failures via the hgvs-discuss mailing list or by             |
