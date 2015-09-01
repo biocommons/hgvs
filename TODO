@@ -3,40 +3,30 @@
 Actionable issues are at https://bitbucket.org/biocommons/hgvs/issues.
 This file is intended for ideas that need fleshing out.
 
-* before release
-** ref, alt = '' or None?, document it!
-** validate with fetch_seq
-** evm normalize=True
-** normalize: separate fill, rewrite, and shuffle
-** convenience import: import hgvs -> parser, evm, VM, 
-
-** docs to rtd
-** release notes w/deprecations
-** implement better logging
-** relative imports
+* 0.4.x
 ** s/2014/2015/g
-** standardize var_x over x_var
-** sq-dq
 ** tests: expected value first
-
-** trial load GRCh38
-
-** docs:
-- differences between cgmnrp
-- changelog
+** sq-dq
+** docs: differences between cgmnrp
 
 ** 239: exon finder uses:
 - vince
 - normalization
 - intervalmapper
 
-** 0.4.0 deprecations / 0.5.0 obsolescence
-- primary_assembly -> assembly
-- consider var_x -> var
 
+* 0.5.0 aspirations / considerations
 
+** ref, alt = '' or None?, document it!
 
-* 0.5.0 aspirations
+** GRCh38 + LRG
+
+** primary_assembly -> assembly
+
+** relative imports
+
+** standardize variable naming; var_x, x_var, var
+
 ** complex variants (compound, phased, mosaic, chimeric)
 
 ** Transcript Mapper simplification
