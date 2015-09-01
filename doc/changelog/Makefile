@@ -1,6 +1,10 @@
 .PHONY: FORCE
 .DELETE_ON_ERROR:
 
+# N.B. this scripts requires tools that are not publicly available
+# yet. Eventually, clogger will show up in bitbucket/reece/clogger.
+# Sorry.
+PATH:=/home/reece/projects/reece/clogger/bin:${PATH}
 SHELL:=/bin/bash -o pipefail
 
 -include .tags.mk

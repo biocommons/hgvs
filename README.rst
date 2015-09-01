@@ -14,24 +14,20 @@ This package provides a Python library to facilitate the use of genome,
 transcript, and protein variants that are represented using the Human
 Genome Variation Society (`mutnomen`_) recommendations.
 
+..
+
 | `Source`_ | `Documentation`_ | `Change Log <changelog>`_ | `Issues <https://goo.gl/G63aFQ>`_ | `Mailing List`_ 
 | |pypi_badge| |rtd_badge| |build_status|
-
-Citation:
-
-| **A Python Package for Parsing, Validating, Mapping, and Formatting Sequence Variants Using HGVS Nomenclature.**
-| Hart RK, Rico R, Hare E, Garcia J, Westbrook J, Fusaro VA.
-| *Bioinformatics*. 2014 Sep 30. `PubMed <http://www.ncbi.nlm.nih.gov/pubmed/25273102>`_ | `Open Access PDF <http://bioinformatics.oxfordjournals.org/content/31/2/268.full.pdf>`_
 
 ----
 
 Features
 -------- 
 
-* A formal grammar for HGVS variant syntax
-* An easy-to-use object model for most variant types (SNVs, indels,
-  dups, inverstions, etc) and concepts (intronic offsets, uncertain
-  positions, intervals)
+* Parsing is based on formal grammar.
+* An easy-to-use object model that represents
+  most variant types (SNVs, indels, dups, inverstions, etc) and
+  concepts (intronic offsets, uncertain positions, intervals)
 * A variant normalizer that rewrites variants in canoncial forms and
   substitutes reference sequences (if reference and transcript
   sequences differ)
@@ -53,18 +49,11 @@ Important Notes
   issues you find.
 * **Use a pip package specification to ensure stay within minor
   releases for API stability.** For example, ``hgvs >=0.3,<0.4``.
-* **The default branch is development.** Pulling from default will get
-  you a *development* version.  Release versions are determined by
-  tags; updating to a specific version (*e.g.,* ``hg up -r 0.3.0``)
-  will get you exactly that version as on PyPI.  If you implement a
-  new feature, please create an issue first and work in a feature
-  branch named like '44-normalization'.
-
 
 ----
 
-An Example
-----------
+Some Examples
+-------------
 
 See `Installation instructions
 <http://hgvs.readthedocs.org/en/latest/installation.html>`_ if you
@@ -146,6 +135,15 @@ There are `more examples in the documentation <http://hgvs.readthedocs.org/en/la
 
 ----
 
+Citing hgvs (the package)
+-------------------------
+
+| **A Python Package for Parsing, Validating, Mapping, and Formatting Sequence Variants Using HGVS Nomenclature.**
+| Hart RK, Rico R, Hare E, Garcia J, Westbrook J, Fusaro VA.
+| *Bioinformatics*. 2014 Sep 30. `PubMed <http://www.ncbi.nlm.nih.gov/pubmed/25273102>`_ | `Open Access PDF <http://bioinformatics.oxfordjournals.org/content/31/2/268.full.pdf>`_
+
+----
+
 Contributing
 ------------
 
@@ -154,6 +152,12 @@ facilitates the reliable use of sequence variants.  Code and
 documentation contributions are appreciated!  Contributions are more
 likely to be quickly incorporated if they:
 
+* **The default branch is development.** Pulling from default will get
+  you a *development* version.  Release versions are determined by
+  tags; updating to a specific version (*e.g.,* ``hg up -r 0.3.0``)
+  will get you exactly that version as on PyPI.  If you implement a
+  new feature, please create an issue first and work in a feature
+  branch named like '44-normalization'.
 * are submitted against the default branch head (or close to
   it);
 * are made via pull requests;

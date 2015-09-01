@@ -39,11 +39,11 @@ Features of the hgvs Package
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 * **Convenient object representation**. Manipulate variants
-  conceptually rather than by modifying text strings. :doc:`Classes
-  <modules>` model HGVS concepts such as :class:`Interval
-  <hgvs.location.Interval>`, intronic offsets (in
-  :class:`BaseOffsetPosition <hgvs.location.BaseOffsetPosition>`),
-  uncertainty, and types of variation (:mod:`hgvs.edit`).
+  conceptually rather than by modifying text strings. Classes model
+  HGVS concepts such as :class:`Interval <hgvs.location.Interval>`,
+  intronic offsets (in :class:`BaseOffsetPosition
+  <hgvs.location.BaseOffsetPosition>`), uncertainty, and types of
+  variation (:mod:`hgvs.edit`).
 * **A grammar-based parser**. `hgvs` uses :doc:`a formal grammar
   <hgvs_railroad>` to parse HGVS variants rather than string
   partitioning or regular expression pattern matching.  This makes

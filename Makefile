@@ -31,7 +31,11 @@ setup: develop
 
 #=> docs -- make sphinx docs
 .PHONY: docs
-docs: setup build_sphinx
+docs: setup changelog build_sphinx
+
+changelog:
+	make -C doc/changelog 0.4.rst
+
 
 #=> build_sphinx
 # sphinx docs needs to be able to import packages
