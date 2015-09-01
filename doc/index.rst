@@ -23,6 +23,7 @@ Contents
    examples
 
    reference
+   privacy
 
    development
 
