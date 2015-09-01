@@ -92,3 +92,5 @@ gcn context
 ** support py3
 
 ** BUG: grammar: ins must require interval
+
+** variant -> sequencevariant
