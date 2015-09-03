@@ -116,24 +116,28 @@ to each other.
 
 
 
-External Data
-@@@@@@@@@@@@@
+External Data Sources
+@@@@@@@@@@@@@@@@@@@@@
 
 Variant mapping and validation requires access to external data,
-specifically exon structures, transcript alignments, and protein
-accessions.  In order to isolate the hgvs package from the myriad
+specifically exon structures, transcript alignments, accessions, and
+sequences.  In order to isolate the hgvs package from the myriad
 choices and tradeoffs, these data are provided through an
 implementation of the (abstract) Data Provider Interface
-(:class:`hgvs.dataproviders.interface`).  A concrete implementation of
-this interface uses `UTA <https://bitbucket.org/biocommons/uta>`_, a
-public archive of transcripts, transcript sequences, and
-transcript-reference sequence alignments.  Invitae provides a public
-UTA instance at ``uta.invitae.com:5432`` (PostgreSQL).  Alternatively,
-users may implement their own providers that conform to the data
-providers interface.
+(:class:`hgvs.dataproviders.interface`).  Currently, the only concrete
+implementation of the data provider interface uses `UTA
+<https://bitbucket.org/biocommons/uta>`_, an archive of transcripts,
+transcript sequences, and transcript-reference sequence alignments.
 
-HGVS uses the public UTA instance by default, so most users won't need
-to worry about this aspect of the hgvs package.
+Invitae provides a public UTA instance at ``uta.biocommons.org:5432``
+(PostgreSQL).  `hgvs` uses this public UTA instance by default, so
+most users won't need to worry about this aspect of the hgvs package.
+However, a docker image of UTA is also available; see
+:ref:`installation` for details.
+
+Alternatively, users may implement their own providers that conform to
+the data providers interface. See :mod:`hgvs.dataproviders.uta` for an
+example.
 
 
 .. |eg| replace:: *e.g.,*
