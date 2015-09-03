@@ -111,3 +111,25 @@ Test your setup like this::
   >>> import hgvs.parser
   >>> hgvs.parser.Parser().parse_hgvs_variant("NM_01234.5:c.12+3A>T")
   SequenceVariant(ac=NM_01234.5, type=c, posedit=12+3A>T)
+
+
+
+Local UTA Docker Instance
+@@@@@@@@@@@@@@@@@@@@@@@@@
+
+The public UTA is available without restrictions. However, some users
+may wish to install UTA locally for performance, isolation, or even
+:ref:`privacy`. 
+
+If you wish to install UTA locally, see the instructions on the
+available are described in the `UTA bitbucket page
+<https://bitbucket.org/biocommons/uta/>`_.
+
+Once the docker image is installed, you should set UTA_DB_URL to
+select it.  A sample interaction::
+
+  $ docker run --name uta_20150827 -p 15032:5432 biocommons/uta:uta_20150827
+  $ export UTA_DB_URL=postgresql://anonymous@localhost:15032/uta/uta_20150827
+  $ python -c 'import hgvs.dataproviders.uta; print(hgvs.dataproviders.uta.connect().data_version());'
+  uta_20150827
+
