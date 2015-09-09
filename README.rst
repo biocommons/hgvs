@@ -3,7 +3,7 @@
 =============================================================================
 
   +------------------------------------------------------------------+
-  | ☺ **2015-08-31**: 0.4.0rc2 was just released. See `Release Notes |
+  | ☺ **2015-09-09**: 0.4.0 is out!. See `Release Notes              |
   | <http://hgvs.readthedocs.org/en/latest/changelog/0.4.0.html>`_   |
   | for breaking changes and new features. Please report successes   |
   | and failures via the hgvs-discuss mailing list or by             |
@@ -16,7 +16,8 @@ Genome Variation Society (`mutnomen`_) recommendations.
 
 ..
 
-| `Source`_ | `Documentation`_ | `Change Log <changelog>`_ | `Issues <https://goo.gl/G63aFQ>`_ | `Mailing List`_ 
+| `Source`_ | `Documentation`_ | `Issues <https://goo.gl/G63aFQ>`_ | `Mailing List`_
+| `Change Log <changelog>`_ | `Upcoming Changes <upcoming_changes>`_
 | |pypi_badge| |rtd_badge| |build_status|
 
 ----
@@ -109,7 +110,10 @@ have installation troubles.
   >>> var_c.posedit.pos.start
   BaseOffsetPosition(base=1582, offset=0, datum=1, uncertain=False)
 
-  # variant normalization
+
+
+  # VARIANT NORMALIZATION
+
   # rewrite ins as dup (depends on sequence context)
   >>> import hgvs.normalizer
   >>> hn = hgvs.normalizer.Normalizer(hdp)
@@ -171,6 +175,7 @@ likely to be quickly incorporated if they:
 
 
 .. _changelog: http://hgvs.readthedocs.org/en/latest/changelog/index.html
+.. _upcoming_changes: http://hgvs.readthedocs.org/en/latest/changelog/upcoming.html
 .. _documentation: http://hgvs.readthedocs.org/en/latest/index.html
 .. _invitae: http://invitae.com/
 .. _mutnomen: http://www.hgvs.org/mutnomen/

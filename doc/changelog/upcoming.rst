@@ -10,9 +10,12 @@ Special Attention
 $$$$$$$$$$$$$$$$$
 
 * connection parameters
-* API changes likely
+* API changes likely 
+  
 
 Anticipated Features
 $$$$$$$$$$$$$$$$$$$$
 
 * SeqDB sequence fetching
+* REST Interface
+* Complex variants
