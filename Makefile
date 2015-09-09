@@ -113,6 +113,18 @@ ${VE_DIR}: ${VE_PY}
 	/bin/mv "$@.err" "$@"
 
 
+#=> hgvs.svg -- import graph; requires snakefood
+hgvs.sfood:
+	sfood hgvs >"$@.tmp"
+	/bin/mv "$@.tmp" "$@"
+hgvs.dot: hgvs.sfood
+	sfood-graph -p <$< >"$@.tmp"
+	/bin/mv "$@.tmp" "$@"
+hgvs.svg: hgvs.dot
+	dot -Tsvg <$< >"$@.tmp"
+	/bin/mv "$@.tmp" "$@"
+
+
 ############################################################################
 #= CLEANUP
 .PHONY: clean cleaner cleanest pristine
@@ -129,7 +141,7 @@ cleaner: clean
 #=> cleanest: above, and remove the virtualenv, .orig, and .bak files
 cleanest: cleaner
 	find . \( -name \*.orig -o -name \*.bak -o -name \*.rej \) -print0 | xargs -0r /bin/rm -v
-	/bin/rm -fr distribute-* *.egg *.egg-info *.tar.gz nosetests.xml cover __pycache__
+	/bin/rm -fr distribute-* .eggs *.egg *.egg-info *.tar.gz nosetests.xml cover __pycache__
 	make -C examples $@
 #=> pristine: above, and delete anything unknown to mercurial
 pristine: cleanest
