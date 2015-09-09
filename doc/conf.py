@@ -23,8 +23,8 @@ project = u'HGVS'
 authors = project + ' Contributors'
 copyright = u'2015, ' + authors
 
-extlinks={
-    'issue': ('https://bitbucket.org/biocommons/hgvs/issue/%s', project + ' issue '),
+extlinks = {
+    'issue': ('https://bitbucket.org/biocommons/hgvs/issue/%s', 'issue '),
     }
 
 man_pages = [
@@ -40,6 +40,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.coverage',
+    'sphinx.ext.extlinks',
     'sphinx.ext.intersphinx',
     'sphinx.ext.pngmath',
     'sphinx.ext.todo',
