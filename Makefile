@@ -25,10 +25,6 @@ config:
 ############################################################################
 #= SETUP, INSTALLATION, PACKAGING
 
-#=> setup
-setup: develop
-#	pip install -r requirements.txt
-
 #=> docs -- make sphinx docs
 .PHONY: docs
 docs: setup changelog build_sphinx
@@ -41,13 +37,13 @@ changelog:
 # sphinx docs needs to be able to import packages
 build_sphinx: develop
 
-#=> develop, bdist, bdist_egg, sdist, upload_docs, etc
-# On Ubuntu 14.04 w/Python 2.7.8, upgrading setuptools (from 2.2 to
-# 7.0) is essential for sphinxcontrib-fulltoc 1.1.
-develop:
-	pip install --upgrade setuptools
-	python setup.py $@
+#=> setup, develop -- install requirements for testing or development
+setup: develop
+develop: %:
+	[ -f requirements.txt ] && pip install --upgrade -r requirements.txt || true
+	python setup.py $*
 
+#=> bdist, bdist_egg, sdist, upload_docs, etc
 bdist bdist_egg build build_sphinx install sdist: %:
 	python setup.py $@
 
@@ -137,8 +133,7 @@ cleanest: cleaner
 	make -C examples $@
 #=> pristine: above, and delete anything unknown to mercurial
 pristine: cleanest
-	hg st -un0 | xargs -0r echo /bin/rm -fv
-
+	if [ -d .hg ]; then hg st -inu0 | xargs -0r /bin/rm -fv; fi
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
