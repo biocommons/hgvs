@@ -1,5 +1,5 @@
 clog format: 1; -*-outline-*-
-* 0.4.0 (2015-09-01)
+* 0.4.0 (2015-09-09)
 Changes since 0.3.7 (2015-06-23). See issues at milestone:0.4.0.
 
 ** Special Attention
@@ -30,6 +30,7 @@ Changes since 0.3.7 (2015-06-23). See issues at milestone:0.4.0.
 *** #251: Parens now optional around p. edits; default is enabled per HGVS spec (hgvs.global_config.mapping.inferred_p_is_uncertain)
 *** #255: variants normalized by EasyVariantMapper by default [1b85d4deabc3]
 *** #261: Replace reference default from config (hgvs.global_config.mapping.replace_reference)
+*** UTA is now available as a docker image for local installation. See :ref:`uta_docker`.
 
 ** Other Changes
 *** #213: Clarify warning message when validating intronic variants.

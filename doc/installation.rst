@@ -113,6 +113,7 @@ Test your setup like this::
   SequenceVariant(ac=NM_01234.5, type=c, posedit=12+3A>T)
 
 
+.. _uta_docker:
 
 Local UTA Docker Instance
 @@@@@@@@@@@@@@@@@@@@@@@@@

@@ -1,5 +1,5 @@
 
-0.4.0 (2015-07-06)
+0.4.0 (2015-09-09)
 ##################
 
 Changes since 0.3.7 (2015-06-23). See issues at `milestone 0.4.0 <https://bitbucket.org/biocommons/hgvs/issues?milestone=0.4.0>`_.
@@ -16,7 +16,7 @@ $$$$$$$$$$$$$$$$$
 * `#244 <https://bitbucket.org/biocommons/hgvs/issues/244/>`_: Removed cache_transcripts argument from VariantMapper. This argument was deprecated in 0.3.0 and is now obsolete. Dataproviders are now expected to cache data.
 * `#246 <https://bitbucket.org/biocommons/hgvs/issues/246/>`_: Remove hgvsX_to_hgvsY methods. These methods were deprecated in 0.3.0 and are now obsolete.
 * `#247 <https://bitbucket.org/biocommons/hgvs/issues/247/>`_: Dup and Repeat "seq" instance variable renamed to "ref" for consistency.
-* EasyVariantMapper, Normalizer, and Validator now fetch sequence data at runtime, which may raise performance and privacy concerns. Users may wish to read `Privacy Issues` <http://hgvs.readthedocs.org/en/latest/privacy.html>`_ in the documentation.
+* EasyVariantMapper, Normalizer, and Validator now fetch sequence data at runtime, which may raise performance and privacy concerns. Users may wish to read `Privacy Issues <http://hgvs.readthedocs.org/en/latest/privacy.html>`_ in the documentation.
 
 
 
@@ -49,6 +49,7 @@ $$$$$$$$$$$$
 * `#251 <https://bitbucket.org/biocommons/hgvs/issues/251/>`_: Parens now optional around p. edits; default is enabled per HGVS spec (hgvs.global_config.mapping.inferred_p_is_uncertain)
 * `#255 <https://bitbucket.org/biocommons/hgvs/issues/255/>`_: variants normalized by EasyVariantMapper by default [`1b85d4deabc3 <https://bitbucket.org/biocommons/hgvs/commits/1b85d4deabc3>`_]
 * `#261 <https://bitbucket.org/biocommons/hgvs/issues/261/>`_: Replace reference default from config (hgvs.global_config.mapping.replace_reference)
+* UTA is now available as a docker image for local installation. See :ref:`uta_docker`.
 
 
 
