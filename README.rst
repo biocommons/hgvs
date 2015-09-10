@@ -17,7 +17,7 @@ Genome Variation Society (`mutnomen`_) recommendations.
 ..
 
 | `Source`_ | `Documentation`_ | `Issues <https://goo.gl/G63aFQ>`_ | `Mailing List`_
-| `Change Log <changelog>`_ | `Upcoming Changes <upcoming_changes>`_
+| `Change Log <http://hgvs.readthedocs.org/en/latest/changelog/index.html>`_ | `Upcoming Changes <http://hgvs.readthedocs.org/en/latest/changelog/upcoming.html>`_
 | |pypi_badge| |rtd_badge| |build_status|
 
 ----
@@ -174,8 +174,6 @@ likely to be quickly incorporated if they:
   with respect to variable naming, etc.
 
 
-.. _changelog: http://hgvs.readthedocs.org/en/latest/changelog/index.html
-.. _upcoming_changes: http://hgvs.readthedocs.org/en/latest/changelog/upcoming.html
 .. _documentation: http://hgvs.readthedocs.org/en/latest/index.html
 .. _invitae: http://invitae.com/
 .. _mutnomen: http://www.hgvs.org/mutnomen/
