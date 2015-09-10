@@ -375,13 +375,11 @@ class EasyVariantMapper(VariantMapper):
       accessions are candidates mapping from genomic to trancript
       coordinates (i.e., g_to_c(...) and g_to_n(...)).
 
-    [tests occur in module doc (rather than in method doc) to use a
-    single db connection]
-
     IMPORTANT: Callers should be prepared to catch HGVSError
     exceptions. These will be thrown whenever a transcript maps
     ambiguously to a chromosome, such as for pseudoautosomal region
     transcripts.
+
     """
 
     def __init__(self, hdp,
@@ -390,6 +388,14 @@ class EasyVariantMapper(VariantMapper):
                  replace_reference=hgvs.global_config.mapping.replace_reference,
                  normalize=hgvs.global_config.mapping.normalize,
                  ):
+        """
+        :param str primary_assembly: assembly name ('GRCh37')
+        :param str alt_aln_method: genome-transcript alignment method ('splign', 'blat', 'genewise')
+        :param bool replace_reference: replace reference (entails additional network access)
+        :param bool normalize: normalize variants
+        :raises HGVSError subclasses: for a variety of mapping and data lookup failures
+        """
+
         super(EasyVariantMapper, self).__init__(hdp=hdp)
         self.primary_assembly = primary_assembly
         self.alt_aln_method = alt_aln_method
@@ -404,43 +410,43 @@ class EasyVariantMapper(VariantMapper):
         var_out = super(EasyVariantMapper, self).g_to_c(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
         if self.replace_reference:
             self._replace_reference(var_out)
-        return var_out if self._norm is None else self._norm.normalize(var_out)
+        return self._maybe_normalize(var_out)
 
     def g_to_n(self, var_g, tx_ac):
         var_out = super(EasyVariantMapper, self).g_to_n(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
         if self.replace_reference:
             self._replace_reference(var_out)
-        return var_out if self._norm is None else self._norm.normalize(var_out)
+        return self._maybe_normalize(var_out)
 
     def c_to_g(self, var_c):
         alt_ac = self._alt_ac_for_tx_ac(var_c.ac)
         var_out = super(EasyVariantMapper, self).c_to_g(var_c, alt_ac, alt_aln_method=self.alt_aln_method)
         if self.replace_reference:
             self._replace_reference(var_out)
-        return var_out if self._norm is None else self._norm.normalize(var_out)
+        return self._maybe_normalize(var_out)
 
     def n_to_g(self, var_n):
         alt_ac = self._alt_ac_for_tx_ac(var_n.ac)
         var_out = super(EasyVariantMapper, self).n_to_g(var_n, alt_ac, alt_aln_method=self.alt_aln_method)
         if self.replace_reference:
             self._replace_reference(var_out)
-        return var_out if self._norm is None else self._norm.normalize(var_out)
+        return self._maybe_normalize(var_out)
 
     def c_to_n(self, var_c):
         var_out = super(EasyVariantMapper, self).c_to_n(var_c)
         if self.replace_reference:
             self._replace_reference(var_out)
-        return var_out if self._norm is None else self._norm.normalize(var_out)
+        return self._maybe_normalize(var_out)
 
     def n_to_c(self, var_n):
         var_out = super(EasyVariantMapper, self).n_to_c(var_n)
         if self.replace_reference:
             self._replace_reference(var_out)
-        return var_out if self._norm is None else self._norm.normalize(var_out)
+        return self._maybe_normalize(var_out)
 
     def c_to_p(self, var_c):
         var_out = super(EasyVariantMapper, self).c_to_p(var_c)
-        return var_out if self._norm is None else self._norm.normalize(var_out)
+        return self._maybe_normalize(var_out)
 
 
     def relevant_transcripts(self, var_g):
@@ -471,55 +477,19 @@ class EasyVariantMapper(VariantMapper):
                 am=self.alt_aln_method))
         return alt_acs[0]    # exactly one remains
 
-    def _get_context(self, var, margin=10):
-        """UNSUPPORTED. DO NOT USE IN PRODUCTION.
 
-        Given a variant, return a dictionary of sequence contexts.
-        WARNING: sequence context will be wrong if it overlaps an
-        intron/exon boundary
-
+    def _maybe_normalize(self, var):
+        """normalize variant if requested, and ignore HGVSUnsupportedOperationError
+        This is better than checking whether the variant is intronic because
+        future UTAs will support LRG, which will enable checking intronic variants.
         """
-
-        def _get_context(v):
-            bounds = (v.posedit.pos.start.base - margin, v.posedit.pos.end.base + margin)
-            return {
-                'span': "{}.{}_{}".format(v.type, *bounds),
-                'seq': self.hdp.fetch_seq(v.ac, bounds[0] - 1, bounds[1]),
-                'var': v
-            }
-
-        assert var.type in 'gcn'
-
-        if var.type == 'g':
-            g_var = var
-            n_var = self.g_to_n(g_var)
-            c_var = self.n_to_c(n_var)
-        elif var.type == 'c':
-            c_var = var
-            n_var = self.c_to_n(c_var)
-            g_var = self.n_to_g(n_var)
-        elif var.type == 'n':
-            n_var = var
-            c_var = self.n_to_c(n_var)
-            g_var = self.n_to_g(n_var)
-
-        assert n_var.posedit.pos.start.offset == n_var.posedit.pos.end.offset == 0, "intronic context not supported"
-
-        c_bounds = (c_var.posedit.pos.start.base - margin, c_var.posedit.pos.end.base + margin)
-        g_bounds = (g_var.posedit.pos.start.base - margin, g_var.posedit.pos.end.base + margin)
-        n_bounds = (n_var.posedit.pos.start.base - margin, n_var.posedit.pos.end.base + margin)
-
-        c_span = "{}.{}_{}".format('c', *c_bounds)
-        g_span = "{}.{}_{}".format('g', *g_bounds)
-        n_span = "{}.{}_{}".format('n', *n_bounds)
-
-        g_seq = self.hdp.fetch_seq(g_var.ac, g_bounds[0] - 1, g_bounds[1])
-        n_seq = self.hdp.fetch_seq(n_var.ac, n_bounds[0] - 1, n_bounds[1])
-
-        return {
-            'g': {'seq': g_seq, 'span': g_span, 'var': g_var},
-            'n': {'seq': n_seq, 'span': "{} ({})".format(n_span, c_span), 'var': "{} ({})".format(n_var, c_var)},
-        }
+        if self._norm is not None:
+            try:
+                return self._norm.normalize(var)
+            except HGVSUnsupportedOperationError as e:
+                _logger.warn(str(e) + "; returning unnormalized variant")
+                # fall through to return unnormalized variant
+        return var
 
 
 ## <LICENSE>
