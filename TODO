@@ -1,0 +1,66 @@
+-*-outline-*-
+
+Actionable issues are at https://bitbucket.org/biocommons/hgvs/issues.
+This file is intended for ideas that need fleshing out.
+
+
+* Background changes
+** s/2014/2015/g
+** tests: expected value first
+** sq-dq, yapf
+** docs: differences between cgmnrp
+** standardize internal variable naming; var_x, x_var, var
+** relative imports
+** consolidate dev instructions, link from README
+
+* Backward API changes / renamings
+** variant -> sequencevariant
+** primary_assembly -> assembly
+** ref, alt = '' or None?, document it!
+** Merge VariantMapper and EasyVariantMapper
+** 100% code coverage
+
+* New features
+** support py3
+** complex variants (compound, phased, mosaic, chimeric)
+** 166-warnings
+** 239: exon finder uses:
+** fill/strip/replace/validate ref config option
+** parse and add gene name
+
+* Architecture
+** Separate code that fetches data from code that uses it.
+E.g., TranscriptMapper fetches data and performs the mappings.
+Consider initializing with fetch *results* instead.
+** Make AA positions more like NA
+** Rethink variant abstractions
+** Simplify Transcript Mapper / CIGAR Mapper
+** Intervals should probably be of one of two types: simple and complex.
+All mapping functions should accept and return one of those types.
+** Use sequence assertions exclusively internally
+** Performance profiling
+
+
+
+* Other ideas
+
+** VariantTool(hdp, assy, aln_method)
+wraps most common functionality
+validate
+var_x_to_y (x_to_y)
+var_to_y (to_y)
+replace_reference
+normalize -> shuffle, rewrite, replace ref
+lift_to
+pos_x_to_y
+describe_region(cvar) -> e.g., {'start': 'exon 5', 'end': "3' UTR", 'span': 'exon 5..3' UTR'}
+extractor(ac, interval, alt) -> var
+as_vcf_ref_alt(var) -> ac, start, end, ref, alt
+variant_equality
+gcn context
+
+** 3 tiers: sequence assertion, HGVS ref alt, HGVS logical (dup, repeat, inv)
+
+** Use pyinter for intervals
+
+** grammar: ins must require interval
