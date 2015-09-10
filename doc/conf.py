@@ -35,6 +35,7 @@ man_pages = [
 ## Boilerplate
 
 autodoc_default_flags = ['members', 'undoc-members', 'show-inheritance'] #, 'inherited-members']
+autoclass_content = 'both'
 exclude_patterns = ['build','static','templates','themes']
 extensions = [
     'sphinx.ext.autodoc',

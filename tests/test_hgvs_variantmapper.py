@@ -137,12 +137,12 @@ class Test_RefReplacement(unittest.TestCase):
             return rec
 
         cls.hdp = hgvs.dataproviders.uta.connect()
-        cls.evm = hgvs.variantmapper.EasyVariantMapper(cls.hdp, primary_assembly='GRCh37', alt_aln_method='splign')
+        cls.evm = hgvs.variantmapper.EasyVariantMapper(cls.hdp, replace_reference=True, primary_assembly='GRCh37', alt_aln_method='splign')
         cls.hp = hgvs.parser.Parser()
         cls.tests = [_parse_rec(rec) for rec in cls.test_cases]
 
     def test_replace_reference_sequence(self):
-        """Replacing reference sequence in parsed variants"""
+        """EasyVariantMapper: Replace invalid reference sequence"""
 
         for rec in self.tests:
             for x in 'cgn':
@@ -158,35 +158,45 @@ class Test_RefReplacement(unittest.TestCase):
 class Test_EasyVariantMapper(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect()
-        cls.evm = hgvs.variantmapper.EasyVariantMapper(cls.hdp, primary_assembly='GRCh37', alt_aln_method='splign')
-        cls.hgvs = {
-            'g': 'NC_000007.13:g.36561662C>T',
-            'c': 'NM_001637.3:c.1582G>A',
-            'n': 'NM_001637.3:n.1983G>A',    # treat as non-coding, relative to tx start
-            'p': 'NP_001628.1:p.(Gly528Arg)'
-        }
-        hp = hgvs.parser.Parser()
-        cls.var = {k: hp.parse_hgvs_variant(v) for k, v in cls.hgvs.iteritems()}
+        hdp = hgvs.dataproviders.uta.connect()
+        cls.hp = hgvs.parser.Parser()
+        cls.evm = hgvs.variantmapper.EasyVariantMapper(hdp, primary_assembly='GRCh37', alt_aln_method='splign')
+    
+    def _test_mapping(self, hgvs_set):
+        """given list of variant strings, test all valid combinations of
+        g<->n<->c<->p mappings
 
-    def test_c_to_g(self):
-        self.assertEqual(self.hgvs['g'], str(self.evm.c_to_g(self.var['c'])))
+        """
+        parsed_variants = [(hv,self.hp.parse_hgvs_variant(hv)) for hv in hgvs_set]
+        hgvs = {v.type: hv for hv,v in parsed_variants}
+        pvs  = {v.type:  v for hv,v in parsed_variants}
+    
+        if 'g' in pvs and 'c' in pvs:
+            self.assertEqual(hgvs['g'], str(self.evm.c_to_g(pvs['c'])))
+            self.assertEqual(hgvs['c'], str(self.evm.g_to_c(pvs['g'], pvs['c'].ac)))
+        if 'g' in pvs and 'n' in pvs:
+            self.assertEqual(hgvs['g'], str(self.evm.n_to_g(pvs['n'])))
+            self.assertEqual(hgvs['n'], str(self.evm.g_to_n(pvs['g'], pvs['n'].ac)))
+        if 'c' in pvs and 'n' in pvs:
+            self.assertEqual(hgvs['n'], str(self.evm.c_to_n(pvs['c'])))
+            self.assertEqual(hgvs['c'], str(self.evm.n_to_c(pvs['n'])))
+        if 'c' in pvs and 'p' in pvs:
+            self.assertEqual(hgvs['p'], str(self.evm.c_to_p(pvs['c'])))
 
-    def test_c_to_n(self):
-        self.assertEqual(self.hgvs['n'], str(self.evm.c_to_n(self.var['c'])))
+    def test_SNV(self):
+        """EasyVariantMapper: smoketest with SNVs"""
+        hgvs_set = ['NC_000007.13:g.36561662C>T', 'NM_001637.3:c.1582G>A', 'NM_001637.3:n.1983G>A', 'NP_001628.1:p.(Gly528Arg)']
+        self._test_mapping(hgvs_set)
 
-    def test_g_to_c(self):
-        self.assertEqual(self.hgvs['c'], str(self.evm.g_to_c(self.var['g'], self.var['c'].ac)))
-
-    def test_g_to_n(self):
-        self.assertEqual(self.hgvs['n'], str(self.evm.g_to_n(self.var['g'], self.var['n'].ac)))
-
-    def test_c_to_p(self):
-        self.assertEqual(self.hgvs['p'], str(self.evm.c_to_p(self.var['c'])))
+    def test_intronic(self):
+        """EasyVariantMapper: smoketest with intronic SNVs"""
+        hgvs_set = ['NC_000010.10:g.89711873A>C', 'NM_000314.4:c.493-2A>C', 'NM_000314.4:n.1524-2A>C', 'NP_000305.3:p.?']
+        self._test_mapping(hgvs_set)
 
 
 if __name__ == '__main__':
     unittest.main()
+
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
