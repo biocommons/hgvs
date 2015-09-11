@@ -24,14 +24,12 @@ def full_house(evm, var, tx_ac=None):
     if var.type == 'g':
         var_g = var
         if tx_ac is None:
-            opts = [r for r in evm.hdp.get_tx_mapping_options(v.ac)
-                    if r['alt_ac'].startswith("NC_0000") and r['alt_aln_method']==evm.alt_aln_method]
-            key = (var.ac, evm.primary_assembly, evm.alt_aln_method)
-            if len(opts) == 0:
-                raise RuntimeError("no mapping options for {key}".format(key=key))
-            if len(opts) > 1:
-                raise RuntimeError("{n} mapping options for {key}".format(n=len(opts), key=key))
-            tx_ac = opts[0].tx_ac
+            rtx = evm.relevant_transcripts(var)
+            if len(rtx) == 0:
+                raise RuntimeError("no relevant transcripts for {var.ac}".format(var=var))
+            if len(rtx) > 1:
+                raise RuntimeError("{n} relevant transcripts for {var.ac}; you need to pick one".format(n=len(rtx),var=var))
+            tx_ac = rtx[0]
         var_n = evm.g_to_n(var_g, tx_ac)
         var_c = evm.n_to_c(var_n)
     elif var.type == 'n':
@@ -57,8 +55,8 @@ def variant_context(evm, var, margin=20):
         ])
 
 
-def variant_context_w_alignment(evm, var, margin=20):
-    fh = full_house(evm, var)
+def variant_context_w_alignment(evm, var, margin=20, tx_ac=None):
+    fh = full_house(evm, var, tx_ac=tx_ac)
     tm = evm._fetch_TranscriptMapper(fh['n'].ac, fh['g'].ac, evm.alt_aln_method)
     strand = tm.strand
     span_g = _ival_to_span(fh['g'].posedit.pos)
@@ -83,14 +81,17 @@ def variant_context_w_alignment(evm, var, margin=20):
     aln_str = _reformat_aln_str(cigar_alignment(a.ref, a.query, a.cigar, hide_match=True)[1])
     s_dir = '>' if strand == 1 else '<'
 
-    return '\n'.join([
-        pointer_line(var=fh['g'], span=span_g),
-        seq_line_fmt(var=fh['g'], span=span_g, content=aseq_gt, dir='>'),
-        seq_line_fmt(var=fh['g'], span=span_g, content=aseq_gb, dir='<'),
-        _line_fmt.format(pre='', content=aln_str, post=a.cigar.to_string(), comment=''),
-        seq_line_fmt(var=fh['n'], span=span_n, content=aseq_n,  dir=s_dir),
-        seq_line_fmt(var=fh['c'], span=span_c, content='',      dir=s_dir),
-        ])
+    lines = [
+        [1, 0, seq_line_fmt(var=fh['c'], span=span_c, content='',      dir=s_dir),              ],
+        [2, 0, seq_line_fmt(var=fh['n'], span=span_n, content=aseq_n,  dir=s_dir),              ],
+        [3, 0, _line_fmt.format(pre='', content=aln_str, post=a.cigar.to_string(), comment=''), ],
+        [4, 1, seq_line_fmt(var=fh['g'], span=span_g, content=aseq_gt, dir='>'),                ],
+        [4, 2, seq_line_fmt(var=fh['g'], span=span_g, content=aseq_gb, dir='<'),                ],
+        [5, 0, pointer_line(var=fh['g'], span=span_g),                                          ],
+        ]
+    if strand == -1:
+        lines.sort(key = lambda e: (-e[0], e[1]))
+    return '\n'.join(r[2] for r in lines)
 
 
 def _ival_to_span(ival):
@@ -101,7 +102,7 @@ def _reformat_aln_str(aln_str):
     return re.sub('[ACGT]', ' ', aln_str.replace('.', '|'))
 
 # pre=[ac c s] d content d post=[end] comment
-_line_fmt = "{pre:>25s} {content:50s} {post} {comment}"
+_line_fmt = "{pre:>25s} {content:100s} {post} {comment}"
 _pre_fmt = "{ac:12s} {type:1s} {s:8d} {dir:1s}"
 _post_fmt = "{dir:1s} {e:8d}"
 
@@ -118,6 +119,6 @@ def pointer_line(var, span):
     if var.posedit.edit.type == 'ins':
         p = ' '*o + '><'
     else:
-        p = ' '*o + 'v'*l
+        p = ' '*o + '*'*l
     return _line_fmt.format(pre='', content=p, post='', comment=str(var))
 
