@@ -11,7 +11,7 @@ import sys
 from hgvs.dataproviders.uta import connect
 from hgvs.parser import Parser
 from hgvs.variantmapper import EasyVariantMapper
-
+from hgvs.normalizer import Normalizer
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -23,8 +23,10 @@ def generate_variants(r):
     ts = 0
     gs = 0
     cigarops = list(cigarop_re.finditer(row['cigar']))
-    #if len(cigarops) > 4:
-    #    raise RuntimeError("{n} cigar ops... skipping".format(n=len(cigarops)))
+
+    # loop over cigar ops, incrementing transcript offset (ts) and
+    # genomic offset (gs). Also, yield a variant for each
+    # non-identity.
     for m in (m.groupdict() for m in cigarops):
         ac = row['tx_ac']
         l = int(m['l'])
@@ -43,12 +45,10 @@ def generate_variants(r):
                 if l==1:
                     v = "{ac}:n.{vs}del".format(ac=ac, vs=vs+1)
                 else:
-                    v = "{ac}:n.{vs}_{ve}del".format(ac=ac, vs=vs+1, ve=vs+l-1)
+                    v = "{ac}:n.{vs}_{ve}del".format(ac=ac, vs=vs+1, ve=vs+l)
             elif m['op'] == 'I':
                 gq = row['alt_aseq'][gs:gs+l]
                 v = "{ac}:n.{vs}_{ve}ins{gq}".format(ac=ac, vs=vs, ve=vs+1, gq=gq)
-
-            #import IPython; IPython.embed()	  ### TODO: Remove IPython.embed()
             yield v
 
         if m['op'] in '=XD':
@@ -61,35 +61,39 @@ if __name__ == "__main__":
     hdp = connect()
     hp = Parser()
     evm = EasyVariantMapper(hdp)
+    hn = Normalizer(hdp)
 
-    fieldnames = 'hgvs_n hgvs_c hgvs_g tx_ac strand exon'.split()
+    fieldnames = 'hgvs_n0 hgvs_n hgvs_c hgvs_g tx_ac strand exon cigar'.split()
     out = csv.DictWriter(sys.stdout, fieldnames=fieldnames, delimiter=b'\t', lineterminator='\n')
     out.writeheader()
 
     tx_list = []
     #tx_list = 'NM_178040.2 NM_015512.4'.split()
     tx_list = sys.argv[1:]
+    txs = ",".join(["'{ac}'".format(ac=ac) for ac in tx_list]) if tx_list else ""
     query = [
-        "select D.*",
-        "from reece.discrep_mv D",
-        "join reece.ej_gene_transcript_v GL on D.tx_ac=GL.tx_ac",
-        "where D.tx_ac in ({txs})".format(txs=",".join(["'{ac}'".format(ac=ac) for ac in tx_list])) if tx_list else "",
-        "order by D.tx_ac,D.ord"
+        "SELECT * FROM tx_exon_aln_v D",
+        "JOIN reece.ej_gene_transcript_v GL on D.tx_ac=GL.tx_ac",
+        "WHERE alt_ac~'^NC_0000' and alt_aln_method='splign' and cigar~'[DIX]' AND D.tx_ac in ({txs})".format(txs=txs),
+        "ORDER BY D.tx_ac,D.ord"
         ]
     cur = hdp._execute(" ".join(query))
     for row in cur:
         try:
-            for var_str in generate_variants(row):
-                var_n = hp.parse_hgvs_variant(var_str)
+            for hgvs_n in generate_variants(row):
+                var_n0 = hp.parse_hgvs_variant(hgvs_n)
+                var_n = hn.normalize(var_n0)
                 var_c = evm.n_to_c(var_n)
                 var_g = evm.n_to_g(var_n)
                 out.writerow({
+                    'hgvs_n0': str(var_n0),
                     'hgvs_n': str(var_n),
                     'hgvs_c': str(var_c),
                     'hgvs_g': str(var_g),
                     'tx_ac': row['tx_ac'],
                     'strand': row['alt_strand'],
                     'exon': row['ord']+1,
+                    'cigar': row['cigar'],
                     })
         except Exception as e:
             print("# {row[tx_ac]}, exon {row[ord]}: {e}".format(row=row, e=e))
