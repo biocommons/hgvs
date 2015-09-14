@@ -17,7 +17,6 @@ NM_000399.3  c      902 <                                                    <  
 import re
 
 from bioutils.sequences import complement, reverse_complement
-from uta_align.align.algorithms import align, cigar_alignment
 from hgvs.location import Interval, SimplePosition
 
 def full_house(evm, var, tx_ac=None):
@@ -56,6 +55,9 @@ def variant_context(evm, var, margin=20):
 
 
 def variant_context_w_alignment(evm, var, margin=20, tx_ac=None):
+    """This module is experimental. It requires the uta_align package from pypi."""
+    from uta_align.align.algorithms import align, cigar_alignment
+
     fh = full_house(evm, var, tx_ac=tx_ac)
     tm = evm._fetch_TranscriptMapper(fh['n'].ac, fh['g'].ac, evm.alt_aln_method)
     strand = tm.strand
