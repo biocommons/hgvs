@@ -5,7 +5,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 class HGVSError(Exception):
     pass
 
-
 class HGVSInternalError(HGVSError):
     pass
 
@@ -36,6 +35,11 @@ class HGVSNormalizationError(HGVSError):
 
 class HGVSUnsupportedOperationError(HGVSError):
     pass
+
+class HGVSUsageError(HGVSError):
+    """Exception thrown when client/caller has made an invalid request"""
+    pass
+
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
