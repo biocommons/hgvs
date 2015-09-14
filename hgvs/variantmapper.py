@@ -404,7 +404,7 @@ class EasyVariantMapper(VariantMapper):
         self.normalize = normalize
         self._norm = None
         if self.normalize:
-            self._norm = hgvs.normalizer.Normalizer(hdp)
+            self._norm = hgvs.normalizer.Normalizer(hdp,alt_aln_method=alt_aln_method)
 
     def g_to_c(self, var_g, tx_ac):
         var_out = super(EasyVariantMapper, self).g_to_c(var_g, tx_ac, alt_aln_method=self.alt_aln_method)

@@ -31,6 +31,15 @@ class Test_VariantMapper(unittest.TestCase):
         self.assertEqual(str(var_c), hgvs_c)
         self.assertEqual(str(var_p), hgvs_p)
 
+
+@attr(tags=["quick"])
+class Test_VariantMapper_Exceptions(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.hdp = hgvs.dataproviders.uta.connect()
+        cls.vm = hgvs.variantmapper.VariantMapper(cls.hdp)
+        cls.hp = hgvs.parser.Parser()
+
     def test_gcrp_invalid_input_type(self):
         hgvs_g = 'NC_000007.13:g.36561662C>T'
         hgvs_c = 'NM_001637.3:c.1582G>A'
@@ -59,14 +68,26 @@ class Test_VariantMapper(unittest.TestCase):
 
         self.assertFalse(failures, "conversions not failing: {}".format(failures))
 
+
     def test_gc_invalid_input_nm_accession(self):
         hgvs_g = 'NC_000007.13:g.36561662C>T'
         var_g = self.hp.parse_hgvs_variant(hgvs_g)
         with self.assertRaises(hgvs.exceptions.HGVSError):
             var_p = self.vm.c_to_p(var_g, 'NM_999999.1')
 
+    def test_undefined_cds(self):
+        """Raise exception when requesting mapping to/from c. with non-coding transcript"""
+        hgvs_n = 'NR_111984.1:n.44G>A'  # legit
+        hgvs_c = 'NR_111984.1:c.44G>A'  # bogus: c. with non-coding tx accession
+        var_n = self.hp.parse_hgvs_variant(hgvs_n)
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        tx_ac = var_n.ac
 
+        with self.assertRaises(hgvs.exceptions.HGVSUsageError):
+            var_c = self.vm.n_to_c(var_n)  # n_to_c: transcript is non-coding
 
+        with self.assertRaises(hgvs.exceptions.HGVSUsageError):
+            var_c = self.vm.c_to_n(var_c)  # c_to_n: var_c is bogus
 
 
 class Test_RefReplacement(unittest.TestCase):
