@@ -104,8 +104,8 @@ def _reformat_aln_str(aln_str):
     return re.sub('[ACGT]', ' ', aln_str.replace('.', '|'))
 
 # pre=[ac c s] d content d post=[end] comment
-_line_fmt = "{pre:>25s} {content:100s} {post} {comment}"
-_pre_fmt = "{ac:12s} {type:1s} {s:8d} {dir:1s}"
+_line_fmt = "{pre:>30s} {content:45s} {post} {comment}"
+_pre_fmt = "{ac:12s} {type:1s} {s:10d} {dir:1s}"
 _post_fmt = "{dir:1s} {e:8d}"
 
 def seq_line_fmt(var, span, content, dir=''):

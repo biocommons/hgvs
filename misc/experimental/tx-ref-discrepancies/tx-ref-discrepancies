@@ -7,63 +7,89 @@ import csv
 import logging
 import re
 import sys
+import traceback
+
+from bioutils.sequences import reverse_complement, complement
 
 from hgvs.dataproviders.uta import connect
 from hgvs.parser import Parser
 from hgvs.variantmapper import EasyVariantMapper
 from hgvs.normalizer import Normalizer
+import hgvs.utils.context as huc
 
-logging.basicConfig(level=logging.INFO)
+
+logging.basicConfig(level=logging.WARN)
 logger = logging.getLogger(__name__)
 
+with_context = True
 cigarop_re = re.compile('(?P<l>\d+)(?P<op>[=IDX])')
 
-def generate_variants(r):
-    """given a query row, return a set of variants corresponding to mismatches"""
-    ts = 0
-    gs = 0
-    cigarops = list(cigarop_re.finditer(row['cigar']))
+def generate_variants(row):
+    """given a query row, return genomic variants corresponding to mismatches
 
-    # loop over cigar ops, incrementing transcript offset (ts) and
-    # genomic offset (gs). Also, yield a variant for each
+    Each input row represents the alignment of corresponding
+    transcript and genomic exons, with transcript as reference.
+
+    """
+    # to and go are offsets/indecies in the transcript and genomic reference
+    # accounting for indels in each sequence.
+    to = 0
+    go = 0
+
+    tx_seq = row['tx_aseq'].replace('-','')
+    alt_seq = row['alt_aseq'].replace('-','')
+    cigarops = list(m.groupdict() for m in cigarop_re.finditer(row['cigar']))
+
+    # loop over cigar ops, incrementing transcript offset (to) and
+    # genomic offset (go). Also, yield a variant for each
     # non-identity.
-    for m in (m.groupdict() for m in cigarops):
-        ac = row['tx_ac']
+    ac = row['tx_ac']
+    for m in cigarops:
         l = int(m['l'])
-        tseq = row['tx_aseq'].replace('-','')
-        gseq = row['alt_aseq'].replace('-','')
+        ac = gq = tq = None
+        tq = tx_seq[to:to+l]
+        gq = alt_seq[go:go+l]
         if m['op'] != '=':
-            vs = row['tx_start_i'] + ts
             if m['op'] == 'X':
-                tq = tseq[ts:ts+l]
-                gq = gseq[gs:gs+l]
+                vs = go + 1
+                ve = vs + l - 1
                 if l==1:
-                    v = "{ac}:n.{vs}{tq}>{gq}".format(ac=ac, vs=vs+1, tq=tq, gq=gq)
+                    edit = "{gq}>{tq}"
                 else:
-                    v = "{ac}:n.{vs}_{ve}delins{gq}".format(ac=ac, vs=vs+1, ve=vs+l, gq=gq)
+                    edit = "del{gq}ins{tq}"
             elif m['op'] == 'D':
-                if l==1:
-                    v = "{ac}:n.{vs}del".format(ac=ac, vs=vs+1)
-                else:
-                    v = "{ac}:n.{vs}_{ve}del".format(ac=ac, vs=vs+1, ve=vs+l)
+                vs = go
+                ve = vs + 1
+                edit = "ins{tq}"
             elif m['op'] == 'I':
-                gq = row['alt_aseq'][gs:gs+l]
-                v = "{ac}:n.{vs}_{ve}ins{gq}".format(ac=ac, vs=vs, ve=vs+1, gq=gq)
-            yield v
+                vs = go + 1
+                ve = vs + l - 1
+                edit = "del{tq}"
+
+            pos = "{gvs}" if vs == ve else "{gvs}_{gve}"
+            v = "{ac}:g." + pos + edit
+            if row['alt_strand'] == 1:
+                gvs, gve = row['alt_start_i'] + vs, row['alt_start_i'] + ve
+            else:
+                gvs, gve = row['alt_end_i'] - ve, row['alt_end_i'] - vs
+                tq = reverse_complement(tq)
+                gq = reverse_complement(gq)
+            yield v.format(ac=row['alt_ac'], gvs=gvs, gve=gve, tq=tq, gq=gq)
 
         if m['op'] in '=XD':
-            ts += l
+            to += l
         if m['op'] in '=XI':
-            gs += l
+            go += l
 
 
 if __name__ == "__main__":
     hdp = connect()
     hp = Parser()
-    evm = EasyVariantMapper(hdp)
-    hn = Normalizer(hdp)
+    evm = EasyVariantMapper(hdp, normalize=False)
+    hn3 = Normalizer(hdp, shuffle_direction=3)
+    hn5 = Normalizer(hdp, shuffle_direction=5)
 
-    fieldnames = 'hgvs_n0 hgvs_n hgvs_c hgvs_g tx_ac strand exon cigar'.split()
+    fieldnames = 'hgvs_g5 hgvs_c3 tx_ac strand exon cigar'.split()
     out = csv.DictWriter(sys.stdout, fieldnames=fieldnames, delimiter=b'\t', lineterminator='\n')
     out.writeheader()
 
@@ -80,21 +106,29 @@ if __name__ == "__main__":
     cur = hdp._execute(" ".join(query))
     for row in cur:
         try:
-            for hgvs_n in generate_variants(row):
-                var_n0 = hp.parse_hgvs_variant(hgvs_n)
-                var_n = hn.normalize(var_n0)
-                var_c = evm.n_to_c(var_n)
-                var_g = evm.n_to_g(var_n)
+            for hgvs_g in generate_variants(row):
+                var_g = hp.parse_hgvs_variant(hgvs_g)
+
+                var_c = evm.g_to_c(var_g, row['tx_ac'])
+                e = var_c.posedit.edit
+                e.ref, e.alt = e.alt, e.ref  # swap sense of change
+
+                var_g5 = hn5.normalize(var_g)  # as VCF would do
+                var_c3 = hn3.normalize(var_c)  # as HGVS demands
+
                 out.writerow({
-                    'hgvs_n0': str(var_n0),
-                    'hgvs_n': str(var_n),
-                    'hgvs_c': str(var_c),
-                    'hgvs_g': str(var_g),
+                    'hgvs_g5': str(var_g5),
+                    'hgvs_c3': str(var_c3),
                     'tx_ac': row['tx_ac'],
                     'strand': row['alt_strand'],
                     'exon': row['ord']+1,
                     'cigar': row['cigar'],
                     })
+
+                if with_context:
+                    c = huc.variant_context_w_alignment(evm, var_g5, tx_ac=var_c.ac)
+                    c = re.sub('^','## ',c,flags=re.M) + "\n"
+                    sys.stdout.write(c)
         except Exception as e:
-            print("# {row[tx_ac]}, exon {row[ord]}: {e}".format(row=row, e=e))
-            #logger.exception(e)
+            logger.warn("# {row[tx_ac]}, exon {row[ord]}: {e}".format(
+                row=row, e=traceback.format_exception_only(type(e),e)[0]))
