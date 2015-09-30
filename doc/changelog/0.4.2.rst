@@ -1,0 +1,7 @@
+
+0.4.2 (2015-09-30)
+##################
+
+Changes since 0.4.1 (2015-09-14).
+
+* fixes `#284 <https://bitbucket.org/biocommons/hgvs/issues/284/>`_: validation fails for g variants [`9732eaf5be1c <https://bitbucket.org/biocommons/hgvs/commits/9732eaf5be1c>`_]
