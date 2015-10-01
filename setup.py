@@ -54,10 +54,7 @@ setup(
     ],
 
     setup_requires = [
-        # 1.8.0 results in errors, as shown here:
-        # https://readthedocs.org/projects/hgvs/builds/3365325/
-        # cause unknown
-        'setuptools_scm==1.7.0',
+        'setuptools_scm',
         'nose',
         'sphinx',
         'sphinxcontrib-fulltoc>=1.1',
