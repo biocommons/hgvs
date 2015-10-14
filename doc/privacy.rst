@@ -37,8 +37,7 @@ into a data provider interface that consists of 11 queries.  Their
 method signatures, including input arguments, are shown below with a
 discussion about privacy consequences.
 
-    | fetch_seq(ac, start_i, end_i)
-    
+    fetch_seq(ac, start_i, end_i)
       This method, which fetches reference sequence for a given accession
       and sequence coordinates, is likely the most serious information
       leak in the hgvs package. It is required in order to validate,
@@ -48,20 +47,10 @@ discussion about privacy consequences.
       implemented, this query fetches transcripts from UTA and genomic
       sequences from NCBI.
     
-    | data_version()
-    | schema_version()
-    
+    data_version(), schema_version()
       Queries for meta data about the data provider.
     
-    | get_acs_for_protein_seq(seq)
-    | get_gene_info(gene)
-    | get_tx_exons(tx_ac, alt_ac, alt_aln_method)
-    | get_tx_for_gene(gene)
-    | get_tx_identity_info(tx_ac)
-    | get_tx_info(tx_ac, alt_ac, alt_aln_method)
-    | get_tx_mapping_options(tx_ac)
-    | get_tx_seq(ac)
-    
+    get_acs_for_protein_seq(seq), get_gene_info(gene), get_tx_exons(tx_ac, alt_ac, alt_aln_method), get_tx_for_gene(gene), get_tx_identity_info(tx_ac), get_tx_info(tx_ac, alt_ac, alt_aln_method), get_tx_mapping_options(tx_ac), get_tx_seq(ac)
       For all of these queries, the inputs are combinations of transcript
       accession, reference accession, gene name. These are likely too
       broad to constitute serious privacy concerns.
