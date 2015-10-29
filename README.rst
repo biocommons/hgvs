@@ -1,6 +1,6 @@
-=============================================================================
-*hgvs* - Python library to parse, format, validate, and map sequence variants
-=============================================================================
+========================================================================================
+*hgvs* - Python library to parse, format, validate, normalize, and map sequence variants
+========================================================================================
 
   +------------------------------------------------------------------+
   | ☺ **2015-09-09**: 0.4.0 is out!. See `Release Notes              |
@@ -14,9 +14,7 @@ This package provides a Python library to facilitate the use of genome,
 transcript, and protein variants that are represented using the Human
 Genome Variation Society (`mutnomen`_) recommendations.
 
-..
-
-| `Source`_ | `Documentation`_ | `Issues <https://goo.gl/G63aFQ>`_ | `Mailing List`_
+`Source`_ | `Documentation`_ | `Issues <https://goo.gl/G63aFQ>`_ | `Mailing List`_
 | `Change Log <http://hgvs.readthedocs.org/en/latest/changelog/index.html>`_ | `Upcoming Changes <http://hgvs.readthedocs.org/en/latest/changelog/upcoming.html>`_
 | |pypi_badge| |rtd_badge| |build_status|
 
