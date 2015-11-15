@@ -8,7 +8,7 @@ import hgvs.location
 import hgvs.posedit
 import hgvs.variant
 
-from hgvs.exceptions import HGVSError
+from hgvs.exceptions import HGVSError, HGVSUsageError
 from hgvs.utils import build_tx_cigar
 
 
@@ -51,7 +51,7 @@ class TranscriptMapper(object):
             self.im = hgvs.intervalmapper.IntervalMapper.from_cigar(self.cigar)
             self.tgt_len = self.im.tgt_len
         else:
-            # this covers the identity cases r <-> c
+            # this covers the identity cases n <-> c
             self.tx_identity_info = hdp.get_tx_identity_info(self.tx_ac)
             if self.tx_identity_info is None:
                 raise HGVSError("TranscriptMapper(tx_ac={self.tx_ac}, "
@@ -61,13 +61,15 @@ class TranscriptMapper(object):
             self.cds_end_i = self.tx_identity_info['cds_end_i']
             self.tgt_len = sum(self.tx_identity_info['lengths'])
 
+        assert  not((self.cds_start_i is None) ^ (self.cds_end_i is None)), "CDS start and end must both be defined or neither defined"
+
     def __str__(self):
         return '{self.__class__.__name__}: {self.tx_ac} ~ {self.alt_ac} ~ {self.alt_aln_method); ' \
                '{strand_pm} strand; {n_exons} exons; offset={self.gc_offset}'.format(
             self=self, n_exons=len(self.tx_exons), strand_pm=strand_int_to_pm(self.strand))
 
     def g_to_n(self, g_interval):
-        """convert a genomic (g.) interval to a transcript cDNA (r.) interval"""
+        """convert a genomic (g.) interval to a transcript cDNA (n.) interval"""
 
         # This code is extremely convoluted. To begin with, it
         # confuses interbase intervals for a *single* hgvs position
@@ -92,7 +94,7 @@ class TranscriptMapper(object):
             frs, fre = self.im.map_ref_to_tgt(g_ci[0] - self.gc_offset, g_ci[1] - self.gc_offset, max_extent=False)
             if self.strand == -1:
                 frs, fre = self.tgt_len - fre, self.tgt_len - frs
-            # get BaseOffsetPosition information for r.
+            # get BaseOffsetPosition information for n.
             if self.strand == 1:
                 grs, gre = self.im.map_tgt_to_ref(frs, fre, max_extent=False)
             elif self.strand == -1:
@@ -128,18 +130,18 @@ class TranscriptMapper(object):
                                                  offset=end_bo[1]),
             uncertain=g_interval.uncertain)
 
-    def n_to_g(self, r_interval):
-        """convert a transcript cDNA (r.) interval to a genomic (g.) interval"""
+    def n_to_g(self, n_interval):
+        """convert a transcript cDNA (n.) interval to a genomic (g.) interval"""
 
         assert self.strand in [1, -1], 'strand = ' + str(self.strand) + '; must be 1 or -1'
 
         if self.strand == 1:
-            frs, fre = _hgvs_coord_to_ci(r_interval.start.base, r_interval.end.base)
-            start_offset, end_offset = r_interval.start.offset, r_interval.end.offset
+            frs, fre = _hgvs_coord_to_ci(n_interval.start.base, n_interval.end.base)
+            start_offset, end_offset = n_interval.start.offset, n_interval.end.offset
         elif self.strand == -1:
-            frs, fre = _hgvs_coord_to_ci(r_interval.start.base, r_interval.end.base)
+            frs, fre = _hgvs_coord_to_ci(n_interval.start.base, n_interval.end.base)
             fre, frs = self.tgt_len - frs, self.tgt_len - fre
-            start_offset, end_offset = self.strand * r_interval.end.offset, self.strand * r_interval.start.offset
+            start_offset, end_offset = self.strand * n_interval.end.offset, self.strand * n_interval.start.offset
 
         # returns the genomic range start (grs) and end (gre)
         grs, gre = self.im.map_tgt_to_ref(frs, fre, max_extent=False)
@@ -147,53 +149,59 @@ class TranscriptMapper(object):
         gs, ge = grs + start_offset, gre + end_offset
         return hgvs.location.Interval(
             start=hgvs.location.SimplePosition(_ci_to_hgvs_coord(gs, ge)[0],
-                                               uncertain=r_interval.start.uncertain),
+                                               uncertain=n_interval.start.uncertain),
             end=hgvs.location.SimplePosition(_ci_to_hgvs_coord(gs, ge)[1],
-                                             uncertain=r_interval.end.uncertain),
-            uncertain=r_interval.uncertain)
+                                             uncertain=n_interval.end.uncertain),
+            uncertain=n_interval.uncertain)
 
-    def n_to_c(self, r_interval):
-        """convert a transcript cDNA (r.) interval to a transcript CDS (c.) interval"""
+    def n_to_c(self, n_interval):
+        """convert a transcript cDNA (n.) interval to a transcript CDS (c.) interval"""
 
-        if r_interval.start.base <= 0:
-            raise HGVSError("Coordinate out of bounds. Start position ({rs}) is <= 0.".format(rs=r_interval.start.base))
-        if r_interval.end.base > self.tgt_len:
+        if self.cds_start_i is None:  # cds_start_i defined iff cds_end_i defined; see assertion above
+            raise HGVSUsageError("CDS is undefined for {self.tx_ac}; cannot map to c. coordinate (non-coding transcript?)".format(self=self))
+        if n_interval.start.base <= 0:
+            raise HGVSError("Coordinate out of bounds. Start position ({rs}) is <= 0.".format(rs=n_interval.start.base))
+        if n_interval.end.base > self.tgt_len:
             raise HGVSError("Coordinate out of bounds. End position ({re}) is > than transcript length ({len}).".format(
-                re=r_interval.end.base,
+                re=n_interval.end.base,
                 len=self.tgt_len))
+
         # start
-        if r_interval.start.base <= self.cds_start_i:
-            cs = r_interval.start.base - (self.cds_start_i + 1)
+        if n_interval.start.base <= self.cds_start_i:
+            cs = n_interval.start.base - (self.cds_start_i + 1)
             cs_datum = hgvs.location.CDS_START
-        elif r_interval.start.base > self.cds_start_i and r_interval.start.base <= self.cds_end_i:
-            cs = r_interval.start.base - self.cds_start_i
+        elif n_interval.start.base > self.cds_start_i and n_interval.start.base <= self.cds_end_i:
+            cs = n_interval.start.base - self.cds_start_i
             cs_datum = hgvs.location.CDS_START
         else:
-            cs = r_interval.start.base - self.cds_end_i
+            cs = n_interval.start.base - self.cds_end_i
             cs_datum = hgvs.location.CDS_END
         # end
-        if r_interval.end.base <= self.cds_start_i:
-            ce = r_interval.end.base - (self.cds_start_i + 1)
+        if n_interval.end.base <= self.cds_start_i:
+            ce = n_interval.end.base - (self.cds_start_i + 1)
             ce_datum = hgvs.location.CDS_START
-        elif r_interval.end.base > self.cds_start_i and r_interval.end.base <= self.cds_end_i:
-            ce = r_interval.end.base - self.cds_start_i
+        elif n_interval.end.base > self.cds_start_i and n_interval.end.base <= self.cds_end_i:
+            ce = n_interval.end.base - self.cds_start_i
             ce_datum = hgvs.location.CDS_START
         else:
-            ce = r_interval.end.base - self.cds_end_i
+            ce = n_interval.end.base - self.cds_end_i
             ce_datum = hgvs.location.CDS_END
 
         c_interval = hgvs.location.Interval(
             start=hgvs.location.BaseOffsetPosition(base=cs,
-                                                   offset=r_interval.start.offset,
+                                                   offset=n_interval.start.offset,
                                                    datum=cs_datum),
             end=hgvs.location.BaseOffsetPosition(base=ce,
-                                                 offset=r_interval.end.offset,
+                                                 offset=n_interval.end.offset,
                                                  datum=ce_datum),
-            uncertain=r_interval.uncertain)
+            uncertain=n_interval.uncertain)
         return c_interval
 
     def c_to_n(self, c_interval):
-        """convert a transcript CDS (c.) interval to a transcript cDNA (r.) interval"""
+        """convert a transcript CDS (c.) interval to a transcript cDNA (n.) interval"""
+
+        if self.cds_start_i is None:  # cds_start_i defined iff cds_end_i defined; see assertion above
+            raise HGVSUsageError("CDS is undefined for {self.tx_ac}; cannot map from c. coordinate (non-coding transcript?)".format(self=self))
 
         # start
         if c_interval.start.datum == hgvs.location.CDS_START and c_interval.start.base < 0:
@@ -217,7 +225,7 @@ class TranscriptMapper(object):
                 re=re,
                 len=self.tgt_len))
 
-        r_interval = hgvs.location.Interval(
+        n_interval = hgvs.location.Interval(
             start=hgvs.location.BaseOffsetPosition(base=rs,
                                                    offset=c_interval.start.offset,
                                                    datum=hgvs.location.SEQ_START),
@@ -225,7 +233,7 @@ class TranscriptMapper(object):
                                                  offset=c_interval.end.offset,
                                                  datum=hgvs.location.SEQ_START),
             uncertain=c_interval.uncertain)
-        return r_interval
+        return n_interval
 
     def g_to_c(self, g_interval):
         """convert a genomic (g.) interval to a transcript CDS (c.) interval"""

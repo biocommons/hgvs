@@ -1,18 +1,4 @@
 ############################################################################
-## Theme setup
-
-html_theme = 'invitae'
-
-html_theme_path = ['themes']
-if html_theme == 'sphinx_rtd_theme':
-    import sphinx_rtd_theme
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-elif html_theme == 'bootstrap':
-    import sphinx_bootstrap_theme
-    html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
-
-
-############################################################################
 ## Project config
 
 import hgvs
@@ -23,8 +9,8 @@ project = u'HGVS'
 authors = project + ' Contributors'
 copyright = u'2015, ' + authors
 
-extlinks={
-    'issue': ('https://bitbucket.org/biocommons/hgvs/issue/%s', project + ' issue '),
+extlinks = {
+    'issue': ('https://bitbucket.org/biocommons/hgvs/issue/%s', 'issue '),
     }
 
 man_pages = [
@@ -35,11 +21,13 @@ man_pages = [
 ## Boilerplate
 
 autodoc_default_flags = ['members', 'undoc-members', 'show-inheritance'] #, 'inherited-members']
+autoclass_content = 'both'
 exclude_patterns = ['build','static','templates','themes']
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.coverage',
+    'sphinx.ext.extlinks',
     'sphinx.ext.intersphinx',
     'sphinx.ext.pngmath',
     'sphinx.ext.todo',

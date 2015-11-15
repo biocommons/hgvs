@@ -45,9 +45,8 @@ setup(
 
     install_requires = [
         'biopython',
-        'bioutils>=0.0.6',
+        'bioutils',
         'configparser',
-        'multifastadb',
         'parsley',
         'psycopg2',
         'recordtype',
@@ -55,7 +54,10 @@ setup(
     ],
 
     setup_requires = [
-        'setuptools_scm',
+        # 1.8.0 results in errors, as shown here:
+        # https://readthedocs.org/projects/hgvs/builds/3365325/
+        # cause unknown
+        'setuptools_scm==1.7.0',
         'nose',
         'sphinx',
         'sphinxcontrib-fulltoc>=1.1',

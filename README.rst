@@ -1,37 +1,30 @@
-=============================================================================
-*hgvs* - Python library to parse, format, validate, and map sequence variants
-=============================================================================
+========================================================================================
+*hgvs* - Python library to parse, format, validate, normalize, and map sequence variants
+========================================================================================
 
-  +------------------------------------------------------------------+
-  | ☺ **2015-08-31**: 0.4.0rc1 was just released. See `Release Notes |
-  | <http://hgvs.readthedocs.org/en/latest/changelog/0.4.0.html>`_   |
-  | for breaking changes and new features. Please report successes   |
-  | and failures via the hgvs-discuss mailing list or by             |
-  | submitting an issue.                                             |
-  +------------------------------------------------------------------+
+`Documentation`_ | `Issues <https://goo.gl/G63aFQ>`_ | `Mailing List`_ | `Change Log <http://hgvs.readthedocs.org/en/latest/changelog/index.html>`_ | `Upcoming Changes <http://hgvs.readthedocs.org/en/latest/changelog/upcoming.html>`_
 
-This package provides a Python library to facilitate the use of genome,
-transcript, and protein variants that are represented using the Human
-Genome Variation Society (`mutnomen`_) recommendations.
+|pypi_badge| |rtd_badge| |build_status|
 
-| `Source`_ | `Documentation`_ | `Change Log <changelog>`_ | `Issues <https://goo.gl/G63aFQ>`_ | `Mailing List`_ 
-| |pypi_badge| |rtd_badge| |build_status|
+The *hgvs* package provides a Python library to facilitate the use of
+genome, transcript, and protein variants that are represented using
+the Human Genome Variation Society (`mutnomen`_) recommendations.
 
-Citation:
-
-| **A Python Package for Parsing, Validating, Mapping, and Formatting Sequence Variants Using HGVS Nomenclature.**
-| Hart RK, Rico R, Hare E, Garcia J, Westbrook J, Fusaro VA.
-| *Bioinformatics*. 2014 Sep 30. `PubMed <http://www.ncbi.nlm.nih.gov/pubmed/25273102>`_ | `Open Access PDF <http://bioinformatics.oxfordjournals.org/content/31/2/268.full.pdf>`_
+.. note:: ☺ **2015-09-09**: 0.4.0 is out!. See `Release Notes
+  <http://hgvs.readthedocs.org/en/latest/changelog/0.4.0.html>`_ for
+  breaking changes and new features. Please report successes and
+  failures via the hgvs-discuss `mailing list`_ or by submitting an
+  issue.
 
 ----
 
 Features
 -------- 
 
-* A formal grammar for HGVS variant syntax
-* An easy-to-use object model for most variant types (SNVs, indels,
-  dups, inverstions, etc) and concepts (intronic offsets, uncertain
-  positions, intervals)
+* Parsing is based on formal grammar.
+* An easy-to-use object model that represents
+  most variant types (SNVs, indels, dups, inverstions, etc) and
+  concepts (intronic offsets, uncertain positions, intervals)
 * A variant normalizer that rewrites variants in canoncial forms and
   substitutes reference sequences (if reference and transcript
   sequences differ)
@@ -52,19 +45,12 @@ Important Notes
   <https://bitbucket.org/biocommons/hgvs/issues>`_. Please report any
   issues you find.
 * **Use a pip package specification to ensure stay within minor
-  releases for API stability.** For example, ``hgvs >=0.3,<0.4``.
-* **The default branch is development.** Pulling from default will get
-  you a *development* version.  Release versions are determined by
-  tags; updating to a specific version (*e.g.,* ``hg up -r 0.3.0``)
-  will get you exactly that version as on PyPI.  If you implement a
-  new feature, please create an issue first and work in a feature
-  branch named like '44-normalization'.
-
+  releases for API stability.** For example, ``hgvs >=0.4,<0.5``.
 
 ----
 
-An Example
-----------
+Some Examples
+-------------
 
 See `Installation instructions
 <http://hgvs.readthedocs.org/en/latest/installation.html>`_ if you
@@ -120,7 +106,10 @@ have installation troubles.
   >>> var_c.posedit.pos.start
   BaseOffsetPosition(base=1582, offset=0, datum=1, uncertain=False)
 
-  # variant normalization
+
+
+  # VARIANT NORMALIZATION
+
   # rewrite ins as dup (depends on sequence context)
   >>> import hgvs.normalizer
   >>> hn = hgvs.normalizer.Normalizer(hdp)
@@ -146,27 +135,42 @@ There are `more examples in the documentation <http://hgvs.readthedocs.org/en/la
 
 ----
 
+Citing hgvs (the package)
+-------------------------
+
+| **A Python Package for Parsing, Validating, Mapping, and Formatting Sequence Variants Using HGVS Nomenclature.**
+| Hart RK, Rico R, Hare E, Garcia J, Westbrook J, Fusaro VA.
+| *Bioinformatics*. 2014 Sep 30. `PubMed <http://www.ncbi.nlm.nih.gov/pubmed/25273102>`_ | `Open Access PDF <http://bioinformatics.oxfordjournals.org/content/31/2/268.full.pdf>`_
+
+----
+
 Contributing
 ------------
 
 The hgvs package is intended to be a community project that
 facilitates the reliable use of sequence variants.  Code and
-documentation contributions are appreciated!  Contributions are more
-likely to be quickly incorporated if they:
+documentation contributions are appreciated!  Tips to make PRs easier:
 
-* are submitted against the default branch head (or close to
-  it);
-* are made via pull requests;
-* are in a named branch, named like <issue#>-meaningful-name;
-* are narrowly focused on the bug/feature described by the issue
-* have discrete commits with good log messages;
-* have tests;
-* are formatted code with yapf;
-* are generally consistent with the (loose) style of the current code
-  with respect to variable naming, etc.
+* **The default branch is development.** Pulling/updating from default
+  will get you a *development* version.
+* Release versions are determined by tags.  Updating to a specific
+  version (*e.g.,* ``hg up -r 0.4.0``) will get you exactly that
+  version as on PyPI.
+* For all but trivial features, create an issue first and work in a
+  feature branch named like '44-normalization'.  This is essential for
+  changelog tracking.
+* Submit changes using pull requests. PRs should be against the
+  default branch head (or close to it).
+* Branch features should be narrowly focused on the bug/feature
+  described by the issue.
+* Have discrete commits with good log messages.
+* Pass tests. PRs will be rejected if tests fail. 
+* Format your code with yapf. Commit code, then `yapf -ri .`, then `hg
+  diff` and `make test`.
+* Use style that is generally consistent with the (loose) style of the
+  current code with respect to variable naming, etc.
 
 
-.. _changelog: http://hgvs.readthedocs.org/en/latest/changelog/index.html
 .. _documentation: http://hgvs.readthedocs.org/en/latest/index.html
 .. _invitae: http://invitae.com/
 .. _mutnomen: http://www.hgvs.org/mutnomen/

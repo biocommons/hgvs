@@ -101,17 +101,20 @@ class ExtrinsicValidator():
         return True
 
     def _ref_is_valid(self, var):
-        var_ref_seq = None
         # use reference sequence of original variant, even if later converted (eg c_to_n)
-        if var.posedit.pos and (var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0):
+        if (var.type in 'cnr'
+            and var.posedit.pos is not None
+            and (var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0)):
             raise HGVSUnsupportedOperationError(
                 "Cannot validate sequence of an intronic variant ({})".format(str(var)))
+
         var_ref_seq = getattr(var.posedit.edit, 'ref', None)
-        
+
         if var_ref_seq == '':
             var_ref_seq = None
-        
+
         if var_ref_seq:
+            # ref_seq is digit, as in 'del6'
             try:
                 int(var_ref_seq)
                 var_ref_seq = None

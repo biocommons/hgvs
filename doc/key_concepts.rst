@@ -5,6 +5,47 @@ This section is intended for all users and provides an understanding
 of key concepts and components of the hgvs package.
 
 
+Reference Sequence Types
+@@@@@@@@@@@@@@@@@@@@@@@@
+
+The HGVS Recommendations provide for six types of reference sequences.
+Because the type influences the syntax and object representation in
+the hgvs package, it is important to understand these distinctions.  A
+summary of the types follows:
+
++------------+---------------+---------------+----------------------+-------------------------------------+
+| Type       | Sequence      | Coordinates   | Datum                | Example                             |
++------------+---------------+---------------+----------------------+-------------------------------------+
+| g.         | DNA           | Continuous    | Sequence start       | NC_000007.13:g.21582936G>A          |
++------------+---------------+---------------+----------------------+-------------------------------------+
+| m.         | DNA           | Continuous    | Sequence start       | NC_012920.1:m.8993T>C               |
++------------+---------------+---------------+----------------------+-------------------------------------+
+| c.         | DNA           | Base-Offset   | Translation start    | NM_001277115.1:c.351+115T>C         |
++------------+---------------+---------------+----------------------+-------------------------------------+
+| n.         | DNA           | Base-Offset   | Sequence start       | NR_111984.1:n.44G>A                 |
++------------+---------------+---------------+----------------------+-------------------------------------+
+| r.         | RNA           | Base-Offset   | Sequence start       | NM_000518.4:r.76_92del              |
++------------+---------------+---------------+----------------------+-------------------------------------+
+| p.         | AA            | Continuous    | Sequence start       | NP_001264044.1:p.(Ala25Thr)         |
++------------+---------------+---------------+----------------------+-------------------------------------+
+
+
+Datum refers to the definition for position 1 in the
+sequence. "Sequence start" means the first position of the
+sequence. "Translation start" means the position of the ATG that
+typically starts translation (only for coding transcripts).
+
+Continuous coordinates are the familiar ordinal counting (1, 2, 3,
+...).  There are no breaks for intervening sequence.
+
+Base-Offset coordinates use a base position, which is an index in the
+specified sequence, and an optional offset from that base position.
+Non-zero offsets refer to non-coding sequence, such as 5' UTR, 3' UTR,
+or intronic position.  Examples are 22 (with a zero offset), 22+6, and
+\*6.
+
+
+
 Variant Object Representation
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
@@ -116,24 +157,28 @@ to each other.
 
 
 
-External Data
-@@@@@@@@@@@@@
+External Data Sources
+@@@@@@@@@@@@@@@@@@@@@
 
 Variant mapping and validation requires access to external data,
-specifically exon structures, transcript alignments, and protein
-accessions.  In order to isolate the hgvs package from the myriad
+specifically exon structures, transcript alignments, accessions, and
+sequences.  In order to isolate the hgvs package from the myriad
 choices and tradeoffs, these data are provided through an
 implementation of the (abstract) Data Provider Interface
-(:class:`hgvs.dataproviders.interface`).  A concrete implementation of
-this interface uses `UTA <https://bitbucket.org/biocommons/uta>`_, a
-public archive of transcripts, transcript sequences, and
-transcript-reference sequence alignments.  Invitae provides a public
-UTA instance at ``uta.invitae.com:5432`` (PostgreSQL).  Alternatively,
-users may implement their own providers that conform to the data
-providers interface.
+(:class:`hgvs.dataproviders.interface`).  Currently, the only concrete
+implementation of the data provider interface uses `UTA
+<https://bitbucket.org/biocommons/uta>`_, an archive of transcripts,
+transcript sequences, and transcript-reference sequence alignments.
 
-HGVS uses the public UTA instance by default, so most users won't need
-to worry about this aspect of the hgvs package.
+Invitae provides a public UTA instance at ``uta.biocommons.org:5432``
+(PostgreSQL).  `hgvs` uses this public UTA instance by default, so
+most users won't need to worry about this aspect of the hgvs package.
+However, a docker image of UTA is also available; see
+:ref:`installation` for details.
+
+Alternatively, users may implement their own providers that conform to
+the data providers interface. See :mod:`hgvs.dataproviders.uta` for an
+example.
 
 
 .. |eg| replace:: *e.g.,*

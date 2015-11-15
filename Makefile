@@ -25,25 +25,27 @@ config:
 ############################################################################
 #= SETUP, INSTALLATION, PACKAGING
 
-#=> setup
-setup: develop
-#	pip install -r requirements.txt
-
 #=> docs -- make sphinx docs
 .PHONY: docs
-docs: setup build_sphinx
+docs: setup changelog build_sphinx
+	# RTD makes json. Build here to ensure that it works.
+	make -C doc json
+
+changelog:
+	make -C doc/changelog 0.4.rst
+
 
 #=> build_sphinx
 # sphinx docs needs to be able to import packages
 build_sphinx: develop
 
-#=> develop, bdist, bdist_egg, sdist, upload_docs, etc
-# On Ubuntu 14.04 w/Python 2.7.8, upgrading setuptools (from 2.2 to
-# 7.0) is essential for sphinxcontrib-fulltoc 1.1.
-develop:
-	pip install --upgrade setuptools
-	python setup.py $@
+#=> setup, develop -- install requirements for testing or development
+setup: develop
+develop: %:
+	[ -f requirements.txt ] && pip install --upgrade -r requirements.txt || true
+	python setup.py $*
 
+#=> bdist, bdist_egg, sdist, upload_docs, etc
 bdist bdist_egg build build_sphinx install sdist: %:
 	python setup.py $@
 
@@ -113,6 +115,18 @@ ${VE_DIR}: ${VE_PY}
 	/bin/mv "$@.err" "$@"
 
 
+#=> hgvs.svg -- import graph; requires snakefood
+hgvs.sfood:
+	sfood hgvs >"$@.tmp"
+	/bin/mv "$@.tmp" "$@"
+hgvs.dot: hgvs.sfood
+	sfood-graph -p <$< >"$@.tmp"
+	/bin/mv "$@.tmp" "$@"
+hgvs.svg: hgvs.dot
+	dot -Tsvg <$< >"$@.tmp"
+	/bin/mv "$@.tmp" "$@"
+
+
 ############################################################################
 #= CLEANUP
 .PHONY: clean cleaner cleanest pristine
@@ -124,17 +138,17 @@ clean:
 cleaner: clean
 	find . -name \*.pyc -print0 | xargs -0r /bin/rm -f
 	/bin/rm -fr build bdist cover dist sdist ve virtualenv* examples/.ipynb_checkpoints
+	/bin/rm -f hgvs.{dot,svg,png,sfood}
 	-make -C doc clean
 	make -C examples $@
 #=> cleanest: above, and remove the virtualenv, .orig, and .bak files
 cleanest: cleaner
 	find . \( -name \*.orig -o -name \*.bak -o -name \*.rej \) -print0 | xargs -0r /bin/rm -v
-	/bin/rm -fr distribute-* *.egg *.egg-info *.tar.gz nosetests.xml cover __pycache__
+	/bin/rm -fr distribute-* .eggs *.egg *.egg-info *.tar.gz nosetests.xml cover __pycache__
 	make -C examples $@
 #=> pristine: above, and delete anything unknown to mercurial
 pristine: cleanest
-	hg st -un0 | xargs -0r echo /bin/rm -fv
-
+	if [ -d .hg ]; then hg st -inu0 | xargs -0r /bin/rm -fv; fi
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

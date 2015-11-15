@@ -1,6 +1,6 @@
 clog format: 1; -*-outline-*-
-* 0.4.0a1 (2015-07-06)
-Changes since 0.3.7 (2015-06-23). See issues at milestone:0.4.0a1.
+* 0.4.0 (2015-09-09)
+Changes since 0.3.7 (2015-06-23). See issues at milestone:0.4.0.
 
 ** Special Attention
 *** #227: x_to_r and r_to_x methods were renamed to x_to_n and n_to_x as part of support for non-coding transcripts. 
@@ -9,6 +9,7 @@ Changes since 0.3.7 (2015-06-23). See issues at milestone:0.4.0a1.
 *** #244: Removed cache_transcripts argument from VariantMapper. This argument was deprecated in 0.3.0 and is now obsolete. Dataproviders are now expected to cache data.
 *** #246: Remove hgvsX_to_hgvsY methods. These methods were deprecated in 0.3.0 and are now obsolete.
 *** #247: Dup and Repeat "seq" instance variable renamed to "ref" for consistency.
+*** EasyVariantMapper, Normalizer, and Validator now fetch sequence data at runtime, which may raise performance and privacy concerns. Users may wish to read `Privacy Issues <http://hgvs.readthedocs.org/en/latest/privacy.html>`_ in the documentation.
 
 ** Deprecations
 *** UTA: UTA now uses anonymous:anonymous as the username:password. uta_public:uta_public will be obsolete shortly.
@@ -27,12 +28,13 @@ Changes since 0.3.7 (2015-06-23). See issues at milestone:0.4.0a1.
 *** #236, #240: Added seqfetcher.SeqFetcher to fetch sequences from NCBI & Ensembl
 *** #250: Implemented configuration module; hgvs.global_config is initialized once and available globally
 *** #251: Parens now optional around p. edits; default is enabled per HGVS spec (hgvs.global_config.mapping.inferred_p_is_uncertain)
-*** #261: Replace reference default from config (hgvs.global_config.mapping.replace_reference)
 *** #255: variants normalized by EasyVariantMapper by default [1b85d4deabc3]
+*** #261: Replace reference default from config (hgvs.global_config.mapping.replace_reference)
+*** UTA is now available as a docker image for local installation. See :ref:`uta_docker`.
 
 ** Other Changes
 *** #213: Clarify warning message when validating intronic variants.
-*** #254: Support inversion and conversion variants
+*** #254: Support inversion, conversion, and nadupn variants
 *** Added misc/experimental/tx-seq-discrepancies to identify genomic locations of reference-transcript discrepancies
 *** Added variant context method to evm (temporary location, but useful for debugging)
 *** HGVSInternalError now subclasses HGVSError (not Exception) [ff6cd4dc51dc]
