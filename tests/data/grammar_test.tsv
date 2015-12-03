@@ -1,0 +1,345 @@
+Func	Test	Valid	InType	Expected
+Not_Yet_Implemented	NOT YET IMPLEMENTED	True	one	
+Not_Yet_Implemented	foobar	False	one	
+
+############################################################
+## Accession
+accn	NM_123456.7:c.G>A|NC_999999.9:g.del|NP_1234567:p.Ala10Gly	False	list	
+accn	NM_123456.7|NC_999999.9|NP_023456.7	True	list	
+accn	NM_123456.C|NC_999999.T	False	list	
+accn	NM_123456|NC_999999	True	list	
+accn	NM_X3|NC_333	True	list	
+accn	NM_|3M|33_12345678.9|NM_12345.|NM_*901.3	False	list	
+accn	NM|NC	True	list	
+accn	N|M|3	False	list	
+accn	XR_123456.7|XM_999999.9|ZZ_12345678890.0|U14680.1	True	list
+
+############################################################
+## Basic types
+aa1	ACDEFGHIKLMNPQRSTVWYBZXU	True	string	
+aa1	JO	False	string	
+aa13	Ala|A	True	list
+aa13	Ooo|O	False	list	
+aa13_ext	*|*10|*?|Ter|Ter8|Ter?|X|X10|X?	True	list	(u'*', None)|(u'*', 10)|(u'*', u'?')|(u'Ter', None)|(u'Ter', 8)|(u'Ter', u'?')|(u'X', None)|(u'X', 10)|(u'X', u'?')
+aa13_ext	GlyTrp|TerGly?	False	list	
+aa13_ext	Val-5|-12	True	list	(u'Val', -5)|(None, -12)
+aa13_ext	Val?|Val|Val-?	False	list	
+aa13_fs	*|*10|*?|Ter|Ter8|Ter?|X|X10|X?	True	list	None|10|?|None|8|?|None|10|?
+aa13_fs	Cys|Gly10|Gly?|TerGly?	False	list	
+aa13_seq	CysM|Yyy|J	False	list	
+aa13_seq	C|LM|Cys|LysMet	True	list	
+aa1_seq	C|WY|ACDEFGHIKLMNPQRSTVWY	True	list	
+aa1_seq	c|JY|YJ|YYJ|YJY|JYY|JJJ	False	list	
+aa3	Ala|Cys|Asp|Glu|Phe|Gly|His|Ile|Lys|Leu|Met|Asn|Pro|Gln|Arg|Ser|Thr|Val|Trp|Tyr|Asx|Glx|Xaa|Sec	True	list	
+aa3	Zaa	False	one	
+aa3_seq	Cys|PheGly|HisHisHis	True	list	
+aa3_seq	Cyx|ProYyyGln|PheGlyZzz|XxxPheGly	False	list	
+aat1	A|*	True	list	
+aat1	J|a	False	list	
+aat13	Ooo|O	False	list	
+aat13	Trp|W|Ter|X|*	True	list	
+aat13_seq	G*	True	one
+aat13_seq	GlyTer	True	one	
+aat13_seq	GlyTer|HisHisHisTer	True	list	
+aat13_seq	GlyTer|Ter	True	list	
+aat13_seq	TerGly|JT|GlyA|AGly	False	list	
+aat1_seq		False	list	
+aat1_seq	*|X|G*|IG*	True	list	
+aat1_seq	J|JJ|XYJ|GGG*G	False	list	
+aat3	Ala|Ter	True	list	
+aat3	Jer|Xer|AlaG|AlaTer|Ala*	False	list	
+aat3_seq		False	list	
+aat3_seq	TerGly|XxxIleGly	False	list	
+aat3_seq	Ter|GlyTer|IleGlyTer	True	list	
+base	+123	True	one	123
+base	123|-123	True	list	
+base	?	True	one	None
+cn_type	cn	True	string	
+cn_type	px	False	string
+dna	ACGTacgtNn	True	string	
+dna	EeFfIi	False	string	
+dna4	ACGTacgt	True	string	
+dna4	XYZxyzQq	False	string	
+dna5	ACGTacgtNn	True	string	
+dna5	XYZxyzQq	False	string	
+dna_iupac	ACGTacgtNn	True	string	
+dna_iupac	EeFfIi	False	string	
+dna_seq	AA|Aa|aA|tA|Ta|ACGTacgt	True	list	
+dna_seq	ACGTacgt	True	string	
+dna_seq	U|u|UU|ACU|UAC	False	list	
+ext	extGlyTrp|extTerGly?	False	list	
+ext	extVal-5|ext-12	True	list	(u'Val', -5)|(None, -12)
+ext	ext|ext*|ext*10|ext*?|extTer|extTer8|extTer?|extX|extX10|extX?	True	list	(None, None)|(u'*', None)|(u'*', 10)|(u'*', u'?')|(u'Ter', None)|(u'Ter', 8)|(u'Ter', u'?')|(u'X', None)|(u'X', 10)|(u'X', u'?')
+fs	fs2|fs?	False	list
+fs	fsCys|fsGly10|fsGly?|fsTerGly?	False	list	
+fs	fs|fs*|fs*10|fs*?|fsTer|fsTer8|fsTer?|fsX|fsX10|fsX?	True	list	None|None|10|?|None|8|?|None|10|?
+fsext_offset		True	one	None
+fsext_offset	-12|*	False	list
+fsext_offset	12|?	True	list
+gm_type	gm	True	string	
+gm_type	px	False	string
+na_iupac	ACGUacguNn	True	string	
+na_iupac	EeFfIi	False	string	
+nnum	-+123	False	one	
+nnum	-123	True	one	-123
+nnum	123|+123	false	list	
+num	1234567890	True	one
+num	1234567890	True	string	
+num	123X	False	one	
+offset		True	one	0
+offset	10|-10	True	list	
+offset	?	True	one	None
+pm	*	False	one	
+pm	-+	True	string
+rna	ACGUacguNn	True	string	
+rna	EeFfIi	False	string	
+rna4	ACGUacgu	True	string	
+rna4	XYZxyzTt	False	string	
+rna5	ACGUacguNn	True	string	
+rna5	XYZxyzTt	False	string	
+rna_iupac	ACGUacguNn	True	string	
+rna_iupac	EeFfIi	False	string	
+rna_seq	AA|Aa|aA|uA|Ua|ACGUacgu	True	list	
+rna_seq	ACGUacgu	True	string	
+rna_seq	T|t|TT|ACT|TAC	False	list	
+snum	+-123	False	one	
+snum	+123	True	one	123
+snum	123|-123	True	list	
+term1	T	False	one	
+term1	X*	True	string	
+term13	X|*|Ter	True	list	
+term13	ter	False	one	
+term3	Ter	True	one	
+term3	ter	False	one	
+
+############################################################
+## Locations
+#n:def_n_interval	2_10|2	True	list	
+#n:def_n_pos	2	True	list
+#n:def_n_pos	?	True	one	
+#n:def_n_pos	A|2?|*1|-2	False	list
+#n:n_interval	2_10|(2_10)	True	list	
+#n:n_pos	2	True	one	
+c_interval	1_10|(1_10)	True	list	
+c_pos	11+1	True	one	
+cn_interval	1_10|(1_10)	True	list	
+def_c_interval	1-10	True	one	
+def_c_interval	1_10|1|1+2_10-2	True	list	
+def_c_pos	0	False	list	
+def_c_pos	1|11+1|9-3|-1|*10	True	list	
+def_c_pos	X|11_12|10*	False	list	
+def_cn_interval	1-10	True	one	
+def_cn_interval	1_10|1|1+2_10-2	True	list	
+def_cn_pos	0	False	list	
+def_cn_pos	1|11+1|9-3|-1|*10	True	list	
+def_cn_pos	X|11_12|10*	False	list	
+def_g_interval	2_10|2	True	list	
+def_g_pos	2	True	list
+def_g_pos	?	True	one	
+def_g_pos	A|2?|*1|-2	False	list
+def_gm_interval	2-10	False	one	
+def_gm_interval	2_10|2	True	list	
+def_gm_pos	2	True	list
+def_gm_pos	?	True	one	
+def_gm_pos	A|2?|*1|-2	False	list
+def_m_interval	2_10|2	True	list	
+def_m_pos	2	True	list
+def_m_pos	?	True	one	
+def_m_pos	A|2?|*1|-2	False	list
+def_n_interval	1-10	True	one	
+def_n_interval	1_10|1|1+2_10-2	True	list	
+def_n_pos	0	False	list	
+def_n_pos	1|11+1|9-3|-1|*10	True	list	
+def_n_pos	X|11_12|10*	False	list	
+def_p_interval	Met1-Gly10	False	one	
+def_p_interval	Met1_Gly10|Met1	True	list	
+def_p_pos	Glx5|J5	False	list	
+def_p_pos	M1|G10|*10	True	list	Met1|Gly10|Ter10
+def_p_pos	Met1|Gly10|Ter10	True	list	
+def_r_interval	1-10	True	one	
+def_r_interval	1_10|1|1+2_10-2	True	list	
+def_r_pos	-1|0	False	list	
+def_r_pos	1|11+1|9-3	True	list	
+def_r_pos	X|11_12|10*	False	list	
+g_interval	2_10|(2_10)	True	list	
+g_pos	2	True	one	
+gm_interval	2_10|(2_10)	True	list	
+gm_pos	-1|0	False	list	
+gm_pos	2	True	one	
+gm_pos	[2]|(2_3)	False	list	
+m_interval	2_10|(2_10)	True	list	
+m_pos	2	True	one	
+n_interval	1_10|(1_10)	True	list	
+n_pos	11+1	True	one	
+p_interval	Met1_Gly10|(Met1_Gly10)	True	list	
+p_pos	Met1	True	one	
+r_interval	1_10|(1_10)	True	list	
+r_pos	9-3	True	one	
+
+############################################################
+## Edits
+dna_con	conAC096506.5	False	list	
+dna_con	conAC096506.5:g.409_1683|conNM_004006.1:c.15_355	True	list	
+dna_del	del5A	False	one	
+dna_del	delA|del5|delAAAA	True	list	
+dna_delins	del5insA	True	one
+dna_delins	delAAAAGGGinsT|delAAinsC	True	list
+dna_delins	delAAinsCG	True	one	
+dna_delins	delAinsT	True	one	A>T
+dna_dup	dupCAU	False	one
+dna_dup	dup|dupA|dupCAG|dupCAT	True	list	
+dna_edit	A>C|delAAinsC|insA|delA|dupA	True	list	
+dna_edit	A>U|del5A	False	list	
+dna_edit_mu	(A>C)	True	one	
+dna_edit_mu	A>C	True	one	
+dna_ins	insA|insC|insG|insT	True	list	
+dna_ins	insU	False	one	
+dna_inv	inv6|invACGT	True	list	
+dna_inv	invACGU|invACGT6	False	list	
+dna_subst	A>C|A>G|A>T|C>G|C>T|G>T	True	list	
+pro_del	del	True	one
+pro_del	delA|delAla|del3	False	list
+pro_delins	delinsAfs|delinsAfs*|delinsAfs*9|delinsAfs*?	False	list	delinsAlafs|delinsAlafs*|delinsAlafs*9|delinsAlafs*?
+pro_delins	delinsAla	True	list	
+pro_delins	delinsAlaGly|delinsGlyIleArg	True	list
+pro_delins	delinsAlafs*|delinsAlafs*9|delinsAlafs*?	False	list
+pro_delins	delinsA|delinsAG	True	list	delinsAla|delinsAlaGly
+pro_delins	delins|delinsfs|Alafs	False	list	
+pro_dup	dup	True	one
+pro_dup	dup2|dupGG|dupGlyAla	False	list
+pro_edit	insProdel|delinsMetSer>Gln	False	list
+pro_edit	insPro|del|delinsMetSer|Gln	True	list
+pro_edit    Argfs|Rfs	True	list	ArgfsTer|ArgfsTer
+pro_edit_mu	(delins)CysTyr|delins(CysTyr)|(Gln)Gln|ins(Lys)	False	list
+pro_edit_mu	delinsCysTyr|(delinsCysTyr)|del|(del)|insAsn|(insAsn)|Glu|(Glu)	True	list
+pro_ext	Glnext*|Glnext*9|Glnext*?	True	list	GlnextTer|GlnextTer9|GlnextTer?
+pro_ext	GlnextTer|GlnextTer9|GlnextTer?	True	list	
+pro_fs	ArgPhefs*9	False	one	
+pro_fs	Argfs	True	one	ArgfsTer
+pro_fs	Argfs*|Argfs*9|Argfs*?	True	list	ArgfsTer|ArgfsTer9|ArgfsTer?
+pro_fs	Argfs2|Argfs?	False	list	
+pro_fs	ArgfsTer|ArgfsTer9|ArgfsTer?	True	list	
+pro_fs	fs*	True	one	fsTer
+pro_ins	insAfs|insAfs*|insAfs*9|insAfs*?	False	list	insAlafs|insAlafs*|insAlafs*9|insAlafs*?
+pro_ins	insAlafs|insAlafs*|insAlafs*9|insAlafs*?	False	list
+pro_ins	insAla|insAlaGly	True	list
+pro_ins	insA|insAG	True	list	insAla|insAlaGly
+pro_ins	ins|insfs|insArgA|insFoo|insJ	False	list
+pro_subst	10VA|V>R	False	list	
+pro_subst	?	True	one
+pro_subst	ArgPhe|10ValArg|Val>Arg	False	list	
+pro_subst	Arg|Phe	True	list	
+pro_subst	R|F	True	list	Arg|Phe
+pro_subst	Ter|*	True	list	Ter|Ter
+rna_con	conAC096506.5	False	list	
+rna_del	del5A|delT	False	list	
+rna_del	delA|del5|delACGU	True	list	
+rna_delins	del5insU	True	one
+rna_delins	delAAAAGGGinsU|delAAinsC	True	list	
+rna_delins	delAAinsCG	True	one	
+rna_delins	delAinsC	True	one	A>C
+rna_dup	dupCAT	False	one	
+rna_dup	dup|dupA|dupCAG|dupCAU	True	list	
+rna_edit	A>C|delAAinsC|insA|delA|dupA	True	list
+rna_edit	A>T|del5A	False	list	
+rna_edit_mu	(A>C)	True	one		
+rna_edit_mu	A>C	True	one
+rna_ins	insAA	True	one	
+rna_ins	insA|insC|insG|insU	True	list	
+rna_ins	insT	False	one	
+rna_inv	inv6|invACGU	True	list	
+rna_inv	invACGT|invACGU6	False	list	
+rna_subst	A>C|A>G|A>U|C>G|C>U|G>U	True	list	
+rna_subst	A>T	False	one	
+
+############################################################
+## PosEdits
+#n:n_posedit	10A>T	True	one	
+c_posedit	1*T>A|(1_10A>C)	False	list	
+c_posedit	76+3A>T|*1T>A|5G>T|1_10A>C|(1_10)A>C|1_2delAAinsC	True	list	
+cn_posedit	1*T>A|(1_10A>C)	False	list	
+cn_posedit	76+3A>T|*1T>A|5G>T|1_10A>C|(1_10)A>C|1_2delAAinsC	True	list	
+g_posedit	7_8dup	True	one	
+gm_posedit	(1_10A>T)|5A>U	False	list	
+gm_posedit	112_117delinsTG|10A>T|5dup|5dupT|7_8dup|7_8dupTG|(1_10)A>T	True	list	
+m_posedit	112_117delinsTG	True	one	
+n_posedit	1*T>A|(1_10A>C)	False	list	
+n_posedit	76+3A>T|*1T>A|5G>T|1_10A>C|(1_10)A>C|1_2delAAinsC	True	list	
+p_posedit	(?)|(Phe|Phe)|(Phe)Ala|Phe|Ala3|Ala3_Phe4|Ala3=|Ala3_Phedel|Ala3Phe4insGly|Ala3_Phe4>Gly3_Ile4	False	list
+p_posedit	(A3F)|(A3_Y6del)	True	list	(Ala3Phe)|(Ala3_Tyr6del)|(Gly10_Phe11insMetMet)
+p_posedit	(Ala3Phe)|(Ala3del)|(Ala3_Tyr6del)|(Gly10_Phe11insMetMet)|(Cys200_Tyr205delinsIleLeuGln)	True	list
+p_posedit	(G10_F11insMM)|(C200_Y205delinsILQ)	True	list	(Gly10_Phe11insMetMet)|(Cys200_Tyr205delinsIleLeuGln)
+p_posedit	=|(=)|0?|0|?	True	list
+p_posedit	A3F|A3_Y6del	True	list	Ala3Phe|Ala3_Tyr6del|Gly10_Phe11insMetMet
+p_posedit	Ala3Phe|Ala3del|Ala3_Tyr6del|Gly10_Phe11insMetMet|Cys200_Tyr205delinsIleLeuGln	True	list
+p_posedit	G10_F11insMM|C200_Y205delinsILQ	True	list	Gly10_Phe11insMetMet|Cys200_Tyr205delinsIleLeuGln
+p_posedit_special	*|+|()|?0	False	list	
+p_posedit_special	=|(=)|0?|0|?	True	list	
+r_posedit	(5G>U)|(1_10A>C)|((1_10)A>C)|(1_2delAAinsC)	True	list	
+r_posedit	5G>T|(1_10A>C|1_10A>C)	False	list
+r_posedit	5G>U|1_10A>C|(1_10)A>C|1_2delAAinsC	True	list	
+
+############################################################
+## HGVS Position
+#n:n_hgvs_position	AC_01234.5:n.1	True	one	
+c_hgvs_position	AC_01234.5:c.1|AC_01234.5:c.5+10	True	list	
+c_hgvs_position	AC_01234.5:r.1|AC_01234.5:p.1	False	list
+cn_hgvs_position	AC_01234.5:c.1|AC_01234.5:n.5+10	True	list	
+cn_hgvs_position	AC_01234.5:r.1|AC_01234.5:p.1	False	list
+g_hgvs_position	AC_01234.5:g.1	True	one	
+gm_hgvs_position	AC_01234.5:c.1	False	one	
+gm_hgvs_position	AC_01234.5:g.1|AC_01234.5:m.1	True	list	
+hgvs_position	AC_01234.5:g.1|AC_01234.5:c.1|AC_01234.5:r.1|AC_01234.5:p.Met1	True	list	
+hgvs_position	NM_01234.5:c.22+6	True	one	
+m_hgvs_position	AC_01234.5:m.1	True	one	
+n_hgvs_position	AC_01234.5:c.1|AC_01234.5:c.5+10	True	list	
+n_hgvs_position	AC_01234.5:r.1|AC_01234.5:p.1	False	list
+p_hgvs_position	AC_01234.5:p.Met1|AC_01234.5:p.Met1_Gly10	True	list	
+p_hgvs_position	AC_01234.5:r.Met1|AC_01234.5:c.Met1	False	list	
+r_hgvs_position	AC_01234.5:c.1|AC_01234.5:g.2|AC_01234.5:p.1|AC_01234.5:r.1A>T	False	list	
+r_hgvs_position	AC_01234.5:r.1|AC_01234.5:r.5+10	True	list	
+
+############################################################
+## HGVS Edit
+#n:n_edit	n.76A>T	True	one	n.76A>T
+c_edit	c.76+3A>T	True	one	c.76+3A>T
+cn_edit	c.76+3A>T	True	one	c.76+3A>T
+g_edit	g.76A>T	True	one	g.76A>T
+gm_edit	g.76A>T	True	one	g.76A>T
+m_edit	m.76A>T	True	one	m.76A>T
+n_edit	c.76+3A>T	True	one	c.76+3A>T
+p_edit	p.Ala1Ser	True	one	p.Ala1Ser
+p_edit	p.Met1?	True	one	p.Met1?
+r_edit	r.76+3A>U	True	one	r.76+3A>U
+
+############################################################
+## HGVS Sequence Variant
+#n:n_variant	AC_01234.5:n.1A>T	True	one
+c_variant	AC_01234.5:c.1A>T	True	one	
+cn_variant	AC_01234.5:c.1A>T	True	one	
+g_variant	AC_01234.5:g.1A>T	True	one	
+gm_variant	AC_01234.5:g.1A>T	True	one	
+hgvs_variant	AC_01234.5:c.1A>T|AC_01234.5:r.1A>U|AC_01234.5:g.1A>T|AC_01234.5:p.Ala1Ser	True	list	
+m_variant	AC_01234.5:m.1A>T	True	one	
+n_variant	AC_01234.5:c.1A>T	True	one	
+p_variant	AC_01234.5:p.Ala1Ser|AC_01234.5:p.Phe2_Ala4del|AC_01234.5:p.Phe2_Ala3insGlnGln|AC_01234.5:p.Cys9_Val10delinsArgGluThr	True	list	
+p_variant	AC_01234.5:p.Met1?	True	one	
+p_variant	NP_000001.1:p.Gly25Trpfs*10|NP_000040.1:p.Ter314Trpext*45	True	list	NP_000001.1:p.Gly25TrpfsTer10|NP_000040.1:p.Ter314TrpextTer45
+p_variant	NP_000001.1:p.Gly25TrpfsTer10|NP_000040.1:p.Ter314TrpextTer45	True	list	
+p_variant	NP_000001.1:p.Met1Valext-10|NP_000040.1:p.Met1ext-12	True	list	
+p_variant	NP_078951.2:p.Arg1039fs|NP_078951.2:p.N1039fs	True	list	NP_078951.2:p.Arg1039fsTer|NP_078951.2:p.Asn1039fsTer
+r_variant	AC_01234.5:r.1A>U	True	one	
+
+############################################################
+## Invitae internal
+c_variant	NM_000352.3:c.2557_2694copy2	True	one     
+c_variant	NM_015702.2:c.307_324dup18	True	one     
+cn_variant	NM_000352.3:c.2557_2694copy2	True	one     
+cn_variant	NM_015702.2:c.307_324dup18	True	one     
+dna_copy	copy1|copy2|copy3	True	list
+dna_copy	copy|copy?	False	list
+dna_dupN	dup3|dup55	True	list
+dna_edit	copy1|copy2|copy3|dup3|dup55	True	list
+g_variant	NC_000014.8:g.88401076_88459508copy4	True	one
+n_variant	NM_000352.3:c.2557_2694copy2	True	one     
+n_variant	NM_015702.2:c.307_324dup18	True	one     
