@@ -3,6 +3,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from .decorators.deprecated import deprecated
 
+import hgvs
+import hgvs.variantmapper
+
 import recordtype
 
 
@@ -18,6 +21,13 @@ class SequenceVariant(recordtype.recordtype('SequenceVariant', ['ac', 'type', 'p
             return '{self.ac}:{self.type}.{self.posedit}'.format(self=self)
         else:
             return '{self.type}.{self.posedit}'.format(self=self)
+
+    def fill_ref(self, hdp):
+        hm = hgvs.variantmapper.VariantMapper(hdp)
+        if self.posedit.edit.ref_s is None:
+            hm._replace_reference(self)
+        return self
+
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

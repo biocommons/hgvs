@@ -6,6 +6,8 @@ import unittest
 from nose.plugins.attrib import attr
 
 import hgvs.variant
+import hgvs.parser
+import hgvs.dataproviders.uta
 
 
 @attr(tags=["quick", "models"])
@@ -13,6 +15,32 @@ class Test_SequenceVariant(unittest.TestCase):
     def test_SequenceVariant(self):
         var = hgvs.variant.SequenceVariant(ac='AC', type='B', posedit='1234DE>FG')
         self.assertEqual(str(var), 'AC:B.1234DE>FG')
+    
+    def test_fill_ref(self):
+        hp = hgvs.parser.Parser()
+        hdp = hgvs.dataproviders.uta.connect()
+        
+        # fill reference for sequence variants
+        var = hp.parse_hgvs_variant('NM_001166478.1:c.31_32del').fill_ref(hdp)
+        self.assertEqual(str(var), 'NM_001166478.1:c.31_32delTT')
+        
+        var = hp.parse_hgvs_variant('NM_001166478.1:c.31_32del2').fill_ref(hdp)
+        self.assertEqual(str(var), 'NM_001166478.1:c.31_32delTT')
+        
+        var = hp.parse_hgvs_variant('NM_001166478.1:c.2_7delinsTTTAGA').fill_ref(hdp)
+        self.assertEqual(str(var), 'NM_001166478.1:c.2_7delTGAAGAinsTTTAGA')
+        
+        var = hp.parse_hgvs_variant('NM_001166478.1:c.35_36dup').fill_ref(hdp)
+        self.assertEqual(str(var), 'NM_001166478.1:c.35_36dupTC')
+        
+        var = hp.parse_hgvs_variant('NM_001166478.1:c.18_24inv').fill_ref(hdp)
+        self.assertEqual(str(var), 'NM_001166478.1:c.18_24invTCTCTTT')
+        
+        var = hp.parse_hgvs_variant('NM_001166478.1:c.18_24inv7').fill_ref(hdp)
+        self.assertEqual(str(var), 'NM_001166478.1:c.18_24invTCTCTTT')
+        
+        var = hp.parse_hgvs_variant('NM_001166478.1:c.18_19insACT').fill_ref(hdp)
+        self.assertEqual(str(var), 'NM_001166478.1:c.18_19insACT')
 
 
 if __name__ == '__main__':
