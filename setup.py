@@ -16,6 +16,7 @@ setup(
     name = "hgvs",
     package_data = {'hgvs': ['_data/*']},
     packages = find_packages(),
+    scripts = ['sbin/hgvs-shell'],
     url = 'https://bitbucket.org/biocommons/hgvs',
 
     classifiers = [
