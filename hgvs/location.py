@@ -21,6 +21,8 @@ import recordtype
 
 from bioutils.sequences import aa1_to_aa3
 
+import hgvs
+
 SEQ_START = 0
 CDS_START = 1
 CDS_END = 2
@@ -31,6 +33,9 @@ class SimplePosition(recordtype.recordtype('SimplePosition', field_names=[('base
         self.validate()
         s = '?' if self.base is None else str(self.base)
         return '(' + s + ')' if self.uncertain else s
+
+    def format(self, conf):
+        return str(self)
 
     @property
     def is_uncertain(self):
@@ -97,6 +102,9 @@ class BaseOffsetPosition(recordtype.recordtype(
         pos = base_str + offset_str
         return '(' + pos + ')' if self.uncertain else pos
 
+    def format(self, conf):
+        return str(self)
+
     def _set_uncertain(self):
         "mark this location as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"
         self.uncertain = True
@@ -115,12 +123,27 @@ class AAPosition(recordtype.recordtype('AAPosition', field_names=[('base', None)
         assert len(self.aa) == 1, 'More than 1 AA associated with position'
         return True
 
-    def __str__(self):
+    def format(self, conf=None):
         self.validate()
+        
+        p_3_letter = hgvs.global_config.formatting.p_3_letter
+        p_term_asterisk = hgvs.global_config.formatting.p_term_asterisk
+        if conf and 'p_3_letter' in conf and conf['p_3_letter'] is not None:
+            p_3_letter = conf['p_3_letter']
+        if conf and 'p_term_asterisk' in conf and conf['p_term_asterisk'] is not None:
+            p_term_asterisk = conf['p_term_asterisk']
+        
         pos = '?' if self.base is None else str(self.base)
-        aa = '?' if self.aa is None else aa1_to_aa3(self.aa)
+        if p_3_letter:
+            aa = '?' if self.aa is None else aa1_to_aa3(self.aa)
+            if p_term_asterisk and aa == 'Ter':
+                aa = '*'
+        else:
+            aa = '?' if self.aa is None else self.aa
         s = aa + pos
         return '(' + s + ')' if self.uncertain else s
+
+    __str__ = format
 
     @property
     def pos(self):
@@ -143,12 +166,14 @@ class Interval(recordtype.recordtype('Interval', field_names=['start', ('end', N
         "raise AssertionError if instance variables are invalid; otherwise return True"
         return True
 
-    def __str__(self):
+    def format(self, conf=None):
         self.validate()
         if self.end is None or self.start == self.end:
-            return str(self.start)
-        iv = str(self.start) + '_' + str(self.end)
+            return self.start.format(conf)
+        iv = self.start.format(conf) + '_' + self.end.format(conf)
         return '(' + iv + ')' if self.uncertain else iv
+    
+    __str__ = format
 
     def _set_uncertain(self):
         "mark this interval as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"

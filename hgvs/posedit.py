@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import hgvs
 import recordtype
 
 
@@ -8,9 +9,18 @@ class PosEdit(recordtype.recordtype('PosEdit', [('pos', None), ('edit', None), (
     """
     represents a **simple** variant, consisting of a single position and edit pair
     """
-
+    def __init__(self, pos=None, edit=None, uncertain=False):
+        self.formatting = {}
+        for option in dir(hgvs.global_config.formatting):
+            self.formatting[option] = None
+        super(PosEdit, self).__init__(pos=pos, edit=edit, uncertain=uncertain)
+     
     def __str__(self):
-        rv = str(self.edit) if self.pos is None else '{self.pos}{self.edit}'.format(self=self)
+        if self.pos is None:
+            rv = str(self.edit.format(self.formatting))
+        else:
+            rv = '{pos}{edit}'.format(pos=self.pos.format(self.formatting), edit=self.edit.format(self.formatting))
+        
         if self.uncertain:
             if self.edit in ['0', '']:
                 rv = rv + '?'
@@ -25,19 +35,34 @@ class PosEdit(recordtype.recordtype('PosEdit', [('pos', None), ('edit', None), (
         """
         self.uncertain = True
         return self
+    
+    def format(self, conf=None):
+        """Formatting the stringification of PosEdit
 
-    ## <LICENSE>
-    ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
-    ## 
-    ## Licensed under the Apache License, Version 2.0 (the "License");
-    ## you may not use this file except in compliance with the License.
-    ## You may obtain a copy of the License at
-    ## 
-    ##     http://www.apache.org/licenses/LICENSE-2.0
-    ## 
-    ## Unless required by applicable law or agreed to in writing, software
-    ## distributed under the License is distributed on an "AS IS" BASIS,
-    ## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    ## See the License for the specific language governing permissions and
-    ## limitations under the License.
-    ## </LICENSE>
+        :param conf: a dict comprises formatting options. None is to use global settings.
+        formatting configuration options:
+            p_3_letter: use 1-letter or 3-letter amino acid representation for p. variants.
+            p_term_asterisk: use * or Ter to represent stop-codon gain for p. variants.
+        """
+        for option in dir(hgvs.global_config.formatting):
+            self.formatting[option] = None
+        if conf:
+            for option in conf:
+                self.formatting[option] = conf[option]
+        return str(self)
+
+## <LICENSE>
+## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
+## 
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+## 
+##     http://www.apache.org/licenses/LICENSE-2.0
+## 
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+## </LICENSE>

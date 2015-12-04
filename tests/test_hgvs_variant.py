@@ -5,6 +5,7 @@ import unittest
 
 from nose.plugins.attrib import attr
 
+import hgvs
 import hgvs.variant
 import hgvs.parser
 import hgvs.dataproviders.uta
@@ -41,6 +42,32 @@ class Test_SequenceVariant(unittest.TestCase):
         
         var = hp.parse_hgvs_variant('NM_001166478.1:c.18_19insACT').fill_ref(hdp)
         self.assertEqual(str(var), 'NM_001166478.1:c.18_19insACT')
+    
+    def test_format(self):
+        hp = hgvs.parser.Parser()
+        
+        # Global default settings
+        var = hp.parse_hgvs_variant('NP_001628.1:p.Gly528Arg')
+        self.assertEqual(str(var), 'NP_001628.1:p.Gly528Arg')
+        self.assertEqual(var.format(), 'NP_001628.1:p.Gly528Arg')
+        
+        # Change global settings
+        hgvs.global_config.formatting.p_3_letter = False
+        self.assertEqual(str(var), 'NP_001628.1:p.G528R')
+        
+        # Custom settings
+        hgvs.global_config.formatting.p_3_letter = True
+        conf = {'p_3_letter' : False}
+        self.assertEqual(var.format(conf), 'NP_001628.1:p.G528R')
+        
+        var = hp.parse_hgvs_variant('NP_001628.1:p.Gly528Ter')
+        conf = {'p_term_asterisk' : True}
+        self.assertEqual(var.format(conf), 'NP_001628.1:p.Gly528*')
+        self.assertEqual(var.format(), 'NP_001628.1:p.Gly528Ter')
+        conf = {'p_3_letter' : False}
+        self.assertEqual(var.format(conf), 'NP_001628.1:p.G528*')
+        self.assertEqual(var.format(), 'NP_001628.1:p.Gly528Ter')
+        
 
 
 if __name__ == '__main__':
