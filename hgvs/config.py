@@ -41,6 +41,9 @@ class Config(object):
         return self._cp.keys()
 
     def __getattr__(self, k):
+        # Work around PyCharm bug https://youtrack.jetbrains.com/issue/PY-4213
+        if k == "_cp":
+            return
         return ConfigGroup(self._cp[k])
 
     __getitem__ = __getattr__
