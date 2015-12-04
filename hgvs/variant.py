@@ -3,6 +3,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from .decorators.deprecated import deprecated
 
+import hgvs
+import hgvs.variantmapper
+
 import recordtype
 
 
@@ -12,12 +15,42 @@ class SequenceVariant(recordtype.recordtype('SequenceVariant', ['ac', 'type', 'p
     component can be stringified; for example, passing pos as either a string
     or an hgvs.location.CDSInterval (for example) are both intended uses
     """
+    def __init__(self, ac=None, type=None, posedit=None):
+        self.formatting = {}
+        for option in dir(hgvs.global_config.formatting):
+            self.formatting[option] = None
+        super(SequenceVariant, self).__init__(ac=ac, type=type, posedit=posedit)
+
 
     def __str__(self):
         if self.ac is not None:
-            return '{self.ac}:{self.type}.{self.posedit}'.format(self=self)
+            return '{ac}:{type}.{posedit}'.format(ac=self.ac, type=self.type, posedit=self.posedit.format(self.formatting))
         else:
-            return '{self.type}.{self.posedit}'.format(self=self)
+            return '{type}.{posedit}'.format(type=self.type, posedit=self.posedit.format(self.formatting))
+
+    
+    def format(self, conf=None):
+        """Formatting the stringification of sequence variants
+
+        :param conf: a dict comprises formatting options. None is to use global settings.
+        formatting configuration options:
+            p_3_letter: use 1-letter or 3-letter amino acid representation for p. variants.
+            p_term_asterisk: use * or Ter to represent stop-codon gain for p. variants.
+        """
+        for option in dir(hgvs.global_config.formatting):
+            self.formatting[option] = None
+        if conf:
+            for option in conf:
+                self.formatting[option] = conf[option]
+        return str(self)
+
+
+    def fill_ref(self, hdp):
+        hm = hgvs.variantmapper.VariantMapper(hdp)
+        if self.posedit.edit.ref_s is None:
+            hm._replace_reference(self)
+        return self
+
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
