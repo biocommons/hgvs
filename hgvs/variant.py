@@ -23,6 +23,9 @@ class SequenceVariant(recordtype.recordtype('SequenceVariant', ['ac', 'type', 'p
 
 
     def __str__(self):
+        if not hasattr(self, 'formatting'):
+            self.formatting = {}
+        
         if self.ac is not None:
             return '{ac}:{type}.{posedit}'.format(ac=self.ac, type=self.type, posedit=self.posedit.format(self.formatting))
         else:
@@ -37,6 +40,7 @@ class SequenceVariant(recordtype.recordtype('SequenceVariant', ['ac', 'type', 'p
             p_3_letter: use 1-letter or 3-letter amino acid representation for p. variants.
             p_term_asterisk: use * or Ter to represent stop-codon gain for p. variants.
         """
+        self.formatting = {}
         for option in dir(hgvs.global_config.formatting):
             self.formatting[option] = None
         if conf:
