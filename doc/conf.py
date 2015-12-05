@@ -32,7 +32,6 @@ extensions = [
     'sphinx.ext.pngmath',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
-    'sphinxcontrib.fulltoc',
     ]
 html_favicon = 'static/favicon.ico'
 html_logo = 'static/logo.svg'
