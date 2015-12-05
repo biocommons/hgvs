@@ -3,10 +3,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from .decorators.deprecated import deprecated
 
-import hgvs
-import hgvs.variantmapper
-
 import recordtype
+
+import hgvs.variantmapper
 
 
 class SequenceVariant(recordtype.recordtype('SequenceVariant', ['ac', 'type', 'posedit'])):
@@ -15,6 +14,7 @@ class SequenceVariant(recordtype.recordtype('SequenceVariant', ['ac', 'type', 'p
     component can be stringified; for example, passing pos as either a string
     or an hgvs.location.CDSInterval (for example) are both intended uses
     """
+
     def __str__(self):
         if not hasattr(self, 'formatting'):
             self.formatting = {}

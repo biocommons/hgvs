@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import hgvs
 import recordtype
 
 
@@ -9,6 +8,7 @@ class PosEdit(recordtype.recordtype('PosEdit', [('pos', None), ('edit', None), (
     """
     represents a **simple** variant, consisting of a single position and edit pair
     """
+
     def __str__(self):
         if not hasattr(self, 'formatting'):
             self.formatting = {}
