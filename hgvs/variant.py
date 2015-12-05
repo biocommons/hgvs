@@ -15,13 +15,6 @@ class SequenceVariant(recordtype.recordtype('SequenceVariant', ['ac', 'type', 'p
     component can be stringified; for example, passing pos as either a string
     or an hgvs.location.CDSInterval (for example) are both intended uses
     """
-    def __init__(self, ac=None, type=None, posedit=None):
-        self.formatting = {}
-        for option in dir(hgvs.global_config.formatting):
-            self.formatting[option] = None
-        super(SequenceVariant, self).__init__(ac=ac, type=type, posedit=posedit)
-
-
     def __str__(self):
         if not hasattr(self, 'formatting'):
             self.formatting = {}
@@ -41,8 +34,6 @@ class SequenceVariant(recordtype.recordtype('SequenceVariant', ['ac', 'type', 'p
             p_term_asterisk: use * or Ter to represent stop-codon gain for p. variants.
         """
         self.formatting = {}
-        for option in dir(hgvs.global_config.formatting):
-            self.formatting[option] = None
         if conf:
             for option in conf:
                 self.formatting[option] = conf[option]

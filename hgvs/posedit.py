@@ -9,12 +9,6 @@ class PosEdit(recordtype.recordtype('PosEdit', [('pos', None), ('edit', None), (
     """
     represents a **simple** variant, consisting of a single position and edit pair
     """
-    def __init__(self, pos=None, edit=None, uncertain=False):
-        self.formatting = {}
-        for option in dir(hgvs.global_config.formatting):
-            self.formatting[option] = None
-        super(PosEdit, self).__init__(pos=pos, edit=edit, uncertain=uncertain)
-     
     def __str__(self):
         if not hasattr(self, 'formatting'):
             self.formatting = {}
@@ -48,8 +42,6 @@ class PosEdit(recordtype.recordtype('PosEdit', [('pos', None), ('edit', None), (
             p_term_asterisk: use * or Ter to represent stop-codon gain for p. variants.
         """
         self.formatting = {}
-        for option in dir(hgvs.global_config.formatting):
-            self.formatting[option] = None
         if conf:
             for option in conf:
                 self.formatting[option] = conf[option]
