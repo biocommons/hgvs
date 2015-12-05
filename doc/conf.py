@@ -1,4 +1,18 @@
 ############################################################################
+## Theme setup
+
+html_theme = 'invitae'
+
+html_theme_path = ['themes']
+if html_theme == 'sphinx_rtd_theme':
+    import sphinx_rtd_theme
+    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+elif html_theme == 'bootstrap':
+    import sphinx_bootstrap_theme
+    html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
+
+
+############################################################################
 ## Project config
 
 import hgvs
@@ -32,7 +46,6 @@ extensions = [
     'sphinx.ext.pngmath',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
-    'sphinxcontrib.fulltoc',
     ]
 html_favicon = 'static/favicon.ico'
 html_logo = 'static/logo.svg'
