@@ -54,7 +54,7 @@ Installation for Development
 
 
 Variables
-.........
+@@@@@@@@@
 
 The following code variable conventions are used for most of the ``hgvs``
 code base.  They should be considered aspirations rather than reality or
@@ -151,3 +151,66 @@ selects a local instance.  Developers can test connectivity like this:
 See hgvs/dataproviders/uta.py for current UTA database URLs.
 
 .. _uta: http://bitbucket.org/biocommons/uta/
+
+
+Release Process
+@@@@@@@@@@@@@@@
+
+``hgvs`` uses a home-grown tool, ``clogger``, to generate change logs.
+This section documents the process.  (Clogger will be released at some
+point, but it is currently really only executable by Reece.)
+
+``clogger``\'s primary goal is to propose a preliminary changelog
+based on commit messages between specified release tags.  That
+``.clog`` file is a simple format like this::
+
+    clog format: 1; -*-outline-*-
+    * 0.4.1 (2015-09-14)
+    Changes since 0.4.0 (2015-09-09).
+    ** Bug Fixes
+    *** fixes #274, #275: initialize normalizer with same alt_aln_method as EasyVariantMapper [43e174d6f8af]
+    *** fixes #276: raise error when user attempts to map to/from c. with non-coding transcript [3f7b659f4f02]
+
+``.clog`` files should be edited for readability during the release
+process and committed to the repo (in ``hgvs/doc/changelog/``).
+
+A Makefile in the same directory generates an ``.rst`` file from the
+``.clog``. This file must also be committed to the repo.  This file
+becomes the release changelog.
+
+Finally, releases are bundled by major.minor versions in a file like
+``0.4.rst`` (no patch level). That file must be edited to include the
+new release and committed to the repo.
+
+
+Specific Example -- 0.4.3 release
+#################################
+
+The 0.4.x branch has two recent changes for the 0.4.3 release.  Here's
+how the release was prepared::
+
+  hg up 0.4.x
+  hg tag 0.4.3cl
+
+  cd doc/changelog
+  make 0.4.3cl.clog
+  mv 0.4.3cl.clog 0.4.3.clog
+  #edit 0.4.3.clog for readability
+  make 0.4.3.rst
+  #edit 0.4.rst to add 0.4.3 to index
+
+``cd ../..`` (hgvs top-level), then ``hg status`` should now look like::
+
+  M doc/changelog/0.4.rst
+  A doc/changelog/0.4.3.clog
+  A doc/changelog/0.4.3.rst
+
+Check your work. Type ``make docs``, then view ``build/sphinx/html/changelog/0.4.3.html``.
+
+Now we're ready to finish up::
+
+  hg tag --remove 0.4.3cl
+  hg com -m 'added docs for 0.4.3 release'
+  hg tag 0.4.3
+  hg push
+  make upload # (builds distribution and uploads to pypi)
