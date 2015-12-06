@@ -20,7 +20,10 @@ XY_RST:=$(addsuffix .rst,${XY})
 XY_VTAGS:=$(filter ${XY}%,${VTAGS})
 XY_VTAGS_RST:=$(addsuffix .rst,${XY_VTAGS})
 
-default all: ${XY_VTAGS_RST} ${XY_RST}
+default:
+	@echo "no $@ target"; exit 1
+
+all: ${XY_VTAGS_RST} ${XY_RST}
 
 
 ${XY_RST}: %.rst:

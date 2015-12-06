@@ -1,0 +1,17 @@
+
+0.4.3 (2015-12-04)
+##################
+
+Changes since 0.4.2 (2015-09-30).
+
+
+New Features
+$$$$$$$$$$$$
+
+* closes `#281 <https://bitbucket.org/biocommons/hgvs/issues/281/>`_: install hgvs-shell executable with package [`bece4e961cd4 <https://bitbucket.org/biocommons/hgvs/commits/bece4e961cd4>`_]
+
+Other Changes
+$$$$$$$$$$$$$
+
+* closes `#289 <https://bitbucket.org/biocommons/hgvs/issues/289/>`_: work around pycharm bug `PY-4213 <https://youtrack.jetbrains.com/issue/PY-4213>`__ [`19c0d4fefbfd <https://bitbucket.org/biocommons/hgvs/commits/19c0d4fefbfd>`_]
+* added 0.4.2 changelog (after the tagged commit :-() [`4a596322bceb <https://bitbucket.org/biocommons/hgvs/commits/4a596322bceb>`_]
