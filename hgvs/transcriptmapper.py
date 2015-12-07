@@ -14,9 +14,10 @@ from hgvs.utils import build_tx_cigar
 
 class TranscriptMapper(object):
     """Provides coordinate (not variant) mapping operations between
-    genomic (g), rna (r), cds (c), and protein (p) coordinates.  All
-    coordinates are 1-based inclusive, per the HGVS recommendations.
-    All methods take :class:`hgvs.location.Interval` objects.
+    genomic (g), non-coding (n), cds (c), and protein (p) coordinates.
+    All coordinates are 1-based inclusive, per the HGVS
+    recommendations.  All methods take :class:`hgvs.location.Interval`
+    objects.
 
     :param hdp: HGVS Data Provider Interface-compliant instance (see :class:`hgvs.dataproviders.interface.Interface`)
     :param str tx_ac: string representing transcript accession (e.g., NM_000551.2)

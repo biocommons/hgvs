@@ -5,23 +5,24 @@ This file is intended for ideas that need fleshing out.
 
 
 * Background changes
-** s/2014/2015/g
 ** tests: expected value first
-** sq-dq, yapf
+** tests: 100% code coverage
+** code: sq-dq, yapf
+** code: standardize internal variable naming; var_x, x_var, var
+** code: relative imports
+** docs: s/2014/2015/g
 ** docs: differences between cgmnrp
-** standardize internal variable naming; var_x, x_var, var
-** relative imports
-** consolidate dev instructions, link from README
+** docs: consolidate dev instructions, link from README
 
 * Backward API changes / renamings
 ** variant -> sequencevariant
 ** primary_assembly -> assembly
 ** ref, alt = '' or None?, document it!
 ** Merge VariantMapper and EasyVariantMapper
-** 100% code coverage
 
-* New features
+* New features (0.5.0?)
 ** support py3
+** REST interface
 ** complex variants (compound, phased, mosaic, chimeric)
 ** 166-warnings
 ** 239: exon finder uses:
@@ -43,6 +44,7 @@ All mapping functions should accept and return one of those types.
 
 
 * Other ideas
+** import hgvs... and you're done?
 
 ** VariantTool(hdp, assy, aln_method)
 wraps most common functionality
@@ -64,3 +66,11 @@ gcn context
 ** Use pyinter for intervals
 
 ** grammar: ins must require interval
+
+
+* remove defaults
+* consider to_nc method
+* verify replace_reference for del and ins (incl v. excl range!)
+* add reciprocal variant option in g_to_c
+* add g_to_t and t_to_g
+* find TODOs and FIXMEs
