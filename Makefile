@@ -29,7 +29,7 @@ config:
 .PHONY: docs
 docs: setup changelog build_sphinx
 	# RTD makes json. Build here to ensure that it works.
-	# make -C doc json
+	make -C doc json
 
 changelog:
 	make -C doc/changelog 0.4.rst
