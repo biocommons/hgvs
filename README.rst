@@ -10,11 +10,8 @@ The *hgvs* package provides a Python library to facilitate the use of
 genome, transcript, and protein variants that are represented using
 the Human Genome Variation Society (`mutnomen`_) recommendations.
 
-.. note:: ☺ **2015-09-09**: 0.4.0 is out!. See `Release Notes
-  <http://hgvs.readthedocs.org/en/latest/changelog/0.4.0.html>`_ for
-  breaking changes and new features. Please report successes and
-  failures via the hgvs-discuss `mailing list`_ or by submitting an
-  issue.
+.. note:: ☺ **2015-12-06**: 0.4.3 is out!. See `Release Notes
+  <http://hgvs.readthedocs.org/en/latest/changelog/0.4.3.html>`_.
 
 ----
 
