@@ -41,6 +41,7 @@ lib/python/uta/_release.py
 misc/data
 misc/exon-str-cmp
 misc/experimental
+misc/tx-ref-discrepancies
 misc/railroad/*_grammar
 misc/railroad/hgvs.ebnf
 misc/railroad/hgvs.pymeta
