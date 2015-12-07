@@ -30,8 +30,8 @@ This variant was chosen because it has data in dbSNP for comparison and
 because it has an intronic variant to spice up the example.
 
 
-Install ``hgvs``
-@@@@@@@@@@@@@@@@
+Install hgvs
+@@@@@@@@@@@@
 
 For this demo, you'll need hgvs (of course).  We recommend that you
 install IPython as well.  In a reasonably modern environment, the
@@ -43,12 +43,11 @@ following should suffice::
 More detailed installation instructions are in :doc:`installation`.
 
 
-
 Parse the variant
 @@@@@@@@@@@@@@@@@
 
 To parse variants, we need to create a an instance of the
-:py:class:`hgvs.parser.Parser`.  Since building the grammar is
+:class:`hgvs.parser.Parser`.  Since building the grammar is
 computationally expensive, you should be only one instance and use it for
 all parsing operations.  Start ``ipython``, then do this:
 
@@ -64,7 +63,7 @@ more specific sequence changes (``posedit`` -- a POSition and EDIt).
 >>> var_c1
 SequenceVariant(ac=NM_001197320.1, type=c, posedit=281C>T)
 
-The ``posedit`` is itself an object:
+The ``posedit`` is itself an object of the :class:`hgvs.posedit.PosEdit` class:
 
 >>> var_c1.posedit
 PosEdit(pos=281, edit=C>T, uncertain=False)
@@ -84,9 +83,10 @@ Finally, "stringifying" a variant regenerates an HGVS variant:
 Create an VariantMapper instance
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-Mapping variants between genomic (g.), transcript (c.), and protein (p.)
-sequences is performed by an instance of :py:class:`hgvs.variantmapper.VariantMapper`. As with
-the parser, you need only one instance per session.
+Mapping variants between genomic (g.), transcript (c.), and protein
+(p.)  sequences is performed by an instance of
+:class:`hgvs.variantmapper.VariantMapper`. As with the parser, you
+need only one instance per session.
 
 Variant mapping and validation requires access to external data,
 specifically exon structures, transcript alignments, and protein
@@ -95,7 +95,7 @@ UTA sister projects.  (If you want more information on the
 architecture of HGVS, UTA, see :doc:`intro`.  However, you don't
 really need to understand the architecture to use HGVS.)
 
-First, connect to UTA via :class:``hgvs.dataproviders.uta``:
+First, connect to UTA via :mod:`hgvs.dataproviders.uta`:
 
 >>> import hgvs.dataproviders.uta
 hdp = hgvs.dataproviders.uta.connect()
@@ -141,7 +141,7 @@ Interval(start=150550916, end=150550916, uncertain=False)
 
 Start and end coordinates are polymorphic (can have multiple
 representations). For genomic positions, these are instances of
-:py:class:`SimplePosition`:
+:class:`SimplePosition`:
 
 >>> var_g.posedit.pos.start
 SimplePosition(base=150550916, uncertain=False)
