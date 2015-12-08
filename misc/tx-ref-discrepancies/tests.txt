@@ -1,0 +1,190 @@
+tx-ref discrepancy test alignments
+
+The intent is to test various possible issues, including variant types
+(SNV, MNV, del, ins), +/- strand, and multiple discrepancies in a
+single exon.
+
+Alignments are from online splign. headers are accession:segment.  The
+subsequent line indicates strand and features being tested.  Reference
+(top line) is always transcript. Variants at right are n. and g.. In
+cases of shuffling options, they appear in parens. Counter to HGVS
+recommendations, g. variants are 5' (left) shuffled only for this test
+to facilitate comparison with VCF.
+
+
+==> NM_000388.3:7.txt <==
++ SNV
+
+        590       600       610       620       630       640       650       660   
+          |    :    |    :    |    :    |    :    |    :    |    :    |    :    |   
+     2590 GTGATCTGGCTCTACACCGCGCCCCCCTCAAGCTACCGCAACCAGGAGCTGGAGGATGAGATCATCTTCA    616C>G
+          |||||||||||||||||||||||||| |||||||||||||||||||||||||||||||||||||||||||    
+122003019 GTGATCTGGCTCTACACCGCGCCCCCGTCAAGCTACCGCAACCAGGAGCTGGAGGATGAGATCATCTTCA    045G>C
+           |    :    |    :    |    :    |    :    |    :    |    :    |    :       
+         020       030       040       050       060       070       080       
+										    
+										    
+        360       370       380       390       400       410       420       430   
+          |    :    |    :    |    :    |    :    |    :    |    :    |    :    |   
+     3360 CTCCCTGGAGGCCCAGAAAAGCAGCGATACGCTGACCCGACACCAGCCATTACTCCCGCTGCAGTGCGGG    403C>G
+          ||||||||||||||||||||||||||||||||||||||||||| ||||||||||||||||||||||||||    
+122003789 CTCCCTGGAGGCCCAGAAAAGCAGCGATACGCTGACCCGACACGAGCCATTACTCCCGCTGCAGTGCGGG    832G>C
+           |    :    |    :    |    :    |    :    |    :    |    :    |    :       
+         790       800       810       820       830       840       850	    
+										    
+==> NM_000557.4:1.txt <==							    
+- SNV										    
+										    
+       210       220       230       240       250       260       270       280    
+         |    :    |    :    |    :    |    :    |    :    |    :    |    :    |    
+      211 CCTTCGCTGCTGCCGCTGTTCTCTTTGGTGTCATTCAGCGGCTGGCCAGAGGATGAGACTCCCCAAACTC    215C>T
+          |||| |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||    
+ 34025760 CCTTTGCTGCTGCCGCTGTTCTCTTTGGTGTCATTCAGCGGCTGGCCAGAGGATGAGACTCCCCAAACTC    756A>G
+          |    :    |    :    |    :    |    :    |    :    |    :    |    :    |   
+        760       750       740       730       720       710       700       690   
+										    
+										    
+==> NM_000557.4:2.txt <==							    
+- SNV (2)									    
+										    
+         030       040       050       060       070       080       090	    
+           |    :    |    :    |    :    |    :    |    :    |    :    |    :       
+     1029 GAGGCGGGCGGGCTGCCCAGCTGAAGCTGTCCAGCTGCCCCAGCGGCCGGCAGCCGGCCGCCTTGCTGGA    088G>T
+          ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| ||||||||||    
+ 34022446 GAGGCGGGCGGGCTGCCCAGCTGAAGCTGTCCAGCTGCCCCAGCGGCCGGCAGCCGGCCTCCTTGCTGGA    387A>C
+      |    :    |    :    |    :    |    :    |    :    |    :    |    :    |	    
+    450       440       430       420       410       400       390       380	    
+										    
+										    
+         240       250       260       270       280       290       300	    
+           |    :    |    :    |    :    |    :    |    :    |    :    |    :       
+     1239 GCCTGGGCTTCGACCGCGCCGCCCGGCAGGTCCACGAGAAAGCCCTGTTCCTGGTGTTTGGCCGCACCAA    279A>G
+          |||||||||||||||||||||||||||||||||||||||| |||||||||||||||||||||||||||||    
+ 34022236 GCCTGGGCTTCGACCGCGCCGCCCGGCAGGTCCACGAGAAGGCCCTGTTCCTGGTGTTTGGCCGCACCAA    196C>T
+      |    :    |    :    |    :    |    :    |    :    |    :    |    :    |	    
+    240       230       220       210       200       190       180       170	    
+										    
+										    
+==> NM_003777.3:31.txt <==							    
++ ins, shuffle									    
+										    
+        440       450       460       470       480       490       500        
+          |    :    |    :    |    :    |    :    |    :    |    :    |    :        (505_506insG)
+     5440 GATCATGACAATTTGTACCATAGATGTCCATGCCAGAGACGTGGTGGCAAAACTTATTTCTCAGAAG-CA    506_507insG -> 506dupG
+          ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| ||    
+ 21721229 GATCATGACAATTTGTACCATAGATGTCCATGCCAGAGACGTGGTGGCAAAACTTATTTCTCAGAAGGCA    295delG
+           |    :    |    :    |    :    |    :    |    :    |    :    |    :       
+         230       240       250       260       270       280       290	    
+										    
+										    
+==> NM_004260.3:14.txt <==							    
+- ins1, shuffle										    
+										    
+          310       320       330        340       350       360       370	    
+            |    :    |    :    |    :     |    :    |    :    |    :    |    :     (337_338insC)
+     2308 GTACAGCGAGCCTTCATGCAGGGCCAGTTGC-GGGTGGTGGTGGCCACGGTGGCCTTTGGGATGGGGCTG    338_339insC -> 338dupC
+          ||||||||||||||||||||||||||||||| ||||||||||||||||||||||||||||||||||||||    
+145738799 GTACAGCGAGCCTTCATGCAGGGCCAGTTGCCGGGTGGTGGTGGCCACGGTGGCCTTTGGGATGGGGCTG    768delG
+         |    :    |    :    |    :    |    :    |    :    |    :    |    :    |    (769delG)
+       800       790       780       770       760       750       740       730    
+										    
+==> NM_004260.3:18.txt <==							    
+- SNV										    
+										    
+     160       170       180       190       200       210       220       230	    
+       |    :    |    :    |    :    |    :    |    :    |    :    |    :    |	    
+     3163 GGGGACCTGACCGCTGAGGAGAAGGACCAGATATGTGACTTCCTCTATGGCCGTGTGCAGGCCCGGGAGC    169C>T
+          |||||| |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||    
+145737642 GGGGACTTGACCGCTGAGGAGAAGGACCAGATATGTGACTTCCTCTATGGCCGTGTGCAGGCCCGGGAGC    636A>G
+            |    :    |    :    |    :    |    :    |    :    |    :    |    :      
+          640       630       620       610       600       590       580      
+										    
+										    
+==> NM_004260.3:3.txt <==							    
+- SNV										    
+										    
+       250       260       270       280       290       300       310       320    
+         |    :    |    :    |    :    |    :    |    :    |    :    |    :    |    
+      256 .....GCGCCAGAGCCCCGCTGCTGGGGGCCCCATCTGAATCGGGCTGCGACCAAGAGTCCACAGCCTAC    316C>T
+               |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| ||||    
+145742579 TGCAGGCGCCAGAGCCCCGCTGCTGGGGGCCCCATCTGAATCGGGCTGCGACCAAGAGTCCACAGTCTAC    514A>G
+         |    :    |    :    |    :    |    :    |    :    |    :    |    :    |    
+       580       570       560       550       540       530       520       510    
+										    
+										    
+==> NM_014467.2:11.txt <==							    
++ SNV										    
+										    
+     970       980       990       000       010       020       030       040	    
+       |    :    |    :    |    :    |    :    |    :    |    :    |    :    |	    
+     1973 CTAGGGACAGGACTCTGAGGTGGGTGAGTTTGACAAATCCTGCAGTGTTTCCAGGCATCCTTTTAGGACT    016A>G
+          ||||||||||||||||||||||||||||||||||||||||||| ||||||||||||||||||||||||||    
+ 99926079 CTAGGGACAGGACTCTGAGGTGGGTGAGTTTGACAAATCCTGCGGTGTTTCCAGGCATCCTTTTAGGACT    122G>A
+           |    :    |    :    |    :    |    :    |    :    |    :    |	    
+         080       090       100       110       120       130       140	    
+										    
+										    
+==> NM_015120.4:1.txt <==							    
++ del3, shuffle										    
+										    
+       140       150       160       170       180       190       200       210    
+         |    :    |    :    |    :    |    :    |    :    |    :    |    :    |    (147_149delGGA)
+      141 CGAGCTGGAGGAGGAGGAGGAGGAGGAGGAGGAGGAGGAGGAGGAGGAAGAGGAGGAGGCTGCAGCGGCG    186_188delGGA
+          |||||||||||||||||||||||||||||||||||||||||||||   ||||||||||||||||||||||    
+ 73613026 CGAGCTGGAGGAGGAGGAGGAGGAGGAGGAGGAGGAGGAGGAGGA---AGAGGAGGAGGCTGCAGCGGCG    031_032insGGA
+              |    :    |    :    |    :    |    :    |       :    |    :    |      (070_071insGGA -> 068_070dupGGA)
+            030       040       050       060          070       080       090	    
+										    
+										    
+==> NM_015120.4:8.txt <==							    
++ del3, shuffle										    
+										    
+      680       690       700       710       720       730       740       750	    
+        |    :    |    :    |    :    |    :    |    :    |    :    |    :    |	    (685_687delCTC)
+     1682 GTTCTCCTCTAGAAACTACTACTGGTCAACACACTGATACTCTCAACCAAAAGACATTAGCAGATACTCA    688_690delCTC
+          ||||||   |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||    
+ 73675225 GTTCTC---TAGAAACTACTACTGGTCAACACACTGATACTCTCAACCAAAAGACATTAGCAGATACTCA    227_228insCTC
+          :    |       :    |    :    |    :    |    :    |    :    |    :    |	    (230_231insCTC -> 228_230dupCTC)
+             230          240       250       260       270       280       290	    
+										    
+										    
+==> NM_024740.2:1.txt <==							    
+- ins1										    
+										    
+       140       150        160       170       180       190       200       210   
+         |    :    |    :     |    :    |    :    |    :    |    :    |    :    |   
+      141 GGCCAGCAGTGGGGATACG-GCCCCGGCTGCGGACAAGCTGCGGGAGCTGCTGGGCAGCCGAGAGGCGGG    159_160insC
+          ||||||||||||||||||| ||||||||||||||||||||||||||||||||||||||||||||||||||    
+111742165 GGCCAGCAGTGGGGATACGCGCCCCGGCTGCGGACAAGCTGCGGGAGCTGCTGGGCAGCCGAGAGGCGGG    146delG
+          :    |    :    |    :    |    :    |    :    |    :    |    :    |	    
+             160       150       140       130       120       110       100	    
+										    
+										    
+==> NM_152274.4:1.txt <==							    
+- del1 (3), shuffle									    
+										    
+         0        10        20        30        40        50        60        70    
+         |    :    |    :    |    :    |    :    |    :    |    :    |    :    |    
+        1 GGACGCGGCCGGGTGGGGCGGCAGCGCCCGCCGCGAGCACCTCCAGTTCTGCCGGCTTCTGCGCGCCGGG    24delG
+          ||||||||||||||||||||||| ||||||||||||||||||||||||||||||||||||||||||||||    
+152864632 GGACGCGGCCGGGTGGGGCGGCA-CGCCCGCCGCGAGCACCTCCAGTTCTGCCGGCTTCTGCGCGCCGGG    609_610insC
+            |    :    |    :    |     :    |    :    |    :    |    :    |    :     
+          630       620       610        600       590       580       570          
+                                                                                    
+        70        80        90       100       110       120       130       140    
+         |    :    |    :    |    :    |    :    |    :    |    :    |    :    |    (119delG)
+       71 GCCGCCTCTCCTTCCGCCGGTGCCGCGGCGCCTCATGGAAGCCCCGGAGGGCGGCGGAGGGGGGCCTGCA    121delG
+          |||||||||||||||||||||||||||||||||||||||||||||||||| |||||||||||||||||||    
+152864563 GCCGCCTCTCCTTCCGCCGGTGCCGCGGCGCCTCATGGAAGCCCCGGAGG-CGGCGGAGGGGGGCCTGCA    513_514insC -> 514dupC
+             |    :    |    :    |    :    |    :    |    :     |    :    |    :    (515_516insC)
+           560       550       540       530       520        510       500         
+										    
+                                                                                    
+       140       150       160       170       180       190       200       210    
+         |    :    |    :    |    :    |    :    |    :    |    :    |    :    |    (155delG)
+      141 GCGCGGGGCCCGGAGGGGCAGCCGGCGCCCGAAGCCAGGGTGCACTTCCGAGTGGCGAGGTTCATCATGG    158delG
+          ||||||||||||||||| ||||||||||||||||||||||||||||||||||||||||||||||||||||    
+152864494 GCGCGGGGCCCGGAGGG-CAGCCGGCGCCCGAAGCCAGGGTGCACTTCCGAGTGGCGAGGTTCATCATGG    477_478insC -> 478dupC
+              |    :    |     :    |    :    |    :    |    :    |    :    |        (480_481insC)
+            490       480        470       460       450       440       430    
+

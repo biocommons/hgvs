@@ -1,0 +1,61 @@
+#!/usr/bin/env python
+__doc__ = "generate reST documentation from a set of railroad images"
+
+import argparse
+import re
+import sys
+
+
+def parse_args(argv):
+    ap = argparse.ArgumentParser(description=__doc__, )
+    ap.add_argument('files', nargs='+', )
+    ap.add_argument('--hgvs-version', required=True)
+    opts = ap.parse_args(argv)
+    return opts
+
+
+def bin_file(fn):
+    if '_variant' in fn: return 'variant'
+    if '_interval' in fn: return 'interval'
+    if '_posedit' in fn: return 'posedit'
+    if '_pos' in fn: return 'pos'
+    if '_edit' in fn: return 'edit'
+    if re.search('_(del|delins|dup|ins|subst)', fn): return 'edit'
+    if '_seq' in fn: return 'seq'
+    if re.search('/(aa|dna|rna)', fn): return 'res'
+    return 'other'
+
+
+bin_heading = {
+    'variant': 'Variants',
+    'interval': 'Intervals',
+    'posedit': 'Localized Edits',
+    'pos': 'Positions',
+    'edit': 'Edits (sequence changes)',
+    'seq': 'Sequences',
+    'res': 'Residues',
+    'other': 'Remaining rules',
+}
+
+if __name__ == '__main__':
+    opts = parse_args(sys.argv[1:])
+
+    binned_files = {b: [] for b in bin_heading.keys()}
+    for f in opts.files:
+        binned_files[bin_file(f)] += [f]
+
+    print(
+        'HGVS Railroad Diagram\n'
+        '^^^^^^^^^^^^^^^^^^^^^\n\n'
+        '  | Generated from `hgvs (https://bitbucket.org/biocommons/hgvs/) <https://bitbucket.org/biocommons/hgvs/>`_\n'
+        '  | ' + opts.hgvs_version + '\n'
+        '  | See the source code for the OMeta-based grammar\n')
+
+    for b in ['variant', 'interval', 'posedit', 'pos', 'edit', 'seq', 'res', 'other']:
+        print(bin_heading[b])
+        print('~' * len(bin_heading[b]))
+        for f in binned_files[b]:
+            print('.. image:: ' + f)
+            print('  :align: center')
+        print
+        print

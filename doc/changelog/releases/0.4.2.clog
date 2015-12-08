@@ -1,0 +1,5 @@
+clog format: 1; -*-outline-*-
+* 0.4.2 (2015-09-30)
+Changes since 0.4.1 (2015-09-14).
+** Bug Fixes
+*** fixes #284: validation fails for g variants [9732eaf5be1c]
