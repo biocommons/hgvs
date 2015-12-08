@@ -4,23 +4,25 @@ Actionable issues are at https://bitbucket.org/biocommons/hgvs/issues.
 This file is intended for ideas that need fleshing out.
 
 
-* Background changes
+* Simple changes
 ** tests: expected value first
-** tests: 100% code coverage
 ** code: sq-dq, yapf
 ** code: standardize internal variable naming; var_x, x_var, var
 ** code: relative imports
-** docs: s/2014/2015/g
-** docs: differences between cgmnrp
 ** docs: consolidate dev instructions, link from README
+** docs: s/2014/2015/g, ## -> # + deindent
+** find TODOs and FIXMEs
 
-* Backward API changes / renamings
+
+
+* New features (0.5.0?)
+** add g_to_t and t_to_g
+** remove defaults
 ** variant -> sequencevariant
 ** primary_assembly -> assembly
 ** ref, alt = '' or None?, document it!
 ** Merge VariantMapper and EasyVariantMapper
-
-* New features (0.5.0?)
+** tests: 100% code coverage
 ** support py3
 ** REST interface
 ** complex variants (compound, phased, mosaic, chimeric)
@@ -29,7 +31,8 @@ This file is intended for ideas that need fleshing out.
 ** fill/strip/replace/validate ref config option
 ** parse and add gene name
 
-* Architecture
+* Consider...
+** use external lru_cache?
 ** Separate code that fetches data from code that uses it.
 E.g., TranscriptMapper fetches data and performs the mappings.
 Consider initializing with fetch *results* instead.
@@ -40,12 +43,7 @@ Consider initializing with fetch *results* instead.
 All mapping functions should accept and return one of those types.
 ** Use sequence assertions exclusively internally
 ** Performance profiling
-
-
-
-* Other ideas
 ** import hgvs... and you're done?
-
 ** VariantTool(hdp, assy, aln_method)
 wraps most common functionality
 validate
@@ -67,10 +65,8 @@ gcn context
 
 ** grammar: ins must require interval
 
+** verify replace_reference for del and ins (incl v. excl range!)
+** add reciprocal variant option in g_to_c
 
-* remove defaults
-* consider to_nc method
-* verify replace_reference for del and ins (incl v. excl range!)
-* add reciprocal variant option in g_to_c
-* add g_to_t and t_to_g
-* find TODOs and FIXMEs
+** more object oriented
+e.g., variant -> normalize, validate, to_t, to_c, to_g, ...
