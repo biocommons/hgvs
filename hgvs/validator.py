@@ -43,10 +43,10 @@ class IntrinsicValidator(object):
         return True
 
     def _start_lte_end(self, var):
-        if var.type == 'g':
+        if var.type in 'gm' and var.posedit.pos:
             if var.posedit.pos.start.base > var.posedit.pos.end.base:
                 raise HGVSValidationError(BASE_RANGE_ERROR_MSG)
-        if var.type in 'cmnp' and var.posedit.pos:
+        if var.type in 'cnp' and var.posedit.pos:
             if var.posedit.pos.start.base > var.posedit.pos.end.base:
                 raise HGVSValidationError(BASE_RANGE_ERROR_MSG)
             elif var.posedit.pos.start.base == var.posedit.pos.end.base:
