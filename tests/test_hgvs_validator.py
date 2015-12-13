@@ -43,6 +43,7 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('NM_01234.5:c.76_77insT')))
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.123+54_123+55insT')))
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.123+54A>T')))
+        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('NC_012920.1:m.54G>C')))
 
         with self.assertRaisesRegexp(HGVSValidationError, hgvs.validator.BASE_RANGE_ERROR_MSG):
             self.validate_int.validate(self.hp.parse_hgvs_variant('NC_000007.13:g.36561664_36561663A>T'))
