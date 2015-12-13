@@ -42,7 +42,7 @@ class SequenceVariant(recordtype.recordtype('SequenceVariant', ['ac', 'type', 'p
 
     def fill_ref(self, hdp):
         hm = hgvs.variantmapper.VariantMapper(hdp)
-        if self.posedit.edit.ref_s is None:
+        if self.posedit.edit.type in ['del', 'delins', 'identity', 'dup', 'inv'] and self.posedit.edit.ref_s is None:
             hm._replace_reference(self)
         return self
 
