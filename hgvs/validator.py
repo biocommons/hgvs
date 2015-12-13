@@ -58,10 +58,10 @@ class IntrinsicValidator(object):
 
     def _ins_length_is_one(self, var):
         if var.posedit.edit.type == 'ins':
-            if var.type == 'g':
+            if var.type in 'gm' and var.posedit.pos:
                 if (var.posedit.pos.end.base - var.posedit.pos.start.base) != 1:
                     raise HGVSValidationError(INS_ERROR_MSG)
-            if var.type in 'cmnp':
+            if var.type in 'cnp' and var.posedit.pos:
                 if ((var.posedit.pos.end.base + var.posedit.pos.end.offset) -
                     (var.posedit.pos.start.base + var.posedit.pos.start.offset)) != 1:
                     raise HGVSValidationError(INS_ERROR_MSG)
