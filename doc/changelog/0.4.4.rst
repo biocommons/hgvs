@@ -1,0 +1,18 @@
+
+0.4.4 (2015-12-15)
+##################
+
+Changes since 0.4.3 (2015-12-06). See issues at `milestone 0.4.4 <https://bitbucket.org/biocommons/hgvs/issues?milestone=0.4.4>`_.
+
+
+Bug Fixes
+$$$$$$$$$
+
+* fixes `#282 <https://bitbucket.org/biocommons/hgvs/issues/282/>`_: preserve position in "identity" variants (e.g., norm(c.123A>A) => c.123= rather than c.=) [`5e6fd1524204 <https://bitbucket.org/biocommons/hgvs/commits/5e6fd1524204>`_]. (Reported by Stephan Pabinger.)
+* fixes `#294 <https://bitbucket.org/biocommons/hgvs/issues/294/>`_: extend variant type checks in validator [`e28b5a525f6e <https://bitbucket.org/biocommons/hgvs/commits/e28b5a525f6e>`_]
+* fixes `#292 <https://bitbucket.org/biocommons/hgvs/issues/292/>`_: Fix bug in validator when validating m. variants and add tests [`64e31808a760 <https://bitbucket.org/biocommons/hgvs/commits/64e31808a760>`_]
+
+Other Changes
+$$$$$$$$$$$$$
+
+* stopgap for `#253 <https://bitbucket.org/biocommons/hgvs/issues/253/>`_: issue warning that p. validation is unsupported [`a9bd9ab405bc <https://bitbucket.org/biocommons/hgvs/commits/a9bd9ab405bc>`_] (Reported by Ram Srinivasan.)
