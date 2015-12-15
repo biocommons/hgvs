@@ -19,6 +19,9 @@ SEQ_ERROR_MSG = 'Variant reference ({var_ref_seq}) does not agree with reference
 
 # TODO: #249: redisign validation interface for greater flexibility
 
+BASE_OFFSET_COORD_TYPES = 'cnr'
+SIMPLE_COORD_TYPES = 'gmp'
+
 class Validator(object):
     """invoke intrinsic and extrinsic validation"""
 
@@ -43,10 +46,11 @@ class IntrinsicValidator(object):
         return True
 
     def _start_lte_end(self, var):
-        if var.type in 'gm' and var.posedit.pos:
+        # TODO: why check var.posedit.pos? should set, right?
+        if var.type in SIMPLE_COORD_TYPES and var.posedit.pos:
             if var.posedit.pos.start.base > var.posedit.pos.end.base:
                 raise HGVSValidationError(BASE_RANGE_ERROR_MSG)
-        if var.type in 'cnp' and var.posedit.pos:
+        if var.type in BASE_OFFSET_COORD_TYPES and var.posedit.pos:
             if var.posedit.pos.start.base > var.posedit.pos.end.base:
                 raise HGVSValidationError(BASE_RANGE_ERROR_MSG)
             elif var.posedit.pos.start.base == var.posedit.pos.end.base:
@@ -57,11 +61,12 @@ class IntrinsicValidator(object):
         return True
 
     def _ins_length_is_one(self, var):
+        # TODO: why check var.posedit.pos? should set, right?
         if var.posedit.edit.type == 'ins':
-            if var.type in 'gm' and var.posedit.pos:
+            if var.type in SIMPLE_COORD_TYPES and var.posedit.pos:
                 if (var.posedit.pos.end.base - var.posedit.pos.start.base) != 1:
                     raise HGVSValidationError(INS_ERROR_MSG)
-            if var.type in 'cnp' and var.posedit.pos:
+            if var.type in BASE_OFFSET_COORD_TYPES and var.posedit.pos:
                 if ((var.posedit.pos.end.base + var.posedit.pos.end.offset) -
                     (var.posedit.pos.start.base + var.posedit.pos.start.offset)) != 1:
                     raise HGVSValidationError(INS_ERROR_MSG)
@@ -73,7 +78,7 @@ class IntrinsicValidator(object):
             if ref_len is None:
                 return True
 
-            if var.type in 'cnr':
+            if var.type in BASE_OFFSET_COORD_TYPES:
                 assert ((var.posedit.pos.start.offset == var.posedit.pos.end.offset == 0) or
                         (var.posedit.pos.start.base == var.posedit.pos.end.base))
                 span_len = ((var.posedit.pos.end.base + var.posedit.pos.end.offset) -
@@ -97,12 +102,16 @@ class ExtrinsicValidator():
 
     def validate(self, var):
         assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
+        # TODO: #253: Add p. validation support
+        if var.type == 'p':
+            raise HGVSUnsupportedOperationError(
+                "Validating p. reference sequences is unsupported ({}); see https://bitbucket.org/biocommons/hgvs/issues/253/ ".format(str(var)))
         self._ref_is_valid(var)
         return True
 
     def _ref_is_valid(self, var):
         # use reference sequence of original variant, even if later converted (eg c_to_n)
-        if (var.type in 'cnr'
+        if (var.type in BASE_OFFSET_COORD_TYPES
             and var.posedit.pos is not None
             and (var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0)):
             raise HGVSUnsupportedOperationError(
@@ -131,11 +140,6 @@ class ExtrinsicValidator():
         return True
 
 
-if __name__ == '__main__':
-    hgvsparser = hgvs.parser.Parser()
-    var1 = hgvsparser.parse_hgvs_variant('NM_001005405.2:r.2T>A')
-    validate_ext = ExtrinsicValidator()
-    validate_ext.validate(var1)
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
