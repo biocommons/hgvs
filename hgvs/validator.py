@@ -102,6 +102,10 @@ class ExtrinsicValidator():
 
     def validate(self, var):
         assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
+        # TODO: #253: Add p. validation support
+        if var.type == 'p':
+            raise HGVSUnsupportedOperationError(
+                "Validating p. reference sequences is unsupported ({}); see https://bitbucket.org/biocommons/hgvs/issues/253/ ".format(str(var)))
         self._ref_is_valid(var)
         return True
 
