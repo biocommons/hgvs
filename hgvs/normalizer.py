@@ -71,12 +71,10 @@ class Normalizer(object):
             raise HGVSUnsupportedOperationError("Unsupported normalization of protein level variants: {0}".format(var))
         if var.posedit.edit.type == 'con':
             raise HGVSUnsupportedOperationError("Unsupported normalization of conversion variants: {0}",format(var))
-        
+
         if var.posedit.edit.type == 'identity':
             var_norm = copy.deepcopy(var)
-            var_norm.posedit.pos = None
             return var_norm
-        
 
         # For c. variants normalization, first convert to n. variant
         # and perform normalization at the n. level, then convert the
