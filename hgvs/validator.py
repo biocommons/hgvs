@@ -79,6 +79,9 @@ class IntrinsicValidator(object):
                 return True
 
             if var.type in BASE_OFFSET_COORD_TYPES:
+                if not ((var.posedit.pos.start.offset == var.posedit.pos.end.offset == 0) or
+                        (var.posedit.pos.start.base == var.posedit.pos.end.base)):
+                    raise HGVSUnsupportedOperationError("Validating deletion length for intronic variants is unsupported ({})".format(str(var)))
                 span_len = ((var.posedit.pos.end.base + var.posedit.pos.end.offset) -
                             (var.posedit.pos.start.base + var.posedit.pos.start.offset) + 1)
             else:
