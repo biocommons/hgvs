@@ -13,6 +13,8 @@ syntax: glob
 *.pyo
 *.sqlite3
 *.tar.gz
+*.wpr
+*.wpu
 *~
 .*.conf.mk
 .DS_Store
@@ -31,6 +33,8 @@ distribute-*
 doc/build
 doc/changelog/.tags
 doc/changelog/.tags.mk
+doc/changelog/releases/.tags
+doc/changelog/releases/.tags.mk
 examples/*_files
 examples/.ipynb_checkpoints
 hgtools-*
@@ -41,13 +45,13 @@ lib/python/uta/_release.py
 misc/data
 misc/exon-str-cmp
 misc/experimental
-misc/tx-ref-discrepancies
 misc/railroad/*_grammar
 misc/railroad/hgvs.ebnf
 misc/railroad/hgvs.pymeta
 misc/railroad/hgvs_railroad
 misc/railroad/hgvs_railroad.rst
 misc/tests
+misc/tx-ref-discrepancies
 nosetests.xml
 parts
 sdist
