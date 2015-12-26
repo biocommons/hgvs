@@ -49,6 +49,8 @@ Important Notes
 Some Examples
 -------------
 
+.. note:: These examples are for the upcoming 0.5.0 release.
+
 See `Installation instructions
 <http://hgvs.readthedocs.org/en/latest/installation.html>`_ if you
 have installation troubles.
@@ -84,7 +86,7 @@ have installation troubles.
   # initialize the mapper for GRCh37 with splign-based alignments
   >>> hdp = hgvs.dataproviders.uta.connect()
   >>> evm = hgvs.variantmapper.EasyVariantMapper(hdp,
-  ...          primary_assembly='GRCh37', alt_aln_method='splign',
+  ...          assembly_name='GRCh37', alt_aln_method='splign',
   ...          replace_reference=True)
   
   # identify transcripts that overlap this genomic variant
