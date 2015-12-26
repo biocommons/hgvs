@@ -7,19 +7,17 @@ This file is intended for ideas that need fleshing out.
 * Simple changes
 ** tests: expected value first
 ** code: sq-dq, yapf
-** code: standardize internal variable naming; var_x, x_var, var
 ** code: relative imports
 ** docs: consolidate dev instructions, link from README
-** docs: s/2014/2015/g, ## -> # + deindent
+** docs: s/2014/2015/g, ## -> # + deindent, unicode + future header
 ** find TODOs and FIXMEs
-
+** code: standardize internal variable naming; var_x, x_var, var
 
 
 * New features (0.5.0?)
 ** add g_to_t and t_to_g
 ** remove defaults
 ** variant -> sequencevariant
-** primary_assembly -> assembly
 ** ref, alt = '' or None?, document it!
 ** Merge VariantMapper and EasyVariantMapper
 ** tests: 100% code coverage

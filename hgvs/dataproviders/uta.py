@@ -12,6 +12,7 @@ import psycopg2
 import psycopg2.extras
 import psycopg2.pool
 
+from bioutils.assemblies import make_ac_name_map
 from bioutils.digests import seq_md5
 
 import hgvs
@@ -472,6 +473,14 @@ class UTABase(Interface, SeqFetcher):
         if row and row['seq'] is not None:
             return row['seq']
         raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
+
+
+    def get_assembly_accessions(self, assembly_name):
+        """return a list of accessions for the specified assembly name (e.g., GRCh38.p5)
+
+        """
+        anm = make_ac_name_map(assembly_name)
+        return anm.keys()
 
 
 class UTA_postgresql(UTABase):
