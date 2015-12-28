@@ -5,6 +5,8 @@ from .decorators.deprecated import deprecated
 
 import recordtype
 
+import hgvs.variantmapper
+
 
 class SequenceVariant(recordtype.recordtype('SequenceVariant', ['ac', 'type', 'posedit'])):
     """
@@ -14,10 +16,36 @@ class SequenceVariant(recordtype.recordtype('SequenceVariant', ['ac', 'type', 'p
     """
 
     def __str__(self):
+        if not hasattr(self, 'formatting'):
+            self.formatting = {}
+        
         if self.ac is not None:
-            return '{self.ac}:{self.type}.{self.posedit}'.format(self=self)
+            return '{ac}:{type}.{posedit}'.format(ac=self.ac, type=self.type, posedit=self.posedit.format(self.formatting))
         else:
-            return '{self.type}.{self.posedit}'.format(self=self)
+            return '{type}.{posedit}'.format(type=self.type, posedit=self.posedit.format(self.formatting))
+
+    
+    def format(self, conf=None):
+        """Formatting the stringification of sequence variants
+
+        :param conf: a dict comprises formatting options. None is to use global settings.
+        formatting configuration options:
+            p_3_letter: use 1-letter or 3-letter amino acid representation for p. variants.
+            p_term_asterisk: use * or Ter to represent stop-codon gain for p. variants.
+        """
+        self.formatting = {}
+        if conf:
+            for option in conf:
+                self.formatting[option] = conf[option]
+        return str(self)
+
+
+    def fill_ref(self, hdp):
+        hm = hgvs.variantmapper.VariantMapper(hdp)
+        if self.posedit.edit.type in ['del', 'delins', 'identity', 'dup', 'inv'] and self.posedit.edit.ref_s is None:
+            hm._replace_reference(self)
+        return self
+
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

@@ -10,7 +10,14 @@ class PosEdit(recordtype.recordtype('PosEdit', [('pos', None), ('edit', None), (
     """
 
     def __str__(self):
-        rv = str(self.edit) if self.pos is None else '{self.pos}{self.edit}'.format(self=self)
+        if not hasattr(self, 'formatting'):
+            self.formatting = {}
+        
+        if self.pos is None:
+            rv = str(self.edit.format(self.formatting))
+        else:
+            rv = '{pos}{edit}'.format(pos=self.pos.format(self.formatting), edit=self.edit.format(self.formatting))
+        
         if self.uncertain:
             if self.edit in ['0', '']:
                 rv = rv + '?'
@@ -25,6 +32,20 @@ class PosEdit(recordtype.recordtype('PosEdit', [('pos', None), ('edit', None), (
         """
         self.uncertain = True
         return self
+    
+    def format(self, conf=None):
+        """Formatting the stringification of PosEdit
+
+        :param conf: a dict comprises formatting options. None is to use global settings.
+        formatting configuration options:
+            p_3_letter: use 1-letter or 3-letter amino acid representation for p. variants.
+            p_term_asterisk: use * or Ter to represent stop-codon gain for p. variants.
+        """
+        self.formatting = {}
+        if conf:
+            for option in conf:
+                self.formatting[option] = conf[option]
+        return str(self)
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
