@@ -28,6 +28,7 @@ config:
 #=> docs -- make sphinx docs
 .PHONY: docs
 docs: setup changelog build_sphinx
+	make -C doc json
 
 changelog:
 	make -C doc/changelog 0.4.rst
