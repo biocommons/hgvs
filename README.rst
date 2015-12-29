@@ -4,8 +4,8 @@
 
 `Documentation`_ | `Issues <https://goo.gl/G63aFQ>`_ | `Mailing List`_ | `Change Log <http://hgvs.readthedocs.org/en/default/changelog/index.html>`_ | `Upcoming Changes <http://hgvs.readthedocs.org/en/default/changelog/upcoming.html>`_
 
-Release: |pypi_badge| |rtd_badge_rel| |build_status|
-Dev: |rtd_badge_dev|
+| Release: |rtd_badge_rel| |pypi_badge| |build_status|
+| Dev: |rtd_badge_dev|
 
 The *hgvs* package provides a Python library to facilitate the use of
 genome, transcript, and protein variants that are represented using
