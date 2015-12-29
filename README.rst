@@ -180,7 +180,7 @@ documentation contributions are appreciated!  Tips to make PRs easier:
   :align: middle
 
 .. |rtd_badge_dev| image:: https://readthedocs.org/projects/hgvs/badge/?version=default
-  :target: http://hgvs.readthedocs.org/en/dev
+  :target: http://hgvs.readthedocs.org/en/default
   :align: middle
 
 .. |pypi_badge| image:: https://badge.fury.io/py/hgvs.png
