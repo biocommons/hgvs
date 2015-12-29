@@ -9,7 +9,7 @@ Changes since 0.3.7 (2015-06-23). See issues at milestone:0.4.0.
 *** #244: Removed cache_transcripts argument from VariantMapper. This argument was deprecated in 0.3.0 and is now obsolete. Dataproviders are now expected to cache data.
 *** #246: Remove hgvsX_to_hgvsY methods. These methods were deprecated in 0.3.0 and are now obsolete.
 *** #247: Dup and Repeat "seq" instance variable renamed to "ref" for consistency.
-*** EasyVariantMapper, Normalizer, and Validator now fetch sequence data at runtime, which may raise performance and privacy concerns. Users may wish to read `Privacy Issues <http://hgvs.readthedocs.org/en/latest/privacy.html>`_ in the documentation.
+*** EasyVariantMapper, Normalizer, and Validator now fetch sequence data at runtime, which may raise performance and privacy concerns. Users may wish to read `Privacy Issues <http://hgvs.readthedocs.org/en/default/privacy.html>`_ in the documentation.
 
 ** Deprecations
 *** UTA: UTA now uses anonymous:anonymous as the username:password. uta_public:uta_public will be obsolete shortly.
