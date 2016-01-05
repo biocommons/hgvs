@@ -101,7 +101,7 @@ if __name__ == '__main__':
         hdp = hgvs.dataproviders.uta.connect()
         evm = easyvariantmapper = hgvs.variantmapper.EasyVariantMapper(
             hdp,
-            primary_assembly=opts.assembly,
+            assembly_name=opts.assembly,
             alt_aln_method='splign')
 
     assemblies = ba.get_assemblies()

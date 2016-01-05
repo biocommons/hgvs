@@ -5,7 +5,6 @@ import copy
 import logging
 
 from Bio.Seq import Seq
-from bioutils.accessions import primary_assembly_accessions
 from bioutils.sequences import reverse_complement
 import recordtype
 
@@ -361,11 +360,11 @@ class EasyVariantMapper(VariantMapper):
     """Provides simplified variant mapping for a single assembly and
     transcript-reference alignment method.
     
-    EasyVariantMapper is instantiated with a primary_assembly and
+    EasyVariantMapper is instantiated with an assembly name and
     alt_aln_method. These enable the following conveniences over
     VariantMapper:
 
-    * The primary assembly and alignment method are used to
+    * The assembly and alignment method are used to
       automatically select an appropriate chromosomal reference
       sequence when mapping from a transcript to a genome (i.e.,
       c_to_g(...) and n_to_g(...)).
@@ -383,13 +382,13 @@ class EasyVariantMapper(VariantMapper):
     """
 
     def __init__(self, hdp,
-                 primary_assembly=hgvs.global_config.mapping.assembly,
+                 assembly_name=hgvs.global_config.mapping.assembly,
                  alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
                  replace_reference=hgvs.global_config.mapping.replace_reference,
                  normalize=hgvs.global_config.mapping.normalize,
                  ):
         """
-        :param str primary_assembly: assembly name ('GRCh37')
+        :param str assembly_name: name of assembly ('GRCh38.p5')
         :param str alt_aln_method: genome-transcript alignment method ('splign', 'blat', 'genewise')
         :param bool replace_reference: replace reference (entails additional network access)
         :param bool normalize: normalize variants
@@ -397,14 +396,14 @@ class EasyVariantMapper(VariantMapper):
         """
 
         super(EasyVariantMapper, self).__init__(hdp=hdp)
-        self.primary_assembly = primary_assembly
+        self.assembly_name = assembly_name
         self.alt_aln_method = alt_aln_method
-        self.primary_assembly_accessions = set(primary_assembly_accessions[primary_assembly])
         self.replace_reference = replace_reference
         self.normalize = normalize
         self._norm = None
         if self.normalize:
-            self._norm = hgvs.normalizer.Normalizer(hdp,alt_aln_method=alt_aln_method)
+            self._norm = hgvs.normalizer.Normalizer(hdp, alt_aln_method=alt_aln_method)
+        self._assembly_accessions = set(hdp.get_assembly_accessions(self.assembly_name))
 
     def g_to_c(self, var_g, tx_ac):
         var_out = super(EasyVariantMapper, self).g_to_c(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
@@ -458,22 +457,22 @@ class EasyVariantMapper(VariantMapper):
 
     def _alt_ac_for_tx_ac(self, tx_ac):
         """return chromosomal accession for given transcript accession (and
-        the primary_assembly and aln_method setting used to
-        instantiate this EasyVariantMapper)
+        the_assembly and aln_method setting used to instantiate this
+        EasyVariantMapper)
 
         """
         alt_acs = [e['alt_ac'] for e in self.hdp.get_tx_mapping_options(tx_ac)
-                   if e['alt_aln_method'] == self.alt_aln_method and e['alt_ac'] in self.primary_assembly_accessions]
+                   if e['alt_aln_method'] == self.alt_aln_method and e['alt_ac'] in self._assembly_accessions]
         if len(alt_acs) > 1:
-            raise HGVSError("Multiple chromosomal alignments for {tx_ac} in {pa}"
+            raise HGVSError("Multiple chromosomal alignments for {tx_ac} in {an}"
                             "using {am} (likely paralog or pseudoautosomal region)".format(
                                 tx_ac=tx_ac,
-                                pa=self.primary_assembly,
+                                an=self.assembly_name,
                                 am=self.alt_aln_method))
         if len(alt_acs) == 0:
-            raise HGVSDataNotAvailableError("No alignments for {tx_ac} in {pa} using {am}".format(
+            raise HGVSDataNotAvailableError("No alignments for {tx_ac} in {an} using {an}".format(
                 tx_ac=tx_ac,
-                pa=self.primary_assembly,
+                an=self.assembly_name,
                 am=self.alt_aln_method))
         return alt_acs[0]    # exactly one remains
 
