@@ -2,16 +2,14 @@
 *hgvs* - Python library to parse, format, validate, normalize, and map sequence variants
 ========================================================================================
 
-`Documentation`_ | `Issues <https://goo.gl/G63aFQ>`_ | `Mailing List`_ | `Change Log <http://hgvs.readthedocs.org/en/latest/changelog/index.html>`_ | `Upcoming Changes <http://hgvs.readthedocs.org/en/latest/changelog/upcoming.html>`_
+`Documentation`_ | `Issues <https://goo.gl/G63aFQ>`_ | `Mailing List`_ | `Change Log <http://hgvs.readthedocs.org/en/default/changelog/index.html>`_ | `Upcoming Changes <http://hgvs.readthedocs.org/en/default/changelog/upcoming.html>`_
 
-|pypi_badge| |rtd_badge| |build_status|
+| Release: |rtd_badge_rel| |pypi_badge| |build_status|
+| Dev: |rtd_badge_dev|
 
 The *hgvs* package provides a Python library to facilitate the use of
 genome, transcript, and protein variants that are represented using
 the Human Genome Variation Society (`mutnomen`_) recommendations.
-
-.. note:: ☺ **2015-12-06**: 0.4.3 is out!. See `Release Notes
-  <http://hgvs.readthedocs.org/en/latest/changelog/0.4.3.html>`_.
 
 ----
 
@@ -49,8 +47,10 @@ Important Notes
 Some Examples
 -------------
 
+.. note:: These examples are for the upcoming 0.5.0 release.
+
 See `Installation instructions
-<http://hgvs.readthedocs.org/en/latest/installation.html>`_ if you
+<http://hgvs.readthedocs.org/en/default/installation.html>`_ if you
 have installation troubles.
 
 ::
@@ -84,7 +84,7 @@ have installation troubles.
   # initialize the mapper for GRCh37 with splign-based alignments
   >>> hdp = hgvs.dataproviders.uta.connect()
   >>> evm = hgvs.variantmapper.EasyVariantMapper(hdp,
-  ...          primary_assembly='GRCh37', alt_aln_method='splign',
+  ...          assembly_name='GRCh37', alt_aln_method='splign',
   ...          replace_reference=True)
   
   # identify transcripts that overlap this genomic variant
@@ -128,7 +128,7 @@ have installation troubles.
   SequenceVariant(ac=NM_001166478.1, type=c, posedit=35delT)
 
 
-There are `more examples in the documentation <http://hgvs.readthedocs.org/en/latest/examples.html>`_.
+There are `more examples in the documentation <http://hgvs.readthedocs.org/en/default/examples.html>`_.
 
 ----
 
@@ -168,15 +168,19 @@ documentation contributions are appreciated!  Tips to make PRs easier:
   current code with respect to variable naming, etc.
 
 
-.. _documentation: http://hgvs.readthedocs.org/en/latest/index.html
+.. _documentation: http://hgvs.readthedocs.org/
 .. _invitae: http://invitae.com/
 .. _mutnomen: http://www.hgvs.org/mutnomen/
 .. _source: https://bitbucket.org/biocommons/hgvs/
 .. _uta: http://bitbucket.org/biocommons/uta/
 .. _mailing list: https://groups.google.com/forum/#!forum/hgvs-discuss
 
-.. |rtd_badge| image:: https://readthedocs.org/projects/hgvs/badge/?version=latest
-  :target: http://hgvs.readthedocs.org/
+.. |rtd_badge_rel| image:: https://readthedocs.org/projects/hgvs/badge/?version=0.4.x
+  :target: http://hgvs.readthedocs.org/en/0.4.x
+  :align: middle
+
+.. |rtd_badge_dev| image:: https://readthedocs.org/projects/hgvs/badge/?version=default
+  :target: http://hgvs.readthedocs.org/en/default
   :align: middle
 
 .. |pypi_badge| image:: https://badge.fury.io/py/hgvs.png

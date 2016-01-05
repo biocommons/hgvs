@@ -45,23 +45,19 @@ setup(
     ],
 
     install_requires = [
-        'biopython',
-        'bioutils',
-        'configparser',
+        'biopython>=1.66',
+        'bioutils>=0.1.0',
+        'configparser>=3.3.0',
         'parsley',
-        'psycopg2',
-        'recordtype',
+        'psycopg2>=2.6.1',
+        'recordtype>=1.1',
         'requests>=1.0.0',
     ],
 
     setup_requires = [
-        # 1.8.0 results in errors, as shown here:
-        # https://readthedocs.org/projects/hgvs/builds/3365325/
-        # cause unknown
-        'setuptools_scm==1.7.0',
+        'setuptools_scm',
         'nose',
         'sphinx',
-        #'sphinxcontrib-fulltoc>=1.1',
         'sphinx_rtd_theme',
         'wheel',
     ],

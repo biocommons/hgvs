@@ -30,7 +30,7 @@ class Interface(object):
     __metaclass__ = abc.ABCMeta
 
     def interface_version(self):
-        return 1
+        return 2
 
     def __init__(self):
         def _split_version_string(v):
@@ -99,6 +99,11 @@ class Interface(object):
     @abc.abstractmethod
     def get_tx_identity_info(self, tx_ac):
         pass
+
+    @abc.abstractmethod
+    def get_assembly_accessions(self, assembly_name):
+        pass
+
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
