@@ -8,7 +8,7 @@ from Bio.Seq import Seq
 from bioutils.sequences import reverse_complement
 import recordtype
 
-from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
+from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
 import hgvs
 import hgvs.location
 import hgvs.normalizer
