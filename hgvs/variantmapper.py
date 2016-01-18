@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+
+"""Provides VariantMapper and EasyVariantMapper to project variants
+between sequences using TranscriptMapper.
+
+"""
+
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import copy
@@ -8,17 +14,17 @@ from Bio.Seq import Seq
 from bioutils.sequences import reverse_complement
 import recordtype
 
-from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
 import hgvs
-import hgvs.location
-import hgvs.normalizer
-import hgvs.posedit
-import hgvs.transcriptmapper
-import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
-import hgvs.utils.altseqbuilder as altseqbuilder
-import hgvs.variant
+from .decorators.lru_cache import lru_cache
+from .exceptions import HGVSError, HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
+from .location import BaseOffsetPosition
+from .normalizer import Normalizer
+from .posedit import PosEdit
+from .transcriptmapper import TranscriptMapper
+from .utils.altseq_to_hgvsp import AltSeqToHgvsp
+from .utils.altseqbuilder import AltSeqBuilder
+from .variant import SequenceVariant
 
-from hgvs.decorators.lru_cache import lru_cache
 
 _logger = logging.getLogger(__name__)
 
@@ -34,7 +40,7 @@ class VariantMapper(object):
       start; in c variants, 1 is the transcription start site.
     * Alphabet: In n and c variants, sequences are DNA; in
       r. variants, sequences are RNA.
-    
+
     This differences are summarized in this diagram::
 
       g ----acgtatgcac--gtctagacgt----      ----acgtatgcac--gtctagacgt----      ----acgtatgcac--gtctagacgt----
@@ -42,7 +48,7 @@ class VariantMapper(object):
       c      acgtATGCACGTCTAGacgt         n      acgtatgcacgtctagacgt         r      acguaugcacgucuagacgu   
                  1                               1                                   1
       p          MetHisValTer
-    
+
     The g excerpt and exon structures are identical. The g⟷n
     transformation, which is the most basic, accounts for the offset
     of the aligned sequences (shown with "1") and the exon structure.
@@ -85,7 +91,7 @@ class VariantMapper(object):
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
         pos_n = tm.g_to_n(var_g.posedit.pos)
         edit_n = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
-        var_n = hgvs.variant.SequenceVariant(ac=tx_ac, type='n', posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
+        var_n = SequenceVariant(ac=tx_ac, type='n', posedit=PosEdit(pos_n, edit_n))
         return var_n
 
     def n_to_g(self, var_n, alt_ac, alt_aln_method='splign'):
@@ -106,7 +112,7 @@ class VariantMapper(object):
         tm = self._fetch_TranscriptMapper(tx_ac=var_n.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         pos_g = tm.n_to_g(var_n.posedit.pos)
         edit_g = self._convert_edit_check_strand(tm.strand, var_n.posedit.edit)
-        var_g = hgvs.variant.SequenceVariant(ac=alt_ac, type='g', posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
+        var_g = SequenceVariant(ac=alt_ac, type='g', posedit=PosEdit(pos_g, edit_g))
         return var_g
 
     # ############################################################################
@@ -130,7 +136,7 @@ class VariantMapper(object):
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
         pos_c = tm.g_to_c(var_g.posedit.pos)
         edit_c = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
-        var_c = hgvs.variant.SequenceVariant(ac=tx_ac, type='c', posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
+        var_c = SequenceVariant(ac=tx_ac, type='c', posedit=PosEdit(pos_c, edit_c))
         return var_c
 
     def c_to_g(self, var_c, alt_ac, alt_aln_method='splign'):
@@ -154,7 +160,7 @@ class VariantMapper(object):
         pos_g = tm.c_to_g(var_c.posedit.pos)
         edit_g = self._convert_edit_check_strand(tm.strand, var_c.posedit.edit)
 
-        var_g = hgvs.variant.SequenceVariant(ac=alt_ac, type='g', posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
+        var_g = SequenceVariant(ac=alt_ac, type='g', posedit=PosEdit(pos_g, edit_g))
         return var_g
 
     # ############################################################################
@@ -175,11 +181,12 @@ class VariantMapper(object):
             raise HGVSInvalidVariantError('Expected a cDNA (c.); got ' + str(var_c))
         tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=var_c.ac, alt_aln_method='transcript')
         pos_n = tm.c_to_n(var_c.posedit.pos)
-        if isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_c.posedit.edit, hgvs.edit.Dup) or isinstance(var_c.posedit.edit, hgvs.edit.NADupN) or isinstance(var_c.posedit.edit, hgvs.edit.Inv):
+        if (isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_c.posedit.edit, hgvs.edit.Dup) or
+                isinstance(var_c.posedit.edit, hgvs.edit.NADupN) or isinstance(var_c.posedit.edit, hgvs.edit.Inv)):
             edit_n = copy.deepcopy(var_c.posedit.edit)
         else:
             raise HGVSUnsupportedOperationError('Only NARefAlt/Dup/NADupN/Inv types are currently implemented')
-        var_n = hgvs.variant.SequenceVariant(ac=var_c.ac, type='n', posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
+        var_n = SequenceVariant(ac=var_c.ac, type='n', posedit=PosEdit(pos_n, edit_n))
         return var_n
 
     def n_to_c(self, var_n):
@@ -197,11 +204,12 @@ class VariantMapper(object):
             raise HGVSInvalidVariantError('Expected n. variant; got ' + str(var_n))
         tm = self._fetch_TranscriptMapper(tx_ac=var_n.ac, alt_ac=var_n.ac, alt_aln_method='transcript')
         pos_c = tm.n_to_c(var_n.posedit.pos)
-        if isinstance(var_n.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_n.posedit.edit, hgvs.edit.Dup) or isinstance(var_n.posedit.edit, hgvs.edit.NADupN) or isinstance(var_n.posedit.edit, hgvs.edit.Inv):
+        if (isinstance(var_n.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_n.posedit.edit, hgvs.edit.Dup) or
+                isinstance(var_n.posedit.edit, hgvs.edit.NADupN) or isinstance(var_n.posedit.edit, hgvs.edit.Inv)):
             edit_c = copy.deepcopy(var_n.posedit.edit)
         else:
             raise HGVSUnsupportedOperationError('Only NARefAlt/Dup/NADupN/Inv types are currently implemented')
-        var_c = hgvs.variant.SequenceVariant(ac=var_n.ac, type='c', posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
+        var_c = SequenceVariant(ac=var_n.ac, type='c', posedit=PosEdit(pos_c, edit_c))
         return var_c
 
     # ############################################################################
@@ -254,7 +262,7 @@ class VariantMapper(object):
             raise HGVSInvalidVariantError('Expected a cDNA (c.); got ' + str(var_c))
 
         reference_data = RefTranscriptData.setup_transcript_data(self.hdp, var_c.ac, pro_ac)
-        builder = altseqbuilder.AltSeqBuilder(var_c, reference_data)
+        builder = AltSeqBuilder(var_c, reference_data)
 
         # TODO - handle case where you get 2+ alt sequences back; currently get list of 1 element
         # loop structure implemented to handle this, but doesn't really do anything currently.
@@ -262,7 +270,7 @@ class VariantMapper(object):
 
         var_ps = []
         for alt_data in all_alt_data:
-            builder = altseq_to_hgvsp.AltSeqToHgvsp(reference_data, alt_data)
+            builder = AltSeqToHgvsp(reference_data, alt_data)
             var_p = builder.build_hgvsp()
             var_ps.append(var_p)
 
@@ -271,7 +279,7 @@ class VariantMapper(object):
         return var_p
 
     ############################################################################
-    ## Internal methods
+    # Internal methods
 
     def _replace_reference(self, var):
         """fetch reference sequence for variant and update (in-place) if necessary"""
@@ -286,8 +294,9 @@ class VariantMapper(object):
             # conversions have no reference sequence (zero-width), so return as-is
             return var
 
-        if ((isinstance(var.posedit.pos.start, hgvs.location.BaseOffsetPosition) and var.posedit.pos.start.offset != 0)
-            or (isinstance(var.posedit.pos.end, hgvs.location.BaseOffsetPosition) and var.posedit.pos.end.offset != 0)):
+        pos = var.posedit.pos
+        if ((isinstance(pos.start, BaseOffsetPosition) and pos.start.offset != 0) or
+            (isinstance(pos.end, BaseOffsetPosition) and pos.end.offset != 0)):
             _logger.info("Can't update reference sequence for intronic variant {}".format(var))
             return var
 
@@ -312,7 +321,7 @@ class VariantMapper(object):
         Get a new TranscriptMapper for the given transcript accession (ac),
         possibly caching the result.
         """
-        return hgvs.transcriptmapper.TranscriptMapper(self.hdp,
+        return TranscriptMapper(self.hdp,
                                                       tx_ac=tx_ac,
                                                       alt_ac=alt_ac,
                                                       alt_aln_method=alt_aln_method)
@@ -359,7 +368,7 @@ class VariantMapper(object):
 class EasyVariantMapper(VariantMapper):
     """Provides simplified variant mapping for a single assembly and
     transcript-reference alignment method.
-    
+
     EasyVariantMapper is instantiated with an assembly name and
     alt_aln_method. These enable the following conveniences over
     VariantMapper:
@@ -381,12 +390,12 @@ class EasyVariantMapper(VariantMapper):
 
     """
 
-    def __init__(self, hdp,
+    def __init__(self,
+                 hdp,
                  assembly_name=hgvs.global_config.mapping.assembly,
                  alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
                  replace_reference=hgvs.global_config.mapping.replace_reference,
-                 normalize=hgvs.global_config.mapping.normalize,
-                 ):
+                 normalize=hgvs.global_config.mapping.normalize, ):
         """
         :param str assembly_name: name of assembly ('GRCh38.p5')
         :param str alt_aln_method: genome-transcript alignment method ('splign', 'blat', 'genewise')
@@ -402,7 +411,7 @@ class EasyVariantMapper(VariantMapper):
         self.normalize = normalize
         self._norm = None
         if self.normalize:
-            self._norm = hgvs.normalizer.Normalizer(hdp, alt_aln_method=alt_aln_method)
+            self._norm = Normalizer(hdp, alt_aln_method=alt_aln_method)
         self._assembly_accessions = set(hdp.get_assembly_accessions(self.assembly_name))
 
     def g_to_c(self, var_g, tx_ac):
@@ -447,7 +456,6 @@ class EasyVariantMapper(VariantMapper):
         var_out = super(EasyVariantMapper, self).c_to_p(var_c)
         return self._maybe_normalize(var_out)
 
-
     def relevant_transcripts(self, var_g):
         """return list of transcripts accessions (strings) for given variant,
         selected by genomic overlap"""
@@ -461,21 +469,20 @@ class EasyVariantMapper(VariantMapper):
         EasyVariantMapper)
 
         """
-        alt_acs = [e['alt_ac'] for e in self.hdp.get_tx_mapping_options(tx_ac)
+        alt_acs = [e['alt_ac']
+                   for e in self.hdp.get_tx_mapping_options(tx_ac)
                    if e['alt_aln_method'] == self.alt_aln_method and e['alt_ac'] in self._assembly_accessions]
         if len(alt_acs) > 1:
             raise HGVSError("Multiple chromosomal alignments for {tx_ac} in {an}"
-                            "using {am} (likely paralog or pseudoautosomal region)".format(
-                                tx_ac=tx_ac,
-                                an=self.assembly_name,
-                                am=self.alt_aln_method))
+                            "using {am} (likely paralog or pseudoautosomal region)".format(tx_ac=tx_ac,
+                                                                                           an=self.assembly_name,
+                                                                                           am=self.alt_aln_method))
         if len(alt_acs) == 0:
-            raise HGVSDataNotAvailableError("No alignments for {tx_ac} in {an} using {an}".format(
-                tx_ac=tx_ac,
-                an=self.assembly_name,
-                am=self.alt_aln_method))
+            raise HGVSDataNotAvailableError(
+                "No alignments for {tx_ac} in {an} using {an}".format(tx_ac=tx_ac,
+                                                                      an=self.assembly_name,
+                                                                      am=self.alt_aln_method))
         return alt_acs[0]    # exactly one remains
-
 
     def _maybe_normalize(self, var):
         """normalize variant if requested, and ignore HGVSUnsupportedOperationError
@@ -490,19 +497,18 @@ class EasyVariantMapper(VariantMapper):
                 # fall through to return unnormalized variant
         return var
 
-
-## <LICENSE>
-## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
-## 
-## Licensed under the Apache License, Version 2.0 (the "License");
-## you may not use this file except in compliance with the License.
-## You may obtain a copy of the License at
-## 
-##     http://www.apache.org/licenses/LICENSE-2.0
-## 
-## Unless required by applicable law or agreed to in writing, software
-## distributed under the License is distributed on an "AS IS" BASIS,
-## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-## See the License for the specific language governing permissions and
-## limitations under the License.
-## </LICENSE>
+# <LICENSE>
+# Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# </LICENSE>

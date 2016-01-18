@@ -146,26 +146,12 @@ Contributing
 
 The hgvs package is intended to be a community project that
 facilitates the reliable use of sequence variants.  Code and
-documentation contributions are appreciated!  Tips to make PRs easier:
+documentation contributions are appreciated!  Please see `development
+instructions
+<http://hgvs.readthedocs.org/en/default/development.html>`_ to get
+started.
 
-* **The default branch is development.** Pulling/updating from default
-  will get you a *development* version.
-* Release versions are determined by tags.  Updating to a specific
-  version (*e.g.,* ``hg up -r 0.4.0``) will get you exactly that
-  version as on PyPI.
-* For all but trivial features, create an issue first and work in a
-  feature branch named like '44-normalization'.  This is essential for
-  changelog tracking.
-* Submit changes using pull requests. PRs should be against the
-  default branch head (or close to it).
-* Branch features should be narrowly focused on the bug/feature
-  described by the issue.
-* Have discrete commits with good log messages.
-* Pass tests. PRs will be rejected if tests fail. 
-* Format your code with yapf. Commit code, then `yapf -ri .`, then `hg
-  diff` and `make test`.
-* Use style that is generally consistent with the (loose) style of the
-  current code with respect to variable naming, etc.
+
 
 
 .. _documentation: http://hgvs.readthedocs.org/

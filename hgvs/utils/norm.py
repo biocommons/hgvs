@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
 
-#
-# Utility to normalize variants.
-# Code of the normalization utilities were imported from vgraph
-# https://github.com/bioinformed/vgraph
-#
+"""Utility to normalize variants.
+Code of the normalization utilities were imported from vgraph
+https://github.com/bioinformed/vgraph
+
+"""
+
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from collections import namedtuple
 
@@ -62,7 +63,7 @@ def normalize_alleles_left(ref, start, stop, alleles, bound, ref_step, shuffle=T
     trimmed, alleles = trim_common_prefixes(alleles)
     start += trimmed
 
-    #assert bound <= start,'start={:d}, left bound={:d}'.format(start, bound)
+    # assert bound <= start,'start={:d}, left bound={:d}'.format(start, bound)
 
     # STEP 3: While a null allele exists, left shuffle by prepending alleles
     #         with reference and trimming common suffixes
@@ -108,7 +109,7 @@ def normalize_alleles_right(ref, start, stop, alleles, bound, ref_step, shuffle=
     trimmed, alleles = trim_common_suffixes(alleles)
     stop -= trimmed
 
-    #assert bound >= stop,'stop={:d}, right bound={:d}'.format(stop, bound)
+    # assert bound >= stop,'stop={:d}, right bound={:d}'.format(stop, bound)
 
     # STEP 3: While a null allele exists, right shuffle by appending alleles
     #         with reference and trimming common prefixes
@@ -142,18 +143,18 @@ def normalize_alleles(ref, start, stop, alleles, bound, ref_step, left, shuffle=
     else:
         return normalize_alleles_right(ref, start, stop, alleles, bound, ref_step, shuffle)
 
-## <LICENSE>
-## Copyright 2015 Kevin Jacobs (https://github.com/bioinformed/vgraph)
-## 
-## Licensed under the Apache License, Version 2.0 (the "License");
-## you may not use this file except in compliance with the License.
-## You may obtain a copy of the License at
-## 
-##     http://www.apache.org/licenses/LICENSE-2.0
-## 
-## Unless required by applicable law or agreed to in writing, software
-## distributed under the License is distributed on an "AS IS" BASIS,
-## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-## See the License for the specific language governing permissions and
-## limitations under the License.
-## </LICENSE>
+# <LICENSE>
+# Copyright 2015 Kevin Jacobs (https://github.com/bioinformed/vgraph)
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# </LICENSE>

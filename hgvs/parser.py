@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+
+"""Provides parser for HGVS strings and HGVS-related conceptual
+components, such as intronic-offset coordiates
+
+"""
+
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from pkg_resources import resource_filename
@@ -8,6 +14,9 @@ import ometa.runtime
 import parsley
 
 from .exceptions import HGVSParseError
+
+# The following imports are referenced by fully-qualified name in the
+# hgvs grammar.
 import hgvs.edit
 import hgvs.hgvsposition
 import hgvs.location
@@ -16,6 +25,7 @@ import hgvs.variant
 
 
 class Parser(object):
+
     """Provides comprehensive parsing of HGVS varaint strings (*i.e.*,
     variants represented according to the Human Genome Variation
     Society recommendations) into Python representations.  The class
@@ -24,7 +34,7 @@ class Parser(object):
     according to the rule.  The class exposes all rules, so that it's
     possible to parse both full variant representations as well as
     components, like so:
-    
+
     >>> hp = Parser()
     >>> v = hp.parse_hgvs_variant("NM_01234.5:c.22+1A>T")
     >>> v
@@ -78,7 +88,7 @@ class Parser(object):
 
         # define function attributes for each grammar rule, prefixed with 'parse_'
         # e.g., Parser.parse_c_interval('26+2_57-3') -> Interval(...)
-        #TODO: exclude built-in rules
+        # TODO: exclude built-in rules
         self.rules = [m.replace('rule_', '') for m in dir(self._grammar._grammarClass) if m.startswith('rule_')]
         for rule_name in self.rules:
             att_name = 'parse_' + rule_name
@@ -96,25 +106,25 @@ class Parser(object):
                 return self._grammar(s).__getattr__(rule_name)()
             except ometa.runtime.ParseError as exc:
                 raise HGVSParseError(
-                    "{s}: char {exc.position}: {reason}".format(s=s,
-                                                                exc=exc,
-                                                                reason=exc.formatReason()))
-
+                    "{s}: char {exc.position}: {reason}".format(
+                        s=s,
+                        exc=exc,
+                        reason=exc.formatReason()))
         rule_fxn.func_doc = "parse string s using `%s' rule" % rule_name
         return rule_fxn
 
-## <LICENSE>
-## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
-## 
-## Licensed under the Apache License, Version 2.0 (the "License");
-## you may not use this file except in compliance with the License.
-## You may obtain a copy of the License at
-## 
-##     http://www.apache.org/licenses/LICENSE-2.0
-## 
-## Unless required by applicable law or agreed to in writing, software
-## distributed under the License is distributed on an "AS IS" BASIS,
-## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-## See the License for the specific language governing permissions and
-## limitations under the License.
-## </LICENSE>
+# <LICENSE>
+# Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# </LICENSE>

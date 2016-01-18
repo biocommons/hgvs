@@ -68,3 +68,4 @@ syntax: regexp
 misc/figures/mapping-tools.svg
 misc/figures/object-diagram.svg
 misc/missing
+code-check.txt

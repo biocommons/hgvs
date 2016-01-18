@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
 
-__doc__ = """
-hgvs.edit -- representation of edit operations in HGVS variants
+"""Representation of edit operations in HGVS variants
 
 NARefAlt and AARefAlt are abstractions of several major variant
 types.  They are distinguished by whether the ref and alt elements
@@ -11,6 +9,8 @@ different (e.g., the ref AA in a protein substitution is part of the
 location).
 
 """
+
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import recordtype
 
@@ -128,7 +128,7 @@ class AARefAlt(Edit, recordtype.recordtype('AARefAlt', [('ref', None), ('alt', N
 
     def __str__(self):
         if self.ref is None and self.alt is None:
-            #raise HGVSError('RefAlt: ref and alt sequences are both undefined')
+            # raise HGVSError('RefAlt: ref and alt sequences are both undefined')
             return '='
 
         # subst and delins
@@ -316,11 +316,6 @@ class Repeat(Edit, recordtype.recordtype('Repeat', [('ref', None), ('min', None)
     def seq(self):
         return self.ref
 
-    @property
-    @deprecated("use ref property instead")
-    def seq(self):
-        return self.ref
-
 
 class NACopy(Edit, recordtype.recordtype('NACopy', ['copy', ('uncertain', False)])):
     """Represent copy number variants (Invitae-specific use)
@@ -394,7 +389,7 @@ class Inv(Edit, recordtype.recordtype('Inv', [('ref', None), ('uncertain', False
         """
         self.uncertain = True
         return self
-    
+
     @property
     def ref_s(self):
         return self.ref if (isinstance(self.ref, basestring) and self.ref and self.ref[0] in 'ACGTUN') else None
@@ -456,25 +451,22 @@ class Conv(Edit, recordtype.recordtype('Conv', [('from_ac', None), ('from_type',
         return 'con'
 
 
-
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
 
-
-
-## <LICENSE>
-## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
-## 
-## Licensed under the Apache License, Version 2.0 (the "License");
-## you may not use this file except in compliance with the License.
-## You may obtain a copy of the License at
-## 
-##     http://www.apache.org/licenses/LICENSE-2.0
-## 
-## Unless required by applicable law or agreed to in writing, software
-## distributed under the License is distributed on an "AS IS" BASIS,
-## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-## See the License for the specific language governing permissions and
-## limitations under the License.
-## </LICENSE>
+# <LICENSE>
+# Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# </LICENSE>

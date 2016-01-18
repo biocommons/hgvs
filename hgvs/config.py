@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """Defines a default set of config for use throughout the hgvs
 package
 
@@ -18,12 +20,13 @@ for str, int, and boolean.
 
 """
 
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 from configparser import ConfigParser, ExtendedInterpolation
 from copy import copy
 import logging
 from pkg_resources import resource_stream
 import re
-
 
 logger = logging.getLogger(__name__)
 
@@ -94,4 +97,3 @@ _default_config = Config()
 _default_config._read_file(resource_stream(__name__, '_data/defaults.ini'))
 
 global_config = copy(_default_config)
-

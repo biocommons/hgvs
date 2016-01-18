@@ -1,20 +1,19 @@
 # -*- coding: utf-8 -*-
+
+"""hgvs.normalizer
+"""
+
 from __future__ import absolute_import, division, print_function, unicode_literals
-"""
-hgvs.normalizer
-"""
 
 import copy
 import logging
 
 import hgvs
-import hgvs.dataproviders.uta
-import hgvs.location
-import hgvs.parser
-import hgvs.posedit
-import hgvs.variantmapper
+import hgvs.variantmapper       # from ... import failed. confused!
+from .dataproviders.uta import (connect)
+from .exceptions import (HGVSDataNotAvailableError, HGVSUnsupportedOperationError)
+from .parser import (Parser)
 
-from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError
 
 _logger = logging.getLogger(__name__)
 
@@ -23,10 +22,9 @@ try:
 
     def normalize_alleles(ref, start, stop, alleles, bound, ref_step, left, shuffle=True):
         """wraps vgraph.norm.normalize_alleles to pass ascii-encoded strings"""
-        return _normalize_alleles_vgraph(ref.encode('ascii'),
-                                         start, stop,
-                                         [a.encode('ascii') for a in alleles],
-                                         bound, ref_step, left, shuffle)
+        return _normalize_alleles_vgraph(
+            ref.encode('ascii'), start, stop, [a.encode('ascii') for a in alleles], bound, ref_step, left, shuffle)
+
     _logger.debug("Using normalize_alleles from vgraph (https://github.com/bioinformed/vgraph)")
 except ImportError:
     from .utils.norm import normalize_alleles
@@ -37,25 +35,27 @@ class Normalizer(object):
     """Perform variant normalization
     """
 
-    def __init__(self, hdp,
+    def __init__(self,
+                 hdp,
                  cross_boundaries=hgvs.global_config.normalizer.cross_boundaries,
                  shuffle_direction=hgvs.global_config.normalizer.shuffle_direction,
-                 alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
-                 ):
+                 alt_aln_method=hgvs.global_config.mapping.alt_aln_method, ):
         """Initialize and configure the normalizer
 
-        :param hdp: HGVS Data Provider Interface-compliant instance (see :class:`hgvs.dataproviders.interface.Interface`)
+        :param hdp: HGVS Data Provider Interface-compliant instance
+            (see :class:`hgvs.dataproviders.interface.Interface`)
         :param direction: shuffling direction
         :param cross_boundaries: whether allow the shuffling to cross the exon-intron boundary
         :param alt_aln_method: sequence alignment method (e.g., splign, blat)
+
         """
-        assert shuffle_direction == 3 or shuffle_direction == 5, "The shuffling direction should be 3 (3' most) or 5 (5' most)."
+        assert shuffle_direction == 3 or shuffle_direction == 5, \
+            "The shuffling direction should be 3 (3' most) or 5 (5' most)."
         self.hdp = hdp
         self.shuffle_direction = shuffle_direction
         self.cross_boundaries = cross_boundaries
         self.alt_aln_method = alt_aln_method
         self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
-
 
     def normalize(self, var):
         """Perform sequence variants normalization for single variant
@@ -68,9 +68,11 @@ class Normalizer(object):
         type = var.type
 
         if type == 'p':
-            raise HGVSUnsupportedOperationError("Unsupported normalization of protein level variants: {0}".format(var))
+            raise HGVSUnsupportedOperationError(
+                "Unsupported normalization of protein level variants: {0}".format(var))
         if var.posedit.edit.type == 'con':
-            raise HGVSUnsupportedOperationError("Unsupported normalization of conversion variants: {0}",format(var))
+            raise HGVSUnsupportedOperationError(
+                "Unsupported normalization of conversion variants: {0}", format(var))
 
         if var.posedit.edit.type == 'identity':
             var_norm = copy.deepcopy(var)
@@ -84,7 +86,8 @@ class Normalizer(object):
 
         if var.type in 'nr':
             if var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0:
-                raise HGVSUnsupportedOperationError("Normalization of intronic variants is not supported")
+                raise HGVSUnsupportedOperationError(
+                    "Normalization of intronic variants is not supported")
 
         # g, m, n, r sequences all use sequence start as the datum
         # That's an essential assumption herein
@@ -101,7 +104,7 @@ class Normalizer(object):
         # Generate normalized variant
         if alt_len == ref_len:
             ref_start = start
-            ref_end   = end - 1
+            ref_end = end - 1
             # inversion
             if ref_len > 1 and ref == alt[::-1]:
                 edit = hgvs.edit.Inv(ref=ref)
@@ -162,7 +165,6 @@ class Normalizer(object):
 
         return var_norm
 
-
     def _get_boundary(self, var):
         """Get the position of exon-intron boundary for current variant
         """
@@ -174,7 +176,8 @@ class Normalizer(object):
                 # TODO: #239: add filter options to get_tx_mapping_options
                 map_info = self.hdp.get_tx_mapping_options(var.ac)
                 if not map_info:
-                    raise HGVSDataNotAvailableError("No mapping info available for {ac}".format(ac=var.ac))
+                    raise HGVSDataNotAvailableError(
+                        "No mapping info available for {ac}".format(ac=var.ac))
                 map_info = [item for item in map_info if item['alt_aln_method'] == self.alt_aln_method]
                 alt_ac = map_info[0]['alt_ac']
 
@@ -198,18 +201,18 @@ class Normalizer(object):
 
                 # TODO: #242: implement methods to find tx regions
                 for i in range(0, len(exon_starts)):
-                    if (var.posedit.pos.start.base - 1 >= exon_starts[i]
-                        and var.posedit.pos.start.base - 1 < exon_ends[i]):
+                    if (var.posedit.pos.start.base - 1 >= exon_starts[i] and
+                            var.posedit.pos.start.base - 1 < exon_ends[i]):
                         break
 
                 for j in range(0, len(exon_starts)):
-                    if (var.posedit.pos.end.base - 1 >= exon_starts[j]
-                        and var.posedit.pos.end.base - 1 < exon_ends[j]):
+                    if (var.posedit.pos.end.base - 1 >= exon_starts[j] and var.posedit.pos.end.base - 1 < exon_ends[j]):
                         break
 
                 if i != j:
                     raise HGVSUnsupportedOperationError(
-                        "Unsupported normalization of variants spanning the exon-intron boundary ({var})".format(var=var))
+                        "Unsupported normalization of variants spanning the exon-intron boundary ({var})".format(var=
+                                                                                                                 var))
 
                 left = exon_starts[i]
                 right = exon_ends[i]
@@ -235,7 +238,6 @@ class Normalizer(object):
             # For variant type of g and m etc.
             return 0, float('inf')
 
-
     def _fetch_bounded_seq(self, var, start, end, boundary):
         """Fetch reference sequence from hgvs data provider.
 
@@ -257,7 +259,7 @@ class Normalizer(object):
         if var.posedit.edit.type == 'ins' or var.posedit.edit.type == 'dup' or var.posedit.edit.type == 'dupn':
             ref = ''
         else:
-            #For NARefAlt and Inv
+            # For NARefAlt and Inv
             if var.posedit.edit.ref_s is None or var.posedit.edit.ref == '':
                 ref = self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, boundary)
             else:
@@ -280,7 +282,6 @@ class Normalizer(object):
             alt = ref
 
         return ref, alt
-    
 
     def _normalize_alleles(self, var, boundary):
         """Normalize the variant until it could not be shuffled
@@ -308,8 +309,8 @@ class Normalizer(object):
                 if ref_seq == '':
                     break
                 orig_start, orig_stop = start, stop
-                start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt),
-                                                            len(ref_seq), win_size, False)
+                start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt), len(ref_seq), win_size,
+                                                            False)
                 if stop < len(ref_seq) or start == orig_start:
                     break
                 # if stop at the end of the window, try to extend the shuffling to the right
@@ -327,7 +328,7 @@ class Normalizer(object):
                 start = var.posedit.pos.end.base - base + 1
                 stop = var.posedit.pos.end.base - base + 1
             else:
-                base = max(var.posedit.pos.start.base - win_size , 1)
+                base = max(var.posedit.pos.start.base - win_size, 1)
                 start = var.posedit.pos.start.base - base
                 stop = var.posedit.pos.end.base - base + 1
 
@@ -340,8 +341,7 @@ class Normalizer(object):
                 if ref_seq == '':
                     break
                 orig_start, orig_stop = start, stop
-                start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt),
-                                                            0, win_size, True)
+                start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt), 0, win_size, True)
                 if start > 0 or stop == orig_stop:
                     break
                 # if stop at the end of the window, try to extend the shuffling to the left
@@ -350,12 +350,11 @@ class Normalizer(object):
                 stop = orig_stop
 
         return base + start, base + stop, (ref, alt)
-    
-    
+
     def _dupN(self, adj_seq, alt, shuffle_direction):
         """Determine the number of duplicates. Return 0 if it is not a dup
         """
-        
+
         seq_len = len(adj_seq)
         alt_len = len(alt)
         for n in range(1, alt_len + 1):
@@ -363,40 +362,37 @@ class Normalizer(object):
                 continue
             if shuffle_direction == 3:
                 start = seq_len - int(alt_len / n)
-                end   = seq_len
+                end = seq_len
             else:
                 start = 0
-                end   = int(alt_len / n)
+                end = int(alt_len / n)
             if start < 0:
                 start = 0
-            if adj_seq[start : end] * n == alt:
+            if adj_seq[start:end] * n == alt:
                 return n
         return 0
 
 
-
-
 if __name__ == '__main__':
-    hgvsparser = hgvs.parser.Parser()
+    hgvsparser = Parser()
     var = hgvsparser.parse_hgvs_variant('NM_001166478.1:c.61delG')
-    hdp = hgvs.dataproviders.uta.connect()
+    hdp = connect()
     norm = Normalizer(hdp, shuffle_direction=5, cross_boundaries=False)
     res = norm.normalize(var)
     print(str(var) + '    =>    ' + str(res))
 
-
-## <LICENSE>
-## Copyright 2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
-##
-## Licensed under the Apache License, Version 2.0 (the "License");
-## you may not use this file except in compliance with the License.
-## You may obtain a copy of the License at
-##
-##     http://www.apache.org/licenses/LICENSE-2.0
-##
-## Unless required by applicable law or agreed to in writing, software
-## distributed under the License is distributed on an "AS IS" BASIS,
-## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-## See the License for the specific language governing permissions and
-## limitations under the License.
-## </LICENSE>
+# <LICENSE>
+# Copyright 2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# </LICENSE>

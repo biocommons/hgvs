@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
+
+"""implements validation of hgvs variants
+
+"""
+
 from __future__ import absolute_import, division, print_function, unicode_literals
-"""
-hgvs.hgvsvalidator
-"""
 
 from .exceptions import HGVSValidationError, HGVSUnsupportedOperationError
-
-import hgvs.parser
-import hgvs.variantmapper
+from .variant import SequenceVariant
+from .variantmapper import VariantMapper
 
 BASE_RANGE_ERROR_MSG = 'base start position must be <= end position'
 OFFSET_RANGE_ERROR_MSG = 'offset start must be <= end position'
@@ -16,11 +17,11 @@ DEL_ERROR_MSG = 'Length implied by coordinates ({span_len})  must equal sequence
 AC_ERROR_MSG = 'Accession is not present in BDI database'
 SEQ_ERROR_MSG = 'Variant reference ({var_ref_seq}) does not agree with reference sequence ({ref_seq})'
 
-
 # TODO: #249: redisign validation interface for greater flexibility
 
 BASE_OFFSET_COORD_TYPES = 'cnr'
 SIMPLE_COORD_TYPES = 'gmp'
+
 
 class Validator(object):
     """invoke intrinsic and extrinsic validation"""
@@ -39,7 +40,7 @@ class IntrinsicValidator(object):
     """
 
     def validate(self, var):
-        assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
+        assert isinstance(var, SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
         self._start_lte_end(var)
         self._ins_length_is_one(var)
         self._del_length(var)
@@ -81,7 +82,8 @@ class IntrinsicValidator(object):
             if var.type in BASE_OFFSET_COORD_TYPES:
                 if not ((var.posedit.pos.start.offset == var.posedit.pos.end.offset == 0) or
                         (var.posedit.pos.start.base == var.posedit.pos.end.base)):
-                    raise HGVSUnsupportedOperationError("Validating deletion length for intronic variants is unsupported ({})".format(str(var)))
+                    raise HGVSUnsupportedOperationError(
+                        "Validating deletion length for intronic variants is unsupported ({})".format(str(var)))
                 span_len = ((var.posedit.pos.end.base + var.posedit.pos.end.offset) -
                             (var.posedit.pos.start.base + var.posedit.pos.start.offset) + 1)
             else:
@@ -99,24 +101,23 @@ class ExtrinsicValidator():
 
     def __init__(self, hdp):
         self.hdp = hdp
-        self.vm = hgvs.variantmapper.VariantMapper(self.hdp)
+        self.vm = VariantMapper(self.hdp)
 
     def validate(self, var):
-        assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
+        assert isinstance(var, SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
         # TODO: #253: Add p. validation support
         if var.type == 'p':
-            raise HGVSUnsupportedOperationError(
-                "Validating p. reference sequences is unsupported ({}); see https://bitbucket.org/biocommons/hgvs/issues/253/ ".format(str(var)))
+            raise HGVSUnsupportedOperationError("Validating p. reference sequences is unsupported"
+                                                " ({}); see https://bitbucket.org/biocommons/hgvs/issues/253/ ".format(
+                                                    str(var)))
         self._ref_is_valid(var)
         return True
 
     def _ref_is_valid(self, var):
         # use reference sequence of original variant, even if later converted (eg c_to_n)
-        if (var.type in BASE_OFFSET_COORD_TYPES
-            and var.posedit.pos is not None
-            and (var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0)):
-            raise HGVSUnsupportedOperationError(
-                "Cannot validate sequence of an intronic variant ({})".format(str(var)))
+        if (var.type in BASE_OFFSET_COORD_TYPES and var.posedit.pos is not None and
+            (var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0)):
+            raise HGVSUnsupportedOperationError("Cannot validate sequence of an intronic variant ({})".format(str(var)))
 
         var_ref_seq = getattr(var.posedit.edit, 'ref', None)
 
@@ -140,20 +141,18 @@ class ExtrinsicValidator():
 
         return True
 
-
-
-## <LICENSE>
-## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
-##
-## Licensed under the Apache License, Version 2.0 (the "License");
-## you may not use this file except in compliance with the License.
-## You may obtain a copy of the License at
-##
-##     http://www.apache.org/licenses/LICENSE-2.0
-##
-## Unless required by applicable law or agreed to in writing, software
-## distributed under the License is distributed on an "AS IS" BASIS,
-## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-## See the License for the specific language governing permissions and
-## limitations under the License.
-## </LICENSE>
+# <LICENSE>
+# Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# </LICENSE>
