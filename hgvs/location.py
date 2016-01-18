@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-"""
-hgvs.location -- classes for dealing with the locations of HGVS variants
+
+"""Provides classes for dealing with the locations of HGVS variants
 
 This module provides for Representing the location of variants in HGVS nomenclature, including:
 
@@ -16,6 +15,8 @@ Classes:
   * :class:`AAPosition` -- an amino acid position (with AA)
   * :class:`Interval` -- an interval of Positions
 """
+
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import recordtype
 
@@ -48,9 +49,9 @@ class SimplePosition(recordtype.recordtype('SimplePosition', field_names=[('base
         return True
 
 
-class BaseOffsetPosition(recordtype.recordtype(
-    'BaseOffsetPosition',
-    field_names=[('base', None), ('offset', 0), ('datum', SEQ_START), ('uncertain', False)])):
+class BaseOffsetPosition(
+        recordtype.recordtype('BaseOffsetPosition',
+                              field_names=[('base', None), ('offset', 0), ('datum', SEQ_START), ('uncertain', False)])):
     """
     Class for dealing with CDS coordinates in transcript variants.
 
@@ -87,7 +88,8 @@ class BaseOffsetPosition(recordtype.recordtype(
     def validate(self):
         "raise AssertionError if instance variables are invalid; otherwise return True"
         assert self.base is None or self.base != 0, 'BaseOffsetPosition base may not be 0'
-        assert self.base is None or self.datum == CDS_START or self.base >= 1, 'BaseOffsetPosition base must be >=1 for datum = SEQ_START or CDS_END'
+        assert (self.base is None or self.datum == CDS_START or self.base >= 1), \
+            'BaseOffsetPosition base must be >=1 for datum = SEQ_START or CDS_END'
         return True
 
     def __str__(self):
@@ -160,18 +162,18 @@ class Interval(recordtype.recordtype('Interval', field_names=['start', ('end', N
         """return True if the position is marked uncertain or undefined"""
         return self.uncertain or self.start.is_uncertain or self.end.is_uncertain
 
-## <LICENSE>
-## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
-## 
-## Licensed under the Apache License, Version 2.0 (the "License");
-## you may not use this file except in compliance with the License.
-## You may obtain a copy of the License at
-## 
-##     http://www.apache.org/licenses/LICENSE-2.0
-## 
-## Unless required by applicable law or agreed to in writing, software
-## distributed under the License is distributed on an "AS IS" BASIS,
-## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-## See the License for the specific language governing permissions and
-## limitations under the License.
-## </LICENSE>
+# <LICENSE>
+# Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# </LICENSE>

@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
+
+"""implements an hgvs data provider interface using UTA (https://bitbucket.org/biocommons/uta)
+
+"""
+
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import inspect
 import logging
 import os
 import sqlite3
-import types
 import urlparse
 
 import psycopg2
@@ -21,6 +25,7 @@ from ..decorators import deprecated
 from ..decorators.lru_cache import lru_cache
 from ..exceptions import HGVSError, HGVSDataNotAvailableError
 from .seqfetcher import SeqFetcher
+
 
 _url_key = os.environ.get('_UTA_URL_KEY', 'public' if hgvs._is_released_version else 'public_dev')
 _default_db_url = os.environ.get('UTA_DB_URL', hgvs.global_config['uta'][_url_key])
@@ -153,7 +158,7 @@ class UTABase(Interface, SeqFetcher):
         return cur
 
     ############################################################################
-    ## Queries
+    # Queries
 
     @lru_cache(maxsize=1)
     def data_version(self):
@@ -294,11 +299,8 @@ class UTABase(Interface, SeqFetcher):
         cur = self._execute(self.sql['tx_identity_info'], [tx_ac])
         rows = cur.fetchall()
         if len(rows) == 0:
-            raise HGVSDataNotAvailableError(
-                "No transcript definition for (tx_ac={tx_ac})".format(
-                    tx_ac=tx_ac))
+            raise HGVSDataNotAvailableError("No transcript definition for (tx_ac={tx_ac})".format(tx_ac=tx_ac))
         return rows[0]
-
 
     @lru_cache(maxsize=128)
     def get_tx_info(self, tx_ac, alt_ac, alt_aln_method):
@@ -327,19 +329,19 @@ class UTABase(Interface, SeqFetcher):
         rows = cur.fetchall()
         if len(rows) == 0:
             raise HGVSDataNotAvailableError(
-                "No tx_info for (tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})".format(
-                    tx_ac=tx_ac,
-                    alt_ac=alt_ac,
-                    alt_aln_method=alt_aln_method))
+                "No tx_info for (tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})".format(tx_ac=tx_ac,
+                                                                                                        alt_ac=alt_ac,
+                                                                                                        alt_aln_method=
+                                                                                                        alt_aln_method))
         elif len(rows) == 1:
             return rows[0]
         else:
             raise HGVSError(
-                "Multiple ({n}) replies for tx_info(tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})".format(
-                    n=len(rows),
-                    tx_ac=tx_ac,
-                    alt_ac=alt_ac,
-                    alt_aln_method=alt_aln_method))
+                "Multiple ({n}) replies for tx_info(tx_ac="
+                "{tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})".format(n=len(rows),
+                                                                                  tx_ac=tx_ac,
+                                                                                  alt_ac=alt_ac,
+                                                                                  alt_aln_method=alt_aln_method))
 
     @lru_cache(maxsize=128)
     def get_tx_mapping_options(self, tx_ac):
@@ -474,7 +476,6 @@ class UTABase(Interface, SeqFetcher):
             return row['seq']
         raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
 
-
     def get_assembly_accessions(self, assembly_name):
         """return a list of accessions for the specified assembly name (e.g., GRCh38.p5)
 
@@ -495,14 +496,12 @@ class UTA_postgresql(UTABase):
         if self.application_name is None:
             st = inspect.stack()
             self.application_name = os.path.basename(st[-1][1])
-        conn_args = dict(
-            host=self.url.hostname,
-            port=self.url.port,
-            database=self.url.database,
-            user=self.url.username,
-            password=self.url.password,
-            application_name=self.application_name + "/" + hgvs.__version__,
-            )
+        conn_args = dict(host=self.url.hostname,
+                         port=self.url.port,
+                         database=self.url.database,
+                         user=self.url.username,
+                         password=self.url.password,
+                         application_name=self.application_name + "/" + hgvs.__version__, )
         if self.pooling:
             self._pool = psycopg2.pool.ThreadedConnectionPool(1, 10, **conn_args)
         else:
@@ -519,8 +518,8 @@ class UTA_postgresql(UTABase):
         cur = self._execute("select exists(SELECT 1 FROM pg_namespace WHERE nspname = %s)", [self.url.schema])
         if cur.fetchone()[0]:
             return
-        raise HGVSDataNotAvailableError("specified schema ({}) does not exist (url={})".format(
-            self.url.schema, self.url))
+        raise HGVSDataNotAvailableError("specified schema ({}) does not exist (url={})".format(self.url.schema,
+                                                                                               self.url))
 
     def _get_cursor(self):
         """returns a cursor obtained from a single or pooled connection, and
@@ -635,18 +634,18 @@ if __name__ == "__main__":
     import doctest
     doctest.testmod()
 
-## <LICENSE>
-## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
-## 
-## Licensed under the Apache License, Version 2.0 (the "License");
-## you may not use this file except in compliance with the License.
-## You may obtain a copy of the License at
-## 
-##     http://www.apache.org/licenses/LICENSE-2.0
-## 
-## Unless required by applicable law or agreed to in writing, software
-## distributed under the License is distributed on an "AS IS" BASIS,
-## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-## See the License for the specific language governing permissions and
-## limitations under the License.
-## </LICENSE>
+# <LICENSE>
+# Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# </LICENSE>

@@ -1,29 +1,37 @@
 # -*- coding: utf-8 -*-
+
+"""Utility to insert an hgvs variant into a transcript sequence.
+Generates a record corresponding to the modified transcript sequence,
+along with annotations for use in conversion to an hgvsp tag.
+Used in hgvsc to hgvsp conversion.
+
+"""
+
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-#
-# Utility to insert an hgvs variant into a transcript sequence.
-# Generates a record corresponding to the modified transcript sequence,
-# along with annotations for use in conversion to an hgvsp tag.
-# Used in hgvsc to hgvsp conversion.
-#
 import math
 import recordtype
 
 from Bio.Seq import Seq
 
-import hgvs.edit
-from hgvs.location import CDS_START, CDS_END
+from ..edit import (Dup, NARefAlt, Repeat)
+from ..location import CDS_START, CDS_END
 
 DBG = False
 
 
 class AltTranscriptData(recordtype.recordtype('AltTranscriptData', [
-    'transcript_sequence', 'aa_sequence', 'cds_start', 'cds_stop', 'protein_accession', ('is_frameshift', False),
+        'transcript_sequence', 'aa_sequence', 'cds_start', 'cds_stop', 'protein_accession', ('is_frameshift', False),
     ('variant_start_aa', None), ('frameshift_start', None), ('is_substitution', False), ('is_ambiguous', False)
 ])):
     @classmethod
-    def create_for_variant_inserter(cls, seq, cds_start, cds_stop, is_frameshift, variant_start_aa, accession,
+    def create_for_variant_inserter(cls,
+                                    seq,
+                                    cds_start,
+                                    cds_stop,
+                                    is_frameshift,
+                                    variant_start_aa,
+                                    accession,
                                     is_substitution=False,
                                     is_ambiguous=False):
         """Create a variant sequence using inputs from VariantInserter
@@ -60,7 +68,11 @@ class AltTranscriptData(recordtype.recordtype('AltTranscriptData', [
         else:
             seq_aa = []
 
-        alt_data = AltTranscriptData(''.join(seq), seq_aa, cds_start, cds_stop, accession,
+        alt_data = AltTranscriptData(''.join(seq),
+                                     seq_aa,
+                                     cds_start,
+                                     cds_stop,
+                                     accession,
                                      is_frameshift=is_frameshift,
                                      variant_start_aa=variant_start_aa,
                                      is_substitution=is_substitution,
@@ -108,9 +120,9 @@ class AltSeqBuilder(object):
         WHOLE_GENE_DELETED = "whole_gene_deleted"
 
         type_map = {
-            hgvs.edit.NARefAlt: self._incorporate_delins,
-            hgvs.edit.Dup: self._incorporate_dup,
-            hgvs.edit.Repeat: self._incorporate_repeat,
+            NARefAlt: self._incorporate_delins,
+            Dup: self._incorporate_dup,
+            Repeat: self._incorporate_repeat,
             NOT_CDS: self._create_alt_equals_ref_noncds,
             WHOLE_GENE_DELETED: self._create_no_protein
         }
@@ -139,7 +151,7 @@ class AltSeqBuilder(object):
 
         try:
             this_alt_data = type_map[edit_type]()
-        except KeyError as e:
+        except KeyError:
             raise NotImplementedError("c to p translation unsupported for {} type {}".format(self._var_c, edit_type))
 
         # get the start of the "terminal" frameshift (i.e. one never "cancelled out")
@@ -213,10 +225,14 @@ class AltSeqBuilder(object):
         # use max of mod 3 value and 1 (in event that indel starts in the 5'utr range)
         variant_start_aa = max(int(math.ceil((self._var_c.posedit.pos.start.base) / 3.0)), 1)
 
-        alt_data = AltTranscriptData.create_for_variant_inserter(
-            seq, cds_start, cds_stop, is_frameshift, variant_start_aa, self._transcript_data.protein_accession,
-            is_substitution=is_substitution,
-            is_ambiguous=self._ref_has_multiple_stops)
+        alt_data = AltTranscriptData.create_for_variant_inserter(seq,
+                                                                 cds_start,
+                                                                 cds_stop,
+                                                                 is_frameshift,
+                                                                 variant_start_aa,
+                                                                 self._transcript_data.protein_accession,
+                                                                 is_substitution=is_substitution,
+                                                                 is_ambiguous=self._ref_has_multiple_stops)
         return alt_data
 
     def _incorporate_dup(self):
@@ -229,7 +245,10 @@ class AltSeqBuilder(object):
         is_frameshift = len(dup_seq) % 3 != 0
         variant_start_aa = int(math.ceil((self._var_c.posedit.pos.end.base + 1) / 3.0))
 
-        alt_data = AltTranscriptData.create_for_variant_inserter(seq, cds_start, cds_stop, is_frameshift,
+        alt_data = AltTranscriptData.create_for_variant_inserter(seq,
+                                                                 cds_start,
+                                                                 cds_stop,
+                                                                 is_frameshift,
                                                                  variant_start_aa,
                                                                  self._transcript_data.protein_accession,
                                                                  is_ambiguous=self._ref_has_multiple_stops)
@@ -274,23 +293,32 @@ class AltSeqBuilder(object):
         end += 1
 
         if DBG:
-            print("len seq:{} cds_start:{} cds_stop:{} start:{} end:{}".format(len(seq), cds_start, cds_stop, start,
-                                                                               end))
+            print("len seq:{} cds_start:{} cds_stop:{} start:{} end:{}".format(
+                len(seq), cds_start, cds_stop, start, end))
         return seq, cds_start, cds_stop, start, end
 
     def _create_alt_equals_ref_noncds(self):
         """Create an alt seq that matches the reference (for non-cds variants)"""
         alt_data = AltTranscriptData.create_for_variant_inserter(
-            list(self._transcript_data.transcript_sequence), self._transcript_data.cds_start,
-            self._transcript_data.cds_stop, False, None, self._transcript_data.protein_accession,
+            list(self._transcript_data.transcript_sequence),
+            self._transcript_data.cds_start,
+            self._transcript_data.cds_stop,
+            False,
+            None,
+            self._transcript_data.protein_accession,
             is_ambiguous=True)
         return alt_data
 
     def _create_no_protein(self):
         """Create a no-protein result"""
-        alt_data = AltTranscriptData.create_for_variant_inserter([], None, None, False, None,
-                                                                 self._transcript_data.protein_accession,
-                                                                 is_ambiguous=False)
+        alt_data = AltTranscriptData.create_for_variant_inserter(
+            [],
+            None,
+            None,
+            False,
+            None,
+            self._transcript_data.protein_accession,
+            is_ambiguous=False)
         return alt_data
 
     def _get_frameshift_start(self, variant_data):
@@ -310,18 +338,18 @@ class AltSeqBuilder(object):
             variant_data.frameshift_start = variant_data.variant_start_aa
         return variant_data
 
-## <LICENSE>
-## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
-## 
-## Licensed under the Apache License, Version 2.0 (the "License");
-## you may not use this file except in compliance with the License.
-## You may obtain a copy of the License at
-## 
-##     http://www.apache.org/licenses/LICENSE-2.0
-## 
-## Unless required by applicable law or agreed to in writing, software
-## distributed under the License is distributed on an "AS IS" BASIS,
-## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-## See the License for the specific language governing permissions and
-## limitations under the License.
-## </LICENSE>
+# <LICENSE>
+# Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# </LICENSE>

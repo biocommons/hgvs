@@ -21,7 +21,6 @@ from hgvs.variant import SequenceVariant
 from hgvs.variantmapper import EasyVariantMapper
 import hgvs.utils.context as huc
 
-
 logging.basicConfig(level=logging.WARN)
 logger = logging.getLogger(__name__)
 
@@ -34,8 +33,10 @@ WHERE alt_ac~'^NC_0000' and alt_aln_method='splign' and cigar~'[DIX]' AND D.tx_a
 ORDER BY D.ord
 """
 
+
 class COp(object):
     __slots__ = "l op a_s a_e r_s r_e q_s q_e".split()
+
     def __init__(self, l, op):
         self.l = int(l)
         self.op = op
@@ -109,9 +110,9 @@ def generate_variants(row):
         if cop.op != '=':
             lrs, lre = cop.r_s, cop.r_e
             lqs, lqe = cop.q_s, cop.q_e
-    
-            tseq = row['tx_aseq'][cop.a_s:cop.a_e].replace('-','') or None
-            gseq = row['alt_aseq'][cop.a_s:cop.a_e].replace('-','') or None
+
+            tseq = row['tx_aseq'][cop.a_s:cop.a_e].replace('-', '') or None
+            gseq = row['alt_aseq'][cop.a_s:cop.a_e].replace('-', '') or None
 
             # _h is hgvs coord
             rs_h, re_h = row['tx_start_i'] + lrs + 1, row['tx_start_i'] + lre
@@ -132,26 +133,21 @@ def generate_variants(row):
             elif cop.op == 'D':
                 qs_h -= 1
                 qe_h += 1
-                
-            var_n = SequenceVariant(
-                ac=row['tx_ac'],
-                type='n',
-                posedit=PosEdit(
-                    pos=Interval(start=BaseOffsetPosition(base=rs_h),
-                                 end=BaseOffsetPosition(base=re_h)),
-                    edit=NARefAlt(ref=rr, alt=ra)
-                    ))
-            var_g = SequenceVariant(
-                ac=row['alt_ac'],
-                type='g',
-                posedit=PosEdit(
-                    pos=Interval(start=SimplePosition(base=qs_h),
-                                 end=SimplePosition(base=qe_h)),
-                    edit=NARefAlt(ref=qr, alt=qa)
-                    ))
+
+            var_n = SequenceVariant(ac=row['tx_ac'],
+                                    type='n',
+                                    posedit=PosEdit(pos=Interval(start=BaseOffsetPosition(base=rs_h),
+                                                                 end=BaseOffsetPosition(base=re_h)),
+                                                    edit=NARefAlt(ref=rr,
+                                                                  alt=ra)))
+            var_g = SequenceVariant(ac=row['alt_ac'],
+                                    type='g',
+                                    posedit=PosEdit(pos=Interval(start=SimplePosition(base=qs_h),
+                                                                 end=SimplePosition(base=qe_h)),
+                                                    edit=NARefAlt(ref=qr,
+                                                                  alt=qa)))
 
             yield var_n, var_g
-
 
 
 if __name__ == "__main__":
@@ -186,15 +182,16 @@ if __name__ == "__main__":
                         'hgvs_c': str(var_c),
                         'tx_ac': row['tx_ac'],
                         'strand': row['alt_strand'],
-                        'exon': row['ord']+1,
+                        'exon': row['ord'] + 1,
                         'cigar': row['cigar'],
                         'comments': "; ".join(comments)
-                        })
+                    })
 
                     if with_context:
                         c = huc.variant_context_w_alignment(evm, var_g, tx_ac=var_c.ac)
-                        c = re.sub('^','## ',c,flags=re.M) + "\n"
+                        c = re.sub('^', '## ', c, flags=re.M) + "\n"
                         sys.stdout.write(c)
             except Exception as e:
-                logger.warn("# {row[tx_ac]}, exon {row[ord]}: {e}".format(
-                    row=row, e=traceback.format_exception_only(type(e),e)[0]))
+                logger.warn("# {row[tx_ac]}, exon {row[ord]}: {e}".format(row=row,
+                                                                          e=traceback.format_exception_only(
+                                                                              type(e), e)[0]))
