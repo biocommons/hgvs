@@ -11,15 +11,15 @@ from hgvs.exceptions import HGVSValidationError, HGVSUnsupportedOperationError
 import hgvs.parser
 import hgvs.variantmapper
 
-BASE_RANGE_ERROR_MSG = 'base start position must be <= end position'
-OFFSET_RANGE_ERROR_MSG = 'offset start must be <= end position'
-INS_ERROR_MSG = 'insertion length must be 1'
-DEL_ERROR_MSG = 'Length implied by coordinates ({span_len})  must equal sequence deletion length ({del_len})'
-AC_ERROR_MSG = 'Accession is not present in BDI database'
-SEQ_ERROR_MSG = 'Variant reference ({var_ref_seq}) does not agree with reference sequence ({ref_seq})'
+BASE_RANGE_ERROR_MSG = "base start position must be <= end position"
+OFFSET_RANGE_ERROR_MSG = "offset start must be <= end position"
+INS_ERROR_MSG = "insertion length must be 1"
+DEL_ERROR_MSG = "Length implied by coordinates ({span_len})  must equal sequence deletion length ({del_len})"
+AC_ERROR_MSG = "Accession is not present in BDI database"
+SEQ_ERROR_MSG = "Variant reference ({var_ref_seq}) does not agree with reference sequence ({ref_seq})"
 
-BASE_OFFSET_COORD_TYPES = 'cnr'
-SIMPLE_COORD_TYPES = 'gmp'
+BASE_OFFSET_COORD_TYPES = "cnr"
+SIMPLE_COORD_TYPES = "gmp"
 
 
 class Validator(object):
@@ -40,7 +40,7 @@ class IntrinsicValidator(object):
     """
 
     def validate(self, var):
-        assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
+        assert isinstance(var, hgvs.variant.SequenceVariant), "variant must be a parsed HGVS sequence variant object"
         self._start_lte_end(var)
         self._ins_length_is_one(var)
         self._del_length(var)
@@ -63,7 +63,7 @@ class IntrinsicValidator(object):
 
     def _ins_length_is_one(self, var):
         # TODO: why check var.posedit.pos? should set, right?
-        if var.posedit.edit.type == 'ins':
+        if var.posedit.edit.type == "ins":
             if var.type in SIMPLE_COORD_TYPES and var.posedit.pos:
                 if (var.posedit.pos.end.base - var.posedit.pos.start.base) != 1:
                     raise HGVSValidationError(INS_ERROR_MSG)
@@ -74,7 +74,7 @@ class IntrinsicValidator(object):
             return True
 
     def _del_length(self, var):
-        if var.posedit.edit.type in ['del', 'delins']:
+        if var.posedit.edit.type in ["del", "delins"]:
             ref_len = var.posedit.edit.ref_n
             if ref_len is None:
                 return True
@@ -104,9 +104,9 @@ class ExtrinsicValidator():
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp)
 
     def validate(self, var):
-        assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
+        assert isinstance(var, hgvs.variant.SequenceVariant), "variant must be a parsed HGVS sequence variant object"
         # TODO: #253: Add p. validation support
-        if var.type == 'p':
+        if var.type == "p":
             raise HGVSUnsupportedOperationError("Validating p. reference sequences is unsupported"
                                                 " ({}); see https://bitbucket.org/biocommons/hgvs/issues/253/ ".format(
                                                     str(var)))
@@ -119,13 +119,13 @@ class ExtrinsicValidator():
             (var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0)):
             raise HGVSUnsupportedOperationError("Cannot validate sequence of an intronic variant ({})".format(str(var)))
 
-        var_ref_seq = getattr(var.posedit.edit, 'ref', None)
+        var_ref_seq = getattr(var.posedit.edit, "ref", None)
 
-        if var_ref_seq == '':
+        if var_ref_seq == "":
             var_ref_seq = None
 
         if var_ref_seq:
-            # ref_seq is digit, as in 'del6'
+            # ref_seq is digit, as in "del6"
             try:
                 int(var_ref_seq)
                 var_ref_seq = None
@@ -133,10 +133,10 @@ class ExtrinsicValidator():
                 pass
 
         if var_ref_seq is not None:
-            var_x = self.vm.c_to_n(var) if var.type == 'c' else var
+            var_x = self.vm.c_to_n(var) if var.type == "c" else var
             ref_seq = self.hdp.fetch_seq(var_x.ac, var_x.posedit.pos.start.base - 1, var_x.posedit.pos.end.base)
             if ref_seq != var_ref_seq:
-                raise HGVSValidationError(str(var) + ': ' + SEQ_ERROR_MSG.format(ref_seq=ref_seq,
+                raise HGVSValidationError(str(var) + ": " + SEQ_ERROR_MSG.format(ref_seq=ref_seq,
                                                                                  var_ref_seq=var_ref_seq))
 
         return True

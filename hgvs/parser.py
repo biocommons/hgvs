@@ -39,7 +39,7 @@ class Parser(object):
     SequenceVariant(ac=NM_01234.5, type=c, posedit=22+1A>T)
     >>> v.posedit.pos
     Interval(start=22+1, end=22+1, uncertain=False)
-    >>> i = hp.parse_c_interval('22+1')
+    >>> i = hp.parse_c_interval("22+1")
     >>> i
     Interval(start=22+1, end=22+1, uncertain=False)
 
@@ -58,38 +58,38 @@ class Parser(object):
 
       >>> hp.parse_hgvs_variant("NM_01234.5:c.22+1A>T")
       SequenceVariant(ac=NM_01234.5, type=c, posedit=22+1A>T)
-      >>> hp.parse_hgvs_variant('NP_012345.6:p.Ala22Trp')
+      >>> hp.parse_hgvs_variant("NP_012345.6:p.Ala22Trp")
       SequenceVariant(ac=NP_012345.6, type=p, posedit=Ala22Trp)
 
     The `hgvs_variant` rule iteratively attempts parsing using the
     major classes of HGVS variants. For slight improvements in
     efficiency, those rules may be invoked directly:
 
-      >>> hp.parse_p_variant('NP_012345.6:p.Ala22Trp')
+      >>> hp.parse_p_variant("NP_012345.6:p.Ala22Trp")
       SequenceVariant(ac=NP_012345.6, type=p, posedit=Ala22Trp)
 
     Similarly, components of the underlying structure may be parsed
     directly as well:
 
-      >>> hp.parse_c_posedit('22+1A>T')
+      >>> hp.parse_c_posedit("22+1A>T")
       PosEdit(pos=22+1, edit=A>T, uncertain=False)
-      >>> hp.parse_c_interval('22+1')
+      >>> hp.parse_c_interval("22+1")
       Interval(start=22+1, end=22+1, uncertain=False)
 
     """
 
-    __default_grammar_fn = resource_filename(__name__, '_data/hgvs.pymeta')
+    __default_grammar_fn = resource_filename(__name__, "_data/hgvs.pymeta")
 
     def __init__(self, grammar_fn=__default_grammar_fn):
         self._grammar_fn = grammar_fn
-        self._grammar = parsley.makeGrammar(open(grammar_fn, 'r').read(), {'hgvs': hgvs, 'bioutils': bioutils})
+        self._grammar = parsley.makeGrammar(open(grammar_fn, "r").read(), {"hgvs": hgvs, "bioutils": bioutils})
 
-        # define function attributes for each grammar rule, prefixed with 'parse_'
-        # e.g., Parser.parse_c_interval('26+2_57-3') -> Interval(...)
+        # define function attributes for each grammar rule, prefixed with "parse_"
+        # e.g., Parser.parse_c_interval("26+2_57-3") -> Interval(...)
         # TODO: exclude built-in rules
-        self.rules = [m.replace('rule_', '') for m in dir(self._grammar._grammarClass) if m.startswith('rule_')]
+        self.rules = [m.replace("rule_", "") for m in dir(self._grammar._grammarClass) if m.startswith("rule_")]
         for rule_name in self.rules:
-            att_name = 'parse_' + rule_name
+            att_name = "parse_" + rule_name
             rule_fxn = self.__make_parse_rule_function(rule_name)
             self.__setattr__(att_name, rule_fxn)
 

@@ -19,7 +19,7 @@ try:
     def normalize_alleles(ref, start, stop, alleles, bound, ref_step, left, shuffle=True):
         """wraps vgraph.norm.normalize_alleles to pass ascii-encoded strings"""
         return _normalize_alleles_vgraph(
-            ref.encode('ascii'), start, stop, [a.encode('ascii') for a in alleles], bound, ref_step, left, shuffle)
+            ref.encode("ascii"), start, stop, [a.encode("ascii") for a in alleles], bound, ref_step, left, shuffle)
 
     _logger.debug("Using normalize_alleles from vgraph (https://github.com/bioinformed/vgraph)")
 except ImportError:
@@ -56,36 +56,36 @@ class Normalizer(object):
     def normalize(self, var):
         """Perform sequence variants normalization for single variant
         """
-        assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
+        assert isinstance(var, hgvs.variant.SequenceVariant), "variant must be a parsed HGVS sequence variant object"
 
         if var.posedit.uncertain or var.posedit.pos is None:
             return var
 
         type = var.type
 
-        if type == 'p':
+        if type == "p":
             raise HGVSUnsupportedOperationError("Unsupported normalization of protein level variants: {0}".format(var))
-        if var.posedit.edit.type == 'con':
+        if var.posedit.edit.type == "con":
             raise HGVSUnsupportedOperationError("Unsupported normalization of conversion variants: {0}", format(var))
 
-        if var.posedit.edit.type == 'identity':
+        if var.posedit.edit.type == "identity":
             var_norm = copy.deepcopy(var)
             return var_norm
 
         # For c. variants normalization, first convert to n. variant
         # and perform normalization at the n. level, then convert the
         # normalized n. variant back to c. variant.
-        if type == 'c':
+        if type == "c":
             var = self.hm.c_to_n(var)
 
-        if var.type in 'nr':
+        if var.type in "nr":
             if var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0:
                 raise HGVSUnsupportedOperationError("Normalization of intronic variants is not supported")
 
         # g, m, n, r sequences all use sequence start as the datum
-        # That's an essential assumption herein
+        # That"s an essential assumption herein
         # (this is why we may have converted from c to n above)
-        assert var.type in 'gmnr', "Internal Error: variant must be of type g, m, n, r"
+        assert var.type in "gmnr", "Internal Error: variant must be of type g, m, n, r"
 
         bound_s, bound_e = self._get_boundary(var)
         boundary = (bound_s, bound_e)
@@ -153,7 +153,7 @@ class Normalizer(object):
         var_norm.posedit.pos.start.base = ref_start
         var_norm.posedit.pos.end.base = ref_end
 
-        if type == 'c':
+        if type == "c":
             var_norm = self.hm.n_to_c(var_norm)
 
         return var_norm
@@ -161,35 +161,35 @@ class Normalizer(object):
     def _get_boundary(self, var):
         """Get the position of exon-intron boundary for current variant
         """
-        if var.type == 'r' or var.type == 'n':
+        if var.type == "r" or var.type == "n":
             if self.cross_boundaries:
-                return 0, float('inf')
+                return 0, float("inf")
             else:
                 # Get genomic sequence access number for this transcript
                 # TODO: #239: add filter options to get_tx_mapping_options
                 map_info = self.hdp.get_tx_mapping_options(var.ac)
                 if not map_info:
                     raise HGVSDataNotAvailableError("No mapping info available for {ac}".format(ac=var.ac))
-                map_info = [item for item in map_info if item['alt_aln_method'] == self.alt_aln_method]
-                alt_ac = map_info[0]['alt_ac']
+                map_info = [item for item in map_info if item["alt_aln_method"] == self.alt_aln_method]
+                alt_ac = map_info[0]["alt_ac"]
 
                 # Get tx info
                 tx_info = self.hdp.get_tx_info(var.ac, alt_ac, self.alt_aln_method)
-                cds_start = tx_info['cds_start_i']
-                cds_end = tx_info['cds_end_i']
+                cds_start = tx_info["cds_start_i"]
+                cds_end = tx_info["cds_end_i"]
 
                 # Get exon info
                 exon_info = self.hdp.get_tx_exons(var.ac, alt_ac, self.alt_aln_method)
-                exon_starts = [exon['tx_start_i'] for exon in exon_info]
-                exon_ends = [exon['tx_end_i'] for exon in exon_info]
+                exon_starts = [exon["tx_start_i"] for exon in exon_info]
+                exon_ends = [exon["tx_end_i"] for exon in exon_info]
                 exon_starts.sort()
                 exon_ends.sort()
                 exon_starts.append(exon_ends[-1])
-                exon_ends.append(float('inf'))
+                exon_ends.append(float("inf"))
 
                 # Find the end pos of the exon where the var locates
                 left = 0
-                right = float('inf')
+                right = float("inf")
 
                 # TODO: #242: implement methods to find tx regions
                 for i in range(0, len(exon_starts)):
@@ -228,7 +228,7 @@ class Normalizer(object):
                 return left, right
         else:
             # For variant type of g and m etc.
-            return 0, float('inf')
+            return 0, float("inf")
 
     def _fetch_bounded_seq(self, var, start, end, boundary):
         """Fetch reference sequence from hgvs data provider.
@@ -239,7 +239,7 @@ class Normalizer(object):
         start = start if start >= boundary[0] else boundary[0]
         end = end if end <= boundary[1] else boundary[1]
         if start >= end:
-            return ''
+            return ""
 
         return self.hdp.fetch_seq(var.ac, start, end)
 
@@ -248,29 +248,29 @@ class Normalizer(object):
         """
 
         # Get reference allele
-        if var.posedit.edit.type == 'ins' or var.posedit.edit.type == 'dup' or var.posedit.edit.type == 'dupn':
-            ref = ''
+        if var.posedit.edit.type == "ins" or var.posedit.edit.type == "dup" or var.posedit.edit.type == "dupn":
+            ref = ""
         else:
             # For NARefAlt and Inv
-            if var.posedit.edit.ref_s is None or var.posedit.edit.ref == '':
+            if var.posedit.edit.ref_s is None or var.posedit.edit.ref == "":
                 ref = self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, boundary)
             else:
                 ref = var.posedit.edit.ref
 
         # Get alternative allele
-        if var.posedit.edit.type == 'sub' or var.posedit.edit.type == 'delins' or var.posedit.edit.type == 'ins':
+        if var.posedit.edit.type == "sub" or var.posedit.edit.type == "delins" or var.posedit.edit.type == "ins":
             alt = var.posedit.edit.alt
-        elif var.posedit.edit.type == 'del':
-            alt = ''
-        elif var.posedit.edit.type == 'dup':
+        elif var.posedit.edit.type == "del":
+            alt = ""
+        elif var.posedit.edit.type == "dup":
             alt = var.posedit.edit.ref or self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1,
                                                                   var.posedit.pos.end.base, boundary)
-        elif var.posedit.edit.type == 'dupn':
+        elif var.posedit.edit.type == "dupn":
             alt = self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, boundary)
             alt *= int(var.posedit.edit.n)
-        elif var.posedit.edit.type == 'inv':
+        elif var.posedit.edit.type == "inv":
             alt = ref[::-1]
-        elif var.posedit.edit.type == 'identity':
+        elif var.posedit.edit.type == "identity":
             alt = ref
 
         return ref, alt
@@ -283,11 +283,11 @@ class Normalizer(object):
         win_size = hgvs.global_config.normalizer.window_size
 
         if self.shuffle_direction == 3:
-            if var.posedit.edit.type == 'ins':
+            if var.posedit.edit.type == "ins":
                 base = var.posedit.pos.start.base
                 start = 1
                 stop = 1
-            elif var.posedit.edit.type == 'dup':
+            elif var.posedit.edit.type == "dup":
                 base = var.posedit.pos.end.base
                 start = 1
                 stop = 1
@@ -298,7 +298,7 @@ class Normalizer(object):
 
             while True:
                 ref_seq = self._fetch_bounded_seq(var, base - 1, base + stop - 1 + win_size, boundary)
-                if ref_seq == '':
+                if ref_seq == "":
                     break
                 orig_start, orig_stop = start, stop
                 start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt), len(ref_seq), win_size,
@@ -311,11 +311,11 @@ class Normalizer(object):
                 start = orig_start
 
         elif self.shuffle_direction == 5:
-            if var.posedit.edit.type == 'ins':
+            if var.posedit.edit.type == "ins":
                 base = max(var.posedit.pos.start.base - win_size, 1)
                 start = var.posedit.pos.end.base - base
                 stop = var.posedit.pos.end.base - base
-            elif var.posedit.edit.type == 'dup':
+            elif var.posedit.edit.type == "dup":
                 base = max(var.posedit.pos.start.base - win_size, 1)
                 start = var.posedit.pos.end.base - base + 1
                 stop = var.posedit.pos.end.base - base + 1
@@ -330,7 +330,7 @@ class Normalizer(object):
                     stop -= boundary[0] + 1 - base
                     base = boundary[0] + 1
                 ref_seq = self._fetch_bounded_seq(var, base - 1, base + stop - 1, boundary)
-                if ref_seq == '':
+                if ref_seq == "":
                     break
                 orig_start, orig_stop = start, stop
                 start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt), 0, win_size, True)
@@ -365,13 +365,13 @@ class Normalizer(object):
         return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     hgvsparser = Parser()
-    var = hgvsparser.parse_hgvs_variant('NM_001166478.1:c.61delG')
+    var = hgvsparser.parse_hgvs_variant("NM_001166478.1:c.61delG")
     hdp = connect()
     norm = Normalizer(hdp, shuffle_direction=5, cross_boundaries=False)
     res = norm.normalize(var)
-    print(str(var) + '    =>    ' + str(res))
+    print(str(var) + "    =>    " + str(res))
 
 # <LICENSE>
 # Copyright 2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

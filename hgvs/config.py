@@ -56,19 +56,19 @@ class Config(object):
 
 class ConfigGroup(object):
     def __init__(self, section):
-        self.__dict__['_section'] = section
+        self.__dict__["_section"] = section
 
     def __dir__(self):
-        return self.__dict__['_section'].keys()
+        return self.__dict__["_section"].keys()
 
     def __getattr__(self, k):
-        return _val_xform(self.__dict__['_section'][k])
+        return _val_xform(self.__dict__["_section"][k])
 
     __getitem__ = __getattr__
 
     def __setattr__(self, k, v):
-        logger.info(str(self.__class__.__name__) + '.__setattr__({k}, ...)'.format(k=k))
-        self.__dict__['_section'][k] = str(v)
+        logger.info(str(self.__class__.__name__) + ".__setattr__({k}, ...)".format(k=k))
+        self.__dict__["_section"][k] = str(v)
 
     __setitem__ = __setattr__
 
@@ -77,13 +77,13 @@ def _name_xform(o):
     """transform names to lowercase, without symbols (except underscore)
     Any chars other than alphanumeric are converted to an underscore
     """
-    return re.sub('\W', '_', o.lower())
+    return re.sub("\W", "_", o.lower())
 
 
 def _val_xform(v):
-    if v == 'True':
+    if v == "True":
         return True
-    if v == 'False':
+    if v == "False":
         return False
     try:
         return int(v)
@@ -93,6 +93,6 @@ def _val_xform(v):
 
 
 _default_config = Config()
-_default_config._read_file(resource_stream(__name__, '_data/defaults.ini'))
+_default_config._read_file(resource_stream(__name__, "_data/defaults.ini"))
 
 global_config = copy(_default_config)

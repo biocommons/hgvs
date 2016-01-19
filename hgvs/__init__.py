@@ -9,7 +9,7 @@ Example use:
 >>> import hgvs.variantmapper
 
 # start with these variants as strings
->>> hgvs_g, hgvs_c = 'NC_000007.13:g.36561662C>T', 'NM_001637.3:c.1582G>A'
+>>> hgvs_g, hgvs_c = "NC_000007.13:g.36561662C>T", "NM_001637.3:c.1582G>A"
 
 # parse the genomic variant into a Python structure
 >>> hp = hgvs.parser.Parser()
@@ -28,7 +28,7 @@ SimplePosition(base=36561662, uncertain=False)
 # initialize the mapper for GRCh37 with splign-based alignments
 >>> hdp = hgvs.dataproviders.uta.connect()
 >>> evm = hgvs.variantmapper.EasyVariantMapper(hdp,
-...          assembly_name='GRCh37', alt_aln_method='splign',
+...          assembly_name="GRCh37", alt_aln_method="splign",
 ...          replace_reference=True)
 
 # identify transcripts that overlap this genomic variant
@@ -37,7 +37,7 @@ SimplePosition(base=36561662, uncertain=False)
 ['NM_001177506.1', 'NM_001177507.1', 'NM_001637.3']
 
 # map genomic variant to one of these transcripts
->>> var_c = evm.g_to_c(var_g, 'NM_001637.3')
+>>> var_c = evm.g_to_c(var_g, "NM_001637.3")
 >>> var_c
 SequenceVariant(ac=NM_001637.3, type=c, posedit=1582G>A)
 >>> str(var_c)
@@ -63,15 +63,15 @@ logger = logging.getLogger(__name__)
 _is_released_version = False
 
 try:
-    __version__ = pkg_resources.get_distribution('hgvs').version
-    if re.match('^\d+\.\d+\.\d+$', __version__) is not None:
+    __version__ = pkg_resources.get_distribution("hgvs").version
+    if re.match("^\d+\.\d+\.\d+$", __version__) is not None:
         _is_released_version = True
 except pkg_resources.DistributionNotFound as e:
     warnings.warn("can't get __version__ because %s package isn't installed" % __package__, Warning)
     __version__ = None
 
-# Make sure we're showing DeprecationWarnings
-warnings.filterwarnings('default', '', DeprecationWarning)
+# Make sure we"re showing DeprecationWarnings
+warnings.filterwarnings("default", "", DeprecationWarning)
 
 logger.info("hgvs " + __version__ + "; released: " + str(_is_released_version))
 

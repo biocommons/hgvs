@@ -28,7 +28,7 @@ class Projector(object):
     variants twice unnecessarily.
     """
 
-    def __init__(self, hdp, alt_ac, src_ac, dst_ac, src_alt_aln_method='splign', dst_alt_aln_method='splign'):
+    def __init__(self, hdp, alt_ac, src_ac, dst_ac, src_alt_aln_method="splign", dst_alt_aln_method="splign"):
         self.hdp = hdp
         self.alt_ac = alt_ac
         self.src_tm = hgvs.transcriptmapper.TranscriptMapper(hdp, src_ac, alt_ac, src_alt_aln_method)
@@ -62,7 +62,7 @@ class Projector(object):
         :returns: c_variant: an :class:`hgvs.variant.SequenceVariant` object on the destination transcript
         """
         if c_variant.ac != self.src_tm.tx_ac:
-            raise RuntimeError('variant accession does not match that used to initialize ' + __name__)
+            raise RuntimeError("variant accession does not match that used to initialize " + __name__)
         new_c_variant = copy.deepcopy(c_variant)
         new_c_variant.ac = self.dst_tm.tx_ac
         new_c_variant.posedit.pos = self.project_interval_forward(c_variant.posedit.pos)
@@ -76,7 +76,7 @@ class Projector(object):
         :returns: c_variant: an :class:`hgvs.variant.SequenceVariant` object on the destination transcript
         """
         if c_variant.ac != self.dst_tm.tx_ac:
-            raise RuntimeError('variant accession does not match that used to initialize ' + __name__)
+            raise RuntimeError("variant accession does not match that used to initialize " + __name__)
         new_c_variant = copy.deepcopy(c_variant)
         new_c_variant.ac = self.src_tm.tx_ac
         new_c_variant.posedit.pos = self.project_interval_backward(c_variant.posedit.pos)

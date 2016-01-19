@@ -34,7 +34,7 @@ class TranscriptMapper(object):
         self.tx_ac = tx_ac
         self.alt_ac = alt_ac
         self.alt_aln_method = alt_aln_method
-        if self.alt_aln_method != 'transcript':
+        if self.alt_aln_method != "transcript":
             self.tx_info = hdp.get_tx_info(self.tx_ac, self.alt_ac, self.alt_aln_method)
             if self.tx_info is None:
                 raise HGVSDataNotAvailableError("TranscriptMapper(tx_ac={self.tx_ac}, "
@@ -47,10 +47,10 @@ class TranscriptMapper(object):
                                                 "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
                                                 "No transcript exons".format(self=self))
 
-            self.strand = self.tx_exons[0]['alt_strand']
-            self.cds_start_i = self.tx_info['cds_start_i']
-            self.cds_end_i = self.tx_info['cds_end_i']
-            self.gc_offset = self.tx_exons[0]['alt_start_i']
+            self.strand = self.tx_exons[0]["alt_strand"]
+            self.cds_start_i = self.tx_info["cds_start_i"]
+            self.cds_end_i = self.tx_info["cds_end_i"]
+            self.gc_offset = self.tx_exons[0]["alt_start_i"]
             self.cigar = build_tx_cigar(self.tx_exons, self.strand)
             self.im = hgvs.intervalmapper.IntervalMapper.from_cigar(self.cigar)
             self.tgt_len = self.im.tgt_len
@@ -61,16 +61,16 @@ class TranscriptMapper(object):
                 raise HGVSError("TranscriptMapper(tx_ac={self.tx_ac}, "
                                 "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
                                 "No transcript identity info".format(self=self))
-            self.cds_start_i = self.tx_identity_info['cds_start_i']
-            self.cds_end_i = self.tx_identity_info['cds_end_i']
-            self.tgt_len = sum(self.tx_identity_info['lengths'])
+            self.cds_start_i = self.tx_identity_info["cds_start_i"]
+            self.cds_end_i = self.tx_identity_info["cds_end_i"]
+            self.tgt_len = sum(self.tx_identity_info["lengths"])
 
         assert not ((self.cds_start_i is None)
                     ^ (self.cds_end_i is None)), "CDS start and end must both be defined or neither defined"
 
     def __str__(self):
-        return '{self.__class__.__name__}: {self.tx_ac} ~ {self.alt_ac} ~ {self.alt_aln_method); ' \
-               '{strand_pm} strand; {n_exons} exons; offset={self.gc_offset}'.format(
+        return "{self.__class__.__name__}: {self.tx_ac} ~ {self.alt_ac} ~ {self.alt_aln_method); " \
+               "{strand_pm} strand; {n_exons} exons; offset={self.gc_offset}".format(
                    self=self, n_exons=len(self.tx_exons), strand_pm=strand_int_to_pm(self.strand))
 
     def g_to_n(self, g_interval):
@@ -105,7 +105,7 @@ class TranscriptMapper(object):
             elif self.strand == -1:
                 grs, gre = self.im.map_tgt_to_ref((self.tgt_len - fre), (self.tgt_len - frs), max_extent=False)
             grs, gre = grs + self.gc_offset, gre + self.gc_offset
-            # 0-width interval indicates an intron.  Need to calculate offsets but we're are in ci coordinates
+            # 0-width interval indicates an intron.  Need to calculate offsets but we"re are in ci coordinates
             # requires adding 1 strategically to get the HGVS position
             # (shift coordinates to 3' end of the ref nucleotide)
 
@@ -139,7 +139,7 @@ class TranscriptMapper(object):
     def n_to_g(self, n_interval):
         """convert a transcript cDNA (n.) interval to a genomic (g.) interval"""
 
-        assert self.strand in [1, -1], 'strand = ' + str(self.strand) + '; must be 1 or -1'
+        assert self.strand in [1, -1], "strand = " + str(self.strand) + "; must be 1 or -1"
 
         if self.strand == 1:
             frs, fre = _hgvs_coord_to_ci(n_interval.start.base, n_interval.end.base)
@@ -270,7 +270,7 @@ def _hgvs_coord_to_ci(s, e):
     (..,-2,-1,0,1,..)"""
 
     def _hgvs_to_ci(c):
-        assert c != 0, 'received CDS coordinate 0; expected ..,-2,-1,1,1,...'
+        assert c != 0, "received CDS coordinate 0; expected ..,-2,-1,1,1,..."
         return c - 1 if c > 0 else c
 
     return (None if s is None else _hgvs_to_ci(s), None if e is None else _hgvs_to_ci(e) + 1)

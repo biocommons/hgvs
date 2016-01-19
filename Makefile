@@ -143,7 +143,7 @@ clean:
 #=> cleaner: above, and remove generated files
 cleaner: clean
 	find . -name \*.pyc -print0 | xargs -0r /bin/rm -f
-	/bin/rm -fr build bdist cover dist sdist ve virtualenv* examples/.ipynb_checkpoints
+	/bin/rm -fr build bdist code-check.txt cover dist sdist ve virtualenv* examples/.ipynb_checkpoints
 	/bin/rm -f hgvs.{dot,svg,png,sfood}
 	-make -C doc clean
 	make -C examples $@

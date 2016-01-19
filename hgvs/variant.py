@@ -8,7 +8,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import recordtype
 
 
-class SequenceVariant(recordtype.recordtype('SequenceVariant', ['ac', 'type', 'posedit'])):
+class SequenceVariant(recordtype.recordtype("SequenceVariant", ["ac", "type", "posedit"])):
     """
     represents a basic HGVS variant.  The only requirement is that each
     component can be stringified; for example, passing pos as either a string
@@ -17,9 +17,9 @@ class SequenceVariant(recordtype.recordtype('SequenceVariant', ['ac', 'type', 'p
 
     def __str__(self):
         if self.ac is not None:
-            return '{self.ac}:{self.type}.{self.posedit}'.format(self=self)
+            return "{self.ac}:{self.type}.{self.posedit}".format(self=self)
         else:
-            return '{self.type}.{self.posedit}'.format(self=self)
+            return "{self.type}.{self.posedit}".format(self=self)
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
