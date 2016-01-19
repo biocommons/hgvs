@@ -9,10 +9,13 @@
 .. _ga4gh_api: http://ga4gh.org/#/api
 .. _ga4gh_dwg: http://ga4gh.org/
 .. _hgvs-discuss: https://groups.google.com/forum/#!forum/hgvs-discuss
+.. _invitae: http://invitae.com/
+.. _mercurial: https://www.mercurial-scm.org/
 .. _peg: http://en.wikipedia.org/wiki/Parsing_expression_grammar
 .. _pep8: https://www.python.org/dev/peps/pep-0008/
 .. _uta: http://bitbucket.org/biocommons/uta/
 .. _yapf: https://github.com/google/yapf
+
 
 .. |eg| replace:: *e.g.,*
 .. |ie| replace:: *i.e.,*
