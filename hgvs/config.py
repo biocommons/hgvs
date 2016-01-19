@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """Defines a default set of config for use throughout the hgvs
 package
 

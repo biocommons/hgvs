@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """Internal utility to display textual representation of variant context
 
 Something like this:

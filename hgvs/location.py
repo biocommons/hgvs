@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """Provides classes for dealing with the locations of HGVS variants
 
 This module provides for Representing the location of variants in HGVS nomenclature, including:

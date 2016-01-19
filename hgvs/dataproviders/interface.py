@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """Defines the abstract data provider interface
 
 """

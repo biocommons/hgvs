@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """Utility class that projects variants from one transcript to another
 via a common reference sequence.
 
@@ -9,7 +8,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import copy
 
-from hgvs.transcriptmapper import TranscriptMapper
+import hgvs.transcriptmapper
 
 
 class Projector(object):
@@ -32,8 +31,8 @@ class Projector(object):
     def __init__(self, hdp, alt_ac, src_ac, dst_ac, src_alt_aln_method='splign', dst_alt_aln_method='splign'):
         self.hdp = hdp
         self.alt_ac = alt_ac
-        self.src_tm = TranscriptMapper(hdp, src_ac, alt_ac, src_alt_aln_method)
-        self.dst_tm = TranscriptMapper(hdp, dst_ac, alt_ac, dst_alt_aln_method)
+        self.src_tm = hgvs.transcriptmapper.TranscriptMapper(hdp, src_ac, alt_ac, src_alt_aln_method)
+        self.dst_tm = hgvs.transcriptmapper.TranscriptMapper(hdp, dst_ac, alt_ac, dst_alt_aln_method)
 
     def project_interval_forward(self, c_interval):
         """

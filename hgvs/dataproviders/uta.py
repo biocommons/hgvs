@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """implements an hgvs data provider interface using UTA (https://bitbucket.org/biocommons/uta)
 
 """
@@ -25,7 +24,6 @@ from ..decorators import deprecated
 from ..decorators.lru_cache import lru_cache
 from ..exceptions import HGVSError, HGVSDataNotAvailableError
 from .seqfetcher import SeqFetcher
-
 
 _url_key = os.environ.get('_UTA_URL_KEY', 'public' if hgvs._is_released_version else 'public_dev')
 _default_db_url = os.environ.get('UTA_DB_URL', hgvs.global_config['uta'][_url_key])

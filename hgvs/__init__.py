@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """hgvs is a package to parse, format, and manipulate biological sequence
 variants.  See https://bitbucket.org/biocommons/hgvs/ for details.
 

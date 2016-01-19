@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """Utility to normalize variants.
 Code of the normalization utilities were imported from vgraph
 https://github.com/bioinformed/vgraph

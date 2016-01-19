@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """
 Mapping intervals between pairs of congruent segments
 

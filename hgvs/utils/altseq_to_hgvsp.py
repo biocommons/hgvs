@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """Utility class for creating an hgvsp SequenceVariant object,
 given a transcript with variants applied.
 Used in hgvsc to hgvsp conversion.
@@ -14,7 +13,6 @@ from ..exceptions import (HGVSError)
 from ..location import (AAPosition, Interval)
 from ..posedit import (PosEdit)
 from ..variant import (SequenceVariant)
-
 
 DBG = False
 

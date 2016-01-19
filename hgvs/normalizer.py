@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """hgvs.normalizer
 """
 
@@ -9,11 +8,8 @@ import copy
 import logging
 
 import hgvs
-import hgvs.variantmapper       # from ... import failed. confused!
-from .dataproviders.uta import (connect)
-from .exceptions import (HGVSDataNotAvailableError, HGVSUnsupportedOperationError)
-from .parser import (Parser)
-
+import hgvs.variantmapper
+from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError
 
 _logger = logging.getLogger(__name__)
 
@@ -68,11 +64,9 @@ class Normalizer(object):
         type = var.type
 
         if type == 'p':
-            raise HGVSUnsupportedOperationError(
-                "Unsupported normalization of protein level variants: {0}".format(var))
+            raise HGVSUnsupportedOperationError("Unsupported normalization of protein level variants: {0}".format(var))
         if var.posedit.edit.type == 'con':
-            raise HGVSUnsupportedOperationError(
-                "Unsupported normalization of conversion variants: {0}", format(var))
+            raise HGVSUnsupportedOperationError("Unsupported normalization of conversion variants: {0}", format(var))
 
         if var.posedit.edit.type == 'identity':
             var_norm = copy.deepcopy(var)
@@ -86,8 +80,7 @@ class Normalizer(object):
 
         if var.type in 'nr':
             if var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0:
-                raise HGVSUnsupportedOperationError(
-                    "Normalization of intronic variants is not supported")
+                raise HGVSUnsupportedOperationError("Normalization of intronic variants is not supported")
 
         # g, m, n, r sequences all use sequence start as the datum
         # That's an essential assumption herein
@@ -176,8 +169,7 @@ class Normalizer(object):
                 # TODO: #239: add filter options to get_tx_mapping_options
                 map_info = self.hdp.get_tx_mapping_options(var.ac)
                 if not map_info:
-                    raise HGVSDataNotAvailableError(
-                        "No mapping info available for {ac}".format(ac=var.ac))
+                    raise HGVSDataNotAvailableError("No mapping info available for {ac}".format(ac=var.ac))
                 map_info = [item for item in map_info if item['alt_aln_method'] == self.alt_aln_method]
                 alt_ac = map_info[0]['alt_ac']
 

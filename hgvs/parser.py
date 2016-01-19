@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """Provides parser for HGVS strings and HGVS-related conceptual
 components, such as intronic-offset coordiates
 
@@ -13,7 +12,7 @@ import bioutils.sequences
 import ometa.runtime
 import parsley
 
-from .exceptions import HGVSParseError
+from hgvs.exceptions import HGVSParseError
 
 # The following imports are referenced by fully-qualified name in the
 # hgvs grammar.
@@ -25,7 +24,6 @@ import hgvs.variant
 
 
 class Parser(object):
-
     """Provides comprehensive parsing of HGVS varaint strings (*i.e.*,
     variants represented according to the Human Genome Variation
     Society recommendations) into Python representations.  The class
@@ -105,11 +103,10 @@ class Parser(object):
             try:
                 return self._grammar(s).__getattr__(rule_name)()
             except ometa.runtime.ParseError as exc:
-                raise HGVSParseError(
-                    "{s}: char {exc.position}: {reason}".format(
-                        s=s,
-                        exc=exc,
-                        reason=exc.formatReason()))
+                raise HGVSParseError("{s}: char {exc.position}: {reason}".format(s=s,
+                                                                                 exc=exc,
+                                                                                 reason=exc.formatReason()))
+
         rule_fxn.func_doc = "parse string s using `%s' rule" % rule_name
         return rule_fxn
 
