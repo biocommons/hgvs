@@ -11,7 +11,7 @@ from collections import namedtuple
 
 
 def trim_common_suffixes(strs, min_len=0):
-    '''trim common suffixes'''
+    """trim common suffixes"""
 
     if len(strs) < 2:
         return 0, strs
@@ -27,7 +27,7 @@ def trim_common_suffixes(strs, min_len=0):
 
 
 def trim_common_prefixes(strs, min_len=0):
-    '''trim common prefixes'''
+    """trim common prefixes"""
 
     trimmed = 0
 
@@ -47,7 +47,7 @@ def trim_common_prefixes(strs, min_len=0):
 
 
 def normalize_alleles_left(ref, start, stop, alleles, bound, ref_step, shuffle=True):
-    '''Normalize loci by removing extraneous reference padding'''
+    """Normalize loci by removing extraneous reference padding"""
 
     normalized_alleles = namedtuple('shuffled_alleles', 'start stop alleles')
 
@@ -91,7 +91,7 @@ def normalize_alleles_left(ref, start, stop, alleles, bound, ref_step, shuffle=T
 
 
 def normalize_alleles_right(ref, start, stop, alleles, bound, ref_step, shuffle=True):
-    '''Normalize loci by removing extraneous reference padding'''
+    """Normalize loci by removing extraneous reference padding"""
 
     normalized_alleles = namedtuple('shuffled_alleles', 'start stop alleles')
 

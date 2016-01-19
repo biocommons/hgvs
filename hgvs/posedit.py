@@ -8,18 +8,18 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import recordtype
 
 
-class PosEdit(recordtype.recordtype('PosEdit', [('pos', None), ('edit', None), ('uncertain', False)])):
+class PosEdit(recordtype.recordtype("PosEdit", [("pos", None), ("edit", None), ("uncertain", False)])):
     """
     represents a **simple** variant, consisting of a single position and edit pair
     """
 
     def __str__(self):
-        rv = str(self.edit) if self.pos is None else '{self.pos}{self.edit}'.format(self=self)
+        rv = str(self.edit) if self.pos is None else "{self.pos}{self.edit}".format(self=self)
         if self.uncertain:
-            if self.edit in ['0', '']:
-                rv = rv + '?'
+            if self.edit in ["0", ""]:
+                rv = rv + "?"
             else:
-                rv = '(' + rv + ')'
+                rv = "(" + rv + ")"
         return rv
 
     def _set_uncertain(self):
