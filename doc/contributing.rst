@@ -12,7 +12,8 @@ quickly.
 Highlights
 @@@@@@@@@@
 
-* The `hgvs package`_ is hosted at bitbucket.
+* The `hgvs package`_ is hosted in a mercurial_ repository at
+  bitbucket.
 
 * Development occurs in the default branch. (Release branches are
   named for the major-minor release, e.g., 0.4.x.)
