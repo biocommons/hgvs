@@ -25,7 +25,7 @@ Contents
    reference
    privacy
 
-   development
+   contributing
 
    changelog/index
 

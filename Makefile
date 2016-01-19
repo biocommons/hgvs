@@ -27,17 +27,17 @@ config:
 
 #=> docs -- make sphinx docs
 .PHONY: docs
-docs: setup changelog build_sphinx
+docs: setup changelog
 	# RTD makes json. Build here to ensure that it works.
-	make -C doc json
+	make -C doc html json
 
 changelog:
 	make -C doc/changelog 0.4.rst
 
 
 #=> build_sphinx
-# sphinx docs needs to be able to import packages
-build_sphinx: develop
+## sphinx docs needs to be able to import packages
+#build_sphinx: develop
 
 #=> setup, develop -- install requirements for testing or development
 setup: develop

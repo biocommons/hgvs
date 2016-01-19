@@ -1,7 +1,8 @@
-#
-# Project config
+import os
 
 import hgvs
+
+
 version = hgvs.__version__
 release = str(hgvs.__version__)
 
@@ -41,6 +42,13 @@ master_doc = 'index'
 pygments_style = 'sphinx'
 source_suffix = '.rst'
 templates_path = ['templates']
+
+
+# rst_epilog is appended to all rst files
+# it's a good place to define global aliases
+rst_epilog_fn = os.path.join(os.path.dirname(__file__), 'epilog.rst')
+rst_epilog = open(rst_epilog_fn).read()
+
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
