@@ -144,12 +144,11 @@ Citing hgvs (the package)
 Contributing
 ------------
 
-The hgvs package is intended to be a community project that
-facilitates the reliable use of sequence variants.  Code and
-documentation contributions are appreciated!  Please see `development
-instructions
-<http://hgvs.readthedocs.org/en/default/development.html>`_ to get
-started.
+The hgvs package is intended to be a community project.  Please see
+`Contributing
+<http://hgvs.readthedocs.org/en/default/contributing.html>`_ to get
+started in submitting source code, tests, or documentation.  Thanks
+for getting involved!
 
 
 
