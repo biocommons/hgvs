@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """implements a (position,edit) tuple that represents a localized sequence change
 
 """

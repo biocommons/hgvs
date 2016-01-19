@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """represents simple sequence-based variants
 
 """

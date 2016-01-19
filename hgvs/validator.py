@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
-
 """implements validation of hgvs variants
 
 """
 
+# TODO: #249: redisign validation interface for greater flexibility
+
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from .exceptions import HGVSValidationError, HGVSUnsupportedOperationError
-from .variant import SequenceVariant
-from .variantmapper import VariantMapper
+from hgvs.exceptions import HGVSValidationError, HGVSUnsupportedOperationError
+import hgvs.parser
+import hgvs.variantmapper
 
 BASE_RANGE_ERROR_MSG = 'base start position must be <= end position'
 OFFSET_RANGE_ERROR_MSG = 'offset start must be <= end position'
@@ -16,8 +17,6 @@ INS_ERROR_MSG = 'insertion length must be 1'
 DEL_ERROR_MSG = 'Length implied by coordinates ({span_len})  must equal sequence deletion length ({del_len})'
 AC_ERROR_MSG = 'Accession is not present in BDI database'
 SEQ_ERROR_MSG = 'Variant reference ({var_ref_seq}) does not agree with reference sequence ({ref_seq})'
-
-# TODO: #249: redisign validation interface for greater flexibility
 
 BASE_OFFSET_COORD_TYPES = 'cnr'
 SIMPLE_COORD_TYPES = 'gmp'
@@ -37,10 +36,11 @@ class Validator(object):
 class IntrinsicValidator(object):
     """
     Attempts to determine if the HGVS name is internally consistent
+
     """
 
     def validate(self, var):
-        assert isinstance(var, SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
+        assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
         self._start_lte_end(var)
         self._ins_length_is_one(var)
         self._del_length(var)
@@ -101,10 +101,10 @@ class ExtrinsicValidator():
 
     def __init__(self, hdp):
         self.hdp = hdp
-        self.vm = VariantMapper(self.hdp)
+        self.vm = hgvs.variantmapper.VariantMapper(self.hdp)
 
     def validate(self, var):
-        assert isinstance(var, SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
+        assert isinstance(var, hgvs.variant.SequenceVariant), 'variant must be a parsed HGVS sequence variant object'
         # TODO: #253: Add p. validation support
         if var.type == 'p':
             raise HGVSUnsupportedOperationError("Validating p. reference sequences is unsupported"

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """Decorator factory class which returns a decorator function that
 marks a function as deprecated.
 

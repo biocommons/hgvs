@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """Representation of edit operations in HGVS variants
 
 NARefAlt and AARefAlt are abstractions of several major variant

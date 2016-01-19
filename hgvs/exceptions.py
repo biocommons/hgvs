@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """defined exceptions used by the hgvs package
 
 """

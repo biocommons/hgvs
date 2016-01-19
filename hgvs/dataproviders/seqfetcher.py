@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """provides sequencing fetching from NCBI and Ensembl
 
 """
