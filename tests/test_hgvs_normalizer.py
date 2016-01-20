@@ -49,6 +49,8 @@ class Test_HGVSNormalizer(unittest.TestCase):
                          "NM_001166478.1:c.36_37dup3")
         self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant("NM_000051.3:c.14_15insT"))),
                          "NM_000051.3:c.15dupT")
+        self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant("NM_030813.5:c.1305_1307invGGG"))),
+                         "NM_030813.5:c.*942=")
 
         #5' shuffling
         self.assertEqual(str(self.norm5.normalize(self.hp.parse_hgvs_variant("NM_001166478.1:c.18_24inv"))),
@@ -75,6 +77,8 @@ class Test_HGVSNormalizer(unittest.TestCase):
         #Around exon-intron boundary
         self.assertEqual(str(self.normc.normalize(self.hp.parse_hgvs_variant("NM_001166478.1:c.59delG"))),
                          "NM_001166478.1:c.60delG")
+        self.assertEqual(str(self.normc.normalize(self.hp.parse_hgvs_variant("NM_030813.5:c.1305_1307invGGG"))),
+                         "NM_030813.5:c.1419=")
         self.assertEqual(str(self.norm5c.normalize(self.hp.parse_hgvs_variant("NM_001166478.1:c.61delG"))),
                          "NM_001166478.1:c.61delG")
         self.assertEqual(str(self.norm5c.normalize(self.hp.parse_hgvs_variant("NM_001110792.1:c.1030_1035del"))),
