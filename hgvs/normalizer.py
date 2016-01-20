@@ -105,6 +105,10 @@ class Normalizer(object):
             # inversion
             if ref_len > 1 and ref == alt[::-1]:
                 edit = hgvs.edit.Inv(ref=ref)
+            # ident
+            elif ref_len == 0 and alt_len == 0:
+                ref_start = ref_end
+                edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
             # substitution or delins
             else:
                 edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
@@ -239,7 +243,7 @@ class Normalizer(object):
     def _fetch_bounded_seq(self, var, start, end, boundary):
         """Fetch reference sequence from hgvs data provider.
 
-        The start posotion is 0 and the interval is half open
+        The start position is 0 and the interval is half open
         """
 
         start = start if start >= boundary[0] else boundary[0]
