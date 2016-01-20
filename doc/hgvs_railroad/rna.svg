@@ -1,0 +1,31 @@
+<?xml version="1.0" standalone="no"?>
+<svg width="174" height="396" viewBox="-8 -58 174 396 " xmlns="http://www.w3.org/2000/svg" version="1.1">
+<defs><style type="text/css">.terminal_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.terminal_text{fill:black;font-family:Verdana,Sans-serif;text-anchor:middle;font-size:14px;}.symbol_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.symbol_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-style:italic;text-anchor:middle;font-size:14px;}.path{fill:none;stroke:black;stroke-width:2;}.rule_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-size:14px;}.rule_path_edge{fill:none;stroke:black;stroke-width:3;}</style></defs>
+<text class="rule_text" x="0" y="-36" >rna:</text>
+<rect class="terminal_rect" x="66" y="-14" width="26" height="28" rx="28" />
+<text class="terminal_text" x="79" y="4" >A</text>
+<rect class="terminal_rect" x="66" y="30" width="26" height="28" rx="28" />
+<text class="terminal_text" x="79" y="48" >C</text>
+<rect class="terminal_rect" x="66" y="74" width="26" height="28" rx="28" />
+<text class="terminal_text" x="79" y="92" >G</text>
+<rect class="terminal_rect" x="66" y="118" width="26" height="28" rx="28" />
+<text class="terminal_text" x="79" y="136" >U</text>
+<rect class="terminal_rect" x="66" y="162" width="26" height="28" rx="28" />
+<text class="terminal_text" x="79" y="180" >a</text>
+<rect class="terminal_rect" x="66" y="206" width="26" height="28" rx="28" />
+<text class="terminal_text" x="79" y="224" >c</text>
+<rect class="terminal_rect" x="66" y="250" width="26" height="28" rx="28" />
+<text class="terminal_text" x="79" y="268" >g</text>
+<rect class="terminal_rect" x="66" y="294" width="26" height="28" rx="28" />
+<text class="terminal_text" x="79" y="312" >u</text>
+<path class="path" d="M30 0 L66 0 M30 0 Q42 0 42 12 M128 0 L92 0 M128 0 Q116 0 116 12" />
+<path class="path" d="M54 44 L66 44 M54 44 Q42 44 42 32 L42 12 M104 44 L92 44 M104 44 Q116 44 116 32 L116 12" />
+<path class="path" d="M54 88 L66 88 M54 88 Q42 88 42 76 L42 32 M104 88 L92 88 M104 88 Q116 88 116 76 L116 32" />
+<path class="path" d="M54 132 L66 132 M54 132 Q42 132 42 120 L42 76 M104 132 L92 132 M104 132 Q116 132 116 120 L116 76" />
+<path class="path" d="M54 176 L66 176 M54 176 Q42 176 42 164 L42 120 M104 176 L92 176 M104 176 Q116 176 116 164 L116 120" />
+<path class="path" d="M54 220 L66 220 M54 220 Q42 220 42 208 L42 164 M104 220 L92 220 M104 220 Q116 220 116 208 L116 164" />
+<path class="path" d="M54 264 L66 264 M54 264 Q42 264 42 252 L42 208 M104 264 L92 264 M104 264 Q116 264 116 252 L116 208" />
+<path class="path" d="M54 308 L66 308 M54 308 Q42 308 42 296 L42 252 M104 308 L92 308 M104 308 Q116 308 116 296 L116 252" />
+<path class="path" d="M0 0 L30 0 M158 0 L128 0" />
+<path class="rule_path_edge" d="M0 -6 L0 6 M158 -6 L158 6" />
+</svg>
