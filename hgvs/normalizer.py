@@ -291,7 +291,7 @@ class Normalizer(object):
                 base = var.posedit.pos.start.base
                 start = 1
                 stop = 1
-            elif var.posedit.edit.type == "dup":
+            elif var.posedit.edit.type == "dup" or var.posedit.edit.type == "dupn":
                 base = var.posedit.pos.end.base
                 start = 1
                 stop = 1
@@ -319,7 +319,7 @@ class Normalizer(object):
                 base = max(var.posedit.pos.start.base - win_size, 1)
                 start = var.posedit.pos.end.base - base
                 stop = var.posedit.pos.end.base - base
-            elif var.posedit.edit.type == "dup":
+            elif var.posedit.edit.type == "dup" or var.posedit.edit.type == "dupn":
                 base = max(var.posedit.pos.start.base - win_size, 1)
                 start = var.posedit.pos.end.base - base + 1
                 stop = var.posedit.pos.end.base - base + 1

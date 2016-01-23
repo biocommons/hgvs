@@ -47,6 +47,8 @@ class Test_HGVSNormalizer(unittest.TestCase):
                          "NM_001166478.1:c.61delG")
         self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant("NM_001166478.1:c.36_37insTCTCTC"))),
                          "NM_001166478.1:c.36_37dup3")
+        self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant("NM_000720.2:c.1208_1209dup2"))),
+                         "NM_000720.2:c.1208_1211dupGTGT")
         self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant("NM_000051.3:c.14_15insT"))),
                          "NM_000051.3:c.15dupT")
         self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant("NM_030813.5:c.1305_1307invGGG"))),
