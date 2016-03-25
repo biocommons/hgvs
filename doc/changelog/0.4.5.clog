@@ -1,0 +1,5 @@
+clog format: 1; -*-outline-*-
+* tip (2016-03-24)
+Changes since 0.4.4.post0 (2015-12-28).
+** New Features
+*** closes #319: added PosEdit.length_change() method [42c75e46940c]

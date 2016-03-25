@@ -5,39 +5,33 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 class HGVSError(Exception):
     pass
 
-class HGVSInternalError(HGVSError):
-    pass
-
-
-class HGVSParseError(HGVSError):
-    pass
-
-
-class HGVSInvalidIntervalError(HGVSError):
-    pass
-
-
-class HGVSInvalidVariantError(HGVSError):
-    pass
-
-
-class HGVSValidationError(HGVSError):
-    pass
-
 
 class HGVSDataNotAvailableError(HGVSError):
     pass
 
+class HGVSInternalError(HGVSError):
+    pass
+
+class HGVSInvalidIntervalError(HGVSError):
+    pass
+
+class HGVSInvalidVariantError(HGVSError):
+    pass
 
 class HGVSNormalizationError(HGVSError):
     pass
 
+class HGVSParseError(HGVSError):
+    pass
 
 class HGVSUnsupportedOperationError(HGVSError):
     pass
 
 class HGVSUsageError(HGVSError):
     """Exception thrown when client/caller has made an invalid request"""
+    pass
+
+class HGVSValidationError(HGVSError):
     pass
 
 

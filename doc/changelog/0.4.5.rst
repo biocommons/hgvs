@@ -1,0 +1,11 @@
+
+tip (2016-03-24)
+################
+
+Changes since 0.4.4.post0 (2015-12-28).
+
+
+New Features
+$$$$$$$$$$$$
+
+* closes `#319 <https://bitbucket.org/biocommons/hgvs/issues/319/>`_: added PosEdit.length_change() method [`42c75e46940c <https://bitbucket.org/biocommons/hgvs/commits/42c75e46940c>`_]

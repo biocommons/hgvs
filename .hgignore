@@ -47,6 +47,7 @@ misc/railroad/hgvs.pymeta
 misc/railroad/hgvs_railroad
 misc/railroad/hgvs_railroad.rst
 misc/tests
+misc/tx-ref-discrepancies/
 nosetests.xml
 parts
 sdist
