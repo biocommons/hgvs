@@ -191,6 +191,14 @@ class AARefAlt(Edit, recordtype.recordtype('AARefAlt', [('ref', None), ('alt', N
             edit_type = 'ins'
         return edit_type
 
+    def _del_ins_lengths(self, ilen):
+        """returns (del_len, ins_len).
+        Unspecified ref or alt returns None for del_len or ins_len respectively.
+        """
+        del_len = 0 if (self.ref is None or self.alt == "") else ilen
+        ins_len = 0 if self.alt is None else len(self.alt)
+        return (del_len, ins_len)
+
 
 class AASub(AARefAlt):
     def __str__(self):
@@ -263,6 +271,13 @@ class AAExt(Edit, recordtype.recordtype('AAExt', [('ref', None), ('alt', None), 
         :returns: edit type (str)
         """
         return 'ext'
+
+    def _del_ins_lengths(self, ilen):
+        """returns (del_len, ins_len).
+        Unspecified ref or alt returns None for del_len or ins_len respectively.
+        """
+        return (0, abs(self.length))
+
 
 
 class Dup(Edit, recordtype.recordtype('Dup', [('ref', None), ('uncertain', False)])):
