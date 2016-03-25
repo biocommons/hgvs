@@ -17,25 +17,24 @@ class Test_VariantLengths(unittest.TestCase):
 
     success_tests = [
             # class AAExt(Edit, recordtype.recordtype('AAExt', [('ref', None), ('alt', None), ('aaterm', None), ('length', None),
-            #TODO: ("NP_000040.1:p.Ter314Trpext*45", ),
-            #TODO: ("NP_000040.1:p.Met1ext-12", ),
+            ("NP_000040.1:p.Ter314Trpext*45", 45),
+            ("NP_000040.1:p.Met1ext-12", 12),
 
             # class AAFs(Edit, recordtype.recordtype('AAFs', [('ref', None), ('alt', None), ('length', None), ('uncertain', False)])):
-            #TODO: ("NP_000001.1:p.Gly25Trpfs*10", ),
+            #TODO: ("NP_000001.1:p.Gly25Trpfs*10", ),   # requires seq fetch for length :-(
 
             # class AARefAlt(Edit, recordtype.recordtype('AARefAlt', [('ref', None), ('alt', None), ('uncertain', False)])):
-            #TODO: ("NP_006149.2:p.(Glu396delinsLysLys)", ),   # NM_006158.3:c.1186delGinsAAAA
-            #TODO: ("NP_006149.2:p.(Glu397del)", ),  # NM_006158.3:n.1288_1290delGAG
-            #TODO: ("NP_006149.2:p.(Glu397dup)", ),  # NM_006158.3:n.1288_1290delGAGinsGAGGAG
+            ("NP_006149.2:p.(Glu396delinsLysLys)", 1),   # NM_006158.3:c.1186delGinsAAAA
+            ("NP_006149.2:p.(Glu397del)", -1),  # NM_006158.3:n.1288_1290delGAG
+            ("NP_006149.2:p.(Glu397dup)", 1),  # NM_006158.3:n.1288_1290delGAGinsGAGGAG
 
             # class AASub(AARefAlt):
-            #TODO: ("NP_006149.2:p.(Glu396Lys)", ),  # NM_006158.3:c.1186delGinsA
+            ("NP_006149.2:p.(Glu396Lys)", 0),  # NM_006158.3:c.1186delGinsA
 
             # class Conv(Edit, recordtype.recordtype('Conv', [('from_ac', None), ('from_type', None), ('from_pos', None),
             # N/A
 
             # class Dup(Edit, recordtype.recordtype('Dup', [('ref', None), ('uncertain', False)])):
-            #TODO: ("NP_006149.2:p.(Glu397dup)", ),   # N.B. Dup object doesn't have ref here!
             ("NM_006158.3:n.1291_1293dup", 3),
             ("NM_006158.3:n.1291_1293dupGAG", 3),
     
