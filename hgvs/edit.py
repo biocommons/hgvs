@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-__doc__ = """
-hgvs.edit -- representation of edit operations in HGVS variants
+"""hgvs.edit -- representation of edit operations in HGVS variants
 
 NARefAlt and AARefAlt are abstractions of several major variant
 types.  They are distinguished by whether the ref and alt elements
@@ -16,11 +15,13 @@ import recordtype
 
 from bioutils.sequences import aa_to_aa1, aa1_to_aa3
 
+from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError
 from hgvs.decorators import deprecated
-from hgvs.exceptions import HGVSError
 
 
 class Edit(object):
+    def _del_ins_lengths(self, ilen):
+        raise HGVSUnsupportedOperationError("internal function _del_ins_lengths not implemented for this variant type")
     pass
 
 
@@ -102,6 +103,7 @@ class NARefAlt(Edit, recordtype.recordtype('NARefAlt', [('ref', None), ('alt', N
         self.uncertain = True
         return self
 
+
     @property
     def type(self):
         """return the type of this Edit
@@ -120,6 +122,15 @@ class NARefAlt(Edit, recordtype.recordtype('NARefAlt', [('ref', None), ('alt', N
         else:
             edit_type = 'ins'
         return edit_type
+
+
+    def _del_ins_lengths(self, ilen):
+        """returns (del_len, ins_len).
+        Unspecified ref or alt returns None for del_len or ins_len respectively.
+        """
+        del_len = 0 if self.ref is None else ilen
+        ins_len = 0 if self.alt is None else len(self.alt)
+        return (del_len, ins_len)
 
 
 class AARefAlt(Edit, recordtype.recordtype('AARefAlt', [('ref', None), ('alt', None), ('uncertain', False)])):
@@ -285,6 +296,15 @@ class Dup(Edit, recordtype.recordtype('Dup', [('ref', None), ('uncertain', False
     def seq(self):
         return self.ref
 
+    def _del_ins_lengths(self, ilen):
+        """returns (del_len, ins_len).
+        Unspecified ref or alt returns None for del_len or ins_len respectively.
+        """
+        if self.ref is not None and self.ref != "":
+            assert len(self.ref) == ilen
+        return (0, ilen)
+
+
 
 class Repeat(Edit, recordtype.recordtype('Repeat', [('ref', None), ('min', None), ('max', None),
                                                     ('uncertain', False)])):
@@ -351,6 +371,13 @@ class NACopy(Edit, recordtype.recordtype('NACopy', ['copy', ('uncertain', False)
         """
         return 'copy'
 
+    def _del_ins_lengths(self, ilen):
+        """returns (del_len, ins_len).
+        Unspecified ref or alt returns None for del_len or ins_len respectively.
+        """
+        return (0, ilen * self.copy)
+
+
 
 class NADupN(Edit, recordtype.recordtype('NADupN', ['n', ('uncertain', False)])):
     def __str__(self):
@@ -373,6 +400,13 @@ class NADupN(Edit, recordtype.recordtype('NADupN', ['n', ('uncertain', False)]))
         """
         return 'dupn'
 
+    def _del_ins_lengths(self, ilen):
+        """returns (del_len, ins_len).
+        Unspecified ref or alt returns None for del_len or ins_len respectively.
+        """
+        return (0, ilen * self.n)
+
+
 
 class Inv(Edit, recordtype.recordtype('Inv', [('ref', None), ('uncertain', False)])):
     """Inversion
@@ -394,7 +428,7 @@ class Inv(Edit, recordtype.recordtype('Inv', [('ref', None), ('uncertain', False
         """
         self.uncertain = True
         return self
-    
+
     @property
     def ref_s(self):
         return self.ref if (isinstance(self.ref, basestring) and self.ref and self.ref[0] in 'ACGTUN') else None
@@ -417,6 +451,12 @@ class Inv(Edit, recordtype.recordtype('Inv', [('ref', None), ('uncertain', False
         :returns: edit type (str)
         """
         return 'inv'
+
+    def _del_ins_lengths(self, ilen):
+        """returns (del_len, ins_len).
+        Unspecified ref or alt returns None for del_len or ins_len respectively.
+        """
+        return (ilen, ilen)
 
 
 class Conv(Edit, recordtype.recordtype('Conv', [('from_ac', None), ('from_type', None), ('from_pos', None),

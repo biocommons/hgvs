@@ -3,6 +3,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import recordtype
 
+from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError
+
 
 class PosEdit(recordtype.recordtype('PosEdit', [('pos', None), ('edit', None), ('uncertain', False)])):
     """
@@ -25,6 +27,40 @@ class PosEdit(recordtype.recordtype('PosEdit', [('pos', None), ('edit', None), (
         """
         self.uncertain = True
         return self
+
+
+    def length_change(self, error_value=None):
+        """returns net length change for this posedit
+
+        For an interval length, ilen, determined from the position,
+        calls _del_ins_lengths(ilen) on the Edit instance, which
+        returns a (del_len, ins_len) tuple.  This method then returns
+        ins_len - del_len as the net change.
+
+        This Heimlich maneuver is necessary to accommodate the
+        optionality of alleles. For example c.10_15del requires that
+        we determine the del length from the interval, where as
+        c.10_15delinsCAT requires information from the interval and
+        from the edit.
+
+        There are many circumstances in which the net length change
+        cannot be determined or is ill-defined. In these cases, the
+        result depends on the value of `error_value`. When
+        `error_value` is None, an exception is raised; when not None,
+        the exception is caught and the value is returned.
+
+        """
+
+        try:
+            ilen = self.pos._length()
+            (del_len, ins_len) = self.edit._del_ins_lengths(ilen)
+        except HGVSUnsupportedOperationError:
+            if error_value is not None:
+                return error_value
+            raise
+
+        return ins_len - del_len
+
 
     ## <LICENSE>
     ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

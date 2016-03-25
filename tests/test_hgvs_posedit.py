@@ -22,8 +22,12 @@ class Test_PosEdit(unittest.TestCase):
         self.assertEqual(str(pe), '12+34_56-78delAA')
 
 
+
+
+
 if __name__ == '__main__':
     unittest.main()
+
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
