@@ -122,7 +122,8 @@ class BaseOffsetPosition(recordtype.recordtype(
             raise HGVSUnsupportedOperationError("Interval length with intronic offsets is ill-defined")
         if lhs.base == rhs.base:
             return lhs.offset - rhs.offset
-        return lhs.base - rhs.base
+        straddles_zero = 1 if (lhs.base > 0 and rhs.base < 0) else 0
+        return lhs.base - rhs.base - straddles_zero
 
 
 class AAPosition(recordtype.recordtype('AAPosition', field_names=[('base', None), ('aa', None), ('uncertain', False)])):
