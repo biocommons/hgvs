@@ -29,37 +29,43 @@ class PosEdit(recordtype.recordtype('PosEdit', [('pos', None), ('edit', None), (
         return self
 
 
-    def length_change(self, error_value=None):
-        """returns net length change for this posedit
+    def length_change(self, on_error_raise=True):
+        """Returns the net length change for this posedit.
 
-        For an interval length, ilen, determined from the position,
-        calls _del_ins_lengths(ilen) on the Edit instance, which
-        returns a (del_len, ins_len) tuple.  This method then returns
-        ins_len - del_len as the net change.
+        The method for computing the net length change depends on the
+        type of variant (dup, del, ins, etc).  The length_change
+        method hides this complexity from callers.
 
-        This Heimlich maneuver is necessary to accommodate the
-        optionality of alleles. For example c.10_15del requires that
-        we determine the del length from the interval, where as
-        c.10_15delinsCAT requires information from the interval and
-        from the edit.
+        :param hgvs.posedit.PosEdit self: a PosEdit instance
+        :param bool on_error_raise: whether to raise an exception on errors 
+
+        :returns: A signed int for the net change in length.  Negative \
+        values imply net deletions, 0 implies a balanced insertion and \
+        deletion (e.g., SNV), and positive values imply a net \
+        insertion.
+
+        :raises HGVSUnsupportedOperationError: When determining the \
+        length for this variant type is ill-defined or unsupported.
 
         There are many circumstances in which the net length change
-        cannot be determined or is ill-defined. In these cases, the
-        result depends on the value of `error_value`. When
-        `error_value` is None, an exception is raised; when not None,
-        the exception is caught and the value is returned.
+        cannot be determined, is ill-defined, or is unsupported.  In
+        these cases, the result depends on the value of
+        `on_error_raise`: when `on_error_raise` is True, an exception
+        is raised; when False, the exception is caught and `None` is
+        returned.  Callers might wish to pass `on_error_raise=False`
+        in list comprehensions to avoid dealing with exceptions.
 
         """
 
         try:
             ilen = self.pos._length()
             (del_len, ins_len) = self.edit._del_ins_lengths(ilen)
+            return ins_len - del_len
         except HGVSUnsupportedOperationError:
-            if error_value is not None:
-                return error_value
-            raise
+            if on_error_raise:
+                raise
+            return None
 
-        return ins_len - del_len
 
 
     ## <LICENSE>

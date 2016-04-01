@@ -82,17 +82,20 @@ class Test_VariantLengths(unittest.TestCase):
         cls.hp = hgvs.parser.Parser()
 
     def test_success_cases(self):
+        "posedit length_change: test supported variant types"
         for tv, tl in self.success_tests:
             v = self.hp.parse_hgvs_variant(tv)
             self.assertEqual(v.posedit.length_change(), tl)
 
     def test_error_cases_w_exceptions(self):
+        "posedit length_change: raise exception on error"
         for tv in self.error_tests:
             v = self.hp.parse_hgvs_variant(tv)
             with self.assertRaises(HGVSUnsupportedOperationError):
                 _ = v.posedit.length_change()
 
     def test_error_cases_w_error_values(self):
+        "posedit length_change: return None on error"
         for tv in self.error_tests:
             v = self.hp.parse_hgvs_variant(tv)
-            self.assertEqual(v.posedit.length_change(error_value="forty-two"), "forty-two")
+            self.assertIsNone(v.posedit.length_change(on_error_raise=False))
