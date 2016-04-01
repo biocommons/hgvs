@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import contextlib
 import inspect
 import logging
 import os
@@ -76,13 +77,14 @@ def connect(db_url=_default_db_url, pooling=False, application_name=None):
     else:
         # fell through connection scheme cases
         raise RuntimeError("{url.scheme} in {url} is not currently supported".format(url=url))
+    _logger.info('connected to ' + str(db_url) + '...')
     return conn
 
 
 class UTABase(Interface, SeqFetcher):
     required_version = "1.1"
 
-    sql = {
+    _queries = {
         "acs_for_protein_md5": """
             select ac
             from seq_anno
@@ -148,12 +150,17 @@ class UTABase(Interface, SeqFetcher):
         self.url = url
         self._connect()
         super(UTABase, self).__init__()
-        _logger.info('connected to ' + str(self.url))
 
-    def _execute(self, sql, *args):
-        cur = self._get_cursor()
-        cur.execute(sql, *args)
-        return cur
+    def _fetchone(self, sql, *args):
+        with self._get_cursor() as cur:
+            cur.execute(sql, *args)
+            return cur.fetchone()
+
+    def _fetchall(self, sql, *args):
+        with self._get_cursor() as cur:
+            cur.execute(sql, *args)
+            return cur.fetchall()
+
 
     ############################################################################
     # Queries
@@ -164,8 +171,7 @@ class UTABase(Interface, SeqFetcher):
 
     @lru_cache(maxsize=1)
     def schema_version(self):
-        cur = self._execute("select * from meta where key = 'schema_version'")
-        return cur.fetchone()['value']
+        return self._fetchone("select * from meta where key = 'schema_version'")['value']
 
     @lru_cache(maxsize=128)
     def get_acs_for_protein_seq(self, seq):
@@ -176,8 +182,7 @@ class UTABase(Interface, SeqFetcher):
         list.
         """
         md5 = seq_md5(seq)
-        cur = self._execute(self.sql['acs_for_protein_md5'], [md5])
-        return [r['ac'] for r in cur.fetchall()] + ['MD5_' + md5]
+        return [r['ac'] for r in self._fetchall(self._queries['acs_for_protein_md5'], [md5])] + ['MD5_' + md5]
 
     @lru_cache(maxsize=128)
     def get_gene_info(self, gene):
@@ -196,8 +201,7 @@ class UTABase(Interface, SeqFetcher):
         added   | 2014-02-04 21:39:32.57125
 
         """
-        cur = self._execute(self.sql['gene_info'], [gene])
-        return cur.fetchone()
+        return self._fetchone(self._queries['gene_info'], [gene])
 
     @lru_cache(maxsize=128)
     def get_tx_exons(self, tx_ac, alt_ac, alt_aln_method):
@@ -242,8 +246,7 @@ class UTABase(Interface, SeqFetcher):
         'NM_199425.2'
 
         """
-        cur = self._execute(self.sql['tx_exons'], [tx_ac, alt_ac, alt_aln_method])
-        rows = cur.fetchall()
+        rows = self._fetchall(self._queries['tx_exons'], [tx_ac, alt_ac, alt_aln_method])
         if len(rows) == 0:
             raise HGVSDataNotAvailableError(
                 "No tx_exons for (tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})".format(
@@ -260,8 +263,7 @@ class UTABase(Interface, SeqFetcher):
         :param gene: HGNC gene name
         :type gene: str
         """
-        cur = self._execute(self.sql['tx_for_gene'], [gene])
-        return cur.fetchall()
+        return self._fetchall(self._queries['tx_for_gene'], [gene])
 
     @lru_cache(maxsize=128)
     def get_tx_for_region(self, alt_ac, alt_aln_method, start_i, end_i):
@@ -273,8 +275,7 @@ class UTABase(Interface, SeqFetcher):
         :param int start_i: 5' bound of region
         :param int end_i: 3' bound of region
         """
-        cur = self._execute(self.sql['tx_for_region'], [alt_ac, alt_aln_method, start_i, end_i])
-        return cur.fetchall()
+        return self._fetchall(self._queries['tx_for_region'], [alt_ac, alt_aln_method, start_i, end_i])
 
     @lru_cache(maxsize=128)
     def get_tx_identity_info(self, tx_ac):
@@ -294,8 +295,7 @@ class UTABase(Interface, SeqFetcher):
         hgnc           | VSX1
 
         """
-        cur = self._execute(self.sql['tx_identity_info'], [tx_ac])
-        rows = cur.fetchall()
+        rows = self._fetchall(self._queries['tx_identity_info'], [tx_ac])
         if len(rows) == 0:
             raise HGVSDataNotAvailableError("No transcript definition for (tx_ac={tx_ac})".format(tx_ac=tx_ac))
         return rows[0]
@@ -323,23 +323,23 @@ class UTABase(Interface, SeqFetcher):
         alt_aln_method | splign
 
         """
-        cur = self._execute(self.sql['tx_info'], [tx_ac, alt_ac, alt_aln_method])
-        rows = cur.fetchall()
+        rows = self._fetchall(self._queries['tx_info'], [tx_ac, alt_ac, alt_aln_method])
         if len(rows) == 0:
             raise HGVSDataNotAvailableError(
-                "No tx_info for (tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})".format(tx_ac=tx_ac,
-                                                                                                        alt_ac=alt_ac,
-                                                                                                        alt_aln_method=
-                                                                                                        alt_aln_method))
+                "No tx_info for (tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})".format(
+                    tx_ac=tx_ac,
+                    alt_ac=alt_ac,
+                    alt_aln_method=alt_aln_method))
         elif len(rows) == 1:
             return rows[0]
         else:
             raise HGVSError(
                 "Multiple ({n}) replies for tx_info(tx_ac="
-                "{tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})".format(n=len(rows),
-                                                                                  tx_ac=tx_ac,
-                                                                                  alt_ac=alt_ac,
-                                                                                  alt_aln_method=alt_aln_method))
+                "{tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})".format(
+                    n=len(rows),
+                    tx_ac=tx_ac,
+                    alt_ac=alt_ac,
+                    alt_aln_method=alt_aln_method))
 
     @lru_cache(maxsize=128)
     def get_tx_mapping_options(self, tx_ac):
@@ -368,8 +368,7 @@ class UTABase(Interface, SeqFetcher):
         alt_aln_method | blat
 
         """
-        cur = self._execute(self.sql['tx_mapping_options'], [tx_ac])
-        rows = cur.fetchall()
+        rows = self._fetchall(self._queries['tx_mapping_options'], [tx_ac])
         return rows
 
     @lru_cache(maxsize=128)
@@ -402,8 +401,7 @@ class UTABase(Interface, SeqFetcher):
 
         """
 
-        cur = self._execute(self.sql['tx_similar'], [tx_ac])
-        rows = cur.fetchall()
+        rows = self._fetchall(self._queries['tx_similar'], [tx_ac])
         return rows
 
     @lru_cache(maxsize=128)
@@ -411,8 +409,7 @@ class UTABase(Interface, SeqFetcher):
         """Return the (single) associated protein accession for a given transcript
         accession, or None if not found."""
 
-        cur = self._execute(self.sql['tx_to_pro'], [tx_ac])
-        rows = cur.fetchall()
+        rows = self._fetchall(self._queries['tx_to_pro'], [tx_ac])
         try:
             return rows[0]['pro_ac']
         except IndexError:
@@ -468,8 +465,7 @@ class UTABase(Interface, SeqFetcher):
         :param ac: transcript accession with version (e.g., 'NM_000051.3')
         :type ac: str
         """
-        cur = self._execute(self.sql['tx_seq'], [ac])
-        row = cur.fetchone()
+        row = self._fetchone(self._queries['tx_seq'], [ac])
         if row and row['seq'] is not None:
             return row['seq']
         raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
@@ -484,10 +480,10 @@ class UTABase(Interface, SeqFetcher):
 
 class UTA_postgresql(UTABase):
     def __init__(self, url, pooling=False, application_name=None):
-        self.pooling = pooling
-        self.application_name = application_name
         if url.schema is None:
             raise Exception("No schema name provided in {url}".format(url=url))
+        self.pooling = pooling
+        self.application_name = application_name
         super(UTA_postgresql, self).__init__(url)
 
     def _connect(self):
@@ -509,45 +505,45 @@ class UTA_postgresql(UTABase):
         self._ensure_schema_exists()
 
         # remap sqlite's ? placeholders to psycopg2's %s
-        self.sql = {k: v.replace('?', '%s') for k, v in self.sql.iteritems()}
+        self._queries = {k: v.replace('?', '%s') for k, v in self._queries.iteritems()}
 
     def _ensure_schema_exists(self):
         # N.B. On AWS RDS, information_schema.schemata always returns zero rows
-        cur = self._execute("select exists(SELECT 1 FROM pg_namespace WHERE nspname = %s)", [self.url.schema])
-        if cur.fetchone()[0]:
+        r = self._fetchone("select exists(SELECT 1 FROM pg_namespace WHERE nspname = %s)", [self.url.schema])
+        if r[0]:
             return
         raise HGVSDataNotAvailableError("specified schema ({}) does not exist (url={})".format(self.url.schema,
                                                                                                self.url))
 
+    @contextlib.contextmanager
     def _get_cursor(self):
-        """returns a cursor obtained from a single or pooled connection, and
-        sets the postgresql search_path appropriately
+        """Returns a context manager for obtained from a single or pooled
+        connection, and sets the PostgreSQL search_path to the schema
+        specified in the connection URL.
 
-        Although connections are threadsafe, cursors are bound to
-        connections and are not threadsafe. Therefore, be sure to not
-        share cursors across threads. Cursors are reaped when they go
-        out of scope, but they may be cleaned up manually with
-        cursor.close(). See the psycopg2 docs for cursor lifetime
+        Although *connections* are threadsafe, *cursors* are bound to
+        connections and are *not* threadsafe. Do not share cursors
+        across threads.
 
         """
 
-        try:
-            conn = self._pool.getconn() if self.pooling else self._conn
-            conn.autocommit = True
-            cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-            return cur
-        finally:
-            if self.pooling:
-                self._pool.putconn(conn)
+        conn = self._pool.getconn() if self.pooling else self._conn
 
-    def _execute(self, sql, *args):
-        cur = self._get_cursor()
-        # N.B. The search_path is reset when pooling is used and the
-        # connection is returned with putconn. Therefore, we need to
-        # set it for every execution.
+        # setting autocommit obviates explicitly closing the
+        # transaction
+        conn.autocommit = True
+
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur.execute("set search_path = " + self.url.schema + ";")
-        cur.execute(sql, *args)
-        return cur
+
+        yield cur
+
+        # the contextmanager will ensure that these are executed
+        # when the context is exited
+        cur.close()
+        if self.pooling:
+            self._pool.putconn(conn)
+
 
 
 class UTA_sqlite(UTABase):
@@ -566,8 +562,9 @@ class UTA_sqlite(UTABase):
         self._conn = sqlite3.connect(self.url.path)
         self._conn.row_factory = _sqlite3_row_dict_factory
 
+    @contextlib.contextmanager
     def _get_cursor(self):
-        return self._conn.cursor()
+        yield self._conn.cursor()
 
 
 class ParseResult(urlparse.ParseResult):

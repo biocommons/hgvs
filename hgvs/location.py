@@ -21,6 +21,9 @@ import recordtype
 
 from bioutils.sequences import aa1_to_aa3
 
+from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError
+
+
 SEQ_START = 0
 CDS_START = 1
 CDS_END = 2
@@ -47,10 +50,14 @@ class SimplePosition(recordtype.recordtype("SimplePosition", field_names=[("base
         assert self.base is None or self.base >= 1, self.__class__.__name__ + ": base must be >= 1"
         return True
 
+    def __sub__(lhs, rhs):
+        assert type(lhs) == type(rhs), "Cannot substract coordinates of different representations"
+        return lhs.base - rhs.base
 
-class BaseOffsetPosition(
-        recordtype.recordtype("BaseOffsetPosition",
-                              field_names=[("base", None), ("offset", 0), ("datum", SEQ_START), ("uncertain", False)])):
+
+class BaseOffsetPosition(recordtype.recordtype(
+    'BaseOffsetPosition',
+    field_names=[('base', None), ('offset', 0), ('datum', SEQ_START), ('uncertain', False)])):
     """
     Class for dealing with CDS coordinates in transcript variants.
 
@@ -108,6 +115,17 @@ class BaseOffsetPosition(
         """return True if the position is marked uncertain or undefined"""
         return self.uncertain or self.base is None or self.offset is None
 
+    def __sub__(lhs, rhs):
+        assert type(lhs) == type(rhs), "Cannot substract coordinates of different representations"
+        if lhs.datum != rhs.datum:
+            raise HGVSUnsupportedOperationError("Interval length measured from different datums is ill-defined")
+        if lhs.offset != 0 or rhs.offset != 0:
+            raise HGVSUnsupportedOperationError("Interval length with intronic offsets is ill-defined")
+        if lhs.base == rhs.base:
+            return lhs.offset - rhs.offset
+        straddles_zero = 1 if (lhs.base > 0 and rhs.base < 0) else 0
+        return lhs.base - rhs.base - straddles_zero
+
 
 class AAPosition(recordtype.recordtype("AAPosition", field_names=[("base", None), ("aa", None), ("uncertain", False)])):
     def validate(self):
@@ -138,6 +156,10 @@ class AAPosition(recordtype.recordtype("AAPosition", field_names=[("base", None)
         """return True if the position is marked uncertain or undefined"""
         return self.uncertain or self.base is None or self.aa is None
 
+    def __sub__(lhs, rhs):
+        assert type(lhs) == type(rhs), "Cannot substract coordinates of different representations"
+        return lhs.base - rhs.base
+
 
 class Interval(recordtype.recordtype("Interval", field_names=["start", ("end", None), ("uncertain", False)])):
     def validate(self):
@@ -156,10 +178,14 @@ class Interval(recordtype.recordtype("Interval", field_names=["start", ("end", N
         self.uncertain = True
         return self
 
+    def _length(self):
+        return 1 if self.end is None else self.end - self.start + 1
+
     @property
     def is_uncertain(self):
         """return True if the position is marked uncertain or undefined"""
         return self.uncertain or self.start.is_uncertain or self.end.is_uncertain
+
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
