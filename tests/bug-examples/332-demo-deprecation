@@ -1,0 +1,17 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import logging
+
+import hgvs.parser
+
+logging.basicConfig(level=logging.DEBUG)
+
+hp = hgvs.parser.Parser()
+
+v = hp.parse_hgvs_variant("NM_01234.5:g.12_15dupAAAA")
+
+# this should raise a deprecation warning:
+print(v.posedit.edit.seq)
