@@ -104,6 +104,9 @@ class Test_HGVSExtrinsicValidator(unittest.TestCase):
                          "NM_000495.3:c.610_628del19",
                          "NM_000059.3:c.44_45insATT",
                          "NC_000001.10:g.156104193G>A",
+                         "NP_000010.1:p.Asn158Ser",
+                         "NP_000042.3:p.His1082_Val1085delinsLeuHisGlnAla",
+                         "NP_000042.3:p.His1082ArgfsTer2",
                          ]
         for var in [self.hp.parse_hgvs_variant(h) for h in hgvs_variants]:
             self.assertTrue(self.validate_ext.validate(var))
@@ -113,6 +116,10 @@ class Test_HGVSExtrinsicValidator(unittest.TestCase):
         hgvs_variants = ["NM_001005405.2:c.435_440delCTGCT",
                          "NR_002728.3:r.55C>U",
                          "NC_000001.10:g.156104193C>A",
+                         "NP_000010.1:p.Ser158Arg",
+                         "NP_000042.3:p.Arg1082_Val1085delinsLeuHisGlnAla",
+                         "NP_000042.3:p.His1082_Arg1085delinsLeuHisGlnAla",
+                         "NP_000042.3:p.Ser1082ArgfsTer2",
                          ]
 
         for var in [self.hp.parse_hgvs_variant(h) for h in hgvs_variants]:
