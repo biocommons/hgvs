@@ -1,11 +1,9 @@
 License
 =======
 
-.. _hgvs: https://bitbucket.org/biocommons/hgvs
-
-hgvs_ is released under the `Apache License 2.0
-<http://www.apache.org/licenses/LICENSE-2.0>`_, the text of which appears
-below::
+The `hgvs package`_ is released under the `Apache License 2.0
+<http://www.apache.org/licenses/LICENSE-2.0>`_, the text of which
+appears below::
 
                                  Apache License
                            Version 2.0, January 2004

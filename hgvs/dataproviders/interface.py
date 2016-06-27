@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+"""Defines the abstract data provider interface
+
+"""
+
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import abc
@@ -10,7 +14,7 @@ class Interface(object):
     accessions.  In order to isolate the hgvs package from the myriad
     choices and tradeoffs, these data are provided through an
     implementation of the (abstract) HGVS Data Provider Interface.
-    
+
     As of June 2014, the only available data provider implementation
     uses the Universal Transcript Archive (`UTA`_), a sister project
     that provides access to transcripts and genome-transcript
@@ -30,7 +34,7 @@ class Interface(object):
     __metaclass__ = abc.ABCMeta
 
     def interface_version(self):
-        return 1
+        return 2
 
     def __init__(self):
         def _split_version_string(v):
@@ -100,18 +104,22 @@ class Interface(object):
     def get_tx_identity_info(self, tx_ac):
         pass
 
-## <LICENSE>
-## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
-## 
-## Licensed under the Apache License, Version 2.0 (the "License");
-## you may not use this file except in compliance with the License.
-## You may obtain a copy of the License at
-## 
-##     http://www.apache.org/licenses/LICENSE-2.0
-## 
-## Unless required by applicable law or agreed to in writing, software
-## distributed under the License is distributed on an "AS IS" BASIS,
-## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-## See the License for the specific language governing permissions and
-## limitations under the License.
-## </LICENSE>
+    @abc.abstractmethod
+    def get_assembly_accessions(self, assembly_name):
+        pass
+
+# <LICENSE>
+# Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# </LICENSE>

@@ -188,13 +188,12 @@ if __name__ == '__main__':
         match_bins[match].add(g_hgvs)
         match_counts[match] += len(hmk)
 
-        msg = "{g_hgvs}: {match}; keys: {ho}/{eqk}/{hmk}/{mo}".format(
-            g_hgvs=g_hgvs,
-            match=match,
-            ho=len(hok),
-            eqk=len(eqk),
-            hmk=len(hmk),
-            mo=len(mok))
+        msg = "{g_hgvs}: {match}; keys: {ho}/{eqk}/{hmk}/{mo}".format(g_hgvs=g_hgvs,
+                                                                      match=match,
+                                                                      ho=len(hok),
+                                                                      eqk=len(eqk),
+                                                                      hmk=len(hmk),
+                                                                      mo=len(mok))
         if eqk:
             matches = [(h_cs_d[k], m_cs_d[k]) for k in eqk]
             msg += "\n  matches:" + '; '.join(str(mm) for mm in matches)

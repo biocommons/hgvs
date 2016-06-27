@@ -1,24 +1,15 @@
-=============================================================================
-*hgvs* - Python library to parse, format, validate, and map sequence variants
-=============================================================================
+========================================================================================
+*hgvs* - Python library to parse, format, validate, normalize, and map sequence variants
+========================================================================================
 
-  +------------------------------------------------------------------+
-  | ☺ **2015-09-09**: 0.4.0 is out!. See `Release Notes              |
-  | <http://hgvs.readthedocs.org/en/latest/changelog/0.4.0.html>`_   |
-  | for breaking changes and new features. Please report successes   |
-  | and failures via the hgvs-discuss mailing list or by             |
-  | submitting an issue.                                             |
-  +------------------------------------------------------------------+
+`Documentation`_ | `Issues <https://goo.gl/G63aFQ>`_ | `Mailing List`_ | `Change Log <http://hgvs.readthedocs.org/en/default/changelog/index.html>`_ | `Upcoming Changes <http://hgvs.readthedocs.org/en/default/changelog/upcoming.html>`_
 
-This package provides a Python library to facilitate the use of genome,
-transcript, and protein variants that are represented using the Human
-Genome Variation Society (`mutnomen`_) recommendations.
+| Release: |rtd_badge_rel| |pypi_badge| |build_status|
+| Dev: |rtd_badge_dev|
 
-..
-
-| `Source`_ | `Documentation`_ | `Issues <https://goo.gl/G63aFQ>`_ | `Mailing List`_
-| `Change Log <http://hgvs.readthedocs.org/en/latest/changelog/index.html>`_ | `Upcoming Changes <http://hgvs.readthedocs.org/en/latest/changelog/upcoming.html>`_
-| |pypi_badge| |rtd_badge| |build_status|
+The *hgvs* package provides a Python library to facilitate the use of
+genome, transcript, and protein variants that are represented using
+the Human Genome Variation Society (`mutnomen`_) recommendations.
 
 ----
 
@@ -49,15 +40,17 @@ Important Notes
   <https://bitbucket.org/biocommons/hgvs/issues>`_. Please report any
   issues you find.
 * **Use a pip package specification to ensure stay within minor
-  releases for API stability.** For example, ``hgvs >=0.3,<0.4``.
+  releases for API stability.** For example, ``hgvs >=0.4,<0.5``.
 
 ----
 
 Some Examples
 -------------
 
+.. note:: These examples are for the upcoming 0.5.0 release.
+
 See `Installation instructions
-<http://hgvs.readthedocs.org/en/latest/installation.html>`_ if you
+<http://hgvs.readthedocs.org/en/default/installation.html>`_ if you
 have installation troubles.
 
 ::
@@ -91,7 +84,7 @@ have installation troubles.
   # initialize the mapper for GRCh37 with splign-based alignments
   >>> hdp = hgvs.dataproviders.uta.connect()
   >>> evm = hgvs.variantmapper.EasyVariantMapper(hdp,
-  ...          primary_assembly='GRCh37', alt_aln_method='splign',
+  ...          assembly_name='GRCh37', alt_aln_method='splign',
   ...          replace_reference=True)
   
   # identify transcripts that overlap this genomic variant
@@ -135,7 +128,7 @@ have installation troubles.
   SequenceVariant(ac=NM_001166478.1, type=c, posedit=35delT)
 
 
-There are `more examples in the documentation <http://hgvs.readthedocs.org/en/latest/examples.html>`_.
+There are `more examples in the documentation <http://hgvs.readthedocs.org/en/default/examples.html>`_.
 
 ----
 
@@ -151,38 +144,28 @@ Citing hgvs (the package)
 Contributing
 ------------
 
-The hgvs package is intended to be a community project that
-facilitates the reliable use of sequence variants.  Code and
-documentation contributions are appreciated!  Contributions are more
-likely to be quickly incorporated if they:
-
-* **The default branch is development.** Pulling from default will get
-  you a *development* version.  Release versions are determined by
-  tags; updating to a specific version (*e.g.,* ``hg up -r 0.3.0``)
-  will get you exactly that version as on PyPI.  If you implement a
-  new feature, please create an issue first and work in a feature
-  branch named like '44-normalization'.
-* are submitted against the default branch head (or close to
-  it);
-* are made via pull requests;
-* are in a named branch, named like <issue#>-meaningful-name;
-* are narrowly focused on the bug/feature described by the issue
-* have discrete commits with good log messages;
-* have tests;
-* are formatted code with yapf;
-* are generally consistent with the (loose) style of the current code
-  with respect to variable naming, etc.
+The hgvs package is intended to be a community project.  Please see
+`Contributing
+<http://hgvs.readthedocs.org/en/default/contributing.html>`_ to get
+started in submitting source code, tests, or documentation.  Thanks
+for getting involved!
 
 
-.. _documentation: http://hgvs.readthedocs.org/en/latest/index.html
+
+
+.. _documentation: http://hgvs.readthedocs.org/
 .. _invitae: http://invitae.com/
 .. _mutnomen: http://www.hgvs.org/mutnomen/
 .. _source: https://bitbucket.org/biocommons/hgvs/
 .. _uta: http://bitbucket.org/biocommons/uta/
 .. _mailing list: https://groups.google.com/forum/#!forum/hgvs-discuss
 
-.. |rtd_badge| image:: https://readthedocs.org/projects/hgvs/badge/?version=latest
-  :target: http://hgvs.readthedocs.org/
+.. |rtd_badge_rel| image:: https://readthedocs.org/projects/hgvs/badge/?version=0.4.x
+  :target: http://hgvs.readthedocs.org/en/0.4.x
+  :align: middle
+
+.. |rtd_badge_dev| image:: https://readthedocs.org/projects/hgvs/badge/?version=default
+  :target: http://hgvs.readthedocs.org/en/default
   :align: middle
 
 .. |pypi_badge| image:: https://badge.fury.io/py/hgvs.png

@@ -17,7 +17,7 @@ class Test_IntervalMapper(unittest.TestCase):
         interval = hgvs.intervalmapper.Interval(3, 4)
         st = str(interval)
         self.assertEqual(1, interval.len)
-        self.assertEqual(interval.__repr__(), 'Interval(start_i=3,end_i=4)')
+        self.assertEqual(interval.__repr__(), "Interval(start_i=3,end_i=4)")
 
     def test_interval_invalid_start_gt_end(self):
         with self.assertRaises(hgvs.exceptions.HGVSInvalidIntervalError):
@@ -65,7 +65,7 @@ class Test_IntervalMapper(unittest.TestCase):
         iv1 = hgvs.intervalmapper.Interval(s1, e1)
         iv2 = hgvs.intervalmapper.Interval(s2, e2)
         intervalpair = hgvs.intervalmapper.IntervalPair(iv1, iv2)
-        repr_str = 'IntervalPair(ref=Interval(start_i={},end_i={}),tgt=Interval(start_i={},end_i={}))'
+        repr_str = "IntervalPair(ref=Interval(start_i={},end_i={}),tgt=Interval(start_i={},end_i={}))"
         self.assertEqual(intervalpair.__repr__(), repr_str.format(s1, e1, s2, e2))
 
     @staticmethod
@@ -81,21 +81,21 @@ class Test_IntervalMapper(unittest.TestCase):
         return ivm
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
 
-## <LICENSE>
-## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
-## 
-## Licensed under the Apache License, Version 2.0 (the "License");
-## you may not use this file except in compliance with the License.
-## You may obtain a copy of the License at
-## 
-##     http://www.apache.org/licenses/LICENSE-2.0
-## 
-## Unless required by applicable law or agreed to in writing, software
-## distributed under the License is distributed on an "AS IS" BASIS,
-## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-## See the License for the specific language governing permissions and
-## limitations under the License.
-## </LICENSE>
+# <LICENSE>
+# Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# </LICENSE>

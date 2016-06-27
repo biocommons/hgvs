@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
 """
 Mapping intervals between pairs of congruent segments
 
@@ -43,19 +42,22 @@ Currently, this code matches an interval <start_i,end_i> using the maximal
 start_i and minimal end_i.
 """
 
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import re
-from hgvs.exceptions import *
+
+from hgvs.exceptions import HGVSInvalidIntervalError
 
 
 class Interval(object):
     """Represents a segment of a sequence in interbase
     coordinates (0-based, right-open).
     """
-    __slots__ = ('start_i', 'end_i')
+    __slots__ = ("start_i", "end_i")
 
     def __init__(self, start_i, end_i):
         if not (start_i <= end_i):
-            raise HGVSInvalidIntervalError('start_i must be less than or equal to end_i')
+            raise HGVSInvalidIntervalError("start_i must be less than or equal to end_i")
         self.start_i = start_i
         self.end_i = end_i
 
@@ -64,14 +66,14 @@ class Interval(object):
         return self.end_i - self.start_i
 
     def __repr__(self):
-        return '{self.__class__.__name__}(start_i={self.start_i},end_i={self.end_i})'.format(self=self)
+        return "{self.__class__.__name__}(start_i={self.start_i},end_i={self.end_i})".format(self=self)
 
 
 class IntervalPair(object):
     """Represents a match, insertion, or deletion segment of an
     alignment. If a match, the lengths must be equal; if an insertion or
     deletion, the length of the ref or tgt must be zero respectively."""
-    __slots__ = ('ref', 'tgt')
+    __slots__ = ("ref", "tgt")
 
     def __init__(self, ref, tgt):
         if not ((ref.len == tgt.len) or (ref.len == 0 and tgt.len != 0) or (ref.len != 0 and tgt.len == 0)):
@@ -80,13 +82,13 @@ class IntervalPair(object):
         self.tgt = tgt
 
     def __repr__(self):
-        return '{self.__class__.__name__}(ref={self.ref},tgt={self.tgt})'.format(self=self)
+        return "{self.__class__.__name__}(ref={self.ref},tgt={self.tgt})".format(self=self)
 
 
 class IntervalMapper(object):
     """Provides mapping between sequence coordinates according to an
     ordered set of IntervalPairs."""
-    __slots__ = ('interval_pairs', 'ref_intervals', 'tgt_intervals', 'ref_len', 'tgt_len')
+    __slots__ = ("interval_pairs", "ref_intervals", "tgt_intervals", "ref_len", "tgt_len")
 
     def __init__(self, interval_pairs):
         """
@@ -100,7 +102,7 @@ class IntervalMapper(object):
                 # check for adjacency/non-overlap
                 # This constraint, combined with the start_i <= end_i constraint
                 # of Intervals, guarantees that intervals are ordered
-                assert ivs[i - 1].end_i == ivs[i].start_i, 'intervals must be adjacent'
+                assert ivs[i - 1].end_i == ivs[i].start_i, "intervals must be adjacent"
 
         self.interval_pairs = interval_pairs
         self.ref_intervals = [ip.ref for ip in self.interval_pairs]
@@ -137,18 +139,18 @@ class IntervalMapper(object):
                 sil = [i for i, iv in enumerate(from_ivs) if iv.start_i <= from_start_i <= iv.end_i]
                 eil = [i for i, iv in enumerate(from_ivs) if iv.start_i <= from_end_i <= iv.end_i]
                 if len(sil) == 0 or len(eil) == 0:
-                    raise HGVSInvalidIntervalError('start or end or both are beyond the bounds of transcript record')
+                    raise HGVSInvalidIntervalError("start or end or both are beyond the bounds of transcript record")
                 si, ei = (sil[0], eil[-1]) if max_extent else (sil[-1], eil[0])
             return si, ei
 
         def clip_to_iv(iv, pos):
             return max(iv.start_i, min(iv.end_i, pos))
 
-        assert from_start_i <= from_end_i, 'expected from_start_i <= from_end_i'
+        assert from_start_i <= from_end_i, "expected from_start_i <= from_end_i"
         try:
             si, ei = iv_map(from_ivs, to_ivs, from_start_i, from_end_i, max_extent)
         except ValueError:
-            raise HGVSInvalidIntervalError('start_i,end_i interval out of bounds')
+            raise HGVSInvalidIntervalError("start_i,end_i interval out of bounds")
         to_start_i = clip_to_iv(to_ivs[si], to_ivs[si].start_i + (from_start_i - from_ivs[si].start_i))
         to_end_i = clip_to_iv(to_ivs[ei], to_ivs[ei].end_i - (from_ivs[ei].end_i - from_end_i))
         return to_start_i, to_end_i
@@ -159,7 +161,7 @@ class CIGARElement(object):
     determining the number of ref and tgt bases consumed by the
     operation"""
 
-    __slots__ = ('len', 'op')
+    __slots__ = ("len", "op")
 
     def __init__(self, len, op):
         self.len = len
@@ -168,12 +170,12 @@ class CIGARElement(object):
     @property
     def ref_len(self):
         """returns number of nt/aa consumed in reference sequence for this edit"""
-        return self.len if self.op in '=INX' else 0
+        return self.len if self.op in "=INX" else 0
 
     @property
     def tgt_len(self):
         """returns number of nt/aa consumed in target sequence for this edit"""
-        return self.len if self.op in '=DX' else 0
+        return self.len if self.op in "=DX" else 0
 
 
 def cigar_to_intervalpairs(cigar):
@@ -182,9 +184,9 @@ def cigar_to_intervalpairs(cigar):
     number of CIGAR operations
     """
 
-    cigar_elem_re = re.compile('(?P<len>\d+)(?P<op>[=DIMNX])')
-    ces = [CIGARElement(op=md['op'],
-                        len=int(md['len'])) for md in [m.groupdict() for m in cigar_elem_re.finditer(cigar)]]
+    cigar_elem_re = re.compile("(?P<len>\d+)(?P<op>[=DIMNX])")
+    ces = [CIGARElement(op=md["op"],
+                        len=int(md["len"])) for md in [m.groupdict() for m in cigar_elem_re.finditer(cigar)]]
     ips = [None] * len(ces)
     ref_pos = tgt_pos = 0
     for i, ce in enumerate(ces):
@@ -193,18 +195,18 @@ def cigar_to_intervalpairs(cigar):
         tgt_pos += ce.tgt_len
     return ips
 
-## <LICENSE>
-## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
-## 
-## Licensed under the Apache License, Version 2.0 (the "License");
-## you may not use this file except in compliance with the License.
-## You may obtain a copy of the License at
-## 
-##     http://www.apache.org/licenses/LICENSE-2.0
-## 
-## Unless required by applicable law or agreed to in writing, software
-## distributed under the License is distributed on an "AS IS" BASIS,
-## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-## See the License for the specific language governing permissions and
-## limitations under the License.
-## </LICENSE>
+# <LICENSE>
+# Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# </LICENSE>

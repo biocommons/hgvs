@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
+"""Full-featured O(1) LRU cache backported from Python3.3. The full
+Py3.3 API is supported (thread safety, maxsize, keyword args, type
+checking, __wrapped__, and cache_info). Includes Py3.3 optimizations
+for better memory utilization, fewer dependencies, and fewer dict
+lookups.
 
-# http://code.activestate.com/recipes/578078-py26-and-py30-backport-of-python-33s-lru-cache/
-#
-# Full-featured O(1) LRU cache backported from Python3.3. The full
-# Py3.3 API is supported (thread safety, maxsize, keyword args, type
-# checking, __wrapped__, and cache_info). Includes Py3.3 optimizations
-# for better memory utilization, fewer dependencies, and fewer dict
-# lookups.
+http://code.activestate.com/recipes/578078-py26-and-py30-backport-of-python-33s-lru-cache/
+
+"""
+
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from collections import namedtuple
 from functools import update_wrapper
@@ -27,7 +29,9 @@ class _HashedSeq(list):
         return self.hashvalue
 
 
-def _make_key(args, kwds, typed,
+def _make_key(args,
+              kwds,
+              typed,
               kwd_mark=(object(), ),
               fasttypes={int, str, frozenset, type(None)},
               sorted=sorted,
@@ -147,7 +151,6 @@ def lru_cache(maxsize=100, typed=False):
                         # empty the oldest link and make it the new root
                         root = nonlocal_root[0] = oldroot[NEXT]
                         oldkey = root[KEY]
-                        oldvalue = root[RESULT]
                         root[KEY] = root[RESULT] = None
                         # now update the cache dictionary for the new links
                         del cache[oldkey]

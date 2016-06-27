@@ -38,7 +38,8 @@ def parse_args(argv):
     ap.add_argument('--assembly', '-A', default='GRCh37')
     ap.add_argument('--in-filename', '-i', default='-')
     ap.add_argument('--out-filename', '-o', default='-')
-    ap.add_argument('--with-c-dot', '-c',
+    ap.add_argument('--with-c-dot',
+                    '-c',
                     default=False,
                     help="add transcript variant projections to c",
                     action='store_true')
@@ -73,17 +74,15 @@ def alts_as_genomic_hgvs(contig_ac_map, r, keep_left_anchor=False):
                 alt = alt[lp:]
                 start += lp
 
-        var_g = hgvs.variant.SequenceVariant(
-            ac=ac,
-            type='g',
-            posedit=hgvs.posedit.PosEdit(
-                hgvs.location.Interval(
-                    start=hgvs.location.SimplePosition(start),
-                    end=hgvs.location.SimplePosition(end),
-                    uncertain=False), hgvs.edit.NARefAlt(
-                        ref=ref if ref != '' else None,
-                        alt=alt if alt != '' else None,
-                        uncertain=False)))
+        var_g = hgvs.variant.SequenceVariant(ac=ac,
+                                             type='g',
+                                             posedit=hgvs.posedit.PosEdit(
+                                                 hgvs.location.Interval(start=hgvs.location.SimplePosition(start),
+                                                                        end=hgvs.location.SimplePosition(end),
+                                                                        uncertain=False),
+                                                 hgvs.edit.NARefAlt(ref=ref if ref != '' else None,
+                                                                    alt=alt if alt != '' else None,
+                                                                    uncertain=False)))
 
         return str(var_g)
 
@@ -99,10 +98,9 @@ if __name__ == '__main__':
     if opts.with_c_dot:
         hp = hgvs.parser.Parser()
         hdp = hgvs.dataproviders.uta.connect()
-        evm = easyvariantmapper = hgvs.variantmapper.EasyVariantMapper(
-            hdp,
-            primary_assembly=opts.assembly,
-            alt_aln_method='splign')
+        evm = easyvariantmapper = hgvs.variantmapper.EasyVariantMapper(hdp,
+                                                                       assembly_name=opts.assembly,
+                                                                       alt_aln_method='splign')
 
     assemblies = ba.get_assemblies()
     assert opts.assembly in assemblies, "{} not in known assemblies (known: {}".format(
