@@ -15,11 +15,13 @@ import recordtype
 
 from bioutils.sequences import aa_to_aa1, aa1_to_aa3
 
+from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError
 from hgvs.decorators import deprecated
-from hgvs.exceptions import HGVSError
 
 
 class Edit(object):
+    def _del_ins_lengths(self, ilen):
+        raise HGVSUnsupportedOperationError("internal function _del_ins_lengths not implemented for this variant type")
     pass
 
 
@@ -121,7 +123,16 @@ class NARefAlt(Edit, recordtype.recordtype("NARefAlt", [("ref", None), ("alt", N
         return edit_type
 
 
-class AARefAlt(Edit, recordtype.recordtype("AARefAlt", [("ref", None), ("alt", None), ("uncertain", False)])):
+    def _del_ins_lengths(self, ilen):
+        """returns (del_len, ins_len).
+        Unspecified ref or alt returns None for del_len or ins_len respectively.
+        """
+        del_len = 0 if self.ref is None else ilen
+        ins_len = 0 if self.alt is None else len(self.alt)
+        return (del_len, ins_len)
+
+
+class AARefAlt(Edit, recordtype.recordtype('AARefAlt', [('ref', None), ('alt', None), ('uncertain', False)])):
     def __init__(self, ref, alt, uncertain=False):
         super(AARefAlt, self).__init__(ref=aa_to_aa1(ref), alt=aa_to_aa1(alt), uncertain=uncertain)
 
@@ -178,6 +189,14 @@ class AARefAlt(Edit, recordtype.recordtype("AARefAlt", [("ref", None), ("alt", N
         elif self.ref is None and self.alt is not None:
             edit_type = "ins"
         return edit_type
+
+    def _del_ins_lengths(self, ilen):
+        """returns (del_len, ins_len).
+        Unspecified ref or alt returns None for del_len or ins_len respectively.
+        """
+        del_len = 0 if (self.ref is None or self.alt == "") else ilen
+        ins_len = 0 if self.alt is None else len(self.alt)
+        return (del_len, ins_len)
 
 
 class AASub(AARefAlt):
@@ -252,8 +271,15 @@ class AAExt(Edit, recordtype.recordtype("AAExt", [("ref", None), ("alt", None), 
         """
         return "ext"
 
+    def _del_ins_lengths(self, ilen):
+        """returns (del_len, ins_len).
+        Unspecified ref or alt returns None for del_len or ins_len respectively.
+        """
+        return (0, abs(self.length))
 
-class Dup(Edit, recordtype.recordtype("Dup", [("ref", None), ("uncertain", False)])):
+
+
+class Dup(Edit, recordtype.recordtype('Dup', [('ref', None), ('uncertain', False)])):
     def __init__(self, ref=None, uncertain=False, edit=None):
         if edit:
             ref = edit.ref
@@ -284,9 +310,18 @@ class Dup(Edit, recordtype.recordtype("Dup", [("ref", None), ("uncertain", False
     def seq(self):
         return self.ref
 
+    def _del_ins_lengths(self, ilen):
+        """returns (del_len, ins_len).
+        Unspecified ref or alt returns None for del_len or ins_len respectively.
+        """
+        if self.ref is not None and self.ref != "":
+            assert len(self.ref) == ilen
+        return (0, ilen)
 
-class Repeat(Edit, recordtype.recordtype("Repeat", [("ref", None), ("min", None), ("max", None),
-                                                    ("uncertain", False)])):
+
+
+class Repeat(Edit, recordtype.recordtype('Repeat', [('ref', None), ('min', None), ('max', None),
+                                                    ('uncertain', False)])):
     def __str__(self):
         if self.min > self.max:
             raise HGVSError("Repeat min count must be less than or equal to max count")
@@ -345,8 +380,15 @@ class NACopy(Edit, recordtype.recordtype("NACopy", ["copy", ("uncertain", False)
         """
         return "copy"
 
+    def _del_ins_lengths(self, ilen):
+        """returns (del_len, ins_len).
+        Unspecified ref or alt returns None for del_len or ins_len respectively.
+        """
+        return (0, ilen * self.copy)
 
-class NADupN(Edit, recordtype.recordtype("NADupN", ["n", ("uncertain", False)])):
+
+
+class NADupN(Edit, recordtype.recordtype('NADupN', ['n', ('uncertain', False)])):
     def __str__(self):
         s = "dup{}".format(self.n)
         return "(" + s + ")" if self.uncertain else s
@@ -367,8 +409,15 @@ class NADupN(Edit, recordtype.recordtype("NADupN", ["n", ("uncertain", False)]))
         """
         return "dupn"
 
+    def _del_ins_lengths(self, ilen):
+        """returns (del_len, ins_len).
+        Unspecified ref or alt returns None for del_len or ins_len respectively.
+        """
+        return (0, ilen * self.n)
 
-class Inv(Edit, recordtype.recordtype("Inv", [("ref", None), ("uncertain", False)])):
+
+
+class Inv(Edit, recordtype.recordtype('Inv', [('ref', None), ('uncertain', False)])):
     """Inversion
     """
 
@@ -412,9 +461,15 @@ class Inv(Edit, recordtype.recordtype("Inv", [("ref", None), ("uncertain", False
         """
         return "inv"
 
+    def _del_ins_lengths(self, ilen):
+        """returns (del_len, ins_len).
+        Unspecified ref or alt returns None for del_len or ins_len respectively.
+        """
+        return (ilen, ilen)
 
-class Conv(Edit, recordtype.recordtype("Conv", [("from_ac", None), ("from_type", None), ("from_pos", None),
-                                                ("uncertain", False)])):
+
+class Conv(Edit, recordtype.recordtype('Conv', [('from_ac', None), ('from_type', None), ('from_pos', None),
+                                                ('uncertain', False)])):
     """Conversion
     """
 

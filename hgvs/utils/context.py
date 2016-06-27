@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 """Internal utility to display textual representation of variant context
 
 Something like this:
@@ -83,10 +84,10 @@ def variant_context_w_alignment(evm, var, margin=20, tx_ac=None):
     seq_gb = complement(seq_gt)
     seq_n = evm.hdp.fetch_seq(fh['n'].ac, span_n[0] - 1, span_n[1])
     if strand == 1:
-        a = align(seq_gt, seq_n, b'global', extended_cigar=True)
+        a = align(bytes(seq_gt), bytes(seq_n), b'global', extended_cigar=True)
     else:
         seq_n = ''.join(reversed(seq_n))
-        a = align(seq_gb, seq_n, b'global', extended_cigar=True)
+        a = align(bytes(seq_gb), bytes(seq_n), b'global', extended_cigar=True)
 
     aseq_gt, _ = cigar_alignment(seq_gt, a.query, a.cigar, hide_match=False)
     aseq_gb, aseq_n = cigar_alignment(seq_gb, a.query, a.cigar, hide_match=False)
@@ -97,13 +98,13 @@ def variant_context_w_alignment(evm, var, margin=20, tx_ac=None):
         [1,
          0,
          seq_line_fmt(var=fh['c'],
-                      span=span_c,
+                      span=span_c if strand == 1 else list(reversed(span_c)),
                       content='',
                       dir=s_dir), ],
         [2,
          0,
          seq_line_fmt(var=fh['n'],
-                      span=span_n,
+                      span=span_n if strand == 1 else list(reversed(span_n)),
                       content=aseq_n,
                       dir=s_dir), ],
         [3,

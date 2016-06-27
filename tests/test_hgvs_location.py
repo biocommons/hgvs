@@ -5,6 +5,7 @@ import unittest
 
 from nose.plugins.attrib import attr
 
+from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError
 import hgvs.location
 
 
@@ -18,6 +19,11 @@ class Test_SimplePosition(unittest.TestCase):
     def test_failure(self):
         with self.assertRaises(AssertionError):
             self.assertEqual(hgvs.location.SimplePosition(-1), "SHOULD FAIL")
+
+    def test_simple_subtraction(self):
+        self.assertEqual(
+            hgvs.location.SimplePosition(5) - hgvs.location.SimplePosition(3),
+            2)
 
 
 @attr(tags=["quick"])
@@ -56,12 +62,33 @@ class Test_BaseOffsetPosition(unittest.TestCase):
         self.assertEqual(str(cdsp), "(*5+7)")
 
 
+    def test_baseoffset_subtraction(self):
+        v30 = hgvs.location.BaseOffsetPosition(3,0)
+        v50 = hgvs.location.BaseOffsetPosition(5,0)
+        v52 = hgvs.location.BaseOffsetPosition(5,2)
+        v54 = hgvs.location.BaseOffsetPosition(5,4)
+
+        self.assertEqual(v50-v30, 2)
+        
+        with self.assertRaises(HGVSError):
+            _ = v54-v52
+        with self.assertRaises(HGVSError):
+            _ = v54-v30
+
+        
+
+
 @attr(tags=["quick"])
 class Test_AAPosition(unittest.TestCase):
     def test_AAPosition(self):
         ap = hgvs.location.AAPosition(15, "S")
         self.assertEqual(ap.pos, 15)
         self.assertEqual(str(ap), "Ser15")
+
+    def test_aaposition_subtraction(self):
+        l1 = hgvs.location.AAPosition(15, 'S')
+        l2 = hgvs.location.AAPosition(20, 'S')
+        self.assertEqual(l2-l1, 5)
 
 
 @attr(tags=["quick"])
@@ -76,6 +103,13 @@ class Test_Interval(unittest.TestCase):
         self.assertEqual(ival.end.base, 56)
         self.assertEqual(ival.end.offset, -78)
         self.assertEqual(str(ival), "12+34_56-78")
+
+    def test_length(self):
+        ival = hgvs.location.Interval(hgvs.location.BaseOffsetPosition(base=12,
+                                                                       offset=0),
+                                      hgvs.location.BaseOffsetPosition(base=50,
+                                                                       offset=0))
+        self.assertEqual(ival._length(), 39)
 
 
 if __name__ == "__main__":

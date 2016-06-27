@@ -1,0 +1,31 @@
+
+0.4.5 (2016-03-31)
+##################
+
+Changes since 0.4.4 (2015-12-15).
+
+Special Attention
+$$$$$$$$$$$$$$$$$
+
+* The `_execute()` method of the UTA data provider was removed.
+
+As part of addressing bug #321, this *internal* method was
+removed. Deprecation notices will not be issued for internal
+methods. (By Pyhon convention, tokens beginning with an underscore are
+considered private to the package or module.)
+
+
+Bug Fixes
+$$$$$$$$$
+
+* fixes `#321 <https://bitbucket.org/biocommons/hgvs/issues/321/>`_: use context manager to obtain and release cursors [`70c13e5a0643 <https://bitbucket.org/biocommons/hgvs/commits/70c13e5a0643>`_]
+
+New Features
+$$$$$$$$$$$$
+
+* closes `#319 <https://bitbucket.org/biocommons/hgvs/issues/319/>`_: added PosEdit.length_change() method [`fa5bb5fb9a50 <https://bitbucket.org/biocommons/hgvs/commits/fa5bb5fb9a50>`_]
+
+Other Changes
+$$$$$$$$$$$$$
+
+* closes `#299 <https://bitbucket.org/biocommons/hgvs/issues/299/>`_: migrate 0.4.x branch docs to rtd theme [`3e016264457d <https://bitbucket.org/biocommons/hgvs/commits/3e016264457d>`_]
