@@ -168,12 +168,8 @@ class TranscriptMapper(object):
             raise HGVSUsageError(
                 "CDS is undefined for {self.tx_ac}; cannot map to c. coordinate (non-coding transcript?)".format(self=
                                                                                                                  self))
-        if n_interval.start.base <= 0:
-            raise HGVSError("Coordinate out of bounds. Start position ({rs}) is <= 0.".format(rs=n_interval.start.base))
-        if n_interval.end.base > self.tgt_len:
-            raise HGVSError("Coordinate out of bounds. End position ({re}) is > than transcript length ({len}).".format(
-                re=n_interval.end.base,
-                len=self.tgt_len))
+        if n_interval.start.base <= 0 or n_interval.end.base > self.tgt_len:
+            raise HGVSError("The given coordinate is outside the bounds of the reference sequence.")
 
         # start
         if n_interval.start.base <= self.cds_start_i:
@@ -228,12 +224,8 @@ class TranscriptMapper(object):
         elif c_interval.end.datum == hgvs.location.CDS_END:
             re = c_interval.end.base + self.cds_end_i
 
-        if rs <= 0:
-            raise HGVSError("Coordinate out of bounds. Start position ({rs}) is <= 0.".format(rs=rs))
-        if re > self.tgt_len:
-            raise HGVSError("Coordinate out of bounds. End position ({re}) is > than transcript length ({len}).".format(
-                re=re,
-                len=self.tgt_len))
+        if rs <= 0 or re > self.tgt_len:
+            raise HGVSError("The given coordinate is outside the bounds of the reference sequence.")
 
         n_interval = hgvs.location.Interval(start=hgvs.location.BaseOffsetPosition(base=rs,
                                                                                    offset=c_interval.start.offset,

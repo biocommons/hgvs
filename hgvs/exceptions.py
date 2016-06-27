@@ -10,11 +10,11 @@ class HGVSError(Exception):
     pass
 
 
-class HGVSInternalError(HGVSError):
+class HGVSDataNotAvailableError(HGVSError):
     pass
 
 
-class HGVSParseError(HGVSError):
+class HGVSInternalError(HGVSError):
     pass
 
 
@@ -26,15 +26,11 @@ class HGVSInvalidVariantError(HGVSError):
     pass
 
 
-class HGVSValidationError(HGVSError):
-    pass
-
-
-class HGVSDataNotAvailableError(HGVSError):
-    pass
-
-
 class HGVSNormalizationError(HGVSError):
+    pass
+
+
+class HGVSParseError(HGVSError):
     pass
 
 
@@ -43,8 +39,14 @@ class HGVSUnsupportedOperationError(HGVSError):
 
 
 class HGVSUsageError(HGVSError):
-    """Exception thrown when client/caller has made an invalid request"""
+    """Exception raised when client/caller has made an invalid request"""
     pass
+
+
+class HGVSValidationError(HGVSError):
+    """Exception raised when variant is inconsistend or invalid"""
+    pass
+
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
