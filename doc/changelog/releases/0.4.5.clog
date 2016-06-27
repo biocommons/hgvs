@@ -1,6 +1,6 @@
 clog format: 1; -*-outline-*-
 * 0.4.5 (2016-03-31)
-Changes since 0.4.4 (2015-12-15). See issues at milestone:0.4.5.
+Changes since 0.4.4 (2015-12-15).
 ** Special Attention
 *** The `_execute()` method of the UTA data provider was removed.
 
