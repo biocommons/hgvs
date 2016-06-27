@@ -2,17 +2,17 @@
 0.4.5 (2016-03-31)
 ##################
 
-Changes since 0.4.4 (2015-12-15). See issues at `milestone 0.4.5 <https://bitbucket.org/biocommons/hgvs/issues?milestone=0.4.5>`_.
+Changes since 0.4.4 (2015-12-15).
 
 Special Attention
 $$$$$$$$$$$$$$$$$
 
 * The `_execute()` method of the UTA data provider was removed.
 
-    As part of addressing bug #321, this *internal* method was
-    removed. Deprecation notices will not be issued for internal
-    methods. (By Pyhon convention, tokens beginning with an underscore are
-    considered private to the package or module.)
+As part of addressing bug #321, this *internal* method was
+removed. Deprecation notices will not be issued for internal
+methods. (By Pyhon convention, tokens beginning with an underscore are
+considered private to the package or module.)
 
 
 Bug Fixes
