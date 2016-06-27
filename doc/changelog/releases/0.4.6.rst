@@ -1,0 +1,21 @@
+
+0.4.6 (2016-06-27)
+##################
+
+Changes since 0.4.5 (2016-04-01).
+
+Bug Fixes
+$$$$$$$$$
+
+* fixes `#308 <https://bitbucket.org/biocommons/hgvs/issues/308/>`_: fix issues with validating across CDS start and CDS end boundaries [`ce6995941984 <https://bitbucket.org/biocommons/hgvs/commits/ce6995941984>`_]
+
+Other Changes
+$$$$$$$$$$$$$
+
+* closes `#309 <https://bitbucket.org/biocommons/hgvs/issues/309/>`_: make errors more informative when coordinate is outside sequence bounds [`e6e0decdad8e <https://bitbucket.org/biocommons/hgvs/commits/e6e0decdad8e>`_]
+* closes `#295 <https://bitbucket.org/biocommons/hgvs/issues/295/>`_: raise error when attempting to validate del length in intronic variants [`13674d3c6d14 <https://bitbucket.org/biocommons/hgvs/commits/13674d3c6d14>`_]
+
+Internal and Developer Changes
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+* fix issues with release docs for 0.4.x layout [`52b2358fed02 <https://bitbucket.org/biocommons/hgvs/commits/52b2358fed02>`_]
