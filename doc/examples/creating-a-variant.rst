@@ -119,9 +119,9 @@ parser, which means that you have the tools to serialize and deserialize
 
 
 
-**Important: It is possible to bogus variants with the hgvs package. For
-example, the above interval is incompatible with a SNV. See
-hgvs.validator.Validator for validation options.**
+**Important: The hgvs package intentionally permits callers to create
+invalid variants. For example, the above interval is incompatible with
+a SNV. See hgvs.validator.Validator for validation options.**
 
 4. Update your variant
 ~~~~~~~~~~~~~~~~~~~~~~

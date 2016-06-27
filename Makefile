@@ -27,16 +27,17 @@ config:
 
 #=> docs -- make sphinx docs
 .PHONY: docs
-docs: setup changelog build_sphinx
-	make -C doc json
+docs: setup changelog
+	# RTD makes json. Build here to ensure that it works.
+	make -C doc html json
 
 changelog:
 	make -C doc/changelog 0.4.rst
 
 
 #=> build_sphinx
-# sphinx docs needs to be able to import packages
-build_sphinx: develop
+## sphinx docs needs to be able to import packages
+#build_sphinx: develop
 
 #=> setup, develop -- install requirements for testing or development
 setup: develop
@@ -91,8 +92,14 @@ ci-test-ve: ve
 doc/source/changelog.rst: CHANGELOG
 	./sbin/clog-txt-to-rst <$< >$@
 
-#=> lint -- run lint, flake, etc
-# TBD
+#=> code-check -- check code with flake8
+code-check:
+	flake8 hgvs test --output-file=$@.txt
+
+#=> reform -- reformat code with yapf
+reform:
+	yapf -ir hgvs test
+
 
 #=> docs-aux -- make generated docs for sphinx
 docs-aux:
@@ -136,7 +143,7 @@ clean:
 #=> cleaner: above, and remove generated files
 cleaner: clean
 	find . -name \*.pyc -print0 | xargs -0r /bin/rm -f
-	/bin/rm -fr build bdist cover dist sdist ve virtualenv* examples/.ipynb_checkpoints
+	/bin/rm -fr build bdist code-check.txt cover dist sdist ve virtualenv* examples/.ipynb_checkpoints
 	/bin/rm -f hgvs.{dot,svg,png,sfood}
 	-make -C doc clean
 	make -C examples $@
@@ -149,18 +156,18 @@ cleanest: cleaner
 pristine: cleanest
 	if [ -d .hg ]; then hg st -inu0 | xargs -0r /bin/rm -fv; fi
 
-## <LICENSE>
-## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
-## 
-## Licensed under the Apache License, Version 2.0 (the "License");
-## you may not use this file except in compliance with the License.
-## You may obtain a copy of the License at
-## 
-##     http://www.apache.org/licenses/LICENSE-2.0
-## 
-## Unless required by applicable law or agreed to in writing, software
-## distributed under the License is distributed on an "AS IS" BASIS,
-## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-## See the License for the specific language governing permissions and
-## limitations under the License.
-## </LICENSE>
+# <LICENSE>
+# Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# </LICENSE>

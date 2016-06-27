@@ -16,7 +16,7 @@ import framework.mock_input_source as mock_input_data_source
 class TestAltSeqBuilder(unittest.TestCase):
 
     # root sequence = ""
-    fn = os.path.join(os.path.dirname(__file__), 'data', 'sanity_cp.tsv')
+    fn = os.path.join(os.path.dirname(__file__), "data", "sanity_cp.tsv")
     _datasource = mock_input_data_source.MockInputSource(fn)
     _parser = hgvs.parser.Parser()
 
@@ -114,11 +114,11 @@ class TestAltSeqBuilder(unittest.TestCase):
     def _run_comparison(self, hgvsc, expected_sequence):
 
         # test replicates the internal class of p_to_c
-        class RefTranscriptData(recordtype.recordtype('RefTranscriptData',
-                                                      ['transcript_sequence', 'aa_sequence', 'cds_start', 'cds_stop',
-                                                       'protein_accession'])):
+        class RefTranscriptData(recordtype.recordtype("RefTranscriptData",
+                                                      ["transcript_sequence", "aa_sequence", "cds_start", "cds_stop",
+                                                       "protein_accession"])):
             @classmethod
-            def setup_transcript_data(cls, ac, ac_p, db, ref='GRCh37.p10'):
+            def setup_transcript_data(cls, ac, ac_p, db, ref="GRCh37.p10"):
                 """helper for generating RefTranscriptData from for c_to_p"""
                 tx_info = db.get_tx_info(ac)
                 tx_seq = db.get_tx_seq(ac)
@@ -127,13 +127,13 @@ class TestAltSeqBuilder(unittest.TestCase):
                     raise hgvs.exceptions.HGVSError("Missing transcript data for accession: {}".format(ac))
 
                 # use 1-based hgvs coords
-                cds_start = tx_info['cds_start_i'] + 1
-                cds_stop = tx_info['cds_end_i']
+                cds_start = tx_info["cds_start_i"] + 1
+                cds_stop = tx_info["cds_end_i"]
 
                 # padding list so biopython won't complain during the conversion
                 tx_seq_to_translate = tx_seq[cds_start - 1:cds_stop]
                 if len(tx_seq_to_translate) % 3 != 0:
-                    ''.join(list(tx_seq_to_translate).extend(['N'] * ((3 - len(tx_seq_to_translate) % 3) % 3)))
+                    "".join(list(tx_seq_to_translate).extend(["N"] * ((3 - len(tx_seq_to_translate) % 3) % 3)))
 
                 tx_seq_cds = Seq(tx_seq_to_translate)
                 protein_seq = str(tx_seq_cds.translate())
@@ -153,21 +153,21 @@ class TestAltSeqBuilder(unittest.TestCase):
         self.assertEqual(expected_sequence, actual_sequence, msg)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
 
-## <LICENSE>
-## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
-## 
-## Licensed under the Apache License, Version 2.0 (the "License");
-## you may not use this file except in compliance with the License.
-## You may obtain a copy of the License at
-## 
-##     http://www.apache.org/licenses/LICENSE-2.0
-## 
-## Unless required by applicable law or agreed to in writing, software
-## distributed under the License is distributed on an "AS IS" BASIS,
-## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-## See the License for the specific language governing permissions and
-## limitations under the License.
-## </LICENSE>
+# <LICENSE>
+# Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# </LICENSE>

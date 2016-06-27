@@ -128,7 +128,7 @@ Links
 
 * `HGVS Mutation Nomenclature Recommendations <http://www.hgvs.org/mutnomen/>`_
 * `Human Genome Variation Society (HGVS) <http://www.hgvs.org/>`_
-* `Parsley <https://pypi.python.org/pypi/Parsley>`_
+* Parsley_, an Python wrapper for the OMeta Parser Expression Grammar (PEG_)
 * `Universal Transcript Archive (UTA) <https://bitbucket.org/biocommons/uta/>`_
 
 
@@ -145,11 +145,3 @@ A formalized description of the standard human variant nomenclature in Extended 
   | BMC bioinformatics, 12 Suppl 4(Suppl 4), S5. (2011). 
   | http://www.ncbi.nlm.nih.gov/pubmed/21992071
 
-
-
-
-
-.. _`Parsley`: https://pypi.python.org/pypi/Parsley
-.. _`HGVS`: http://www.hgvs.org/
-.. _`HGVS Recommendations`: http://hgvs.org/mutnomen/
-.. _PEG: http://en.wikipedia.org/wiki/Parsing_expression_grammar

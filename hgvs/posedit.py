@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+"""implements a (position,edit) tuple that represents a localized sequence change
+
+"""
+
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import recordtype
@@ -12,12 +16,12 @@ class PosEdit(recordtype.recordtype('PosEdit', [('pos', None), ('edit', None), (
     """
 
     def __str__(self):
-        rv = str(self.edit) if self.pos is None else '{self.pos}{self.edit}'.format(self=self)
+        rv = str(self.edit) if self.pos is None else "{self.pos}{self.edit}".format(self=self)
         if self.uncertain:
-            if self.edit in ['0', '']:
-                rv = rv + '?'
+            if self.edit in ["0", ""]:
+                rv = rv + "?"
             else:
-                rv = '(' + rv + ')'
+                rv = "(" + rv + ")"
         return rv
 
     def _set_uncertain(self):

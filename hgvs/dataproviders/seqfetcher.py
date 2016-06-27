@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""provides sequencing fetching from NCBI and Ensembl
+
+"""
+
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import re
 
 import requests
@@ -115,7 +122,8 @@ def fetch_seq(ac, start_i=None, end_i=None):
     fetched:
 
     >> [(ac,fetch_seq(ac,0,25))
-    ... for ac in ['NG_032072.1', 'NW_003571030.1', 'NT_113901.1', 'NC_000001.10', 'NP_056374.2', 'GL000191.1', 'KB663603.1',
+    ... for ac in ['NG_032072.1', 'NW_003571030.1', 'NT_113901.1', 'NC_000001.10',
+    ...            'NP_056374.2', 'GL000191.1', 'KB663603.1',
     ...            'ENST00000288602', 'ENSP00000288602']]
     [('NG_032072.1', 'AAAATTAAATTAAAATAAATAAAAA'),
      ('NW_003571030.1', 'TTGTGTGTTAGGGTGCTCTAAGCAA'),

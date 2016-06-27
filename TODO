@@ -3,32 +3,28 @@
 Actionable issues are at https://bitbucket.org/biocommons/hgvs/issues.
 This file is intended for ideas that need fleshing out.
 
+* 105-formatting
+* 237-mock-test-date
+** 300-update-interface
 
-* Background changes
-** s/2014/2015/g
-** tests: expected value first
-** sq-dq, yapf
-** docs: differences between cgmnrp
-** standardize internal variable naming; var_x, x_var, var
-** relative imports
-** consolidate dev instructions, link from README
 
-* Backward API changes / renamings
+* New features (0.5.0?)
+** add g_to_t and t_to_g
+** remove defaults
 ** variant -> sequencevariant
-** primary_assembly -> assembly
 ** ref, alt = '' or None?, document it!
 ** Merge VariantMapper and EasyVariantMapper
-** 100% code coverage
-
-* New features
+** tests: 100% code coverage
 ** support py3
+** REST interface
 ** complex variants (compound, phased, mosaic, chimeric)
 ** 166-warnings
 ** 239: exon finder uses:
 ** fill/strip/replace/validate ref config option
 ** parse and add gene name
 
-* Architecture
+* Consider...
+** use external lru_cache?
 ** Separate code that fetches data from code that uses it.
 E.g., TranscriptMapper fetches data and performs the mappings.
 Consider initializing with fetch *results* instead.
@@ -39,11 +35,7 @@ Consider initializing with fetch *results* instead.
 All mapping functions should accept and return one of those types.
 ** Use sequence assertions exclusively internally
 ** Performance profiling
-
-
-
-* Other ideas
-
+** import hgvs... and you're done?
 ** VariantTool(hdp, assy, aln_method)
 wraps most common functionality
 validate
@@ -64,3 +56,9 @@ gcn context
 ** Use pyinter for intervals
 
 ** grammar: ins must require interval
+
+** verify replace_reference for del and ins (incl v. excl range!)
+** add reciprocal variant option in g_to_c
+
+** more object oriented
+e.g., variant -> normalize, validate, to_t, to_c, to_g, ...
