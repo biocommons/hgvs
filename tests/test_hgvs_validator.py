@@ -77,6 +77,8 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
             self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.76_78delACTACAT"))
         with self.assertRaises(HGVSUnsupportedOperationError):
             self.validate_int.validate(self.hp.parse_hgvs_variant("NM_000030.2:c.679_680+2delAAGT"))
+        with self.assertRaises(HGVSUnsupportedOperationError):
+            self.validate_int.validate(self.hp.parse_hgvs_variant("NM_032487.4:c.831_*2687del2976"))
 
 
 @attr(tags=["validation"])
