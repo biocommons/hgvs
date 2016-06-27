@@ -111,11 +111,6 @@ class ExtrinsicValidator():
 
     def validate(self, var):
         assert isinstance(var, hgvs.variant.SequenceVariant), "variant must be a parsed HGVS sequence variant object"
-        # TODO: #253: Add p. validation support
-        if var.type == "p":
-            raise HGVSUnsupportedOperationError("Validating p. reference sequences is unsupported"
-                                                " ({}); see https://bitbucket.org/biocommons/hgvs/issues/253/ ".format(
-                                                    str(var)))
         self._ref_is_valid(var)
         return True
 
@@ -125,22 +120,28 @@ class ExtrinsicValidator():
             (var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0)):
             raise HGVSUnsupportedOperationError("Cannot validate sequence of an intronic variant ({})".format(str(var)))
 
-        var_ref_seq = getattr(var.posedit.edit, "ref", None)
+        ref_checks = []
+        if var.type == 'p':
+            ref_checks.append( (var.ac, var.posedit.pos.start.pos, var.posedit.pos.start.pos, var.posedit.pos.start.aa) )
+            if var.posedit.pos.start.pos != var.posedit.pos.end.pos:
+                ref_checks.append( (var.ac, var.posedit.pos.end.pos, var.posedit.pos.end.pos, var.posedit.pos.end.aa) )
+        else:
+            var_ref_seq = getattr(var.posedit.edit, "ref", None) or None
+            var_x = self.vm.c_to_n(var) if var.type == "c" else var
+            ref_checks.append( (var_x.ac, var_x.posedit.pos.start.base, var_x.posedit.pos.end.base, var_ref_seq) )
 
-        if var_ref_seq == "":
-            var_ref_seq = None
+        for ac, var_ref_start, var_ref_end, var_ref_seq in ref_checks:
+            if var_ref_start is None or var_ref_end is None or not var_ref_seq:
+                continue
 
-        if var_ref_seq:
             # ref_seq is digit, as in "del6"
             try:
                 int(var_ref_seq)
-                var_ref_seq = None
+                continue
             except ValueError:
                 pass
 
-        if var_ref_seq is not None:
-            var_x = self.vm.c_to_n(var) if var.type == "c" else var
-            ref_seq = self.hdp.fetch_seq(var_x.ac, var_x.posedit.pos.start.base - 1, var_x.posedit.pos.end.base)
+            ref_seq = self.hdp.fetch_seq(ac, var_ref_start - 1, var_ref_end)
             if ref_seq != var_ref_seq:
                 raise HGVSValidationError(str(var) + ": " + SEQ_ERROR_MSG.format(ref_seq=ref_seq,
                                                                                  var_ref_seq=var_ref_seq))
