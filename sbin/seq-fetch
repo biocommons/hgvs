@@ -1,0 +1,29 @@
+#!/usr/bin/env python
+
+import logging
+import sys
+
+import requests
+
+from hgvs.dataproviders.seqfetcher import SeqFetcher
+
+
+def _wrapper(s, line_length=100):
+    return (s[i:i + line_length] for i in range(0, len(s), line_length))
+
+
+if __name__ == "__main__":
+
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
+
+    sf = SeqFetcher()
+
+    for ac in sys.argv[1:]:
+        try:
+            seq = sf.fetch_seq(ac)
+        except requests.exceptions.HTTPError:
+            logger.error(ac + ": lookup failed")
+        with open("{}.fa".format(ac), "w") as fh:
+            fh.write(">" + ac + "\n" + "\n".join(_wrapper(seq)) + "\n")
+        logging.info("fetched & wrote {} (length={})".format(ac, len(seq)))

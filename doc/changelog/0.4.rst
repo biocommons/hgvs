@@ -1,0 +1,14 @@
+0.4 Series
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+.. toctree::
+   :maxdepth: 1
+
+   releases/0.4.7
+   releases/0.4.6
+   releases/0.4.5
+   releases/0.4.4
+   releases/0.4.3
+   releases/0.4.2
+   releases/0.4.1
+   releases/0.4.0

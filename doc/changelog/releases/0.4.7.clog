@@ -1,0 +1,5 @@
+clog format: 1; -*-outline-*-
+* 0.4.7 (2016-01-23)
+Changes since 0.4.6 (2016-06-27).
+** Bug Fixes
+*** fixes #310: Fix wrong start position when normalizing some variants [734c08f18ea1]. Thanks to Meng Wang.
