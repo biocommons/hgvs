@@ -5,7 +5,7 @@ import unittest
 
 from nose.plugins.attrib import attr
 
-from hgvs.exceptions import HGVSValidationError
+from hgvs.exceptions import HGVSValidationError, HGVSUnsupportedOperationError
 import hgvs.dataproviders.uta
 import hgvs.variantmapper
 import hgvs.parser
@@ -73,8 +73,16 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.76_78delACT')))
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.123+54_123+55delTA')))
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.76_78del')))
-        with self.assertRaises(HGVSValidationError):
-            self.validate_int.validate(self.hp.parse_hgvs_variant('AC_01234.5:c.76_78delACTACAT'))
+        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('NM_003060.3:c.-91_22del113')))
+
+        # the variants are expected to fail:
+        for h in ['AC_01234.5:c.76_78delACTACAT']:
+            with self.assertRaises(HGVSValidationError):
+                self.validate_int.validate(self.hp.parse_hgvs_variant(h))
+
+        for h in ['NM_032487.4:c.831_*2687del2976']:
+            with self.assertRaises(HGVSUnsupportedOperationError):
+                self.validate_int.validate(self.hp.parse_hgvs_variant(h))
 
 
 @attr(tags=["validation"])

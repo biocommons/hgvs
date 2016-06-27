@@ -6,6 +6,8 @@ hgvs.hgvsvalidator
 
 from .exceptions import HGVSValidationError, HGVSUnsupportedOperationError
 
+import hgvs
+import hgvs.location
 import hgvs.parser
 import hgvs.variantmapper
 
@@ -79,12 +81,18 @@ class IntrinsicValidator(object):
                 return True
 
             if var.type in BASE_OFFSET_COORD_TYPES:
+                if var.posedit.pos.start.datum != hgvs.location.CDS_END and var.posedit.pos.end.datum == hgvs.location.CDS_END:
+                    raise HGVSUnsupportedOperationError(
+                        "Validating deletion length across CDS end is unsupported ({}); consider projecting to n. first".format(str(var)))
                 if not ((var.posedit.pos.start.offset == var.posedit.pos.end.offset == 0) or
                         (var.posedit.pos.start.base == var.posedit.pos.end.base)):
                     raise HGVSUnsupportedOperationError(
-                        "Validating deletion length for intronic variants is unsupported ({})".format(str(var)))
+                        "Validating deletion length for variants across exon/intron junctions is unsupported ({})".format(str(var)))
                 span_len = ((var.posedit.pos.end.base + var.posedit.pos.end.offset) -
                             (var.posedit.pos.start.base + var.posedit.pos.start.offset) + 1)
+                # BO numbering is missing 0 (... -2 -1, 1, 2 ...) ⇒ adjust length if crossing
+                if var.posedit.pos.start.base < 0 and var.posedit.pos.end.base > 0:
+                    span_len -= 1
             else:
                 span_len = var.posedit.pos.end.base - var.posedit.pos.start.base + 1
 
