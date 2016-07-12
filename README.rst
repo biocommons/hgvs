@@ -2,14 +2,18 @@
 *hgvs* - Python library to parse, format, validate, normalize, and map sequence variants
 ========================================================================================
 
-`Documentation`_ | `Issues <https://goo.gl/G63aFQ>`_ | `Mailing List`_ | `Change Log <http://hgvs.readthedocs.org/en/default/changelog/index.html>`_ | `Upcoming Changes <http://hgvs.readthedocs.org/en/default/changelog/upcoming.html>`_
-
-| Release: |rtd_badge_rel| |pypi_badge| |build_status|
-| Dev: |rtd_badge_dev|
-
 The *hgvs* package provides a Python library to facilitate the use of
 genome, transcript, and protein variants that are represented using
 the Human Genome Variation Society (`mutnomen`_) recommendations.
+
+===============  ==========  ============   ==============  ================  ===============  ===============  
+                 branch      changelog      issues          pypi              build status     docs             
+===============  ==========  ============   ==============  ================  ===============  ===============  
+**Release**      `0.4.x`_    `Changelog`_   `Open Issues`_  |pypi_badge_rel|  |status_rel|     |rtd_badge_rel|  
+**Development**  `default`_  `Upcoming`_    `Features`_                                        |rtd_badge_dev|  
+===============  ==========  ============   ==============  ================  ===============  ===============  
+
+Questions? Use the `mailing list`_.
 
 ----
 
@@ -159,6 +163,14 @@ for getting involved!
 .. _source: https://bitbucket.org/biocommons/hgvs/
 .. _uta: http://bitbucket.org/biocommons/uta/
 .. _mailing list: https://groups.google.com/forum/#!forum/hgvs-discuss
+.. _Open Issues: https://bitbucket.org/biocommons/hgvs/issues?status=new&status=open&version=0.4.x
+.. _Features: https://bitbucket.org/biocommons/hgvs/issues?status=new&status=open&milestone=0.5.0
+
+.. _changelog: http://hgvs.readthedocs.io/en/default/changelog/0.4.html
+.. _upcoming: http://hgvs.readthedocs.io/en/default/changelog/upcoming.html
+
+.. _0.4.x: https://bitbucket.org/biocommons/hgvs/commits/branch/0.4.x
+.. _default: https://bitbucket.org/biocommons/hgvs/commits/branch/default
 
 .. |rtd_badge_rel| image:: https://readthedocs.org/projects/hgvs/badge/?version=0.4.x
   :target: http://hgvs.readthedocs.org/en/0.4.x
@@ -168,16 +180,17 @@ for getting involved!
   :target: http://hgvs.readthedocs.org/en/default
   :align: middle
 
-.. |pypi_badge| image:: https://badge.fury.io/py/hgvs.png
+.. |pypi_badge_rel| image:: https://badge.fury.io/py/hgvs.png
   :target: https://pypi.python.org/pypi?name=hgvs
   :align: middle
 
-.. |build_status| image:: https://drone.io/bitbucket.org/biocommons/hgvs/status.png
+.. |status_rel| image:: https://drone.io/bitbucket.org/biocommons/hgvs/status.png
   :target: https://drone.io/bitbucket.org/biocommons/hgvs
   :align: middle 
+
+
 
 .. |install_status| image:: https://travis-ci.org/reece/hgvs-integration-test.png?branch=master
   :target: https://travis-ci.org/reece/hgvs-integration-test
   :align: middle
 
-.. http://badge.fury.io/for/py/uta
