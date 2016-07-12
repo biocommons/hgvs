@@ -6,12 +6,12 @@ The *hgvs* package provides a Python library to facilitate the use of
 genome, transcript, and protein variants that are represented using
 the Human Genome Variation Society (`mutnomen`_) recommendations.
 
-===============  ==========  ============   ==============  ================  ===============  ===============  
-                 branch      changelog      issues          pypi              build status     docs             
-===============  ==========  ============   ==============  ================  ===============  ===============  
-**Release**      `0.4.x`_    `Changelog`_   `Open Issues`_  |pypi_badge_rel|  |status_rel|     |rtd_badge_rel|  
-**Development**  `default`_  `Upcoming`_    `Features`_                                        |rtd_badge_dev|  
-===============  ==========  ============   ==============  ================  ===============  ===============  
+===============  ==========  =============   ==============  ================  ===============  ===============
+**Stage**        **Branch**  **changelog**   **Issues**      **PyPi**          **Status**       **Docs**
+===============  ==========  =============   ==============  ================  ===============  ===============
+**Release**      `0.4.x`_    `Changelog`_    `Open Issues`_  |pypi_badge_rel|  |status_rel|     |rtd_badge_rel|
+**Development**  `default`_  `Upcoming`_     `Features`_                                        |rtd_badge_dev|
+===============  ==========  =============   ==============  ================  ===============  ===============
 
 Questions? Use the `mailing list`_.
 
