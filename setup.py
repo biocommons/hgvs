@@ -46,12 +46,12 @@ setup(
 
     install_requires = [
         'biopython',
-        'bioutils',
+        'bioutils >=0.1.0,<0.2.0',
         'configparser',
         'parsley',
         'psycopg2',
         'recordtype',
-        'requests>=1.0.0',
+        'requests >=1.0.0',
     ],
 
     setup_requires = [
