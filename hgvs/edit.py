@@ -428,7 +428,7 @@ class Inv(Edit, recordtype.recordtype('Inv', [('ref', None), ('uncertain', False
         super(Inv, self).__init__(ref=ref, uncertain=uncertain)
 
     def __str__(self):
-        return "inv" + (self.ref or "")
+        return "inv"
 
     def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
