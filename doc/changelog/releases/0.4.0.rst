@@ -1,0 +1,82 @@
+
+0.4.0 (2015-09-09)
+##################
+
+Changes since 0.3.7 (2015-06-23). See issues at `milestone 0.4.0 <https://bitbucket.org/biocommons/hgvs/issues?milestone=0.4.0>`_.
+
+
+
+
+Special Attention
+$$$$$$$$$$$$$$$$$
+
+* `#227 <https://bitbucket.org/biocommons/hgvs/issues/227/>`_: x_to_r and r_to_x methods were renamed to x_to_n and n_to_x as part of support for non-coding transcripts.
+* `#231 <https://bitbucket.org/biocommons/hgvs/issues/231/>`_: The UTA data provider will use a recently updated database by default (uta_20150827).  Clients with custom configurations should use postgresql://anonymous:anonymous@uta.biocommons.org/uta/uta_20150827. (Note the change of hostname, username, and password as well; see Deprecations.)
+* `#238 <https://bitbucket.org/biocommons/hgvs/issues/238/>`_: Most methods now raise HGVSDataNotAvailableError when expected data is not available. Previously, None was returned for some methods.
+* `#244 <https://bitbucket.org/biocommons/hgvs/issues/244/>`_: Removed cache_transcripts argument from VariantMapper. This argument was deprecated in 0.3.0 and is now obsolete. Dataproviders are now expected to cache data.
+* `#246 <https://bitbucket.org/biocommons/hgvs/issues/246/>`_: Remove hgvsX_to_hgvsY methods. These methods were deprecated in 0.3.0 and are now obsolete.
+* `#247 <https://bitbucket.org/biocommons/hgvs/issues/247/>`_: Dup and Repeat "seq" instance variable renamed to "ref" for consistency.
+* EasyVariantMapper, Normalizer, and Validator now fetch sequence data at runtime, which may raise performance and privacy concerns. Users may wish to read `Privacy Issues <http://hgvs.readthedocs.org/en/latest/privacy.html>`_ in the documentation.
+
+
+
+Deprecations
+$$$$$$$$$$$$
+
+* UTA: UTA now uses anonymous:anonymous as the username:password. uta_public:uta_public will be obsolete shortly.
+
+
+
+Bug Fixes
+$$$$$$$$$
+
+* `#248 <https://bitbucket.org/biocommons/hgvs/issues/248/>`_: Don't raise validation exception when del sequence is empty [`b6c07d329d36 <https://bitbucket.org/biocommons/hgvs/commits/b6c07d329d36>`_]
+* There are `known bugs <https://bitbucket.org/biocommons/hgvs/issues?kind=bug&status=open&status=new>`_ and `other issues <https://bitbucket.org/biocommons/hgvs/issues?status=open&status=new>`_.
+
+
+
+New Features
+$$$$$$$$$$$$
+
+* `#44 <https://bitbucket.org/biocommons/hgvs/issues/44/>`_: Added variant normalization and use during mapping. Thanks to Meng Wang and Kevin Jacobs for contributions. (pull request #17)
+* `#168 <https://bitbucket.org/biocommons/hgvs/issues/168/>`_: EasyVariantMapper supports replacing the reference sequence during mapping and enabled by default.
+* `#227 <https://bitbucket.org/biocommons/hgvs/issues/227/>`_: Implement initial support for non-coding transcripts.
+* `#230 <https://bitbucket.org/biocommons/hgvs/issues/230/>`_: Allow full IUPAC for NA and AA, with tests. Previously, the grammar admitted only ACGTU.
+* `#233 <https://bitbucket.org/biocommons/hgvs/issues/233/>`_: Added get_similar_transcripts() to data UTA provider to expose UTA's tx_similarity view.
+* `#234 <https://bitbucket.org/biocommons/hgvs/issues/234/>`_, `#241 <https://bitbucket.org/biocommons/hgvs/issues/241/>`_: Preferentially use transcript-protein accession associations from RefSeq when mapping c. to p. variants. Previously, when multiple protein accessions were associated with a single distinct sequence, the p. accession was arbitrary.
+* `#236 <https://bitbucket.org/biocommons/hgvs/issues/236/>`_, `#240 <https://bitbucket.org/biocommons/hgvs/issues/240/>`_: Added seqfetcher.SeqFetcher to fetch sequences from NCBI & Ensembl
+* `#250 <https://bitbucket.org/biocommons/hgvs/issues/250/>`_: Implemented configuration module; hgvs.global_config is initialized once and available globally
+* `#251 <https://bitbucket.org/biocommons/hgvs/issues/251/>`_: Parens now optional around p. edits; default is enabled per HGVS spec (hgvs.global_config.mapping.inferred_p_is_uncertain)
+* `#255 <https://bitbucket.org/biocommons/hgvs/issues/255/>`_: variants normalized by EasyVariantMapper by default [`1b85d4deabc3 <https://bitbucket.org/biocommons/hgvs/commits/1b85d4deabc3>`_]
+* `#261 <https://bitbucket.org/biocommons/hgvs/issues/261/>`_: Replace reference default from config (hgvs.global_config.mapping.replace_reference)
+* UTA is now available as a docker image for local installation. See :ref:`uta_docker`.
+
+
+
+Other Changes
+$$$$$$$$$$$$$
+
+* `#213 <https://bitbucket.org/biocommons/hgvs/issues/213/>`_: Clarify warning message when validating intronic variants.
+* `#254 <https://bitbucket.org/biocommons/hgvs/issues/254/>`_: Support inversion, conversion, and nadupn variants
+* Added misc/experimental/tx-seq-discrepancies to identify genomic locations of reference-transcript discrepancies
+* Added variant context method to evm (temporary location, but useful for debugging)
+* HGVSInternalError now subclasses HGVSError (not Exception) [`ff6cd4dc51dc <https://bitbucket.org/biocommons/hgvs/commits/ff6cd4dc51dc>`_]
+* Lots of documentation updates.
+* Raise HGVSParserError (instead of ometa.runtime.ParseError) when parsing fails [`efa93fe29d15 <https://bitbucket.org/biocommons/hgvs/commits/efa93fe29d15>`_]
+* The UTA data provider now checks for the requested schema on connection and provides more informative errors on failure.
+* hdp.data_version returns schema name for UTA since that that is the conventional use.
+* Use autocommit to prevent transaction overhead and locks [`65d69e41716e <https://bitbucket.org/biocommons/hgvs/commits/65d69e41716e>`_]
+
+
+
+Internal and Developer Changes
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+* `#263 <https://bitbucket.org/biocommons/hgvs/issues/263/>`_: Trying out a new tag-based changelog mechanism for 0.4.0 and 0.4 series.
+* All code will be mercilously reformmated with yapf occasionally using .style.yapf
+* Build and upload wheel packages (in addition to existing eggs and tarballs)
+* Docs significantly overhauled and moved to readthedocs.org with automatic webhook-based building
+* Enable users to set application_name when connecting [`835ac7771909 <https://bitbucket.org/biocommons/hgvs/commits/835ac7771909>`_]
+* _UTA_URL_KEY (dev use only) will switch URLs to any in hgvs/_data/defaults.ini
+* on import of hgvs, emit logging info line w/version [`aa97f2c1cdc8 <https://bitbucket.org/biocommons/hgvs/commits/aa97f2c1cdc8>`_]
+* sped up most tests by using setUpClass() rather than setUp() [`a6d227f6a3e0 <https://bitbucket.org/biocommons/hgvs/commits/a6d227f6a3e0>`_]
