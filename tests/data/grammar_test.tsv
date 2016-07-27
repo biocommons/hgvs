@@ -194,7 +194,7 @@ dna_edit_mu	(A>C)	True	one
 dna_edit_mu	A>C	True	one	
 dna_ins	insA|insC|insG|insT	True	list	
 dna_ins	insU	False	one	
-dna_inv	inv6|invACGT	True	list	
+dna_inv	inv	True	list	
 dna_inv	invACGU|invACGT6	False	list	
 dna_subst	A>C|A>G|A>T|C>G|C>T|G>T	True	list	
 pro_del	del	True	one
@@ -247,7 +247,7 @@ rna_edit_mu	A>C	True	one
 rna_ins	insAA	True	one	
 rna_ins	insA|insC|insG|insU	True	list	
 rna_ins	insT	False	one	
-rna_inv	inv6|invACGU	True	list	
+rna_inv	inv	True	list	
 rna_inv	invACGT|invACGU6	False	list	
 rna_subst	A>C|A>G|A>U|C>G|C>U|G>U	True	list	
 rna_subst	A>T	False	one	

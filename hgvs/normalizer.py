@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
 """
 hgvs.normalizer
 """
 
+from __future__ import absolute_import, division, print_function, unicode_literals
 import copy
 import logging
+
+from bioutils.sequences import reverse_complement
 
 import hgvs
 import hgvs.dataproviders.uta
@@ -23,10 +25,8 @@ try:
 
     def normalize_alleles(ref, start, stop, alleles, bound, ref_step, left, shuffle=True):
         """wraps vgraph.norm.normalize_alleles to pass ascii-encoded strings"""
-        return _normalize_alleles_vgraph(ref.encode('ascii'),
-                                         start, stop,
-                                         [a.encode('ascii') for a in alleles],
-                                         bound, ref_step, left, shuffle)
+        return _normalize_alleles_vgraph(
+            ref.encode("ascii"), start, stop, [a.encode("ascii") for a in alleles], bound, ref_step, left, shuffle)
     _logger.debug("Using normalize_alleles from vgraph (https://github.com/bioinformed/vgraph)")
 except ImportError:
     from .utils.norm import normalize_alleles
@@ -37,19 +37,21 @@ class Normalizer(object):
     """Perform variant normalization
     """
 
-    def __init__(self, hdp,
+    def __init__(self,
+                 hdp,
                  cross_boundaries=hgvs.global_config.normalizer.cross_boundaries,
                  shuffle_direction=hgvs.global_config.normalizer.shuffle_direction,
-                 alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
-                 ):
+                 alt_aln_method=hgvs.global_config.mapping.alt_aln_method, ):
         """Initialize and configure the normalizer
 
-        :param hdp: HGVS Data Provider Interface-compliant instance (see :class:`hgvs.dataproviders.interface.Interface`)
+        :param hdp: HGVS Data Provider Interface-compliant instance
+            (see :class:`hgvs.dataproviders.interface.Interface`)
         :param direction: shuffling direction
         :param cross_boundaries: whether allow the shuffling to cross the exon-intron boundary
         :param alt_aln_method: sequence alignment method (e.g., splign, blat)
         """
-        assert shuffle_direction == 3 or shuffle_direction == 5, "The shuffling direction should be 3 (3' most) or 5 (5' most)."
+        assert shuffle_direction == 3 or shuffle_direction == 5, \
+            "The shuffling direction should be 3 (3' most) or 5 (5' most)."
         self.hdp = hdp
         self.shuffle_direction = shuffle_direction
         self.cross_boundaries = cross_boundaries
@@ -103,7 +105,7 @@ class Normalizer(object):
             ref_start = start
             ref_end   = end - 1
             # inversion
-            if ref_len > 1 and ref == alt[::-1]:
+            if ref_len > 1 and ref == reverse_complement(alt):
                 edit = hgvs.edit.Inv(ref=ref)
             # ident
             elif ref_len == 0 and alt_len == 0:
@@ -202,18 +204,18 @@ class Normalizer(object):
 
                 # TODO: #242: implement methods to find tx regions
                 for i in range(0, len(exon_starts)):
-                    if (var.posedit.pos.start.base - 1 >= exon_starts[i]
-                        and var.posedit.pos.start.base - 1 < exon_ends[i]):
+                    if (var.posedit.pos.start.base - 1 >= exon_starts[i] and
+                            var.posedit.pos.start.base - 1 < exon_ends[i]):
                         break
 
                 for j in range(0, len(exon_starts)):
-                    if (var.posedit.pos.end.base - 1 >= exon_starts[j]
-                        and var.posedit.pos.end.base - 1 < exon_ends[j]):
+                    if (var.posedit.pos.end.base - 1 >= exon_starts[j] and var.posedit.pos.end.base - 1 < exon_ends[j]):
                         break
 
                 if i != j:
                     raise HGVSUnsupportedOperationError(
-                        "Unsupported normalization of variants spanning the exon-intron boundary ({var})".format(var=var))
+                        "Unsupported normalization of variants spanning the exon-intron boundary ({var})".format(var=
+                                                                                                                 var))
 
                 left = exon_starts[i]
                 right = exon_ends[i]
@@ -279,7 +281,7 @@ class Normalizer(object):
             alt = self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, boundary)
             alt *= int(var.posedit.edit.n)
         elif var.posedit.edit.type == 'inv':
-            alt = ref[::-1]
+            alt = reverse_complement(ref)
         elif var.posedit.edit.type == 'identity':
             alt = ref
 
@@ -312,8 +314,8 @@ class Normalizer(object):
                 if ref_seq == '':
                     break
                 orig_start, orig_stop = start, stop
-                start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt),
-                                                            len(ref_seq), win_size, False)
+                start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt), len(ref_seq), win_size,
+                                                            False)
                 if stop < len(ref_seq) or start == orig_start:
                     break
                 # if stop at the end of the window, try to extend the shuffling to the right
@@ -344,8 +346,7 @@ class Normalizer(object):
                 if ref_seq == '':
                     break
                 orig_start, orig_stop = start, stop
-                start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt),
-                                                            0, win_size, True)
+                start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt), 0, win_size, True)
                 if start > 0 or stop == orig_stop:
                     break
                 # if stop at the end of the window, try to extend the shuffling to the left
@@ -381,26 +382,26 @@ class Normalizer(object):
 
 
 if __name__ == '__main__':
-    hgvsparser = hgvs.parser.Parser()
+    hgvsparser = Parser()
     var = hgvsparser.parse_hgvs_variant('NM_001166478.1:c.61delG')
-    hdp = hgvs.dataproviders.uta.connect()
+    hdp = connect()
     norm = Normalizer(hdp, shuffle_direction=5, cross_boundaries=False)
     res = norm.normalize(var)
     print(str(var) + '    =>    ' + str(res))
 
 
-## <LICENSE>
-## Copyright 2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
-##
-## Licensed under the Apache License, Version 2.0 (the "License");
-## you may not use this file except in compliance with the License.
-## You may obtain a copy of the License at
-##
-##     http://www.apache.org/licenses/LICENSE-2.0
-##
-## Unless required by applicable law or agreed to in writing, software
-## distributed under the License is distributed on an "AS IS" BASIS,
-## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-## See the License for the specific language governing permissions and
-## limitations under the License.
-## </LICENSE>
+# <LICENSE>
+# Copyright 2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# </LICENSE>
