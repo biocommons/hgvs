@@ -89,8 +89,6 @@ class Test_Edit(unittest.TestCase):
 
     def test_Inv(self):
         self.assertEqual(str(hgvs.edit.Inv()), "inv")
-        self.assertEqual(str(hgvs.edit.Inv("AGCT")), "invAGCT")
-        self.assertEqual(str(hgvs.edit.Inv("100")), "inv100")
         # edit types
         self.assertEqual(str(hgvs.edit.Inv().type), "inv")
 

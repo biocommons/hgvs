@@ -7,6 +7,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import copy
 import logging
 
+from bioutils.sequences import reverse_complement
+
 import hgvs
 import hgvs.variantmapper
 from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError
@@ -99,7 +101,7 @@ class Normalizer(object):
             ref_start = start
             ref_end = end - 1
             # inversion
-            if ref_len > 1 and ref == alt[::-1]:
+            if ref_len > 1 and ref == reverse_complement(alt):
                 edit = hgvs.edit.Inv(ref=ref)
             # ident
             elif ref_len == 0 and alt_len == 0:
@@ -273,7 +275,7 @@ class Normalizer(object):
             alt = self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, boundary)
             alt *= int(var.posedit.edit.n)
         elif var.posedit.edit.type == "inv":
-            alt = ref[::-1]
+            alt = reverse_complement(ref)
         elif var.posedit.edit.type == "identity":
             alt = ref
 
