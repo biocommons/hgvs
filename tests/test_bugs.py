@@ -24,7 +24,7 @@ class Test_VariantMapper(unittest.TestCase):
         self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
         self.hp = hgvs.parser.Parser()
         self.evm = hgvs.variantmapper.EasyVariantMapper(self.hdp,
-                                                        replace_reference=True, primary_assembly='GRCh37',
+                                                        replace_reference=True, assembly_name='GRCh37',
                                                         alt_aln_method='splign')
         self.vn = hgvs.normalizer.Normalizer(self.hdp, shuffle_direction=3, cross_boundaries=True)
 
