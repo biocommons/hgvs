@@ -9,6 +9,7 @@ import unittest
 
 from nose.plugins.attrib import attr
 
+from hgvs.exceptions import HGVSParseError
 import hgvs.dataproviders.uta
 import hgvs.normalizer
 import hgvs.parser
@@ -62,3 +63,7 @@ class Test_VariantMapper(unittest.TestCase):
         self.assertEqual(str(vn), "NM_000535.5:c.1_3inv")
 
 
+    def test_340_inv_without_sequence(self):
+        # inversions should not accept sequence
+        with self.assertRaises(HGVSParseError):
+            self.hp.parse_hgvs_variant("NM_000535.5:c.1673_1674invCC")
