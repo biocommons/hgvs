@@ -142,6 +142,8 @@ class Test_HGVSNormalizer(unittest.TestCase):
 
         self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant(
             "NC_000009.11:g.36233991_36233992delCAinsTG"))), "NC_000009.11:g.36233991_36233992inv")
+        with self.assertRaises(HGVSInvalidVariantError):
+            self.norm.normalize(self.hp.parse_hgvs_variant("NG_032871.1:g.32476_53457delinsAATTAAGGTATA"))
 
         with self.assertRaises(HGVSInvalidVariantError):
             self.norm.normalize(self.hp.parse_hgvs_variant("NG_032871.1:g.32476_53457delinsAATTAAGGTATA"))
