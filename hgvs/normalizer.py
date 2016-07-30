@@ -16,7 +16,7 @@ import hgvs.parser
 import hgvs.posedit
 import hgvs.variantmapper
 
-from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError
+from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
 
 _logger = logging.getLogger(__name__)
 
@@ -253,7 +253,12 @@ class Normalizer(object):
         if start >= end:
             return ''
 
-        return self.hdp.fetch_seq(var.ac, start, end)
+        seq = self.hdp.fetch_seq(var.ac, start, end)
+
+        if len(seq) < end - start:
+            raise HGVSInvalidVariantError("Variant span is outside sequence bounds ({var})".format(var=var))
+
+        return seq
 
     def _get_ref_alt(self, var, boundary):
         """Get reference allele and alternative allele of the variant
