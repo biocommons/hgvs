@@ -11,7 +11,7 @@ from bioutils.sequences import reverse_complement
 
 import hgvs
 import hgvs.variantmapper
-from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError
+from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
 
 _logger = logging.getLogger(__name__)
 
@@ -247,7 +247,12 @@ class Normalizer(object):
         if start >= end:
             return ""
 
-        return self.hdp.fetch_seq(var.ac, start, end)
+        seq = self.hdp.fetch_seq(var.ac, start, end)
+
+        if len(seq) < end - start:
+            raise HGVSInvalidVariantError("Position is out of range ({var})".format(var=var))
+
+        return seq
 
     def _get_ref_alt(self, var, boundary):
         """Get reference allele and alternative allele of the variant
