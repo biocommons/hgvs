@@ -58,6 +58,7 @@ setup(
         'setuptools_scm',
         'nose',
         'sphinx',
+        'sphinx_rtd_theme',
         'sphinxcontrib-fulltoc>=1.1',
         'wheel',
     ],
