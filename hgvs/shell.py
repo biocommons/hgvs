@@ -1,5 +1,7 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+"""start IPython shell with hgvs initialized. Intended to be used for
+experimenting, debugging, and generating bug reports."""
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -13,37 +15,31 @@ import hgvs.parser
 import hgvs.variantmapper
 import hgvs.validator
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 alt_aln_method = 'splign'
 hgvs_g = 'NC_000007.13:g.36561662C>T'
 hgvs_c = 'NM_001637.3:c.1582G>A'
 hgvs_p = 'NP_001628.1:p.(Gly528Arg)'
 
-hdp = hgvs.dataproviders.uta.connect()
 
-hp = hgvsparser = hgvs.parser.Parser()
-vm = variantmapper = hgvs.variantmapper.VariantMapper(hdp)
-evm = easyvariantmapper = hgvs.variantmapper.EasyVariantMapper(hdp,
-                                                               primary_assembly='GRCh37',
-                                                               alt_aln_method=alt_aln_method)
-hv = hgvs.validator.Validator(hdp)
-hn = hgvs.normalizer.Normalizer(hdp)
+def shell():
+    hp = hgvsparser = hgvs.parser.Parser()
+
+    hdp = hgvs.dataproviders.uta.connect()
+    vm = variantmapper = hgvs.variantmapper.VariantMapper(hdp)
+    evm = easyvariantmapper = hgvs.variantmapper.EasyVariantMapper(
+        hdp, primary_assembly='GRCh37', alt_aln_method=alt_aln_method)
+    hv = hgvs.validator.Validator(hdp)
+    hn = hgvs.normalizer.Normalizer(hdp)
+
+    var_g = hgvsparser.parse_hgvs_variant(hgvs_g)
+    var_c = hgvsparser.parse_hgvs_variant(hgvs_c)
+    var_p = hgvsparser.parse_hgvs_variant(hgvs_p)
+
+    IPython.embed()
 
 
-hgvs_g = 'NC_000001.10:g.156100564_156104193insG'
-#hgvs_g = 'NC_000001.10:g.156104193A>G'
-hgvs_c = 'NM_170707.3:c.513_514-1insG'
-
-var_g = hgvsparser.parse_hgvs_variant(hgvs_g)
-var_c = hgvsparser.parse_hgvs_variant(hgvs_c)
-var_p = hgvsparser.parse_hgvs_variant(hgvs_p)
-
-var_g_to_c = variantmapper.g_to_c(var_g, var_c.ac)
-var_g_to_n = variantmapper.g_to_n(var_g, var_c.ac, 'splign')
-#var_c_to_g = variantmapper.c_to_g( var_c, ref )
-
-IPython.embed()
 
 ## <LICENSE>
 ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
