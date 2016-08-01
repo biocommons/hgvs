@@ -73,7 +73,7 @@ except pkg_resources.DistributionNotFound as e:
     __version__ = None
 
 # Make sure we're showing DeprecationWarnings
-warnings.filterwarnings('default', '', DeprecationWarning)
+# warnings.filterwarnings('default', '', DeprecationWarning)
 
 logger.info("hgvs " + __version__ + "; released: " + str(_is_released_version))
 
