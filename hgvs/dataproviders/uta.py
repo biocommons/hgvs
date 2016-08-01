@@ -253,6 +253,18 @@ class UTABase(Interface, SeqFetcher):
                     tx_ac=tx_ac,
                     alt_ac=alt_ac,
                     alt_aln_method=alt_aln_method))
+
+        # hgvs-346: verify that alignment data covers full-length transcript
+        # Check that tx exon 0 starts at sequence position 0
+        # TODO: Should check that end is transcript sequence length, but cannot currently
+        ex0 = 0 if (rows[0]["alt_strand"] ==  1) else -1
+        if rows[ex0]["tx_start_i"] != 0:
+            raise HGVSDataNotAvailableError(
+                "Alignment is incomplete; cannot use transcript for mapping"
+                "(tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})".format(
+                    tx_ac=tx_ac,
+                    alt_ac=alt_ac,
+                    alt_aln_method=alt_aln_method))
         return rows
 
     @lru_cache(maxsize=128)
