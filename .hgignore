@@ -22,6 +22,8 @@ syntax: glob
 .idea
 .installed.cfg
 .ipynb_checkpoints
+.tags
+.tags.mk
 archive
 bdist
 build
@@ -29,8 +31,6 @@ cover
 dist
 distribute-*
 doc/build
-doc/changelog/.tags
-doc/changelog/.tags.mk
 examples/*_files
 examples/.ipynb_checkpoints
 hgtools-*
