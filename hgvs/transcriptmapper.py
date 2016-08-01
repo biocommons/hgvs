@@ -11,7 +11,7 @@ from bioutils.coordinates import strand_int_to_pm
 import hgvs.intervalmapper
 import hgvs.location
 
-from hgvs.exceptions import HGVSError, HGVSUsageError
+from hgvs.exceptions import HGVSError, HGVSUsageError, HGVSDataNotAvailableError
 from hgvs.utils import build_tx_cigar
 
 
@@ -47,6 +47,14 @@ class TranscriptMapper(object):
                                                 "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
                                                 "No transcript exons".format(self=self))
 
+            # hgvs-346: verify that alignment data covers full-length transcript
+            # Check that tx exon 0 starts at sequence position 0
+            # TODO: Should check that end is transcript sequence length, but cannot currently
+            ex0 = 0 if (self.tx_exons[0]["alt_strand"] ==  1) else -1
+            if self.tx_exons[ex0]["tx_start_i"] != 0:
+                raise HGVSDataNotAvailableError("TranscriptMapper(tx_ac={self.tx_ac}, "
+                                "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
+                                "Alignment is incomplete; cannot use transcript for mapping".format(self=self))
             self.strand = self.tx_exons[0]["alt_strand"]
             self.cds_start_i = self.tx_info["cds_start_i"]
             self.cds_end_i = self.tx_info["cds_end_i"]
