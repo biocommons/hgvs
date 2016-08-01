@@ -33,7 +33,10 @@ ${XY_RST}: %.rst:
 
 .PRECIOUS: %.clog
 %.clog:
-	clogger $* | perl -pe 's/CORE-(\d+)/#\1/' >$@ >$@.tmp
+	clogger $* | perl -pe 's/CORE-(\d+)/#\1/' >$@.tmp
+	mv $@.tmp $@
+next.clog:
+	clogger . | perl -pe 's/CORE-(\d+)/#\1/' >$@.tmp
 	mv $@.tmp $@
 
 %.rst: %.clog

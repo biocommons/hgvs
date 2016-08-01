@@ -52,6 +52,7 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
           "nose",
           "sphinx",
           "sphinx_rtd_theme",
+          "sphinxcontrib-fulltoc>=1.1",
           "wheel",
       ],
       tests_require=[
