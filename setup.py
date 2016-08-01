@@ -8,13 +8,17 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
       use_scm_version=True,
       zip_safe=True,
       author="HGVS Contributors",
-      author_email="reecehart+hgvs@gmail.com",
+    author_email = 'hgvs-discuss@gmail.com',
       description="""HGVS Parser, Formatter, Mapper, Validator""",
       name="hgvs",
       package_data={"hgvs": ["_data/*"]},
       packages=find_packages(),
-      scripts=["sbin/hgvs-shell"],
       url="https://bitbucket.org/biocommons/hgvs",
+    entry_points={
+        'console_scripts': [
+            'hgvs-shell = hgvs.shell:shell'
+            ],
+        },
       classifiers=[
           "Development Status :: 3 - Alpha",
           "Intended Audience :: Developers",
