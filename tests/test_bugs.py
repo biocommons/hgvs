@@ -9,10 +9,11 @@ import unittest
 
 from nose.plugins.attrib import attr
 
-from hgvs.exceptions import HGVSParseError
+from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError, HGVSParseError
 import hgvs.dataproviders.uta
 import hgvs.normalizer
 import hgvs.parser
+import hgvs.transcriptmapper
 import hgvs.variant
 import hgvs.variantmapper
 
@@ -67,3 +68,12 @@ class Test_VariantMapper(unittest.TestCase):
         # inversions should not accept sequence
         with self.assertRaises(HGVSParseError):
             self.hp.parse_hgvs_variant("NM_000535.5:c.1673_1674invCC")
+
+    def test_346_reject_partial_alignments(self):
+        # hgvs-346: verify that alignment data covers full-length transcript
+        with self.assertRaises(HGVSDataNotAvailableError):
+            hgvs.transcriptmapper.TranscriptMapper(self.hdp,
+                                                   tx_ac="NM_001290223.1",
+                                                   alt_ac="NC_000010.10",
+                                                   alt_aln_method="splign")
+                                                   
