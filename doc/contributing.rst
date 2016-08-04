@@ -28,8 +28,8 @@ Highlights
 
 * All significant development *must* have an associated issue in `hgvs
   issues`_; *create an issue if necessary*. Other changes *may* have
-  have an issue. Development must occur in a bookmark (preferred) or
-  branch named for the issue, such as ``44-normalization``.
+  have an issue. Please develop using a bookmark or branch named for
+  the issue, such as ``44-normalization``.
 
 * Pull requests should be narrowly focused around a bug or feature.
   Discrete commits with good log messages facilitate review.  Consider
@@ -37,13 +37,16 @@ Highlights
   make the PR concise.  Submit PRs against the default branch head (or
   close to it).
 
-* Abide by current `code style`_.  Use ``make reform`` to reformat all
+* Abide by current `code style`_.  Use ``make reformat`` to reformat all
   code with `yapf`_ prior to submitting a PR.
 
 * Email the `hgvs-discuss`_ mailing list if you have questions.
 
 * Test your code with ``make test`` before you submit a PR.
 
+* Currently, only Python 2.7 is supported. Support for Python 3.5 is
+  slated for the next release
+  (`#190 <https://bitbucket.org/biocommons/hgvs/issues/190/>`__).
 
 
 A Quick Contribution Example
@@ -51,57 +54,88 @@ A Quick Contribution Example
 
 * Fork the project at https://bitbucket.org/biocommons/hgvs/
 
-This command will create a copy of hgvs in your bitbucket account.
-You will be able to make changes there and then submit your
-contributions for inclusion into the biocommons repo.
+  This command will create a copy of hgvs in your bitbucket account.
+  You will be able to make changes there and then submit your
+  contributions for inclusion into the biocommons repo.
 
-* Clone the project locally with::
+.. spacer
 
-    $ hg clone https://bitbucket.org/<your_username>/hgvs
 
-* Create a virtualenv (recommended)::
+* Clone the project locally with
 
-    $ mkvirtualenv hgvs
+  ::
 
-There are other ways to make python virtual environment. How you do
-this isn't important, but using a virtual environment is good
-practice.
+     $ hg clone https://bitbucket.org/<your_username>/hgvs
 
-* Prepare your environment::
+.. spacer
 
-    $ make develop
+* Create a virtualenv (recommended)
 
-The Makefile in hgvs wraps functionality in setup.py, and also
-provides many useful rules. See `make`_ for more information.
+  ::
 
-* Code code code!
+     $ mkvirtualenv hgvs
 
-Make changes and commit locally.  Tip: Consider using mercurial queues
-to checkpoint changes.
+  There are other ways to make python virtual environment. How you do
+  this isn't important, but using a virtual environment is good
+  practice.
 
-* Test code::
+.. spacer
 
-  $ make test
+* Prepare your environment
 
-* Reformat your code::
+  ::
 
-  $ make reform
+     $ make develop
 
-This command will reformat the entire package in-place. Be sure to
-commit changes afterward. Then, test again.
+  The Makefile in hgvs wraps functionality in setup.py, and also
+  provides many useful rules. See `make`_ for more information.
 
-* Commit and push::
+.. spacer
 
+* Make a branch (for significant changes)
+
+  If you expect to change multiple files, please work in a
+  branch. Please name the branch like `141-formatter-class`.
+
+.. spacer
+
+* Code, code, code!
+
+  You probably want to test code with::
+
+    $ make test
+
+  See `Local UTA`_ and `make`_ for tips on accellerating testing.
+
+.. spacer
+
+* Reformat code
+
+  This command will reformat the entire package in-place.::
+
+    $ make reformat
     $ hg commit -m 'fixes #141: implements Formatter class'
-    $ hg push
+
+  Be sure to commit changes afterward!
 
 .. note: Bitbucket recognized "fixes #nnn" and "closes #nnn" as
    comments that close a feature. The preferred use is "fixes" for
    bugs and "closes" for features.
 
+.. spacer
+
+* Commit and push::
+
+  $ make test
+  $ hg push
+
+.. spacer
+
 * Submit a pull request at the `hgvs package`_ web site.
 
 
+
+.. _Local UTA:
 
 Using a local/alternative UTA instance
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@

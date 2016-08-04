@@ -96,8 +96,8 @@ doc/source/changelog.rst: CHANGELOG
 code-check:
 	flake8 hgvs test --output-file=$@.txt
 
-#=> reform -- reformat code with yapf
-reform:
+#=> reformat -- reformat code with yapf
+reformat:
 	yapf -ir hgvs test
 
 
