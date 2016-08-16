@@ -14,6 +14,7 @@ import hgvs.normalizer
 import hgvs.parser
 import hgvs.variantmapper
 import hgvs.validator
+import hgvs.utils.context
 
 logging.basicConfig(level=logging.INFO)
 
@@ -29,7 +30,7 @@ def shell():
     hdp = hgvs.dataproviders.uta.connect()
     vm = variantmapper = hgvs.variantmapper.VariantMapper(hdp)
     evm = easyvariantmapper = hgvs.variantmapper.EasyVariantMapper(
-        hdp, primary_assembly='GRCh37', alt_aln_method=alt_aln_method)
+        hdp, assembly_name='GRCh37', alt_aln_method=alt_aln_method)
     hv = hgvs.validator.Validator(hdp)
     hn = hgvs.normalizer.Normalizer(hdp)
 
