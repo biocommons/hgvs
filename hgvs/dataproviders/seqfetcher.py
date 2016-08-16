@@ -73,7 +73,7 @@ def _fetch_seq_ncbi(ac, start_i=None, end_i=None):
 
     """
 
-    url_fmt = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id={ac}&rettype=fasta"
+    url_fmt = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id={ac}&rettype=fasta"
     if (start_i is None or end_i is None):
         url = url_fmt.format(ac=ac)
     else:
