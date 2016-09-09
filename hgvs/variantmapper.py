@@ -21,6 +21,7 @@ import hgvs.transcriptmapper
 import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
 import hgvs.utils.altseqbuilder as altseqbuilder
 import hgvs.variant
+import hgvs.validator
 
 from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
 from hgvs.decorators.lru_cache import lru_cache
@@ -394,7 +395,8 @@ class EasyVariantMapper(VariantMapper):
                  assembly_name=hgvs.global_config.mapping.assembly,
                  alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
                  replace_reference=hgvs.global_config.mapping.replace_reference,
-                 normalize=hgvs.global_config.mapping.normalize, ):
+                 normalize=hgvs.global_config.mapping.normalize,
+                 validate=hgvs.global_config.mapping.validate):
         """
         :param str assembly_name: name of assembly ("GRCh38.p5")
         :param str alt_aln_method: genome-transcript alignment method ("splign", "blat", "genewise")
@@ -408,24 +410,31 @@ class EasyVariantMapper(VariantMapper):
         self.alt_aln_method = alt_aln_method
         self.replace_reference = replace_reference
         self.normalize = normalize
+        self.validate = validate
         self._norm = None
         if self.normalize:
             self._norm = hgvs.normalizer.Normalizer(hdp, alt_aln_method=alt_aln_method)
+        self._validator = None
+        if self.validate:
+            self._validator = hgvs.validator.Validator(hdp)
         self._assembly_accessions = set(hdp.get_assembly_accessions(self.assembly_name))
 
     def g_to_c(self, var_g, tx_ac):
+        self._maybe_validate(var_g)
         var_out = super(EasyVariantMapper, self).g_to_c(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
         if self.replace_reference:
             self._replace_reference(var_out)
         return self._maybe_normalize(var_out)
 
     def g_to_n(self, var_g, tx_ac):
+        self._maybe_validate(var_g)
         var_out = super(EasyVariantMapper, self).g_to_n(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
         if self.replace_reference:
             self._replace_reference(var_out)
         return self._maybe_normalize(var_out)
 
     def c_to_g(self, var_c):
+        self._maybe_validate(var_c)
         alt_ac = self._alt_ac_for_tx_ac(var_c.ac)
         var_out = super(EasyVariantMapper, self).c_to_g(var_c, alt_ac, alt_aln_method=self.alt_aln_method)
         if self.replace_reference:
@@ -433,6 +442,7 @@ class EasyVariantMapper(VariantMapper):
         return self._maybe_normalize(var_out)
 
     def n_to_g(self, var_n):
+        self._maybe_validate(var_n)
         alt_ac = self._alt_ac_for_tx_ac(var_n.ac)
         var_out = super(EasyVariantMapper, self).n_to_g(var_n, alt_ac, alt_aln_method=self.alt_aln_method)
         if self.replace_reference:
@@ -440,24 +450,28 @@ class EasyVariantMapper(VariantMapper):
         return self._maybe_normalize(var_out)
 
     def c_to_n(self, var_c):
+        self._maybe_validate(var_c)
         var_out = super(EasyVariantMapper, self).c_to_n(var_c)
         if self.replace_reference:
             self._replace_reference(var_out)
         return self._maybe_normalize(var_out)
 
     def n_to_c(self, var_n):
+        self._maybe_validate(var_n)
         var_out = super(EasyVariantMapper, self).n_to_c(var_n)
         if self.replace_reference:
             self._replace_reference(var_out)
         return self._maybe_normalize(var_out)
 
     def c_to_p(self, var_c):
+        self._maybe_validate(var_c)
         var_out = super(EasyVariantMapper, self).c_to_p(var_c)
         return self._maybe_normalize(var_out)
 
     def relevant_transcripts(self, var_g):
         """return list of transcripts accessions (strings) for given variant,
         selected by genomic overlap"""
+        self._maybe_validate(var_g)
         tx = self.hdp.get_tx_for_region(var_g.ac, self.alt_aln_method, var_g.posedit.pos.start.base,
                                         var_g.posedit.pos.end.base)
         return [e["tx_ac"] for e in tx]
@@ -495,6 +509,17 @@ class EasyVariantMapper(VariantMapper):
                 _logger.warn(str(e) + "; returning unnormalized variant")
                 # fall through to return unnormalized variant
         return var
+
+    def _maybe_validate(self, var):
+        """validate variant if requested.
+        """
+        if self._validator is not None:
+            try:
+                return self._validator.validate(var)
+            except HGVSUnsupportedOperationError as e:
+                _logger.warn(str(e) + "; returning unvalidated variant")
+                # fall through to return unvalidated variant
+        return None
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
