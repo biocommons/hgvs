@@ -144,7 +144,7 @@ class AARefAlt(Edit, recordtype.recordtype('AARefAlt', [('ref', None), ('alt', N
         # subst and delins
         if self.ref is not None and self.alt is not None:
             if self.ref == self.alt:
-                s = "="
+                s = "{ref}=".format(ref=aa1_to_aa3(self.ref))
             elif len(self.ref) == 1 and len(self.alt) == 1:
                 s = aa1_to_aa3(self.alt)
             else:
