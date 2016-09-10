@@ -180,12 +180,11 @@ rna_inv    = 'inv'                           -> hgvs.edit.Inv()
 rna_con    = 'con' hgvs_position:pos         -> hgvs.edit.Conv(from_ac=pos.ac, from_type=pos.type, from_pos=pos.pos)
 
 pro_edit_mu = pro_edit | '(' pro_edit:edit ')' -> edit._set_uncertain()
-pro_edit   = pro_fs | pro_ext | pro_subst | pro_delins | pro_ins | pro_del | pro_dup | pro_ident
+pro_edit   = pro_fs | pro_ext | pro_subst | pro_delins | pro_ins | pro_del | pro_dup
 pro_subst  = (aat13|'?'):alt                 -> hgvs.edit.AASub(ref='',alt=alt)
 pro_delins = 'delins' aat13_seq:alt          -> hgvs.edit.AARefAlt(ref='',alt=alt)
 pro_del    = 'del'                           -> hgvs.edit.AARefAlt(ref='',alt=None)
 pro_ins    = 'ins' aat13_seq:alt             -> hgvs.edit.AARefAlt(ref=None,alt=alt)
-pro_ident  = <aat13_seq*>:ref '='            -> hgvs.edit.AARefAlt(ref=ref, alt=ref)
 pro_dup    = 'dup'                           -> hgvs.edit.Dup(ref='')
 pro_fs     = (aat13 | (-> '')):alt fs:length -> hgvs.edit.AAFs(ref='', alt=alt, length=length)
 pro_ext    = aat13?:alt ext:(aaterm, length) -> hgvs.edit.AAExt(ref='', alt=alt, aaterm=aaterm, length=length)
