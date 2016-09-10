@@ -413,7 +413,7 @@ class EasyVariantMapper(VariantMapper):
         self.validate = validate
         self._norm = None
         if self.normalize:
-            self._norm = hgvs.normalizer.Normalizer(hdp, alt_aln_method=alt_aln_method)
+            self._norm = hgvs.normalizer.Normalizer(hdp, alt_aln_method=alt_aln_method, validate=False)
         self._validator = None
         if self.validate:
             self._validator = hgvs.validator.Validator(hdp)
