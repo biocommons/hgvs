@@ -1,0 +1,27 @@
+#!/bin/bash
+# replaces the html header with title and version info
+
+# The first 3 lines of the generated railroad are:
+# <!DOCTYPE html>
+# <html>
+# <body>
+# replace them with:
+
+commit="$(hg id -i)"
+commit_info="$(hg id -bt)"
+
+cat <<EOF
+<!DOCTYPE html>
+<html>
+<head>
+  <title>HGVS Railroad Diagram - $commit</title>
+</head>
+<body>
+  <h1>HGVS Railroad Diagram</h1>
+  Generated from <a href="https://bitbucket.org/biocommons/hgvs/">hgvs (https://bitbucket.org/biocommons/hgvs/)</a>
+  <br> commit $commit ($commit_info)
+  <hr>
+EOF
+
+# and now the rest..
+tail -n+4 "$1"

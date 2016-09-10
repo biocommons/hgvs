@@ -1,0 +1,62 @@
+Nt = ‘a’ | ‘c’ | ‘g’ | ‘t’ | ‘u’ | ‘A’ | ‘C’ | ‘G’ | ‘T’ | ‘U’
+NtString = Nt+
+name = ([a–z] | [A–Z] | [0–9])+
+Number = ([0–9])+
+Var = SingleVar | MultiVar | MultiTranscriptVar | UnkEffectVar | NoRNAVar | SplicingVar
+Locations = PtLoc | RangeLoc
+
+Offset = (‘+’ | ‘-’) (‘u’ | ‘d’)? (Number | ‘?’)
+RealPtLoc = ((‘-’ | ‘*’)? Number Offset?) | ‘?’
+IVSLoc = ‘IVS’ Number (‘+’ | ‘-’) Number
+PtLoc = IVSLoc | RealPtLoc
+RealExtent = PtLoc ‘_’ (‘o’? (RefSeqAcc | GeneSymbol) ‘:’)? | PtLoc
+EXLoc = ‘EX’ Number (‘-’ Number)?
+Extent = RealExtent | EXLoc RangeLoc = Extent | ‘(‘ Extent ‘)’
+FarLoc = (RefSeqAcc | GeneSymbol) (‘:’ RefType? Extent)?
+ChromBand = (‘p’ | ‘q’) Number ‘.’ Number
+ChromCoords = ‘(’ Chrom ‘;’ Chrom ‘)’ ‘(’ ChromBand ‘;’ ChromBand ‘)’
+
+Ref = ((RefSeqAcc | GeneSymbol) ‘:’)? RefType?
+RefType = (‘c’ | ‘g’ | ‘m’ | ‘n’ | ‘r’) ‘.’
+RefSeqAcc = GenBankRef | LRG
+GenBankRef = (GI | AccNo) (‘(’ GeneSymbol ‘)’)?
+GI = (‘GI’ | ‘GI:’)? Number
+AccNo = ‘ish.’? ([a–Z] Number ‘_’)+ Version?
+Version = ‘.’ Number
+GeneSymbol = ‘(’ name (TransVar | ProtIso)? ‘)’
+TransVar c = ‘_v’ Number
+ProtIso c = ‘_i’ Number
+LRGTranscriptID d = ‘t’ ([0-9])+
+LRGProteinID d = ‘p’ ([0-9])+
+LRG d = ‘LRG’ ([0-9])+ (‘_’ (LRGTranscriptID | LRGProteinID))?
+Chrom = name Single Variations = PtLoc Nt ‘>’ Nt 
+Del = Loc ‘del’ (Nt+ | Number)?
+Dup = Loc ‘dup’ (Nt+ | Number)? Nest?
+AbrSSR = PtLoc Nt+ ‘(’ Number ‘_’ Number ‘)’
+VarSSR = (PtLoc Nt+ ‘[’ Number ‘]’) | (RangeLoc ‘[’ Number ‘]’) | AbrSSR
+Ins = RangeLoc ‘ins’ (Nt+ | Number | RangeLoc | FarLoc) Nest?
+Indel = RangeLoc ‘del’ (Nt+ | Number)? ‘ins’ (Nt+ | Number | RangeLoc | FarLoc) Nest?
+Inv = RangeLoc ‘inv’ (Nt+ | Number)? Nest?
+Conv = RangeLoc ‘con’ FarLoc Nest?
+TransLoc = ‘t’ ChromCoords ‘(’ FarLoc ‘)’
+
+RawVar = Subst | Del | Dup | VarSSR | Ins | Indel | Inv | Conv
+SingleVar = Ref RawVar | TransLoc
+ExtendedRawVar = RawVar | ‘=’ | ‘?’
+UnkEffectVar = Ref (‘(=)’ | ‘?’)
+SplicingVar = Ref (‘spl?’ | ‘(spl?)’)
+NoRNAVar = Ref ‘0’ ‘?’?
+
+# Multiple Variations 
+CAlleleVarSet =  ExtendedRawVar (‘;’ ExtendedRawVar)*
+UAlleleVarSet = (CAlleleVarSet | (‘(’ CAlleleVarSet ‘)’)) ‘?’?
+
+SimpleAlleleVarSet = (‘[’ UAlleleVarSet ‘]’) | ExtendedRawVar
+MosaicSet = (‘[’ SimpleAlleleVarSet (‘/’ SimpleAlleleVarSet)* ‘]’) | SimpleAlleleVarSet
+ChimeronSet = (‘[’ MosaicSet (‘//’ MosaicSet)* ‘]’) | MosaicSet
+SingleAlleleVarSet = (‘[’ ChimeronSet ((‘;’ | ‘^’) ChimeronSet)* | (‘(;)’ ChimeronSet)* ‘]’) | ChimeronSet
+SingleAlleleVars = Ref SingleAlleleVarSet
+MultiAlleleVars = Ref SingleAlleleVarSet (‘;’ Ref? SingleAlleleVarSet)+
+MultiVar = SingleAlleleVars | MultiAlleleVars
+MultiTranscriptVar = Ref ‘[‘ ExtendedRawVar (‘;’ ExtendedRawVar)* (‘,’ ExtendedRawVar (‘;’ ExtendedRawVar)*)+ ‘]’
+Nest = ‘{’ SimpleAlleleVarSet ‘}’

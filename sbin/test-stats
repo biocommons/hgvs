@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+"""compute statistics from test files (*.tsv) in tests/data/
+
+./sbin/test-stats 
+
+"""
+
+import collections
+import pprint
+import sys
+
+if __name__ == '__main__':
+    types = collections.Counter()
+    txs = collections.Counter()
+
+    for line in sys.stdin:
+        if line.startswith('#') or line.startswith('id') or line.strip() == '':
+            continue
+
+        vals = line.rstrip().split('\t', 3)
+        name, g, c = vals[:3]
+
+        typ = ('delins' if 'del' in g and 'ins' in g else 'del' if 'del' in g else 'ins' if 'ins' in g else 'dup' if
+               'dup' in g else 'sub' if '>' in g else None)
+        if typ is None:
+            print(line)
+
+        types['all'] += 1
+        types[typ] += 1
+
+        tx = c.split(':')[0]
+        txs[tx] += 1
+
+pprint.pprint(types)
+pprint.pprint(txs)
+print("{n} distinct transcripts".format(n=len(txs)))

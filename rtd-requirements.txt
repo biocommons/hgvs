@@ -1,0 +1,2 @@
+#sphinxcontrib-fulltoc==1.1
+setuptools_scm==1.7.0
