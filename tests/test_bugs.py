@@ -76,4 +76,11 @@ class Test_VariantMapper(unittest.TestCase):
                                                    tx_ac="NM_001290223.1",
                                                    alt_ac="NC_000010.10",
                                                    alt_aln_method="splign")
+
+    def test_314_parsing_identity_variant(self):
+        v = self.hp.parse_hgvs_variant("NM_206933.2:c.6317=")
+        self.assertEqual(str(v), "NM_206933.2:c.6317=")
+
+        v = self.hp.parse_hgvs_variant("NM_206933.2:c.6317G=")
+        self.assertEqual(str(v), "NM_206933.2:c.6317C=")
                                                    

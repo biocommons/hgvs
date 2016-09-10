@@ -150,7 +150,8 @@ p_posedit_special =
 ## "_mu" = "maybe uncertain"
 
 dna_edit_mu = dna_edit | '(' dna_edit:edit ')' -> edit._set_uncertain()
-dna_edit   = dna_dupN | dna_subst | dna_delins | dna_ins | dna_del | dna_dup | dna_inv | dna_con | dna_copy
+dna_edit   = dna_dupN | dna_ident | dna_subst | dna_delins | dna_ins | dna_del | dna_dup | dna_inv | dna_con | dna_copy
+dna_ident  = <dna*>:ref '='           -> hgvs.edit.NARefAlt(ref=ref,alt=ref)
 dna_subst  = dna:ref '>' dna:alt      -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
 dna_delins = 'del' (<num>|<dna*>):ref 'ins' <dna+>:alt  -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
 dna_del    = 'del' (<num>|<dna*>):ref -> hgvs.edit.NARefAlt(ref=ref,alt=None)
@@ -168,7 +169,8 @@ dna_dupN = 'dup' num:n -> hgvs.edit.NADupN(n=n)
 # 		     | <dna+>:ref '(' num:min '_' num:max ')' -> Repeat(ref=ref, min=min, max=max)
 
 rna_edit_mu = rna_edit | '(' rna_edit:edit ')' -> edit._set_uncertain()
-rna_edit   = rna_subst | rna_delins | rna_ins | rna_del | rna_dup | rna_inv | rna_con
+rna_edit   = rna_ident | rna_subst | rna_delins | rna_ins | rna_del | rna_dup | rna_inv | rna_con
+rna_ident  = <rna*>:ref '='                  -> hgvs.edit.NARefAlt(ref=ref,alt=ref)
 rna_subst  = rna:ref '>' rna:alt             -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
 rna_delins = 'del' (<num>|<rna*>):ref 'ins' <rna+>:alt  -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
 rna_del    = 'del' (<num>|<rna*>):ref        -> hgvs.edit.NARefAlt(ref=ref,alt=None)
