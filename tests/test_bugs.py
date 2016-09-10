@@ -81,6 +81,6 @@ class Test_VariantMapper(unittest.TestCase):
         v = self.hp.parse_hgvs_variant("NM_206933.2:c.6317=")
         self.assertEqual(str(v), "NM_206933.2:c.6317=")
 
-        v = self.hp.parse_hgvs_variant("NM_206933.2:c.6317G=")
+        v = self.hp.parse_hgvs_variant("NM_206933.2:c.6317C=")
         self.assertEqual(str(v), "NM_206933.2:c.6317C=")
                                                    
