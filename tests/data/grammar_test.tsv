@@ -197,6 +197,7 @@ dna_ins	insU	False	one
 dna_inv	inv	True	list	
 dna_inv	invACGU|invACGT6	False	list	
 dna_subst	A>C|A>G|A>T|C>G|C>T|G>T	True	list	
+dna_ident	=|T=|ACG=	True	list	
 pro_del	del	True	one
 pro_del	delA|delAla|del3	False	list
 pro_delins	delinsAfs|delinsAfs*|delinsAfs*9|delinsAfs*?	False	list	delinsAlafs|delinsAlafs*|delinsAlafs*9|delinsAlafs*?
@@ -251,6 +252,7 @@ rna_inv	inv	True	list
 rna_inv	invACGT|invACGU6	False	list	
 rna_subst	A>C|A>G|A>U|C>G|C>U|G>U	True	list	
 rna_subst	A>T	False	one	
+rna_ident	=|U=|UGG=	True	list	
 
 ############################################################
 ## PosEdits

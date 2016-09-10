@@ -17,7 +17,7 @@ class Test_Edit(unittest.TestCase):
             edit = str(hgvs.edit.NARefAlt(None, None))
 
     def test_NARefAlt(self):
-        self.assertEqual(str(hgvs.edit.NARefAlt("A", "A")), "=")
+        self.assertEqual(str(hgvs.edit.NARefAlt("A", "A")), "A=")
         self.assertEqual(str(hgvs.edit.NARefAlt("A", "T")), "A>T")
         self.assertEqual(str(hgvs.edit.NARefAlt("AA", None)), "delAA")
         self.assertEqual(str(hgvs.edit.NARefAlt(None, "TT")), "insTT")
@@ -32,7 +32,7 @@ class Test_Edit(unittest.TestCase):
         self.assertEqual(str(hgvs.edit.NARefAlt("A", "TT").type), "delins")
 
     def test_AARefAlt(self):
-        self.assertEqual(str(hgvs.edit.AARefAlt("A", "A")), "=")
+        self.assertEqual(str(hgvs.edit.AARefAlt("A", "A")), "A=")
         self.assertEqual(str(hgvs.edit.AARefAlt("A", "T")), "Thr")
         self.assertEqual(str(hgvs.edit.AARefAlt("AA", None)), "del")
         self.assertEqual(str(hgvs.edit.AARefAlt(None, "TT")), "insThrThr")
