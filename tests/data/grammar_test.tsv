@@ -232,7 +232,7 @@ pro_subst	ArgPhe|10ValArg|Val>Arg	False	list
 pro_subst	Arg|Phe	True	list	
 pro_subst	R|F	True	list	Arg|Phe
 pro_subst	Ter|*	True	list	Ter|Ter
-pro_ident	=|A=|AM=	True	list	
+pro_ident	=|Ala=|AlaMet=	True	list	
 rna_con	conAC096506.5	False	list	
 rna_del	del5A|delT	False	list	
 rna_del	delA|del5|delACGU	True	list	
