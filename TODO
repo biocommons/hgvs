@@ -7,6 +7,10 @@ This file is intended for ideas that need fleshing out.
 * 237-mock-test-date
 ** 300-update-interface
 
+* PAR selection in EVM
+* remove Bio/biopython dependency
+* comments/notes/warnings on variants
+
 
 * New features (0.5.0?)
 ** add g_to_t and t_to_g
