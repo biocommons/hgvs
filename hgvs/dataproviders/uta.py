@@ -53,10 +53,11 @@ def _get_uta_db_url():
         return os.environ["UTA_DB_URL"]
 
     if "_UTA_URL_KEY" in os.environ:
-        hgvs.global_config['uta'][os.environ["_UTA_URL_KEY"]]
-
-    _url_key = "public_{sdlc}".format(sdlc=_stage_from_version(hgvs.__version__))
-    return hgvs.global_config['uta'][_url_key]
+        url_key = os.environ["_UTA_URL_KEY"]
+    else:
+        sdlc = _stage_from_version(hgvs.__version__)
+        url_key = "public_{sdlc}".format(sdlc=sdlc)
+    return hgvs.global_config['uta'][url_key]
 
 
 def connect(db_url=None, pooling=False, application_name=None):
