@@ -1,0 +1,8 @@
+clog format: 1; -*-outline-*-
+* 0.4.10 (2016-08-16)
+Changes since 0.4.9 (2016-08-01).
+** Bug Fixes
+*** fixes #336: add hgvs-shell as excutable for exploration, debugging, bug submission [8ae7f072abc1]
+*** fixes #346: pushed alignment validation into dataprovider get_tx_exons() to cover use in normalizer [0bc61059562c]
+** Other Changes
+*** closes #352: use https for seqfetcher [ed0655b1bb2b]
