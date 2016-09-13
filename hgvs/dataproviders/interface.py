@@ -34,7 +34,7 @@ class Interface(object):
     __metaclass__ = abc.ABCMeta
 
     def interface_version(self):
-        return 2
+        return 3
 
     def __init__(self):
         def _split_version_string(v):
@@ -78,10 +78,6 @@ class Interface(object):
 
     @abc.abstractmethod
     def get_tx_info(self, tx_ac, alt_ac, alt_aln_method):
-        pass
-
-    @abc.abstractmethod
-    def get_tx_seq(self, ac):
         pass
 
     @abc.abstractmethod

@@ -48,6 +48,7 @@ Important Notes
 
 ----
 
+
 Some Examples
 -------------
 
@@ -154,6 +155,14 @@ The hgvs package is intended to be a community project.  Please see
 started in submitting source code, tests, or documentation.  Thanks
 for getting involved!
 
+
+See Also
+--------
+
+Other packages that manipulate HGVS variants:
+
+* `pyhgvs <https://github.com/counsyl/hgvs>`__
+* `Mutalyzer <https://mutalyzer.nl/>`__
 
 
 
