@@ -17,6 +17,9 @@ hgvs_p = "NP_001628.1:p.(Gly528Arg)"
 def shell():
     logging.basicConfig(level=logging.INFO)
 
+    import hgvs
+    logging.info("Starting hgvs-shell " + hgvs.__version__)
+
     import hgvs.dataproviders.uta
     import hgvs.normalizer
     import hgvs.parser
@@ -28,7 +31,8 @@ def shell():
 
     hdp = hgvs.dataproviders.uta.connect()
     vm = variantmapper = hgvs.variantmapper.VariantMapper(hdp)
-    evm = easyvariantmapper = hgvs.variantmapper.EasyVariantMapper(hdp)
+    evm37 = easyvariantmapper = hgvs.variantmapper.EasyVariantMapper(hdp, assembly_name='GRCh37')
+    evm38 = easyvariantmapper = hgvs.variantmapper.EasyVariantMapper(hdp, assembly_name='GRCh38')
     hv = hgvs.validator.Validator(hdp)
     hn = hgvs.normalizer.Normalizer(hdp)
 
