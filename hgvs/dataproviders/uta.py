@@ -9,6 +9,7 @@ import contextlib
 import inspect
 import logging
 import os
+import re
 import sqlite3
 import urlparse
 
@@ -21,18 +22,44 @@ from bioutils.digests import seq_md5
 
 import hgvs
 from ..dataproviders.interface import Interface
-from ..decorators import deprecated
 from ..decorators.lru_cache import lru_cache
 from ..exceptions import HGVSError, HGVSDataNotAvailableError
 from .seqfetcher import SeqFetcher
 
-_url_key = os.environ.get('_UTA_URL_KEY', 'public' if hgvs._is_released_version else 'public_dev')
-_default_db_url = os.environ.get('UTA_DB_URL', hgvs.global_config['uta'][_url_key])
 
 _logger = logging.getLogger(__name__)
 
 
-def connect(db_url=_default_db_url, pooling=False, application_name=None):
+def _stage_from_version(version):
+    """return "prd", "stg", or "dev" for the given version string.  A value is always returned"""
+    if version:
+        m = re.match("^(?P<xyz>\d+\.\d+\.\d+)(?P<extra>.*)", version)
+        if m:
+            return "stg" if m.group("extra") else "prd"
+    return "dev"
+
+
+def _get_uta_db_url():
+    """returns UTA DB URL based on environment variables and code version
+
+    * if UTA_DB_URL is set, use that
+    * Otherwise, if _UTA_URL_KEY is set, use that as the name of a
+      config file entry and use the corresponding URL
+    * Otherwise, 
+
+    """
+
+    if "UTA_DB_URL" in os.environ:
+        return os.environ["UTA_DB_URL"]
+
+    if "_UTA_URL_KEY" in os.environ:
+        hgvs.global_config['uta'][os.environ["_UTA_URL_KEY"]]
+
+    _url_key = "public_{sdlc}".format(sdlc=_stage_from_version(hgvs.__version__))
+    return hgvs.global_config['uta'][_url_key]
+
+
+def connect(db_url=None, pooling=False, application_name=None):
     """Connect to a UTA database instance and return a UTA interface instance.
 
     :param db_url: URL for database connection
@@ -69,6 +96,10 @@ def connect(db_url=_default_db_url, pooling=False, application_name=None):
     """
 
     _logger.debug('connecting to ' + str(db_url) + '...')
+
+    if db_url is None:
+        db_url = _get_uta_db_url()
+
     url = _parse_url(db_url)
     if url.scheme == 'sqlite':
         conn = UTA_sqlite(url)
