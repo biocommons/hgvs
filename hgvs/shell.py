@@ -9,28 +9,26 @@ import logging
 
 import IPython
 
-import hgvs.dataproviders.uta
-import hgvs.normalizer
-import hgvs.parser
-import hgvs.variantmapper
-import hgvs.validator
-import hgvs.utils.context
-
-logging.basicConfig(level=logging.INFO)
-
-alt_aln_method = 'splign'
-hgvs_g = 'NC_000007.13:g.36561662C>T'
-hgvs_c = 'NM_001637.3:c.1582G>A'
-hgvs_p = 'NP_001628.1:p.(Gly528Arg)'
+hgvs_g = "NC_000007.13:g.36561662C>T"
+hgvs_c = "NM_001637.3:c.1582G>A"
+hgvs_p = "NP_001628.1:p.(Gly528Arg)"
 
 
 def shell():
+    logging.basicConfig(level=logging.INFO)
+
+    import hgvs.dataproviders.uta
+    import hgvs.normalizer
+    import hgvs.parser
+    import hgvs.variantmapper
+    import hgvs.validator
+    import hgvs.utils.context
+
     hp = hgvsparser = hgvs.parser.Parser()
 
     hdp = hgvs.dataproviders.uta.connect()
     vm = variantmapper = hgvs.variantmapper.VariantMapper(hdp)
-    evm = easyvariantmapper = hgvs.variantmapper.EasyVariantMapper(
-        hdp, assembly_name='GRCh37', alt_aln_method=alt_aln_method)
+    evm = easyvariantmapper = hgvs.variantmapper.EasyVariantMapper(hdp)
     hv = hgvs.validator.Validator(hdp)
     hn = hgvs.normalizer.Normalizer(hdp)
 
