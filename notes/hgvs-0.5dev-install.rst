@@ -106,7 +106,7 @@ Instructions
 
    The hgvs 0.5.0.devN releases are available in pypi.  Install the lastest like this::
 
-     $ pip install hgvs
+     $ pip install 'hgvs>=0.5.0.dev'
    
 #. Try the shell
 
@@ -145,6 +145,9 @@ Instructions
    Please send success and failures to hgvs-discuss@googlegroups.com. 
 
    In particular, I'd like feedback on the following (at least):
+
+   * For successes and failures, please include OS, Python, and docker
+     versions.
 
    * If you installed the docker UTA instance, was the installation smooth?
 
