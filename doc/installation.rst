@@ -115,22 +115,22 @@ Test your setup like this::
 
 .. _uta_docker:
 
-Local UTA Docker Instance
+Local Installation of UTA
 @@@@@@@@@@@@@@@@@@@@@@@@@
 
-The public UTA is available without restrictions. However, some users
-may wish to install UTA locally for performance, isolation, or even
-:ref:`privacy`. 
+The public UTA instance is available without restrictions and is
+suitable for many uses.  However, some users may wish to install UTA
+locally for performance, isolation, or :ref:`privacy`; see
+`instructions for local UTA installation
+<https://bitbucket.org/biocommons/uta/>`_ for details. 
 
-If you wish to install UTA locally, see the instructions on the
-available are described in the `UTA bitbucket page
-<https://bitbucket.org/biocommons/uta/>`_.
+To override the UTA instance used by the hgvs package, sers must set
+the UTA_DB_URL environment variable.  A sample interaction::
 
-Once the docker image is installed, you should set UTA_DB_URL to
-select it.  A sample interaction::
-
-  $ docker run --name uta_20150827 -p 15032:5432 biocommons/uta:uta_20150827
-  $ export UTA_DB_URL=postgresql://anonymous@localhost:15032/uta/uta_20150827
+  $ docker run --name uta_20160908 -p 60908:5432 biocommons/uta:uta_20160908
+  $ export UTA_DB_URL=postgresql://anonymous@localhost:15032/uta/uta_20160908
   $ python -c 'import hgvs.dataproviders.uta; print(hgvs.dataproviders.uta.connect().data_version());'
-  uta_20150827
+  uta_20160908
 
+NOTE: The details of UTA_DB_URL string will depend on details of your local
+installation.
