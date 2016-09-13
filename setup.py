@@ -1,5 +1,6 @@
 from setuptools import setup, find_packages
 
+short_description = "HGVS Parser, Formatter, Mapper, Validator"
 with open("doc/description.txt") as f:
     long_description = f.read()
 
@@ -8,17 +9,17 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
       use_scm_version=True,
       zip_safe=True,
       author="HGVS Contributors",
-    author_email = 'hgvs-discuss@gmail.com',
-      description="""HGVS Parser, Formatter, Mapper, Validator""",
+      author_email = 'hgvs-discuss@gmail.com',
+      description = short_description.replace("\n", " "),
       name="hgvs",
       package_data={"hgvs": ["_data/*"]},
       packages=find_packages(),
       url="https://bitbucket.org/biocommons/hgvs",
-    entry_points={
-        'console_scripts': [
-            'hgvs-shell = hgvs.shell:shell'
-            ],
-        },
+      entry_points={
+          'console_scripts': [
+              'hgvs-shell = hgvs.shell:shell'
+          ],
+      },
       classifiers=[
           "Development Status :: 3 - Alpha",
           "Intended Audience :: Developers",
