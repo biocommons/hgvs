@@ -395,8 +395,7 @@ class EasyVariantMapper(VariantMapper):
                  assembly_name=hgvs.global_config.mapping.assembly,
                  alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
                  replace_reference=hgvs.global_config.mapping.replace_reference,
-                 normalize=hgvs.global_config.mapping.normalize,
-                 validate=hgvs.global_config.mapping.validate):
+                 normalize=hgvs.global_config.mapping.normalize):
         """
         :param str assembly_name: name of assembly ("GRCh38.p5")
         :param str alt_aln_method: genome-transcript alignment method ("splign", "blat", "genewise")
@@ -410,13 +409,10 @@ class EasyVariantMapper(VariantMapper):
         self.alt_aln_method = alt_aln_method
         self.replace_reference = replace_reference
         self.normalize = normalize
-        self.validate = validate
         self._norm = None
         if self.normalize:
             self._norm = hgvs.normalizer.Normalizer(hdp, alt_aln_method=alt_aln_method, validate=False)
-        self._validator = None
-        if self.validate:
-            self._validator = hgvs.validator.Validator(hdp)
+        self._validator = hgvs.validator.IntrinsicValidator()
         self._assembly_accessions = set(hdp.get_assembly_accessions(self.assembly_name))
 
     def __repr__(self):
@@ -520,12 +516,11 @@ class EasyVariantMapper(VariantMapper):
     def _maybe_validate(self, var):
         """validate variant if requested.
         """
-        if self._validator is not None:
-            try:
-                return self._validator.validate(var)
-            except HGVSUnsupportedOperationError as e:
-                _logger.warn(str(e) + "; returning unvalidated variant")
-                # fall through to return unvalidated variant
+        try:
+            return self._validator.validate(var)
+        except HGVSUnsupportedOperationError as e:
+            _logger.warn(str(e) + "; returning unvalidated variant")
+            # fall through to return unvalidated variant
         return None
 
 # <LICENSE>

@@ -38,8 +38,7 @@ class Normalizer(object):
                  hdp,
                  cross_boundaries=hgvs.global_config.normalizer.cross_boundaries,
                  shuffle_direction=hgvs.global_config.normalizer.shuffle_direction,
-                 alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
-                 validate=hgvs.global_config.normalizer.validate):
+                 alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
         """Initialize and configure the normalizer
 
         :param hdp: HGVS Data Provider Interface-compliant instance
@@ -55,9 +54,7 @@ class Normalizer(object):
         self.shuffle_direction = shuffle_direction
         self.cross_boundaries = cross_boundaries
         self.alt_aln_method = alt_aln_method
-        self.validator = None
-        if validate:
-            self.validator = hgvs.validator.Validator(self.hdp)
+        self.validator = hgvs.validator.IntrinsicValidator()
         self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
 
     def normalize(self, var):
@@ -65,8 +62,7 @@ class Normalizer(object):
         """
         assert isinstance(var, hgvs.variant.SequenceVariant), "variant must be a parsed HGVS sequence variant object"
         
-        if self.validator is not None:
-            self.validator.validate(var)
+        self.validator.validate(var)
 
         if var.posedit.uncertain or var.posedit.pos is None:
             return var
