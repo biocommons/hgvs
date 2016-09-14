@@ -150,7 +150,8 @@ p_posedit_special =
 ## "_mu" = "maybe uncertain"
 
 dna_edit_mu = dna_edit | '(' dna_edit:edit ')' -> edit._set_uncertain()
-dna_edit   = dna_dupN | dna_subst | dna_delins | dna_ins | dna_del | dna_dup | dna_inv | dna_con | dna_copy
+dna_edit   = dna_dupN | dna_ident | dna_subst | dna_delins | dna_ins | dna_del | dna_dup | dna_inv | dna_con | dna_copy
+dna_ident  = <dna*>:ref '='           -> hgvs.edit.NARefAlt(ref=ref,alt=ref)
 dna_subst  = dna:ref '>' dna:alt      -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
 dna_delins = 'del' (<num>|<dna*>):ref 'ins' <dna+>:alt  -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
 dna_del    = 'del' (<num>|<dna*>):ref -> hgvs.edit.NARefAlt(ref=ref,alt=None)
@@ -168,7 +169,8 @@ dna_dupN = 'dup' num:n -> hgvs.edit.NADupN(n=n)
 # 		     | <dna+>:ref '(' num:min '_' num:max ')' -> Repeat(ref=ref, min=min, max=max)
 
 rna_edit_mu = rna_edit | '(' rna_edit:edit ')' -> edit._set_uncertain()
-rna_edit   = rna_subst | rna_delins | rna_ins | rna_del | rna_dup | rna_inv | rna_con
+rna_edit   = rna_ident | rna_subst | rna_delins | rna_ins | rna_del | rna_dup | rna_inv | rna_con
+rna_ident  = <rna*>:ref '='                  -> hgvs.edit.NARefAlt(ref=ref,alt=ref)
 rna_subst  = rna:ref '>' rna:alt             -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
 rna_delins = 'del' (<num>|<rna*>):ref 'ins' <rna+>:alt  -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
 rna_del    = 'del' (<num>|<rna*>):ref        -> hgvs.edit.NARefAlt(ref=ref,alt=None)
@@ -179,13 +181,13 @@ rna_con    = 'con' hgvs_position:pos         -> hgvs.edit.Conv(from_ac=pos.ac, f
 
 pro_edit_mu = pro_edit | '(' pro_edit:edit ')' -> edit._set_uncertain()
 pro_edit   = pro_fs | pro_ext | pro_subst | pro_delins | pro_ins | pro_del | pro_dup
-pro_subst  = (aat13|'?'):alt                 -> hgvs.edit.AASub(ref='',alt=bioutils.sequences.aa_to_aa1(alt))
-pro_delins = 'delins' aat13_seq:alt          -> hgvs.edit.AARefAlt(ref='',alt=bioutils.sequences.aa_to_aa1(alt))
+pro_subst  = (aat13|'?'):alt                 -> hgvs.edit.AASub(ref='',alt=alt)
+pro_delins = 'delins' aat13_seq:alt          -> hgvs.edit.AARefAlt(ref='',alt=alt)
 pro_del    = 'del'                           -> hgvs.edit.AARefAlt(ref='',alt=None)
-pro_ins    = 'ins' aat13_seq:alt             -> hgvs.edit.AARefAlt(ref=None,alt=bioutils.sequences.aa_to_aa1(alt))
+pro_ins    = 'ins' aat13_seq:alt             -> hgvs.edit.AARefAlt(ref=None,alt=alt)
 pro_dup    = 'dup'                           -> hgvs.edit.Dup(ref='')
-pro_fs     = (aat13 | (-> '')):alt fs:length -> hgvs.edit.AAFs(ref='',alt=bioutils.sequences.aa_to_aa1(alt),length=length)
-pro_ext    = aat13?:alt ext:(aaterm, length) -> hgvs.edit.AAExt(ref='',alt=bioutils.sequences.aa_to_aa1(alt),aaterm=bioutils.sequences.aa_to_aa1(aaterm), length=length)
+pro_fs     = (aat13 | (-> '')):alt fs:length -> hgvs.edit.AAFs(ref='', alt=alt, length=length)
+pro_ext    = aat13?:alt ext:(aaterm, length) -> hgvs.edit.AAExt(ref='', alt=alt, aaterm=aaterm, length=length)
 
 
 ############################################################################

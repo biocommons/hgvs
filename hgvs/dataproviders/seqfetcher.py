@@ -5,6 +5,8 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import logging
+import os
 import re
 
 import requests
@@ -12,9 +14,7 @@ import requests
 from ..exceptions import HGVSDataNotAvailableError
 from ..decorators import lru_cache
 
-# TODO: Move sequence fetching to another package.
-# TODO: Consider using eutils to get request throttling.
-# N.B. >> used (rather than >>>) to not incur web requests during testing
+logger = logging.getLogger(__name__)
 
 
 def _fetch_seq_ensembl(ac, start_i=None, end_i=None):
@@ -85,7 +85,7 @@ def _fetch_seq_ncbi(ac, start_i=None, end_i=None):
 
 
 @lru_cache(maxsize=20)
-def fetch_seq(ac, start_i=None, end_i=None):
+def _fetch_seq_remote(ac, start_i=None, end_i=None):
     """return a subsequence of the given accession for the
     interbase interval [start_i,end_i)
 
@@ -161,6 +161,30 @@ def fetch_seq(ac, start_i=None, end_i=None):
             except requests.HTTPError:
                 raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
     raise HGVSDataNotAvailableError("No fetcher for accessions like {}".format(ac))
+
+
+
+# If HGVS_SEQREPO_DIR is defined, we use seqrepo for *all* sequences
+# Otherwise, we fall back to remote sequence fetching
+seqrepo_dir = os.environ.get("HGVS_SEQREPO_DIR")
+
+if seqrepo_dir:
+
+    from biocommons.seqrepo import SeqRepo
+    sr = SeqRepo(seqrepo_dir)
+
+    def _fetch_seq_seqrepo(ac, start_i=None, end_i=None):
+        return sr.fetch(ac, start_i, end_i)
+
+    fetch_seq = _fetch_seq_seqrepo
+    logger.info("Using SeqRepo({}) sequence fetching".format(seqrepo_dir))
+
+else:
+
+    fetch_seq = _fetch_seq_remote
+    logger.info("Using remote sequence fetching")
+
+
 
 
 class SeqFetcher(object):
