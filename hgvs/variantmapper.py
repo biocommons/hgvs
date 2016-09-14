@@ -419,6 +419,12 @@ class EasyVariantMapper(VariantMapper):
             self._validator = hgvs.validator.Validator(hdp)
         self._assembly_accessions = set(hdp.get_assembly_accessions(self.assembly_name))
 
+    def __repr__(self):
+        return ("{self.__module__}.{t.__name__}(alt_aln_method={self.alt_aln_method}, "
+                "assembly_name={self.assembly_name}, normalize={self.normalize}, "
+                "replace_reference={self.replace_reference})".format(
+                    self=self, t=type(self)))
+
     def g_to_c(self, var_g, tx_ac):
         self._maybe_validate(var_g)
         var_out = super(EasyVariantMapper, self).g_to_c(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
@@ -485,6 +491,7 @@ class EasyVariantMapper(VariantMapper):
         alt_acs = [e["alt_ac"]
                    for e in self.hdp.get_tx_mapping_options(tx_ac)
                    if e["alt_aln_method"] == self.alt_aln_method and e["alt_ac"] in self._assembly_accessions]
+
         if len(alt_acs) > 1:
             raise HGVSError("Multiple chromosomal alignments for {tx_ac} in {an}"
                             "using {am} (likely paralog or pseudoautosomal region)".format(tx_ac=tx_ac,
@@ -492,7 +499,7 @@ class EasyVariantMapper(VariantMapper):
                                                                                            am=self.alt_aln_method))
         if len(alt_acs) == 0:
             raise HGVSDataNotAvailableError(
-                "No alignments for {tx_ac} in {an} using {an}".format(tx_ac=tx_ac,
+                "No alignments for {tx_ac} in {an} using {am}".format(tx_ac=tx_ac,
                                                                       an=self.assembly_name,
                                                                       am=self.alt_aln_method))
         return alt_acs[0]    # exactly one remains

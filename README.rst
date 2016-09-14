@@ -7,7 +7,7 @@ genome, transcript, and protein variants that are represented using
 the Human Genome Variation Society (`mutnomen`_) recommendations.
 
 ===============  ==========  =============   ==============  ================  ===============  ===============
-**Stage**        **Branch**  **changelog**   **Issues**      **PyPi**          **Status**       **Docs**
+**Stage**        **Branch**  **ChangeLog**   **Issues**      **PyPi**          **Status**       **Docs**
 ===============  ==========  =============   ==============  ================  ===============  ===============
 **Release**      `0.4.x`_    `Changelog`_    `Open Issues`_  |pypi_badge_rel|  |status_rel|     |rtd_badge_rel|
 **Development**  `default`_  `Upcoming`_     `Features`_                                        |rtd_badge_dev|
@@ -47,6 +47,7 @@ Important Notes
   releases for API stability.** For example, ``hgvs >=0.4,<0.5``.
 
 ----
+
 
 Some Examples
 -------------
@@ -154,6 +155,14 @@ The hgvs package is intended to be a community project.  Please see
 started in submitting source code, tests, or documentation.  Thanks
 for getting involved!
 
+
+See Also
+--------
+
+Other packages that manipulate HGVS variants:
+
+* `pyhgvs <https://github.com/counsyl/hgvs>`__
+* `Mutalyzer <https://mutalyzer.nl/>`__
 
 
 

@@ -9,6 +9,7 @@ import contextlib
 import inspect
 import logging
 import os
+import re
 import sqlite3
 import urlparse
 
@@ -21,18 +22,45 @@ from bioutils.digests import seq_md5
 
 import hgvs
 from ..dataproviders.interface import Interface
-from ..decorators import deprecated
 from ..decorators.lru_cache import lru_cache
 from ..exceptions import HGVSError, HGVSDataNotAvailableError
 from .seqfetcher import SeqFetcher
 
-_url_key = os.environ.get('_UTA_URL_KEY', 'public' if hgvs._is_released_version else 'public_dev')
-_default_db_url = os.environ.get('UTA_DB_URL', hgvs.global_config['uta'][_url_key])
 
 _logger = logging.getLogger(__name__)
 
 
-def connect(db_url=_default_db_url, pooling=False, application_name=None):
+def _stage_from_version(version):
+    """return "prd", "stg", or "dev" for the given version string.  A value is always returned"""
+    if version:
+        m = re.match("^(?P<xyz>\d+\.\d+\.\d+)(?P<extra>.*)", version)
+        if m:
+            return "stg" if m.group("extra") else "prd"
+    return "dev"
+
+
+def _get_uta_db_url():
+    """returns UTA DB URL based on environment variables and code version
+
+    * if UTA_DB_URL is set, use that
+    * Otherwise, if _UTA_URL_KEY is set, use that as the name of a
+      config file entry and use the corresponding URL
+    * Otherwise, 
+
+    """
+
+    if "UTA_DB_URL" in os.environ:
+        return os.environ["UTA_DB_URL"]
+
+    if "_UTA_URL_KEY" in os.environ:
+        url_key = os.environ["_UTA_URL_KEY"]
+    else:
+        sdlc = _stage_from_version(hgvs.__version__)
+        url_key = "public_{sdlc}".format(sdlc=sdlc)
+    return hgvs.global_config['uta'][url_key]
+
+
+def connect(db_url=None, pooling=False, application_name=None):
     """Connect to a UTA database instance and return a UTA interface instance.
 
     :param db_url: URL for database connection
@@ -69,6 +97,10 @@ def connect(db_url=_default_db_url, pooling=False, application_name=None):
     """
 
     _logger.debug('connecting to ' + str(db_url) + '...')
+
+    if db_url is None:
+        db_url = _get_uta_db_url()
+
     url = _parse_url(db_url)
     if url.scheme == 'sqlite':
         conn = UTA_sqlite(url)
@@ -426,61 +458,6 @@ class UTABase(Interface, SeqFetcher):
             return rows[0]['pro_ac']
         except IndexError:
             return None
-
-    # Sequence fetching
-    # -----------------
-    # UTA stored a subset of relevant sequences in
-    # the postgresql database, but that's impractical for large
-    # sequences (genome scale) and is difficult to maintain.
-    # The design goal is to migrate from the get_tx_seq() method to
-    # externalize all sequence fetching.  See
-    # TODO: Externalize sequence fetching (https://bitbucket.org/biocommons/hgvs/issue/236/)
-    #
-    # For the 0.4.0 release, we'll enable a a new method, fetch_seq(),
-    # and deprecate get_tx_seq(). get_tx_seq() will be removed in a
-    # subsequent major inteface update.  fetch_seq() itself will wrap
-    # get_tx_seq() and SeqFetcher.fetch_seq() now, but is expected to
-    # be entirely replaced by a more complete sequence database.
-    # See https://bitbucket.org/biocommons/hgvs/issue/240/
-
-    @lru_cache(maxsize=128)
-    def fetch_seq(self, ac, start_i=None, end_i=None):
-        """Fetches sequence by accession, optionally bounded by [start_i,end_i).
-        See SeqFetcher.fetch_seq() for details and examples.
-
-        This function tries _get_tx_seq() (because it's usually
-        faster), and then SeqFetcher.fetch_seq().
-        """
-
-        if any(ac.startswith(pfx) for pfx in ['NM_', 'NR_', 'ENST']):
-            try:
-                seq = self._get_tx_seq(ac)[start_i:end_i]
-                _logger.debug("fetched {ac} from UTA".format(ac=ac))
-                return seq
-            except HGVSDataNotAvailableError:
-                pass
-        # if ac not matching or on HGVSDataNotAvailableError...
-        seq = super(UTABase, self).fetch_seq(ac, start_i, end_i)
-        _logger.debug("fetched {ac} with SeqFetcher".format(ac=ac))
-        assert seq is not None
-        return seq
-
-    # TODO: Remove get_tx_seq() in 0.5.0
-    @deprecated(use_instead="fetch_seq(...)")
-    def get_tx_seq(self, ac):
-        """DEPRECATED: will be removed in 0.5.0"""
-        return self._get_tx_seq(ac)
-
-    def _get_tx_seq(self, ac):
-        """return transcript sequence for supplied accession (ac), or None if not found
-
-        :param ac: transcript accession with version (e.g., 'NM_000051.3')
-        :type ac: str
-        """
-        row = self._fetchone(self._queries['tx_seq'], [ac])
-        if row and row['seq'] is not None:
-            return row['seq']
-        raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
 
     def get_assembly_accessions(self, assembly_name):
         """return a list of accessions for the specified assembly name (e.g., GRCh38.p5)
