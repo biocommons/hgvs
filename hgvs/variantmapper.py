@@ -411,7 +411,7 @@ class EasyVariantMapper(VariantMapper):
         self.normalize = normalize
         self._norm = None
         if self.normalize:
-            self._norm = hgvs.normalizer.Normalizer(hdp, alt_aln_method=alt_aln_method, validate=False)
+            self._norm = hgvs.normalizer.Normalizer(hdp, alt_aln_method=alt_aln_method)
         self._validator = hgvs.validator.IntrinsicValidator()
         self._assembly_accessions = set(hdp.get_assembly_accessions(self.assembly_name))
 
