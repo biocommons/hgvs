@@ -422,21 +422,21 @@ class EasyVariantMapper(VariantMapper):
                     self=self, t=type(self)))
 
     def g_to_c(self, var_g, tx_ac):
-        self._maybe_validate(var_g)
+        self._validator.validate(var_g)
         var_out = super(EasyVariantMapper, self).g_to_c(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
         if self.replace_reference:
             self._replace_reference(var_out)
         return self._maybe_normalize(var_out)
 
     def g_to_n(self, var_g, tx_ac):
-        self._maybe_validate(var_g)
+        self._validator.validate(var_g)
         var_out = super(EasyVariantMapper, self).g_to_n(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
         if self.replace_reference:
             self._replace_reference(var_out)
         return self._maybe_normalize(var_out)
 
     def c_to_g(self, var_c):
-        self._maybe_validate(var_c)
+        self._validator.validate(var_c)
         alt_ac = self._alt_ac_for_tx_ac(var_c.ac)
         var_out = super(EasyVariantMapper, self).c_to_g(var_c, alt_ac, alt_aln_method=self.alt_aln_method)
         if self.replace_reference:
@@ -444,7 +444,7 @@ class EasyVariantMapper(VariantMapper):
         return self._maybe_normalize(var_out)
 
     def n_to_g(self, var_n):
-        self._maybe_validate(var_n)
+        self._validator.validate(var_n)
         alt_ac = self._alt_ac_for_tx_ac(var_n.ac)
         var_out = super(EasyVariantMapper, self).n_to_g(var_n, alt_ac, alt_aln_method=self.alt_aln_method)
         if self.replace_reference:
@@ -452,28 +452,28 @@ class EasyVariantMapper(VariantMapper):
         return self._maybe_normalize(var_out)
 
     def c_to_n(self, var_c):
-        self._maybe_validate(var_c)
+        self._validator.validate(var_c)
         var_out = super(EasyVariantMapper, self).c_to_n(var_c)
         if self.replace_reference:
             self._replace_reference(var_out)
         return self._maybe_normalize(var_out)
 
     def n_to_c(self, var_n):
-        self._maybe_validate(var_n)
+        self._validator.validate(var_n)
         var_out = super(EasyVariantMapper, self).n_to_c(var_n)
         if self.replace_reference:
             self._replace_reference(var_out)
         return self._maybe_normalize(var_out)
 
     def c_to_p(self, var_c):
-        self._maybe_validate(var_c)
+        self._validator.validate(var_c)
         var_out = super(EasyVariantMapper, self).c_to_p(var_c)
         return self._maybe_normalize(var_out)
 
     def relevant_transcripts(self, var_g):
         """return list of transcripts accessions (strings) for given variant,
         selected by genomic overlap"""
-        self._maybe_validate(var_g)
+        self._validator.validate(var_g)
         tx = self.hdp.get_tx_for_region(var_g.ac, self.alt_aln_method, var_g.posedit.pos.start.base,
                                         var_g.posedit.pos.end.base)
         return [e["tx_ac"] for e in tx]
@@ -512,16 +512,6 @@ class EasyVariantMapper(VariantMapper):
                 _logger.warn(str(e) + "; returning unnormalized variant")
                 # fall through to return unnormalized variant
         return var
-
-    def _maybe_validate(self, var):
-        """validate variant if requested.
-        """
-        try:
-            return self._validator.validate(var)
-        except HGVSUnsupportedOperationError as e:
-            _logger.warn(str(e) + "; returning unvalidated variant")
-            # fall through to return unvalidated variant
-        return None
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

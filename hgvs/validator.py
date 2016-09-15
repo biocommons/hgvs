@@ -9,6 +9,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from hgvs.exceptions import HGVSValidationError, HGVSUnsupportedOperationError
 import hgvs.parser
+import hgvs.edit
 import hgvs.variantmapper
 
 BASE_RANGE_ERROR_MSG = "base start position must be <= end position"
@@ -65,7 +66,7 @@ class IntrinsicValidator(object):
     def _ins_length_is_one(self, var):
         if not var.posedit.pos or not var.posedit.pos.start or not var.posedit.pos.end:
             return True
-        if isinstance(var.posedit.edit, basestring):
+        if not isinstance(var.posedit.edit, hgvs.edit.NARefAlt) and not isinstance(var.posedit.edit, hgvs.edit.AARefAlt):
             return True
         if var.posedit.edit.type == "ins":
             if var.type in SIMPLE_COORD_TYPES:
@@ -79,7 +80,7 @@ class IntrinsicValidator(object):
             return True
 
     def _del_length(self, var):
-        if isinstance(var.posedit.edit, basestring):
+        if not isinstance(var.posedit.edit, hgvs.edit.NARefAlt) and not isinstance(var.posedit.edit, hgvs.edit.AARefAlt):
             return True
         if var.posedit.edit.type in ["del", "delins"]:
             ref_len = var.posedit.edit.ref_n
