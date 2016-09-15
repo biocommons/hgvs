@@ -39,6 +39,19 @@ class Test_VariantMapper(unittest.TestCase):
         self.assertEqual(str(vn), "NM_000088.3:c.590_599inv")
 
 
+    def test_293_parser_attribute_assignment_error(self):
+        # https://bitbucket.org/biocommons/hgvs/issues/293/        
+        var = self.hp.parse_hgvs_variant('NG_029146.1:g.6494delG')
+        self.vn.normalize(var)  # per issue, should raise error
+        
+    def test_314_parsing_identity_variant(self):
+        v = self.hp.parse_hgvs_variant("NM_206933.2:c.6317=")
+        self.assertEqual(str(v), "NM_206933.2:c.6317=")
+
+        v = self.hp.parse_hgvs_variant("NM_206933.2:c.6317C=")
+        self.assertEqual(str(v), "NM_206933.2:c.6317C=")
+                                                   
+
     def test_324_error_normalizing_simple_inversion(self):
         v = self.hp.parse_hgvs_variant("NM_000535.5:c.1673_1674inv")
         vn = self.vn.normalize(v)
@@ -77,10 +90,3 @@ class Test_VariantMapper(unittest.TestCase):
                                                    alt_ac="NC_000010.10",
                                                    alt_aln_method="splign")
 
-    def test_314_parsing_identity_variant(self):
-        v = self.hp.parse_hgvs_variant("NM_206933.2:c.6317=")
-        self.assertEqual(str(v), "NM_206933.2:c.6317=")
-
-        v = self.hp.parse_hgvs_variant("NM_206933.2:c.6317C=")
-        self.assertEqual(str(v), "NM_206933.2:c.6317C=")
-                                                   
