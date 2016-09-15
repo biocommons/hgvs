@@ -9,6 +9,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from hgvs.exceptions import HGVSValidationError, HGVSUnsupportedOperationError
 import hgvs.parser
+import hgvs.edit
 import hgvs.variantmapper
 
 BASE_RANGE_ERROR_MSG = "base start position must be <= end position"
@@ -47,12 +48,13 @@ class IntrinsicValidator(object):
         return True
 
     def _start_lte_end(self, var):
-        # TODO: why check var.posedit.pos? should set, right?
-        if var.type in SIMPLE_COORD_TYPES and var.posedit.pos:
+        if not var.posedit.pos or not var.posedit.pos.start or not var.posedit.pos.end:
+            return True
+        if var.type in SIMPLE_COORD_TYPES:
             if var.posedit.pos.start.base > var.posedit.pos.end.base:
                 raise HGVSValidationError(BASE_RANGE_ERROR_MSG)
-        if var.type in BASE_OFFSET_COORD_TYPES and var.posedit.pos:
-            if var.posedit.pos.start.base > var.posedit.pos.end.base:
+        if var.type in BASE_OFFSET_COORD_TYPES:
+            if var.posedit.pos.start.datum == var.posedit.pos.end.datum and var.posedit.pos.start.base > var.posedit.pos.end.base:
                 raise HGVSValidationError(BASE_RANGE_ERROR_MSG)
             elif var.posedit.pos.start.base == var.posedit.pos.end.base:
                 if var.posedit.pos.start.offset > var.posedit.pos.end.offset:
@@ -62,18 +64,24 @@ class IntrinsicValidator(object):
         return True
 
     def _ins_length_is_one(self, var):
-        # TODO: why check var.posedit.pos? should set, right?
+        if not var.posedit.pos or not var.posedit.pos.start or not var.posedit.pos.end:
+            return True
+        if not isinstance(var.posedit.edit, hgvs.edit.NARefAlt) and not isinstance(var.posedit.edit, hgvs.edit.AARefAlt):
+            return True
         if var.posedit.edit.type == "ins":
-            if var.type in SIMPLE_COORD_TYPES and var.posedit.pos:
+            if var.type in SIMPLE_COORD_TYPES:
                 if (var.posedit.pos.end.base - var.posedit.pos.start.base) != 1:
                     raise HGVSValidationError(INS_ERROR_MSG)
-            if var.type in BASE_OFFSET_COORD_TYPES and var.posedit.pos:
-                if ((var.posedit.pos.end.base + var.posedit.pos.end.offset) -
-                    (var.posedit.pos.start.base + var.posedit.pos.start.offset)) != 1:
-                    raise HGVSValidationError(INS_ERROR_MSG)
+            if var.type in BASE_OFFSET_COORD_TYPES:
+                if var.posedit.pos.start.datum == var.posedit.pos.end.datum:
+                    if ((var.posedit.pos.end.base + var.posedit.pos.end.offset) -
+                        (var.posedit.pos.start.base + var.posedit.pos.start.offset)) != 1:
+                        raise HGVSValidationError(INS_ERROR_MSG)
             return True
 
     def _del_length(self, var):
+        if not isinstance(var.posedit.edit, hgvs.edit.NARefAlt) and not isinstance(var.posedit.edit, hgvs.edit.AARefAlt):
+            return True
         if var.posedit.edit.type in ["del", "delins"]:
             ref_len = var.posedit.edit.ref_n
             if ref_len is None:
@@ -122,6 +130,8 @@ class ExtrinsicValidator():
 
         ref_checks = []
         if var.type == 'p':
+            if not var.posedit.pos or not var.posedit.pos.start or not var.posedit.pos.end:
+                return True
             ref_checks.append( (var.ac, var.posedit.pos.start.pos, var.posedit.pos.start.pos, var.posedit.pos.start.aa) )
             if var.posedit.pos.start.pos != var.posedit.pos.end.pos:
                 ref_checks.append( (var.ac, var.posedit.pos.end.pos, var.posedit.pos.end.pos, var.posedit.pos.end.aa) )

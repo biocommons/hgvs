@@ -82,7 +82,7 @@ class Test_VariantMapper(unittest.TestCase):
         vn = self.vn.normalize(v)
         self.assertEqual(str(vn), "NM_000535.5:c.1673_1674inv")
         
-        v = self.hp.parse_hgvs_variant("NM_000535.5:c.1_3delAGCinsGCT")
+        v = self.hp.parse_hgvs_variant("NM_000535.5:c.1_3delATGinsCAT")
         vn = self.vn.normalize(v)
         self.assertEqual(str(vn), "NM_000535.5:c.1_3inv")
 
