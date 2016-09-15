@@ -9,7 +9,7 @@ import unittest
 
 from nose.plugins.attrib import attr
 
-from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError, HGVSParseError
+from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError, HGVSParseError, HGVSInvalidVariantError, HGVSValidationError
 import hgvs.dataproviders.uta
 import hgvs.normalizer
 import hgvs.parser
@@ -31,13 +31,17 @@ class Test_VariantMapper(unittest.TestCase):
         self.vn = hgvs.normalizer.Normalizer(self.hdp, shuffle_direction=3, cross_boundaries=True)
 
 
+    def test_260_raise_exception_when_mapping_bogus_variant(self):
+        v = self.hp.parse_hgvs_variant("NM_000059.3:c.7790delAAG")
+        with self.assertRaises(HGVSValidationError):
+            self.evm.c_to_p(v)
+
     def test_285_partial_palindrome_inversion(self):
         # https://bitbucket.org/biocommons/hgvs/issues/285/
         # Inversion mapping is not palindrome aware
         v = self.hp.parse_hgvs_variant("NM_000088.3:c.589_600inv")
         vn = self.vn.normalize(v)
         self.assertEqual(str(vn), "NM_000088.3:c.590_599inv")
-
 
     def test_293_parser_attribute_assignment_error(self):
         # https://bitbucket.org/biocommons/hgvs/issues/293/        
@@ -51,6 +55,10 @@ class Test_VariantMapper(unittest.TestCase):
         v = self.hp.parse_hgvs_variant("NM_206933.2:c.6317C=")
         self.assertEqual(str(v), "NM_206933.2:c.6317C=")
                                                    
+    def test_322_raise_exception_when_mapping_bogus_variant(self):
+        v = self.hp.parse_hgvs_variant("chrX:g.71684476delTGGAGinsAC")
+        with self.assertRaises(HGVSValidationError):
+            self.evm.g_to_c(v, "NM_018486.2")
 
     def test_324_error_normalizing_simple_inversion(self):
         v = self.hp.parse_hgvs_variant("NM_000535.5:c.1673_1674inv")
@@ -61,7 +69,6 @@ class Test_VariantMapper(unittest.TestCase):
         v2 = self.evm.g_to_c(vg, tx_ac = v.ac)
         self.assertEqual(str(v), str(v2))  # no change after roundtrip
 
-
     def test_330_incorrect_end_datum_post_ter(self):
         # https://bitbucket.org/biocommons/hgvs/issues/330/
         # In a variant like NM_004006.2:c.*87_91del, the interval
@@ -71,7 +78,6 @@ class Test_VariantMapper(unittest.TestCase):
         self.assertEqual(v.posedit.pos.start.datum, hgvs.location.CDS_END)
         self.assertEqual(v.posedit.pos.end.datum,   hgvs.location.CDS_END)
         
-
     def test_334_delins_normalization(self):
         # also tests 335 re: inv including sequence (e.g., NC_000009.11:g.36233991_36233992invCA)
         v = self.hp.parse_hgvs_variant("NC_000009.11:g.36233991_36233992delCAinsAC")
@@ -86,13 +92,10 @@ class Test_VariantMapper(unittest.TestCase):
         vn = self.vn.normalize(v)
         self.assertEqual(str(vn), "NM_000535.5:c.1_3inv")
 
-
     def test_340_inv_without_sequence(self):
         # inversions should not accept sequence
         with self.assertRaises(HGVSParseError):
             self.hp.parse_hgvs_variant("NM_000535.5:c.1673_1674invCC")
-
-            
 
     def test_346_reject_partial_alignments(self):
         # hgvs-346: verify that alignment data covers full-length transcript

@@ -15,7 +15,7 @@ import hgvs.variantmapper
 BASE_RANGE_ERROR_MSG = "base start position must be <= end position"
 OFFSET_RANGE_ERROR_MSG = "offset start must be <= end position"
 INS_ERROR_MSG = "insertion length must be 1"
-DEL_ERROR_MSG = "Length implied by coordinates ({span_len})  must equal sequence deletion length ({del_len})"
+DEL_ERROR_MSG = "Length implied by coordinates ({span_len}) must equal sequence deletion length ({del_len})"
 AC_ERROR_MSG = "Accession is not present in BDI database"
 SEQ_ERROR_MSG = "Variant reference ({var_ref_seq}) does not agree with reference sequence ({ref_seq})"
 
