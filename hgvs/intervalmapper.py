@@ -49,6 +49,8 @@ import re
 from hgvs.exceptions import HGVSInvalidIntervalError
 
 
+# N.B. This Interval is internal to intervalmapper.py. It is *NOT* the
+# same as the Interval defined in location.py.
 class Interval(object):
     """Represents a segment of a sequence in interbase
     coordinates (0-based, right-open).

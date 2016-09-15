@@ -21,7 +21,7 @@ import recordtype
 
 from bioutils.sequences import aa1_to_aa3
 
-from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError
+from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError, HGVSInvalidIntervalError
 
 
 SEQ_START = 0
@@ -190,6 +190,34 @@ class Interval(recordtype.recordtype("Interval", field_names=["start", ("end", N
     def is_uncertain(self):
         """return True if the position is marked uncertain or undefined"""
         return self.uncertain or self.start.is_uncertain or self.end.is_uncertain
+
+
+class BaseOffsetInterval(Interval):
+    """BaseOffsetInterval isa Interval of BaseOffsetPositions.  The only
+    additional functionality over Interval is to ensure that the dutum
+    of end and start are compatible.
+
+    """
+    def __init__(self, *args, **kwargs):
+        super(BaseOffsetInterval, self).__init__(*args, **kwargs)
+
+        # #330: In a post-ter interval like *87_91, the * binds only
+        # to the start. This means that the start.datum is CDS_END,
+        # but the end.datum is CDS_START (the default). 
+        if self.start.datum == CDS_END:
+            self.end.datum = CDS_END
+
+        self.validate()
+
+    def validate(self):
+        # check for valid combinations of start and end datums
+        if (self.start.datum, self.end.datum) not in [
+                (SEQ_START, SEQ_START),
+                (CDS_START, CDS_START),
+                (CDS_START, CDS_END),
+                (CDS_END, CDS_END),
+                ]:
+            raise HGVSInvalidIntervalError("BaseOffsetInterval start datum and end datum are incompatible")
 
 
 # <LICENSE>
