@@ -23,6 +23,7 @@ class HGVSInvalidIntervalError(HGVSError):
 
 
 class HGVSInvalidVariantError(HGVSError):
+    """Exception raised when variant is inconsistend or invalid"""
     pass
 
 
@@ -42,10 +43,6 @@ class HGVSUsageError(HGVSError):
     """Exception raised when client/caller has made an invalid request"""
     pass
 
-
-class HGVSValidationError(HGVSError):
-    """Exception raised when variant is inconsistend or invalid"""
-    pass
 
 
 # <LICENSE>

@@ -5,7 +5,7 @@ import unittest
 
 from nose.plugins.attrib import attr
 
-from hgvs.exceptions import HGVSUnsupportedOperationError, HGVSInvalidVariantError, HGVSValidationError
+from hgvs.exceptions import HGVSUnsupportedOperationError, HGVSInvalidVariantError, HGVSInvalidVariantError
 import hgvs.dataproviders.uta
 import hgvs.variantmapper
 import hgvs.parser
@@ -110,7 +110,7 @@ class Test_HGVSNormalizer(unittest.TestCase):
         self.assertEqual(str(self.norm5.normalize(self.hp.parse_hgvs_variant("NM_000051.3:c.9171_*1insA"))),
                          "NM_000051.3:c.9171dupA")
 
-        with self.assertRaises(HGVSValidationError):
+        with self.assertRaises(HGVSInvalidVariantError):
             self.norm.normalize(self.hp.parse_hgvs_variant("NM_000059.3:c.7790delAAG"))
 
     def test_g_normalizer(self):

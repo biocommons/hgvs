@@ -5,7 +5,7 @@ import unittest
 
 from nose.plugins.attrib import attr
 
-from hgvs.exceptions import HGVSValidationError
+from hgvs.exceptions import HGVSInvalidVariantError
 import hgvs.dataproviders.uta
 import hgvs.parser
 import hgvs.variantmapper
@@ -32,7 +32,7 @@ class Test_VariantMapper(unittest.TestCase):
         self.assertEqual(str(var_c), hgvs_c)
         self.assertEqual(str(var_p), hgvs_p)
 
-        with self.assertRaises(HGVSValidationError):
+        with self.assertRaises(HGVSInvalidVariantError):
             self.evm.c_to_p(self.hp.parse_hgvs_variant("NM_000059.3:c.7790delAAG"))
 
 
