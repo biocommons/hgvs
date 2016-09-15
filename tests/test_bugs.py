@@ -64,11 +64,6 @@ class Test_VariantMapper(unittest.TestCase):
         self.assertEqual(str(vn), "NM_000535.5:c.1_3inv")
 
 
-    def test_340_inv_without_sequence(self):
-        # inversions should not accept sequence
-        with self.assertRaises(HGVSParseError):
-            self.hp.parse_hgvs_variant("NM_000535.5:c.1673_1674invCC")
-
     def test_346_reject_partial_alignments(self):
         # hgvs-346: verify that alignment data covers full-length transcript
         with self.assertRaises(HGVSDataNotAvailableError):
