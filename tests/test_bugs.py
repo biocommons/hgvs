@@ -9,7 +9,7 @@ import unittest
 
 from nose.plugins.attrib import attr
 
-from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError, HGVSParseError, HGVSInvalidVariantError, HGVSValidationError
+from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError, HGVSParseError, HGVSInvalidVariantError, HGVSInvalidVariantError
 import hgvs.dataproviders.uta
 import hgvs.normalizer
 import hgvs.parser
@@ -33,7 +33,7 @@ class Test_VariantMapper(unittest.TestCase):
 
     def test_260_raise_exception_when_mapping_bogus_variant(self):
         v = self.hp.parse_hgvs_variant("NM_000059.3:c.7790delAAG")
-        with self.assertRaises(HGVSValidationError):
+        with self.assertRaises(HGVSInvalidVariantError):
             self.evm.c_to_p(v)
 
     def test_285_partial_palindrome_inversion(self):
@@ -57,7 +57,7 @@ class Test_VariantMapper(unittest.TestCase):
                                                    
     def test_322_raise_exception_when_mapping_bogus_variant(self):
         v = self.hp.parse_hgvs_variant("chrX:g.71684476delTGGAGinsAC")
-        with self.assertRaises(HGVSValidationError):
+        with self.assertRaises(HGVSInvalidVariantError):
             self.evm.g_to_c(v, "NM_018486.2")
 
     def test_324_error_normalizing_simple_inversion(self):

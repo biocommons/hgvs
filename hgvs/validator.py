@@ -7,7 +7,7 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from hgvs.exceptions import HGVSValidationError, HGVSUnsupportedOperationError
+from hgvs.exceptions import HGVSInvalidVariantError, HGVSUnsupportedOperationError
 import hgvs.parser
 import hgvs.edit
 import hgvs.variantmapper
@@ -52,15 +52,15 @@ class IntrinsicValidator(object):
             return True
         if var.type in SIMPLE_COORD_TYPES:
             if var.posedit.pos.start.base > var.posedit.pos.end.base:
-                raise HGVSValidationError(BASE_RANGE_ERROR_MSG)
+                raise HGVSInvalidVariantError(BASE_RANGE_ERROR_MSG)
         if var.type in BASE_OFFSET_COORD_TYPES:
             if var.posedit.pos.start.datum == var.posedit.pos.end.datum and var.posedit.pos.start.base > var.posedit.pos.end.base:
-                raise HGVSValidationError(BASE_RANGE_ERROR_MSG)
+                raise HGVSInvalidVariantError(BASE_RANGE_ERROR_MSG)
             elif var.posedit.pos.start.base == var.posedit.pos.end.base:
                 if var.posedit.pos.start.offset > var.posedit.pos.end.offset:
-                    raise HGVSValidationError(OFFSET_RANGE_ERROR_MSG)
+                    raise HGVSInvalidVariantError(OFFSET_RANGE_ERROR_MSG)
             if var.posedit.pos.start.datum > var.posedit.pos.end.datum:
-                raise HGVSValidationError(BASE_RANGE_ERROR_MSG)
+                raise HGVSInvalidVariantError(BASE_RANGE_ERROR_MSG)
         return True
 
     def _ins_length_is_one(self, var):
@@ -71,12 +71,12 @@ class IntrinsicValidator(object):
         if var.posedit.edit.type == "ins":
             if var.type in SIMPLE_COORD_TYPES:
                 if (var.posedit.pos.end.base - var.posedit.pos.start.base) != 1:
-                    raise HGVSValidationError(INS_ERROR_MSG)
+                    raise HGVSInvalidVariantError(INS_ERROR_MSG)
             if var.type in BASE_OFFSET_COORD_TYPES:
                 if var.posedit.pos.start.datum == var.posedit.pos.end.datum:
                     if ((var.posedit.pos.end.base + var.posedit.pos.end.offset) -
                         (var.posedit.pos.start.base + var.posedit.pos.start.offset)) != 1:
-                        raise HGVSValidationError(INS_ERROR_MSG)
+                        raise HGVSInvalidVariantError(INS_ERROR_MSG)
             return True
 
     def _del_length(self, var):
@@ -104,7 +104,7 @@ class IntrinsicValidator(object):
                 span_len = var.posedit.pos.end.base - var.posedit.pos.start.base + 1
 
             if span_len != ref_len:
-                raise HGVSValidationError(DEL_ERROR_MSG.format(span_len=span_len, del_len=ref_len))
+                raise HGVSInvalidVariantError(DEL_ERROR_MSG.format(span_len=span_len, del_len=ref_len))
         return True
 
 
@@ -153,7 +153,7 @@ class ExtrinsicValidator():
 
             ref_seq = self.hdp.fetch_seq(ac, var_ref_start - 1, var_ref_end)
             if ref_seq != var_ref_seq:
-                raise HGVSValidationError(str(var) + ": " + SEQ_ERROR_MSG.format(ref_seq=ref_seq,
+                raise HGVSInvalidVariantError(str(var) + ": " + SEQ_ERROR_MSG.format(ref_seq=ref_seq,
                                                                                  var_ref_seq=var_ref_seq))
 
         return True
