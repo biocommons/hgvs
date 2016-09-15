@@ -49,6 +49,16 @@ class Test_VariantMapper(unittest.TestCase):
         self.assertEqual(str(v), str(v2))  # no change after roundtrip
 
 
+    def test_330_incorrect_end_datum_post_ter(self):
+        # https://bitbucket.org/biocommons/hgvs/issues/330/
+        # In a variant like NM_004006.2:c.*87_91del, the interval
+        # start and end are parsed independently. The * binds to
+        # start but not end, causing end to have an incorrect datum.
+        v = self.hp.parse_hgvs_variant("NM_004006.2:c.*87_91del")
+        self.assertEqual(v.posedit.pos.start.datum, hgvs.location.CDS_END)
+        self.assertEqual(v.posedit.pos.end.datum,   hgvs.location.CDS_END)
+        
+
     def test_334_delins_normalization(self):
         # also tests 335 re: inv including sequence (e.g., NC_000009.11:g.36233991_36233992invCA)
         v = self.hp.parse_hgvs_variant("NC_000009.11:g.36233991_36233992delCAinsAC")
@@ -68,6 +78,8 @@ class Test_VariantMapper(unittest.TestCase):
         # inversions should not accept sequence
         with self.assertRaises(HGVSParseError):
             self.hp.parse_hgvs_variant("NM_000535.5:c.1673_1674invCC")
+
+            
 
     def test_346_reject_partial_alignments(self):
         # hgvs-346: verify that alignment data covers full-length transcript

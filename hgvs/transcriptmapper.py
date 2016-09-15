@@ -130,11 +130,10 @@ class TranscriptMapper(object):
         if self.strand == -1:
             start_bo, end_bo = end_bo, start_bo
 
-        return hgvs.location.Interval(start=hgvs.location.BaseOffsetPosition(base=start_bo[0],
-                                                                             offset=start_bo[1]),
-                                      end=hgvs.location.BaseOffsetPosition(base=end_bo[0],
-                                                                           offset=end_bo[1]),
-                                      uncertain=g_interval.uncertain)
+        return hgvs.location.BaseOffsetInterval(
+            start=hgvs.location.BaseOffsetPosition(base=start_bo[0], offset=start_bo[1], datum=hgvs.location.SEQ_START),
+            end=hgvs.location.BaseOffsetPosition(base=end_bo[0],     offset=end_bo[1],   datum=hgvs.location.SEQ_START),
+            uncertain=g_interval.uncertain)
 
     def n_to_g(self, n_interval):
         """convert a transcript cDNA (n.) interval to a genomic (g.) interval"""
@@ -192,13 +191,10 @@ class TranscriptMapper(object):
             ce = n_interval.end.base - self.cds_end_i
             ce_datum = hgvs.location.CDS_END
 
-        c_interval = hgvs.location.Interval(start=hgvs.location.BaseOffsetPosition(base=cs,
-                                                                                   offset=n_interval.start.offset,
-                                                                                   datum=cs_datum),
-                                            end=hgvs.location.BaseOffsetPosition(base=ce,
-                                                                                 offset=n_interval.end.offset,
-                                                                                 datum=ce_datum),
-                                            uncertain=n_interval.uncertain)
+        c_interval = hgvs.location.BaseOffsetInterval(
+            start=hgvs.location.BaseOffsetPosition(base=cs, offset=n_interval.start.offset,  datum=cs_datum),
+            end=hgvs.location.BaseOffsetPosition(base=ce,   offset=n_interval.end.offset,    datum=ce_datum),
+            uncertain=n_interval.uncertain)
         return c_interval
 
     def c_to_n(self, c_interval):
@@ -227,13 +223,10 @@ class TranscriptMapper(object):
         if rs <= 0 or re > self.tgt_len:
             raise HGVSError("The given coordinate is outside the bounds of the reference sequence.")
 
-        n_interval = hgvs.location.Interval(start=hgvs.location.BaseOffsetPosition(base=rs,
-                                                                                   offset=c_interval.start.offset,
-                                                                                   datum=hgvs.location.SEQ_START),
-                                            end=hgvs.location.BaseOffsetPosition(base=re,
-                                                                                 offset=c_interval.end.offset,
-                                                                                 datum=hgvs.location.SEQ_START),
-                                            uncertain=c_interval.uncertain)
+        n_interval = hgvs.location.BaseOffsetInterval(
+            start=hgvs.location.BaseOffsetPosition(base=rs, offset=c_interval.start.offset, datum=hgvs.location.SEQ_START),
+            end=hgvs.location.BaseOffsetPosition(base=re,   offset=c_interval.end.offset,   datum=hgvs.location.SEQ_START),
+            uncertain=c_interval.uncertain)
         return n_interval
 
     def g_to_c(self, g_interval):
