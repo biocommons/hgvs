@@ -35,14 +35,17 @@ class Test_BaseOffsetPosition(unittest.TestCase):
         self.assertEqual(cdsp.base, 5)
         self.assertEqual(cdsp.offset, 0)
         self.assertEqual(str(cdsp), "5")
+        self.assertFalse(cdsp.is_intronic)
 
         #r.5+6
         cdsp.offset = 6
         self.assertEqual(str(cdsp), "5+6")
+        self.assertTrue(cdsp.is_intronic)
 
         #r.5+?
         cdsp.offset = None
         self.assertEqual(str(cdsp), "5+?")
+        self.assertTrue(cdsp.is_intronic)
 
         #r.(5+?)
         cdsp.uncertain = True

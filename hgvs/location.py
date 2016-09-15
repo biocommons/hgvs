@@ -115,6 +115,11 @@ class BaseOffsetPosition(recordtype.recordtype(
         """return True if the position is marked uncertain or undefined"""
         return self.uncertain or self.base is None or self.offset is None
 
+    @property
+    def is_intronic(self):
+        """returns True if the variant is intronic (if the offset is None or non-zero)"""
+        return (self.offset is None or self.offset != 0)
+
     def __sub__(lhs, rhs):
         assert type(lhs) == type(rhs), "Cannot substract coordinates of different representations"
         if lhs.datum != rhs.datum:
