@@ -202,10 +202,10 @@ class BaseOffsetInterval(Interval):
         if self.start.datum == CDS_END:
             self.end.datum = CDS_END
 
-        #self.validate()
+        self.validate()
 
     def validate(self):
-	# check for valid combinations of start and end datums
+        # check for valid combinations of start and end datums
         if (self.start.datum, self.end.datum) not in [
                 (SEQ_START, SEQ_START),
                 (CDS_START, CDS_START),
