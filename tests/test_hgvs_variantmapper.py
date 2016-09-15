@@ -5,6 +5,7 @@ import unittest
 
 from nose.plugins.attrib import attr
 
+from hgvs.exceptions import HGVSValidationError
 import hgvs.dataproviders.uta
 import hgvs.parser
 import hgvs.variantmapper
@@ -15,7 +16,7 @@ class Test_VariantMapper(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.hdp = hgvs.dataproviders.uta.connect()
-        cls.vm = hgvs.variantmapper.VariantMapper(cls.hdp)
+        cls.evm = hgvs.variantmapper.EasyVariantMapper(cls.hdp)
         cls.hp = hgvs.parser.Parser()
 
     def test_VariantMapper_quick(self):
@@ -25,11 +26,14 @@ class Test_VariantMapper(unittest.TestCase):
         hgvs_p = "NP_001628.1:p.(Gly528Arg)"    # from Mutalyzer
 
         var_g = self.hp.parse_hgvs_variant(hgvs_g)
-        var_c = self.vm.g_to_c(var_g, "NM_001637.3")
-        var_p = self.vm.c_to_p(var_c)
+        var_c = self.evm.g_to_c(var_g, "NM_001637.3")
+        var_p = self.evm.c_to_p(var_c)
 
         self.assertEqual(str(var_c), hgvs_c)
         self.assertEqual(str(var_p), hgvs_p)
+
+        with self.assertRaises(HGVSValidationError):
+            self.evm.c_to_p(self.hp.parse_hgvs_variant("NM_000059.3:c.7790delAAG"))
 
 
 @attr(tags=["quick"])
