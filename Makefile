@@ -69,11 +69,12 @@ host-info:
 
 #=> test -- run all tests (except those tagged "extra")
 test: host-info
-	python setup.py nosetests -A '(not tags) or ("extra" not in tags)'
+	nosetests doc
+	nosetests -A '(not tags) or ("extra" not in tags)'
 
 #=> test-* -- run tests with specified tag
 test-%: host-info
-	python setup.py nosetests -a 'tags=$*'
+	nosetests -a 'tags=$*'
 
 #=> ci-test -- per-commit test target for CI
 ci-test: test
