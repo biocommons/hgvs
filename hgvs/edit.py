@@ -16,7 +16,6 @@ import recordtype
 from bioutils.sequences import aa_to_aa1, aa1_to_aa3
 
 from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError
-from hgvs.decorators import deprecated
 
 
 class Edit(object):
@@ -305,11 +304,6 @@ class Dup(Edit, recordtype.recordtype('Dup', [('ref', None), ('uncertain', False
         """
         return "dup"
 
-    @property
-    @deprecated("use ref property instead")
-    def seq(self):
-        return self.ref
-
     def _del_ins_lengths(self, ilen):
         """returns (del_len, ins_len).
         Unspecified ref or alt returns None for del_len or ins_len respectively.
@@ -345,10 +339,6 @@ class Repeat(Edit, recordtype.recordtype('Repeat', [('ref', None), ('min', None)
         """
         return "repeat"
 
-    @property
-    @deprecated("use ref property instead")
-    def seq(self):
-        return self.ref
 
 
 class NACopy(Edit, recordtype.recordtype("NACopy", ["copy", ("uncertain", False)])):
