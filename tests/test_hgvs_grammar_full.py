@@ -26,6 +26,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import os
 import pkg_resources
 import pprint
+import re
 import unittest
 
 import unicodecsv as csv
@@ -40,26 +41,23 @@ class TestGrammarFull(unittest.TestCase):
         cls.grammar = cls.p._grammar
         cls._test_fn = os.path.join(os.path.dirname(__file__), "data", "grammar_test.tsv")
 
-    def test_parser_test_completeness(self):
 
-        rules_tested = set()
+    def test_parser_test_completeness(self):
+        """ensure that all rules in grammar have tests"""
+
+        grammar_rule_re = re.compile("^(\w+)")
+        grammar_fn = pkg_resources.resource_filename(__name__, "../hgvs/_data/hgvs.pymeta")
+        with open(grammar_fn, "r") as f:
+            grammar_rules = set(r.group(1) for r in filter(None, map(grammar_rule_re.match, f)))
 
         with open(self._test_fn, "r") as f:
             reader = csv.DictReader(f, delimiter=str("\t"))
-            for row in reader:
-                rules_tested.add(row["Func"])
+            test_rules = set(row["Func"] for row in reader)
 
-        rules_all = set()
-        grammar_fn = pkg_resources.resource_filename(__name__, "../hgvs/_data/hgvs.pymeta")
-        for line in open(grammar_fn, "r"):
-            if len(line) > 0 and line[0] != "#" and line[0].isalpha():
-                line = line.strip()
-                rules_all.add(line.split()[0])
+        untested_rules = grammar_rules - test_rules
 
-        rules_untested = rules_all - rules_tested
+        self.assertTrue(len(untested_rules) == 0, "untested rules: {}".format(untested_rules))
 
-        msg = "untested rules: {}".format(rules_untested)
-        self.assertTrue(len(rules_untested) == 0, msg)
 
     def test_parser_grammar(self):
         with open(self._test_fn, "r") as f:
@@ -101,8 +99,10 @@ class TestGrammarFull(unittest.TestCase):
             inputs = in_string.split(DELIM)
         elif intype == "string":
             inputs = list(in_string)
-        else:    # intype == "one"
+        elif intype == "one":
             inputs = [in_string]
+        else:
+            assert False, "shouldn't be here"
         inputs = [x if x != "None" else None for x in inputs]
         return inputs
 

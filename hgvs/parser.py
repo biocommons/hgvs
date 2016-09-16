@@ -6,6 +6,9 @@ components, such as intronic-offset coordiates
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import logging
+import re
+
 from pkg_resources import resource_filename
 
 import bioutils.sequences
@@ -80,35 +83,47 @@ class Parser(object):
 
     __default_grammar_fn = resource_filename(__name__, "_data/hgvs.pymeta")
 
-    def __init__(self, grammar_fn=__default_grammar_fn):
+    def __init__(self, grammar_fn=__default_grammar_fn, expose_all_rules=False):
         self._grammar_fn = grammar_fn
         self._grammar = parsley.makeGrammar(open(grammar_fn, "r").read(), {"hgvs": hgvs, "bioutils": bioutils})
+        self._logger = logging.getLogger(__name__)
+        self._expose_rule_functions(expose_all_rules)
 
-        # define function attributes for each grammar rule, prefixed with "parse_"
-        # e.g., Parser.parse_c_interval("26+2_57-3") -> Interval(...)
-        # TODO: exclude built-in rules
-        self.rules = [m.replace("rule_", "") for m in dir(self._grammar._grammarClass) if m.startswith("rule_")]
-        for rule_name in self.rules:
+    def _expose_rule_functions(self, expose_all_rules=False):
+        """add parse functions for public grammar rules
+
+        Defines a function for each public grammar rule, based on
+        introspecting the grammar. For example, the `c_interval` rule
+        is exposed as a method `parse_c_interval` and used like this::
+
+          Parser.parse_c_interval('26+2_57-3') -> Interval(...)
+
+        """
+
+        def make_parse_rule_function(rule_name):
+            "builds a wrapper function that parses a string with the specified rule"
+            def rule_fxn(s):
+                try:
+                    return self._grammar(s).__getattr__(rule_name)()
+                except ometa.runtime.ParseError as exc:
+                    raise HGVSParseError("{s}: char {exc.position}: {reason}".format(s=s,
+                                                                                     exc=exc,
+                                                                                     reason=exc.formatReason()))
+            rule_fxn.func_doc = "parse string s using `%s' rule" % rule_name
+            return rule_fxn
+
+        exposed_rule_re = re.compile("hgvs_(variant|position)|(c|g|m|n|p|r)"
+                                     "_(edit|hgvs_position|interval|pos|posedit|variant)")
+        exposed_rules = [m.replace("rule_", "") for m in dir(self._grammar._grammarClass) if m.startswith("rule_")]
+        if not expose_all_rules:
+            exposed_rules = [rule_name for rule_name in exposed_rules if exposed_rule_re.match(rule_name)]
+        for rule_name in exposed_rules:
             att_name = "parse_" + rule_name
-            rule_fxn = self.__make_parse_rule_function(rule_name)
+            rule_fxn = make_parse_rule_function(rule_name)
             self.__setattr__(att_name, rule_fxn)
+        self._logger.info("Exposed {n} rules ({rules})".format(n=len(exposed_rules), rules=", ".join(exposed_rules)))
 
-    def __make_parse_rule_function(self, rule_name):
-        # http://docs.python.org/2/reference/datamodel.html#object.__getattr__
-        """
-        This function returns a function that takes a string and returns the parsing result.
-        """
 
-        def rule_fxn(s):
-            try:
-                return self._grammar(s).__getattr__(rule_name)()
-            except ometa.runtime.ParseError as exc:
-                raise HGVSParseError("{s}: char {exc.position}: {reason}".format(s=s,
-                                                                                 exc=exc,
-                                                                                 reason=exc.formatReason()))
-
-        rule_fxn.func_doc = "parse string s using `%s' rule" % rule_name
-        return rule_fxn
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
