@@ -63,18 +63,18 @@ upload_%:
 ############################################################################
 #= TESTING
 # see test configuration in setup.cfg
+TEST_DIRS:=doc hgvs tests
 
 host-info:
 	(PS4="\n>>"; set -x; /bin/uname -a; ./sbin/cpu-info; /usr/bin/free) 2>&1 | sed -e 's/^/## /'
 
 #=> test -- run all tests (except those tagged "extra")
 test: host-info
-	nosetests doc
-	nosetests -A '(not tags) or ("extra" not in tags)'
+	nosetests -A '(not tags) or ("extra" not in tags)' ${TEST_DIRS}
 
 #=> test-* -- run tests with specified tag
 test-%: host-info
-	nosetests -a 'tags=$*'
+	nosetests -a 'tags=$*' ${TEST_DIRS}
 
 #=> ci-test -- per-commit test target for CI
 ci-test: test
