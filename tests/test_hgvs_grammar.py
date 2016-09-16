@@ -16,7 +16,7 @@ class Test_Parser(unittest.TestCase):
     longMessage = True
 
     def setUp(self):
-        self.p = hgvs.parser.Parser()
+        self.p = hgvs.parser.Parser(expose_all_rules=True)
         self.grammar = self.p._grammar
 
     def test_parser_basic(self):

@@ -1,6 +1,4 @@
 Func	Test	Valid	InType	Expected
-Not_Yet_Implemented	NOT YET IMPLEMENTED	True	one	
-Not_Yet_Implemented	foobar	False	one	
 
 ############################################################
 ## Accession
@@ -55,10 +53,6 @@ base	+123	True	one	123
 base	123|-123	True	list	
 dna	ACGTacgtNn	True	string	
 dna	EeFfIi	False	string	
-dna4	ACGTacgt	True	string	
-dna4	XYZxyzQq	False	string	
-dna5	ACGTacgtNn	True	string	
-dna5	XYZxyzQq	False	string	
 dna_iupac	ACGTacgtNn	True	string	
 dna_iupac	EeFfIi	False	string	
 dna_seq	AA|Aa|aA|tA|Ta|ACGTacgt	True	list	
@@ -73,8 +67,6 @@ fs	fs|fs*|fs*10|fs*?|fsTer|fsTer8|fsTer?|fsX|fsX10|fsX?	True	list	None|None|10|?
 fsext_offset		True	one	None
 fsext_offset	-12|*	False	list
 fsext_offset	12|?	True	list
-gm_type	gm	True	string	
-gm_type	px	False	string
 na_iupac	ACGUacguNn	True	string	
 na_iupac	EeFfIi	False	string	
 nnum	-+123	False	one	
@@ -89,10 +81,6 @@ pm	*	False	one
 pm	-+	True	string
 rna	ACGUacguNn	True	string	
 rna	EeFfIi	False	string	
-rna4	ACGUacgu	True	string	
-rna4	XYZxyzTt	False	string	
-rna5	ACGUacguNn	True	string	
-rna5	XYZxyzTt	False	string	
 rna_iupac	ACGUacguNn	True	string	
 rna_iupac	EeFfIi	False	string	
 rna_seq	AA|Aa|aA|uA|Ua|ACGUacgu	True	list	
@@ -113,24 +101,14 @@ term3	ter	False	one
 c_interval	1_10|(1_10)	True	list	
 c_pos	11+1	True	one	
 def_c_interval	1-10	True	one	
-def_c_interval	1-10	True	one	
-def_c_interval	1_10|1|1+2_10-2	True	list	
 def_c_interval	1_10|1|1+2_10-2	True	list	
 def_c_pos	0	False	list	
-def_c_pos	0	False	list	
 def_c_pos	1|11+1|9-3|-1|*10	True	list	
-def_c_pos	1|11+1|9-3|-1|*10	True	list	
-def_c_pos	X|11_12|10*	False	list	
 def_c_pos	X|11_12|10*	False	list	
 def_g_interval	2_10|2	True	list	
 def_g_pos	2	True	list
 def_g_pos	?	True	one	
 def_g_pos	A|2?|*1|-2	False	list
-def_gm_interval	2-10	False	one	
-def_gm_interval	2_10|2	True	list	
-def_gm_pos	2	True	list
-def_gm_pos	?	True	one	
-def_gm_pos	A|2?|*1|-2	False	list
 def_m_interval	2_10|2	True	list	
 def_m_pos	2	True	list
 def_m_pos	?	True	one	
@@ -155,13 +133,8 @@ def_r_pos	1|11+1|9-3	True	list
 def_r_pos	X|11_12|10*	False	list	
 g_interval	2_10|(2_10)	True	list	
 g_pos	2	True	one	
-gm_interval	2_10|(2_10)	True	list	
-gm_pos	-1|0	False	list	
-gm_pos	2	True	one	
-gm_pos	[2]|(2_3)	False	list	
 m_interval	2_10|(2_10)	True	list	
 m_pos	2	True	one	
-n_interval	1_10|(1_10)	True	list	
 n_interval	1_10|(1_10)	True	list	
 n_interval	2_10|(2_10)	True	list	
 n_pos	11+1	True	one	
@@ -187,12 +160,12 @@ dna_edit	A>C|delAAinsC|insA|delA|dupA	True	list
 dna_edit	A>U|del5A	False	list	
 dna_edit_mu	(A>C)	True	one	
 dna_edit_mu	A>C	True	one	
+dna_ident	=|T=|ACG=	True	list	
 dna_ins	insA|insC|insG|insT	True	list	
 dna_ins	insU	False	one	
 dna_inv	inv	True	list	
 dna_inv	invACGU|invACGT6	False	list	
 dna_subst	A>C|A>G|A>T|C>G|C>T|G>T	True	list	
-dna_ident	=|T=|ACG=	True	list	
 pro_del	del	True	one
 pro_del	delA|delAla|del3	False	list
 pro_delins	delinsAfs|delinsAfs*|delinsAfs*9|delinsAfs*?	False	list	delinsAlafs|delinsAlafs*|delinsAlafs*9|delinsAlafs*?
@@ -240,6 +213,7 @@ rna_edit	A>C|delAAinsC|insA|delA|dupA	True	list
 rna_edit	A>T|del5A	False	list	
 rna_edit_mu	(A>C)	True	one		
 rna_edit_mu	A>C	True	one
+rna_ident	=|U=|UGG=	True	list	
 rna_ins	insAA	True	one	
 rna_ins	insA|insC|insG|insU	True	list	
 rna_ins	insT	False	one	
@@ -247,17 +221,12 @@ rna_inv	inv	True	list
 rna_inv	invACGT|invACGU6	False	list	
 rna_subst	A>C|A>G|A>U|C>G|C>U|G>U	True	list	
 rna_subst	A>T	False	one	
-rna_ident	=|U=|UGG=	True	list	
 
 ############################################################
 ## PosEdits
 c_posedit	1*T>A|(1_10A>C)	False	list	
-c_posedit	1*T>A|(1_10A>C)	False	list	
-c_posedit	76+3A>T|*1T>A|5G>T|1_10A>C|(1_10)A>C|1_2delAAinsC	True	list	
 c_posedit	76+3A>T|*1T>A|5G>T|1_10A>C|(1_10)A>C|1_2delAAinsC	True	list	
 g_posedit	7_8dup	True	one	
-gm_posedit	(1_10A>T)|5A>U	False	list	
-gm_posedit	112_117delinsTG|10A>T|5dup|5dupT|7_8dup|7_8dupTG|(1_10)A>T	True	list	
 m_posedit	112_117delinsTG	True	one	
 n_posedit	1*T>A|(1_10A>C)	False	list	
 n_posedit	10A>T	True	one	
@@ -279,17 +248,12 @@ r_posedit	5G>U|1_10A>C|(1_10)A>C|1_2delAAinsC	True	list
 ############################################################
 ## HGVS Position
 hgvs_position	AC_01234.5:n.1	True	one	
-c_hgvs_position	AC_01234.5:c.1|AC_01234.5:c.5+10	True	list	
-c_hgvs_position	AC_01234.5:r.1|AC_01234.5:p.1	False	list
-c_hgvs_position	AC_01234.5:c.1|AC_01234.5:c.5+10	True	list	
-c_hgvs_position	AC_01234.5:r.1|AC_01234.5:p.1	False	list
-n_hgvs_position	AC_01234.5:n.1|AC_01234.5:n.5+10	True	list	
-n_hgvs_position	AC_01234.5:r.1|AC_01234.5:p.1	False	list
-g_hgvs_position	AC_01234.5:g.1	True	one	
-gm_hgvs_position	AC_01234.5:c.1	False	one	
-gm_hgvs_position	AC_01234.5:g.1|AC_01234.5:m.1	True	list	
 hgvs_position	AC_01234.5:g.1|AC_01234.5:c.1|AC_01234.5:r.1|AC_01234.5:p.Met1	True	list	
 hgvs_position	NM_01234.5:c.22+6	True	one	
+
+c_hgvs_position	AC_01234.5:c.1|AC_01234.5:c.5+10	True	list	
+c_hgvs_position	AC_01234.5:r.1|AC_01234.5:p.1	False	list
+g_hgvs_position	AC_01234.5:g.1	True	one	
 m_hgvs_position	AC_01234.5:m.1	True	one	
 n_hgvs_position	AC_01234.5:n.1|AC_01234.5:n.5+10	True	list	
 n_hgvs_position	AC_01234.5:r.1|AC_01234.5:p.1	False	list
@@ -302,7 +266,6 @@ r_hgvs_position	AC_01234.5:r.1|AC_01234.5:r.5+10	True	list
 ## HGVS Edit
 c_edit	c.76+3A>T	True	one	c.76+3A>T
 g_edit	g.76A>T	True	one	g.76A>T
-gm_edit	g.76A>T	True	one	g.76A>T
 m_edit	m.76A>T	True	one	m.76A>T
 n_edit	n.76+3A>T	True	one	n.76+3A>T
 n_edit	n.76A>T	True	one	n.76A>T
@@ -312,12 +275,12 @@ r_edit	r.76+3A>U	True	one	r.76+3A>U
 
 ############################################################
 ## HGVS Sequence Variant
-n_variant	AC_01234.5:n.1A>T	True	one
+hgvs_variant	AC_01234.5:c.1A>T|AC_01234.5:r.1A>U|AC_01234.5:g.1A>T|AC_01234.5:p.Ala1Ser	True	list	
+
 c_variant	AC_01234.5:c.1A>T	True	one	
 g_variant	AC_01234.5:g.1A>T	True	one	
-gm_variant	AC_01234.5:g.1A>T	True	one	
-hgvs_variant	AC_01234.5:c.1A>T|AC_01234.5:r.1A>U|AC_01234.5:g.1A>T|AC_01234.5:p.Ala1Ser	True	list	
 m_variant	AC_01234.5:m.1A>T	True	one	
+n_variant	AC_01234.5:n.1A>T	True	one
 n_variant	AC_01234.5:n.1A>T	True	one	
 p_variant	AC_01234.5:p.Ala1Ser|AC_01234.5:p.Phe2_Ala4del|AC_01234.5:p.Phe2_Ala3insGlnGln|AC_01234.5:p.Cys9_Val10delinsArgGluThr	True	list	
 p_variant	AC_01234.5:p.Met1?	True	one	
@@ -331,14 +294,11 @@ r_variant	AC_01234.5:r.1A>U	True	one
 ## Invitae internal
 c_variant	NM_000352.3:c.2557_2694copy2	True	one     
 c_variant	NM_015702.2:c.307_324dup18	True	one     
-c_variant	NM_000352.3:c.2557_2694copy2	True	one     
-c_variant	NM_015702.2:c.307_324dup18	True	one     
+g_variant	NC_000014.8:g.88401076_88459508copy4	True	one
 n_variant	NM_000352.3:n.2557_2694copy2	True	one     
 n_variant	NM_015702.2:n.307_324dup18	True	one     
+
 dna_copy	copy1|copy2|copy3	True	list
 dna_copy	copy|copy?	False	list
 dna_dupN	dup3|dup55	True	list
 dna_edit	copy1|copy2|copy3|dup3|dup55	True	list
-g_variant	NC_000014.8:g.88401076_88459508copy4	True	one
-n_variant	NM_000352.3:n.2557_2694copy2	True	one     
-n_variant	NM_015702.2:n.307_324dup18	True	one     
