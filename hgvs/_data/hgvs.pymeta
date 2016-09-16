@@ -48,6 +48,11 @@
 #    http://www.ncbi.nlm.nih.gov/pubmed/21992071
 #
 
+# * inversions: the grammar intentionally supports sequences after
+# 'inv' because that was a long-standing recommendation (until Dec
+# 2015 at least). The recommendations now do not show sequence after
+# 'inv'.
+
 ## MISSING FEATURES
 # * LATER: posedits structure for chimeric, mosaic, compound variants, multiallelic variants
 # * LATER: gene name
@@ -154,7 +159,7 @@ dna_delins = 'del' (<num>|<dna*>):ref 'ins' <dna+>:alt  -> hgvs.edit.NARefAlt(re
 dna_del    = 'del' (<num>|<dna*>):ref -> hgvs.edit.NARefAlt(ref=ref,alt=None)
 dna_ins    = 'ins' <dna+>:alt         -> hgvs.edit.NARefAlt(ref=None,alt=alt)
 dna_dup    = 'dup' <dna*>:ref         -> hgvs.edit.Dup(ref=ref)
-dna_inv    = 'inv' (<num>|<dna*>):ref -> hgvs.edit.Inv(ref=ref)
+dna_inv    = 'inv' (<num>|<dna*>):ref -> hgvs.edit.Inv(ref=None)
 dna_con    = 'con' hgvs_position:pos  -> hgvs.edit.Conv(from_ac=pos.ac, from_type=pos.type, from_pos=pos.pos)
 # internal
 dna_copy = 'copy' num:n -> hgvs.edit.NACopy(copy=n)
@@ -173,7 +178,7 @@ rna_delins = 'del' (<num>|<rna*>):ref 'ins' <rna+>:alt  -> hgvs.edit.NARefAlt(re
 rna_del    = 'del' (<num>|<rna*>):ref        -> hgvs.edit.NARefAlt(ref=ref,alt=None)
 rna_ins    = 'ins' <rna+>:alt                -> hgvs.edit.NARefAlt(ref=None,alt=alt)
 rna_dup    = 'dup' <rna*>:ref                -> hgvs.edit.Dup(ref=ref)
-rna_inv    = 'inv' (<num>|<rna*>):ref        -> hgvs.edit.Inv(ref=ref)
+rna_inv    = 'inv' (<num>|<rna*>):ref        -> hgvs.edit.Inv(ref=None)
 rna_con    = 'con' hgvs_position:pos         -> hgvs.edit.Conv(from_ac=pos.ac, from_type=pos.type, from_pos=pos.pos)
 
 pro_edit_mu = pro_edit | '(' pro_edit:edit ')' -> edit._set_uncertain()
