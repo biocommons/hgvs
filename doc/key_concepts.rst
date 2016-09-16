@@ -57,6 +57,8 @@ may be other classes in the hgvs package.
 
 For example, a variant parsed like this:
 
+>>> import hgvs.parser
+>>> hgvsparser = hgvs.parser.Parser()
 >>> var = hgvsparser.parse_hgvs_variant('NM_001197320.1:c.281C>T')
 
 will generate an object tree like the following:
@@ -70,9 +72,9 @@ will generate an object tree like the following:
 For that variant, the properties may be obtained easily by dot lookup:
 
 >>> var.ac
-u'NM_001197320.1'
+'NM_001197320.1'
 >>> var.type
-u'c'
+'c'
 >>> var.posedit
 PosEdit(pos=281, edit=C>T, uncertain=False)
 >>> var.posedit.pos
