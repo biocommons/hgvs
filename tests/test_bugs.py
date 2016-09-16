@@ -14,6 +14,7 @@ import hgvs.dataproviders.uta
 import hgvs.normalizer
 import hgvs.parser
 import hgvs.transcriptmapper
+import hgvs.validator
 import hgvs.variant
 import hgvs.variantmapper
 
@@ -25,6 +26,7 @@ class Test_VariantMapper(unittest.TestCase):
         self.hdp = hgvs.dataproviders.uta.connect()
         self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
         self.hp = hgvs.parser.Parser()
+        self.hv = hgvs.validator.IntrinsicValidator()
         self.evm = hgvs.variantmapper.EasyVariantMapper(self.hdp,
                                                         replace_reference=True, assembly_name='GRCh37',
                                                         alt_aln_method='splign')
@@ -48,6 +50,11 @@ class Test_VariantMapper(unittest.TestCase):
         var = self.hp.parse_hgvs_variant('NG_029146.1:g.6494delG')
         self.vn.normalize(var)  # per issue, should raise error
         
+    def test_307_validator_rejects_valid_interval(self):
+        # https://bitbucket.org/biocommons/hgvs/issues/307/
+        # before fix, raises error; after fix, should pass 
+        self.hv.validate(self.hp.parse_hgvs_variant("NM_002858.3:c.1903-573_*1108del"))
+
     def test_314_parsing_identity_variant(self):
         v = self.hp.parse_hgvs_variant("NM_206933.2:c.6317=")
         self.assertEqual(str(v), "NM_206933.2:c.6317=")
