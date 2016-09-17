@@ -102,7 +102,7 @@ class TestGrammarFull(unittest.TestCase):
         elif intype == "one":
             inputs = [in_string]
         else:
-            assert False, "shouldn't be here"
+            assert False, "shouldn't be here (intype = {})".format(intype)
         inputs = [x if x != "None" else None for x in inputs]
         return inputs
 
