@@ -101,7 +101,7 @@ class Interface(object):
         pass
 
     @abc.abstractmethod
-    def get_assembly_accessions(self, assembly_name):
+    def get_assembly_map(self, assembly_name):
         pass
 
 # <LICENSE>

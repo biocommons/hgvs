@@ -395,12 +395,15 @@ class EasyVariantMapper(VariantMapper):
                  assembly_name=hgvs.global_config.mapping.assembly,
                  alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
                  replace_reference=hgvs.global_config.mapping.replace_reference,
-                 normalize=hgvs.global_config.mapping.normalize):
+                 normalize=hgvs.global_config.mapping.normalize,
+                 in_par_assume=hgvs.global_config.mapping.in_par_assume,
+                 ):
         """
         :param str assembly_name: name of assembly ("GRCh38.p5")
         :param str alt_aln_method: genome-transcript alignment method ("splign", "blat", "genewise")
         :param bool replace_reference: replace reference (entails additional network access)
         :param bool normalize: normalize variants
+        :param str in_par_assume: during x_to_g, assume this chromosome name if alignment is ambiguous
         :raises HGVSError subclasses: for a variety of mapping and data lookup failures
         """
 
@@ -409,11 +412,13 @@ class EasyVariantMapper(VariantMapper):
         self.alt_aln_method = alt_aln_method
         self.replace_reference = replace_reference
         self.normalize = normalize
+        self.in_par_assume = in_par_assume
         self._norm = None
         if self.normalize:
             self._norm = hgvs.normalizer.Normalizer(hdp, alt_aln_method=alt_aln_method)
         self._validator = hgvs.validator.IntrinsicValidator()
-        self._assembly_accessions = set(hdp.get_assembly_accessions(self.assembly_name))
+        self._assembly_map = hdp.get_assembly_map(self.assembly_name)
+        self._assembly_accessions = set(self._assembly_map.keys())
 
     def __repr__(self):
         return ("{self.__module__}.{t.__name__}(alt_aln_method={self.alt_aln_method}, "
@@ -488,17 +493,34 @@ class EasyVariantMapper(VariantMapper):
                    for e in self.hdp.get_tx_mapping_options(tx_ac)
                    if e["alt_aln_method"] == self.alt_aln_method and e["alt_ac"] in self._assembly_accessions]
 
-        if len(alt_acs) > 1:
-            raise HGVSError("Multiple chromosomal alignments for {tx_ac} in {an}"
-                            "using {am} (likely paralog or pseudoautosomal region)".format(tx_ac=tx_ac,
-                                                                                           an=self.assembly_name,
-                                                                                           am=self.alt_aln_method))
         if len(alt_acs) == 0:
             raise HGVSDataNotAvailableError(
                 "No alignments for {tx_ac} in {an} using {am}".format(tx_ac=tx_ac,
                                                                       an=self.assembly_name,
                                                                       am=self.alt_aln_method))
-        return alt_acs[0]    # exactly one remains
+
+        if len(alt_acs) > 1:
+            names = set(self._assembly_map[ac] for ac in alt_acs)
+            if names != set("XY"):
+                raise HGVSError("Multiple chromosomal alignments for {tx_ac} in {an}"
+                                " using {am} (non-pseudoautosomal region, paralogs)".format(
+                                    tx_ac=tx_ac, an=self.assembly_name, am=self.alt_aln_method))
+
+            # assume PAR
+            if self.in_par_assume is None:
+                raise HGVSError("Multiple chromosomal alignments for {tx_ac} in {an}"
+                                " using {am} (likely pseudoautosomal region)".format(
+                                    tx_ac=tx_ac, an=self.assembly_name, am=self.alt_aln_method))
+
+            alt_acs = [ac for ac in alt_acs if self._assembly_map[ac] == self.in_par_assume]
+            if len(alt_acs) != 1:
+                raise HGVSError("Multiple chromosomal alignments for {tx_ac} in {an}"
+                                " using {am}; in_par_assume={ipa} selected {n} of them".format(
+                                    tx_ac=tx_ac, an=self.assembly_name, am=self.alt_aln_method,
+                                    ipa=self.in_par_assume, n=len(alt_acs)))
+
+        assert len(alt_acs) == 1, "Should have exactly one alignment at this point"
+        return alt_acs[0]
 
     def _maybe_normalize(self, var):
         """normalize variant if requested, and ignore HGVSUnsupportedOperationError
