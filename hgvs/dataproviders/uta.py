@@ -459,12 +459,11 @@ class UTABase(Interface, SeqFetcher):
         except IndexError:
             return None
 
-    def get_assembly_accessions(self, assembly_name):
+    def get_assembly_map(self, assembly_name):
         """return a list of accessions for the specified assembly name (e.g., GRCh38.p5)
 
         """
-        anm = make_ac_name_map(assembly_name)
-        return anm.keys()
+        return make_ac_name_map(assembly_name)
 
 
 class UTA_postgresql(UTABase):
