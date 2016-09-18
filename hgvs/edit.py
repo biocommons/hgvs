@@ -378,35 +378,6 @@ class NACopy(Edit, recordtype.recordtype("NACopy", ["copy", ("uncertain", False)
 
 
 
-class NADupN(Edit, recordtype.recordtype('NADupN', ['n', ('uncertain', False)])):
-    def __str__(self):
-        s = "dup{}".format(self.n)
-        return "(" + s + ")" if self.uncertain else s
-
-    def _set_uncertain(self):
-        """sets the uncertain flag to True; used primarily by the HGVS grammar
-
-        :returns: self
-        """
-        self.uncertain = True
-        return self
-
-    @property
-    def type(self):
-        """return the type of this Edit
-
-        :returns: edit type (str)
-        """
-        return "dupn"
-
-    def _del_ins_lengths(self, ilen):
-        """returns (del_len, ins_len).
-        Unspecified ref or alt returns None for del_len or ins_len respectively.
-        """
-        return (0, ilen * self.n)
-
-
-
 class Inv(Edit, recordtype.recordtype('Inv', [('ref', None), ('uncertain', False)])):
     """Inversion
     """
