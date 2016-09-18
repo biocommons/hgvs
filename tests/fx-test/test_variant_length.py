@@ -44,9 +44,6 @@ class Test_VariantLengths(unittest.TestCase):
         # class NACopy(Edit, recordtype.recordtype('NACopy', ['copy', ('uncertain', False)])):
         ("NC_000014.8:g.88401076_88459508copy4", (88459508-88401076+1) * 4),
 
-        # class NADupN(Edit, recordtype.recordtype('NADupN', ['n', ('uncertain', False)])):
-        ("NM_015702.2:c.307_324dup18", (324-307+1) * 18),
-
         # class    NARefAlt(Edit, recordtype.recordtype('NARefAlt', [('ref', None), ('alt', None), ('uncertain', False)])):
         ("NM_000314.4:c.706G>T", 0),
         ("NM_000314.4:c.706delG", -1),
