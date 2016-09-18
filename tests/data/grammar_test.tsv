@@ -300,5 +300,4 @@ n_variant	NM_015702.2:n.307_324dup18	True	one
 
 dna_copy	copy1|copy2|copy3	True	list
 dna_copy	copy|copy?	False	list
-dna_dupN	dup3|dup55	True	list
-dna_edit	copy1|copy2|copy3|dup3|dup55	True	list
+dna_edit	copy1|copy2|copy3	True	list

@@ -126,14 +126,13 @@ class Normalizer(object):
                     adj_seq = self._fetch_bounded_seq(var, start - alt_len - 1, end - 1, boundary)
                 else:
                     adj_seq = self._fetch_bounded_seq(var, start - 1, start + alt_len - 1, boundary)
-                n = self._dupN(adj_seq, alt, self.shuffle_direction)
                 # ins
-                if n == 0:
+                if alt != adj_seq:
                     ref_start = start - 1
                     ref_end = end
                     edit = hgvs.edit.NARefAlt(ref=None, alt=alt)
                 # dup
-                elif n == 1:
+                else:
                     if self.shuffle_direction == 3:
                         ref_start = start - alt_len
                         ref_end = end - 1
@@ -142,16 +141,6 @@ class Normalizer(object):
                         ref_start = start
                         ref_end = start + alt_len - 1
                         edit = hgvs.edit.Dup(ref=alt)
-                # dupN
-                elif n > 1:
-                    if self.shuffle_direction == 3:
-                        ref_start = start - int(alt_len / n)
-                        ref_end = end - 1
-                        edit = hgvs.edit.NADupN(n=n)
-                    else:
-                        ref_start = start
-                        ref_end = start + int(alt_len / n) - 1
-                        edit = hgvs.edit.NADupN(n=n)
             # delins
             else:
                 ref_start = start
@@ -263,7 +252,7 @@ class Normalizer(object):
         """
 
         # Get reference allele
-        if var.posedit.edit.type == "ins" or var.posedit.edit.type == "dup" or var.posedit.edit.type == "dupn":
+        if var.posedit.edit.type == "ins" or var.posedit.edit.type == "dup":
             ref = ""
         else:
             # For NARefAlt and Inv
@@ -280,9 +269,6 @@ class Normalizer(object):
         elif var.posedit.edit.type == "dup":
             alt = var.posedit.edit.ref or self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1,
                                                                   var.posedit.pos.end.base, boundary)
-        elif var.posedit.edit.type == "dupn":
-            alt = self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, boundary)
-            alt *= int(var.posedit.edit.n)
         elif var.posedit.edit.type == "inv":
             alt = reverse_complement(ref)
         elif var.posedit.edit.type == "identity":
@@ -302,7 +288,7 @@ class Normalizer(object):
                 base = var.posedit.pos.start.base
                 start = 1
                 stop = 1
-            elif var.posedit.edit.type == "dup" or var.posedit.edit.type == "dupn":
+            elif var.posedit.edit.type == "dup":
                 base = var.posedit.pos.end.base
                 start = 1
                 stop = 1
@@ -330,7 +316,7 @@ class Normalizer(object):
                 base = max(var.posedit.pos.start.base - win_size, 1)
                 start = var.posedit.pos.end.base - base
                 stop = var.posedit.pos.end.base - base
-            elif var.posedit.edit.type == "dup" or var.posedit.edit.type == "dupn":
+            elif var.posedit.edit.type == "dup":
                 base = max(var.posedit.pos.start.base - win_size, 1)
                 start = var.posedit.pos.end.base - base + 1
                 stop = var.posedit.pos.end.base - base + 1
@@ -357,27 +343,6 @@ class Normalizer(object):
                 stop = orig_stop
 
         return base + start, base + stop, (ref, alt)
-
-    def _dupN(self, adj_seq, alt, shuffle_direction):
-        """Determine the number of duplicates. Return 0 if it is not a dup
-        """
-
-        seq_len = len(adj_seq)
-        alt_len = len(alt)
-        for n in range(1, alt_len + 1):
-            if alt_len % n:
-                continue
-            if shuffle_direction == 3:
-                start = seq_len - int(alt_len / n)
-                end = seq_len
-            else:
-                start = 0
-                end = int(alt_len / n)
-            if start < 0:
-                start = 0
-            if adj_seq[start:end] * n == alt:
-                return n
-        return 0
 
 
 if __name__ == "__main__":
