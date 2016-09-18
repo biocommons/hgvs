@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+
+"""Given a c. variant with a gene symbol accession, return plausible
+transcript-based variants
+
+HFE2:c.187_188insGAG
+
+"""
+
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import copy
+import logging
+import sys
+
+from hgvs.exceptions import HGVSValidationError
+import hgvs.dataproviders.uta
+import hgvs.normalizer
+import hgvs.parser
+import hgvs.variantmapper
+import hgvs.validator
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+alt_aln_method = "splign"
+
+
+def generate_plausible_variants(hdp, hv, v):
+    alignments = hdp.get_tx_for_gene(v.ac)
+
+    if len(alignments) == 0:
+        logger.warn("No transcripts found for gene {v.ac} in {v}".format(v=v))
+
+    alignments = [a for a in alignments if a["alt_aln_method"] == alt_aln_method]
+
+    # I'm using accession prefix to mean "coding" or "not-coding", which gauls me.
+    # But, this is a PoC script, so moving on...
+    if v.type == "c":
+        alignments = [a for a in alignments if a["tx_ac"].startswith("NM_")]
+    elif v.type == "n":
+        alignments = [a for a in alignments if a["tx_ac"].startswith("NR_")]
+    else:
+        raise RuntimeError("variant was not of type c or n")
+
+    gene_tx = set(a["tx_ac"] for a in alignments)
+
+    for tx in gene_tx:
+        v2 = copy.copy(v)
+        v2.ac = tx
+        try:
+            hv.validate(v2)
+            yield v2
+        except HGVSValidationError:
+            pass
+
+
+if __name__ == "__main__":
+    hdp = hgvs.dataproviders.uta.connect()
+    hp = hgvsparser = hgvs.parser.Parser()
+    hv = hgvs.validator.Validator(hdp)
+    # hn = hgvs.normalizer.Normalizer(hdp)
+
+    for hgvs in sys.argv[1:]:
+        v = hp.parse_hgvs_variant(hgvs)
+        if v.type not in "cn":
+            logger.error("{v}: Only variant types c and n are supported".format(v=v))
+            continue
+        pv = list(generate_plausible_variants(hdp, hv, v))
+        if len(pv) == 0:
+            logger.info("No plausible transcript variants for "+str(v))
+        print("\t".join([hgvs,str(len(pv))]+[str(v) for v in pv]))

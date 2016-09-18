@@ -1,0 +1,23 @@
+
+0.4.9 (2016-08-01)
+##################
+
+Changes since 0.4.8 (2016-07-19).
+
+Special Attention
+$$$$$$$$$$$$$$$$$
+
+A small number of alignments provided by NCBI do not begin at the
+transcript start.  These exist in UTA as-is and lead to incorrect
+mapping and validation.  Issue `#346 <https://bitbucket.org/biocommons/hgvs/issues/346/>`_ contains the list of 52
+transcripts in 37 genes which exhibit this issue; please review prior
+results.  **hgvs will now refuse to use such alignments.**
+
+
+Bug Fixes
+$$$$$$$$$
+
+* `#346 <https://bitbucket.org/biocommons/hgvs/issues/346/>`_ (partial fix): ensure that alignment starts at transcript position 0 [`ab402bf020c6 <https://bitbucket.org/biocommons/hgvs/commits/ab402bf020c6>`_]
+* fixes `#338 <https://bitbucket.org/biocommons/hgvs/issues/338/>`_: check position range limit when normalizing [`da5f1fbcf76d <https://bitbucket.org/biocommons/hgvs/commits/da5f1fbcf76d>`_]
+* fixes `#285 <https://bitbucket.org/biocommons/hgvs/issues/285/>`_, `#334 <https://bitbucket.org/biocommons/hgvs/issues/334/>`_, `#335 <https://bitbucket.org/biocommons/hgvs/issues/335/>`_, `#324 <https://bitbucket.org/biocommons/hgvs/issues/324/>`_, `#340 <https://bitbucket.org/biocommons/hgvs/issues/340/>`_: inversions parsing, formatting, and normalization [`29a7b8634b01 <https://bitbucket.org/biocommons/hgvs/commits/29a7b8634b01>`_]
+* fixes `#340 <https://bitbucket.org/biocommons/hgvs/issues/340/>`_: do not accept sequence following inv [`f76e1cb83422 <https://bitbucket.org/biocommons/hgvs/commits/f76e1cb83422>`_]
