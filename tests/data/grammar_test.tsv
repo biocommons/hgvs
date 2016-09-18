@@ -293,10 +293,8 @@ r_variant	AC_01234.5:r.1A>U	True	one
 ############################################################
 ## Invitae internal
 c_variant	NM_000352.3:c.2557_2694copy2	True	one	
-c_variant	NM_015702.2:c.307_324dup18	True	one	
 g_variant	NC_000014.8:g.88401076_88459508copy4	True	one
 n_variant	NM_000352.3:n.2557_2694copy2	True	one	
-n_variant	NM_015702.2:n.307_324dup18	True	one	
 
 dna_copy	copy1|copy2|copy3	True	list
 dna_copy	copy|copy?	False	list
