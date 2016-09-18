@@ -100,7 +100,6 @@ class Test_HGVSExtrinsicValidator(unittest.TestCase):
                          "NM_001005405.2:c.*3C>G",
                          "NM_001005405.2:c.435_440delCTGCTG",
                          "NM_000187.3:c.457dupG",
-                         "NM_000151.3:c.379_380dup2",
                          "NR_002728.3:r.55A>U",
                          "NM_000495.3:c.610_628del19",
                          "NM_000059.3:c.44_45insATT",
