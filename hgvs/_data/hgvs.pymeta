@@ -25,18 +25,6 @@ r_variant = accn:ac ':' 'r':type '.' r_posedit:posedit -> hgvs.variant.SequenceV
 
 
 ############################################################################
-## HGVS Edit (without accession); e.g., c.76+3A>T
-## TODO: Rename these rules — it's confusing for a c_edit to use c_posedit which has a dna_edit
-
-c_edit = 'c':type '.' c_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
-g_edit = 'g':type '.' g_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
-m_edit = 'm':type '.' m_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
-n_edit = 'n':type '.' n_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
-p_edit = 'p':type '.' p_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
-r_edit = 'r':type '.' r_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
-
-
-############################################################################
 ## HGVS Position -- e.g., NM_01234.5:c.22+6 (without an edit)
 # This is unofficial syntax 
 
@@ -48,6 +36,20 @@ m_hgvs_position = accn:ac ':' 'm':type '.' m_interval:pos -> hgvs.hgvsposition.H
 n_hgvs_position = accn:ac ':' 'n':type '.' n_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac, type, pos)
 p_hgvs_position = accn:ac ':' 'p':type '.' p_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac, type, pos)
 r_hgvs_position = accn:ac ':' 'r':type '.' r_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac, type, pos)
+
+
+############################################################################
+## HGVS Edit (without accession); e.g., c.76+3A>T
+# This family of rules exists primarily to aid parsing variants from
+# sources that use non-standard syntax. For example, some LOVD
+# installations provide variants like c.222A>T.
+
+c_typed_posedit = 'c':type '.' c_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
+g_typed_posedit = 'g':type '.' g_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
+m_typed_posedit = 'm':type '.' m_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
+n_typed_posedit = 'n':type '.' n_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
+p_typed_posedit = 'p':type '.' p_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
+r_typed_posedit = 'r':type '.' r_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
 
 
 ############################################################################
