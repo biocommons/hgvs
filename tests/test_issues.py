@@ -26,6 +26,7 @@ class Test_VariantMapper(unittest.TestCase):
         self.hdp = hgvs.dataproviders.uta.connect()
         self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
         self.hp = hgvs.parser.Parser()
+        self.hn = hgvs.normalizer.Normalizer(self.hdp)
         self.hv = hgvs.validator.IntrinsicValidator()
         self.evm37 = hgvs.variantmapper.EasyVariantMapper(self.hdp,
                                                           replace_reference=True,
@@ -139,3 +140,11 @@ class Test_VariantMapper(unittest.TestCase):
                                                    alt_ac="NC_000010.10",
                                                    alt_aln_method="splign")
 
+    def test_349_incorrect_normalization_insGG_to_dup2(self):
+        # With dupN support, NM_005877.4:c.1104_1105insGG would
+        # normalize to NM_005877.4:c.1104_1105dup2 (which is
+        # different).
+        original_var = "NM_005877.4:c.1104_1105insGG"
+        self.assertEqual(
+            original_var,
+            str(self.hn.normalize(self.hp.parse_c_variant(original_var))))
