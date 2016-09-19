@@ -264,14 +264,14 @@ r_hgvs_position	AC_01234.5:r.1|AC_01234.5:r.5+10	True	list
 
 ############################################################
 ## HGVS Edit
-c_edit	c.76+3A>T	True	one	c.76+3A>T
-g_edit	g.76A>T	True	one	g.76A>T
-m_edit	m.76A>T	True	one	m.76A>T
-n_edit	n.76+3A>T	True	one	n.76+3A>T
-n_edit	n.76A>T	True	one	n.76A>T
-p_edit	p.Ala1Ser	True	one	p.Ala1Ser
-p_edit	p.Met1?	True	one	p.Met1?
-r_edit	r.76+3A>U	True	one	r.76+3A>U
+c_typed_posedit	c.76+3A>T	True	one	c.76+3A>T
+g_typed_posedit	g.76A>T	True	one	g.76A>T
+m_typed_posedit	m.76A>T	True	one	m.76A>T
+n_typed_posedit	n.76+3A>T	True	one	n.76+3A>T
+n_typed_posedit	n.76A>T	True	one	n.76A>T
+p_typed_posedit	p.Ala1Ser	True	one	p.Ala1Ser
+p_typed_posedit	p.Met1?	True	one	p.Met1?
+r_typed_posedit	r.76+3A>U	True	one	r.76+3A>U
 
 ############################################################
 ## HGVS Sequence Variant
