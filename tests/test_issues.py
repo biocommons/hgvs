@@ -73,6 +73,21 @@ class Test_VariantMapper(unittest.TestCase):
         self.assertEqual(str(v), "NM_206933.2:c.6317C=")
                                                    
 
+    def test_316_provide_ttog_and_gtot_methods(self):
+        h_c_g, h_c_t = "NC_000023.10:g.152864509_152864510insA", "NM_152274.3:c.21_22insT"
+        h_nc_g, h_nc_t = "NC_000001.10:g.12776161G>A", "NR_111984.1:n.44G>A"
+        
+        v_c_g = self.hp.parse_hgvs_variant(h_c_g)
+        v_c_t = self.hp.parse_hgvs_variant(h_c_t)
+        v_nc_g = self.hp.parse_hgvs_variant(h_nc_g)
+        v_nc_t = self.hp.parse_hgvs_variant(h_nc_t)
+
+        self.assertEqual(h_c_t, str(self.evm37.g_to_t(v_c_g, tx_ac=v_c_t.ac)))
+        self.assertEqual(h_c_g, str(self.evm37.t_to_g(v_c_t)))
+        self.assertEqual(h_nc_t, str(self.evm37.g_to_t(v_nc_g, tx_ac=v_nc_t.ac)))
+        self.assertEqual(h_nc_g, str(self.evm37.t_to_g(v_nc_t)))
+
+
     def test_322_raise_exception_when_mapping_bogus_variant(self):
         v = self.hp.parse_hgvs_variant("chrX:g.71684476delTGGAGinsAC")
         with self.assertRaises(HGVSInvalidVariantError):

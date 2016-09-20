@@ -73,6 +73,13 @@ class TranscriptMapper(object):
                "{strand_pm} strand; {n_exons} exons; offset={self.gc_offset}".format(
                    self=self, n_exons=len(self.tx_exons), strand_pm=strand_int_to_pm(self.strand))
 
+    @property
+    def is_coding_transcript(self):
+        if ((self.tx_info["cds_start_i"] is not None) ^ (self.tx_info["cds_end_i"] is not None)):
+            raise HGVSError("{self.tx_ac}: CDS start_i and end_i"
+                            " must be both defined or both undefined".format(self=self))
+        return self.tx_info["cds_start_i"] is not None
+
     def g_to_n(self, g_interval):
         """convert a genomic (g.) interval to a transcript cDNA (n.) interval"""
 

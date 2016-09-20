@@ -71,6 +71,28 @@ class VariantMapper(object):
     def __init__(self, hdp):
         self.hdp = hdp
 
+
+    # ############################################################################
+    # g⟷t
+    def g_to_t(self, var_g, tx_ac, alt_aln_method="splign"):
+        if not (var_g.type == "g"):
+            raise HGVSInvalidVariantError("Expected a g. variant; got " + str(var_g))
+        tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
+        if tm.is_coding_transcript:
+            return VariantMapper.g_to_c(self, var_g=var_g, tx_ac=tx_ac, alt_aln_method=alt_aln_method)
+        else:
+            return VariantMapper.g_to_n(self, var_g=var_g, tx_ac=tx_ac, alt_aln_method=alt_aln_method)
+
+    def t_to_g(self, var_t, alt_ac, alt_aln_method="splign"):
+        if var_t.type not in "cn":
+            raise HGVSInvalidVariantError("Expected a c. or n. variant; got " + str(var_t))
+        tm = self._fetch_TranscriptMapper(tx_ac=var_t.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
+        if tm.is_coding_transcript:
+            return VariantMapper.c_to_g(self, var_c=var_t, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
+        else:
+            return VariantMapper.n_to_g(self, var_n=var_t, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
+
+
     # ############################################################################
     # g⟷n
     def g_to_n(self, var_g, tx_ac, alt_aln_method="splign"):
@@ -165,7 +187,6 @@ class VariantMapper(object):
 
     # ############################################################################
     # c⟷n
-    # TODO: Identify use case for this code
     def c_to_n(self, var_c):
         """Given a parsed c. variant, return a n. variant on the specified
         transcript using the specified alignment method (default is
@@ -214,7 +235,6 @@ class VariantMapper(object):
 
     # ############################################################################
     # c ⟶ p
-    # TODO: c_to_p needs refactoring
     def c_to_p(self, var_c, pro_ac=None):
         """
         Converts a c. SequenceVariant to a p. SequenceVariant on the specified protein accession
@@ -438,6 +458,13 @@ class EasyVariantMapper(VariantMapper):
             self._replace_reference(var_out)
         return self._maybe_normalize(var_out)
 
+    def g_to_t(self, var_g, tx_ac):
+        self._validator.validate(var_g)
+        var_out = super(EasyVariantMapper, self).g_to_t(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
+        if self.replace_reference:
+            self._replace_reference(var_out)
+        return self._maybe_normalize(var_out)
+
     def c_to_g(self, var_c):
         self._validator.validate(var_c)
         alt_ac = self._alt_ac_for_tx_ac(var_c.ac)
@@ -450,6 +477,14 @@ class EasyVariantMapper(VariantMapper):
         self._validator.validate(var_n)
         alt_ac = self._alt_ac_for_tx_ac(var_n.ac)
         var_out = super(EasyVariantMapper, self).n_to_g(var_n, alt_ac, alt_aln_method=self.alt_aln_method)
+        if self.replace_reference:
+            self._replace_reference(var_out)
+        return self._maybe_normalize(var_out)
+
+    def t_to_g(self, var_t):
+        self._validator.validate(var_t)
+        alt_ac = self._alt_ac_for_tx_ac(var_t.ac)
+        var_out = super(EasyVariantMapper, self).t_to_g(var_t, alt_ac, alt_aln_method=self.alt_aln_method)
         if self.replace_reference:
             self._replace_reference(var_out)
         return self._maybe_normalize(var_out)
