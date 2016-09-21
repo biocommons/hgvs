@@ -21,7 +21,7 @@ class TestHgvsCToP(unittest.TestCase):
 
     def test_silent(self):
         hgvsc = "NM_999999.1:c.6A>G"
-        hgvsp_expected = "MOCK:p.(=)"
+        hgvsp_expected = "MOCK:p.(Lys2=)"
         self._run_conversion(hgvsc, hgvsp_expected)
 
     def test_substitution(self):

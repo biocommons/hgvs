@@ -35,6 +35,16 @@ class Test_VariantMapper(unittest.TestCase):
         with self.assertRaises(HGVSInvalidVariantError):
             self.evm.c_to_p(self.hp.parse_hgvs_variant("NM_000059.3:c.7790delAAG"))
 
+        hgvs_c = "NM_000059.3:c.7791A>G"
+        hgvs_p = "NP_000050.2:p.(Lys2597=)"
+
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.evm.c_to_p(var_c)
+
+        self.assertEqual(str(var_p), hgvs_p)        
+
+
+
 
 @attr(tags=["quick"])
 class Test_VariantMapper_Exceptions(unittest.TestCase):

@@ -58,6 +58,11 @@ class AltSeqToHgvsp(object):
 
             do_delins = True
             if self._ref_seq == self._alt_seq:
+                # Silent p. variant
+                start = self._alt_data.variant_start_aa
+                deletion = self._ref_seq[start - 1]
+                insertion = deletion
+                variants.append({"start": start, "ins": insertion, "del": deletion})
                 do_delins = False
             elif self._is_substitution:
                 if len(self._ref_seq) == len(self._alt_seq):
@@ -139,10 +144,8 @@ class AltSeqToHgvsp(object):
                                            acc=self._protein_accession,
                                            is_ambiguous=self._is_ambiguous,
                                            is_no_protein=True)]
-        elif variants:
+        else:
             var_ps = [self._convert_to_sequence_variants(x, self._protein_accession) for x in variants]
-        else:    # ref = alt - "silent" hgvs change
-            var_ps = [self._create_variant('', '', '', '', acc=self._protein_accession)]
 
         # TODO - handle multiple variants
 
@@ -210,11 +213,15 @@ class AltSeqToHgvsp(object):
             alt = insertion[0]
 
         else:    # no frameshift - sub/delins/dup
-            if len(insertion) == len(deletion) == 1:    # substitution
-                aa_start = aa_end = AAPosition(base=start, aa=deletion)
-                ref = ''
-                alt = insertion
-                is_sub = True
+            if len(insertion) == len(deletion) == 1:
+                if insertion == deletion:    # silent
+                    aa_start = aa_end = AAPosition(base=start, aa=deletion)
+                    ref = alt = ''
+                else:    # substitution
+                    aa_start = aa_end = AAPosition(base=start, aa=deletion)
+                    ref = ''
+                    alt = insertion
+                    is_sub = True
 
             elif len(deletion) > 0:    # delins OR deletion OR stop codon at variant position
                 ref = deletion
@@ -326,7 +333,7 @@ class AltSeqToHgvsp(object):
         elif is_dup:
             edit = Dup()
         elif ref == alt == '':
-            edit = '='
+            edit = AARefAlt(ref='', alt='')
         else:
             edit = AARefAlt(ref=ref, alt=alt)
         posedit = PosEdit(interval, edit)

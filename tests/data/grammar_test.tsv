@@ -200,6 +200,7 @@ pro_subst	ArgPhe|10ValArg|Val>Arg	False	list
 pro_subst	Arg|Phe	True	list	
 pro_subst	R|F	True	list	Arg|Phe
 pro_subst	Ter|*	True	list	Ter|Ter
+pro_ident	=	True	one
 rna_con	conAC096506.5	False	list	
 rna_del	del5A|delT	False	list	
 rna_del	delA|del5|delACGU	True	list	
@@ -231,7 +232,7 @@ m_posedit	112_117delinsTG	True	one
 n_posedit	1*T>A|(1_10A>C)	False	list	
 n_posedit	10A>T	True	one	
 n_posedit	76+3A>T|5G>T|1_10A>C|(1_10)A>C|1_2delAAinsC	True	list	
-p_posedit	(?)|(Phe|Phe)|(Phe)Ala|Phe|Ala3|Ala3_Phe4|Ala3=|Ala3_Phedel|Ala3Phe4insGly|Ala3_Phe4>Gly3_Ile4	False	list
+p_posedit	(?)|(Phe|Phe)|(Phe)Ala|Phe|Ala3|Ala3_Phe4|Ala=|Ala3_Phedel|Ala3Phe4insGly|Ala3_Phe4>Gly3_Ile4	False	list
 p_posedit	(A3F)|(A3_Y6del)	True	list	(Ala3Phe)|(Ala3_Tyr6del)|(Gly10_Phe11insMetMet)
 p_posedit	(Ala3Phe)|(Ala3del)|(Ala3_Tyr6del)|(Gly10_Phe11insMetMet)|(Cys200_Tyr205delinsIleLeuGln)	True	list
 p_posedit	(G10_F11insMM)|(C200_Y205delinsILQ)	True	list	(Gly10_Phe11insMetMet)|(Cys200_Tyr205delinsIleLeuGln)
