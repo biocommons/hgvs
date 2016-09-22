@@ -88,6 +88,36 @@ class Test_VariantMapper(unittest.TestCase):
         self.assertEqual(h_nc_g, str(self.evm37.t_to_g(v_nc_t)))
 
 
+    def test_317_improve_p_repr_of_syn_variants(self):
+        # from original issue:
+        v317 = self.hp.parse_hgvs_variant("NM_000059.3:c.7791A>G")
+        self.assertEqual(b"NP_000050.2:p.(Lys2597=)", str(self.evm37.c_to_p(v317)))
+
+    def test_317_improve_p_repr_of_syn_variants_part2(self):
+        # Verify behavior of syn MNVs
+        # NM_000059.3:
+        #   :   3   6   9  12  15  18  21  24  27  30  33  36  39  42
+        # 1 : ATG CCT ATT GGA TCC AAA GAG AGG CCA ACA TTT TTT GAA ATT
+        #       M   P   I   G   W   F   E   R   P   T
+        #                               ^      v21 (snv)
+        #                                 ^    v22 (snv)
+        #                                 ^^^  v2224 (mnv, 1 codon)
+        #                               ^ ^    v2122 (mnv, 2 codons)
+        # Glu (E): GA[AG]
+        # Arg (R): AG[AG],  CG[UCAG]
+        #
+        # All of the following are synonymous changes:
+        v21 = self.hp.parse_hgvs_variant("NM_000059.3:c.21G>A")  # GAG -> GAA (E)
+        v22 = self.hp.parse_hgvs_variant("NM_000059.3:c.22A>C")  # AGG -> CGA (R)
+        v2224 = self.hp.parse_hgvs_variant("NM_000059.3:c.22_24delinsCGA") # AGG -> CGA (R)
+        v2122 = self.hp.parse_hgvs_variant("NM_000059.3:c.21_22delinsAC")  # GAGAGG -> GAACAG (ER)
+
+        self.assertEqual(b"NP_000050.2:p.(Glu7=)", str(self.evm37.c_to_p(v21)))
+        self.assertEqual(b"NP_000050.2:p.(Arg8=)", str(self.evm37.c_to_p(v22)))
+        self.assertEqual(b"NP_000050.2:p.(Arg8=)", str(self.evm37.c_to_p(v2224)))
+        # self.assertEqual(b"NP_000050.2:p.(Glu7=)", str(self.evm37.c_to_p(v2122)))  # perhaps p.(=)?
+
+
     def test_322_raise_exception_when_mapping_bogus_variant(self):
         v = self.hp.parse_hgvs_variant("chrX:g.71684476delTGGAGinsAC")
         with self.assertRaises(HGVSInvalidVariantError):
