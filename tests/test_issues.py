@@ -21,7 +21,7 @@ import hgvs.variantmapper
 
 
 @attr(tags=["issues"])
-class Test_VariantMapper(unittest.TestCase):
+class Test_Issues(unittest.TestCase):
     def setUp(self):
         self.hdp = hgvs.dataproviders.uta.connect()
         self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
@@ -133,6 +133,10 @@ class Test_VariantMapper(unittest.TestCase):
         v2 = self.evm37.g_to_c(vg, tx_ac = v.ac)
         self.assertEqual(str(v), str(v2))  # no change after roundtrip
 
+
+    def test_325_3p_UTR_treated_as_intronic(self):
+        v = self.hp.parse_hgvs_variant("NM_000023.2:c.*6C>T")
+        self.assertTrue(self.hv.validate(v))
 
     def test_326_handle_variants_in_par(self):
         "For a variant in the PAR, allow user user choose preference"
