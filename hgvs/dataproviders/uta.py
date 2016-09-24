@@ -286,9 +286,7 @@ class UTABase(Interface, SeqFetcher):
                     alt_ac=alt_ac,
                     alt_aln_method=alt_aln_method))
 
-        # hgvs-346: verify that alignment data covers full-length transcript
-        # Check that tx exon 0 starts at sequence position 0
-        # TODO: Should check that end is transcript sequence length, but cannot currently
+        # TODO: Check that end == transcript sequence length (but length N/A in current hdp)
         ex0 = 0 if (rows[0]["alt_strand"] ==  1) else -1
         if rows[ex0]["tx_start_i"] != 0:
             raise HGVSDataNotAvailableError(
@@ -535,9 +533,11 @@ class UTA_postgresql(UTABase):
 
 
 class UTA_sqlite(UTABase):
-    # TODO: implement mocks (issue #237) The current sqlite db was
-    # based on schema v1. No tests currently use 1.1 features from
-    # sqlite, so we override the required_version here.
+    # The current sqlite db was based on schema v1. No tests currently
+    # use 1.1 features from sqlite, so we override the
+    # required_version here.  Total hack.  This should go away with
+    # #237.
+
     required_version = "1"
 
     def _connect(self):

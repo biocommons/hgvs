@@ -126,7 +126,7 @@ class AltSeqBuilder(object):
             WHOLE_GENE_DELETED: self._create_no_protein
         }
 
-        # TODO - loop over each allele rather than assume only 1 variant; return a list for now
+        # should loop over each allele rather than assume only 1 variant; return a list for now
         alt_data = []
 
         variant_location = self._get_variant_region()
@@ -138,7 +138,7 @@ class AltSeqBuilder(object):
         elif variant_location == self.T_UTR:
             edit_type = NOT_CDS
         elif variant_location == self.F_UTR:
-            # TODO - handle case where variant introduces a Met (new start)
+            # TODO: handle case where variant introduces a Met (new start)
             edit_type = NOT_CDS
         elif variant_location == self.WHOLE_GENE:
             if self._var_c.posedit.edit.ref is not None and self._var_c.posedit.edit.alt is None:
@@ -255,7 +255,6 @@ class AltSeqBuilder(object):
 
     def _incorporate_repeat(self):
         """Incorporate repeat int sequence"""
-        # TODO - implement
         raise NotImplementedError("hgvs c to p conversion does not support {} type: repeats".format(self._var_c))
 
     def _setup_incorporate(self):
@@ -328,7 +327,6 @@ class AltSeqBuilder(object):
         :return variant data with additional field for AA index (1-based) of the frameshift start
         :rtype recordtype
         """
-        # TODO - implement for 2+ variants
 
         if DBG:
             print("is_frameshift:{}".format(variant_data.is_frameshift))

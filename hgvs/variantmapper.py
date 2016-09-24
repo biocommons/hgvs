@@ -284,8 +284,9 @@ class VariantMapper(object):
         reference_data = RefTranscriptData.setup_transcript_data(self.hdp, var_c.ac, pro_ac)
         builder = altseqbuilder.AltSeqBuilder(var_c, reference_data)
 
-        # TODO - handle case where you get 2+ alt sequences back; currently get list of 1 element
-        # loop structure implemented to handle this, but doesn't really do anything currently.
+        # TODO: handle case where you get 2+ alt sequences back;
+        # currently get list of 1 element loop structure implemented
+        # to handle this, but doesn't really do anything currently.
         all_alt_data = builder.build_altseq()
 
         var_ps = []
