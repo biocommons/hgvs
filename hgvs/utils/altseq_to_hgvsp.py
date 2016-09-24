@@ -147,8 +147,6 @@ class AltSeqToHgvsp(object):
         else:
             var_ps = [self._convert_to_sequence_variants(x, self._protein_accession) for x in variants]
 
-        # TODO - handle multiple variants
-
         if len(var_ps) > 1:
             raise HGVSError("Got multiple AA variants - not supported")
         return var_ps[0]

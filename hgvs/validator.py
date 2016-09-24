@@ -3,8 +3,6 @@
 
 """
 
-# TODO: #249: redisign validation interface for greater flexibility
-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from hgvs.exceptions import HGVSInvalidVariantError, HGVSUnsupportedOperationError

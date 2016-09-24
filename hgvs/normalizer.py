@@ -165,7 +165,6 @@ class Normalizer(object):
                 return 0, float("inf")
             else:
                 # Get genomic sequence access number for this transcript
-                # TODO: #239: add filter options to get_tx_mapping_options
                 map_info = self.hdp.get_tx_mapping_options(var.ac)
                 if not map_info:
                     raise HGVSDataNotAvailableError("No mapping info available for {ac}".format(ac=var.ac))

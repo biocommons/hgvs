@@ -137,7 +137,6 @@ def_c_interval = (c_pos:start '_' c_pos:end -> hgvs.location.BaseOffsetInterval(
 def_n_interval = (n_pos:start '_' n_pos:end -> hgvs.location.BaseOffsetInterval(start,end)) | (n_pos:start -> hgvs.location.BaseOffsetInterval(start,start))
 
 # positions
-# TODO: extend to support uncertain positions
 c_pos = def_c_pos #| '(' def_c_pos:pos ')' -> pos._set_uncertain()
 g_pos = def_g_pos #| '(' def_g_pos:pos ')' -> pos._set_uncertain()
 m_pos = def_m_pos #| '(' def_m_pos:pos ')' -> pos._set_uncertain()
