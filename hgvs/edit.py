@@ -15,13 +15,25 @@ import recordtype
 
 from bioutils.sequences import aa_to_aa1, aa1_to_aa3
 
+import hgvs
 from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError
 
 
 class Edit(object):
+    def format(self, conf=None):
+        return str(self)
+
+    def _format_config(self, conf=None):
+        p_3_letter = hgvs.global_config.formatting.p_3_letter
+        p_term_asterisk = hgvs.global_config.formatting.p_term_asterisk
+        if conf and "p_3_letter" in conf and conf["p_3_letter"] is not None:
+            p_3_letter = conf["p_3_letter"]
+        if conf and "p_term_asterisk" in conf and conf["p_term_asterisk"] is not None:
+            p_term_asterisk = conf["p_term_asterisk"]
+        return p_3_letter, p_term_asterisk
+
     def _del_ins_lengths(self, ilen):
         raise HGVSUnsupportedOperationError("internal function _del_ins_lengths not implemented for this variant type")
-    pass
 
 
 class NARefAlt(Edit, recordtype.recordtype("NARefAlt", [("ref", None), ("alt", None), ("uncertain", False)])):
@@ -56,8 +68,8 @@ class NARefAlt(Edit, recordtype.recordtype("NARefAlt", [("ref", None), ("alt", N
     @property
     def ref_n(self):
         """
-        returns an integer, either from the `ref` instance variable if it"s a number, or the length of
-        ref if it"s a string, or None otherwise
+        returns an integer, either from the `ref` instance variable if it's a number, or the length of
+        ref if it's a string, or None otherwise
 
         >>> NARefAlt("ACGT").ref_n
         4
@@ -131,23 +143,40 @@ class NARefAlt(Edit, recordtype.recordtype("NARefAlt", [("ref", None), ("alt", N
         return (del_len, ins_len)
 
 
-class AARefAlt(Edit, recordtype.recordtype('AARefAlt', [('ref', None), ('alt', None), ('uncertain', False)])):
+class AARefAlt(Edit, recordtype.recordtype("AARefAlt", [("ref", None), ("alt", None), ("uncertain", False)])):
     def __init__(self, ref, alt, uncertain=False):
         super(AARefAlt, self).__init__(ref=aa_to_aa1(ref), alt=aa_to_aa1(alt), uncertain=uncertain)
 
-    def __str__(self):
+    def format(self, conf=None):
         if self.ref is None and self.alt is None:
             # raise HGVSError("RefAlt: ref and alt sequences are both undefined")
             return "="
 
+        p_3_letter, p_term_asterisk = self._format_config(conf)
+        
         # subst and delins
         if self.ref is not None and self.alt is not None:
             if self.ref == self.alt:
-                s = "{ref}=".format(ref=aa1_to_aa3(self.ref))
+                if p_3_letter:
+                    s = "{ref}=".format(ref=aa1_to_aa3(self.ref))
+                    if p_term_asterisk and s == "Ter=":
+                        s = "*="
+                else:
+                    s = "{ref}=".format(ref=self.ref)
             elif len(self.ref) == 1 and len(self.alt) == 1:
-                s = aa1_to_aa3(self.alt)
+                if p_3_letter:
+                    s = aa1_to_aa3(self.alt)
+                    if p_term_asterisk and s == "Ter":
+                        s = "*"
+                else:
+                    s = self.alt
             else:
-                s = "delins{alt}".format(alt=aa1_to_aa3(self.alt))
+                if p_3_letter:
+                    s = "delins{alt}".format(alt=aa1_to_aa3(self.alt))
+                    if p_term_asterisk and s == "delinsTer":
+                        s = "delins*"
+                else:
+                    s = "delins{alt}".format(alt=self.alt)
 
         # del case
         elif self.ref is not None and self.alt is None:
@@ -155,12 +184,19 @@ class AARefAlt(Edit, recordtype.recordtype('AARefAlt', [('ref', None), ('alt', N
 
         # ins case
         elif self.ref is None and self.alt is not None:
-            s = "ins{alt}".format(alt=aa1_to_aa3(self.alt))
+            if p_3_letter:
+                s = "ins{alt}".format(alt=aa1_to_aa3(self.alt))
+                if p_term_asterisk and s == "insTer":
+                    s = "ins*"
+            else:
+                s = "ins{alt}".format(alt=self.alt)
 
         else:
             raise RuntimeError("Should not be here")
 
         return "(" + s + ")" if self.uncertain else s
+
+    __str__ = format
 
     def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
@@ -199,9 +235,18 @@ class AARefAlt(Edit, recordtype.recordtype('AARefAlt', [('ref', None), ('alt', N
 
 
 class AASub(AARefAlt):
-    def __str__(self):
-        s = aa1_to_aa3(self.alt) if self.alt != "?" else self.alt
+    def format(self, conf=None):
+        p_3_letter, p_term_asterisk = self._format_config(conf)
+        
+        if p_3_letter:
+            s = aa1_to_aa3(self.alt) if self.alt != "?" else self.alt
+            if p_term_asterisk and s == "Ter":
+                s = "*"
+        else:
+            s = self.alt
         return "(" + s + ")" if self.uncertain else s
+
+    __str__ = format
 
     @property
     def type(self):
@@ -216,10 +261,20 @@ class AAFs(Edit, recordtype.recordtype("AAFs", [("ref", None), ("alt", None), ("
     def __init__(self, ref, alt, length=None, uncertain=False):
         super(AAFs, self).__init__(ref=aa_to_aa1(ref), alt=aa_to_aa1(alt), length=length, uncertain=uncertain)
 
-    def __str__(self):
+    def format(self, conf=None):
+        p_3_letter, p_term_asterisk = self._format_config(conf)
+        
         st_length = self.length or ""
-        s = "{alt}fsTer{length}".format(alt=aa1_to_aa3(self.alt), length=st_length)
+        if p_3_letter:
+            if p_term_asterisk:
+                s = "{alt}fs*{length}".format(alt=aa1_to_aa3(self.alt), length=st_length)
+            else:
+                s = "{alt}fsTer{length}".format(alt=aa1_to_aa3(self.alt), length=st_length)
+        else:
+            s = "{alt}fs*{length}".format(alt=self.alt, length=st_length)
         return "(" + s + ")" if self.uncertain else s
+
+    __str__ = format
 
     def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
@@ -247,12 +302,24 @@ class AAExt(Edit, recordtype.recordtype("AAExt", [("ref", None), ("alt", None), 
                                     length=length,
                                     uncertain=uncertain)
 
-    def __str__(self):
+    def format(self, conf=None):
+        p_3_letter, p_term_asterisk = self._format_config(conf)
+        
         st_alt = self.alt or ""
         st_aaterm = self.aaterm or ""
         st_length = self.length or ""
-        s = "{alt}ext{term}{length}".format(alt=aa1_to_aa3(st_alt), term=aa1_to_aa3(st_aaterm), length=st_length)
+        if p_3_letter:
+            st_alt = aa1_to_aa3(st_alt)
+            st_aaterm = aa1_to_aa3(st_aaterm)
+            if p_term_asterisk and st_alt == "Ter":
+                st_alt = "*"
+            if p_term_asterisk and st_aaterm == "Ter":
+                st_aaterm = "*"
+                
+        s = "{alt}ext{term}{length}".format(alt=st_alt, term=st_aaterm, length=st_length)
         return "(" + s + ")" if self.uncertain else s
+
+    __str__ = format
 
     def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
@@ -287,6 +354,13 @@ class Dup(Edit, recordtype.recordtype('Dup', [('ref', None), ('uncertain', False
 
     def __str__(self):
         return "dup" + (self.ref or "")
+
+    @property
+    def ref_s(self):
+        """
+        returns a string representing the ref sequence, if it is not None and smells like a sequence
+        """
+        return self.ref if (isinstance(self.ref, basestring) and self.ref and self.ref[0] in "ACGTUN") else None
 
     def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar

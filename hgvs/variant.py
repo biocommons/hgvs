@@ -7,6 +7,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import recordtype
 
+import hgvs.variantmapper
+
 
 class SequenceVariant(recordtype.recordtype("SequenceVariant", ["ac", "type", "posedit"])):
     """
@@ -15,11 +17,30 @@ class SequenceVariant(recordtype.recordtype("SequenceVariant", ["ac", "type", "p
     or an hgvs.location.CDSInterval (for example) are both intended uses
     """
 
-    def __str__(self):
+    def format(self, conf=None):
+        """Formatting the stringification of sequence variants
+
+        :param conf: a dict comprises formatting options. None is to use global settings.
+        formatting configuration options:
+            p_3_letter: use 1-letter or 3-letter amino acid representation for p. variants.
+            p_term_asterisk: use * or Ter to represent stop-codon gain for p. variants.
+        """
         if self.ac is not None:
-            return "{self.ac}:{self.type}.{self.posedit}".format(self=self)
+            return "{ac}:{type}.{posedit}".format(ac=self.ac, type=self.type, posedit=self.posedit.format(conf))
         else:
-            return "{self.type}.{self.posedit}".format(self=self)
+            return "{type}.{posedit}".format(type=self.type, posedit=self.posedit.format(conf))
+
+    __str__ = format
+
+    def fill_ref(self, hdp):
+        hm = hgvs.variantmapper.VariantMapper(hdp)
+        type = self.posedit.edit.type
+        if type in ["del", "delins", "identity", "dup", "inv"] and self.posedit.edit.ref_s is None:
+            hm._replace_reference(self)
+        if type == "identity" and isinstance(self.posedit.edit, hgvs.edit.NARefAlt):
+            self.posedit.edit.alt = self.posedit.edit.ref
+        return self
+
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
