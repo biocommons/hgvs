@@ -15,14 +15,22 @@ class PosEdit(recordtype.recordtype('PosEdit', [('pos', None), ('edit', None), (
     represents a **simple** variant, consisting of a single position and edit pair
     """
 
-    def __str__(self):
-        rv = str(self.edit) if self.pos is None else "{self.pos}{self.edit}".format(self=self)
+    def format(self, conf=None):
+        """Formatting the string of PosEdit
+        """
+        if self.pos is None:
+            rv = str(self.edit.format(conf))
+        else:
+            rv = "{pos}{edit}".format(pos=self.pos.format(conf), edit=self.edit.format(conf))
+        
         if self.uncertain:
             if self.edit in ["0", ""]:
                 rv = rv + "?"
             else:
                 rv = "(" + rv + ")"
         return rv
+
+    __str__ = format
 
     def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
@@ -31,7 +39,6 @@ class PosEdit(recordtype.recordtype('PosEdit', [('pos', None), ('edit', None), (
         """
         self.uncertain = True
         return self
-
 
     def length_change(self, on_error_raise=True):
         """Returns the net length change for this posedit.

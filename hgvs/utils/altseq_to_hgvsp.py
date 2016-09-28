@@ -12,7 +12,6 @@ from ..edit import (AAExt, AAFs, AARefAlt, AASub, Dup)
 from ..exceptions import (HGVSError)
 from ..location import (AAPosition, Interval)
 from ..posedit import (PosEdit)
-from ..variant import (SequenceVariant)
 
 DBG = False
 
@@ -337,7 +336,7 @@ class AltSeqToHgvsp(object):
         posedit = PosEdit(interval, edit)
         if not (is_ambiguous and start == ''):
             posedit.uncertain = hgvs.global_config.mapping.inferred_p_is_uncertain
-        var_p = SequenceVariant(acc, 'p', posedit)
+        var_p = hgvs.variant.SequenceVariant(acc, 'p', posedit)
 
         return var_p
 
