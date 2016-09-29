@@ -45,7 +45,7 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
       ],
       install_requires=[
           "biopython>=1.66",
-          "bioutils>=0.1.0",
+          "bioutils>=0.2.0a2",
           "configparser>=3.3.0",
           "ipython",            # for hgvs-shell
           "parsley",
