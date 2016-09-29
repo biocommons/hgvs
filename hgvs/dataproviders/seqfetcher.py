@@ -11,6 +11,7 @@ import re
 
 import requests
 
+import hgvs
 from ..exceptions import HGVSDataNotAvailableError
 from ..decorators import lru_cache
 
@@ -84,7 +85,7 @@ def _fetch_seq_ncbi(ac, start_i=None, end_i=None):
     return ''.join(resp.content.splitlines()[1:])
 
 
-@lru_cache(maxsize=20)
+@lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)
 def _fetch_seq_remote(ac, start_i=None, end_i=None):
     """return a subsequence of the given accession for the
     interbase interval [start_i,end_i)

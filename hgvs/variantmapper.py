@@ -74,7 +74,7 @@ class VariantMapper(object):
 
     # ############################################################################
     # g⟷t
-    def g_to_t(self, var_g, tx_ac, alt_aln_method="splign"):
+    def g_to_t(self, var_g, tx_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
         if not (var_g.type == "g"):
             raise HGVSInvalidVariantError("Expected a g. variant; got " + str(var_g))
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
@@ -83,7 +83,7 @@ class VariantMapper(object):
         else:
             return VariantMapper.g_to_n(self, var_g=var_g, tx_ac=tx_ac, alt_aln_method=alt_aln_method)
 
-    def t_to_g(self, var_t, alt_ac, alt_aln_method="splign"):
+    def t_to_g(self, var_t, alt_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
         if var_t.type not in "cn":
             raise HGVSInvalidVariantError("Expected a c. or n. variant; got " + str(var_t))
         tm = self._fetch_TranscriptMapper(tx_ac=var_t.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
@@ -95,7 +95,7 @@ class VariantMapper(object):
 
     # ############################################################################
     # g⟷n
-    def g_to_n(self, var_g, tx_ac, alt_aln_method="splign"):
+    def g_to_n(self, var_g, tx_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
         """Given a parsed g. variant, return a n. variant on the specified
         transcript using the specified alignment method (default is
         "splign" from NCBI).
@@ -116,7 +116,7 @@ class VariantMapper(object):
         var_n = hgvs.variant.SequenceVariant(ac=tx_ac, type="n", posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
         return var_n
 
-    def n_to_g(self, var_n, alt_ac, alt_aln_method="splign"):
+    def n_to_g(self, var_n, alt_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
         """Given a parsed n. variant, return a g. variant on the specified
         transcript using the specified alignment method (default is
         "splign" from NCBI).
@@ -139,7 +139,7 @@ class VariantMapper(object):
 
     # ############################################################################
     # g⟷c
-    def g_to_c(self, var_g, tx_ac, alt_aln_method="splign"):
+    def g_to_c(self, var_g, tx_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
         """Given a parsed g. variant, return a c. variant on the specified
         transcript using the specified alignment method (default is
         "splign" from NCBI).
@@ -161,7 +161,7 @@ class VariantMapper(object):
         var_c = hgvs.variant.SequenceVariant(ac=tx_ac, type="c", posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
         return var_c
 
-    def c_to_g(self, var_c, alt_ac, alt_aln_method="splign"):
+    def c_to_g(self, var_c, alt_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
         """Given a parsed c. variant, return a g. variant on the specified
         transcript using the specified alignment method (default is
         "splign" from NCBI).
@@ -336,7 +336,7 @@ class VariantMapper(object):
 
         return var
 
-    @lru_cache(maxsize=128)
+    @lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)
     def _fetch_TranscriptMapper(self, tx_ac, alt_ac, alt_aln_method):
         """
         Get a new TranscriptMapper for the given transcript accession (ac),
