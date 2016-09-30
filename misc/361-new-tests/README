@@ -1,0 +1,17 @@
+This directory contains notes about the construction of new test cases
+based on clinvar.  The primary motivation is to address the need for
+new tests for GRCh38, but it provided an opportunity to easily pull in
+new tests for GRCh37 too.
+
+
+Process:
+
+* Downloaded hgvs4variation.txt.gz
+$ wget -nd ftp://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/hgvs4variation.txt.gz
+$ \ls -l hgvs4variation.txt.gz 
+-rw-rw-r-- 1 reece reece 10292972 Sep 28 07:07 hgvs4variation.txt.gz
+$ sha1sum hgvs4variation.txt.gz 
+9bcee2fb6e7d67dbd422990eb5eaa4aacbce07b7  hgvs4variation.txt.gz
+
+$ ./extract-tests hgvs4variation.txt.gz | gzip -c >../../tests/data/clinvar.gz
+
