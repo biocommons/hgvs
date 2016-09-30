@@ -68,8 +68,16 @@ class VariantMapper(object):
 
     """
 
-    def __init__(self, hdp):
+    def __init__(self,
+                 hdp,
+                 replace_reference=hgvs.global_config.mapping.replace_reference):
+        """
+        :param bool replace_reference: replace reference (entails additional network access)
+
+        """
+
         self.hdp = hdp
+        self.replace_reference = replace_reference
 
 
     # ############################################################################
@@ -79,18 +87,24 @@ class VariantMapper(object):
             raise HGVSInvalidVariantError("Expected a g. variant; got " + str(var_g))
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
         if tm.is_coding_transcript:
-            return VariantMapper.g_to_c(self, var_g=var_g, tx_ac=tx_ac, alt_aln_method=alt_aln_method)
+            var_out = VariantMapper.g_to_c(self, var_g=var_g, tx_ac=tx_ac, alt_aln_method=alt_aln_method)
         else:
-            return VariantMapper.g_to_n(self, var_g=var_g, tx_ac=tx_ac, alt_aln_method=alt_aln_method)
+            var_out = VariantMapper.g_to_n(self, var_g=var_g, tx_ac=tx_ac, alt_aln_method=alt_aln_method)
+        if self.replace_reference:
+            self._replace_reference(var_out)
+        return var_out
 
     def t_to_g(self, var_t, alt_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
         if var_t.type not in "cn":
             raise HGVSInvalidVariantError("Expected a c. or n. variant; got " + str(var_t))
         tm = self._fetch_TranscriptMapper(tx_ac=var_t.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         if tm.is_coding_transcript:
-            return VariantMapper.c_to_g(self, var_c=var_t, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
+            var_out = VariantMapper.c_to_g(self, var_c=var_t, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         else:
-            return VariantMapper.n_to_g(self, var_n=var_t, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
+            var_out = VariantMapper.n_to_g(self, var_n=var_t, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
+        if self.replace_reference:
+            self._replace_reference(var_out)
+        return var_out
 
 
     # ############################################################################
@@ -114,6 +128,8 @@ class VariantMapper(object):
         pos_n = tm.g_to_n(var_g.posedit.pos)
         edit_n = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
         var_n = hgvs.variant.SequenceVariant(ac=tx_ac, type="n", posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
+        if self.replace_reference:
+            self._replace_reference(var_n)
         return var_n
 
     def n_to_g(self, var_n, alt_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
@@ -135,6 +151,8 @@ class VariantMapper(object):
         pos_g = tm.n_to_g(var_n.posedit.pos)
         edit_g = self._convert_edit_check_strand(tm.strand, var_n.posedit.edit)
         var_g = hgvs.variant.SequenceVariant(ac=alt_ac, type="g", posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
+        if self.replace_reference:
+            self._replace_reference(var_g)
         return var_g
 
     # ############################################################################
@@ -159,6 +177,8 @@ class VariantMapper(object):
         pos_c = tm.g_to_c(var_g.posedit.pos)
         edit_c = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
         var_c = hgvs.variant.SequenceVariant(ac=tx_ac, type="c", posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
+        if self.replace_reference:
+            self._replace_reference(var_c)
         return var_c
 
     def c_to_g(self, var_c, alt_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
@@ -183,6 +203,8 @@ class VariantMapper(object):
         edit_g = self._convert_edit_check_strand(tm.strand, var_c.posedit.edit)
 
         var_g = hgvs.variant.SequenceVariant(ac=alt_ac, type="g", posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
+        if self.replace_reference:
+            self._replace_reference(var_g)
         return var_g
 
     # ############################################################################
@@ -208,6 +230,8 @@ class VariantMapper(object):
         else:
             raise HGVSUnsupportedOperationError("Only NARefAlt/Dup/Inv types are currently implemented")
         var_n = hgvs.variant.SequenceVariant(ac=var_c.ac, type="n", posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
+        if self.replace_reference:
+            self._replace_reference(var_n)
         return var_n
 
     def n_to_c(self, var_n):
@@ -231,6 +255,8 @@ class VariantMapper(object):
         else:
             raise HGVSUnsupportedOperationError("Only NARefAlt/Dup/Inv types are currently implemented")
         var_c = hgvs.variant.SequenceVariant(ac=var_n.ac, type="c", posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
+        if self.replace_reference:
+            self._replace_reference(var_c)
         return var_c
 
     # ############################################################################
@@ -413,23 +439,25 @@ class EasyVariantMapper(VariantMapper):
                  hdp,
                  assembly_name=hgvs.global_config.mapping.assembly,
                  alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
-                 replace_reference=hgvs.global_config.mapping.replace_reference,
                  normalize=hgvs.global_config.mapping.normalize,
                  in_par_assume=hgvs.global_config.mapping.in_par_assume,
+                 *args, **kwargs
                  ):
         """
+        :param object hdp: instance of hgvs.dataprovider subclass
+        :param bool replace_reference: replace reference (entails additional network access)
+
         :param str assembly_name: name of assembly ("GRCh38.p5")
         :param str alt_aln_method: genome-transcript alignment method ("splign", "blat", "genewise")
-        :param bool replace_reference: replace reference (entails additional network access)
         :param bool normalize: normalize variants
         :param str in_par_assume: during x_to_g, assume this chromosome name if alignment is ambiguous
+
         :raises HGVSError subclasses: for a variety of mapping and data lookup failures
         """
 
-        super(EasyVariantMapper, self).__init__(hdp=hdp)
+        super(EasyVariantMapper, self).__init__(hdp=hdp, *args, **kwargs)
         self.assembly_name = assembly_name
         self.alt_aln_method = alt_aln_method
-        self.replace_reference = replace_reference
         self.normalize = normalize
         self.in_par_assume = in_par_assume
         self._norm = None
@@ -448,60 +476,44 @@ class EasyVariantMapper(VariantMapper):
     def g_to_c(self, var_g, tx_ac):
         self._validator.validate(var_g)
         var_out = super(EasyVariantMapper, self).g_to_c(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
-        if self.replace_reference:
-            self._replace_reference(var_out)
         return self._maybe_normalize(var_out)
 
     def g_to_n(self, var_g, tx_ac):
         self._validator.validate(var_g)
         var_out = super(EasyVariantMapper, self).g_to_n(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
-        if self.replace_reference:
-            self._replace_reference(var_out)
         return self._maybe_normalize(var_out)
 
     def g_to_t(self, var_g, tx_ac):
         self._validator.validate(var_g)
         var_out = super(EasyVariantMapper, self).g_to_t(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
-        if self.replace_reference:
-            self._replace_reference(var_out)
         return self._maybe_normalize(var_out)
 
     def c_to_g(self, var_c):
         self._validator.validate(var_c)
         alt_ac = self._alt_ac_for_tx_ac(var_c.ac)
         var_out = super(EasyVariantMapper, self).c_to_g(var_c, alt_ac, alt_aln_method=self.alt_aln_method)
-        if self.replace_reference:
-            self._replace_reference(var_out)
         return self._maybe_normalize(var_out)
 
     def n_to_g(self, var_n):
         self._validator.validate(var_n)
         alt_ac = self._alt_ac_for_tx_ac(var_n.ac)
         var_out = super(EasyVariantMapper, self).n_to_g(var_n, alt_ac, alt_aln_method=self.alt_aln_method)
-        if self.replace_reference:
-            self._replace_reference(var_out)
         return self._maybe_normalize(var_out)
 
     def t_to_g(self, var_t):
         self._validator.validate(var_t)
         alt_ac = self._alt_ac_for_tx_ac(var_t.ac)
         var_out = super(EasyVariantMapper, self).t_to_g(var_t, alt_ac, alt_aln_method=self.alt_aln_method)
-        if self.replace_reference:
-            self._replace_reference(var_out)
         return self._maybe_normalize(var_out)
 
     def c_to_n(self, var_c):
         self._validator.validate(var_c)
         var_out = super(EasyVariantMapper, self).c_to_n(var_c)
-        if self.replace_reference:
-            self._replace_reference(var_out)
         return self._maybe_normalize(var_out)
 
     def n_to_c(self, var_n):
         self._validator.validate(var_n)
         var_out = super(EasyVariantMapper, self).n_to_c(var_n)
-        if self.replace_reference:
-            self._replace_reference(var_out)
         return self._maybe_normalize(var_out)
 
     def c_to_p(self, var_c):
