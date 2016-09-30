@@ -9,7 +9,8 @@ import unittest
 
 import hgvs.variantmapper as variantmapper
 import hgvs.parser
-import framework.mock_input_source as mock_input_data_source
+
+import support.mock_input_source as mock_input_data_source
 
 
 class TestHgvsCToP(unittest.TestCase):

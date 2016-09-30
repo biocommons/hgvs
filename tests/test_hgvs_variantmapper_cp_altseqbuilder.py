@@ -10,7 +10,7 @@ import recordtype
 import hgvs.parser
 import hgvs.utils.altseqbuilder as altseqbuilder
 
-import framework.mock_input_source as mock_input_data_source
+import support.mock_input_source as mock_input_data_source
 
 
 class TestAltSeqBuilder(unittest.TestCase):
