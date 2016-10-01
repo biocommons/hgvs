@@ -1,0 +1,21 @@
+    def filter(self, fn=data_fn):
+        fieldnames = "gene variation_id hgvs_variants".split()
+        fh = LineIterator(fh=gzip.open(fn) if fn.endswith(".gz") else io.open(fn),
+                          skip_comments=True)
+        
+        ofh = gzip.open("/tmp/z.gz", "wt")
+        writer = csv.DictWriter(ofh, delimiter=b"\t", fieldnames=fieldnames)
+        writer.writeheader()
+        for rec in csv.DictReader(fh, delimiter=b"\t"):
+            print(rec["gene"])
+            try:
+                variants = (self.hp.parse_hgvs_variant(vs) for vs in rec["hgvs_variants"].split())
+                variants = filter(lambda v: v.type in "cg" and not v.ac.startswith("NG"), variants)
+                msg = self.crosscheck_variant_group(list(variants))
+            except Exception as e:
+                msg = e.args[0]
+            if msg:
+                msg = msg.replace("\n", " ")
+                ofh.write("# "+msg + "\n#")
+            writer.writerow(rec)
+
