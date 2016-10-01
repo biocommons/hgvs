@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+
+import csv
+import gzip
+import io
+import re
+import sys
+
+import hgvs
+import hgvs.parser
+
+
+if __name__ == "__main__":
+    wanted_varstr_re = re.compile("^N[CMR]_\d+\.\d+:[gcn]")
+
+    hp = hgvs.parser.Parser()
+
+    fn = sys.argv[1]
+    fh = gzip.open(fn)
+
+    fieldnames = "gene variation_id hgvs_variants".split()
+    writer = csv.DictWriter(sys.stdout, fieldnames=fieldnames, delimiter="\t")
+    writer.writeheader()
+
+    seen = {}
+    for rec in csv.DictReader(fh, delimiter=b"\t"):
+        varstrings = list(filter(wanted_varstr_re.match, rec["hgvs_variants"].split()))
+
+        if len(varstrings) == 0:
+            continue
+
+        try:
+            v0 = hp.parse_hgvs_variant(varstrings[0])
+        except hgvs.parser.HGVSParseError:
+            continue
+
+        key = rec["gene"] + "/" + v0.posedit.edit.type
+        if key in seen:         # max 1 of each type per gene
+            continue
+        seen[key] = True
+        
+        rec["hgvs_variants"] = " ".join(varstrings)
+        writer.writerow(rec)
+
