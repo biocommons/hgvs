@@ -10,6 +10,8 @@ import sys
 import types
 import unittest
 
+from nose.plugins.attrib import attr
+
 import hgvs
 import hgvs.dataproviders.uta
 import hgvs.parser
@@ -19,18 +21,29 @@ from hgvs.exceptions import HGVSError
 
 from support.crosschecker import CrossChecker, LineIterator
 
+
 data_fn = os.path.join(os.path.dirname(__file__), "data", "clinvar.gz")
 
 class Test_Clinvar(unittest.TestCase, CrossChecker):
-    """Test genome-transcript projections for 7498 clinvar variants in 4676 against genes
-    for both GRCh37 and GRCh38 (when both are available)"""
-
     def setUp(self):
         self.hdp = hgvs.dataproviders.uta.connect()
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp)
         self.hp = hgvs.parser.Parser()
 
+    @attr(tags=["extra"])
     def test_clinvar(self, fn=data_fn, mod=None):
+        """Test genome-transcript projections for 7498 clinvar variants in 4676 against genes
+        for both GRCh37 and GRCh38 (when both are available).
+
+        Approximate timings in various configurations:
+        uta         sequences        time
+        local       remote          1 min
+        local       remote         40 min
+        remote      local          10 min
+        remote      remote         50 min
+
+        In other words, you really want to run this with local sequences and UTA.
+        """
         fh = LineIterator(fh=gzip.open(fn) if fn.endswith(".gz") else io.open(fn),
                           skip_comments=True)
         for rec in csv.DictReader(fh, delimiter=b"\t"):
