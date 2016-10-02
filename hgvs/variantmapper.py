@@ -90,8 +90,6 @@ class VariantMapper(object):
             var_out = VariantMapper.g_to_c(self, var_g=var_g, tx_ac=tx_ac, alt_aln_method=alt_aln_method)
         else:
             var_out = VariantMapper.g_to_n(self, var_g=var_g, tx_ac=tx_ac, alt_aln_method=alt_aln_method)
-        if self.replace_reference:
-            self._replace_reference(var_out)
         return var_out
 
     def t_to_g(self, var_t, alt_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
@@ -102,8 +100,6 @@ class VariantMapper(object):
             var_out = VariantMapper.c_to_g(self, var_c=var_t, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         else:
             var_out = VariantMapper.n_to_g(self, var_n=var_t, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
-        if self.replace_reference:
-            self._replace_reference(var_out)
         return var_out
 
 
