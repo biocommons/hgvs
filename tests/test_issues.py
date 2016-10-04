@@ -24,7 +24,8 @@ import hgvs.variantmapper
 class Test_Issues(unittest.TestCase):
     def setUp(self):
         self.hdp = hgvs.dataproviders.uta.connect()
-        self.vm = hgvs.variantmapper.VariantMapper(self.hdp)
+        self.vm = hgvs.variantmapper.VariantMapper(self.hdp, replace_reference=False)
+        self.vm_rr = hgvs.variantmapper.VariantMapper(self.hdp, replace_reference=True)
         self.hp = hgvs.parser.Parser()
         self.hn = hgvs.normalizer.Normalizer(self.hdp)
         self.hv = hgvs.validator.IntrinsicValidator()
@@ -204,4 +205,4 @@ class Test_Issues(unittest.TestCase):
         g_var = self.hp.parse_hgvs_variant("NC_000006.11:g.44275011T=")
         c_var = self.hp.parse_hgvs_variant("NM_020745.3:c.1015G>A")  # correct projection with ref replacement
         self.assertEqual(c_var, self.evm37.g_to_c(g_var, "NM_020745.3"))  # previously okay
-        self.assertEqual(c_var, self.vm.g_to_c(g_var, "NM_020745.3"))  # previously wrong
+        self.assertEqual(c_var, self.vm_rr.g_to_c(g_var, "NM_020745.3"))  # previously wrong
