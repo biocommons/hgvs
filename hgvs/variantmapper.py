@@ -70,7 +70,7 @@ class VariantMapper(object):
 
     def __init__(self,
                  hdp,
-                 replace_reference=hgvs.global_config.mapping.replace_reference):
+                 replace_reference=False):
         """
         :param bool replace_reference: replace reference (entails additional network access)
 
@@ -437,6 +437,7 @@ class EasyVariantMapper(VariantMapper):
                  alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
                  normalize=hgvs.global_config.mapping.normalize,
                  in_par_assume=hgvs.global_config.mapping.in_par_assume,
+                 replace_reference=hgvs.global_config.mapping.replace_reference,
                  *args, **kwargs
                  ):
         """
@@ -451,7 +452,9 @@ class EasyVariantMapper(VariantMapper):
         :raises HGVSError subclasses: for a variety of mapping and data lookup failures
         """
 
-        super(EasyVariantMapper, self).__init__(hdp=hdp, *args, **kwargs)
+        super(EasyVariantMapper, self).__init__(hdp=hdp,
+                                                replace_reference=replace_reference,
+                                                *args, **kwargs)
         self.assembly_name = assembly_name
         self.alt_aln_method = alt_aln_method
         self.normalize = normalize
