@@ -162,6 +162,15 @@ class Test_RefReplacement(unittest.TestCase):
         {u"c": "NM_002173.2:c.*115_*117delTCAinsNN",  u"g": "NC_000009.11:g.21216618_21216620delGAAinsNN",  u"n": "NM_002173.2:n.691_693delTCAinsNN"},
         {u"c": "NM_002173.2:c.*115_*117delTCAinsNN",  u"g": "NC_000009.11:g.21216618_21216620delGAAinsNN",  u"n": "NM_002173.2:n.691_693delTCAinsNN"},
         {u"c": "NM_002173.2:c.*115_*117dupTCA",  u"g": "NC_000009.11:g.21216618_21216620dupGAA",  u"n": "NM_002173.2:n.691_693dupTCA"},
+
+
+        # genomic variation within an indel discrepancy
+        # NM_032790.3  c        108 >
+        # NM_032790.3  n        301 > CGGGGAGCCCCCGGGGGCC------CCGCCACCGCCGCCGT
+        #                             |||||||||||||||||||------||||||||||||||||
+        # NC_000012.11 g  122064755 > CGGGGAGCCCCCGGGGGCCCCGCCACCGCCACCGCCGCCGT
+        #                                              **********
+        {u"c": "NM_032790.3:c.125_128delCCCC",  u"g": "NC_000012.11:g.122064772_122064781delCCCCGCCACC",  u"n": "NM_032790.3:n.318_321delCCCC"},
     ]
 
 
