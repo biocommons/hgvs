@@ -206,3 +206,8 @@ class Test_Issues(unittest.TestCase):
         c_var = self.hp.parse_hgvs_variant("NM_020745.3:c.1015G>A")  # correct projection with ref replacement
         self.assertEqual(c_var, self.evm37.g_to_c(g_var, "NM_020745.3"))  # previously okay
         self.assertEqual(c_var, self.vm_rr.g_to_c(g_var, "NM_020745.3"))  # previously wrong
+
+    def test_381_c_to_p_error_with_del_variants(self):
+        hgvs_c = "NM_000302.3:c.1594_1596del"
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        self.evm37.c_to_p(var_c)  # raises exception before fixing
