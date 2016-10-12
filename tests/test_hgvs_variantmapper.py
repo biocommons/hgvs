@@ -41,7 +41,23 @@ class Test_VariantMapper(unittest.TestCase):
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
         var_p = self.evm.c_to_p(var_c)
 
-        self.assertEqual(str(var_p), hgvs_p)        
+        self.assertEqual(str(var_p), hgvs_p)
+
+        hgvs_c = "NM_000302.3:c.1594_1596del"
+        hgvs_p = "NP_000293.2:p.(Glu532del)"
+
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.evm.c_to_p(var_c)
+
+        self.assertEqual(str(var_p), hgvs_p)
+
+        hgvs_c = "NM_000090.3:c.2490_2516del"
+        hgvs_p = "NP_000081.1:p.(Glu832_Gly840del)"
+
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.evm.c_to_p(var_c)
+
+        self.assertEqual(str(var_p), hgvs_p)
 
 
 
