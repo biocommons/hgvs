@@ -53,7 +53,7 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
         with self.assertRaisesRegexp(HGVSInvalidVariantError, hgvs.validator.BASE_RANGE_ERROR_MSG):
             self.validate_int.validate(self.hp.parse_hgvs_variant("NM_000277.1:c.3_1delAG"))
 
-        with self.assertRaisesRegexp(HGVSInvalidVariantError, hgvs.validator.OFFSET_RANGE_ERROR_MSG):
+        with self.assertRaisesRegexp(HGVSInvalidVariantError, hgvs.validator.BASE_RANGE_ERROR_MSG):
             self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.123+56_123+55A>T"))
 
     def test_ins_length_is_one(self):
