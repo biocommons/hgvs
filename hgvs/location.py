@@ -19,6 +19,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import recordtype
 
+from functools import total_ordering
 from bioutils.sequences import aa1_to_aa3
 
 import hgvs
@@ -166,8 +167,8 @@ class BaseOffsetPosition(recordtype.recordtype(
             if lhs.base == rhs.base:
                 return lhs.offset < rhs.offset
             else:
-                if (rhs.base - lhs.base == 1 and lhs.offset > 0 and rhs.offset < 0) or
-                   (lhs.base - rhs.base == 1 and rhs.offset > 0 and lhs.offset < 0):
+                if ((rhs.base - lhs.base == 1 and lhs.offset > 0 and rhs.offset < 0) or
+                    (lhs.base - rhs.base == 1 and rhs.offset > 0 and lhs.offset < 0)):
                     raise HGVSUnsupportedOperationError("Cannot compare coordinates in the same intron with one based on end of exon and the other based on start of next exon")
                 else:
                     return lhs.base < rhs.base
