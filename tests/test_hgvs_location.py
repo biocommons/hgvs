@@ -7,10 +7,15 @@ from nose.plugins.attrib import attr
 
 from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError
 import hgvs.location
+import hgvs.parser
 
 
 @attr(tags=["quick", "models"])
 class Test_SimplePosition(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.hp = hgvs.parser.Parser()
+
     def test_success(self):
         self.assertEqual(str(hgvs.location.SimplePosition(5)), "5")
         self.assertEqual(str(hgvs.location.SimplePosition(5, uncertain=True)), "(5)")
@@ -25,9 +30,28 @@ class Test_SimplePosition(unittest.TestCase):
             hgvs.location.SimplePosition(5) - hgvs.location.SimplePosition(3),
             2)
 
+    def test_simple_comparision(self):
+        var = self.hp.parse_hgvs_variant("NC_000007.13:g.36561662_36561683del")
+        self.assertFalse(var.posedit.pos.start == var.posedit.pos.end)
+        self.assertTrue(var.posedit.pos.start < var.posedit.pos.end)
+        self.assertTrue(var.posedit.pos.start <= var.posedit.pos.end)
+        self.assertFalse(var.posedit.pos.start > var.posedit.pos.end)
+        self.assertFalse(var.posedit.pos.start >= var.posedit.pos.end)
+
+        var = self.hp.parse_hgvs_variant("NC_000007.13:g.36561662C>T")
+        self.assertTrue(var.posedit.pos.start == var.posedit.pos.end)
+        self.assertFalse(var.posedit.pos.start < var.posedit.pos.end)
+        self.assertTrue(var.posedit.pos.start <= var.posedit.pos.end)
+        self.assertFalse(var.posedit.pos.start > var.posedit.pos.end)
+        self.assertTrue(var.posedit.pos.start >= var.posedit.pos.end)
+
 
 @attr(tags=["quick"])
 class Test_BaseOffsetPosition(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.hp = hgvs.parser.Parser()
+
     def test_success(self):
         # r.5
         cdsp = hgvs.location.BaseOffsetPosition(5)
@@ -78,11 +102,70 @@ class Test_BaseOffsetPosition(unittest.TestCase):
         with self.assertRaises(HGVSError):
             _ = v54-v30
 
+    def test_baseoffset_comparision(self):
+        var = self.hp.parse_hgvs_variant("NM_000030.2:c.669_680del")
+        self.assertFalse(var.posedit.pos.start == var.posedit.pos.end)
+        self.assertTrue(var.posedit.pos.start < var.posedit.pos.end)
+        self.assertTrue(var.posedit.pos.start <= var.posedit.pos.end)
+        self.assertFalse(var.posedit.pos.start > var.posedit.pos.end)
+        self.assertFalse(var.posedit.pos.start >= var.posedit.pos.end)
+
+        var = self.hp.parse_hgvs_variant("NM_000030.2:c.679_680+2del")
+        self.assertFalse(var.posedit.pos.start == var.posedit.pos.end)
+        self.assertTrue(var.posedit.pos.start < var.posedit.pos.end)
+        self.assertTrue(var.posedit.pos.start <= var.posedit.pos.end)
+        self.assertFalse(var.posedit.pos.start > var.posedit.pos.end)
+        self.assertFalse(var.posedit.pos.start >= var.posedit.pos.end)
+
+        var = self.hp.parse_hgvs_variant("NM_000030.2:c.-6_680+2del")
+        self.assertFalse(var.posedit.pos.start == var.posedit.pos.end)
+        self.assertTrue(var.posedit.pos.start < var.posedit.pos.end)
+        self.assertTrue(var.posedit.pos.start <= var.posedit.pos.end)
+        self.assertFalse(var.posedit.pos.start > var.posedit.pos.end)
+        self.assertFalse(var.posedit.pos.start >= var.posedit.pos.end)
+
+        var = self.hp.parse_hgvs_variant("NM_000030.2:c.680+2_680+10del")
+        self.assertFalse(var.posedit.pos.start == var.posedit.pos.end)
+        self.assertTrue(var.posedit.pos.start < var.posedit.pos.end)
+        self.assertTrue(var.posedit.pos.start <= var.posedit.pos.end)
+        self.assertFalse(var.posedit.pos.start > var.posedit.pos.end)
+        self.assertFalse(var.posedit.pos.start >= var.posedit.pos.end)
+
+        var = self.hp.parse_hgvs_variant("NM_000030.2:c.680+2_*82del")
+        self.assertFalse(var.posedit.pos.start == var.posedit.pos.end)
+        self.assertTrue(var.posedit.pos.start < var.posedit.pos.end)
+        self.assertTrue(var.posedit.pos.start <= var.posedit.pos.end)
+        self.assertFalse(var.posedit.pos.start > var.posedit.pos.end)
+        self.assertFalse(var.posedit.pos.start >= var.posedit.pos.end)
+
+        var = self.hp.parse_hgvs_variant("NM_000030.2:c.-12_*82del")
+        self.assertFalse(var.posedit.pos.start == var.posedit.pos.end)
+        self.assertTrue(var.posedit.pos.start < var.posedit.pos.end)
+        self.assertTrue(var.posedit.pos.start <= var.posedit.pos.end)
+        self.assertFalse(var.posedit.pos.start > var.posedit.pos.end)
+        self.assertFalse(var.posedit.pos.start >= var.posedit.pos.end)
+
+        var = self.hp.parse_hgvs_variant("NM_000030.2:c.680+2_681del")
+        self.assertFalse(var.posedit.pos.start == var.posedit.pos.end)
+        self.assertTrue(var.posedit.pos.start < var.posedit.pos.end)
+        self.assertTrue(var.posedit.pos.start <= var.posedit.pos.end)
+        self.assertFalse(var.posedit.pos.start > var.posedit.pos.end)
+        self.assertFalse(var.posedit.pos.start >= var.posedit.pos.end)
+
+        var = self.hp.parse_hgvs_variant("NM_000030.2:c.680+2_681-32del")
+        with self.assertRaises(HGVSUnsupportedOperationError):
+            var.posedit.pos.start < var.posedit.pos.end
+        
+
         
 
 
 @attr(tags=["quick"])
 class Test_AAPosition(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.hp = hgvs.parser.Parser()
+
     def test_AAPosition(self):
         ap = hgvs.location.AAPosition(15, "S")
         self.assertEqual(ap.pos, 15)
@@ -92,6 +175,15 @@ class Test_AAPosition(unittest.TestCase):
         l1 = hgvs.location.AAPosition(15, 'S')
         l2 = hgvs.location.AAPosition(20, 'S')
         self.assertEqual(l2-l1, 5)
+
+    def test_aaposition_comparision(self):
+        var = self.hp.parse_hgvs_variant("NP_000042.3:p.His1082_Val1085delinsLeuHisGlnAla")
+        self.assertTrue(var.posedit.pos.start < var.posedit.pos.end)
+        self.assertFalse(var.posedit.pos.start > var.posedit.pos.end)
+
+        var = self.hp.parse_hgvs_variant("NP_000042.3:p.His1082ArgfsTer2")
+        self.assertFalse(var.posedit.pos.start < var.posedit.pos.end)
+        self.assertFalse(var.posedit.pos.start > var.posedit.pos.end)
 
 
 @attr(tags=["quick"])
