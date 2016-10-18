@@ -11,7 +11,6 @@ import hgvs.edit
 import hgvs.variantmapper
 
 BASE_RANGE_ERROR_MSG = "base start position must be <= end position"
-OFFSET_RANGE_ERROR_MSG = "offset start must be <= end position"
 INS_ERROR_MSG = "insertion length must be 1"
 DEL_ERROR_MSG = "Length implied by coordinates ({span_len}) must equal sequence deletion length ({del_len})"
 AC_ERROR_MSG = "Accession is not present in BDI database"
@@ -48,18 +47,12 @@ class IntrinsicValidator(object):
     def _start_lte_end(self, var):
         if not var.posedit.pos or not var.posedit.pos.start or not var.posedit.pos.end:
             return True
-        if var.type in SIMPLE_COORD_TYPES:
-            if var.posedit.pos.start.base > var.posedit.pos.end.base:
-                raise HGVSInvalidVariantError(BASE_RANGE_ERROR_MSG)
-        if var.type in BASE_OFFSET_COORD_TYPES:
-            if var.posedit.pos.start.datum == var.posedit.pos.end.datum and var.posedit.pos.start.base > var.posedit.pos.end.base:
-                raise HGVSInvalidVariantError(BASE_RANGE_ERROR_MSG)
-            elif var.posedit.pos.start.base == var.posedit.pos.end.base:
-                if var.posedit.pos.start.offset > var.posedit.pos.end.offset:
-                    raise HGVSInvalidVariantError(OFFSET_RANGE_ERROR_MSG)
-            if var.posedit.pos.start.datum > var.posedit.pos.end.datum:
-                raise HGVSInvalidVariantError(BASE_RANGE_ERROR_MSG)
-        return True
+        if var.type == 'p':
+            return True
+        if var.posedit.pos.start <= var.posedit.pos.end:
+            return True
+        else:
+            raise HGVSInvalidVariantError(BASE_RANGE_ERROR_MSG)
 
     def _ins_length_is_one(self, var):
         if not var.posedit.pos or not var.posedit.pos.start or not var.posedit.pos.end:
