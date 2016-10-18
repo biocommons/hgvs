@@ -30,6 +30,7 @@ CDS_START = 1
 CDS_END = 2
 
 
+@total_ordering
 class SimplePosition(recordtype.recordtype("SimplePosition", field_names=[("base", None), ("uncertain", False)])):
     def __str__(self):
         self.validate()
@@ -58,7 +59,20 @@ class SimplePosition(recordtype.recordtype("SimplePosition", field_names=[("base
         assert type(lhs) == type(rhs), "Cannot substract coordinates of different representations"
         return lhs.base - rhs.base
 
+    def __eq__(lhs, rhs):
+        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+        if lhs.uncertain or rhs.uncertain:
+            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+        return lhs.base == rhs.base
+    
+    def __lt__(lhs, rhs):
+        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+        if lhs.uncertain or rhs.uncertain:
+            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+        return lhs.base < rhs.base
 
+
+@total_ordering
 class BaseOffsetPosition(recordtype.recordtype(
     'BaseOffsetPosition',
     field_names=[('base', None), ('offset', 0), ('datum', SEQ_START), ('uncertain', False)])):
@@ -138,6 +152,32 @@ class BaseOffsetPosition(recordtype.recordtype(
         straddles_zero = 1 if (lhs.base > 0 and rhs.base < 0) else 0
         return lhs.base - rhs.base - straddles_zero
 
+    def __eq__(lhs, rhs):
+        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+        if lhs.uncertain or rhs.uncertain:
+            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+        return lhs.datum == rhs.datum and lhs.base == rhs.base and lhs.offset == rhs.offset
+
+    def __lt__(lhs, rhs):
+        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+        if lhs.uncertain or rhs.uncertain:
+            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+        if lhs.datum == rhs.datum:
+            if lhs.base == rhs.base:
+                return lhs.offset < rhs.offset
+            else:
+                if (rhs.base - lhs.base == 1 and lhs.offset > 0 and rhs.offset < 0) or
+                   (lhs.base - rhs.base == 1 and rhs.offset > 0 and lhs.offset < 0):
+                    raise HGVSUnsupportedOperationError("Cannot compare coordinates in the same intron with one based on end of exon and the other based on start of next exon")
+                else:
+                    return lhs.base < rhs.base
+        else:
+            if lhs.datum == SEQ_START or rhs.datum == SEQ_START:
+                raise HGVSUnsupportedOperationError("Cannot compare coordinates of datum SEQ_START with CDS_START or CDS_END")
+            else:
+                return lhs.datum < rhs.datum
+
+
 
 class AAPosition(recordtype.recordtype("AAPosition", field_names=[("base", None), ("aa", None), ("uncertain", False)])):
     def validate(self):
@@ -186,6 +226,18 @@ class AAPosition(recordtype.recordtype("AAPosition", field_names=[("base", None)
     def __sub__(lhs, rhs):
         assert type(lhs) == type(rhs), "Cannot substract coordinates of different representations"
         return lhs.base - rhs.base
+
+    def __lt__(lhs, rhs):
+        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+        if lhs.uncertain or rhs.uncertain:
+            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+        return lhs.base < rhs.base
+
+    def __gt__(lhs, rhs):
+        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+        if lhs.uncertain or rhs.uncertain:
+            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+        return lhs.base > rhs.base
 
 
 class Interval(recordtype.recordtype("Interval", field_names=["start", ("end", None), ("uncertain", False)])):
