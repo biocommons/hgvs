@@ -1,0 +1,23 @@
+<?xml version="1.0" standalone="no"?>
+<svg width="396" height="220" viewBox="-8 -58 396 220 " xmlns="http://www.w3.org/2000/svg" version="1.1">
+<defs><style type="text/css">.terminal_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.terminal_text{fill:black;font-family:Verdana,Sans-serif;text-anchor:middle;font-size:14px;}.symbol_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.symbol_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-style:italic;text-anchor:middle;font-size:14px;}.path{fill:none;stroke:black;stroke-width:2;}.rule_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-size:14px;}.rule_path_edge{fill:none;stroke:black;stroke-width:3;}</style></defs>
+<text class="rule_text" x="0" y="-36" >pro_subst:</text>
+<rect class="symbol_rect" x="102" y="-14" width="66" height="28" rx="1" />
+<text class="symbol_text" x="135" y="4" >aat13</text>
+<rect class="terminal_rect" x="102" y="30" width="26" height="28" rx="28" />
+<text class="terminal_text" x="115" y="48" >?</text>
+<path class="path" d="M66 0 L102 0 M66 0 Q78 0 78 12 M204 0 L168 0 M204 0 Q192 0 192 12" />
+<path class="path" d="M90 44 L102 44 M90 44 Q78 44 78 32 L78 12 M180 44 L128 44 M180 44 Q192 44 192 32 L192 12" />
+<rect class="symbol_rect" x="228" y="-14" width="86" height="28" rx="1" />
+<text class="symbol_text" x="271" y="4" >aa13_fs</text>
+<path class="path" d="M204 0 L228 0" />
+<rect class="symbol_rect" x="66" y="74" width="96" height="28" rx="1" />
+<text class="symbol_text" x="114" y="92" >aa13_ext</text>
+<rect class="terminal_rect" x="66" y="118" width="16" height="28" rx="28" />
+<text class="terminal_text" x="74" y="136" ></text>
+<path class="path" d="M30 0 L66 0 M30 0 Q42 0 42 12 M350 0 L314 0 M350 0 Q338 0 338 12" />
+<path class="path" d="M54 88 L66 88 M54 88 Q42 88 42 76 L42 12 M326 88 L162 88 M326 88 Q338 88 338 76 L338 12" />
+<path class="path" d="M54 132 L66 132 M54 132 Q42 132 42 120 L42 76 M326 132 L82 132 M326 132 Q338 132 338 120 L338 76" />
+<path class="path" d="M0 0 L30 0 M380 0 L350 0" />
+<path class="rule_path_edge" d="M0 -6 L0 6 M380 -6 L380 6" />
+</svg>

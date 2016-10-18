@@ -1,0 +1,9 @@
+clog format: 1; -*-outline-*-
+* 0.4.4 (2015-12-15)
+Changes since 0.4.3 (2015-12-06).
+** Bug Fixes
+*** fixes #282: preserve position in "identity" variants (e.g., norm(c.123A>A) => c.123= rather than c.=) [5e6fd1524204]. (Reported by Stephan Pabinger.)
+*** fixes #294: extend variant type checks in validator [e28b5a525f6e]
+*** fixes #292: Fix bug in validator when validating m. variants and add tests [64e31808a760]
+** Other Changes
+*** stopgap for #253: issue warning that p. validation is unsupported [a9bd9ab405bc] (Reported by Ram Srinivasan.)
