@@ -20,7 +20,7 @@ def bin_file(fn):
     if '_posedit' in fn: return 'posedit'
     if '_pos' in fn: return 'pos'
     if '_edit' in fn: return 'edit'
-    if re.search('_(del|delins|dup|ins|subst)', fn): return 'edit'
+    if re.search('_(del|delins|dup|ins|subst|inv|conv|ident|copy)', fn): return 'edit'
     if '_seq' in fn: return 'seq'
     if re.search('/(aa|dna|rna)', fn): return 'res'
     return 'other'
