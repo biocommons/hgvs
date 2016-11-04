@@ -47,9 +47,9 @@ More detailed installation instructions are in :doc:`installation`.
 Parse the variant
 @@@@@@@@@@@@@@@@@
 
-To parse variants, we need to create a an instance of the
+To parse variants, we need to create an instance of the
 :py:class:`hgvs.parser.Parser`.  Since building the grammar is
-computationally expensive, you should be only one instance and use it for
+computationally expensive, you should create only one instance and use it for
 all parsing operations.  Start ``ipython``, then do this:
 
 >>> import hgvs.parser
@@ -91,7 +91,7 @@ the parser, you need only one instance per session.
 Variant mapping and validation requires access to external data,
 specifically exon structures, transcript alignments, and protein
 accessions.  Right now, the only source of this data is via the UTA
-UTA sister projects.  (If you want more information on the
+sister projects.  (If you want more information on the
 architecture of HGVS, UTA, see :doc:`intro`.  However, you don't
 really need to understand the architecture to use HGVS.)
 
@@ -103,7 +103,7 @@ hdp = hgvs.dataproviders.uta.connect()
 By default, you'll connect to the public UTA database instance hosted by
 `Invitae <http://invitae.com/>`_.
 
-Then, with that connection, instantiate an VariantMapper:
+Then, with that connection, instantiate a VariantMapper:
 
 >>> import hgvs.variantmapper
 variantmapper = hgvs.variantmapper.VariantMapper(hdp)
@@ -131,10 +131,10 @@ a minus-strand transcript, so the nucleotides are reverse complemented.
 Since you'll probably want to access the position, now is a good time to
 explore the posedit structure:
 
-First, a posedit consists of a position and an edit.  Positions are
+First, a posedit consists of a position and an edit. Positions are
 **always** intervals, even if their string representation looks like a
-simple integer.  Interval bounds are referred to with ``start`` and
-``end`` attributes.  As with edits, they may also be ``uncertain``.
+simple integer. Interval bounds are referred to with ``start`` and
+``end`` attributes. As with edits, they may also be ``uncertain``.
  
 >>> var_g.posedit.pos
 Interval(start=150550916, end=150550916, uncertain=False)
