@@ -44,6 +44,7 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
           "hgvs",
       ],
       install_requires=[
+          "biocommons.seqrepo",
           "biopython>=1.66",
           "bioutils>=0.2.0a2",
           "configparser>=3.3.0",
