@@ -113,7 +113,7 @@ def connect(db_url=None, pooling=hgvs.global_config.uta.pooling, application_nam
     return conn
 
 
-class UTABase(Interface, SeqFetcher):
+class UTABase(Interface):
     required_version = "1.1"
 
     _queries = {
@@ -180,6 +180,7 @@ class UTABase(Interface, SeqFetcher):
 
     def __init__(self, url):
         self.url = url
+        self.seqfetcher = SeqFetcher()
         self._connect()
         super(UTABase, self).__init__()
 
@@ -204,6 +205,10 @@ class UTABase(Interface, SeqFetcher):
     @lru_cache(maxsize=1)
     def schema_version(self):
         return self._fetchone("select * from meta where key = 'schema_version'")['value']
+
+    @lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)
+    def get_seq(self, ac, start_i=None, end_i=None):
+        return self.seqfetcher.fetch_seq(ac, start_i, end_i)
 
     @lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)
     def get_acs_for_protein_seq(self, seq):

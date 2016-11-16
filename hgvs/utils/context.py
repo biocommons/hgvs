@@ -60,7 +60,7 @@ def full_house(evm, var, tx_ac=None):
 #     return '\n'.join([
 #         seq_line_fmt(var=var,
 #                      span=span,
-#                      content=evm.hdp.fetch_seq(var.ac, *span),
+#                      content=evm.hdp.get_seq(var.ac, *span),
 #                      post=''), pointer_line(var, span)
 #     ])
 
@@ -80,9 +80,9 @@ def variant_context_w_alignment(evm, var, margin=20, tx_ac=None):
     span_n = _ival_to_span(ival_n)
     ival_c = tm.g_to_c(ival_g)
     span_c = _ival_to_span(ival_c)
-    seq_gt = evm.hdp.fetch_seq(fh['g'].ac, span_g[0] - 1, span_g[1])
+    seq_gt = evm.hdp.get_seq(fh['g'].ac, span_g[0] - 1, span_g[1])
     seq_gb = complement(seq_gt)
-    seq_n = evm.hdp.fetch_seq(fh['n'].ac, span_n[0] - 1, span_n[1])
+    seq_n = evm.hdp.get_seq(fh['n'].ac, span_n[0] - 1, span_n[1])
     if strand == 1:
         a = align(bytes(seq_gt), bytes(seq_n), b'global', extended_cigar=True)
     else:
