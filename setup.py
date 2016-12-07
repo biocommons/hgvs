@@ -53,6 +53,7 @@ setup(
         'biopython',
         'bioutils >=0.1.0,<0.2.0',
         'configparser',
+        'ipython',
         'parsley',
         'psycopg2',
         'recordtype',
