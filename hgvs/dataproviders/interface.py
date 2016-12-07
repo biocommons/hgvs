@@ -9,7 +9,8 @@ import abc
 
 import hgvs
 
-from ..decorators.lru_cache import lru_cache
+from ..decorators.lru_cache import lru_cache, LEARN, RUN, VERIFY
+from ..utils.PersistentDict import PersistentDict
 
 
 class Interface(object):
@@ -41,19 +42,40 @@ class Interface(object):
         return 4
 
     def __init__(self):
-        self.data_version            = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.data_version)
-        self.schema_version          = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.schema_version)
-        self.get_acs_for_protein_seq = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.get_acs_for_protein_seq)
-        self.get_gene_info           = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.get_gene_info)
-        self.get_pro_ac_for_tx_ac    = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.get_pro_ac_for_tx_ac)
-        self.get_seq                 = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.get_seq)
-        self.get_similar_transcripts = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.get_similar_transcripts)
-        self.get_tx_exons            = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.get_tx_exons)
-        self.get_tx_for_gene         = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.get_tx_for_gene)
-        self.get_tx_for_region       = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.get_tx_for_region)
-        self.get_tx_identity_info    = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.get_tx_identity_info)
-        self.get_tx_info             = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.get_tx_info)
-        self.get_tx_mapping_options  = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.get_tx_mapping_options)
+        """
+        :param mode: cache mode (None[default lru cache], 'learn', 'run', 'verify')
+        :type mode: str
+        :param cache: local cache file name
+        :type cache: str
+        """
+        self.mode = None
+        if mode == 'learn':
+            self.mode = LEARN
+        elif mode == 'run':
+            self.mode = RUN
+        elif mode == 'verify':
+            self.mode = VERIFY
+        
+        self.cache = None
+        if self.mode is not None:
+            if self.mode == LEARN:
+                self.cache = PersistentDict(cache, flag='c')
+            else:
+                self.cache = PersistentDict(cache, flag='r')
+
+        self.data_version            = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.data_version)
+        self.schema_version          = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.schema_version)
+        self.get_acs_for_protein_seq = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_acs_for_protein_seq)
+        self.get_gene_info           = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_gene_info)
+        self.get_pro_ac_for_tx_ac    = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_pro_ac_for_tx_ac)
+        self.get_seq                 = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_seq)
+        self.get_similar_transcripts = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_similar_transcripts)
+        self.get_tx_exons            = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_tx_exons)
+        self.get_tx_for_gene         = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_tx_for_gene)
+        self.get_tx_for_region       = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_tx_for_region)
+        self.get_tx_identity_info    = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_tx_identity_info)
+        self.get_tx_info             = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_tx_info)
+        self.get_tx_mapping_options  = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_tx_mapping_options)
 
         def _split_version_string(v):
             versions = map(int, v.split("."))
