@@ -54,6 +54,7 @@ sdist
 tests/data/*.out
 tmp
 ve
+venv
 virtualenv-*
 virtualenv.py
 workspace

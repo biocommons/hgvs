@@ -122,22 +122,29 @@ class UTABase(Interface):
             from seq_anno
             where seq_id=?
             """,
+
         "gene_info": """
             select *
             from gene
             where hgnc=?
             """,
+
+        # TODO: reconcile tx_exons query and build_tx_cigar
+        # built_tx_cigar says it expects exons in transcript order,
+        # but tx_exons isn't do that (on the - strand).
         "tx_exons": """
             select *
             from tx_exon_aln_v
             where tx_ac=? and alt_ac=? and alt_aln_method=?
             order by alt_start_i
             """,
+
         "tx_for_gene": """
             select hgnc, cds_start_i, cds_end_i, tx_ac, alt_ac, alt_aln_method
             from transcript T
             join exon_set ES on T.ac=ES.tx_ac where alt_aln_method != 'transcript' and hgnc=?
             """,
+
         "tx_for_region": """
             select tx_ac,alt_ac,alt_strand,alt_aln_method,min(start_i) as start_i,max(end_i) as end_i
             from exon_set ES
@@ -147,32 +154,38 @@ class UTABase(Interface):
             group by tx_ac,alt_ac,alt_strand,alt_aln_method
             having max(end_i)>? and min(start_i)<?
             """,
+
         "tx_identity_info": """
             select distinct(tx_ac), alt_ac, alt_aln_method, cds_start_i, cds_end_i, lengths, hgnc
             from tx_def_summary_v
             where tx_ac=?
             """,
+
         "tx_info": """
             select hgnc, cds_start_i, cds_end_i, tx_ac, alt_ac, alt_aln_method
             from transcript T
             join exon_set ES on T.ac=ES.tx_ac
             where tx_ac=? and alt_ac=? and alt_aln_method=?
             """,
+
         "tx_mapping_options": """
             select distinct tx_ac,alt_ac,alt_aln_method
             from tx_exon_aln_v where tx_ac=? and exon_aln_id is not NULL
             """,
+
         "tx_seq": """
             select seq
             from seq S
             join seq_anno SA on S.seq_id=SA.seq_id
             where ac=?
             """,
+
         "tx_similar": """
             select *
             from tx_similarity_v
             where tx_ac1 = ?
             """,
+
         "tx_to_pro": """
             select * from associated_accessions where tx_ac = ?
             """,
