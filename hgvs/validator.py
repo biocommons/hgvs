@@ -142,7 +142,7 @@ class ExtrinsicValidator():
             except ValueError:
                 pass
 
-            ref_seq = self.hdp.fetch_seq(ac, var_ref_start - 1, var_ref_end)
+            ref_seq = self.hdp.get_seq(ac, var_ref_start - 1, var_ref_end)
             if ref_seq != var_ref_seq:
                 raise HGVSInvalidVariantError(str(var) + ": " + SEQ_ERROR_MSG.format(ref_seq=ref_seq,
                                                                                  var_ref_seq=var_ref_seq))
