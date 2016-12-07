@@ -34,7 +34,7 @@ class Interface(object):
     __metaclass__ = abc.ABCMeta
 
     def interface_version(self):
-        return 3
+        return 4
 
     def __init__(self):
         def _split_version_string(v):
@@ -73,19 +73,11 @@ class Interface(object):
         pass
 
     @abc.abstractmethod
-    def get_tx_exons(self, tx_ac, alt_ac, alt_aln_method):
-        pass
-
-    @abc.abstractmethod
-    def get_tx_info(self, tx_ac, alt_ac, alt_aln_method):
-        pass
-
-    @abc.abstractmethod
-    def get_tx_for_gene(self, gene):
-        pass
-
-    @abc.abstractmethod
     def get_acs_for_protein_seq(seq):
+        pass
+
+    @abc.abstractmethod
+    def get_assembly_map(self, assembly_name):
         pass
 
     @abc.abstractmethod
@@ -93,7 +85,27 @@ class Interface(object):
         pass
 
     @abc.abstractmethod
-    def get_tx_mapping_options(self, tx_ac):
+    def get_pro_ac_for_tx_ac(self, tx_ac):
+        pass
+
+    @abc.abstractmethod
+    def get_seq(self, ac, start_i=None, end_i=None):
+        pass
+
+    @abc.abstractmethod
+    def get_similar_transcripts(self, tx_ac):
+        pass
+
+    @abc.abstractmethod
+    def get_tx_exons(self, tx_ac, alt_ac, alt_aln_method):
+        pass
+
+    @abc.abstractmethod
+    def get_tx_for_gene(self, gene):
+        pass
+
+    @abc.abstractmethod
+    def get_tx_for_region(self, alt_ac, alt_aln_method, start_i, end_i):
         pass
 
     @abc.abstractmethod
@@ -101,7 +113,11 @@ class Interface(object):
         pass
 
     @abc.abstractmethod
-    def get_assembly_map(self, assembly_name):
+    def get_tx_info(self, tx_ac, alt_ac, alt_aln_method):
+        pass
+
+    @abc.abstractmethod
+    def get_tx_mapping_options(self, tx_ac):
         pass
 
 # <LICENSE>

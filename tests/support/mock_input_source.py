@@ -52,7 +52,7 @@ class MockInputSource():
             result = data['transcript_sequence']
         return result
 
-    def fetch_seq(self, ac, start_i=None, end_i=None):
+    def get_seq(self, ac, start_i=None, end_i=None):
         return self.get_tx_seq(ac)[start_i:end_i]
 
     #

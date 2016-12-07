@@ -30,8 +30,8 @@ def vset(hs):
 
 n_vars = [
     # ADRB2    │ NM_000024.5 │  239 │ 1481 │ NC_000005.9  │  1 │ 148206155,148208197 | 284=1X32=1X1724=
-    # cseq = hdp.fetch_seq('NM_000024.5')
-    # gseq = hdp.fetch_seq('NC_000005.9',148206155,148208197)
+    # cseq = hdp.get_seq('NM_000024.5')
+    # gseq = hdp.get_seq('NC_000005.9',148206155,148208197)
     # cseq[280:290] = 'CAATAGAAGC'
     # gseq[280:290] = 'CAATGGAAGC'
     #                      ^ @285
@@ -47,8 +47,8 @@ n_vars = [
     'NM_000024.5:n.285dupA',
 
     # IFNA16   │ NM_002173.2 │    6 │  576 │ NC_000009.11 │ -1 │  21216371, 21217310 | 691=2X246=
-    # cseq = hdp.fetch_seq('NM_002173.2')
-    # gseq = reverse_complement(hdp.fetch_seq('NC_000009.11',21216371,21217310))
+    # cseq = hdp.get_seq('NM_002173.2')
+    # gseq = reverse_complement(hdp.get_seq('NC_000009.11',21216371,21217310))
     # cseq[685:695] = 'AAATTTCAAA'
     # gseq[685:695] = 'AAATTTTCAA'
     #                        ^^ @ i[691,693)

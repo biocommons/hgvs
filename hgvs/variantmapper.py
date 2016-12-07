@@ -275,7 +275,7 @@ class VariantMapper(object):
             def setup_transcript_data(cls, hdp, tx_ac, pro_ac):
                 """helper for generating RefTranscriptData from for c_to_p"""
                 tx_info = hdp.get_tx_identity_info(var_c.ac)
-                tx_seq = hdp.fetch_seq(tx_ac)
+                tx_seq = hdp.get_seq(tx_ac)
 
                 if tx_info is None or tx_seq is None:
                     raise HGVSDataNotAvailableError("Missing transcript data for accession: {}".format(tx_ac))
@@ -349,7 +349,7 @@ class VariantMapper(object):
             pos = tm.c_to_n(var.posedit.pos)
         else:
             pos = var.posedit.pos
-        seq = self.hdp.fetch_seq(var.ac, pos.start.base - 1, pos.end.base)
+        seq = self.hdp.get_seq(var.ac, pos.start.base - 1, pos.end.base)
 
         edit = var.posedit.edit
         if edit.ref != seq:
