@@ -1,0 +1,46 @@
+This directory contains notes about the construction of new test cases
+based on clinvar.  The primary motivation is to address the need for
+new tests for GRCh38, but it provided an opportunity to easily pull in
+new tests for GRCh37 too.
+
+
+Process:
+
+* Downloaded hgvs4variation.txt.gz
+$ wget -nd ftp://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/hgvs4variation.txt.gz
+$ \ls -l hgvs4variation.txt.gz 
+-rw-rw-r-- 1 reece reece 10292972 Sep 28 07:07 hgvs4variation.txt.gz
+$ sha1sum hgvs4variation.txt.gz 
+9bcee2fb6e7d67dbd422990eb5eaa4aacbce07b7  hgvs4variation.txt.gz
+
+$ ./extract-tests hgvs4variation.txt.gz | gzip -c >clinvar-groups.gz
+
+$ ./make-tests clinvar-groups.gz | gzip -c >clinvar-tests.gz
+
+$ mv clinvar-tests.gz ../../tests/data/clinvar.gz
+
+
+
+
+
+Clinvar gets a lot of variant representation wrong, which made
+generating tests difficult.  These seem to be general issues with
+particular variant types.  Examples:
+
+* AssertionError: g_to_t(NC_000002.11:g.169780331dupG,NM_003742.2): got NM_003742.2:c.3767dupC; expected NM_003742.2:c.3767_3768insC
+
+* AssertionError: c_to_p(NM_005763.3:c.1601_1609delGTAAACAAG): got NP_005754.2:p.Cys534Ter; expected on of NP_005754.2:p.Cys534_Ala871delinsTer
+deletion through end of sequence is discouraged by recommendations
+
+* AssertionError: g_to_t(NC_000019.10:g.1047511_1047516delAGCAGG,NM_019112.3): got NM_019112.3:c.2126_2131delAGCAGG; expected NM_019112.3:c.2124_2130del7
+delN is deprecated, I think
+
+* AssertionError: c_to_p(NM_030957.2:c.709C>T): got NP_112219.2:p.Arg237Ter; expected on of NP_112219.3:p.Arg237Ter
+wrong NM-NP association per NCBI web site
+
+* AssertionError: c_to_p(NM_000642.2:c.4529dupA): got NP_000633.2:p.Tyr1510Ter; expected on of NP_000633.2:p.Tyr1510TerfsTer
+TerfsTer?!
+
+* AssertionError: g_to_t(NC_000001.10:g.94980759G>A,NM_002858.3): got NM_002858.3:c.1902+1G>A; expected NM_002858.3:c.1902_1903insATTTGTATTTCTTTCATTGAATG
+Normalized against genomic sequence?
+  

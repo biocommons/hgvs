@@ -1,0 +1,31 @@
+<?xml version="1.0" standalone="no"?>
+<svg width="264" height="396" viewBox="-8 -58 264 396 " xmlns="http://www.w3.org/2000/svg" version="1.1">
+<defs><style type="text/css">.terminal_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.terminal_text{fill:black;font-family:Verdana,Sans-serif;text-anchor:middle;font-size:14px;}.symbol_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.symbol_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-style:italic;text-anchor:middle;font-size:14px;}.path{fill:none;stroke:black;stroke-width:2;}.rule_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-size:14px;}.rule_path_edge{fill:none;stroke:black;stroke-width:3;}</style></defs>
+<text class="rule_text" x="0" y="-36" >pro_edit:</text>
+<rect class="symbol_rect" x="66" y="-14" width="76" height="28" rx="1" />
+<text class="symbol_text" x="104" y="4" >pro_fs</text>
+<rect class="symbol_rect" x="66" y="30" width="86" height="28" rx="1" />
+<text class="symbol_text" x="109" y="48" >pro_ext</text>
+<rect class="symbol_rect" x="66" y="74" width="106" height="28" rx="1" />
+<text class="symbol_text" x="119" y="92" >pro_subst</text>
+<rect class="symbol_rect" x="66" y="118" width="116" height="28" rx="1" />
+<text class="symbol_text" x="124" y="136" >pro_delins</text>
+<rect class="symbol_rect" x="66" y="162" width="86" height="28" rx="1" />
+<text class="symbol_text" x="109" y="180" >pro_ins</text>
+<rect class="symbol_rect" x="66" y="206" width="86" height="28" rx="1" />
+<text class="symbol_text" x="109" y="224" >pro_del</text>
+<rect class="symbol_rect" x="66" y="250" width="86" height="28" rx="1" />
+<text class="symbol_text" x="109" y="268" >pro_dup</text>
+<rect class="symbol_rect" x="66" y="294" width="106" height="28" rx="1" />
+<text class="symbol_text" x="119" y="312" >pro_ident</text>
+<path class="path" d="M30 0 L66 0 M30 0 Q42 0 42 12 M218 0 L142 0 M218 0 Q206 0 206 12" />
+<path class="path" d="M54 44 L66 44 M54 44 Q42 44 42 32 L42 12 M194 44 L152 44 M194 44 Q206 44 206 32 L206 12" />
+<path class="path" d="M54 88 L66 88 M54 88 Q42 88 42 76 L42 32 M194 88 L172 88 M194 88 Q206 88 206 76 L206 32" />
+<path class="path" d="M54 132 L66 132 M54 132 Q42 132 42 120 L42 76 M194 132 L182 132 M194 132 Q206 132 206 120 L206 76" />
+<path class="path" d="M54 176 L66 176 M54 176 Q42 176 42 164 L42 120 M194 176 L152 176 M194 176 Q206 176 206 164 L206 120" />
+<path class="path" d="M54 220 L66 220 M54 220 Q42 220 42 208 L42 164 M194 220 L152 220 M194 220 Q206 220 206 208 L206 164" />
+<path class="path" d="M54 264 L66 264 M54 264 Q42 264 42 252 L42 208 M194 264 L152 264 M194 264 Q206 264 206 252 L206 208" />
+<path class="path" d="M54 308 L66 308 M54 308 Q42 308 42 296 L42 252 M194 308 L172 308 M194 308 Q206 308 206 296 L206 252" />
+<path class="path" d="M0 0 L30 0 M248 0 L218 0" />
+<path class="rule_path_edge" d="M0 -6 L0 6 M248 -6 L248 6" />
+</svg>

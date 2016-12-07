@@ -1,0 +1,15 @@
+clog format: 1; -*-outline-*-
+* 0.4.9 (2016-08-01)
+Changes since 0.4.8 (2016-07-19).
+** Special Attention
+A small number of alignments provided by NCBI do not begin at the
+transcript start.  These exist in UTA as-is and lead to incorrect
+mapping and validation.  Issue #346 contains the list of 52
+transcripts in 37 genes which exhibit this issue; please review prior
+results.  **hgvs will now refuse to use such alignments.**
+
+** Bug Fixes
+*** #346 (partial fix): ensure that alignment starts at transcript position 0 [ab402bf020c6]
+*** fixes #338: check position range limit when normalizing [da5f1fbcf76d]
+*** fixes #285, #334, #335, #324, #340: inversions parsing, formatting, and normalization [29a7b8634b01]
+*** fixes #340: do not accept sequence following inv [f76e1cb83422]
