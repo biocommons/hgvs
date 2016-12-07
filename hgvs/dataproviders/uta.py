@@ -59,7 +59,7 @@ def _get_uta_db_url():
     return hgvs.global_config['uta'][url_key]
 
 
-def connect(db_url=None, pooling=hgvs.global_config.uta.pooling, application_name=None):
+def connect(db_url=None, pooling=hgvs.global_config.uta.pooling, application_name=None, mode=None, cache=None):
     """Connect to a UTA database instance and return a UTA interface instance.
 
     :param db_url: URL for database connection
@@ -102,9 +102,9 @@ def connect(db_url=None, pooling=hgvs.global_config.uta.pooling, application_nam
 
     url = _parse_url(db_url)
     if url.scheme == 'sqlite':
-        conn = UTA_sqlite(url)
+        conn = UTA_sqlite(url, mode, cache)
     elif url.scheme == 'postgresql':
-        conn = UTA_postgresql(url=url, pooling=pooling, application_name=application_name)
+        conn = UTA_postgresql(url=url, pooling=pooling, application_name=application_name, mode=mode, cache=cache)
     else:
         # fell through connection scheme cases
         raise RuntimeError("{url.scheme} in {url} is not currently supported".format(url=url))
@@ -190,11 +190,11 @@ class UTABase(Interface):
             """,
     }
 
-    def __init__(self, url):
+    def __init__(self, url, mode=None, cache=None):
         self.url = url
         self.seqfetcher = SeqFetcher()
         self._connect()
-        super(UTABase, self).__init__()
+        super(UTABase, self).__init__(mode, cache)
 
     def _fetchone(self, sql, *args):
         with self._get_cursor() as cur:
@@ -469,12 +469,12 @@ class UTABase(Interface):
 
 
 class UTA_postgresql(UTABase):
-    def __init__(self, url, pooling=hgvs.global_config.uta.pooling, application_name=None):
+    def __init__(self, url, pooling=hgvs.global_config.uta.pooling, application_name=None, mode=None, cache=None):
         if url.schema is None:
             raise Exception("No schema name provided in {url}".format(url=url))
         self.pooling = pooling
         self.application_name = application_name
-        super(UTA_postgresql, self).__init__(url)
+        super(UTA_postgresql, self).__init__(url, mode, cache)
 
     def _connect(self):
         if self.application_name is None:
