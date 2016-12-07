@@ -43,6 +43,16 @@ class TranscriptMapper(object):
                                 "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
                                 "No transcript exons".format(self=self))
 
+            # hgvs-386: An assumption when building the cigar string
+            # is that exons are adjacent. Assert that here.
+            tx_exons = sorted(self.tx_exons, key=lambda e: e["ord"])
+            for i in range(1, len(tx_exons)):
+                if tx_exons[i - 1]["tx_end_i"] != tx_exons[i]["tx_start_i"]:
+                    raise HGVSDataNotAvailableError(
+                        "TranscriptMapper(tx_ac={self.tx_ac}, "
+                        "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
+                        "Exons {a} and {b} are not adjacent".format(self=self, a=i, b=i+1))
+
             self.strand = self.tx_exons[0]['alt_strand']
             self.cds_start_i = self.tx_info['cds_start_i']
             self.cds_end_i = self.tx_info['cds_end_i']
