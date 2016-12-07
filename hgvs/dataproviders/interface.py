@@ -7,6 +7,10 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import abc
 
+import hgvs
+
+from ..decorators.lru_cache import lru_cache
+
 
 class Interface(object):
     """Variant mapping and validation requires access to external data,
@@ -37,6 +41,20 @@ class Interface(object):
         return 4
 
     def __init__(self):
+        self.data_version            = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.data_version)
+        self.schema_version          = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.schema_version)
+        self.get_acs_for_protein_seq = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.get_acs_for_protein_seq)
+        self.get_gene_info           = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.get_gene_info)
+        self.get_pro_ac_for_tx_ac    = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.get_pro_ac_for_tx_ac)
+        self.get_seq                 = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.get_seq)
+        self.get_similar_transcripts = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.get_similar_transcripts)
+        self.get_tx_exons            = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.get_tx_exons)
+        self.get_tx_for_gene         = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.get_tx_for_gene)
+        self.get_tx_for_region       = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.get_tx_for_region)
+        self.get_tx_identity_info    = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.get_tx_identity_info)
+        self.get_tx_info             = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.get_tx_info)
+        self.get_tx_mapping_options  = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)(self.get_tx_mapping_options)
+
         def _split_version_string(v):
             versions = map(int, v.split("."))
             if len(versions) < 2:

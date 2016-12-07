@@ -22,7 +22,6 @@ from bioutils.digests import seq_md5
 
 import hgvs
 from ..dataproviders.interface import Interface
-from ..decorators.lru_cache import lru_cache
 from ..exceptions import HGVSError, HGVSDataNotAvailableError
 from .seqfetcher import SeqFetcher
 
@@ -211,19 +210,15 @@ class UTABase(Interface):
     ############################################################################
     # Queries
 
-    @lru_cache(maxsize=1)
     def data_version(self):
         return self.url.schema
 
-    @lru_cache(maxsize=1)
     def schema_version(self):
         return self._fetchone("select * from meta where key = 'schema_version'")['value']
 
-    @lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)
     def get_seq(self, ac, start_i=None, end_i=None):
         return self.seqfetcher.fetch_seq(ac, start_i, end_i)
 
-    @lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)
     def get_acs_for_protein_seq(self, seq):
         """
         returns a list of protein accessions for a given sequence.  The
@@ -234,7 +229,6 @@ class UTABase(Interface):
         md5 = seq_md5(seq)
         return [r['ac'] for r in self._fetchall(self._queries['acs_for_protein_md5'], [md5])] + ['MD5_' + md5]
 
-    @lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)
     def get_gene_info(self, gene):
         """
         returns basic information about the gene.
@@ -253,7 +247,6 @@ class UTABase(Interface):
         """
         return self._fetchone(self._queries['gene_info'], [gene])
 
-    @lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)
     def get_tx_exons(self, tx_ac, alt_ac, alt_aln_method):
         """
         return transcript exon info for supplied accession (tx_ac, alt_ac, alt_aln_method), or None if not found
@@ -315,7 +308,6 @@ class UTABase(Interface):
                     alt_aln_method=alt_aln_method))
         return rows
 
-    @lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)
     def get_tx_for_gene(self, gene):
         """
         return transcript info records for supplied gene, in order of decreasing length
@@ -325,7 +317,6 @@ class UTABase(Interface):
         """
         return self._fetchall(self._queries['tx_for_gene'], [gene])
 
-    @lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)
     def get_tx_for_region(self, alt_ac, alt_aln_method, start_i, end_i):
         """
         return transcripts that overlap given region
@@ -337,7 +328,6 @@ class UTABase(Interface):
         """
         return self._fetchall(self._queries['tx_for_region'], [alt_ac, alt_aln_method, start_i, end_i])
 
-    @lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)
     def get_tx_identity_info(self, tx_ac):
         """returns features associated with a single transcript.
 
@@ -360,7 +350,6 @@ class UTABase(Interface):
             raise HGVSDataNotAvailableError("No transcript definition for (tx_ac={tx_ac})".format(tx_ac=tx_ac))
         return rows[0]
 
-    @lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)
     def get_tx_info(self, tx_ac, alt_ac, alt_aln_method):
         """return a single transcript info for supplied accession (tx_ac, alt_ac, alt_aln_method), or None if not found
 
@@ -401,7 +390,6 @@ class UTABase(Interface):
                     alt_ac=alt_ac,
                     alt_aln_method=alt_aln_method))
 
-    @lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)
     def get_tx_mapping_options(self, tx_ac):
         """Return all transcript alignment sets for a given transcript
         accession (tx_ac); returns empty list if transcript does not
@@ -431,7 +419,6 @@ class UTABase(Interface):
         rows = self._fetchall(self._queries['tx_mapping_options'], [tx_ac])
         return rows
 
-    @lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)
     def get_similar_transcripts(self, tx_ac):
         """Return a list of transcripts that are similar to the given
         transcript, with relevant similarity criteria.
@@ -464,7 +451,6 @@ class UTABase(Interface):
         rows = self._fetchall(self._queries['tx_similar'], [tx_ac])
         return rows
 
-    @lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)
     def get_pro_ac_for_tx_ac(self, tx_ac):
         """Return the (single) associated protein accession for a given transcript
         accession, or None if not found."""
