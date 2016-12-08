@@ -41,7 +41,7 @@ class Interface(object):
     def interface_version(self):
         return 4
 
-    def __init__(self):
+    def __init__(self, mode=None, cache=None):
         """
         :param mode: cache mode (None[default lru cache], 'learn', 'run', 'verify')
         :type mode: str
