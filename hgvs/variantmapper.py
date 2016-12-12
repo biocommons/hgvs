@@ -9,7 +9,7 @@ from bioutils.accessions import primary_assembly_accessions
 from bioutils.sequences import reverse_complement
 import recordtype
 
-from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
+from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
 import hgvs
 import hgvs.location
 import hgvs.normalizer
@@ -466,7 +466,7 @@ class EasyVariantMapper(VariantMapper):
                    if e['alt_aln_method'] == self.alt_aln_method and e['alt_ac'] in self.primary_assembly_accessions]
         if len(alt_acs) > 1:
             raise HGVSError("Multiple chromosomal alignments for {tx_ac} in {pa}"
-                            "using {am} (likely paralog or pseudoautosomal region)".format(
+                            " using {am} (likely paralog or pseudoautosomal region)".format(
                                 tx_ac=tx_ac,
                                 pa=self.primary_assembly,
                                 am=self.alt_aln_method))
