@@ -19,7 +19,7 @@ class Test_SequenceVariant(unittest.TestCase):
     
     def test_fill_ref(self):
         hp = hgvs.parser.Parser()
-        hdp = hgvs.dataproviders.uta.connect()
+        hdp = hgvs.dataproviders.uta.connect(mode="run", cache="tests/data/cache.hdp")
         
         # fill reference for sequence variants
         var = hp.parse_hgvs_variant("NM_001166478.1:c.31_32del").fill_ref(hdp)

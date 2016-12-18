@@ -19,7 +19,7 @@ class Test_transcriptmapper(unittest.TestCase):
 
     @classmethod
     def setUp(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect()
+        cls.hdp = hgvs.dataproviders.uta.connect(mode="run", cache="tests/data/cache.hdp")
 
     def test_transcriptmapper_failures(self):
         self.assertRaises(HGVSError, TranscriptMapper, self.hdp,

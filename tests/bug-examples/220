@@ -25,7 +25,7 @@ def create_genomic_variant():
 
 gvar = create_genomic_variant()
 
-hdp = hgvs.dataproviders.uta.connect()
+hdp = hgvs.dataproviders.uta.connect(mode="run", cache="tests/data/cache.hdp")
 
 print("build a variant mapper once for the given transcript: all okay")
 variantmapper = hgvs.variantmapper.VariantMapper(hdp)
