@@ -15,7 +15,7 @@ import hgvs.projector
 class TestHgvsProjector(unittest.TestCase):
     @classmethod
     def setUp(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect()
+        cls.hdp = hgvs.dataproviders.uta.connect(mode="run", cache="tests/data/cache.hdp")
         cls.alt_ac = "NC_000001.10"
         cls.alt_aln_method = "splign"
         cls.hp = hgvs.parser.Parser()

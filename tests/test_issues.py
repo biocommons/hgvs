@@ -23,7 +23,7 @@ import hgvs.variantmapper
 @attr(tags=["issues"])
 class Test_Issues(unittest.TestCase):
     def setUp(self):
-        self.hdp = hgvs.dataproviders.uta.connect()
+        self.hdp = hgvs.dataproviders.uta.connect(mode="run", cache="tests/data/cache.hdp")
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp, replace_reference=False)
         self.vm_rr = hgvs.variantmapper.VariantMapper(self.hdp, replace_reference=True)
         self.hp = hgvs.parser.Parser()

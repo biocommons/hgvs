@@ -11,7 +11,7 @@ import hgvs.variantmapper
 import hgvs.parser
 import hgvs.validator
 
-hdp = hgvs.dataproviders.uta.connect()
+hdp = hgvs.dataproviders.uta.connect(mode="run", cache="tests/data/cache.hdp")
 
 
 class Test_HGVSValidator(unittest.TestCase):

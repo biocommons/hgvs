@@ -26,7 +26,7 @@ data_fn = os.path.join(os.path.dirname(__file__), "data", "clinvar.gz")
 
 class Test_Clinvar(unittest.TestCase, CrossChecker):
     def setUp(self):
-        self.hdp = hgvs.dataproviders.uta.connect()
+        self.hdp = hgvs.dataproviders.uta.connect(mode="learn", cache="tests/data/cache.hdp")
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp)
         self.hp = hgvs.parser.Parser()
 
