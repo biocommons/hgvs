@@ -1,0 +1,7 @@
+clog format: 1; -*-outline-*-
+* 0.4.12 (2016-12-06)
+Changes since 0.4.11 (2016-09-15).
+** Bug Fixes
+*** #386: reject discontiguous alignments [839a6fc36c7d]
+** Other Changes
+*** Minor typo corrections on quick_start.rst [49bb4ac246f1] (PR #53 from kmcallenberg)

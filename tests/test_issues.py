@@ -212,8 +212,3 @@ class Test_Issues(unittest.TestCase):
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
         self.evm37.c_to_p(var_c)  # raises exception before fixing
 
-    def test_386_reject_discontiguous_alignments(self):
-        # hgvs-386: raise exception when alignments are discontiguous
-        self.evm37.c_to_g(self.hp.parse_hgvs_variant("NM_001637.3:c.1582G>A"))  # control
-        with self.assertRaises(HGVSDataNotAvailableError):
-            self.evm37.c_to_g(self.hp.parse_hgvs_variant("NM_033517.1:c.1403A>C"))
