@@ -1,6 +1,7 @@
 .. _HGVS: http://www.hgvs.org/
 .. _Parsley: https://pypi.python.org/pypi/Parsley
-.. _`HGVS Recommendations`: http://www.hgvs.org/mutnomen/
+.. _`HGVS Recommendations`: http://varnomen.hgvs.org/
+.. _`Variation Nomenclature Recommendations`: http://varnomen.hgvs.org/
 .. _`hgvs issues`: https://bitbucket.org/biocommons/hgvs/issues
 .. _`hgvs package`: https://bitbucket.org/biocommons/hgvs
 .. _`semantic versioning`: http://semver.org/

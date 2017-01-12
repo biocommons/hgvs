@@ -16,7 +16,7 @@
 
 The *hgvs* package provides a Python library to facilitate the use of
 genome, transcript, and protein variants that are represented using
-the Human Genome Variation Society (`mutnomen`_) recommendations.
+the Human Genome Variation Society (`vanomen`_) recommendations.
 
 ===============  ==========  =============   ==============  ================  ===============  ===============
 **Stage**        **Branch**  **ChangeLog**   **Issues**      **PyPi**          **Status**       **Docs**
@@ -180,7 +180,7 @@ Other packages that manipulate HGVS variants:
 
 .. _documentation: http://hgvs.readthedocs.org/
 .. _invitae: http://invitae.com/
-.. _mutnomen: http://www.hgvs.org/mutnomen/
+.. _varnomen: http://varnomen.hgvs.org/
 .. _source: https://bitbucket.org/biocommons/hgvs/
 .. _uta: http://bitbucket.org/biocommons/uta/
 .. _mailing list: https://groups.google.com/forum/#!forum/hgvs-discuss
