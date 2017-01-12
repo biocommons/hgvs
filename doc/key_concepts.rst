@@ -168,9 +168,9 @@ sequences.  In order to isolate the hgvs package from the myriad
 choices and tradeoffs, these data are provided through an
 implementation of the (abstract) Data Provider Interface
 (:class:`hgvs.dataproviders.interface`).  Currently, the only concrete
-implementation of the data provider interface uses `UTA
-<https://bitbucket.org/biocommons/uta>`_, an archive of transcripts,
-transcript sequences, and transcript-reference sequence alignments.
+implementation of the data provider interface uses `UTA`_, an archive
+of transcripts, transcript sequences, and transcript-reference
+sequence alignments.
 
 Invitae provides a public UTA instance at ``uta.biocommons.org:5432``
 (PostgreSQL).  `hgvs` uses this public UTA instance by default, so
@@ -181,6 +181,3 @@ However, a docker image of UTA is also available; see
 Alternatively, users may implement their own providers that conform to
 the data providers interface. See :mod:`hgvs.dataproviders.uta` for an
 example.
-
-
-.. |eg| replace:: *e.g.,*

@@ -11,7 +11,7 @@ The hgvs package uses versions of the form `major.minor.patch`.
 Changes in patch level are for bug fixes only and will not have API
 changes.  As hgvs is still a nascent project, API changes are possible
 even for minor (y) version changes.  (As hgvs matures, will eventually
-adopt `semantic versioning <http://semver.org/>`_, in which breaking
+adopt `semantic versioning`_, in which breaking
 API changes will be restricted to major releases. We're not ready for
 that yet.)
 
@@ -83,8 +83,7 @@ Installing from source
    Users (non-developers) should prefer the PyPI installation.  There
    is no advantage to installing from source.
 
-Fetch the source code using `Mercurial
-<https://mercurial.selenic.com/>`_::
+Fetch the source code using `Mercurial`_::
 
   $ hg clone https://bitbucket.org/biocommons/hgvs
 

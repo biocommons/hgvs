@@ -50,7 +50,7 @@ parser, which means that you have the tools to serialize and deserialize
 
 .. parsed-literal::
 
-    (BaseOffsetPosition(base=22, offset=0, datum=2, uncertain=False), '*22')
+    (BaseOffsetPosition(base=22, offset=0, datum=2, uncertain=False), '\*22')
 
 
 
@@ -170,7 +170,7 @@ components of the variant and see the effects immediately.
 
 .. parsed-literal::
 
-    'NM_01234.5:c.200-6_(*22)A>T'
+    'NM_01234.5:c.200-6_(\*22)A>T'
 
 
 

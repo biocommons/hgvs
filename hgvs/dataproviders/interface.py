@@ -21,7 +21,7 @@ class Interface(object):
     implementation of the (abstract) HGVS Data Provider Interface.
 
     As of June 2014, the only available data provider implementation
-    uses the Universal Transcript Archive (`UTA`_), a sister project
+    uses the `Universal Transcript Archive (UTA)`_, a sister project
     that provides access to transcripts and genome-transcript
     alignments.  `Invitae`_ provides a public UTA database instance
     that is used by default; see the `UTA`_ page for instructions on
@@ -32,7 +32,7 @@ class Interface(object):
     data provider implementation should be a subclass (possibly
     indirect) of this class.
 
-    .. _UTA: http://bitbucket.org/biocommons/uta
+    .. _`Universal Transcript Archive (UTA)`: http://bitbucket.org/biocommons/uta
     .. _Invitae: http://invitae.com/
     """
 

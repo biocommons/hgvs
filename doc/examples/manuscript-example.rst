@@ -41,6 +41,8 @@ Open the UTA public data source for mapping and validation
 
     import hgvs.dataproviders.uta
     hdp = hgvs.dataproviders.uta.connect()
+
+
 Project transcript variant NM\_182763.2:c.688+403C>T to GRCh37 primary assembly using splign alignments
 -------------------------------------------------------------------------------------------------------
 

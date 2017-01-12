@@ -64,35 +64,19 @@ Features of the hgvs Package
   validate variants, separate from syntactic validation provided by
   the grammar.
 * **Extensible data sources**. Mapping and sequence data come from
-  `UTA <https://bitbucket.org/biocommons/uta/>`_ by default, but the
-  package includes a well-defined service interface that enables
-  alternative data sources.
+  `UTA`_ by default, but the package includes a well-defined service
+  interface that enables alternative data sources.
 * **Extensive automated tests**. We run extensive automated tests
   consisting of all supported variant types on many genes for every
   single commit to the source code repository. Test results are
   displayed publicly and immediately.
 
 
-.. _limitations:
-
-Current limitations of the hgvs Package
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-.. note::
-
-   All issues are public. For a full set of bugs, feature requests,
-   and tasks, see `hgvs issues
-   <https://bitbucket.org/biocommons/hgvs/issues?status=new&status=open>`__.
-
-* **Compound, complex, and mosaic variants will be available in the next release (0.5)**.
-  These have been implemented, and are awaiting further testing before
-  merging.  See :issue:`104`.
-
-* **Some HGVS recommendations are intentionally absent.**. We chose to focus on the subset
-  of the HGVS recommendations that are relevant for high-throughput
-  sequencing. Some features, such as translocations, are not currently
-  on our roadmap.
-
+.. note:: **Some HGVS recommendations are intentionally absent.** This
+   package is primarily concerned with the subset of the `VarNomen`_
+   recommendations that are relevant for high-throughput
+   sequencing. See `issues`_ for a full set of bugs and feature
+   requests.
 
 
 
