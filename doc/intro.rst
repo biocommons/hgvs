@@ -2,12 +2,12 @@ Introduction
 !!!!!!!!!!!!
 
 Genome, transcript, and protein sequence variants are typically
-reported using the `mutation nomenclature ("mutnomen") recommendations
-<http://www.hgvs.org/mutnomen/>`_ provided by the `Human Genome
-Variation Society (HGVS) <http://www.hgvs.org/>`_ (`Taschner and den
-Dunnen, 2011 <http://www.ncbi.nlm.nih.gov/pubmed/21309030>`_).  Most
-variants are deceptively simple looking, such as
-NM_021960.4:c.740C>T. In reality, the mutnomen standard provides for
+reported using the `variation nomenclature ("varnomen")
+recommendations <http://varnomen.hgvs.org/>`_ provided by the `Human
+Genome Variation Society (HGVS) <http://www.hgvs.org/>`_ (`Taschner
+and den Dunnen, 2011 <http://www.ncbi.nlm.nih.gov/pubmed/21309030>`_).
+Most variants are deceptively simple looking, such as
+NM_021960.4:c.740C>T. In reality, the varnomen standard provides for
 much more complex concepts and representations.
 
 As high-throughput sequencing becomes commonplace in the investigation
@@ -23,14 +23,14 @@ standardize the representation of variants discovered before the
 advent of high-throughput sequencing – are now approved by the HGVS
 and continue to evolve under the auspices of the Human Variome
 Project. Unfortunately, the complexity of biological phenomena and the
-breadth of the mutnomen standard makes it difficult to implement the
+breadth of the varnomen standard makes it difficult to implement the
 standard in software, which in turn makes using the standard in
 high-throughput analyses difficult.
 
 This package, ``hgvs``, is an easy-to-use Python library for parsing,
 representing, formatting, and mapping variants between genome, transcript,
 and protein sequences.  The current implementation handles most (but not
-all) of the mutnomen standard for precisely defined sequence variants.
+all) of the varnomen standard for precisely defined sequence variants.
 The intent is to centralize the subset of HGVS variant manipulation that
 is routinely used in modern, high-throughput sequencing analysis.
 
@@ -118,15 +118,16 @@ way to reach the ``hgvs`` package authors.  Please file bugs and feature
 requests on the `hgvs issue tracker
 <https://bitbucket.org/biocommons/hgvs/issues?status=new&status=open>`_.
 
-If you have questions about the `HGVS Mutation Nomenclature Recommendations
-<http://www.hgvs.org/mutnomen/>`_, consider posting your questions to the
-`HGVS Facebook page <https://www.facebook.com/HGVSmutnomen>`_.
+If you have questions about the `Variation Nomenclature
+Recommendations <http://varnomen.hgvs.org/>`_, consider posting your
+questions to the `HGVS Facebook page
+<https://www.facebook.com/HGVSmutnomen>`_.
 
 
 Links
 @@@@@
 
-* `HGVS Mutation Nomenclature Recommendations <http://www.hgvs.org/mutnomen/>`_
+* `Variation Nomenclature Recommendations <http://varnomen.hgvs.org/>`_
 * `Human Genome Variation Society (HGVS) <http://www.hgvs.org/>`_
 * Parsley_, an Python wrapper for the OMeta Parser Expression Grammar (PEG_)
 * `Universal Transcript Archive (UTA) <https://bitbucket.org/biocommons/uta/>`_
