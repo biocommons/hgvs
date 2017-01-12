@@ -21,9 +21,8 @@ class SequenceVariant(recordtype.recordtype("SequenceVariant", ["ac", "type", "p
         """Formatting the stringification of sequence variants
 
         :param conf: a dict comprises formatting options. None is to use global settings.
-        formatting configuration options:
-            p_3_letter: use 1-letter or 3-letter amino acid representation for p. variants.
-            p_term_asterisk: use * or Ter to represent stop-codon gain for p. variants.
+
+        See :class:`hgvs.config`.
         """
         if self.ac is not None:
             return "{ac}:{type}.{posedit}".format(ac=self.ac, type=self.type, posedit=self.posedit.format(conf))

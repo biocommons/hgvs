@@ -1,17 +1,19 @@
-.. _HGVS: http://www.hgvs.org/
-.. _Parsley: https://pypi.python.org/pypi/Parsley
-.. _`HGVS Recommendations`: http://varnomen.hgvs.org/
-.. _`Variation Nomenclature Recommendations`: http://varnomen.hgvs.org/
 .. _`hgvs issues`: https://bitbucket.org/biocommons/hgvs/issues
 .. _`hgvs package`: https://bitbucket.org/biocommons/hgvs
+.. _`HGVS Recommendations`: http://varnomen.hgvs.org/
+.. _`issues`: https://bitbucket.org/biocommons/hgvs/issues
 .. _`semantic versioning`: http://semver.org/
+.. _`Variation Nomenclature Recommendations`: http://varnomen.hgvs.org/
+.. _`varnomen`: http://varnomen.hgvs.org/
 .. _biocommons: https://biocommons.org/
 .. _ga4gh: http://genomicsandhealth.org/
 .. _ga4gh_api: http://ga4gh.org/#/api
 .. _ga4gh_dwg: http://ga4gh.org/
 .. _hgvs-discuss: https://groups.google.com/forum/#!forum/hgvs-discuss
+.. _HGVS: http://www.hgvs.org/
 .. _invitae: http://invitae.com/
 .. _mercurial: https://www.mercurial-scm.org/
+.. _Parsley: https://pypi.python.org/pypi/Parsley
 .. _peg: http://en.wikipedia.org/wiki/Parsing_expression_grammar
 .. _pep8: https://www.python.org/dev/peps/pep-0008/
 .. _uta: http://bitbucket.org/biocommons/uta/

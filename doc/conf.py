@@ -29,7 +29,6 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.extlinks',
     'sphinx.ext.intersphinx',
-    'sphinx.ext.pngmath',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
 ]
@@ -46,7 +45,8 @@ templates_path = ['templates']
 
 # rst_epilog is appended to all rst files
 # it's a good place to define global aliases
-rst_epilog_fn = os.path.join(os.path.dirname(__file__), 'epilog.rst')
+# If ends in .rst, sphinx will append it to itself :-(
+rst_epilog_fn = os.path.join(os.path.dirname(__file__), 'rst_epilog')
 rst_epilog = open(rst_epilog_fn).read()
 
 
