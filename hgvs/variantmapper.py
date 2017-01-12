@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 """Provides VariantMapper and EasyVariantMapper to project variants
 between sequences using TranscriptMapper.
 
