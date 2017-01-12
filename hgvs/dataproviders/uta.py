@@ -196,6 +196,12 @@ class UTABase(Interface):
         self._connect()
         super(UTABase, self).__init__(mode, cache)
 
+    def __str__(self):
+        return ("{n} <data_version:{dv}; schema_version:{sv}; application_name={self.application_name};"
+                " url={self.url}; sequences-from={sf}>").format(
+                    n=type(self).__name__, self=self, dv=self.data_version(),
+                    sv=self.schema_version(), sf=os.environ.get("HGVS_SEQREPO_DIR", "seqfetcher"))
+
     def _fetchone(self, sql, *args):
         with self._get_cursor() as cur:
             cur.execute(sql, *args)
