@@ -192,7 +192,8 @@ class UTABase(Interface):
     def __init__(self, url, mode=None, cache=None):
         self.url = url
         self.seqfetcher = SeqFetcher()
-        self._connect()
+        if mode != 'run':
+            self._connect()
         super(UTABase, self).__init__(mode, cache)
 
     def __str__(self):
