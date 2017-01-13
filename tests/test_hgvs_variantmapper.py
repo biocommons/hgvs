@@ -15,7 +15,7 @@ import hgvs.variantmapper
 class Test_VariantMapper(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect()
+        cls.hdp = hgvs.dataproviders.uta.connect(mode="run", cache="tests/data/cache.hdp")
         cls.evm = hgvs.variantmapper.EasyVariantMapper(cls.hdp)
         cls.hp = hgvs.parser.Parser()
 
@@ -66,7 +66,7 @@ class Test_VariantMapper(unittest.TestCase):
 class Test_VariantMapper_Exceptions(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect()
+        cls.hdp = hgvs.dataproviders.uta.connect(mode="run", cache="tests/data/cache.hdp")
         cls.vm = hgvs.variantmapper.VariantMapper(cls.hdp)
         cls.hp = hgvs.parser.Parser()
 
@@ -196,7 +196,7 @@ class Test_RefReplacement(unittest.TestCase):
             rec["pv"] = {x: cls.hp.parse_hgvs_variant(rec[x]) for x in "cgn"}
             return rec
 
-        cls.hdp = hgvs.dataproviders.uta.connect()
+        cls.hdp = hgvs.dataproviders.uta.connect(mode="run", cache="tests/data/cache.hdp")
         cls.evm = hgvs.variantmapper.EasyVariantMapper(cls.hdp, replace_reference=True, assembly_name="GRCh37", alt_aln_method="splign")
         cls.hp = hgvs.parser.Parser()
         cls.tests = [_parse_rec(rec) for rec in cls.test_cases]
@@ -218,7 +218,7 @@ class Test_RefReplacement(unittest.TestCase):
 class Test_EasyVariantMapper(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        hdp = hgvs.dataproviders.uta.connect()
+        hdp = hgvs.dataproviders.uta.connect(mode="run", cache="tests/data/cache.hdp")
         cls.hp = hgvs.parser.Parser()
         cls.evm = hgvs.variantmapper.EasyVariantMapper(hdp, assembly_name="GRCh37", alt_aln_method="splign")
     
