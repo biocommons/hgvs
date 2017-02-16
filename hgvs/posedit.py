@@ -7,7 +7,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import recordtype
 
-from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError
+from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
 
 
 class PosEdit(recordtype.recordtype('PosEdit', [('pos', None), ('edit', None), ('uncertain', False)])):
@@ -76,6 +76,19 @@ class PosEdit(recordtype.recordtype('PosEdit', [('pos', None), ('edit', None), (
             if on_error_raise:
                 raise
             return None
+
+    def validate(self):
+        if self.pos:
+            self.pos.validate()
+            # Check ins length is 1
+            if self.edit.type == "ins" and self.pos.end - self.pos.start != 1:
+                raise HGVSInvalidVariantError("insertion length must be 1")
+            # Check del length
+            if self.edit.type in ["del", "delins"]:
+                ref_len = self.edit.ref_n
+                if ref_len is not None and ref_len != self.pos.end - self.pos.start + 1:
+                    raise HGVSInvalidVariantError("Length implied by coordinates must equal sequence deletion length")
+        return True
 
 
 

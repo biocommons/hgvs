@@ -12,8 +12,6 @@ import hgvs.variantmapper
 
 BASE_RANGE_ERROR_MSG = "base start position must be <= end position"
 INS_ERROR_MSG = "insertion length must be 1"
-DEL_ERROR_MSG = "Length implied by coordinates ({span_len}) must equal sequence deletion length ({del_len})"
-AC_ERROR_MSG = "Accession is not present in BDI database"
 SEQ_ERROR_MSG = "Variant reference ({var_ref_seq}) does not agree with reference sequence ({ref_seq})"
 
 BASE_OFFSET_COORD_TYPES = "cnr"
@@ -39,64 +37,7 @@ class IntrinsicValidator(object):
 
     def validate(self, var):
         assert isinstance(var, hgvs.variant.SequenceVariant), "variant must be a parsed HGVS sequence variant object"
-        self._start_lte_end(var)
-        self._ins_length_is_one(var)
-        self._del_length(var)
-        return True
-
-    def _start_lte_end(self, var):
-        if not var.posedit.pos or not var.posedit.pos.start or not var.posedit.pos.end:
-            return True
-        if var.type == 'p':
-            return True
-        if var.posedit.pos.start <= var.posedit.pos.end:
-            return True
-        else:
-            raise HGVSInvalidVariantError(BASE_RANGE_ERROR_MSG)
-
-    def _ins_length_is_one(self, var):
-        if not var.posedit.pos or not var.posedit.pos.start or not var.posedit.pos.end:
-            return True
-        if not isinstance(var.posedit.edit, hgvs.edit.NARefAlt) and not isinstance(var.posedit.edit, hgvs.edit.AARefAlt):
-            return True
-        if var.posedit.edit.type == "ins":
-            if var.type in SIMPLE_COORD_TYPES:
-                if (var.posedit.pos.end.base - var.posedit.pos.start.base) != 1:
-                    raise HGVSInvalidVariantError(INS_ERROR_MSG)
-            if var.type in BASE_OFFSET_COORD_TYPES:
-                if var.posedit.pos.start.datum == var.posedit.pos.end.datum:
-                    if ((var.posedit.pos.end.base + var.posedit.pos.end.offset) -
-                        (var.posedit.pos.start.base + var.posedit.pos.start.offset)) != 1:
-                        raise HGVSInvalidVariantError(INS_ERROR_MSG)
-            return True
-
-    def _del_length(self, var):
-        if not isinstance(var.posedit.edit, hgvs.edit.NARefAlt) and not isinstance(var.posedit.edit, hgvs.edit.AARefAlt):
-            return True
-        if var.posedit.edit.type in ["del", "delins"]:
-            ref_len = var.posedit.edit.ref_n
-            if ref_len is None:
-                return True
-
-            if var.type in BASE_OFFSET_COORD_TYPES:
-                if var.posedit.pos.start.datum != hgvs.location.CDS_END and var.posedit.pos.end.datum == hgvs.location.CDS_END:
-                    raise HGVSUnsupportedOperationError(
-                        "Validating deletion length across CDS end is unsupported ({}); consider projecting to n. first".format(str(var)))
-                if not ((var.posedit.pos.start.offset == var.posedit.pos.end.offset == 0) or
-                        (var.posedit.pos.start.base == var.posedit.pos.end.base)):
-                    raise HGVSUnsupportedOperationError(
-                        "Validating deletion length for variants across exon/intron junctions is unsupported ({})".format(str(var)))
-                span_len = ((var.posedit.pos.end.base + var.posedit.pos.end.offset) -
-                            (var.posedit.pos.start.base + var.posedit.pos.start.offset) + 1)
-                # BO numbering is missing 0 (... -2 -1, 1, 2 ...) ⇒ adjust length if crossing
-                if var.posedit.pos.start.base < 0 and var.posedit.pos.end.base > 0:
-                    span_len -= 1
-            else:
-                span_len = var.posedit.pos.end.base - var.posedit.pos.start.base + 1
-
-            if span_len != ref_len:
-                raise HGVSInvalidVariantError(DEL_ERROR_MSG.format(span_len=span_len, del_len=ref_len))
-        return True
+        return var.validate()
 
 
 class ExtrinsicValidator():

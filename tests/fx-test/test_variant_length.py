@@ -68,7 +68,6 @@ class Test_VariantLengths(unittest.TestCase):
         ]
 
     error_tests = [
-        "NM_000249.3:c.1897_1897-3del844insGGAAA",
         "NM_003777.3:c.13552_*36del57",
         ]
 

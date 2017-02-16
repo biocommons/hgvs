@@ -23,7 +23,7 @@ from functools import total_ordering
 from bioutils.sequences import aa1_to_aa3
 
 import hgvs
-from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError, HGVSInvalidIntervalError
+from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError, HGVSInvalidIntervalError, HGVSInvalidVariantError
 
 
 SEQ_START = 0
@@ -146,10 +146,10 @@ class BaseOffsetPosition(recordtype.recordtype(
         assert type(lhs) == type(rhs), "Cannot substract coordinates of different representations"
         if lhs.datum != rhs.datum:
             raise HGVSUnsupportedOperationError("Interval length measured from different datums is ill-defined")
-        if lhs.offset != 0 or rhs.offset != 0:
-            raise HGVSUnsupportedOperationError("Interval length with intronic offsets is ill-defined")
         if lhs.base == rhs.base:
             return lhs.offset - rhs.offset
+        if lhs.offset != 0 or rhs.offset != 0:
+            raise HGVSUnsupportedOperationError("Interval length with intronic offsets is ill-defined")
         straddles_zero = 1 if (lhs.base > 0 and rhs.base < 0) else 0
         return lhs.base - rhs.base - straddles_zero
 
@@ -241,13 +241,22 @@ class AAPosition(recordtype.recordtype("AAPosition", field_names=[("base", None)
         return lhs.base > rhs.base
 
 
+
 class Interval(recordtype.recordtype("Interval", field_names=["start", ("end", None), ("uncertain", False)])):
     def validate(self):
-        "raise AssertionError if instance variables are invalid; otherwise return True"
-        return True
+        if not self.start:
+            self.start.validate()
+        if not self.end:
+            self.end.validate()
+        # Check start less than or equal to end
+        if not self.start or not self.end:
+            return True
+        if self.start <= self.end:
+            return True
+        else:
+            raise HGVSInvalidVariantError("base start position must be <= end position")
 
     def format(self, conf=None):
-        self.validate()
         if self.end is None or self.start == self.end:
             return self.start.format(conf)
         iv = self.start.format(conf) + "_" + self.end.format(conf)
@@ -284,9 +293,9 @@ class BaseOffsetInterval(Interval):
         if self.start.datum == CDS_END:
             self.end.datum = CDS_END
 
-        self.validate()
+        self.check_datum()
 
-    def validate(self):
+    def check_datum(self):
         # check for valid combinations of start and end datums
         if (self.start.datum, self.end.datum) not in [
                 (SEQ_START, SEQ_START),
@@ -295,6 +304,7 @@ class BaseOffsetInterval(Interval):
                 (CDS_END, CDS_END),
                 ]:
             raise HGVSInvalidIntervalError("BaseOffsetInterval start datum and end datum are incompatible")
+
 
 
 # <LICENSE>
