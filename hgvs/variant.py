@@ -40,6 +40,9 @@ class SequenceVariant(recordtype.recordtype("SequenceVariant", ["ac", "type", "p
             self.posedit.edit.alt = self.posedit.edit.ref
         return self
 
+    def validate(self):
+        return self.posedit.validate()
+
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

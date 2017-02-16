@@ -98,8 +98,6 @@ class Test_BaseOffsetPosition(unittest.TestCase):
         self.assertEqual(v50-v30, 2)
         
         with self.assertRaises(HGVSError):
-            _ = v54-v52
-        with self.assertRaises(HGVSError):
             _ = v54-v30
 
     def test_baseoffset_comparision(self):
