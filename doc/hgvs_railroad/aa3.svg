@@ -1,0 +1,79 @@
+<?xml version="1.0" standalone="no"?>
+<svg width="194" height="1100" viewBox="-8 -58 194 1100 " xmlns="http://www.w3.org/2000/svg" version="1.1">
+<defs><style type="text/css">.terminal_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.terminal_text{fill:black;font-family:Verdana,Sans-serif;text-anchor:middle;font-size:14px;}.symbol_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.symbol_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-style:italic;text-anchor:middle;font-size:14px;}.path{fill:none;stroke:black;stroke-width:2;}.rule_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-size:14px;}.rule_path_edge{fill:none;stroke:black;stroke-width:3;}</style></defs>
+<text class="rule_text" x="0" y="-36" >aa3:</text>
+<rect class="terminal_rect" x="66" y="-14" width="46" height="28" rx="28" />
+<text class="terminal_text" x="89" y="4" >Ala</text>
+<rect class="terminal_rect" x="66" y="30" width="46" height="28" rx="28" />
+<text class="terminal_text" x="89" y="48" >Cys</text>
+<rect class="terminal_rect" x="66" y="74" width="46" height="28" rx="28" />
+<text class="terminal_text" x="89" y="92" >Asp</text>
+<rect class="terminal_rect" x="66" y="118" width="46" height="28" rx="28" />
+<text class="terminal_text" x="89" y="136" >Glu</text>
+<rect class="terminal_rect" x="66" y="162" width="46" height="28" rx="28" />
+<text class="terminal_text" x="89" y="180" >Phe</text>
+<rect class="terminal_rect" x="66" y="206" width="46" height="28" rx="28" />
+<text class="terminal_text" x="89" y="224" >Gly</text>
+<rect class="terminal_rect" x="66" y="250" width="46" height="28" rx="28" />
+<text class="terminal_text" x="89" y="268" >His</text>
+<rect class="terminal_rect" x="66" y="294" width="46" height="28" rx="28" />
+<text class="terminal_text" x="89" y="312" >Ile</text>
+<rect class="terminal_rect" x="66" y="338" width="46" height="28" rx="28" />
+<text class="terminal_text" x="89" y="356" >Lys</text>
+<rect class="terminal_rect" x="66" y="382" width="46" height="28" rx="28" />
+<text class="terminal_text" x="89" y="400" >Leu</text>
+<rect class="terminal_rect" x="66" y="426" width="46" height="28" rx="28" />
+<text class="terminal_text" x="89" y="444" >Met</text>
+<rect class="terminal_rect" x="66" y="470" width="46" height="28" rx="28" />
+<text class="terminal_text" x="89" y="488" >Asn</text>
+<rect class="terminal_rect" x="66" y="514" width="46" height="28" rx="28" />
+<text class="terminal_text" x="89" y="532" >Pro</text>
+<rect class="terminal_rect" x="66" y="558" width="46" height="28" rx="28" />
+<text class="terminal_text" x="89" y="576" >Gln</text>
+<rect class="terminal_rect" x="66" y="602" width="46" height="28" rx="28" />
+<text class="terminal_text" x="89" y="620" >Arg</text>
+<rect class="terminal_rect" x="66" y="646" width="46" height="28" rx="28" />
+<text class="terminal_text" x="89" y="664" >Ser</text>
+<rect class="terminal_rect" x="66" y="690" width="46" height="28" rx="28" />
+<text class="terminal_text" x="89" y="708" >Thr</text>
+<rect class="terminal_rect" x="66" y="734" width="46" height="28" rx="28" />
+<text class="terminal_text" x="89" y="752" >Val</text>
+<rect class="terminal_rect" x="66" y="778" width="46" height="28" rx="28" />
+<text class="terminal_text" x="89" y="796" >Trp</text>
+<rect class="terminal_rect" x="66" y="822" width="46" height="28" rx="28" />
+<text class="terminal_text" x="89" y="840" >Tyr</text>
+<rect class="terminal_rect" x="66" y="866" width="46" height="28" rx="28" />
+<text class="terminal_text" x="89" y="884" >Asx</text>
+<rect class="terminal_rect" x="66" y="910" width="46" height="28" rx="28" />
+<text class="terminal_text" x="89" y="928" >Glx</text>
+<rect class="terminal_rect" x="66" y="954" width="46" height="28" rx="28" />
+<text class="terminal_text" x="89" y="972" >Xaa</text>
+<rect class="terminal_rect" x="66" y="998" width="46" height="28" rx="28" />
+<text class="terminal_text" x="89" y="1016" >Sec</text>
+<path class="path" d="M30 0 L66 0 M30 0 Q42 0 42 12 M148 0 L112 0 M148 0 Q136 0 136 12" />
+<path class="path" d="M54 44 L66 44 M54 44 Q42 44 42 32 L42 12 M124 44 L112 44 M124 44 Q136 44 136 32 L136 12" />
+<path class="path" d="M54 88 L66 88 M54 88 Q42 88 42 76 L42 32 M124 88 L112 88 M124 88 Q136 88 136 76 L136 32" />
+<path class="path" d="M54 132 L66 132 M54 132 Q42 132 42 120 L42 76 M124 132 L112 132 M124 132 Q136 132 136 120 L136 76" />
+<path class="path" d="M54 176 L66 176 M54 176 Q42 176 42 164 L42 120 M124 176 L112 176 M124 176 Q136 176 136 164 L136 120" />
+<path class="path" d="M54 220 L66 220 M54 220 Q42 220 42 208 L42 164 M124 220 L112 220 M124 220 Q136 220 136 208 L136 164" />
+<path class="path" d="M54 264 L66 264 M54 264 Q42 264 42 252 L42 208 M124 264 L112 264 M124 264 Q136 264 136 252 L136 208" />
+<path class="path" d="M54 308 L66 308 M54 308 Q42 308 42 296 L42 252 M124 308 L112 308 M124 308 Q136 308 136 296 L136 252" />
+<path class="path" d="M54 352 L66 352 M54 352 Q42 352 42 340 L42 296 M124 352 L112 352 M124 352 Q136 352 136 340 L136 296" />
+<path class="path" d="M54 396 L66 396 M54 396 Q42 396 42 384 L42 340 M124 396 L112 396 M124 396 Q136 396 136 384 L136 340" />
+<path class="path" d="M54 440 L66 440 M54 440 Q42 440 42 428 L42 384 M124 440 L112 440 M124 440 Q136 440 136 428 L136 384" />
+<path class="path" d="M54 484 L66 484 M54 484 Q42 484 42 472 L42 428 M124 484 L112 484 M124 484 Q136 484 136 472 L136 428" />
+<path class="path" d="M54 528 L66 528 M54 528 Q42 528 42 516 L42 472 M124 528 L112 528 M124 528 Q136 528 136 516 L136 472" />
+<path class="path" d="M54 572 L66 572 M54 572 Q42 572 42 560 L42 516 M124 572 L112 572 M124 572 Q136 572 136 560 L136 516" />
+<path class="path" d="M54 616 L66 616 M54 616 Q42 616 42 604 L42 560 M124 616 L112 616 M124 616 Q136 616 136 604 L136 560" />
+<path class="path" d="M54 660 L66 660 M54 660 Q42 660 42 648 L42 604 M124 660 L112 660 M124 660 Q136 660 136 648 L136 604" />
+<path class="path" d="M54 704 L66 704 M54 704 Q42 704 42 692 L42 648 M124 704 L112 704 M124 704 Q136 704 136 692 L136 648" />
+<path class="path" d="M54 748 L66 748 M54 748 Q42 748 42 736 L42 692 M124 748 L112 748 M124 748 Q136 748 136 736 L136 692" />
+<path class="path" d="M54 792 L66 792 M54 792 Q42 792 42 780 L42 736 M124 792 L112 792 M124 792 Q136 792 136 780 L136 736" />
+<path class="path" d="M54 836 L66 836 M54 836 Q42 836 42 824 L42 780 M124 836 L112 836 M124 836 Q136 836 136 824 L136 780" />
+<path class="path" d="M54 880 L66 880 M54 880 Q42 880 42 868 L42 824 M124 880 L112 880 M124 880 Q136 880 136 868 L136 824" />
+<path class="path" d="M54 924 L66 924 M54 924 Q42 924 42 912 L42 868 M124 924 L112 924 M124 924 Q136 924 136 912 L136 868" />
+<path class="path" d="M54 968 L66 968 M54 968 Q42 968 42 956 L42 912 M124 968 L112 968 M124 968 Q136 968 136 956 L136 912" />
+<path class="path" d="M54 1012 L66 1012 M54 1012 Q42 1012 42 1000 L42 956 M124 1012 L112 1012 M124 1012 Q136 1012 136 1000 L136 956" />
+<path class="path" d="M0 0 L30 0 M178 0 L148 0" />
+<path class="rule_path_edge" d="M0 -6 L0 6 M178 -6 L178 6" />
+</svg>

@@ -1,0 +1,16 @@
+#!/usr/bin/env python
+# cpu-info -- report summary machine info
+
+# Motiviation: drone.io bots have wildly variable performance: the
+# hgvs test suite runs in ~5 minutes around 20% of the time, but in
+# ~75% cases it's kill because it exceeds 15 minutes.  Rarely it's
+# sometime in between.  This is driving me nuts.
+
+import re
+
+cpuinfo_tags = ['processor', 'model name', 'cpu MHz', 'cache size', 'cpu cores', 'bogomips']
+cpuinfo_block_re = re.compile(".+?".join(["^{t}\s+:\s+([^\n]+)".format(t=t) for t in cpuinfo_tags]),
+                              flags=re.MULTILINE + re.DOTALL)
+print("\t".join(cpuinfo_tags))
+for m in cpuinfo_block_re.finditer(open('/proc/cpuinfo', 'r').read()):
+    print("\t".join(m.groups()))

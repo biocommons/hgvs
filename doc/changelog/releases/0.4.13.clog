@@ -1,0 +1,5 @@
+clog format: 1; -*-outline-*-
+* 0.4.13 (2016-12-12)
+Changes since 0.4.12 (2016-12-06).
+** Bug Fixes
+*** closes #390: fix missing HGVSError import in variantmapper [9e3bee72a349]

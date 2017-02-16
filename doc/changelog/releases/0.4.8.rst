@@ -1,0 +1,10 @@
+
+0.4.8 (2016-07-19)
+##################
+
+Changes since 0.4.7 (2016-06-27).
+
+Bug Fixes
+$$$$$$$$$
+
+* fixes `#337 <https://bitbucket.org/biocommons/hgvs/issues/337/>`_: soft-pin bioutils >=0.1.0,<0.2.0 [`13620e943e0c <https://bitbucket.org/biocommons/hgvs/commits/13620e943e0c>`_]

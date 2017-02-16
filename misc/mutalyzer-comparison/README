@@ -1,0 +1,15 @@
+This directory contains code to compare genome-to-transcript mapping
+between the hgvs package and Mutalyzer's position converter.
+
+As of August 2014, there is >99.9 concordance between the two tools
+for 129,556 genomic variants in 57 ACMG must report genes. Mapping of
+these genomic variants generated 263,351 transcript variant pairs, one
+from each tool and with identical accessions. Of these, 263,170
+matched exactly or substantively (discarding formatting
+differences). 58 genomic variants generated 181 transcript variant
+pairs that didn't match; all occur in transcripts that have
+genome-transcript indels.
+
+Source data files and results are available in
+https://bitbucket.org/biocommons/hgvs/downloads.
+
