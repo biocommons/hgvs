@@ -244,9 +244,9 @@ class AAPosition(recordtype.recordtype("AAPosition", field_names=[("base", None)
 
 class Interval(recordtype.recordtype("Interval", field_names=["start", ("end", None), ("uncertain", False)])):
     def validate(self):
-        if not self.start:
+        if self.start:
             self.start.validate()
-        if not self.end:
+        if self.end:
             self.end.validate()
         # Check start less than or equal to end
         if not self.start or not self.end:
