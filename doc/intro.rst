@@ -120,13 +120,18 @@ Links
 References
 @@@@@@@@@@
 
+A Python package for parsing, validating, mapping and formatting sequence variants using HGVS nomenclature.
+  | Hart RK, Rico R, Hare E, Garcia J, Westbrook J, Fusaro VA
+  | Bioinformatics. 31(2):268-70 (2014).
+  | https://www.ncbi.nlm.nih.gov/pubmed/25273102
+
 Describing structural changes by extending HGVS sequence variation nomenclature.
   | Taschner, P. E. M., & den Dunnen, J. T.
-  | Human mutation, 32(5), 507–11. (2011).
+  | Human Mutation, 32(5), 507–11. (2011).
   | http://www.ncbi.nlm.nih.gov/pubmed/21309030
 
 A formalized description of the standard human variant nomenclature in Extended Backus-Naur Form.
   | Laros, J. F. J., Blavier, A., den Dunnen, J. T., & Taschner, P. E. M.
-  | BMC bioinformatics, 12 Suppl 4(Suppl 4), S5. (2011). 
+  | BMC Bioinformatics, 12 Suppl 4(Suppl 4), S5. (2011). 
   | http://www.ncbi.nlm.nih.gov/pubmed/21992071
 
