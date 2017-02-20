@@ -46,13 +46,12 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
       install_requires=[
           "biocommons.seqrepo",
           "biopython>=1.66",
-          "bioutils>=0.2.0a2",
+          "bioutils>=0.2.2",
           "configparser>=3.3.0",
           "ipython",            # for hgvs-shell
           "parsley",
           "psycopg2>=2.6.1",
           "recordtype>=1.1",
-          "requests>=1.0.0",
       ],
       setup_requires=[
           "setuptools_scm",

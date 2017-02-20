@@ -72,6 +72,9 @@ host-info:
 test: host-info
 	python setup.py nosetests -A '(not tags) or ("extra" not in tags)' --tests ${TEST_DIRS}
 
+_local-%:
+	HGVS_SEQREPO_DIR=/usr/local/share/seqrepo/master _UTA_URL_KEY=local-dev make $*
+
 #=> test-* -- run tests with specified tag
 test-%: host-info
 	python setup.py nosetests -a 'tags=$*' --tests ${TEST_DIRS}
