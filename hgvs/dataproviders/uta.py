@@ -188,7 +188,7 @@ class UTABase(Interface):
             """,
 
         "tx_to_pro": """
-            select * from associated_accessions where tx_ac = ?
+            select * from associated_accessions where tx_ac = ? order by pro_ac desc
             """,
     }
 
