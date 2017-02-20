@@ -59,7 +59,8 @@ def _get_uta_db_url():
     return hgvs.global_config['uta'][url_key]
 
 
-def connect(db_url=None, pooling=hgvs.global_config.uta.pooling, application_name=None, mode=None, cache=None):
+def connect(db_url=None, pooling=hgvs.global_config.uta.pooling,
+            application_name=None, mode=None, cache=None):
     """Connect to a UTA database instance and return a UTA interface instance.
 
     :param db_url: URL for database connection
@@ -104,10 +105,12 @@ def connect(db_url=None, pooling=hgvs.global_config.uta.pooling, application_nam
     if url.scheme == 'sqlite':
         conn = UTA_sqlite(url, mode, cache)
     elif url.scheme == 'postgresql':
-        conn = UTA_postgresql(url=url, pooling=pooling, application_name=application_name, mode=mode, cache=cache)
+        conn = UTA_postgresql(url=url, pooling=pooling,
+                              application_name=application_name, mode=mode, cache=cache)
     else:
         # fell through connection scheme cases
-        raise RuntimeError("{url.scheme} in {url} is not currently supported".format(url=url))
+        raise RuntimeError("{url.scheme} in {url} is not currently supported".format(
+            url=url))
     _logger.info('connected to ' + str(db_url) + '...')
     return conn
 
@@ -475,7 +478,8 @@ class UTABase(Interface):
 
 
 class UTA_postgresql(UTABase):
-    def __init__(self, url, pooling=hgvs.global_config.uta.pooling, application_name=None, mode=None, cache=None):
+    def __init__(self, url, pooling=hgvs.global_config.uta.pooling,
+                 application_name=None, mode=None, cache=None):
         if url.schema is None:
             raise Exception("No schema name provided in {url}".format(url=url))
         self.pooling = pooling
@@ -493,7 +497,11 @@ class UTA_postgresql(UTABase):
                          password=self.url.password,
                          application_name=self.application_name + "/" + hgvs.__version__, )
         if self.pooling:
-            self._pool = psycopg2.pool.ThreadedConnectionPool(1, 10, **conn_args)
+            _logger.info("Using UTA ThreadedConnectionPool")
+            self._pool = psycopg2.pool.ThreadedConnectionPool(
+                hgvs.global_config.uta.pool_min,
+                hgvs.global_config.uta.pool_max,
+                **conn_args)
         else:
             self._conn = psycopg2.connect(**conn_args)
             self._conn.autocommit = True
