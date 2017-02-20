@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
-"""Defines a default set of config for use throughout the hgvs
-package
+"""The hgvs package uses a single, package-wide configuration instance
+to control package behavior.  The hgvs.config module provides that
+configuration instance, via the `hgvs.global_config` variable.
 
-Config are read from an ini-format file using configparser. A thin
-wrapper on the ConfigParser instance provides *attribute* based
-lookups (rather than key), and returns heuristically typed values
-(e.g., "True" becomes True).
+You should not import hgvs.config directly.
+
+Config are read from an ini-format file.  `hgvs.config` implements a
+thin wrapper on the ConfigParser instance in order to provide
+*attribute* based lookups (rather than key). It also returns
+heuristically typed values (e.g., "True" becomes True). 
 
 Although keys are settable, they are stringified on setting and
 type-inferred on getting, which means that round-tripping works only
@@ -15,7 +18,12 @@ for str, int, and boolean.
 
 .. data:: hgvs.config.global_config
 
-  global config, initialized once with defaults
+   Package-wide ("global") configuration, initialized with package
+   defaults.  Setting configuration in this object will change global
+   behavior of the hgvs package.
+
+   global_config, an instance of :ref:``hgvs.config.Config``, supports
+   reading ini-like files that updates
 
 """
 
@@ -31,6 +39,11 @@ logger = logging.getLogger(__name__)
 
 
 class Config(object):
+    """provides an attribute-based lookup of configparser sections and
+    settings.
+
+    """
+
     def __init__(self, extended_interpolation=True):
         if extended_interpolation:
             cp = ConfigParser(interpolation=ExtendedInterpolation())
@@ -38,6 +51,13 @@ class Config(object):
             cp = ConfigParser()
         cp.optionxform = _name_xform
         self._cp = cp
+
+    def read_stream(self, flo):
+        """read configuration from ini-formatted file-like object
+
+        """
+        self._cp.read_file(flo)
+
 
     def __dir__(self):
         return self._cp.keys()
@@ -50,8 +70,6 @@ class Config(object):
 
     __getitem__ = __getattr__
 
-    def _read_file(self, flo):
-        self._cp.read_file(flo)
 
 
 class ConfigGroup(object):
@@ -74,6 +92,7 @@ class ConfigGroup(object):
 
 
 def _name_xform(o):
+
     """transform names to lowercase, without symbols (except underscore)
     Any chars other than alphanumeric are converted to an underscore
     """
@@ -93,6 +112,6 @@ def _val_xform(v):
 
 
 _default_config = Config()
-_default_config._read_file(resource_stream(__name__, "_data/defaults.ini"))
+_default_config.read_stream(resource_stream(__name__, "_data/defaults.ini"))
 
 global_config = copy(_default_config)
