@@ -133,7 +133,6 @@ class NARefAlt(Edit, recordtype.recordtype("NARefAlt", [("ref", None), ("alt", N
             edit_type = "ins"
         return edit_type
 
-
     def _del_ins_lengths(self, ilen):
         """returns (del_len, ins_len).
         Unspecified ref or alt returns None for del_len or ins_len respectively.
@@ -153,7 +152,7 @@ class AARefAlt(Edit, recordtype.recordtype("AARefAlt", [("ref", None), ("alt", N
             return "="
 
         p_3_letter, p_term_asterisk = self._format_config(conf)
-        
+
         # subst and delins
         if self.ref is not None and self.alt is not None:
             if self.ref == self.alt:
@@ -237,7 +236,7 @@ class AARefAlt(Edit, recordtype.recordtype("AARefAlt", [("ref", None), ("alt", N
 class AASub(AARefAlt):
     def format(self, conf=None):
         p_3_letter, p_term_asterisk = self._format_config(conf)
-        
+
         if p_3_letter:
             s = aa1_to_aa3(self.alt) if self.alt != "?" else self.alt
             if p_term_asterisk and s == "Ter":
@@ -263,7 +262,7 @@ class AAFs(Edit, recordtype.recordtype("AAFs", [("ref", None), ("alt", None), ("
 
     def format(self, conf=None):
         p_3_letter, p_term_asterisk = self._format_config(conf)
-        
+
         st_length = self.length or ""
         if p_3_letter:
             if p_term_asterisk:
@@ -293,18 +292,16 @@ class AAFs(Edit, recordtype.recordtype("AAFs", [("ref", None), ("alt", None), ("
         return "fs"
 
 
-class AAExt(Edit, recordtype.recordtype("AAExt", [("ref", None), ("alt", None), ("aaterm", None), ("length", None),
-                                                  ("uncertain", False)])):
+class AAExt(Edit,
+            recordtype.recordtype("AAExt", [("ref", None), ("alt", None), ("aaterm", None), ("length", None),
+                                            ("uncertain", False)])):
     def __init__(self, ref, alt, aaterm=None, length=None, uncertain=False):
-        super(AAExt, self).__init__(ref=aa_to_aa1(ref),
-                                    alt=aa_to_aa1(alt),
-                                    aaterm=aa_to_aa1(aaterm),
-                                    length=length,
-                                    uncertain=uncertain)
+        super(AAExt, self).__init__(
+            ref=aa_to_aa1(ref), alt=aa_to_aa1(alt), aaterm=aa_to_aa1(aaterm), length=length, uncertain=uncertain)
 
     def format(self, conf=None):
         p_3_letter, p_term_asterisk = self._format_config(conf)
-        
+
         st_alt = self.alt or ""
         st_aaterm = self.aaterm or ""
         st_length = self.length or ""
@@ -315,7 +312,7 @@ class AAExt(Edit, recordtype.recordtype("AAExt", [("ref", None), ("alt", None), 
                 st_alt = "*"
             if p_term_asterisk and st_aaterm == "Ter":
                 st_aaterm = "*"
-                
+
         s = "{alt}ext{term}{length}".format(alt=st_alt, term=st_aaterm, length=st_length)
         return "(" + s + ")" if self.uncertain else s
 
@@ -342,7 +339,6 @@ class AAExt(Edit, recordtype.recordtype("AAExt", [("ref", None), ("alt", None), 
         Unspecified ref or alt returns None for del_len or ins_len respectively.
         """
         return (0, abs(self.length))
-
 
 
 class Dup(Edit, recordtype.recordtype('Dup', [('ref', None), ('uncertain', False)])):
@@ -387,7 +383,6 @@ class Dup(Edit, recordtype.recordtype('Dup', [('ref', None), ('uncertain', False
         return (0, ilen)
 
 
-
 class Repeat(Edit, recordtype.recordtype('Repeat', [('ref', None), ('min', None), ('max', None),
                                                     ('uncertain', False)])):
     def __str__(self):
@@ -412,7 +407,6 @@ class Repeat(Edit, recordtype.recordtype('Repeat', [('ref', None), ('min', None)
         :returns: edit type (str)
         """
         return "repeat"
-
 
 
 class NACopy(Edit, recordtype.recordtype("NACopy", ["copy", ("uncertain", False)])):
@@ -449,7 +443,6 @@ class NACopy(Edit, recordtype.recordtype("NACopy", ["copy", ("uncertain", False)
         Unspecified ref or alt returns None for del_len or ins_len respectively.
         """
         return (0, ilen * self.copy)
-
 
 
 class Inv(Edit, recordtype.recordtype('Inv', [('ref', None), ('uncertain', False)])):
@@ -503,8 +496,9 @@ class Inv(Edit, recordtype.recordtype('Inv', [('ref', None), ('uncertain', False
         return (ilen, ilen)
 
 
-class Conv(Edit, recordtype.recordtype('Conv', [('from_ac', None), ('from_type', None), ('from_pos', None),
-                                                ('uncertain', False)])):
+class Conv(Edit,
+           recordtype.recordtype('Conv', [('from_ac', None), ('from_type', None), ('from_pos', None),
+                                          ('uncertain', False)])):
     """Conversion
     """
 

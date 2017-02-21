@@ -102,13 +102,14 @@ class Parser(object):
 
         def make_parse_rule_function(rule_name):
             "builds a wrapper function that parses a string with the specified rule"
+
             def rule_fxn(s):
                 try:
                     return self._grammar(s).__getattr__(rule_name)()
                 except ometa.runtime.ParseError as exc:
-                    raise HGVSParseError("{s}: char {exc.position}: {reason}".format(s=s,
-                                                                                     exc=exc,
-                                                                                     reason=exc.formatReason()))
+                    raise HGVSParseError(
+                        "{s}: char {exc.position}: {reason}".format(s=s, exc=exc, reason=exc.formatReason()))
+
             rule_fxn.func_doc = "parse string s using `%s' rule" % rule_name
             return rule_fxn
 
@@ -122,7 +123,6 @@ class Parser(object):
             rule_fxn = make_parse_rule_function(rule_name)
             self.__setattr__(att_name, rule_fxn)
         self._logger.debug("Exposed {n} rules ({rules})".format(n=len(exposed_rules), rules=", ".join(exposed_rules)))
-
 
 
 # <LICENSE>

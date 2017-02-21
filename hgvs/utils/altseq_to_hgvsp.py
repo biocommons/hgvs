@@ -65,8 +65,8 @@ class AltSeqToHgvsp(object):
                 do_delins = False
             elif self._is_substitution:
                 if len(self._ref_seq) == len(self._alt_seq):
-                    diff_pos = [(i, self._ref_seq[i], self._alt_seq[i])
-                                for i in xrange(len(self._ref_seq)) if self._ref_seq[i] != self._alt_seq[i]]
+                    diff_pos = [(i, self._ref_seq[i], self._alt_seq[i]) for i in xrange(len(self._ref_seq))
+                                if self._ref_seq[i] != self._alt_seq[i]]
                     if len(diff_pos) == 1:
                         (start, deletion, insertion) = diff_pos[0]
                         variants.append({"start": start + 1, "ins": insertion, "del": deletion})
@@ -129,20 +129,14 @@ class AltSeqToHgvsp(object):
                 print(variants)
 
         if self._is_ambiguous:
-            var_ps = [self._create_variant('',
-                                           '',
-                                           '',
-                                           '',
-                                           acc=self._protein_accession,
-                                           is_ambiguous=self._is_ambiguous)]
+            var_ps = [
+                self._create_variant('', '', '', '', acc=self._protein_accession, is_ambiguous=self._is_ambiguous)
+            ]
         elif len(self._alt_seq) == 0:
-            var_ps = [self._create_variant('',
-                                           '',
-                                           '',
-                                           '',
-                                           acc=self._protein_accession,
-                                           is_ambiguous=self._is_ambiguous,
-                                           is_no_protein=True)]
+            var_ps = [
+                self._create_variant(
+                    '', '', '', '', acc=self._protein_accession, is_ambiguous=self._is_ambiguous, is_no_protein=True)
+            ]
         else:
             var_ps = [self._convert_to_sequence_variants(x, self._protein_accession) for x in variants]
 
@@ -268,16 +262,17 @@ class AltSeqToHgvsp(object):
             else:    # should never get here
                 raise ValueError("unexpected variant: {}".format(variant))
 
-        var_p = self._create_variant(aa_start,
-                                     aa_end,
-                                     ref,
-                                     alt,
-                                     fsext_len=fsext_len,
-                                     is_dup=is_dup,
-                                     acc=acc,
-                                     is_ambiguous=self._is_ambiguous,
-                                     is_sub=is_sub,
-                                     is_ext=is_ext)
+        var_p = self._create_variant(
+            aa_start,
+            aa_end,
+            ref,
+            alt,
+            fsext_len=fsext_len,
+            is_dup=is_dup,
+            acc=acc,
+            is_ambiguous=self._is_ambiguous,
+            is_sub=is_sub,
+            is_ext=is_ext)
 
         return var_p
 
@@ -339,6 +334,7 @@ class AltSeqToHgvsp(object):
         var_p = hgvs.variant.SequenceVariant(acc, 'p', posedit)
 
         return var_p
+
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

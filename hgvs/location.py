@@ -25,7 +25,6 @@ from bioutils.sequences import aa1_to_aa3
 import hgvs
 from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError, HGVSInvalidIntervalError, HGVSInvalidVariantError
 
-
 SEQ_START = 0
 CDS_START = 1
 CDS_END = 2
@@ -65,7 +64,7 @@ class SimplePosition(recordtype.recordtype("SimplePosition", field_names=[("base
         if lhs.uncertain or rhs.uncertain:
             raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
         return lhs.base == rhs.base
-    
+
     def __lt__(lhs, rhs):
         assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
         if lhs.uncertain or rhs.uncertain:
@@ -74,9 +73,10 @@ class SimplePosition(recordtype.recordtype("SimplePosition", field_names=[("base
 
 
 @total_ordering
-class BaseOffsetPosition(recordtype.recordtype(
-    'BaseOffsetPosition',
-    field_names=[('base', None), ('offset', 0), ('datum', SEQ_START), ('uncertain', False)])):
+class BaseOffsetPosition(
+        recordtype.recordtype(
+            'BaseOffsetPosition',
+            field_names=[('base', None), ('offset', 0), ('datum', SEQ_START), ('uncertain', False)])):
     """
     Class for dealing with CDS coordinates in transcript variants.
 
@@ -169,15 +169,17 @@ class BaseOffsetPosition(recordtype.recordtype(
             else:
                 if ((rhs.base - lhs.base == 1 and lhs.offset > 0 and rhs.offset < 0) or
                     (lhs.base - rhs.base == 1 and rhs.offset > 0 and lhs.offset < 0)):
-                    raise HGVSUnsupportedOperationError("Cannot compare coordinates in the same intron with one based on end of exon and the other based on start of next exon")
+                    raise HGVSUnsupportedOperationError(
+                        "Cannot compare coordinates in the same intron with one based on end of exon and the other based on start of next exon"
+                    )
                 else:
                     return lhs.base < rhs.base
         else:
             if lhs.datum == SEQ_START or rhs.datum == SEQ_START:
-                raise HGVSUnsupportedOperationError("Cannot compare coordinates of datum SEQ_START with CDS_START or CDS_END")
+                raise HGVSUnsupportedOperationError(
+                    "Cannot compare coordinates of datum SEQ_START with CDS_START or CDS_END")
             else:
                 return lhs.datum < rhs.datum
-
 
 
 class AAPosition(recordtype.recordtype("AAPosition", field_names=[("base", None), ("aa", None), ("uncertain", False)])):
@@ -189,14 +191,14 @@ class AAPosition(recordtype.recordtype("AAPosition", field_names=[("base", None)
 
     def format(self, conf=None):
         self.validate()
-        
+
         p_3_letter = hgvs.global_config.formatting.p_3_letter
         p_term_asterisk = hgvs.global_config.formatting.p_term_asterisk
         if conf and "p_3_letter" in conf and conf["p_3_letter"] is not None:
             p_3_letter = conf["p_3_letter"]
         if conf and "p_term_asterisk" in conf and conf["p_term_asterisk"] is not None:
             p_term_asterisk = conf["p_term_asterisk"]
-        
+
         pos = "?" if self.base is None else str(self.base)
         if p_3_letter:
             aa = "?" if self.aa is None else aa1_to_aa3(self.aa)
@@ -241,7 +243,6 @@ class AAPosition(recordtype.recordtype("AAPosition", field_names=[("base", None)
         return lhs.base > rhs.base
 
 
-
 class Interval(recordtype.recordtype("Interval", field_names=["start", ("end", None), ("uncertain", False)])):
     def validate(self):
         if self.start:
@@ -261,7 +262,7 @@ class Interval(recordtype.recordtype("Interval", field_names=["start", ("end", N
             return self.start.format(conf)
         iv = self.start.format(conf) + "_" + self.end.format(conf)
         return "(" + iv + ")" if self.uncertain else iv
-    
+
     __str__ = format
 
     def _set_uncertain(self):
@@ -284,6 +285,7 @@ class BaseOffsetInterval(Interval):
     of end and start are compatible.
 
     """
+
     def __init__(self, *args, **kwargs):
         super(BaseOffsetInterval, self).__init__(*args, **kwargs)
 
@@ -298,13 +300,12 @@ class BaseOffsetInterval(Interval):
     def check_datum(self):
         # check for valid combinations of start and end datums
         if (self.start.datum, self.end.datum) not in [
-                (SEQ_START, SEQ_START),
-                (CDS_START, CDS_START),
-                (CDS_START, CDS_END),
-                (CDS_END, CDS_END),
-                ]:
+            (SEQ_START, SEQ_START),
+            (CDS_START, CDS_START),
+            (CDS_START, CDS_END),
+            (CDS_END, CDS_END),
+        ]:
             raise HGVSInvalidIntervalError("BaseOffsetInterval start datum and end datum are incompatible")
-
 
 
 # <LICENSE>

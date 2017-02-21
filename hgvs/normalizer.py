@@ -65,7 +65,7 @@ class Normalizer(object):
         """Perform sequence variants normalization for single variant
         """
         assert isinstance(var, hgvs.variant.SequenceVariant), "variant must be a parsed HGVS sequence variant object"
-        
+
         if self.validator:
             self.validator.validate(var)
 
@@ -206,8 +206,8 @@ class Normalizer(object):
 
                 if i != j:
                     raise HGVSUnsupportedOperationError(
-                        "Unsupported normalization of variants spanning the exon-intron boundary ({var})".format(var=
-                                                                                                                 var))
+                        "Unsupported normalization of variants spanning the exon-intron boundary ({var})".format(
+                            var=var))
 
                 left = exon_starts[i]
                 right = exon_ends[i]
@@ -306,8 +306,8 @@ class Normalizer(object):
                 if ref_seq == "":
                     break
                 orig_start, orig_stop = start, stop
-                start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt), len(ref_seq), win_size,
-                                                            False)
+                start, stop, (ref, alt) = normalize_alleles(ref_seq, start, stop, (ref, alt),
+                                                            len(ref_seq), win_size, False)
                 if stop < len(ref_seq) or start == orig_start:
                     break
                 # if stop at the end of the window, try to extend the shuffling to the right

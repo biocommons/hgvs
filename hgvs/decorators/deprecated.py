@@ -41,10 +41,11 @@ class deprecated(object):
         def wrapper(*args, **kwargs):
             fingerprint = (func.__name__, func.func_code.co_filename, func.func_code.co_firstlineno)
             if fingerprint not in self.seen:
-                warnings.warn_explicit(msg,
-                                       category=DeprecationWarning,
-                                       filename=func.func_code.co_filename,
-                                       lineno=func.func_code.co_firstlineno + 1)
+                warnings.warn_explicit(
+                    msg,
+                    category=DeprecationWarning,
+                    filename=func.func_code.co_filename,
+                    lineno=func.func_code.co_firstlineno + 1)
             self.seen.update([fingerprint])
             return func(*args, **kwargs)
 

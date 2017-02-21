@@ -46,13 +46,11 @@ class SeqFetcher(object):
             self.fetcher = bioutils.seqfetcher.fetch_seq
             logger.info("Using remote sequence fetching")
 
-
     def fetch_seq(self, ac, start_i=None, end_i=None):
         try:
             return self.fetcher(ac, start_i, end_i)
         except RuntimeError as ex:
-            raise HGVSDataNotAvailableError(
-                "No sequence available for {ac} ({ex})".format(ac=ac, ex=ext))
+            raise HGVSDataNotAvailableError("No sequence available for {ac} ({ex})".format(ac=ac, ex=ext))
 
 
 # <LICENSE>

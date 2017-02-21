@@ -58,7 +58,6 @@ class Config(object):
         """
         self._cp.read_file(flo)
 
-
     def __dir__(self):
         return self._cp.keys()
 
@@ -69,7 +68,6 @@ class Config(object):
         return ConfigGroup(self._cp[k])
 
     __getitem__ = __getattr__
-
 
 
 class ConfigGroup(object):
@@ -92,7 +90,6 @@ class ConfigGroup(object):
 
 
 def _name_xform(o):
-
     """transform names to lowercase, without symbols (except underscore)
     Any chars other than alphanumeric are converted to an underscore
     """

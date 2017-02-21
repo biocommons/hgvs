@@ -21,6 +21,7 @@ class HGVSPosition(recordtype.recordtype("HGVSPosition", ["ac", "type", "pos"]))
     def __str__(self):
         return "{self.ac}:{self.type}.{self.pos}".format(self=self)
 
+
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
 # 

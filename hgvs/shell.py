@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """start IPython shell with hgvs initialized. Intended to be used for
 experimenting, debugging, and generating bug reports."""
 
@@ -41,7 +40,6 @@ def shell():
     var_p = hgvsparser.parse_hgvs_variant(hgvs_p)
 
     IPython.embed()
-
 
 
 ## <LICENSE>

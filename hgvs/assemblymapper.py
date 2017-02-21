@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """Provides VariantMapper and AssemblyMapper to project variants
 between sequences using TranscriptMapper.
 
@@ -15,7 +14,6 @@ import hgvs.validator
 
 from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError, HGVSUnsupportedOperationError
 from hgvs.variantmapper import VariantMapper
-
 
 _logger = logging.getLogger(__name__)
 
@@ -52,8 +50,8 @@ class AssemblyMapper(VariantMapper):
                  normalize=hgvs.global_config.mapping.normalize,
                  in_par_assume=hgvs.global_config.mapping.in_par_assume,
                  replace_reference=hgvs.global_config.mapping.replace_reference,
-                 *args, **kwargs
-                 ):
+                 *args,
+                 **kwargs):
         """
         :param object hdp: instance of hgvs.dataprovider subclass
         :param bool replace_reference: replace reference (entails additional network access)
@@ -66,9 +64,7 @@ class AssemblyMapper(VariantMapper):
         :raises HGVSError subclasses: for a variety of mapping and data lookup failures
         """
 
-        super(AssemblyMapper, self).__init__(hdp=hdp,
-                                                replace_reference=replace_reference,
-                                                *args, **kwargs)
+        super(AssemblyMapper, self).__init__(hdp=hdp, replace_reference=replace_reference, *args, **kwargs)
         self.assembly_name = assembly_name
         self.alt_aln_method = alt_aln_method
         self.normalize = normalize
@@ -83,8 +79,7 @@ class AssemblyMapper(VariantMapper):
     def __repr__(self):
         return ("{self.__module__}.{t.__name__}(alt_aln_method={self.alt_aln_method}, "
                 "assembly_name={self.assembly_name}, normalize={self.normalize}, "
-                "replace_reference={self.replace_reference})".format(
-                    self=self, t=type(self)))
+                "replace_reference={self.replace_reference})".format(self=self, t=type(self)))
 
     def g_to_c(self, var_g, tx_ac):
         self._validator.validate(var_g)
@@ -148,15 +143,14 @@ class AssemblyMapper(VariantMapper):
         AssemblyMapper)
 
         """
-        alt_acs = [e["alt_ac"]
-                   for e in self.hdp.get_tx_mapping_options(tx_ac)
-                   if e["alt_aln_method"] == self.alt_aln_method and e["alt_ac"] in self._assembly_accessions]
+        alt_acs = [
+            e["alt_ac"] for e in self.hdp.get_tx_mapping_options(tx_ac)
+            if e["alt_aln_method"] == self.alt_aln_method and e["alt_ac"] in self._assembly_accessions
+        ]
 
         if len(alt_acs) == 0:
-            raise HGVSDataNotAvailableError(
-                "No alignments for {tx_ac} in {an} using {am}".format(tx_ac=tx_ac,
-                                                                      an=self.assembly_name,
-                                                                      am=self.alt_aln_method))
+            raise HGVSDataNotAvailableError("No alignments for {tx_ac} in {an} using {am}".format(
+                tx_ac=tx_ac, an=self.assembly_name, am=self.alt_aln_method))
 
         if len(alt_acs) > 1:
             names = set(self._assembly_map[ac] for ac in alt_acs)
@@ -175,8 +169,11 @@ class AssemblyMapper(VariantMapper):
             if len(alt_acs) != 1:
                 raise HGVSError("Multiple chromosomal alignments for {tx_ac} in {an}"
                                 " using {am}; in_par_assume={ipa} selected {n} of them".format(
-                                    tx_ac=tx_ac, an=self.assembly_name, am=self.alt_aln_method,
-                                    ipa=self.in_par_assume, n=len(alt_acs)))
+                                    tx_ac=tx_ac,
+                                    an=self.assembly_name,
+                                    am=self.alt_aln_method,
+                                    ipa=self.in_par_assume,
+                                    n=len(alt_acs)))
 
         assert len(alt_acs) == 1, "Should have exactly one alignment at this point"
         return alt_acs[0]

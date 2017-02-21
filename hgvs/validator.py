@@ -64,13 +64,13 @@ class ExtrinsicValidator():
         if var.type == 'p':
             if not var.posedit.pos or not var.posedit.pos.start or not var.posedit.pos.end:
                 return True
-            ref_checks.append( (var.ac, var.posedit.pos.start.pos, var.posedit.pos.start.pos, var.posedit.pos.start.aa) )
+            ref_checks.append((var.ac, var.posedit.pos.start.pos, var.posedit.pos.start.pos, var.posedit.pos.start.aa))
             if var.posedit.pos.start.pos != var.posedit.pos.end.pos:
-                ref_checks.append( (var.ac, var.posedit.pos.end.pos, var.posedit.pos.end.pos, var.posedit.pos.end.aa) )
+                ref_checks.append((var.ac, var.posedit.pos.end.pos, var.posedit.pos.end.pos, var.posedit.pos.end.aa))
         else:
             var_ref_seq = getattr(var.posedit.edit, "ref", None) or None
             var_x = self.vm.c_to_n(var) if var.type == "c" else var
-            ref_checks.append( (var_x.ac, var_x.posedit.pos.start.base, var_x.posedit.pos.end.base, var_ref_seq) )
+            ref_checks.append((var_x.ac, var_x.posedit.pos.start.base, var_x.posedit.pos.end.base, var_ref_seq))
 
         for ac, var_ref_start, var_ref_end, var_ref_seq in ref_checks:
             if var_ref_start is None or var_ref_end is None or not var_ref_seq:
@@ -85,10 +85,11 @@ class ExtrinsicValidator():
 
             ref_seq = self.hdp.get_seq(ac, var_ref_start - 1, var_ref_end)
             if ref_seq != var_ref_seq:
-                raise HGVSInvalidVariantError(str(var) + ": " + SEQ_ERROR_MSG.format(ref_seq=ref_seq,
-                                                                                 var_ref_seq=var_ref_seq))
+                raise HGVSInvalidVariantError(
+                    str(var) + ": " + SEQ_ERROR_MSG.format(ref_seq=ref_seq, var_ref_seq=var_ref_seq))
 
         return True
+
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
