@@ -36,7 +36,7 @@ class IntrinsicValidator(object):
     """
 
     def validate(self, var):
-        assert isinstance(var, hgvs.variant.SequenceVariant), "variant must be a parsed HGVS sequence variant object"
+        assert isinstance(var, hgvs.sequencevariant.SequenceVariant), "variant must be a parsed HGVS sequence variant object"
         return var.validate()
 
 
@@ -50,7 +50,7 @@ class ExtrinsicValidator():
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp)
 
     def validate(self, var):
-        assert isinstance(var, hgvs.variant.SequenceVariant), "variant must be a parsed HGVS sequence variant object"
+        assert isinstance(var, hgvs.sequencevariant.SequenceVariant), "variant must be a parsed HGVS sequence variant object"
         self._ref_is_valid(var)
         return True
 

@@ -64,7 +64,7 @@ class Normalizer(object):
     def normalize(self, var):
         """Perform sequence variants normalization for single variant
         """
-        assert isinstance(var, hgvs.variant.SequenceVariant), "variant must be a parsed HGVS sequence variant object"
+        assert isinstance(var, hgvs.sequencevariant.SequenceVariant), "variant must be a parsed HGVS sequence variant object"
 
         if self.validator:
             self.validator.validate(var)

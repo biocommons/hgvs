@@ -20,7 +20,7 @@ import hgvs.posedit
 import hgvs.transcriptmapper
 import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
 import hgvs.utils.altseqbuilder as altseqbuilder
-import hgvs.variant
+import hgvs.sequencevariant
 import hgvs.validator
 
 from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
@@ -64,7 +64,7 @@ class VariantMapper(object):
     start site offset, then calls n_to_g.
 
     All methods require and return objects of type
-    :class:`hgvs.variant.SequenceVariant`.
+    :class:`hgvs.sequencevariant.SequenceVariant`.
 
     """
 
@@ -106,10 +106,10 @@ class VariantMapper(object):
         transcript using the specified alignment method (default is
         "splign" from NCBI).
 
-        :param hgvs.variant.SequenceVariant var_g: a variant object
+        :param hgvs.sequencevariant.SequenceVariant var_g: a variant object
         :param str tx_ac: a transcript accession (e.g., NM_012345.6 or ENST012345678)
         :param str alt_aln_method: the alignment method; valid values depend on data source
-        :returns: variant object (:class:`hgvs.variant.SequenceVariant`) using transcript (n.) coordinates
+        :returns: variant object (:class:`hgvs.sequencevariant.SequenceVariant`) using transcript (n.) coordinates
         :raises HGVSInvalidVariantError: if var_g is not of type "g"
 
         """
@@ -119,7 +119,7 @@ class VariantMapper(object):
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
         pos_n = tm.g_to_n(var_g.posedit.pos)
         edit_n = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
-        var_n = hgvs.variant.SequenceVariant(ac=tx_ac, type="n", posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
+        var_n = hgvs.sequencevariant.SequenceVariant(ac=tx_ac, type="n", posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
         if self.replace_reference:
             self._replace_reference(var_n)
         return var_n
@@ -129,10 +129,10 @@ class VariantMapper(object):
         transcript using the specified alignment method (default is
         "splign" from NCBI).
 
-        :param hgvs.variant.SequenceVariant var_n: a variant object
+        :param hgvs.sequencevariant.SequenceVariant var_n: a variant object
         :param str alt_ac: a reference sequence accession (e.g., NC_000001.11)
         :param str alt_aln_method: the alignment method; valid values depend on data source
-        :returns: variant object (:class:`hgvs.variant.SequenceVariant`)
+        :returns: variant object (:class:`hgvs.sequencevariant.SequenceVariant`)
         :raises HGVSInvalidVariantError: if var_n is not of type "n"
 
         """
@@ -142,7 +142,7 @@ class VariantMapper(object):
         tm = self._fetch_TranscriptMapper(tx_ac=var_n.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         pos_g = tm.n_to_g(var_n.posedit.pos)
         edit_g = self._convert_edit_check_strand(tm.strand, var_n.posedit.edit)
-        var_g = hgvs.variant.SequenceVariant(ac=alt_ac, type="g", posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
+        var_g = hgvs.sequencevariant.SequenceVariant(ac=alt_ac, type="g", posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
         if self.replace_reference:
             self._replace_reference(var_g)
         return var_g
@@ -154,10 +154,10 @@ class VariantMapper(object):
         transcript using the specified alignment method (default is
         "splign" from NCBI).
 
-        :param hgvs.variant.SequenceVariant var_g: a variant object
+        :param hgvs.sequencevariant.SequenceVariant var_g: a variant object
         :param str tx_ac: a transcript accession (e.g., NM_012345.6 or ENST012345678)
         :param str alt_aln_method: the alignment method; valid values depend on data source
-        :returns: variant object (:class:`hgvs.variant.SequenceVariant`) using CDS coordinates
+        :returns: variant object (:class:`hgvs.sequencevariant.SequenceVariant`) using CDS coordinates
         :raises HGVSInvalidVariantError: if var_g is not of type "g"
 
         """
@@ -168,7 +168,7 @@ class VariantMapper(object):
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
         pos_c = tm.g_to_c(var_g.posedit.pos)
         edit_c = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
-        var_c = hgvs.variant.SequenceVariant(ac=tx_ac, type="c", posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
+        var_c = hgvs.sequencevariant.SequenceVariant(ac=tx_ac, type="c", posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
         if self.replace_reference:
             self._replace_reference(var_c)
         return var_c
@@ -178,10 +178,10 @@ class VariantMapper(object):
         transcript using the specified alignment method (default is
         "splign" from NCBI).
 
-        :param hgvs.variant.SequenceVariant var_c: a variant object
+        :param hgvs.sequencevariant.SequenceVariant var_c: a variant object
         :param str alt_ac: a reference sequence accession (e.g., NC_000001.11)
         :param str alt_aln_method: the alignment method; valid values depend on data source
-        :returns: variant object (:class:`hgvs.variant.SequenceVariant`)
+        :returns: variant object (:class:`hgvs.sequencevariant.SequenceVariant`)
         :raises HGVSInvalidVariantError: if var_c is not of type "c"
 
         """
@@ -194,7 +194,7 @@ class VariantMapper(object):
         pos_g = tm.c_to_g(var_c.posedit.pos)
         edit_g = self._convert_edit_check_strand(tm.strand, var_c.posedit.edit)
 
-        var_g = hgvs.variant.SequenceVariant(ac=alt_ac, type="g", posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
+        var_g = hgvs.sequencevariant.SequenceVariant(ac=alt_ac, type="g", posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
         if self.replace_reference:
             self._replace_reference(var_g)
         return var_g
@@ -206,8 +206,8 @@ class VariantMapper(object):
         transcript using the specified alignment method (default is
         "transcript" indicating a self alignment).
 
-        :param hgvs.variant.SequenceVariant var_c: a variant object
-        :returns: variant object (:class:`hgvs.variant.SequenceVariant`)
+        :param hgvs.sequencevariant.SequenceVariant var_c: a variant object
+        :returns: variant object (:class:`hgvs.sequencevariant.SequenceVariant`)
         :raises HGVSInvalidVariantError: if var_c is not of type "c"
 
         """
@@ -221,7 +221,7 @@ class VariantMapper(object):
             edit_n = copy.deepcopy(var_c.posedit.edit)
         else:
             raise HGVSUnsupportedOperationError("Only NARefAlt/Dup/Inv types are currently implemented")
-        var_n = hgvs.variant.SequenceVariant(ac=var_c.ac, type="n", posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
+        var_n = hgvs.sequencevariant.SequenceVariant(ac=var_c.ac, type="n", posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
         if self.replace_reference:
             self._replace_reference(var_n)
         return var_n
@@ -231,8 +231,8 @@ class VariantMapper(object):
         transcript using the specified alignment method (default is
         "transcript" indicating a self alignment).
 
-        :param hgvs.variant.SequenceVariant var_n: a variant object
-        :returns: variant object (:class:`hgvs.variant.SequenceVariant`)
+        :param hgvs.sequencevariant.SequenceVariant var_n: a variant object
+        :returns: variant object (:class:`hgvs.sequencevariant.SequenceVariant`)
         :raises HGVSInvalidVariantError: if var_n is not of type "n"
 
         """
@@ -246,7 +246,7 @@ class VariantMapper(object):
             edit_c = copy.deepcopy(var_n.posedit.edit)
         else:
             raise HGVSUnsupportedOperationError("Only NARefAlt/Dup/Inv types are currently implemented")
-        var_c = hgvs.variant.SequenceVariant(ac=var_n.ac, type="c", posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
+        var_c = hgvs.sequencevariant.SequenceVariant(ac=var_n.ac, type="c", posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
         if self.replace_reference:
             self._replace_reference(var_c)
         return var_c
@@ -260,7 +260,7 @@ class VariantMapper(object):
 
         :param SequenceVariant var_c: hgvsc tag
         :param str pro_ac: protein accession
-        :rtype: hgvs.variant.SequenceVariant
+        :rtype: hgvs.sequencevariant.SequenceVariant
 
         """
 

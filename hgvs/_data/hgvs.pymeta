@@ -16,12 +16,12 @@
 
 hgvs_variant = g_variant | m_variant | c_variant | n_variant  | r_variant | p_variant
 
-c_variant = accn:ac ':' 'c':type '.' c_posedit:posedit -> hgvs.variant.SequenceVariant(ac,type,posedit)
-g_variant = accn:ac ':' 'g':type '.' g_posedit:posedit -> hgvs.variant.SequenceVariant(ac,type,posedit)
-m_variant = accn:ac ':' 'm':type '.' m_posedit:posedit -> hgvs.variant.SequenceVariant(ac,type,posedit)
-n_variant = accn:ac ':' 'n':type '.' n_posedit:posedit -> hgvs.variant.SequenceVariant(ac,type,posedit)
-p_variant = accn:ac ':' 'p':type '.' p_posedit:posedit -> hgvs.variant.SequenceVariant(ac,type,posedit)
-r_variant = accn:ac ':' 'r':type '.' r_posedit:posedit -> hgvs.variant.SequenceVariant(ac,type,posedit)
+c_variant = accn:ac ':' 'c':type '.' c_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(ac,type,posedit)
+g_variant = accn:ac ':' 'g':type '.' g_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(ac,type,posedit)
+m_variant = accn:ac ':' 'm':type '.' m_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(ac,type,posedit)
+n_variant = accn:ac ':' 'n':type '.' n_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(ac,type,posedit)
+p_variant = accn:ac ':' 'p':type '.' p_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(ac,type,posedit)
+r_variant = accn:ac ':' 'r':type '.' r_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(ac,type,posedit)
 
 
 ############################################################################
@@ -44,12 +44,12 @@ r_hgvs_position = accn:ac ':' 'r':type '.' r_interval:pos -> hgvs.hgvsposition.H
 # sources that use non-standard syntax. For example, some LOVD
 # installations provide variants like c.222A>T.
 
-c_typed_posedit = 'c':type '.' c_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
-g_typed_posedit = 'g':type '.' g_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
-m_typed_posedit = 'm':type '.' m_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
-n_typed_posedit = 'n':type '.' n_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
-p_typed_posedit = 'p':type '.' p_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
-r_typed_posedit = 'r':type '.' r_posedit:posedit -> hgvs.variant.SequenceVariant(None,type,posedit)
+c_typed_posedit = 'c':type '.' c_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(None,type,posedit)
+g_typed_posedit = 'g':type '.' g_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(None,type,posedit)
+m_typed_posedit = 'm':type '.' m_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(None,type,posedit)
+n_typed_posedit = 'n':type '.' n_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(None,type,posedit)
+p_typed_posedit = 'p':type '.' p_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(None,type,posedit)
+r_typed_posedit = 'r':type '.' r_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(None,type,posedit)
 
 
 ############################################################################

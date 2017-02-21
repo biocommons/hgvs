@@ -6,7 +6,7 @@ import unittest
 from nose.plugins.attrib import attr
 
 import hgvs
-import hgvs.variant
+import hgvs.sequencevariant
 import hgvs.parser
 import hgvs.dataproviders.uta
 
@@ -14,7 +14,7 @@ import hgvs.dataproviders.uta
 @attr(tags=["quick", "models"])
 class Test_SequenceVariant(unittest.TestCase):
     def test_SequenceVariant(self):
-        var = hgvs.variant.SequenceVariant(ac="AC", type="B", posedit="1234DE>FG")
+        var = hgvs.sequencevariant.SequenceVariant(ac="AC", type="B", posedit="1234DE>FG")
         self.assertEqual(str(var), "AC:B.1234DE>FG")
     
     def test_fill_ref(self):

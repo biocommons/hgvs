@@ -15,7 +15,7 @@ from nose.plugins.attrib import attr
 import hgvs
 import hgvs.dataproviders.uta
 import hgvs.parser
-import hgvs.variant
+import hgvs.sequencevariant
 import hgvs.variantmapper
 from hgvs.exceptions import HGVSError
 

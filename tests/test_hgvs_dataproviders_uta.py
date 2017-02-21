@@ -15,7 +15,7 @@ import hgvs.edit
 import hgvs.location
 import hgvs.posedit
 import hgvs.variantmapper
-import hgvs.variant
+import hgvs.sequencevariant
 
 
 class UTA_Base(object):
@@ -110,7 +110,7 @@ class TestUTACache(Test_hgvs_dataproviders_uta_UTA_default):
         iv = hgvs.location.Interval(start=start, end=end)
         edit = hgvs.edit.NARefAlt(ref="G", alt="T")
         posedit = hgvs.posedit.PosEdit(pos=iv, edit=edit)
-        genomic_variant = hgvs.variant.SequenceVariant(ac="NC_000011.9", type="g", posedit=posedit, )
+        genomic_variant = hgvs.sequencevariant.SequenceVariant(ac="NC_000011.9", type="g", posedit=posedit, )
         variantmapper = hgvs.variantmapper.VariantMapper(self.hdp)
         return variantmapper.g_to_c(genomic_variant, "NM_001164277.1")
 
