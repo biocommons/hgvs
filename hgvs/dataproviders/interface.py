@@ -55,7 +55,7 @@ class Interface(object):
             self.mode = RUN
         elif mode == 'verify':
             self.mode = VERIFY
-        
+
         self.cache = None
         if self.mode is not None:
             if self.mode == LEARN:
@@ -63,19 +63,34 @@ class Interface(object):
             else:
                 self.cache = PersistentDict(cache, flag='r')
 
-        self.data_version            = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.data_version)
-        self.schema_version          = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.schema_version)
-        self.get_acs_for_protein_seq = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_acs_for_protein_seq)
-        self.get_gene_info           = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_gene_info)
-        self.get_pro_ac_for_tx_ac    = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_pro_ac_for_tx_ac)
-        self.get_seq                 = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_seq)
-        self.get_similar_transcripts = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_similar_transcripts)
-        self.get_tx_exons            = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_tx_exons)
-        self.get_tx_for_gene         = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_tx_for_gene)
-        self.get_tx_for_region       = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_tx_for_region)
-        self.get_tx_identity_info    = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_tx_identity_info)
-        self.get_tx_info             = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_tx_info)
-        self.get_tx_mapping_options  = lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_tx_mapping_options)
+        self.data_version = lru_cache(
+            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.data_version)
+        self.schema_version = lru_cache(
+            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.schema_version)
+        self.get_acs_for_protein_seq = lru_cache(
+            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode,
+            cache=self.cache)(self.get_acs_for_protein_seq)
+        self.get_gene_info = lru_cache(
+            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_gene_info)
+        self.get_pro_ac_for_tx_ac = lru_cache(
+            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_pro_ac_for_tx_ac)
+        self.get_seq = lru_cache(
+            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_seq)
+        self.get_similar_transcripts = lru_cache(
+            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode,
+            cache=self.cache)(self.get_similar_transcripts)
+        self.get_tx_exons = lru_cache(
+            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_tx_exons)
+        self.get_tx_for_gene = lru_cache(
+            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_tx_for_gene)
+        self.get_tx_for_region = lru_cache(
+            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_tx_for_region)
+        self.get_tx_identity_info = lru_cache(
+            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_tx_identity_info)
+        self.get_tx_info = lru_cache(
+            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_tx_info)
+        self.get_tx_mapping_options = lru_cache(
+            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode, cache=self.cache)(self.get_tx_mapping_options)
 
         def _split_version_string(v):
             versions = map(int, v.split("."))
@@ -94,10 +109,7 @@ class Interface(object):
 
         raise RuntimeError(
             "Incompatible versions: {k} requires schema version {rv}, but {self.url} provides version {av}".format(
-                k=type(self).__name__,
-                self=self,
-                rv=self.required_version,
-                av=self.schema_version()))
+                k=type(self).__name__, self=self, rv=self.required_version, av=self.schema_version()))
 
     # required_version: what version of the remote schema is required
     # by the subclass? This value is compared to the result of
@@ -159,6 +171,7 @@ class Interface(object):
     @abc.abstractmethod
     def get_tx_mapping_options(self, tx_ac):
         pass
+
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

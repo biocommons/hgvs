@@ -22,7 +22,7 @@ class PosEdit(recordtype.recordtype('PosEdit', [('pos', None), ('edit', None), (
             rv = str(self.edit.format(conf))
         else:
             rv = "{pos}{edit}".format(pos=self.pos.format(conf), edit=self.edit.format(conf))
-        
+
         if self.uncertain:
             if self.edit in ["0", ""]:
                 rv = rv + "?"
@@ -89,8 +89,6 @@ class PosEdit(recordtype.recordtype('PosEdit', [('pos', None), ('edit', None), (
                 if ref_len is not None and ref_len != self.pos.end - self.pos.start + 1:
                     raise HGVSInvalidVariantError("Length implied by coordinates must equal sequence deletion length")
         return True
-
-
 
     ## <LICENSE>
     ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """Provides VariantMapper and AssemblyMapper to project variants
 between sequences using TranscriptMapper.
 
@@ -69,9 +68,7 @@ class VariantMapper(object):
 
     """
 
-    def __init__(self,
-                 hdp,
-                 replace_reference=False):
+    def __init__(self, hdp, replace_reference=False):
         """
         :param bool replace_reference: replace reference (entails additional network access)
 
@@ -79,7 +76,6 @@ class VariantMapper(object):
 
         self.hdp = hdp
         self.replace_reference = replace_reference
-
 
     # ############################################################################
     # g⟷t
@@ -102,7 +98,6 @@ class VariantMapper(object):
         else:
             var_out = VariantMapper.n_to_g(self, var_n=var_t, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         return var_out
-
 
     # ############################################################################
     # g⟷n
@@ -269,9 +264,10 @@ class VariantMapper(object):
 
         """
 
-        class RefTranscriptData(recordtype.recordtype("RefTranscriptData",
-                                                      ["transcript_sequence", "aa_sequence", "cds_start", "cds_stop",
-                                                       "protein_accession"])):
+        class RefTranscriptData(
+                recordtype.recordtype("RefTranscriptData", [
+                    "transcript_sequence", "aa_sequence", "cds_start", "cds_stop", "protein_accession"
+                ])):
             @classmethod
             def setup_transcript_data(cls, hdp, tx_ac, pro_ac):
                 """helper for generating RefTranscriptData from for c_to_p"""
@@ -365,10 +361,8 @@ class VariantMapper(object):
         Get a new TranscriptMapper for the given transcript accession (ac),
         possibly caching the result.
         """
-        return hgvs.transcriptmapper.TranscriptMapper(self.hdp,
-                                                      tx_ac=tx_ac,
-                                                      alt_ac=alt_ac,
-                                                      alt_aln_method=alt_aln_method)
+        return hgvs.transcriptmapper.TranscriptMapper(
+            self.hdp, tx_ac=tx_ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
 
     @staticmethod
     def _convert_edit_check_strand(strand, edit_in):
@@ -386,7 +380,9 @@ class VariantMapper(object):
                     ref = edit_in.ref
                 except (ValueError, TypeError):
                     ref = reverse_complement(edit_in.ref)
-                edit_out = hgvs.edit.NARefAlt(ref=ref, alt=reverse_complement(edit_in.alt), )
+                edit_out = hgvs.edit.NARefAlt(
+                    ref=ref,
+                    alt=reverse_complement(edit_in.alt), )
         elif isinstance(edit_in, hgvs.edit.Dup):
             if strand == 1:
                 edit_out = copy.deepcopy(edit_in)
@@ -439,8 +435,8 @@ class AssemblyMapper(VariantMapper):
                  normalize=hgvs.global_config.mapping.normalize,
                  in_par_assume=hgvs.global_config.mapping.in_par_assume,
                  replace_reference=hgvs.global_config.mapping.replace_reference,
-                 *args, **kwargs
-                 ):
+                 *args,
+                 **kwargs):
         """
         :param object hdp: instance of hgvs.dataprovider subclass
         :param bool replace_reference: replace reference (entails additional network access)
@@ -453,9 +449,7 @@ class AssemblyMapper(VariantMapper):
         :raises HGVSError subclasses: for a variety of mapping and data lookup failures
         """
 
-        super(AssemblyMapper, self).__init__(hdp=hdp,
-                                                replace_reference=replace_reference,
-                                                *args, **kwargs)
+        super(AssemblyMapper, self).__init__(hdp=hdp, replace_reference=replace_reference, *args, **kwargs)
         self.assembly_name = assembly_name
         self.alt_aln_method = alt_aln_method
         self.normalize = normalize
@@ -470,8 +464,7 @@ class AssemblyMapper(VariantMapper):
     def __repr__(self):
         return ("{self.__module__}.{t.__name__}(alt_aln_method={self.alt_aln_method}, "
                 "assembly_name={self.assembly_name}, normalize={self.normalize}, "
-                "replace_reference={self.replace_reference})".format(
-                    self=self, t=type(self)))
+                "replace_reference={self.replace_reference})".format(self=self, t=type(self)))
 
     def g_to_c(self, var_g, tx_ac):
         self._validator.validate(var_g)
@@ -535,15 +528,14 @@ class AssemblyMapper(VariantMapper):
         AssemblyMapper)
 
         """
-        alt_acs = [e["alt_ac"]
-                   for e in self.hdp.get_tx_mapping_options(tx_ac)
-                   if e["alt_aln_method"] == self.alt_aln_method and e["alt_ac"] in self._assembly_accessions]
+        alt_acs = [
+            e["alt_ac"] for e in self.hdp.get_tx_mapping_options(tx_ac)
+            if e["alt_aln_method"] == self.alt_aln_method and e["alt_ac"] in self._assembly_accessions
+        ]
 
         if len(alt_acs) == 0:
-            raise HGVSDataNotAvailableError(
-                "No alignments for {tx_ac} in {an} using {am}".format(tx_ac=tx_ac,
-                                                                      an=self.assembly_name,
-                                                                      am=self.alt_aln_method))
+            raise HGVSDataNotAvailableError("No alignments for {tx_ac} in {an} using {am}".format(
+                tx_ac=tx_ac, an=self.assembly_name, am=self.alt_aln_method))
 
         if len(alt_acs) > 1:
             names = set(self._assembly_map[ac] for ac in alt_acs)
@@ -562,8 +554,11 @@ class AssemblyMapper(VariantMapper):
             if len(alt_acs) != 1:
                 raise HGVSError("Multiple chromosomal alignments for {tx_ac} in {an}"
                                 " using {am}; in_par_assume={ipa} selected {n} of them".format(
-                                    tx_ac=tx_ac, an=self.assembly_name, am=self.alt_aln_method,
-                                    ipa=self.in_par_assume, n=len(alt_acs)))
+                                    tx_ac=tx_ac,
+                                    an=self.assembly_name,
+                                    am=self.alt_aln_method,
+                                    ipa=self.in_par_assume,
+                                    n=len(alt_acs)))
 
         assert len(alt_acs) == 1, "Should have exactly one alignment at this point"
         return alt_acs[0]
@@ -580,6 +575,7 @@ class AssemblyMapper(VariantMapper):
                 _logger.warn(str(e) + "; returning unnormalized variant")
                 # fall through to return unnormalized variant
         return var
+
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

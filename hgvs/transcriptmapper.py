@@ -55,7 +55,7 @@ class TranscriptMapper(object):
                     raise HGVSDataNotAvailableError(
                         "TranscriptMapper(tx_ac={self.tx_ac}, "
                         "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
-                        "Exons {a} and {b} are not adjacent".format(self=self, a=i, b=i+1))
+                        "Exons {a} and {b} are not adjacent".format(self=self, a=i, b=i + 1))
 
             self.strand = self.tx_exons[0]["alt_strand"]
             self.cds_start_i = self.tx_info["cds_start_i"]
@@ -75,8 +75,8 @@ class TranscriptMapper(object):
             self.cds_end_i = self.tx_identity_info["cds_end_i"]
             self.tgt_len = sum(self.tx_identity_info["lengths"])
 
-        assert not ((self.cds_start_i is None)
-                    ^ (self.cds_end_i is None)), "CDS start and end must both be defined or neither defined"
+        assert not ((self.cds_start_i is None) ^
+                    (self.cds_end_i is None)), "CDS start and end must both be defined or neither defined"
 
     def __str__(self):
         return "{self.__class__.__name__}: {self.tx_ac} ~ {self.alt_ac} ~ {self.alt_aln_method); " \
@@ -149,7 +149,7 @@ class TranscriptMapper(object):
 
         return hgvs.location.BaseOffsetInterval(
             start=hgvs.location.BaseOffsetPosition(base=start_bo[0], offset=start_bo[1], datum=hgvs.location.SEQ_START),
-            end=hgvs.location.BaseOffsetPosition(base=end_bo[0],     offset=end_bo[1],   datum=hgvs.location.SEQ_START),
+            end=hgvs.location.BaseOffsetPosition(base=end_bo[0], offset=end_bo[1], datum=hgvs.location.SEQ_START),
             uncertain=g_interval.uncertain)
 
     def n_to_g(self, n_interval):
@@ -169,21 +169,18 @@ class TranscriptMapper(object):
         grs, gre = self.im.map_tgt_to_ref(frs, fre, max_extent=False)
         grs, gre = grs + self.gc_offset, gre + self.gc_offset
         gs, ge = grs + start_offset, gre + end_offset
-        return hgvs.location.Interval(start=hgvs.location.SimplePosition(
-            _ci_to_hgvs_coord(gs, ge)[0],
-            uncertain=n_interval.start.uncertain),
-                                      end=hgvs.location.SimplePosition(
-                                          _ci_to_hgvs_coord(gs, ge)[1],
-                                          uncertain=n_interval.end.uncertain),
-                                      uncertain=n_interval.uncertain)
+        return hgvs.location.Interval(
+            start=hgvs.location.SimplePosition(_ci_to_hgvs_coord(gs, ge)[0], uncertain=n_interval.start.uncertain),
+            end=hgvs.location.SimplePosition(_ci_to_hgvs_coord(gs, ge)[1], uncertain=n_interval.end.uncertain),
+            uncertain=n_interval.uncertain)
 
     def n_to_c(self, n_interval):
         """convert a transcript cDNA (n.) interval to a transcript CDS (c.) interval"""
 
         if self.cds_start_i is None:    # cds_start_i defined iff cds_end_i defined; see assertion above
             raise HGVSUsageError(
-                "CDS is undefined for {self.tx_ac}; cannot map to c. coordinate (non-coding transcript?)".format(self=
-                                                                                                                 self))
+                "CDS is undefined for {self.tx_ac}; cannot map to c. coordinate (non-coding transcript?)".format(
+                    self=self))
         if n_interval.start.base <= 0 or n_interval.end.base > self.tgt_len:
             raise HGVSError("The given coordinate is outside the bounds of the reference sequence.")
 
@@ -209,8 +206,8 @@ class TranscriptMapper(object):
             ce_datum = hgvs.location.CDS_END
 
         c_interval = hgvs.location.BaseOffsetInterval(
-            start=hgvs.location.BaseOffsetPosition(base=cs, offset=n_interval.start.offset,  datum=cs_datum),
-            end=hgvs.location.BaseOffsetPosition(base=ce,   offset=n_interval.end.offset,    datum=ce_datum),
+            start=hgvs.location.BaseOffsetPosition(base=cs, offset=n_interval.start.offset, datum=cs_datum),
+            end=hgvs.location.BaseOffsetPosition(base=ce, offset=n_interval.end.offset, datum=ce_datum),
             uncertain=n_interval.uncertain)
         return c_interval
 
@@ -241,8 +238,9 @@ class TranscriptMapper(object):
             raise HGVSError("The given coordinate is outside the bounds of the reference sequence.")
 
         n_interval = hgvs.location.BaseOffsetInterval(
-            start=hgvs.location.BaseOffsetPosition(base=rs, offset=c_interval.start.offset, datum=hgvs.location.SEQ_START),
-            end=hgvs.location.BaseOffsetPosition(base=re,   offset=c_interval.end.offset,   datum=hgvs.location.SEQ_START),
+            start=hgvs.location.BaseOffsetPosition(
+                base=rs, offset=c_interval.start.offset, datum=hgvs.location.SEQ_START),
+            end=hgvs.location.BaseOffsetPosition(base=re, offset=c_interval.end.offset, datum=hgvs.location.SEQ_START),
             uncertain=c_interval.uncertain)
         return n_interval
 
@@ -276,6 +274,7 @@ def _hgvs_coord_to_ci(s, e):
         return c - 1 if c > 0 else c
 
     return (None if s is None else _hgvs_to_ci(s), None if e is None else _hgvs_to_ci(e) + 1)
+
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

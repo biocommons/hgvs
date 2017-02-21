@@ -142,6 +142,7 @@ def normalize_alleles(ref, start, stop, alleles, bound, ref_step, left, shuffle=
     else:
         return normalize_alleles_right(ref, start, stop, alleles, bound, ref_step, shuffle)
 
+
 # <LICENSE>
 # Copyright 2015 Kevin Jacobs (https://github.com/bioinformed/vgraph)
 # 

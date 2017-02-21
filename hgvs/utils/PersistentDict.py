@@ -3,12 +3,14 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import pickle
 
+
 class PersistentDict(dict):
     ''' Persistent dictionary 
     '''
+
     def __init__(self, filename, flag='c', *args, **kwds):
         self.filename = filename
-        self.flag = flag        # r=readonly, c=create,write,read
+        self.flag = flag    # r=readonly, c=create,write,read
         try:
             with open(self.filename, 'rb') as f:
                 self.update(pickle.load(f))

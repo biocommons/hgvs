@@ -187,8 +187,9 @@ def cigar_to_intervalpairs(cigar):
     """
 
     cigar_elem_re = re.compile("(?P<len>\d+)(?P<op>[=DIMNX])")
-    ces = [CIGARElement(op=md["op"],
-                        len=int(md["len"])) for md in [m.groupdict() for m in cigar_elem_re.finditer(cigar)]]
+    ces = [
+        CIGARElement(op=md["op"], len=int(md["len"])) for md in [m.groupdict() for m in cigar_elem_re.finditer(cigar)]
+    ]
     ips = [None] * len(ces)
     ref_pos = tgt_pos = 0
     for i, ce in enumerate(ces):
@@ -196,6 +197,7 @@ def cigar_to_intervalpairs(cigar):
         ref_pos += ce.ref_len
         tgt_pos += ce.tgt_len
     return ips
+
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

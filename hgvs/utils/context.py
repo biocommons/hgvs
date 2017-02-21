@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """Internal utility to display textual representation of variant context
 
 Something like this:
@@ -36,8 +35,8 @@ def full_house(evm, var, tx_ac=None):
             if len(rtx) == 0:
                 raise RuntimeError("no relevant transcripts for {var.ac}".format(var=var))
             if len(rtx) > 1:
-                raise RuntimeError("{n} relevant transcripts for {var.ac}; you need to pick one".format(n=len(rtx),
-                                                                                                        var=var))
+                raise RuntimeError(
+                    "{n} relevant transcripts for {var.ac}; you need to pick one".format(n=len(rtx), var=var))
             tx_ac = rtx[0]
         var_n = evm.g_to_n(var_g, tx_ac)
         var_c = evm.n_to_c(var_n)
@@ -51,6 +50,7 @@ def full_house(evm, var, tx_ac=None):
         var_n = evm.c_to_n(var_c)
     var_p = evm.c_to_p(var_c)
     return {'g': var_g, 'c': var_c, 'n': var_n, 'p': var_p}
+
 
 # def variant_context(evm, var, margin=20):
 #     span = _span(var, margin)
@@ -95,40 +95,37 @@ def variant_context_w_alignment(evm, var, margin=20, tx_ac=None):
     s_dir = '>' if strand == 1 else '<'
 
     lines = [
-        [1,
-         0,
-         seq_line_fmt(var=fh['c'],
-                      span=span_c if strand == 1 else list(reversed(span_c)),
-                      content='',
-                      dir=s_dir), ],
-        [2,
-         0,
-         seq_line_fmt(var=fh['n'],
-                      span=span_n if strand == 1 else list(reversed(span_n)),
-                      content=aseq_n,
-                      dir=s_dir), ],
-        [3,
-         0,
-         _line_fmt.format(pre='',
-                          content=aln_str,
-                          post=a.cigar.to_string(),
-                          comment=''), ],
-        [4,
-         1,
-         seq_line_fmt(var=fh['g'],
-                      span=span_g,
-                      content=aseq_gt,
-                      dir='>'), ],
-        [4,
-         2,
-         seq_line_fmt(var=fh['g'],
-                      span=span_g,
-                      content=aseq_gb,
-                      dir='<'), ],
-        [5,
-         0,
-         pointer_line(var=fh['g'],
-                      span=span_g), ],
+        [
+            1,
+            0,
+            seq_line_fmt(var=fh['c'], span=span_c if strand == 1 else list(reversed(span_c)), content='', dir=s_dir),
+        ],
+        [
+            2,
+            0,
+            seq_line_fmt(
+                var=fh['n'], span=span_n if strand == 1 else list(reversed(span_n)), content=aseq_n, dir=s_dir),
+        ],
+        [
+            3,
+            0,
+            _line_fmt.format(pre='', content=aln_str, post=a.cigar.to_string(), comment=''),
+        ],
+        [
+            4,
+            1,
+            seq_line_fmt(var=fh['g'], span=span_g, content=aseq_gt, dir='>'),
+        ],
+        [
+            4,
+            2,
+            seq_line_fmt(var=fh['g'], span=span_g, content=aseq_gb, dir='<'),
+        ],
+        [
+            5,
+            0,
+            pointer_line(var=fh['g'], span=span_g),
+        ],
     ]
     if strand == -1:
         lines.sort(key=lambda e: (-e[0], e[1]))
@@ -142,6 +139,7 @@ def _ival_to_span(ival):
 def _reformat_aln_str(aln_str):
     return re.sub('[ACGT]', ' ', aln_str.replace('.', '|'))
 
+
 # pre=[ac c s] d content d post=[end] comment
 _line_fmt = "{pre:>30s} {content:45s} {post} {comment}"
 _pre_fmt = "{ac:12s} {type:1s} {s:10d} {dir:1s}"
@@ -149,14 +147,11 @@ _post_fmt = "{dir:1s} {e:8d}"
 
 
 def seq_line_fmt(var, span, content, dir=''):
-    return _line_fmt.format(pre=_pre_fmt.format(ac=var.ac,
-                                                type=var.type,
-                                                s=span[0],
-                                                dir=dir),
-                            content=content,
-                            post=_post_fmt.format(dir=dir,
-                                                  e=span[1]),
-                            comment=str(var))
+    return _line_fmt.format(
+        pre=_pre_fmt.format(ac=var.ac, type=var.type, s=span[0], dir=dir),
+        content=content,
+        post=_post_fmt.format(dir=dir, e=span[1]),
+        comment=str(var))
 
 
 def pointer_line(var, span):
@@ -189,7 +184,7 @@ def format_sequence(seq, start=None, end=None, group_size=3):
 
     bw = width - loc_width - len(body_sep)
     assert group_size <= bw, "group size must be less than available line width"
-    gpl = int((bw + len(sep)) / (group_size + len(sep)))  # groups per line
+    gpl = int((bw + len(sep)) / (group_size + len(sep)))    # groups per line
     gpl = int(gpl / 5) * 5 if gpl > 20 else gpl
     rpl = group_size * gpl
     line_fmt = "{{l:>{lw}s}}{body_sep}{{body}}".format(lw=loc_width, body_sep=body_sep)
@@ -199,11 +194,11 @@ def format_sequence(seq, start=None, end=None, group_size=3):
     for ls in range(start, end, rpl):
         le = ls + rpl
 
-        groups = [ge_fmt.format(ge=str(gs+group_size)[-group_size+1:]) for gs in range(ls, le, group_size)]
+        groups = [ge_fmt.format(ge=str(gs + group_size)[-group_size + 1:]) for gs in range(ls, le, group_size)]
         blocks += [line_fmt.format(l="", body=sep.join(groups)) + "\n"]
 
-        groups = [seq[gs:min(gs+group_size,end)] for gs in range(ls, le, group_size)]
-        blocks += [line_fmt.format(l=str(ls+1), body=sep.join(groups)) + "\n"]
+        groups = [seq[gs:min(gs + group_size, end)] for gs in range(ls, le, group_size)]
+        blocks += [line_fmt.format(l=str(ls + 1), body=sep.join(groups)) + "\n"]
 
         blocks += ["\n"]
 

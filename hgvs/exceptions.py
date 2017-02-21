@@ -43,6 +43,7 @@ class HGVSUsageError(HGVSError):
     """Exception raised when client/caller has made an invalid request"""
     pass
 
+
 class HGVSVerifyFailedError(HGVSError):
     """Exception raised when the cached hdp result is not consistent with latest remote result"""
     pass
