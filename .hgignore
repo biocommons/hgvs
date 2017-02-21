@@ -66,3 +66,6 @@ misc/figures/mapping-tools.svg
 misc/figures/object-diagram.svg
 misc/missing
 misc/361-new-tests/hgvs4variation.txt.gz
+misc/clinvar-test-variants/clinvar-groups.gz
+misc/clinvar-test-variants/clinvar-shuffle
+misc/clinvar-test-variants/hgvs4variation.txt.gz
