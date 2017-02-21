@@ -65,8 +65,8 @@ class Projector(object):
         """
         project c_variant on the source transcript onto the destination transcript
 
-        :param c_variant: an :class:`hgvs.variant.SequenceVariant` object on the source transcript
-        :returns: c_variant: an :class:`hgvs.variant.SequenceVariant` object on the destination transcript
+        :param c_variant: an :class:`hgvs.sequencevariant.SequenceVariant` object on the source transcript
+        :returns: c_variant: an :class:`hgvs.sequencevariant.SequenceVariant` object on the destination transcript
         """
         if c_variant.ac != self.src_tm.tx_ac:
             raise RuntimeError("variant accession does not match that used to initialize " + __name__)
@@ -79,8 +79,8 @@ class Projector(object):
         """
         project c_variant on the source transcript onto the destination transcript
 
-        :param c_variant: an :class:`hgvs.variant.SequenceVariant` object on the source transcript
-        :returns: c_variant: an :class:`hgvs.variant.SequenceVariant` object on the destination transcript
+        :param c_variant: an :class:`hgvs.sequencevariant.SequenceVariant` object on the source transcript
+        :returns: c_variant: an :class:`hgvs.sequencevariant.SequenceVariant` object on the destination transcript
         """
         if c_variant.ac != self.dst_tm.tx_ac:
             raise RuntimeError("variant accession does not match that used to initialize " + __name__)

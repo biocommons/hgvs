@@ -10,7 +10,7 @@ from hgvs.exceptions import HGVSDataNotAvailableError
 import hgvs.dataproviders.uta
 import hgvs.edit
 import hgvs.parser
-import hgvs.variant
+import hgvs.sequencevariant
 import hgvs.variantmapper
 
 
@@ -41,7 +41,7 @@ class CrossChecker(object):
     def crosscheck_variant_group(self, variants):
         """crosscheck a group of variants; returns None if successful, otherwise a message"""
         
-        assert all(isinstance(v, hgvs.variant.SequenceVariant) for v in variants)
+        assert all(isinstance(v, hgvs.sequencevariant.SequenceVariant) for v in variants)
 
         variants = sorted(variants, key=lambda v: v.type)
         binned_variants = {k:[] for k in "cgmnrp"}

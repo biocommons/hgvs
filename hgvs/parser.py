@@ -23,7 +23,7 @@ import hgvs.edit
 import hgvs.hgvsposition
 import hgvs.location
 import hgvs.posedit
-import hgvs.variant
+import hgvs.sequencevariant
 
 
 class Parser(object):

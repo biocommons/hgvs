@@ -331,7 +331,7 @@ class AltSeqToHgvsp(object):
         posedit = PosEdit(interval, edit)
         if not (is_ambiguous and start == ''):
             posedit.uncertain = hgvs.global_config.mapping.inferred_p_is_uncertain
-        var_p = hgvs.variant.SequenceVariant(acc, 'p', posedit)
+        var_p = hgvs.sequencevariant.SequenceVariant(acc, 'p', posedit)
 
         return var_p
 

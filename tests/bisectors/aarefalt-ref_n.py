@@ -4,7 +4,7 @@ import hgvs
 import hgvs.dataproviders.uta
 import hgvs.parser
 import hgvs.transcriptmapper
-import hgvs.variant
+import hgvs.sequencevariant
 import hgvs.variantmapper
 
 hdp = hgvs.dataproviders.uta.connect()

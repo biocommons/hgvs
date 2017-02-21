@@ -15,7 +15,7 @@ import hgvs.normalizer
 import hgvs.parser
 import hgvs.transcriptmapper
 import hgvs.validator
-import hgvs.variant
+import hgvs.sequencevariant
 import hgvs.variantmapper
 
 
