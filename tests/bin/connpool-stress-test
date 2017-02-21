@@ -32,7 +32,7 @@ _logger = logging.getLogger(__name__)
 if __name__ == "__main__":
     hp = hgvs.parser.Parser()
     hdp = hgvs.dataproviders.uta.connect(pooling=True)
-    evm = hgvs.variantmapper.EasyVariantMapper(
+    evm = hgvs.variantmapper.AssemblyMapper(
         hdp, primary_assembly='GRCh37', alt_aln_method='splign')
     
     keep_going = True

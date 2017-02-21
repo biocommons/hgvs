@@ -31,8 +31,8 @@ def shell():
 
     hdp = hgvs.dataproviders.uta.connect()
     vm = variantmapper = hgvs.variantmapper.VariantMapper(hdp)
-    evm37 = easyvariantmapper = hgvs.variantmapper.EasyVariantMapper(hdp, assembly_name='GRCh37')
-    evm38 = easyvariantmapper = hgvs.variantmapper.EasyVariantMapper(hdp, assembly_name='GRCh38')
+    am37 = easyvariantmapper = hgvs.variantmapper.AssemblyMapper(hdp, assembly_name='GRCh37')
+    am38 = easyvariantmapper = hgvs.variantmapper.AssemblyMapper(hdp, assembly_name='GRCh38')
     hv = hgvs.validator.Validator(hdp)
     hn = hgvs.normalizer.Normalizer(hdp)
 

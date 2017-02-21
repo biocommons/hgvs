@@ -250,7 +250,7 @@ based on commit messages between specified release tags.  That
     * 0.4.1 (2015-09-14)
     Changes since 0.4.0 (2015-09-09).
     ** Bug Fixes
-    *** fixes #274, #275: initialize normalizer with same alt_aln_method as EasyVariantMapper [43e174d6f8af]
+    *** fixes #274, #275: initialize normalizer with same alt_aln_method as AssemblyMapper [43e174d6f8af]
     *** fixes #276: raise error when user attempts to map to/from c. with non-coding transcript [3f7b659f4f02]
 
 ``.clog`` files should be edited for readability during the release

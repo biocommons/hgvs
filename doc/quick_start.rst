@@ -106,7 +106,7 @@ By default, you'll connect to the public UTA database instance hosted by
 Then, with that connection, instantiate a VariantMapper:
 
 >>> import hgvs.variantmapper
->>> variantmapper = hgvs.variantmapper.EasyVariantMapper(hdp, assembly_name="GRCh37")
+>>> variantmapper = hgvs.variantmapper.AssemblyMapper(hdp, assembly_name="GRCh37")
 
 We can use this mapper to transform our transcript variant to a protein variant:
 

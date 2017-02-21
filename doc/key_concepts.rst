@@ -101,7 +101,7 @@ Variant Mapping Tools
 @@@@@@@@@@@@@@@@@@@@@
 
 Variant mapping is supported by several modules.  Most users will
-likely be content with :class:`hgvs.variant.EasyVariantMapper`.  For
+likely be content with :class:`hgvs.variant.AssemblyMapper`.  For
 completeness, it may help to understand how all of the mappers relate
 to each other.
 
@@ -130,7 +130,7 @@ to each other.
      it must be instantiated with an appropriate transcript,
      reference, and alignment method.
 
-  :class:`hgvs.variantmapper.EasyVariantMapper`
+  :class:`hgvs.variantmapper.AssemblyMapper`
 
      VariantMapper requires that the caller provide a transcript
      accession and an appropriate reference sequence, which in turn
@@ -138,7 +138,7 @@ to each other.
      method is also required.  While the VariantMapper interface
      serves the general case of mapping to any sequence (including
      patch sequences), it is burdensome for the most common case.
-     EasyVariantMapper wraps VariantMapper to provide identical
+     AssemblyMapper wraps VariantMapper to provide identical
      mapping functionality that is tailored for mapping between a
      transcript and a primary assembly.
 
