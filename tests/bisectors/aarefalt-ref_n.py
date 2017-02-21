@@ -9,7 +9,7 @@ import hgvs.variantmapper
 
 hdp = hgvs.dataproviders.uta.connect()
 hp = hgvs.parser.Parser()
-evm = hgvs.variantmapper.EasyVariantMapper(hdp,
+evm = hgvs.variantmapper.AssemblyMapper(hdp,
                                            replace_reference=True, assembly_name='GRCh37',
                                            alt_aln_method='splign')
 

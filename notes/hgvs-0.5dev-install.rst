@@ -122,11 +122,11 @@ Instructions
 
      In [1]: v = hp.parse_hgvs_variant("NM_033089.6:c.571C>G")
 
-     In [2]: evm37.c_to_g(v)
+     In [2]: am37.c_to_g(v)
      INFO:biocommons.seqrepo.fastadir.fastadir:Opening for reading: /usr/.../1472015601.985206.fa.bgz
      Out[2]: SequenceVariant(ac=NC_000020.10, type=g, posedit=278801C>G)
 
-     In [3]: evm38.c_to_g(v)
+     In [3]: am38.c_to_g(v)
      INFO:biocommons.seqrepo.fastadir.fastadir:Opening for reading: /usr/.../1472026864.4364622.fa.bgz
      Out[3]: SequenceVariant(ac=NC_000020.11, type=g, posedit=298157C>G)
 
@@ -134,7 +134,7 @@ Instructions
 #. Try it on your code
 
    hgvs 0.5.0 uses GRCh38 **by default**.  You can change that easily
-   when invoking EasyVariantMapper using the ``assembly_name``
+   when invoking AssemblyMapper using the ``assembly_name``
    argument. (NOTE: This command-line argument changed from
    ``primary_assembly`` to ``assembly_name``.  This is the only API
    change, I believe.)

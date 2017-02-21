@@ -29,11 +29,11 @@ class Test_Issues(unittest.TestCase):
         self.hp = hgvs.parser.Parser()
         self.hn = hgvs.normalizer.Normalizer(self.hdp)
         self.hv = hgvs.validator.IntrinsicValidator()
-        self.evm37 = hgvs.variantmapper.EasyVariantMapper(self.hdp,
+        self.am37 = hgvs.variantmapper.AssemblyMapper(self.hdp,
                                                           replace_reference=True,
                                                           assembly_name='GRCh37',
                                                           alt_aln_method='splign')
-        self.evm38 = hgvs.variantmapper.EasyVariantMapper(self.hdp,
+        self.am38 = hgvs.variantmapper.AssemblyMapper(self.hdp,
                                                           replace_reference=True,
                                                           assembly_name='GRCh38',
                                                           alt_aln_method='splign')
@@ -43,7 +43,7 @@ class Test_Issues(unittest.TestCase):
     def test_260_raise_exception_when_mapping_bogus_variant(self):
         v = self.hp.parse_hgvs_variant("NM_000059.3:c.7790delAAG")
         with self.assertRaises(HGVSInvalidVariantError):
-            self.evm37.c_to_p(v)
+            self.am37.c_to_p(v)
 
 
     def test_285_partial_palindrome_inversion(self):
@@ -83,16 +83,16 @@ class Test_Issues(unittest.TestCase):
         v_nc_g = self.hp.parse_hgvs_variant(h_nc_g)
         v_nc_t = self.hp.parse_hgvs_variant(h_nc_t)
 
-        self.assertEqual(h_c_t, str(self.evm37.g_to_t(v_c_g, tx_ac=v_c_t.ac)))
-        self.assertEqual(h_c_g, str(self.evm37.t_to_g(v_c_t)))
-        self.assertEqual(h_nc_t, str(self.evm37.g_to_t(v_nc_g, tx_ac=v_nc_t.ac)))
-        self.assertEqual(h_nc_g, str(self.evm37.t_to_g(v_nc_t)))
+        self.assertEqual(h_c_t, str(self.am37.g_to_t(v_c_g, tx_ac=v_c_t.ac)))
+        self.assertEqual(h_c_g, str(self.am37.t_to_g(v_c_t)))
+        self.assertEqual(h_nc_t, str(self.am37.g_to_t(v_nc_g, tx_ac=v_nc_t.ac)))
+        self.assertEqual(h_nc_g, str(self.am37.t_to_g(v_nc_t)))
 
 
     def test_317_improve_p_repr_of_syn_variants(self):
         # from original issue:
         v317 = self.hp.parse_hgvs_variant("NM_000059.3:c.7791A>G")
-        self.assertEqual(b"NP_000050.2:p.(Lys2597=)", str(self.evm37.c_to_p(v317)))
+        self.assertEqual(b"NP_000050.2:p.(Lys2597=)", str(self.am37.c_to_p(v317)))
 
     #def test_370_handle_multicodon_syn_variants(self):
     #    # Verify behavior of syn MNVs
@@ -113,15 +113,15 @@ class Test_Issues(unittest.TestCase):
     #    v2224 = self.hp.parse_hgvs_variant("NM_000059.3:c.22_24delinsCGA") # AGG -> CGA (R)
     #    v2122 = self.hp.parse_hgvs_variant("NM_000059.3:c.21_22delinsAC")  # GAGAGG -> GAACAG (ER)
     #
-    #    self.assertEqual(b"NP_000050.2:p.(Glu7=)", str(self.evm37.c_to_p(v21)))
-    #    self.assertEqual(b"NP_000050.2:p.(Arg8=)", str(self.evm37.c_to_p(v22)))
-    #    self.assertEqual(b"NP_000050.2:p.(Arg8=)", str(self.evm37.c_to_p(v2224)))
-    #    self.assertEqual(b"NP_000050.2:p.(Glu7_Arg8=)", str(self.evm37.c_to_p(v2122)))
+    #    self.assertEqual(b"NP_000050.2:p.(Glu7=)", str(self.am37.c_to_p(v21)))
+    #    self.assertEqual(b"NP_000050.2:p.(Arg8=)", str(self.am37.c_to_p(v22)))
+    #    self.assertEqual(b"NP_000050.2:p.(Arg8=)", str(self.am37.c_to_p(v2224)))
+    #    self.assertEqual(b"NP_000050.2:p.(Glu7_Arg8=)", str(self.am37.c_to_p(v2122)))
 
     def test_322_raise_exception_when_mapping_bogus_variant(self):
         v = self.hp.parse_hgvs_variant("chrX:g.71684476delTGGAGinsAC")
         with self.assertRaises(HGVSInvalidVariantError):
-            self.evm37.g_to_c(v, "NM_018486.2")
+            self.am37.g_to_c(v, "NM_018486.2")
 
 
     def test_324_error_normalizing_simple_inversion(self):
@@ -129,8 +129,8 @@ class Test_Issues(unittest.TestCase):
         vn = self.vn.normalize(v)
         self.assertEqual(str(vn), "NM_000535.5:c.1673_1674inv")  # no change
 
-        vg = self.evm37.c_to_g(v)
-        v2 = self.evm37.g_to_c(vg, tx_ac = v.ac)
+        vg = self.am37.c_to_g(v)
+        v2 = self.am37.g_to_c(vg, tx_ac = v.ac)
         self.assertEqual(str(v), str(v2))  # no change after roundtrip
 
 
@@ -143,17 +143,17 @@ class Test_Issues(unittest.TestCase):
         hgvs_c = "NM_000451.3:c.584G>A"
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
 
-        self.evm37.in_par_assume = None
+        self.am37.in_par_assume = None
         with self.assertRaises(HGVSError):
-            var_g = self.evm37.c_to_g(var_c)
+            var_g = self.am37.c_to_g(var_c)
 
-        self.evm37.in_par_assume = 'X'
-        self.assertEqual(self.evm37.c_to_g(var_c).ac, "NC_000023.10")
+        self.am37.in_par_assume = 'X'
+        self.assertEqual(self.am37.c_to_g(var_c).ac, "NC_000023.10")
 
-        self.evm37.in_par_assume = 'Y'
-        self.assertEqual(self.evm37.c_to_g(var_c).ac, "NC_000024.9")
+        self.am37.in_par_assume = 'Y'
+        self.assertEqual(self.am37.c_to_g(var_c).ac, "NC_000024.9")
 
-        self.evm37.in_par_assume = None
+        self.am37.in_par_assume = None
 
 
     def test_330_incorrect_end_datum_post_ter(self):
@@ -204,11 +204,11 @@ class Test_Issues(unittest.TestCase):
         # resulted in variants that were not reference corrected.
         g_var = self.hp.parse_hgvs_variant("NC_000006.11:g.44275011T=")
         c_var = self.hp.parse_hgvs_variant("NM_020745.3:c.1015G>A")  # correct projection with ref replacement
-        self.assertEqual(c_var, self.evm37.g_to_c(g_var, "NM_020745.3"))  # previously okay
+        self.assertEqual(c_var, self.am37.g_to_c(g_var, "NM_020745.3"))  # previously okay
         self.assertEqual(c_var, self.vm_rr.g_to_c(g_var, "NM_020745.3"))  # previously wrong
 
     def test_381_c_to_p_error_with_del_variants(self):
         hgvs_c = "NM_000302.3:c.1594_1596del"
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
-        self.evm37.c_to_p(var_c)  # raises exception before fixing
+        self.am37.c_to_p(var_c)  # raises exception before fixing
 

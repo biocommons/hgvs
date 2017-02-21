@@ -24,7 +24,7 @@ import sys
 
 import hgvs.parser
 import hgvs.dataproviders.uta
-from hgvs.variantmapper import EasyVariantMapper
+from hgvs.variantmapper import AssemblyMapper
 
 defaults = {'uta-dsn': 'postgresql://localhost/uta', }
 
@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
     hp = hgvs.parser.Parser()
     dp = hgvs.dataproviders.uta.connect(defaults['uta-dsn'])
-    evm = hgvs.variantmapper.EasyVariantMapper(hdp=dp)
+    evm = hgvs.variantmapper.AssemblyMapper(hdp=dp)
 
     print("\t".join(fieldnames))
 

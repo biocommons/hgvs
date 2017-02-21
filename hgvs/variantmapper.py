@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Provides VariantMapper and EasyVariantMapper to project variants
+"""Provides VariantMapper and AssemblyMapper to project variants
 between sequences using TranscriptMapper.
 
 """
@@ -407,11 +407,11 @@ class VariantMapper(object):
         return edit_out
 
 
-class EasyVariantMapper(VariantMapper):
+class AssemblyMapper(VariantMapper):
     """Provides simplified variant mapping for a single assembly and
     transcript-reference alignment method.
 
-    EasyVariantMapper is instantiated with an assembly name and
+    AssemblyMapper is instantiated with an assembly name and
     alt_aln_method. These enable the following conveniences over
     VariantMapper:
 
@@ -453,7 +453,7 @@ class EasyVariantMapper(VariantMapper):
         :raises HGVSError subclasses: for a variety of mapping and data lookup failures
         """
 
-        super(EasyVariantMapper, self).__init__(hdp=hdp,
+        super(AssemblyMapper, self).__init__(hdp=hdp,
                                                 replace_reference=replace_reference,
                                                 *args, **kwargs)
         self.assembly_name = assembly_name
@@ -475,50 +475,50 @@ class EasyVariantMapper(VariantMapper):
 
     def g_to_c(self, var_g, tx_ac):
         self._validator.validate(var_g)
-        var_out = super(EasyVariantMapper, self).g_to_c(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
+        var_out = super(AssemblyMapper, self).g_to_c(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
         return self._maybe_normalize(var_out)
 
     def g_to_n(self, var_g, tx_ac):
         self._validator.validate(var_g)
-        var_out = super(EasyVariantMapper, self).g_to_n(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
+        var_out = super(AssemblyMapper, self).g_to_n(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
         return self._maybe_normalize(var_out)
 
     def g_to_t(self, var_g, tx_ac):
         self._validator.validate(var_g)
-        var_out = super(EasyVariantMapper, self).g_to_t(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
+        var_out = super(AssemblyMapper, self).g_to_t(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
         return self._maybe_normalize(var_out)
 
     def c_to_g(self, var_c):
         self._validator.validate(var_c)
         alt_ac = self._alt_ac_for_tx_ac(var_c.ac)
-        var_out = super(EasyVariantMapper, self).c_to_g(var_c, alt_ac, alt_aln_method=self.alt_aln_method)
+        var_out = super(AssemblyMapper, self).c_to_g(var_c, alt_ac, alt_aln_method=self.alt_aln_method)
         return self._maybe_normalize(var_out)
 
     def n_to_g(self, var_n):
         self._validator.validate(var_n)
         alt_ac = self._alt_ac_for_tx_ac(var_n.ac)
-        var_out = super(EasyVariantMapper, self).n_to_g(var_n, alt_ac, alt_aln_method=self.alt_aln_method)
+        var_out = super(AssemblyMapper, self).n_to_g(var_n, alt_ac, alt_aln_method=self.alt_aln_method)
         return self._maybe_normalize(var_out)
 
     def t_to_g(self, var_t):
         self._validator.validate(var_t)
         alt_ac = self._alt_ac_for_tx_ac(var_t.ac)
-        var_out = super(EasyVariantMapper, self).t_to_g(var_t, alt_ac, alt_aln_method=self.alt_aln_method)
+        var_out = super(AssemblyMapper, self).t_to_g(var_t, alt_ac, alt_aln_method=self.alt_aln_method)
         return self._maybe_normalize(var_out)
 
     def c_to_n(self, var_c):
         self._validator.validate(var_c)
-        var_out = super(EasyVariantMapper, self).c_to_n(var_c)
+        var_out = super(AssemblyMapper, self).c_to_n(var_c)
         return self._maybe_normalize(var_out)
 
     def n_to_c(self, var_n):
         self._validator.validate(var_n)
-        var_out = super(EasyVariantMapper, self).n_to_c(var_n)
+        var_out = super(AssemblyMapper, self).n_to_c(var_n)
         return self._maybe_normalize(var_out)
 
     def c_to_p(self, var_c):
         self._validator.validate(var_c)
-        var_out = super(EasyVariantMapper, self).c_to_p(var_c)
+        var_out = super(AssemblyMapper, self).c_to_p(var_c)
         return self._maybe_normalize(var_out)
 
     def relevant_transcripts(self, var_g):
@@ -532,7 +532,7 @@ class EasyVariantMapper(VariantMapper):
     def _alt_ac_for_tx_ac(self, tx_ac):
         """return chromosomal accession for given transcript accession (and
         the_assembly and aln_method setting used to instantiate this
-        EasyVariantMapper)
+        AssemblyMapper)
 
         """
         alt_acs = [e["alt_ac"]

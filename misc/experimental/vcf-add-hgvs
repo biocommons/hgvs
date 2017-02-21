@@ -98,7 +98,7 @@ if __name__ == '__main__':
     if opts.with_c_dot:
         hp = hgvs.parser.Parser()
         hdp = hgvs.dataproviders.uta.connect()
-        evm = easyvariantmapper = hgvs.variantmapper.EasyVariantMapper(hdp,
+        evm = easyvariantmapper = hgvs.variantmapper.AssemblyMapper(hdp,
                                                                        assembly_name=opts.assembly,
                                                                        alt_aln_method='splign')
 

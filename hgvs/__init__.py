@@ -27,7 +27,7 @@ SimplePosition(base=36561662, uncertain=False)
 
 # initialize the mapper for GRCh37 with splign-based alignments
 >>> hdp = hgvs.dataproviders.uta.connect()
->>> evm = hgvs.variantmapper.EasyVariantMapper(hdp,
+>>> evm = hgvs.variantmapper.AssemblyMapper(hdp,
 ...          assembly_name="GRCh37", alt_aln_method="splign",
 ...          replace_reference=True)
 
