@@ -31,7 +31,6 @@ venv:
 	#pyvenv venv
 	virtualenv venv
 	source venv/bin/activate; \
-	python -m ensurepip --upgrade; \
 	pip install --upgrade pip setuptools
 
 #=> setup: setup/upgrade packages *in current environment*

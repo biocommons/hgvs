@@ -23,7 +23,7 @@ import hgvs.variantmapper
 @attr(tags=["issues"])
 class Test_Issues(unittest.TestCase):
     def setUp(self):
-        self.hdp = hgvs.dataproviders.uta.connect(mode="run", cache="tests/data/cache.hdp")
+        self.hdp = hgvs.dataproviders.uta.connect(mode="store", cache="tests/data/cache.hdp")
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp, replace_reference=False)
         self.vm_rr = hgvs.variantmapper.VariantMapper(self.hdp, replace_reference=True)
         self.hp = hgvs.parser.Parser()
@@ -212,3 +212,14 @@ class Test_Issues(unittest.TestCase):
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
         self.am37.c_to_p(var_c)  # raises exception before fixing
 
+    def test_393_posedit_for_unknown_p_effect(self):
+        hgvs_c = "NM_001330368.1:c.641-3353C>A"
+        hgvs_p = "NP_001317297.1:p.?"
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        translated_var_p = self.am37.c_to_p(var_c)
+        parsed_var_p = self.hp.parse_hgvs_variant(hgvs_p)
+        self.assertIsNone(translated_var_p.posedit.pos)
+        self.assertEqual(translated_var_p.posedit.edit, "")
+        self.assertTrue(translated_var_p.posedit.uncertain)
+        self.assertEqual(hgvs_p, str(translated_var_p))
+        self.assertEqual(parsed_var_p.posedit, translated_var_p.posedit)
