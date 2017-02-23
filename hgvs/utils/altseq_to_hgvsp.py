@@ -129,14 +129,15 @@ class AltSeqToHgvsp(object):
                 print(variants)
 
         if self._is_ambiguous:
-            var_ps = [
-                self._create_variant('', '', '', '', acc=self._protein_accession, is_ambiguous=self._is_ambiguous)
+            var_ps = [ self._create_variant('', '', '', '',
+                                            acc=self._protein_accession,
+                                            is_ambiguous=self._is_ambiguous)
             ]
         elif len(self._alt_seq) == 0:
-            var_ps = [
-                self._create_variant(
-                    '', '', '', '', acc=self._protein_accession, is_ambiguous=self._is_ambiguous, is_no_protein=True)
-            ]
+            var_ps = [ self._create_variant( '', '', '', '',
+                                             acc=self._protein_accession,
+                                             is_ambiguous=self._is_ambiguous,
+                                             is_no_protein=True) ]
         else:
             var_ps = [self._convert_to_sequence_variants(x, self._protein_accession) for x in variants]
 
@@ -311,11 +312,14 @@ class AltSeqToHgvsp(object):
                         is_no_protein=False):
         """Creates a SequenceVariant object"""
         interval = Interval(start=start, end=end)
+        uncertain = False
         # Note - order matters
         if is_no_protein:
             edit = '0'
         elif is_ambiguous:
-            edit = '?'
+            edit = ""
+            interval = None
+            uncertain = True
         elif is_sub:
             edit = AASub(ref=ref, alt=alt)
         elif is_ext:
@@ -328,7 +332,7 @@ class AltSeqToHgvsp(object):
             edit = AARefAlt(ref='', alt='')
         else:
             edit = AARefAlt(ref=ref, alt=alt)
-        posedit = PosEdit(interval, edit)
+        posedit = PosEdit(pos=interval, edit=edit, uncertain=uncertain)
         if not (is_ambiguous and start == ''):
             posedit.uncertain = hgvs.global_config.mapping.inferred_p_is_uncertain
         var_p = hgvs.sequencevariant.SequenceVariant(acc, 'p', posedit)
