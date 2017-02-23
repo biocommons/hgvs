@@ -52,19 +52,23 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
           "parsley",
           "psycopg2>=2.6.1",
           "recordtype>=1.1",
+          "unicodecsv",
       ],
       setup_requires=[
           "setuptools_scm",
           "nose",
+          "pytest-runner",
           "sphinx",
           "sphinx_rtd_theme",
           "sphinxcontrib-fulltoc>=1.1",
           "wheel",
       ],
       tests_require=[
-          "coverage",
-          "unicodecsv",
-      ], )
+          "pytest",
+          "pytest-cov",
+          "tox",
+      ],
+)
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

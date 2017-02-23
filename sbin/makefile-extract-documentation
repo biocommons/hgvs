@@ -2,6 +2,7 @@
 # extract-makefile-documentation -- extract doc from a makefile
 # This script prints the header, up to the first empty line AND prints
 # line starting with #=, and indented by an optional number of >.
+
 my $print = 1;
 while (<>) {
   next if ($. == 1 and m/^\#!/);
@@ -11,7 +12,7 @@ while (<>) {
 
 
 # <LICENSE>
-# Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
+# Copyright 2014 Contributors
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
