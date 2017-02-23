@@ -1,12 +1,16 @@
-# Python project Makefile
+# Makefile for Python project
 
-.SUFFIXES :
-.PRECIOUS :
-.PHONY : FORCE
 .DELETE_ON_ERROR:
+.PHONY: FORCE
+.PRECIOUS :
+.SUFFIXES:
 
 SHELL:=/bin/bash -o pipefail
 SELF:=$(firstword $(MAKEFILE_LIST))
+
+PKG=hgvs
+PKGD=$(subst .,/,${PKG})
+TEST_DIRS:=doc,hgvs,tests
 
 
 ############################################################################
@@ -14,83 +18,120 @@ SELF:=$(firstword $(MAKEFILE_LIST))
 default: help
 
 #=> help -- display this help message
-help: config
-	@sbin/extract-makefile-documentation "${SELF}"
-
-config:
-	@echo CONFIGURATION
-	@echo "  UTA_DB_URL=${UTA_DB_URL}"
+help:
+	@sbin/makefile-extract-documentation "${SELF}"
 
 
 ############################################################################
 #= SETUP, INSTALLATION, PACKAGING
 
-#=> docs -- make sphinx docs
-.PHONY: docs
-docs: setup changelog
-	# RTD makes json. Build here to ensure that it works.
-	make -C doc html json
+#=> venv: make a Python 3 virtual environment
+.PHONY: venv
+venv:
+	#pyvenv venv
+	virtualenv venv
+	source venv/bin/activate; \
+	python -m ensurepip --upgrade; \
+	pip install --upgrade pip setuptools
 
-changelog:
-	make -C doc/changelog 0.4.rst
+#=> setup: setup/upgrade packages *in current environment*
+.PHONY: setup
+setup: etc/develop.reqs etc/install.reqs
+	if [ -s $(word 1,$^) ]; then pip install --upgrade -r $(word 1,$^); fi
+	if [ -s $(word 2,$^) ]; then pip install --upgrade -r $(word 2,$^); fi
+
+#=> devready: create venv, install prerequisites, install pkg in develop mode
+.PHONY: devready
+devready:
+	make venv && source venv/bin/activate && make setup develop
+	@echo '#############################################################################'
+	@echo '###  Do not forget to `source venv/bin/activate` to use this environment  ###'
+	@echo '#############################################################################'
 
 
-#=> build_sphinx
-## sphinx docs needs to be able to import packages
-#build_sphinx: develop
-
-#=> setup, develop -- install requirements for testing or development
-setup: develop
-develop: %:
-	[ -f requirements.txt ] && pip install --upgrade -r requirements.txt || true
-	python setup.py $*
-
-#=> bdist, bdist_egg, sdist, upload_docs, etc
-bdist bdist_egg build build_sphinx install sdist: %:
+#=> develop: install package in develop mode
+#=> install: install package
+#=> bdist bdist_egg bdist_wheel build sdist: distribution options
+.PHONY: bdist bdist_egg bdist_wheel build build_sphinx sdist install develop
+bdist bdist_egg bdist_wheel build sdist install develop: %:
 	python setup.py $@
 
-#=> upload
-upload: upload_pypi
 
-#=> upload_all: upload_pypi, upload_invitae, and upload_docs
-upload_all: upload_pypi upload_docs;
-
-#=> upload_*: upload to named pypi service (requires config in ~/.pypirc)
-upload_%:
-	python setup.py bdist_egg bdist_wheel sdist upload -r $*
 
 
 ############################################################################
 #= TESTING
 # see test configuration in setup.cfg
-TEST_DIRS:=doc,hgvs,tests
 
-host-info:
-	(PS4="\n>>"; set -x; /bin/uname -a; ./sbin/cpu-info; /usr/bin/free) 2>&1 | sed -e 's/^/## /'
 
-#=> test -- run all tests (except those tagged "extra")
-test: host-info
+
+#=> test: execute tests
+.PHONY: test
+test:
 	python setup.py nosetests -A '(not tags) or ("extra" not in tags)' --tests ${TEST_DIRS}
 
-_local-%:
-	HGVS_SEQREPO_DIR=/usr/local/share/seqrepo/master _UTA_URL_KEY=local-dev make $*
-
 #=> test-* -- run tests with specified tag
-test-%: host-info
+test-%:
 	python setup.py nosetests -a 'tags=$*' --tests ${TEST_DIRS}
-
-#=> ci-test -- per-commit test target for CI
-ci-test: test
-
-#=> ci-test-ve -- test in virtualenv
-ci-test-ve: ve
-	source ve/bin/activate; \
-	make ci-test
 
 
 
 ############################################################################
 #= UTILITY TARGETS
+
+# N.B. Although code is stored in github, I use hg and hg-git on the command line
+#=> reformat: reformat code with yapf and commit
+.PHONY: reformat
+reformat:
+	@if hg sum | grep -qL '^commit:.*modified'; then echo "Repository not clean" 1>&2; exit 1; fi
+	@if hg sum | grep -qL ' applied'; then echo "Repository has applied patches" 1>&2; exit 1; fi
+	yapf -i -r "${PKGD}" tests
+	hg commit -m "reformatted with yapf"
+
+#=> docs -- make sphinx docs
+.PHONY: docs
+docs: develop
+	# RTD makes json. Build here to ensure that it works.
+	make -C doc html json
+
+############################################################################
+#= CLEANUP
+
+#=> clean: remove temporary and backup files
+.PHONY: clean
+clean:
+	find . \( -name \*~ -o -name \*.bak \) -print0 | xargs -0r rm
+	-make -C doc $@
+	-make -C examples $@
+
+#=> cleaner: remove files and directories that are easily rebuilt
+.PHONY: cleaner
+cleaner: clean
+	rm -fr .cache *.egg-info build dist doc/_build htmlcov
+	find . \( -name \*.pyc -o -name \*.orig -o -name \*.rej \) -print0 | xargs -0r rm
+	find . -name __pycache__ -print0 | xargs -0r rm -fr
+	/bin/rm -f examples/.ipynb_checkpoints
+	/bin/rm -f hgvs.{dot,svg,png,sfood}
+	-make -C doc $@
+	-make -C examples $@
+
+#=> cleanest: remove files and directories that require more time/network fetches to rebuild
+.PHONY: cleanest
+cleanest: cleaner
+	rm -fr .eggs .tox venv
+	-make -C doc $@
+	-make -C examples $@
+
+#=> pristine distclean: above, and delete anything unknown to mercurial
+pristine distclean: cleanest
+	if [ -d .hg ]; then hg st -inu0 | xargs -0r /bin/rm -fv; fi
+
+
+############################################################################
+#= HGVS specific
+
+changelog:
+	make -C doc/changelog 0.4.rst
 
 #=> changelog
 doc/source/changelog.rst: CHANGELOG
@@ -100,30 +141,10 @@ doc/source/changelog.rst: CHANGELOG
 code-check:
 	flake8 hgvs test --output-file=$@.txt
 
-#=> reformat -- reformat code with yapf
-reformat:
-	yapf -ir hgvs test
-
-
 #=> docs-aux -- make generated docs for sphinx
 docs-aux:
 	make -C misc/railroad doc-install
 	make -C examples doc-install
-
-#=> ve -- create a *local* virtualenv (not typically needed)
-VE_DIR:=ve
-VE_MAJOR:=1
-VE_MINOR:=10
-VE_PY_DIR:=virtualenv-${VE_MAJOR}.${VE_MINOR}
-VE_PY:=${VE_PY_DIR}/virtualenv.py
-${VE_PY}:
-	curl -sO  https://pypi.python.org/packages/source/v/virtualenv/virtualenv-${VE_MAJOR}.${VE_MINOR}.tar.gz
-	tar -xvzf virtualenv-${VE_MAJOR}.${VE_MINOR}.tar.gz
-	rm -f virtualenv-${VE_MAJOR}.${VE_MINOR}.tar.gz
-${VE_DIR}: ${VE_PY} 
-	${SYSTEM_PYTHON} $< ${VE_DIR} 2>&1 | tee "$@.err"
-	/bin/mv "$@.err" "$@"
-
 
 #=> hgvs.svg -- import graph; requires snakefood
 hgvs.sfood:
@@ -137,41 +158,18 @@ hgvs.svg: hgvs.dot
 	/bin/mv "$@.tmp" "$@"
 
 
-############################################################################
-#= CLEANUP
-.PHONY: clean cleaner cleanest pristine
-#=> clean: clean up editor backups, etc.
-clean:
-	find . -name \*~ -print0 | xargs -0r /bin/rm
-	make -C examples $@
-#=> cleaner: above, and remove generated files
-cleaner: clean
-	find . -name \*.pyc -print0 | xargs -0r /bin/rm -f
-	/bin/rm -fr build bdist code-check.txt cover dist sdist ve virtualenv* examples/.ipynb_checkpoints
-	/bin/rm -f hgvs.{dot,svg,png,sfood}
-	-make -C doc clean
-	make -C examples $@
-#=> cleanest: above, and remove the virtualenv, .orig, and .bak files
-cleanest: cleaner
-	find . \( -name \*.orig -o -name \*.bak -o -name \*.rej \) -print0 | xargs -0r /bin/rm -v
-	/bin/rm -fr distribute-* .eggs *.egg *.egg-info *.tar.gz nosetests.xml cover __pycache__
-	make -C examples $@
-#=> pristine: above, and delete anything unknown to mercurial
-pristine: cleanest
-	if [ -d .hg ]; then hg st -inu0 | xargs -0r /bin/rm -fv; fi
-
-# <LICENSE>
-# Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
-# 
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-# 
-#     http://www.apache.org/licenses/LICENSE-2.0
-# 
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# </LICENSE>
+## <LICENSE>
+## Copyright 2016 Source Code Committers
+## 
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+## 
+##     http://www.apache.org/licenses/LICENSE-2.0
+## 
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+## </LICENSE>
