@@ -2,30 +2,17 @@
 *hgvs* - Python library to parse, format, validate, normalize, and map sequence variants
 ========================================================================================
 
-* **2016-09-15**: hgvs 0.4.11, a bugfix release, is available. See
-  `changelog
-  <https://hgvs.readthedocs.io/en/0.4.x/changelog/releases/0.4.11.html>`__
-  for details.
+The *hgvs* package provides a Python library to facilitate the use of
+genome, transcript, and protein variants that are represented using
+the Human Genome Variation Society (`varnomen`_) recommendations.
 
-* **2016-09-13**: A *preview release* of hgvs 0.5.0 is available, with
-  support for GRCh38 and local sequence sources.  See `installation
-  notes
-  <https://bitbucket.org/biocommons/hgvs/src/13be956259489dfe52ae94071591023d7cc6133d/notes/hgvs-0.5dev-install.rst?at=default>`__.
+`Code`_ | `Docs`_ | `PyPI`_ | `Open Issues`_ | `Changelog`_ | `Mailing List`_.
 
 ----
 
-The *hgvs* package provides a Python library to facilitate the use of
-genome, transcript, and protein variants that are represented using
-the Human Genome Variation Society (`vanomen`_) recommendations.
-
-===============  ==========  =============   ==============  ================  ===============  ===============
-**Stage**        **Branch**  **ChangeLog**   **Issues**      **PyPi**          **Status**       **Docs**
-===============  ==========  =============   ==============  ================  ===============  ===============
-**Release**      `0.4.x`_    `Changelog`_    `Open Issues`_  |pypi_badge_rel|  |status_rel|     |rtd_badge_rel|
-**Development**  `default`_  `Upcoming`_     `Features`_                                        |rtd_badge_dev|
-===============  ==========  =============   ==============  ================  ===============  ===============
-
-Questions? Use the `mailing list`_.
+.. note:: A *preview release* of hgvs 0.5.0 is available, with support
+  for GRCh38 and local sequence sources.  See `installation notes
+  <https://bitbucket.org/biocommons/hgvs/src/13be956259489dfe52ae94071591023d7cc6133d/notes/hgvs-0.5dev-install.rst?at=default>`__.
 
 ----
 
@@ -163,7 +150,7 @@ Contributing
 
 The hgvs package is intended to be a community project.  Please see
 `Contributing
-<http://hgvs.readthedocs.org/en/default/contributing.html>`_ to get
+<http://hgvs.readthedocs.org/en/default/contributing.html>`__ to get
 started in submitting source code, tests, or documentation.  Thanks
 for getting involved!
 
@@ -178,27 +165,17 @@ Other packages that manipulate HGVS variants:
 
 
 
-.. _documentation: http://hgvs.readthedocs.org/
-.. _invitae: http://invitae.com/
+.. _docs: http://hgvs.readthedocs.org/
 .. _varnomen: http://varnomen.hgvs.org/
-.. _source: https://bitbucket.org/biocommons/hgvs/
-.. _uta: http://bitbucket.org/biocommons/uta/
 .. _mailing list: https://groups.google.com/forum/#!forum/hgvs-discuss
 .. _Open Issues: https://bitbucket.org/biocommons/hgvs/issues?status=new&status=open&version=0.4.x
-.. _Features: https://bitbucket.org/biocommons/hgvs/issues?status=new&status=open&milestone=0.5.0
-
+.. _code: https://bitbucket.org/biocommons/hgvs
 .. _changelog: http://hgvs.readthedocs.io/en/default/changelog/0.4.html
-.. _upcoming: http://hgvs.readthedocs.io/en/default/changelog/upcoming.html
+.. _pypi: https://pypi.python.org/pypi/hgvs
 
-.. _0.4.x: https://bitbucket.org/biocommons/hgvs/commits/branch/0.4.x
-.. _default: https://bitbucket.org/biocommons/hgvs/commits/branch/default
 
 .. |rtd_badge_rel| image:: https://readthedocs.org/projects/hgvs/badge/?version=0.4.x
   :target: http://hgvs.readthedocs.org/en/0.4.x
-  :align: middle
-
-.. |rtd_badge_dev| image:: https://readthedocs.org/projects/hgvs/badge/?version=default
-  :target: http://hgvs.readthedocs.org/en/default
   :align: middle
 
 .. |pypi_badge_rel| image:: https://badge.fury.io/py/hgvs.png
