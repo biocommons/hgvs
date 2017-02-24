@@ -23,7 +23,8 @@ from functools import total_ordering
 from bioutils.sequences import aa1_to_aa3
 
 import hgvs
-from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError, HGVSInvalidIntervalError, HGVSInvalidVariantError
+from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError, HGVSInvalidIntervalError
+from hgvs.utils.validationlevel import ValidationLevel
 
 SEQ_START = 0
 CDS_START = 1
@@ -51,9 +52,9 @@ class SimplePosition(recordtype.recordtype("SimplePosition", field_names=[("base
         return self
 
     def validate(self):
-        "raise AssertionError if instance variables are invalid; otherwise return True"
-        assert self.base is None or self.base >= 1, self.__class__.__name__ + ": base must be >= 1"
-        return True
+        if self.base is not None and self.base < 1:
+            return (ValidationLevel.ERROR, "Position base must be >= 1")
+        return (ValidationLevel.VALID, None)
 
     def __sub__(lhs, rhs):
         assert type(lhs) == type(rhs), "Cannot substract coordinates of different representations"
@@ -111,11 +112,11 @@ class BaseOffsetPosition(
     """
 
     def validate(self):
-        "raise AssertionError if instance variables are invalid; otherwise return True"
-        assert self.base is None or self.base != 0, "BaseOffsetPosition base may not be 0"
-        assert (self.base is None or self.datum == CDS_START or self.base >= 1), \
-            "BaseOffsetPosition base must be >=1 for datum = SEQ_START or CDS_END"
-        return True
+        if self.base is not None and self.base == 0:
+            return (ValidationLevel.ERROR, "BaseOffsetPosition base may not be 0")
+        if self.base is not None and self.datum != CDS_START and self.base < 1:
+            return (ValidationLevel.ERROR, "BaseOffsetPosition base must be >=1 for datum = SEQ_START or CDS_END")
+        return (ValidationLevel.VALID, None)
 
     def __str__(self):
         self.validate()
@@ -184,10 +185,11 @@ class BaseOffsetPosition(
 
 class AAPosition(recordtype.recordtype("AAPosition", field_names=[("base", None), ("aa", None), ("uncertain", False)])):
     def validate(self):
-        "raise AssertionError if instance variables are invalid; otherwise return True"
-        assert self.base is None or self.base >= 1, "AAPosition location must be >=1"
-        assert len(self.aa) == 1, "More than 1 AA associated with position"
-        return True
+        if self.base is not None and self.base < 1:
+            return (ValidationLevel.ERROR, "AAPosition location must be >=1")
+        if len(self.aa) != 1:
+            return (ValidationLevel.ERROR, "More than 1 AA associated with position")
+        return (ValidationLevel.VALID, None)
 
     def format(self, conf=None):
         self.validate()
@@ -246,16 +248,23 @@ class AAPosition(recordtype.recordtype("AAPosition", field_names=[("base", None)
 class Interval(recordtype.recordtype("Interval", field_names=["start", ("end", None), ("uncertain", False)])):
     def validate(self):
         if self.start:
-            self.start.validate()
+            (res, msg) = self.start.validate()
+            if res != ValidationLevel.VALID:
+                return (res, msg)
         if self.end:
-            self.end.validate()
+            (res, msg) = self.end.validate()
+            if res != ValidationLevel.VALID:
+                return (res, msg)
         # Check start less than or equal to end
         if not self.start or not self.end:
-            return True
-        if self.start <= self.end:
-            return True
-        else:
-            raise HGVSInvalidVariantError("base start position must be <= end position")
+            return (ValidationLevel.VALID, None)
+        try:
+            if self.start <= self.end:
+                return (ValidationLevel.VALID, None)
+            else:
+                return (ValidationLevel.ERROR, "base start position must be <= end position")
+        except HGVSUnsupportedOperationError as err:
+            return (ValidationLevel.WARNING, str(err))
 
     def format(self, conf=None):
         if self.end is None or self.start == self.end:

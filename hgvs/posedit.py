@@ -7,7 +7,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import recordtype
 
-from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
+from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError
+from hgvs.utils.validationlevel import ValidationLevel
 
 
 class PosEdit(recordtype.recordtype('PosEdit', [('pos', None), ('edit', None), ('uncertain', False)])):
@@ -79,16 +80,21 @@ class PosEdit(recordtype.recordtype('PosEdit', [('pos', None), ('edit', None), (
 
     def validate(self):
         if self.pos:
-            self.pos.validate()
-            # Check ins length is 1
-            if self.edit.type == "ins" and self.pos.end - self.pos.start != 1:
-                raise HGVSInvalidVariantError("insertion length must be 1")
-            # Check del length
-            if self.edit.type in ["del", "delins"]:
-                ref_len = self.edit.ref_n
-                if ref_len is not None and ref_len != self.pos.end - self.pos.start + 1:
-                    raise HGVSInvalidVariantError("Length implied by coordinates must equal sequence deletion length")
-        return True
+            (res, msg) = self.pos.validate()
+            if res != ValidationLevel.VALID:
+                return (res, msg)
+            try:
+                # Check ins length is 1
+                if self.edit.type == "ins" and self.pos.end - self.pos.start != 1:
+                    return (ValidationLevel.ERROR, "insertion length must be 1")
+                # Check del length
+                if self.edit.type in ["del", "delins"]:
+                    ref_len = self.edit.ref_n
+                    if ref_len is not None and ref_len != self.pos.end - self.pos.start + 1:
+                        return (ValidationLevel.ERROR, "Length implied by coordinates must equal sequence deletion length")
+            except HGVSUnsupportedOperationError as err:
+                return (ValidationLevel.WARNING, str(err))
+        return (ValidationLevel.VALID, None)
 
     ## <LICENSE>
     ## Copyright 2014 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
