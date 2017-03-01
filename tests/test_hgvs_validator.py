@@ -27,6 +27,14 @@ class Test_HGVSValidator(unittest.TestCase):
         self.assertTrue(self.vr.validate(self.hp.parse_hgvs_variant("NM_001005405.2:c.6C>A")))
         self.assertTrue(self.vr.validate(self.hp.parse_hgvs_variant("NP_000305.3:p.?")))
 
+    def test_not_strict_mode(self):
+        """Test that validator is working when in not strict mode"""
+        self.assertTrue(self.vr.validate(self.hp.parse_hgvs_variant("NM_000030.2:c.679_680+2delAAGT"), strict=False))
+        with self.assertRaises(HGVSInvalidVariantError):
+            self.vr.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.76_78delACTACAT"), strict=False)
+        with self.assertRaises(HGVSInvalidVariantError):
+            self.vr.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.76_78insT"), strict=False)
+
 
 @attr(tags=["quick", "validation"])
 class Test_HGVSIntrinsicValidator(unittest.TestCase):
@@ -47,13 +55,13 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("NC_012920.1:m.54G>C")))
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("NC_012920.1:m.57_58insC")))
 
-        with self.assertRaisesRegexp(HGVSInvalidVariantError, hgvs.validator.BASE_RANGE_ERROR_MSG):
+        with self.assertRaises(HGVSInvalidVariantError):
             self.validate_int.validate(self.hp.parse_hgvs_variant("NC_000007.13:g.36561664_36561663A>T"))
 
-        with self.assertRaisesRegexp(HGVSInvalidVariantError, hgvs.validator.BASE_RANGE_ERROR_MSG):
+        with self.assertRaises(HGVSInvalidVariantError):
             self.validate_int.validate(self.hp.parse_hgvs_variant("NM_000277.1:c.3_1delAG"))
 
-        with self.assertRaisesRegexp(HGVSInvalidVariantError, hgvs.validator.BASE_RANGE_ERROR_MSG):
+        with self.assertRaises(HGVSInvalidVariantError):
             self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.123+56_123+55A>T"))
 
     def test_ins_length_is_one(self):
@@ -63,10 +71,10 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.123+54_123+55insT")))
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.123-54_123-53insT")))
 
-        with self.assertRaisesRegexp(HGVSInvalidVariantError, hgvs.validator.INS_ERROR_MSG):
+        with self.assertRaises(HGVSInvalidVariantError):
             self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.76_78insTT"))
 
-        with self.assertRaisesRegexp(HGVSInvalidVariantError, hgvs.validator.INS_ERROR_MSG):
+        with self.assertRaises(HGVSInvalidVariantError):
             self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.123+54_123+56insT"))
 
     def test_del_length(self):

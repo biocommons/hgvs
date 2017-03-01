@@ -102,7 +102,6 @@ c_interval	1_10|(1_10)	True	list
 c_pos	11+1	True	one	
 def_c_interval	1-10	True	one	
 def_c_interval	1_10|1|1+2_10-2	True	list	
-def_c_pos	0	False	list	
 def_c_pos	1|11+1|9-3|-1|*10	True	list	
 def_c_pos	X|11_12|10*	False	list	
 def_g_interval	2_10|2	True	list	
@@ -116,10 +115,9 @@ def_m_pos	A|2?|*1|-2	False	list
 def_n_interval	1-10	True	one	
 def_n_interval	1_10|1|1+2_10-2	True	list	
 def_n_interval	2_10|2	True	list	
-def_n_pos	0	False	list	
 def_n_pos	1|11+1|9-3	True	list	
 def_n_pos	2	True	list
-def_n_pos	A|2?|*1|-2	False	list
+def_n_pos	A|2?|*1	False	list
 def_n_pos	X|11_12|10*	False	list	
 def_p_interval	Met1-Gly10	False	one	
 def_p_interval	Met1_Gly10|Met1	True	list	
@@ -128,7 +126,6 @@ def_p_pos	M1|G10|*10	True	list	Met1|Gly10|Ter10
 def_p_pos	Met1|Gly10|Ter10	True	list	
 def_r_interval	1-10	True	one	
 def_r_interval	1_10|1|1+2_10-2	True	list	
-def_r_pos	-1|0	False	list	
 def_r_pos	1|11+1|9-3	True	list	
 def_r_pos	X|11_12|10*	False	list	
 g_interval	2_10|(2_10)	True	list	

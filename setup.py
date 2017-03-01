@@ -53,6 +53,7 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
           "psycopg2>=2.6.1",
           "recordtype>=1.1",
           "unicodecsv",
+          "enum34",
       ],
       setup_requires=[
           "setuptools_scm",
