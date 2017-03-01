@@ -58,7 +58,7 @@ class Normalizer(object):
         self.alt_aln_method = alt_aln_method
         self.validator = None
         if validate:
-            self.validator = hgvs.validator.IntrinsicValidator()
+            self.validator = hgvs.validator.IntrinsicValidator(strict=False)
         self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
 
     def normalize(self, var):

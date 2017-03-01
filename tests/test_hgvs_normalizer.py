@@ -105,9 +105,8 @@ class Test_HGVSNormalizer(unittest.TestCase):
 
         self.assertEqual(str(self.norm5.normalize(self.hp.parse_hgvs_variant("NM_000051.3:c.*4_*5insT"))),
                          "NM_000051.3:c.*3dupT")
-        
-        with self.assertRaises(HGVSUnsupportedOperationError):
-            self.norm5.normalize(self.hp.parse_hgvs_variant("NM_000051.3:c.9171_*1insA"))
+        self.assertEqual(str(self.norm5.normalize(self.hp.parse_hgvs_variant("NM_000051.3:c.9171_*1insA"))),
+                         "NM_000051.3:c.9171dupA")
 
         with self.assertRaises(HGVSInvalidVariantError):
             self.norm.normalize(self.hp.parse_hgvs_variant("NM_000059.3:c.7790delAAG"))
