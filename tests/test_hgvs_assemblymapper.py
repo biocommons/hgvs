@@ -16,7 +16,7 @@ class Test_VariantMapper(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.hdp = hgvs.dataproviders.uta.connect(mode="run", cache="tests/data/cache.hdp")
-        cls.evm = hgvs.variantmapper.AssemblyMapper(cls.hdp)
+        cls.evm = hgvs.assemblymapper.AssemblyMapper(cls.hdp)
         cls.hp = hgvs.parser.Parser()
 
     def test_VariantMapper_quick(self):
@@ -137,7 +137,7 @@ class Test_RefReplacement(unittest.TestCase):
             return rec
 
         cls.hdp = hgvs.dataproviders.uta.connect(mode="run", cache="tests/data/cache.hdp")
-        cls.evm = hgvs.variantmapper.AssemblyMapper(cls.hdp, replace_reference=True, assembly_name="GRCh37", alt_aln_method="splign")
+        cls.evm = hgvs.assemblymapper.AssemblyMapper(cls.hdp, replace_reference=True, assembly_name="GRCh37", alt_aln_method="splign")
         cls.hp = hgvs.parser.Parser()
         cls.tests = [_parse_rec(rec) for rec in cls.test_cases]
 
@@ -160,7 +160,7 @@ class Test_AssemblyMapper(unittest.TestCase):
     def setUpClass(cls):
         hdp = hgvs.dataproviders.uta.connect(mode="run", cache="tests/data/cache.hdp")
         cls.hp = hgvs.parser.Parser()
-        cls.evm = hgvs.variantmapper.AssemblyMapper(hdp, assembly_name="GRCh37", alt_aln_method="splign")
+        cls.evm = hgvs.assemblymapper.AssemblyMapper(hdp, assembly_name="GRCh37", alt_aln_method="splign")
     
     def _test_mapping(self, hgvs_set):
         """given list of variant strings, test all valid combinations of
