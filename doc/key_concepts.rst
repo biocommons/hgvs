@@ -130,7 +130,7 @@ to each other.
      it must be instantiated with an appropriate transcript,
      reference, and alignment method.
 
-  :class:`hgvs.variantmapper.AssemblyMapper`
+  :class:`hgvs.assemblymapper.AssemblyMapper`
 
      VariantMapper requires that the caller provide a transcript
      accession and an appropriate reference sequence, which in turn

@@ -29,11 +29,11 @@ class Test_Issues(unittest.TestCase):
         self.hp = hgvs.parser.Parser()
         self.hn = hgvs.normalizer.Normalizer(self.hdp)
         self.hv = hgvs.validator.IntrinsicValidator()
-        self.am37 = hgvs.variantmapper.AssemblyMapper(self.hdp,
+        self.am37 = hgvs.assemblymapper.AssemblyMapper(self.hdp,
                                                           replace_reference=True,
                                                           assembly_name='GRCh37',
                                                           alt_aln_method='splign')
-        self.am38 = hgvs.variantmapper.AssemblyMapper(self.hdp,
+        self.am38 = hgvs.assemblymapper.AssemblyMapper(self.hdp,
                                                           replace_reference=True,
                                                           assembly_name='GRCh38',
                                                           alt_aln_method='splign')
