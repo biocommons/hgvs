@@ -1,0 +1,28 @@
+dist: trusty
+sudo: required
+
+language: python
+python:
+- '2.7'
+- '3.5'
+cache: pip
+
+before_install:
+
+install: pip install tox-travis
+
+script: make tox
+
+deploy:
+  provider: pypi
+  user: biocommons
+  skip_upload_docs: true
+  skip_cleanup: true
+  distributions: "sdist bdist_egg bdist_wheel"
+  on:
+    tags: true
+    # repo: needed?
+    branch: master
+  password:
+    # secure: "use `travis encrypt --add deploy.password -r biocommons/<repo>`"
+

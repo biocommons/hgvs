@@ -1,0 +1,25 @@
+<?xml version="1.0" standalone="no"?>
+<svg width="484" height="132" viewBox="-8 -58 484 132 " xmlns="http://www.w3.org/2000/svg" version="1.1">
+<defs><style type="text/css">.terminal_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.terminal_text{fill:black;font-family:Verdana,Sans-serif;text-anchor:middle;font-size:14px;}.symbol_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.symbol_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-style:italic;text-anchor:middle;font-size:14px;}.path{fill:none;stroke:black;stroke-width:2;}.rule_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-size:14px;}.rule_path_edge{fill:none;stroke:black;stroke-width:3;}</style></defs>
+<text class="rule_text" x="0" y="-36" >r_posedit:</text>
+<rect class="symbol_rect" x="66" y="-14" width="116" height="28" rx="1" />
+<text class="symbol_text" x="124" y="4" >r_interval</text>
+<rect class="symbol_rect" x="206" y="-14" width="96" height="28" rx="1" />
+<text class="symbol_text" x="254" y="4" >rna_edit</text>
+<path class="path" d="M182 0 L206 0" />
+<rect class="terminal_rect" x="66" y="30" width="26" height="28" rx="28" />
+<text class="terminal_text" x="79" y="48" >(</text>
+<rect class="symbol_rect" x="116" y="30" width="116" height="28" rx="1" />
+<text class="symbol_text" x="174" y="48" >r_interval</text>
+<rect class="symbol_rect" x="256" y="30" width="96" height="28" rx="1" />
+<text class="symbol_text" x="304" y="48" >rna_edit</text>
+<rect class="terminal_rect" x="376" y="30" width="26" height="28" rx="28" />
+<text class="terminal_text" x="389" y="48" >)</text>
+<path class="path" d="M92 44 L116 44" />
+<path class="path" d="M232 44 L256 44" />
+<path class="path" d="M352 44 L376 44" />
+<path class="path" d="M30 0 L66 0 M30 0 Q42 0 42 12 M438 0 L302 0 M438 0 Q426 0 426 12" />
+<path class="path" d="M54 44 L66 44 M54 44 Q42 44 42 32 L42 12 M414 44 L402 44 M414 44 Q426 44 426 32 L426 12" />
+<path class="path" d="M0 0 L30 0 M468 0 L438 0" />
+<path class="rule_path_edge" d="M0 -6 L0 6 M468 -6 L468 6" />
+</svg>

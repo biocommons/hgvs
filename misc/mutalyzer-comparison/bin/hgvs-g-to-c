@@ -1,0 +1,73 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from __future__ import absolute_import, division, print_function, unicode_literals
+"""compare hgvs and mutalyzer for c. and g. variants provided on the command line
+
+The comparison has two basic cases:
+
+  1) When a c. variant is provided, it is converted to g. by both hgvs
+     and mutalyzer and the results are compared.
+
+  2) When a g. variant is provided, it is converted to c. variants for
+     all transcripts available by each tool.  The members of each
+     result set with matching accessions are compared.
+
+"""
+
+import argparse
+import codecs
+import csv
+import logging
+import os
+import sys
+
+import hgvs.parser
+import hgvs.dataproviders.uta
+from hgvs.variantmapper import AssemblyMapper
+
+defaults = {'uta-dsn': 'postgresql://localhost/uta', }
+
+fieldnames = ['Input Variant', 'Errors', 'Chromosomal Variant', 'Coding Variant(s)']
+
+
+def parse_args(argv):
+    # parse command line for configuration files
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter, )
+    ap.add_argument('--variant-file', '-f')
+    ap.add_argument('--verbose', '-v', default=0, action='count')
+    args = ap.parse_args(argv)
+    return args
+
+
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.WARN)
+    logger = logging.getLogger(__name__)
+
+    opts = parse_args(sys.argv[1:])
+    if opts.verbose:
+        logger.setLevel(logging.INFO if opts.verbose == 1 else logging.DEBUG)
+
+    hp = hgvs.parser.Parser()
+    dp = hgvs.dataproviders.uta.connect(defaults['uta-dsn'])
+    evm = hgvs.variantmapper.AssemblyMapper(hdp=dp)
+
+    print("\t".join(fieldnames))
+
+    in_fh = codecs.open(opts.variant_file, encoding='utf-8') if opts.variant_file else sys.stdin
+    for hgvs_g in in_fh:
+        hgvs_g = hgvs_g.strip()
+
+        if hgvs_g.startswith("#"):
+            continue
+
+        try:
+            var_g = hp.parse_hgvs_variant(hgvs_g)
+            assert var_g.type == 'g'
+            var_cs = [evm.g_to_c(var_g, ac) for ac in evm.relevant_transcripts(var_g)]
+            print("\t".join([hgvs_g, '', hgvs_g] + map(str, var_cs)))
+        except hgvs.exceptions.HGVSError as exc:
+            logger.error(hgvs_g, exc_info=1)
+        except Exception as e:
+            logger.error(hgvs_g, exc_info=1)
+            sys.exit(1)

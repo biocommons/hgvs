@@ -1,0 +1,9 @@
+<?xml version="1.0" standalone="no"?>
+<svg width="132" height="88" viewBox="-8 -58 132 88 " xmlns="http://www.w3.org/2000/svg" version="1.1">
+<defs><style type="text/css">.terminal_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.terminal_text{fill:black;font-family:Verdana,Sans-serif;text-anchor:middle;font-size:14px;}.symbol_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.symbol_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-style:italic;text-anchor:middle;font-size:14px;}.path{fill:none;stroke:black;stroke-width:2;}.rule_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-size:14px;}.rule_path_edge{fill:none;stroke:black;stroke-width:3;}</style></defs>
+<text class="rule_text" x="0" y="-36" >base:</text>
+<rect class="symbol_rect" x="30" y="-14" width="56" height="28" rx="1" />
+<text class="symbol_text" x="58" y="4" >snum</text>
+<path class="path" d="M0 0 L30 0 M116 0 L86 0" />
+<path class="rule_path_edge" d="M0 -6 L0 6 M116 -6 L116 6" />
+</svg>
