@@ -68,6 +68,12 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
         with self.assertRaises(hgvs.exceptions.HGVSUsageError):
             var_c = self.vm.c_to_n(var_c)  # c_to_n: var_c is bogus
 
+    def test_map_var_of_unsupported_validation(self):
+        hgvs_c = "NM_003777.3:c.13552_*36del57"
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_g = self.vm.c_to_g(var_c, "NC_000007.13")
+        self.assertEqual(str(var_g), "NC_000007.13:g.21940852_21940908del57")
+
 
 if __name__ == "__main__":
     unittest.main()

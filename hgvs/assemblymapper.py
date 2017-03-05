@@ -10,7 +10,6 @@ import logging
 
 import hgvs
 import hgvs.normalizer
-import hgvs.validator
 
 from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError, HGVSUnsupportedOperationError
 from hgvs.variantmapper import VariantMapper
@@ -72,7 +71,6 @@ class AssemblyMapper(VariantMapper):
         self._norm = None
         if self.normalize:
             self._norm = hgvs.normalizer.Normalizer(hdp, alt_aln_method=alt_aln_method, validate=False)
-        self._validator = hgvs.validator.IntrinsicValidator(strict=False)
         self._assembly_map = hdp.get_assembly_map(self.assembly_name)
         self._assembly_accessions = set(self._assembly_map.keys())
 
@@ -82,57 +80,47 @@ class AssemblyMapper(VariantMapper):
                 "replace_reference={self.replace_reference})".format(self=self, t=type(self)))
 
     def g_to_c(self, var_g, tx_ac):
-        self._validator.validate(var_g)
         var_out = super(AssemblyMapper, self).g_to_c(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
         return self._maybe_normalize(var_out)
 
     def g_to_n(self, var_g, tx_ac):
-        self._validator.validate(var_g)
         var_out = super(AssemblyMapper, self).g_to_n(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
         return self._maybe_normalize(var_out)
 
     def g_to_t(self, var_g, tx_ac):
-        self._validator.validate(var_g)
         var_out = super(AssemblyMapper, self).g_to_t(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
         return self._maybe_normalize(var_out)
 
     def c_to_g(self, var_c):
-        self._validator.validate(var_c)
         alt_ac = self._alt_ac_for_tx_ac(var_c.ac)
         var_out = super(AssemblyMapper, self).c_to_g(var_c, alt_ac, alt_aln_method=self.alt_aln_method)
         return self._maybe_normalize(var_out)
 
     def n_to_g(self, var_n):
-        self._validator.validate(var_n)
         alt_ac = self._alt_ac_for_tx_ac(var_n.ac)
         var_out = super(AssemblyMapper, self).n_to_g(var_n, alt_ac, alt_aln_method=self.alt_aln_method)
         return self._maybe_normalize(var_out)
 
     def t_to_g(self, var_t):
-        self._validator.validate(var_t)
         alt_ac = self._alt_ac_for_tx_ac(var_t.ac)
         var_out = super(AssemblyMapper, self).t_to_g(var_t, alt_ac, alt_aln_method=self.alt_aln_method)
         return self._maybe_normalize(var_out)
 
     def c_to_n(self, var_c):
-        self._validator.validate(var_c)
         var_out = super(AssemblyMapper, self).c_to_n(var_c)
         return self._maybe_normalize(var_out)
 
     def n_to_c(self, var_n):
-        self._validator.validate(var_n)
         var_out = super(AssemblyMapper, self).n_to_c(var_n)
         return self._maybe_normalize(var_out)
 
     def c_to_p(self, var_c):
-        self._validator.validate(var_c)
         var_out = super(AssemblyMapper, self).c_to_p(var_c)
         return self._maybe_normalize(var_out)
 
     def relevant_transcripts(self, var_g):
         """return list of transcripts accessions (strings) for given variant,
         selected by genomic overlap"""
-        self._validator.validate(var_g)
         tx = self.hdp.get_tx_for_region(var_g.ac, self.alt_aln_method, var_g.posedit.pos.start.base,
                                         var_g.posedit.pos.end.base)
         return [e["tx_ac"] for e in tx]
