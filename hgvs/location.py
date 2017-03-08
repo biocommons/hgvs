@@ -23,8 +23,9 @@ from functools import total_ordering
 from bioutils.sequences import aa1_to_aa3
 
 import hgvs
-from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError, HGVSInvalidIntervalError
-from hgvs.utils.validationlevel import ValidationLevel
+from hgvs.exceptions import HGVSUnsupportedOperationError, HGVSInvalidIntervalError
+from hgvs.enums import ValidationLevel
+
 
 SEQ_START = 0
 CDS_START = 1

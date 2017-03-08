@@ -10,7 +10,8 @@ import hgvs.parser
 import hgvs.edit
 import hgvs.variantmapper
 from hgvs.exceptions import HGVSInvalidVariantError, HGVSUnsupportedOperationError
-from hgvs.utils.validationlevel import ValidationLevel
+from hgvs.enums import ValidationLevel
+
 
 SEQ_ERROR_MSG = "Variant reference ({var_ref_seq}) does not agree with reference sequence ({ref_seq})"
 
@@ -27,7 +28,8 @@ class Validator(object):
         self._evr = ExtrinsicValidator(hdp, strict)
 
     def validate(self, var, strict=None):
-        if strict is None: strict = self.strict
+        if strict is None:
+            strict = self.strict
         return self._ivr.validate(var, strict) and self._evr.validate(var, strict)
 
 
@@ -41,7 +43,8 @@ class IntrinsicValidator(object):
 
     def validate(self, var, strict=None):
         assert isinstance(var, hgvs.sequencevariant.SequenceVariant), "variant must be a parsed HGVS sequence variant object"
-        if strict is None: strict = self.strict
+        if strict is None:
+            strict = self.strict
         fail_level = ValidationLevel.WARNING if strict else ValidationLevel.ERROR
         (res, msg) = var.validate()
         if res >= fail_level:

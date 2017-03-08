@@ -7,8 +7,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import recordtype
 
-from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError
-from hgvs.utils.validationlevel import ValidationLevel
+from hgvs.exceptions import HGVSUnsupportedOperationError
+from hgvs.enums import ValidationLevel
 
 
 class PosEdit(recordtype.recordtype('PosEdit', [('pos', None), ('edit', None), ('uncertain', False)])):
