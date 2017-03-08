@@ -43,11 +43,15 @@ class SequenceVariant(recordtype.recordtype("SequenceVariant", ["ac", "type", "p
         return self
 
     def validate(self):
+        (res, msg) = (ValidationLevel.VALID, None)
         if self.ac and self.type:
             (res, msg) = self._validate_ac_type_pair()
-            if res != ValidationLevel.VALID:
+            if res == ValidationLevel.ERROR:
                 return (res, msg)
-        return self.posedit.validate()
+        (pe_res, pe_msg) = self.posedit.validate()
+        if pe_res == ValidationLevel.VALID:
+            return (res, msg)
+        return (pe_res, pe_msg)
 
     def _validate_ac_type_pair(self):
         g_ac  = r'^(NC|NG|NT|NW|NZ|CM|LRG_\d+$)'
