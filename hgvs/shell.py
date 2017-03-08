@@ -19,6 +19,7 @@ def shell():
     import hgvs
     logging.info("Starting hgvs-shell " + hgvs.__version__)
 
+    import hgvs.assemblymapper
     import hgvs.dataproviders.uta
     import hgvs.normalizer
     import hgvs.parser
