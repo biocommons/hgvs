@@ -6,8 +6,10 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import recordtype
+import re
 
 import hgvs.variantmapper
+from hgvs.utils.validationlevel import ValidationLevel
 
 
 class SequenceVariant(recordtype.recordtype("SequenceVariant", ["ac", "type", "posedit"])):
@@ -41,7 +43,26 @@ class SequenceVariant(recordtype.recordtype("SequenceVariant", ["ac", "type", "p
         return self
 
     def validate(self):
+        if self.ac and self.type:
+            (res, msg) = self._validate_ac_type_pair()
+            if res != ValidationLevel.VALID:
+                return (res, msg)
         return self.posedit.validate()
+
+    def _validate_ac_type_pair(self):
+        valid_pairs = {
+            'g' : re.compile(r'^(NC|NG|NT|NW|NZ|CM|LRG_\d+$)'),
+            'c' : re.compile(r'^(NM|XM|ENST|LRG_\d+t\d+$)'),
+            'r' : re.compile(r'^(NM|XM|ENST|LRG_\d+t\d+$)'),
+            'n' : re.compile(r'^(NR|XR|ENST)'),
+            'p' : re.compile(r'^(NP|XP|ENSP|LRG_\d+p\d+$)'),
+            'm' : re.compile(r'^(NC)')
+        }
+        if valid_pairs[self.type].match(self.ac):
+            return (ValidationLevel.VALID, None)
+        else:
+            return (ValidationLevel.WARNING,
+                'Variant accession ({ac}) and type ({type}) do not match'.format(ac=self.ac, type=self.type))
 
 
 # <LICENSE>
