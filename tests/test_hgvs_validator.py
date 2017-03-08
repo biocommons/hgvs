@@ -91,6 +91,20 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
         with self.assertRaises(HGVSUnsupportedOperationError):
             self.validate_int.validate(self.hp.parse_hgvs_variant("NM_032487.4:c.831_*2687del2976"))
 
+    def test_accession_type_pair(self):
+        """Test if the accession and type of a variant match"""
+        with self.assertRaises(HGVSInvalidVariantError):
+            self.validate_int.validate(self.hp.parse_hgvs_variant("NM_000030.2:g.679del"))
+        with self.assertRaises(HGVSInvalidVariantError):
+            self.validate_int.validate(self.hp.parse_hgvs_variant("NM_000030.2:p.?"))
+        with self.assertRaises(HGVSInvalidVariantError):
+            self.validate_int.validate(self.hp.parse_hgvs_variant("NP_000305.3:c.6del"))
+        with self.assertRaises(HGVSInvalidVariantError):
+            self.validate_int.validate(self.hp.parse_hgvs_variant("NC_000007.13:c.679del"))
+        with self.assertRaises(HGVSUnsupportedOperationError):
+            self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.679del"))
+        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.679del"), strict=False))
+
 
 @attr(tags=["validation"])
 class Test_HGVSExtrinsicValidator(unittest.TestCase):
