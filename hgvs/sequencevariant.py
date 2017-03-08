@@ -9,7 +9,7 @@ import recordtype
 import re
 
 import hgvs.variantmapper
-from hgvs.utils.validationlevel import ValidationLevel
+from hgvs.enums import ValidationLevel
 
 
 class SequenceVariant(recordtype.recordtype("SequenceVariant", ["ac", "type", "posedit"])):

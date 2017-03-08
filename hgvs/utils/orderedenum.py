@@ -17,7 +17,6 @@ class OrderedEnum(Enum):
         assert self.__class__ is other.__class__, "OrderedEnum can only compare to OrderedEnum"
         return self.value < other.value
 
-ValidationLevel = OrderedEnum("ValidationLevel", "VALID WARNING ERROR")
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
