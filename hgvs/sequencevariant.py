@@ -66,12 +66,12 @@ class SequenceVariant(recordtype.recordtype("SequenceVariant", ["ac", "type", "p
         }
 
         invalid_pairs = {
-            'g' : re.compile('|'.join(cr_ac, n_ac, p_ac)),
-            'c' : re.compile('|'.join(g_ac, p_ac)),
-            'r' : re.compile('|'.join(g_ac, p_ac)),
-            'n' : re.compile('|'.join(g_ac, p_ac)),
-            'p' : re.compile('|'.join(g_ac, cr_ac, n_ac)),
-            'm' : re.compile('|'.join(cr_ac, n_ac, p_ac))
+            'g' : re.compile('|'.join((cr_ac, n_ac, p_ac))),
+            'c' : re.compile('|'.join((g_ac, p_ac))),
+            'r' : re.compile('|'.join((g_ac, p_ac))),
+            'n' : re.compile('|'.join((g_ac, p_ac))),
+            'p' : re.compile('|'.join((g_ac, cr_ac, n_ac))),
+            'm' : re.compile('|'.join((cr_ac, n_ac, p_ac)))
         }
 
         if valid_pairs[self.type].match(self.ac):
