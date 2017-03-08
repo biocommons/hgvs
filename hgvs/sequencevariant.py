@@ -50,19 +50,38 @@ class SequenceVariant(recordtype.recordtype("SequenceVariant", ["ac", "type", "p
         return self.posedit.validate()
 
     def _validate_ac_type_pair(self):
+        g_ac  = r'^(NC|NG|NT|NW|NZ|CM|LRG_\d+$)'
+        cr_ac = r'^(NM|XM|ENST|LRG_\d+t\d+$)'
+        n_ac  = r'^(NR|XR|ENST|LRG_\d+t\d+$)'
+        p_ac  = r'^(NP|XP|ENSP|LRG_\d+p\d+$)'
+        m_ac  = r'^(NC)'
+
         valid_pairs = {
-            'g' : re.compile(r'^(NC|NG|NT|NW|NZ|CM|LRG_\d+$)'),
-            'c' : re.compile(r'^(NM|XM|ENST|LRG_\d+t\d+$)'),
-            'r' : re.compile(r'^(NM|XM|ENST|LRG_\d+t\d+$)'),
-            'n' : re.compile(r'^(NR|XR|ENST)'),
-            'p' : re.compile(r'^(NP|XP|ENSP|LRG_\d+p\d+$)'),
-            'm' : re.compile(r'^(NC)')
+            'g' : re.compile(g_ac),
+            'c' : re.compile(cr_ac),
+            'r' : re.compile(cr_ac),
+            'n' : re.compile(n_ac),
+            'p' : re.compile(p_ac),
+            'm' : re.compile(m_ac)
         }
+
+        invalid_pairs = {
+            'g' : re.compile('|'.join(cr_ac, n_ac, p_ac)),
+            'c' : re.compile('|'.join(g_ac, p_ac)),
+            'r' : re.compile('|'.join(g_ac, p_ac)),
+            'n' : re.compile('|'.join(g_ac, p_ac)),
+            'p' : re.compile('|'.join(g_ac, cr_ac, n_ac)),
+            'm' : re.compile('|'.join(cr_ac, n_ac, p_ac))
+        }
+
         if valid_pairs[self.type].match(self.ac):
             return (ValidationLevel.VALID, None)
+        elif invalid_pairs[self.type].match(self.ac):
+            return (ValidationLevel.ERROR,
+                'Variant accession ({ac}) and type ({type}) do not match'.format(ac=self.ac, type=self.type))
         else:
             return (ValidationLevel.WARNING,
-                'Variant accession ({ac}) and type ({type}) do not match'.format(ac=self.ac, type=self.type))
+                'Variant accession ({ac}) and type ({type}) may not match'.format(ac=self.ac, type=self.type))
 
 
 # <LICENSE>
