@@ -5,6 +5,8 @@ import logging
 import pprint
 import re
 import sys
+import os
+
 import unittest
 
 import unicodecsv as csv
@@ -29,7 +31,7 @@ def gxp_file_reader(fn):
 @attr(tags=["mapping"])
 class Test_VariantMapper(unittest.TestCase):
     def setUp(self):
-        self.hdp = hgvs.dataproviders.uta.connect(mode="run", cache="tests/data/cache.hdp")
+        self.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache="tests/data/cache.hdp")
         self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
         self.hp = hgvs.parser.Parser()
 

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import os
+
 import unittest
 
 from nose.plugins.attrib import attr
@@ -19,7 +21,7 @@ class Test_SequenceVariant(unittest.TestCase):
     
     def test_fill_ref(self):
         hp = hgvs.parser.Parser()
-        hdp = hgvs.dataproviders.uta.connect(mode="run", cache="tests/data/cache.hdp")
+        hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache="tests/data/cache.hdp")
         
         # fill reference for sequence variants
         var = hp.parse_hgvs_variant("NM_001166478.1:c.31_32del").fill_ref(hdp)
