@@ -79,8 +79,8 @@ class Test_HGVSNormalizer(unittest.TestCase):
                          "NM_001166478.1:c.61delG")
         self.assertEqual(str(self.norm5c.normalize(self.hp.parse_hgvs_variant("NM_001110792.1:c.1030_1035del"))),
                          "NM_001110792.1:c.1029_1034delGAGCGG")
-        self.assertRaises(HGVSUnsupportedOperationError, self.normc.normalize,
-                          self.hp.parse_hgvs_variant("NM_001166478.1:c.59_61del"))
+        with self.assertRaises(HGVSUnsupportedOperationError):
+            self.normc.normalize(self.hp.parse_hgvs_variant("NM_001166478.1:c.59_61del"))
 
         #UTR variants
         self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant("NM_000051.3:c.-5_-4insA"))),
