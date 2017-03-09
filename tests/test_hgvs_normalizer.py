@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import os
+
 import unittest
 
 from nose.plugins.attrib import attr
@@ -11,7 +13,7 @@ import hgvs.variantmapper
 import hgvs.parser
 import hgvs.normalizer
 
-hdp = hgvs.dataproviders.uta.connect(mode="run", cache="tests/data/cache.hdp")
+hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache="tests/data/cache.hdp")
 
 
 @attr(tags=["normalization"])
@@ -79,8 +81,8 @@ class Test_HGVSNormalizer(unittest.TestCase):
                          "NM_001166478.1:c.61delG")
         self.assertEqual(str(self.norm5c.normalize(self.hp.parse_hgvs_variant("NM_001110792.1:c.1030_1035del"))),
                          "NM_001110792.1:c.1029_1034delGAGCGG")
-        self.assertRaises(HGVSUnsupportedOperationError, self.normc.normalize,
-                          self.hp.parse_hgvs_variant("NM_001166478.1:c.59_61del"))
+        with self.assertRaises(HGVSUnsupportedOperationError):
+            self.normc.normalize(self.hp.parse_hgvs_variant("NM_001166478.1:c.59_61del"))
 
         #UTR variants
         self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant("NM_000051.3:c.-5_-4insA"))),

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import os
+
 import unittest
 
 from nose.plugins.attrib import attr
@@ -19,21 +21,15 @@ class Test_transcriptmapper(unittest.TestCase):
 
     @classmethod
     def setUp(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect(mode="run", cache="tests/data/cache.hdp")
+        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache="tests/data/cache.hdp")
 
     def test_transcriptmapper_failures(self):
-        self.assertRaises(HGVSError, TranscriptMapper, self.hdp,
-                          tx_ac="bogus",
-                          alt_ac="NM_033089.6",
-                          alt_aln_method="splign")
-        self.assertRaises(HGVSError, TranscriptMapper, self.hdp,
-                          tx_ac="NM_033089.6",
-                          alt_ac="bogus",
-                          alt_aln_method="splign")
-        self.assertRaises(HGVSError, TranscriptMapper, self.hdp,
-                          tx_ac="NM_000051.3",
-                          alt_ac="NC_000011.9",
-                          alt_aln_method="bogus")
+        with self.assertRaises(HGVSError):
+            TranscriptMapper(self.hdp, tx_ac="bogus", alt_ac="NM_033089.6", alt_aln_method="splign")
+        with self.assertRaises(HGVSError):
+            TranscriptMapper(self.hdp, tx_ac="NM_033089.6", alt_ac="bogus", alt_aln_method="splign")
+        with self.assertRaises(HGVSError):
+            TranscriptMapper(self.hdp, tx_ac="NM_000051.3", alt_ac="NC_000011.9", alt_aln_method="bogus")
 
     def test_transcriptmapper_TranscriptMapper_LCE3C_uncertain(self):
         """Use NM_178434.2 tests to test mapping with uncertain positions"""
