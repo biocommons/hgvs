@@ -25,7 +25,7 @@ def gcp_file_reader(fn):
 class TestHgvsCToPReal(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect(mode="run", cache="tests/data/cache.hdp")
+        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache="tests/data/cache.hdp")
         cls._hm = hgvs.variantmapper.VariantMapper(cls.hdp)
         cls._hp = hgvs.parser.Parser()
         cls._failed = []

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import os
+
 import unittest
 
 from nose.plugins.attrib import attr
@@ -11,7 +13,7 @@ import hgvs.variantmapper
 import hgvs.parser
 import hgvs.normalizer
 
-hdp = hgvs.dataproviders.uta.connect(mode="run", cache="tests/data/cache.hdp")
+hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache="tests/data/cache.hdp")
 
 
 @attr(tags=["normalization"])

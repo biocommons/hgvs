@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import os
+
 import unittest
 
 from nose.plugins.attrib import attr
@@ -19,7 +21,7 @@ class Test_transcriptmapper(unittest.TestCase):
 
     @classmethod
     def setUp(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect(mode="run", cache="tests/data/cache.hdp")
+        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache="tests/data/cache.hdp")
 
     def test_transcriptmapper_failures(self):
         with self.assertRaises(HGVSError):
