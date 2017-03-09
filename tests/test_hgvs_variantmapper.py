@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import os
+
 import unittest
 
 from nose.plugins.attrib import attr
@@ -15,7 +17,7 @@ import hgvs.variantmapper
 class Test_VariantMapper_Exceptions(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect(mode="run", cache="tests/data/cache.hdp")
+        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache="tests/data/cache.hdp")
         cls.vm = hgvs.variantmapper.VariantMapper(cls.hdp)
         cls.hp = hgvs.parser.Parser()
 
@@ -72,7 +74,7 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
         hgvs_c = "NM_003777.3:c.13552_*36del57"
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
         var_g = self.vm.c_to_g(var_c, "NC_000007.13")
-        self.assertEqual(str(var_g), "NC_000007.13:g.21940852_21940908del57")
+        self.assertEqual(str(var_g), "NC_000007.13:g.21940852_21940908delGCTCTGCTTCTAGAAGCGTAAGGTAACACTGGCATTCCTCTAGCCTCTGCTGGAGTG")
 
 
 if __name__ == "__main__":

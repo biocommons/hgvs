@@ -5,6 +5,8 @@ import logging
 import pprint
 import re
 import sys
+import os
+
 import unittest
 
 from nose.plugins.attrib import attr
