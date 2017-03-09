@@ -1,0 +1,44 @@
+#!/usr/bin/env perl
+
+while (<>) {
+	my $orig = $_;
+
+	# remove comments (but print blank line to preserve line numbers
+	s%#(.*)%%;
+
+	# hgvs package specific
+	s/\(-> 0\)/''/;
+	s/\(-> ''\)/''/;
+	s/-> None/''/;
+	s/-> \(None, None\)/''/;
+	s/\s+->\s+hgvs.edit.AA\w+\(.+\)+//;
+	s/\s+->\s+\Qhgvs.location.AAPosition(pos,bioutils.sequences.aa_to_aa1(aa))\E//;
+	s/\Q<'fs' (term13 (num|'?')?)?>\E/'fs' | fs aat13 | fs aat13 num | fs aat13 '?'/;
+	s/\Qletter letterOrDigit+ ('_' letterOrDigit+)? ('.' digit+)?\E/letter letterOrDigit+ | letter letterOrDigit+ '_' letterOrDigit+ | letter letterOrDigit+ '_' letterOrDigit+ '.' digit+/;
+	s/\Q(aa13_fs|aa13_ext)?\E/aa13_fs|aa13_ext|''/;
+	s/\Q<'ext' (term13 (num|'?')?)?>\E/'ext' | 'ext' (term13 (num|'?'|'')|'')/;
+
+	# strip object creation (rule -> object)
+	s/\s*->\s*[\w._]+(?:\([^)]*\))?//g;
+	s/\s*->\s*\([\w,\s]+\)//g;
+
+	# = -> ::=
+	s%^(\w+\s*)=%$1 ::=%;
+
+	# strip variable names
+	s/:\w+//g;
+	s/:\([\w,\s]+\)//g;
+
+	# ":x ?(x in 'gmn') -> x" -> 'g'|'m'|'n'
+	s%\?\(\w+ in '([^']+?)'\)%join("|",map {sprintf("'\%s'",$_)} split(//,$1))%ge;
+
+	# remove angle brackets from stringified matches
+	s/<([^>]+?)>/$1/g;
+
+	s/(\w+)\?/($1|'')/g;
+
+	s/\Q| () | \E/|/;
+	s/\Q('?')\E/ '?'/;
+
+	print;
+}

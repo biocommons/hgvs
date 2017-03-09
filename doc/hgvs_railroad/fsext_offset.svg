@@ -1,0 +1,16 @@
+<?xml version="1.0" standalone="no"?>
+<svg width="194" height="176" viewBox="-8 -58 194 176 " xmlns="http://www.w3.org/2000/svg" version="1.1">
+<defs><style type="text/css">.terminal_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.terminal_text{fill:black;font-family:Verdana,Sans-serif;text-anchor:middle;font-size:14px;}.symbol_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.symbol_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-style:italic;text-anchor:middle;font-size:14px;}.path{fill:none;stroke:black;stroke-width:2;}.rule_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-size:14px;}.rule_path_edge{fill:none;stroke:black;stroke-width:3;}</style></defs>
+<text class="rule_text" x="0" y="-36" >fsext_offset:</text>
+<rect class="symbol_rect" x="66" y="-14" width="46" height="28" rx="1" />
+<text class="symbol_text" x="89" y="4" >num</text>
+<rect class="terminal_rect" x="66" y="30" width="26" height="28" rx="28" />
+<text class="terminal_text" x="79" y="48" >?</text>
+<rect class="terminal_rect" x="66" y="74" width="16" height="28" rx="28" />
+<text class="terminal_text" x="74" y="92" ></text>
+<path class="path" d="M30 0 L66 0 M30 0 Q42 0 42 12 M148 0 L112 0 M148 0 Q136 0 136 12" />
+<path class="path" d="M54 44 L66 44 M54 44 Q42 44 42 32 L42 12 M124 44 L92 44 M124 44 Q136 44 136 32 L136 12" />
+<path class="path" d="M54 88 L66 88 M54 88 Q42 88 42 76 L42 32 M124 88 L82 88 M124 88 Q136 88 136 76 L136 32" />
+<path class="path" d="M0 0 L30 0 M178 0 L148 0" />
+<path class="rule_path_edge" d="M0 -6 L0 6 M178 -6 L178 6" />
+</svg>

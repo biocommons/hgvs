@@ -1,0 +1,25 @@
+<?xml version="1.0" standalone="no"?>
+<svg width="314" height="308" viewBox="-8 -58 314 308 " xmlns="http://www.w3.org/2000/svg" version="1.1">
+<defs><style type="text/css">.terminal_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.terminal_text{fill:black;font-family:Verdana,Sans-serif;text-anchor:middle;font-size:14px;}.symbol_rect{fill:rgb(206,255,206);stroke:black;stroke-width:2;}.symbol_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-style:italic;text-anchor:middle;font-size:14px;}.path{fill:none;stroke:black;stroke-width:2;}.rule_text{fill:black;font-family:Verdana,Sans-serif;font-weight:bold;font-size:14px;}.rule_path_edge{fill:none;stroke:black;stroke-width:3;}</style></defs>
+<text class="rule_text" x="0" y="-36" >hgvs_position:</text>
+<rect class="symbol_rect" x="66" y="-14" width="166" height="28" rx="1" />
+<text class="symbol_text" x="149" y="4" >g_hgvs_position</text>
+<rect class="symbol_rect" x="66" y="30" width="166" height="28" rx="1" />
+<text class="symbol_text" x="149" y="48" >m_hgvs_position</text>
+<rect class="symbol_rect" x="66" y="74" width="166" height="28" rx="1" />
+<text class="symbol_text" x="149" y="92" >c_hgvs_position</text>
+<rect class="symbol_rect" x="66" y="118" width="166" height="28" rx="1" />
+<text class="symbol_text" x="149" y="136" >n_hgvs_position</text>
+<rect class="symbol_rect" x="66" y="162" width="166" height="28" rx="1" />
+<text class="symbol_text" x="149" y="180" >r_hgvs_position</text>
+<rect class="symbol_rect" x="66" y="206" width="166" height="28" rx="1" />
+<text class="symbol_text" x="149" y="224" >p_hgvs_position</text>
+<path class="path" d="M30 0 L66 0 M30 0 Q42 0 42 12 M268 0 L232 0 M268 0 Q256 0 256 12" />
+<path class="path" d="M54 44 L66 44 M54 44 Q42 44 42 32 L42 12 M244 44 L232 44 M244 44 Q256 44 256 32 L256 12" />
+<path class="path" d="M54 88 L66 88 M54 88 Q42 88 42 76 L42 32 M244 88 L232 88 M244 88 Q256 88 256 76 L256 32" />
+<path class="path" d="M54 132 L66 132 M54 132 Q42 132 42 120 L42 76 M244 132 L232 132 M244 132 Q256 132 256 120 L256 76" />
+<path class="path" d="M54 176 L66 176 M54 176 Q42 176 42 164 L42 120 M244 176 L232 176 M244 176 Q256 176 256 164 L256 120" />
+<path class="path" d="M54 220 L66 220 M54 220 Q42 220 42 208 L42 164 M244 220 L232 220 M244 220 Q256 220 256 208 L256 164" />
+<path class="path" d="M0 0 L30 0 M298 0 L268 0" />
+<path class="rule_path_edge" d="M0 -6 L0 6 M298 -6 L298 6" />
+</svg>

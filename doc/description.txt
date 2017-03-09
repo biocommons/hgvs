@@ -1,0 +1,3 @@
+hgvs is a Python package to parse, format, validate, normalize, and
+map biological sequence variants according to recommendations of the
+Human Genome Variation Society.
