@@ -23,7 +23,7 @@ import hgvs.utils.altseqbuilder as altseqbuilder
 import hgvs.sequencevariant
 import hgvs.validator
 
-from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
+from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
 from hgvs.decorators.lru_cache import lru_cache
 
 _logger = logging.getLogger(__name__)
@@ -68,7 +68,8 @@ class VariantMapper(object):
 
     """
 
-    def __init__(self, hdp, replace_reference=False):
+    def __init__(self, hdp,
+                 replace_reference=hgvs.global_config.mapping.replace_reference):
         """
         :param bool replace_reference: replace reference (entails additional network access)
 
