@@ -41,8 +41,10 @@ class TestHgvsProjector(unittest.TestCase):
         pj = hgvs.projector.Projector(self.hdp, self.alt_ac, var_c[0].ac, var_c[1].ac, self.alt_aln_method,
                                       self.alt_aln_method)
         # intentionally call p_v_f with variant on *destination* transcript, and vice versa
-        self.assertRaises(RuntimeError, pj.project_variant_forward, var_c[1])
-        self.assertRaises(RuntimeError, pj.project_variant_backward, var_c[0])
+        with self.assertRaises(RuntimeError):
+            pj.project_variant_forward(var_c[1])
+        with self.assertRaises(RuntimeError):
+            pj.project_variant_backward(var_c[0])
 
 
 if __name__ == "__main__":
