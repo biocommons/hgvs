@@ -5,7 +5,7 @@ import unittest
 
 from nose.plugins.attrib import attr
 
-from hgvs.exceptions import HGVSInvalidVariantError, HGVSUnsupportedOperationError
+from hgvs.exceptions import HGVSInvalidVariantError
 import hgvs.dataproviders.uta
 import hgvs.variantmapper
 import hgvs.parser
@@ -86,9 +86,9 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
 
         with self.assertRaises(HGVSInvalidVariantError):
             self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.76_78delACTACAT"), strict=False)
-        with self.assertRaises(HGVSUnsupportedOperationError):
+        with self.assertRaises(HGVSInvalidVariantError):
             self.validate_int.validate(self.hp.parse_hgvs_variant("NM_000030.2:c.679_680+2delAAGT"))
-        with self.assertRaises(HGVSUnsupportedOperationError):
+        with self.assertRaises(HGVSInvalidVariantError):
             self.validate_int.validate(self.hp.parse_hgvs_variant("NM_032487.4:c.831_*2687del2976"))
 
     def test_accession_type_pair(self):
@@ -101,7 +101,7 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
             self.validate_int.validate(self.hp.parse_hgvs_variant("NP_000305.3:c.6del"))
         with self.assertRaises(HGVSInvalidVariantError):
             self.validate_int.validate(self.hp.parse_hgvs_variant("NC_000007.13:c.679del"))
-        with self.assertRaises(HGVSUnsupportedOperationError):
+        with self.assertRaises(HGVSInvalidVariantError):
             self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.679del"))
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.679del"), strict=False))
 
@@ -151,6 +151,7 @@ class Test_HGVSExtrinsicValidator(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)

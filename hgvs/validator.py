@@ -48,10 +48,7 @@ class IntrinsicValidator(object):
         fail_level = ValidationLevel.WARNING if strict else ValidationLevel.ERROR
         (res, msg) = var.validate()
         if res >= fail_level:
-            if res == ValidationLevel.ERROR:
-                raise HGVSInvalidVariantError(msg)
-            else:
-                raise HGVSUnsupportedOperationError(msg)
+            raise HGVSInvalidVariantError(msg)
         return True
 
 
@@ -71,10 +68,7 @@ class ExtrinsicValidator():
         fail_level = ValidationLevel.WARNING if strict else ValidationLevel.ERROR
         (res, msg) = self._ref_is_valid(var)
         if res >= fail_level:
-            if res == ValidationLevel.ERROR:
-                raise HGVSInvalidVariantError(msg)
-            else:
-                raise HGVSUnsupportedOperationError(msg)
+            raise HGVSInvalidVariantError(msg)
         return True
 
     def _ref_is_valid(self, var):
