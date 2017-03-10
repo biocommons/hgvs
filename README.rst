@@ -169,7 +169,7 @@ Other packages that manipulate HGVS variants:
 .. _varnomen: http://varnomen.hgvs.org/
 .. _mailing list: https://groups.google.com/forum/#!forum/hgvs-discuss
 .. _Open Issues: https://github.com/biocommons/hgvs/issues
-.. _code: https://bitbucket.org/biocommons/hgvs
+.. _code: https://github.com/biocommons/hgvs
 .. _changelog: http://hgvs.readthedocs.io/en/default/changelog/0.4.html
 .. _pypi: https://pypi.python.org/pypi/hgvs
 

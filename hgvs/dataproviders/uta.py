@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-"""implements an hgvs data provider interface using UTA (https://bitbucket.org/biocommons/uta)
+"""implements an hgvs data provider interface using UTA
+(https://github.com/biocommons/uta)
 
 """
 

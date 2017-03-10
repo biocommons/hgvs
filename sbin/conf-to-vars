@@ -50,7 +50,7 @@ if __name__ == "__main__":
                 v=v))
 
 # <LICENSE>
-# Copyright 2014 UTA Contributors (https://bitbucket.org/biocommons/uta)
+# Copyright 2014 Reece Hart
 ##
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

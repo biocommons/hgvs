@@ -32,7 +32,7 @@ class Interface(object):
     data provider implementation should be a subclass (possibly
     indirect) of this class.
 
-    .. _`Universal Transcript Archive (UTA)`: https://bitbucket.org/biocommons/uta
+    .. _`Universal Transcript Archive (UTA)`: https://github.com/biocommons/uta
     .. _Invitae: http://invitae.com/
     """
 

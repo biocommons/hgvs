@@ -12,9 +12,6 @@ quickly.
 Highlights
 @@@@@@@@@@
 
-* The `hgvs package`_ is hosted in a mercurial_ repository at
-  bitbucket.
-
 * Development occurs in the default branch. (Release branches are
   named for the major-minor release, e.g., 0.4.x.)
 
@@ -54,7 +51,6 @@ A Quick Contribution Example
 
 * Fork the project at https://github.com/biocommons/hgvs/
 
-  This command will create a copy of hgvs in your bitbucket account.
   You will be able to make changes there and then submit your
   contributions for inclusion into the biocommons repo.
 
@@ -118,9 +114,9 @@ A Quick Contribution Example
 
   Be sure to commit changes afterward!
 
-.. note: Bitbucket recognized "fixes #nnn" and "closes #nnn" as
-   comments that close a feature. The preferred use is "fixes" for
-   bugs and "closes" for features.
+.. note: Github recognizes "fixes #nnn" and "closes #nnn" as comments
+   that close a feature. The preferred use is "fixes" for bugs and
+   "closes" for features.
 
 .. spacer
 

@@ -114,7 +114,7 @@ Links
 * `Variation Nomenclature Recommendations <http://varnomen.hgvs.org/>`_
 * `Human Genome Variation Society (HGVS) <http://www.hgvs.org/>`_
 * Parsley_, an Python wrapper for the OMeta Parser Expression Grammar (PEG_)
-* `Universal Transcript Archive (UTA) <https://bitbucket.org/biocommons/uta/>`_
+* `Universal Transcript Archive (UTA) <https://github.com/biocommons/uta/>`_
 
 
 References

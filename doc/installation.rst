@@ -83,9 +83,9 @@ Installing from source
    Users (non-developers) should prefer the PyPI installation.  There
    is no advantage to installing from source.
 
-Fetch the source code using `Mercurial`_::
+Fetch the source code::
 
-  $ hg clone https://bitbucket.org/biocommons/hgvs
+  $ git clone https://github.com/biocommons/hgvs
 
 Then::
 
@@ -117,7 +117,7 @@ The public UTA instance is available without restrictions and is
 suitable for many uses.  However, some users may wish to install UTA
 locally for performance, isolation, or :ref:`privacy`; see
 `instructions for local UTA installation
-<https://bitbucket.org/biocommons/uta/>`_ for details. 
+<https://github.com/biocommons/uta/>`_ for details. 
 
 To override the UTA instance used by the hgvs package, sers must set
 the UTA_DB_URL environment variable.  A sample interaction::
