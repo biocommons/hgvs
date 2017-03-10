@@ -87,10 +87,6 @@ Fetch the source code using `Mercurial`_::
 
   $ hg clone https://bitbucket.org/biocommons/hgvs
 
-Alternatively, see the `Downloads section
-<https://bitbucket.org/biocommons/hgvs/downloads>`_ for tarballs and
-zipfiles.
-
 Then::
 
   $ cd hgvs

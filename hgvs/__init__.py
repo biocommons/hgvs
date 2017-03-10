@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """hgvs is a package to parse, format, and manipulate biological sequence
-variants.  See https://bitbucket.org/biocommons/hgvs/ for details.
+variants.  See https://github.com/biocommons/hgvs/ for details.
 
 Example use:
 
@@ -77,7 +77,7 @@ warnings.filterwarnings('default', '', DeprecationWarning, '.*\Wlib\W.*\Whgvs\W.
 logger.info("hgvs " + __version__ + "; released: " + str(_is_released_version))
 
 # <LICENSE>
-# Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
+# Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

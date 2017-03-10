@@ -17,7 +17,7 @@ results.  **hgvs will now refuse to use such alignments.**
 Bug Fixes
 $$$$$$$$$
 
-* `#346 <https://github.com/biocommons/hgvs/issues/346/>`_ (partial fix): ensure that alignment starts at transcript position 0 [`ab402bf020c6 <https://bitbucket.org/biocommons/hgvs/commits/ab402bf020c6>`_]
-* fixes `#338 <https://github.com/biocommons/hgvs/issues/338/>`_: check position range limit when normalizing [`da5f1fbcf76d <https://bitbucket.org/biocommons/hgvs/commits/da5f1fbcf76d>`_]
-* fixes `#285 <https://github.com/biocommons/hgvs/issues/285/>`_, `#334 <https://github.com/biocommons/hgvs/issues/334/>`_, `#335 <https://github.com/biocommons/hgvs/issues/335/>`_, `#324 <https://github.com/biocommons/hgvs/issues/324/>`_, `#340 <https://github.com/biocommons/hgvs/issues/340/>`_: inversions parsing, formatting, and normalization [`29a7b8634b01 <https://bitbucket.org/biocommons/hgvs/commits/29a7b8634b01>`_]
-* fixes `#340 <https://github.com/biocommons/hgvs/issues/340/>`_: do not accept sequence following inv [`f76e1cb83422 <https://bitbucket.org/biocommons/hgvs/commits/f76e1cb83422>`_]
+* `#346 <https://github.com/biocommons/hgvs/issues/346/>`_ (partial fix): ensure that alignment starts at transcript position 0 [`BROKEN: ab402bf020c6 <https://github.com/biocommons/hgvs/commit/ab402bf020c6>`_]
+* fixes `#338 <https://github.com/biocommons/hgvs/issues/338/>`_: check position range limit when normalizing [`BROKEN: da5f1fbcf76d <https://github.com/biocommons/hgvs/commit/da5f1fbcf76d>`_]
+* fixes `#285 <https://github.com/biocommons/hgvs/issues/285/>`_, `#334 <https://github.com/biocommons/hgvs/issues/334/>`_, `#335 <https://github.com/biocommons/hgvs/issues/335/>`_, `#324 <https://github.com/biocommons/hgvs/issues/324/>`_, `#340 <https://github.com/biocommons/hgvs/issues/340/>`_: inversions parsing, formatting, and normalization [`BROKEN: 29a7b8634b01 <https://github.com/biocommons/hgvs/commit/29a7b8634b01>`_]
+* fixes `#340 <https://github.com/biocommons/hgvs/issues/340/>`_: do not accept sequence following inv [`BROKEN: f76e1cb83422 <https://github.com/biocommons/hgvs/commit/f76e1cb83422>`_]

@@ -7,9 +7,9 @@ Changes since 0.4.11 (2016-09-15).
 Bug Fixes
 $$$$$$$$$
 
-* `#386 <https://github.com/biocommons/hgvs/issues/386/>`_: reject discontiguous alignments [`839a6fc36c7d <https://bitbucket.org/biocommons/hgvs/commits/839a6fc36c7d>`_]
+* `#386 <https://github.com/biocommons/hgvs/issues/386/>`_: reject discontiguous alignments [`BROKEN: 839a6fc36c7d <https://github.com/biocommons/hgvs/commit/839a6fc36c7d>`_]
 
 Other Changes
 $$$$$$$$$$$$$
 
-* Minor typo corrections on quick_start.rst [`49bb4ac246f1 <https://bitbucket.org/biocommons/hgvs/commits/49bb4ac246f1>`_] (PR `#53 <https://github.com/biocommons/hgvs/issues/53/>`_ from kmcallenberg)
+* Minor typo corrections on quick_start.rst [`BROKEN: 49bb4ac246f1 <https://github.com/biocommons/hgvs/commit/49bb4ac246f1>`_] (PR `#53 <https://github.com/biocommons/hgvs/issues/53/>`_ from kmcallenberg)

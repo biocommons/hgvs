@@ -52,7 +52,7 @@ Highlights
 A Quick Contribution Example
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-* Fork the project at https://bitbucket.org/biocommons/hgvs/
+* Fork the project at https://github.com/biocommons/hgvs/
 
   This command will create a copy of hgvs in your bitbucket account.
   You will be able to make changes there and then submit your
@@ -65,7 +65,7 @@ A Quick Contribution Example
 
   ::
 
-     $ hg clone https://bitbucket.org/<your_username>/hgvs
+     $ hg clone https://github.com/<your_username>/hgvs
 
 .. spacer
 

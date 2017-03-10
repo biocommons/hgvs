@@ -539,7 +539,7 @@ if __name__ == "__main__":
     doctest.testmod()
 
 # <LICENSE>
-# Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
+# Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

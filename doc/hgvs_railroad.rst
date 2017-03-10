@@ -1,7 +1,7 @@
 HGVS Railroad Diagram
 ^^^^^^^^^^^^^^^^^^^^^
 
-  | Generated from `hgvs (https://bitbucket.org/biocommons/hgvs/) <https://bitbucket.org/biocommons/hgvs/>`_
+  | Generated from `hgvs (https://github.com/biocommons/hgvs) <https://github.com/biocommons/hgvs>`_
   | 1b1f788ef473+ default tip
   | See the source code for the OMeta-based grammar
 

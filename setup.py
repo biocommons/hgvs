@@ -14,7 +14,7 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
       name="hgvs",
       package_data={"hgvs": ["_data/*"]},
       packages=find_packages(),
-      url="https://bitbucket.org/biocommons/hgvs",
+      url="https://github.com/biocommons/hgvs",
       entry_points={
           'console_scripts': [
               'hgvs-shell = hgvs.shell:shell'
@@ -72,7 +72,7 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
 )
 
 # <LICENSE>
-# Copyright 2013-2015 HGVS Contributors (https://bitbucket.org/biocommons/hgvs)
+# Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

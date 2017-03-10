@@ -5,7 +5,7 @@ hgvs
 
 .. include:: description.txt
 
-`Source <https://bitbucket.org/biocommons/hgvs>`_ | `Documentation <http://hgvs.readthedocs.org/>`_ | `Discuss <https://groups.google.com/forum/#!forum/hgvs-discuss>`_ | `Issues`_
+`Source <https://github.com/biocommons/hgvs>`_ | `Documentation <http://hgvs.readthedocs.org/>`_ | `Discuss <https://groups.google.com/forum/#!forum/hgvs-discuss>`_ | `Issues`_
 
 
 Contents

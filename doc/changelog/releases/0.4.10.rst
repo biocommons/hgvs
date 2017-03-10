@@ -7,10 +7,10 @@ Changes since 0.4.9 (2016-08-01).
 Bug Fixes
 $$$$$$$$$
 
-* fixes `#336 <https://github.com/biocommons/hgvs/issues/336/>`_: add hgvs-shell as excutable for exploration, debugging, bug submission [`8ae7f072abc1 <https://bitbucket.org/biocommons/hgvs/commits/8ae7f072abc1>`_]
-* fixes `#346 <https://github.com/biocommons/hgvs/issues/346/>`_: pushed alignment validation into dataprovider get_tx_exons() to cover use in normalizer [`0bc61059562c <https://bitbucket.org/biocommons/hgvs/commits/0bc61059562c>`_]
+* fixes `#336 <https://github.com/biocommons/hgvs/issues/336/>`_: add hgvs-shell as excutable for exploration, debugging, bug submission [`BROKEN: 8ae7f072abc1 <https://github.com/biocommons/hgvs/commit/8ae7f072abc1>`_]
+* fixes `#346 <https://github.com/biocommons/hgvs/issues/346/>`_: pushed alignment validation into dataprovider get_tx_exons() to cover use in normalizer [`BROKEN: 0bc61059562c <https://github.com/biocommons/hgvs/commit/0bc61059562c>`_]
 
 Other Changes
 $$$$$$$$$$$$$
 
-* closes `#352 <https://github.com/biocommons/hgvs/issues/352/>`_: use https for seqfetcher [`ed0655b1bb2b <https://bitbucket.org/biocommons/hgvs/commits/ed0655b1bb2b>`_]
+* closes `#352 <https://github.com/biocommons/hgvs/issues/352/>`_: use https for seqfetcher [`BROKEN: ed0655b1bb2b <https://github.com/biocommons/hgvs/commit/ed0655b1bb2b>`_]
