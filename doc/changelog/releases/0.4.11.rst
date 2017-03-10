@@ -7,5 +7,5 @@ Changes since 0.4.10 (2016-09-13).
 Other Changes
 $$$$$$$$$$$$$
 
-* fixed `#357 <https://bitbucket.org/biocommons/hgvs/issues/357/>`_: reenable parsing of sequence with inversion (backed out `#340 <https://bitbucket.org/biocommons/hgvs/issues/340/>`_) [`881c58dda474 <https://bitbucket.org/biocommons/hgvs/commits/881c58dda474>`_]
+* fixed `#357 <https://github.com/biocommons/hgvs/issues/357/>`_: reenable parsing of sequence with inversion (backed out `#340 <https://github.com/biocommons/hgvs/issues/340/>`_) [`881c58dda474 <https://bitbucket.org/biocommons/hgvs/commits/881c58dda474>`_]
 

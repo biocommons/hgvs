@@ -7,4 +7,4 @@ Changes since 0.4.12 (2016-12-06).
 Bug Fixes
 $$$$$$$$$
 
-* closes `#390 <https://bitbucket.org/biocommons/hgvs/issues/390/>`_: fix missing HGVSError import in variantmapper [`9e3bee72a349 <https://bitbucket.org/biocommons/hgvs/commits/9e3bee72a349>`_]
+* closes `#390 <https://github.com/biocommons/hgvs/issues/390/>`_: fix missing HGVSError import in variantmapper [`9e3bee72a349 <https://bitbucket.org/biocommons/hgvs/commits/9e3bee72a349>`_]

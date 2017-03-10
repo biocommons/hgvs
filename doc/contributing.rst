@@ -46,7 +46,7 @@ Highlights
 
 * Currently, only Python 2.7 is supported. Support for Python 3.5 is
   slated for the next release
-  (`#190 <https://bitbucket.org/biocommons/hgvs/issues/190/>`__).
+  (`#190 <https://github.com/biocommons/hgvs/issues/190/>`__).
 
 
 A Quick Contribution Example

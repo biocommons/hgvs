@@ -49,7 +49,7 @@ class Test_Issues(unittest.TestCase):
 
 
     def test_285_partial_palindrome_inversion(self):
-        # https://bitbucket.org/biocommons/hgvs/issues/285/
+        # https://github.com/biocommons/hgvs/issues/285/
         # Inversion mapping is not palindrome aware
         v = self.hp.parse_hgvs_variant("NM_000088.3:c.589_600inv")
         vn = self.vn.normalize(v)
@@ -57,13 +57,13 @@ class Test_Issues(unittest.TestCase):
 
 
     def test_293_parser_attribute_assignment_error(self):
-        # https://bitbucket.org/biocommons/hgvs/issues/293/        
+        # https://github.com/biocommons/hgvs/issues/293/        
         var = self.hp.parse_hgvs_variant('NG_029146.1:g.6494delG')
         self.vn.normalize(var)  # per issue, should raise error
         
 
     def test_307_validator_rejects_valid_interval(self):
-        # https://bitbucket.org/biocommons/hgvs/issues/307/
+        # https://github.com/biocommons/hgvs/issues/307/
         # before fix, raises error; after fix, should pass 
         self.hv.validate(self.hp.parse_hgvs_variant("NM_002858.3:c.1903-573_*1108del"))
 
@@ -159,7 +159,7 @@ class Test_Issues(unittest.TestCase):
 
 
     def test_330_incorrect_end_datum_post_ter(self):
-        # https://bitbucket.org/biocommons/hgvs/issues/330/
+        # https://github.com/biocommons/hgvs/issues/330/
         # In a variant like NM_004006.2:c.*87_91del, the interval
         # start and end are parsed independently. The * binds to
         # start but not end, causing end to have an incorrect datum.

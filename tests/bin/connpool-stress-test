@@ -8,7 +8,7 @@ $ ./connpool-stress-test ../data/random-vars.gz
 On 0.4.4, this reliably fails within 10 seconds when using a local database.
 With 0.4.5a4.post0, it runs until terminated (several runs of at least two minutes).
 
-https://bitbucket.org/biocommons/hgvs/issues/321
+https://github.com/biocommons/hgvs/issues/321/
 """
 
 from __future__ import absolute_import, division, print_function, unicode_literals
