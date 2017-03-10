@@ -2,9 +2,7 @@
 0.4.0 (2015-09-09)
 ##################
 
-Changes since 0.3.7 (2015-06-23). See issues at `milestone 0.4.0 <https://bitbucket.org/biocommons/hgvs/issues?milestone=0.4.0>`_.
-
-
+Changes since 0.3.7 (2015-06-23). See issues at .
 
 
 Special Attention
@@ -19,20 +17,16 @@ $$$$$$$$$$$$$$$$$
 * EasyVariantMapper, Normalizer, and Validator now fetch sequence data at runtime, which may raise performance and privacy concerns. Users may wish to read `Privacy Issues <http://hgvs.readthedocs.org/en/default/privacy.html>`_ in the documentation.
 
 
-
 Deprecations
 $$$$$$$$$$$$
 
 * UTA: UTA now uses anonymous:anonymous as the username:password. uta_public:uta_public will be obsolete shortly.
 
 
-
 Bug Fixes
 $$$$$$$$$
 
-* `#248 <https://github.com/biocommons/hgvs/issues/248/>`_: Don't raise validation exception when del sequence is empty [`b6c07d329d36 <https://bitbucket.org/biocommons/hgvs/commits/b6c07d329d36>`_]
-* There are `known bugs <https://bitbucket.org/biocommons/hgvs/issues?kind=bug&status=open&status=new>`_ and `other issues <https://bitbucket.org/biocommons/hgvs/issues?status=open&status=new>`_.
-
+* `#248 <https://github.com/biocommons/hgvs/issues/248/>`_: Don't raise validation exception when del sequence is empty []
 
 
 New Features
@@ -47,10 +41,9 @@ $$$$$$$$$$$$
 * `#236 <https://github.com/biocommons/hgvs/issues/236/>`_, `#240 <https://github.com/biocommons/hgvs/issues/240/>`_: Added seqfetcher.SeqFetcher to fetch sequences from NCBI & Ensembl
 * `#250 <https://github.com/biocommons/hgvs/issues/250/>`_: Implemented configuration module; hgvs.global_config is initialized once and available globally
 * `#251 <https://github.com/biocommons/hgvs/issues/251/>`_: Parens now optional around p. edits; default is enabled per HGVS spec (hgvs.global_config.mapping.inferred_p_is_uncertain)
-* `#255 <https://github.com/biocommons/hgvs/issues/255/>`_: variants normalized by EasyVariantMapper by default [`1b85d4deabc3 <https://bitbucket.org/biocommons/hgvs/commits/1b85d4deabc3>`_]
+* `#255 <https://github.com/biocommons/hgvs/issues/255/>`_: variants normalized by EasyVariantMapper by default []
 * `#261 <https://github.com/biocommons/hgvs/issues/261/>`_: Replace reference default from config (hgvs.global_config.mapping.replace_reference)
 * UTA is now available as a docker image for local installation. See :ref:`uta_docker`.
-
 
 
 Other Changes
@@ -60,13 +53,12 @@ $$$$$$$$$$$$$
 * `#254 <https://github.com/biocommons/hgvs/issues/254/>`_: Support inversion, conversion, and nadupn variants
 * Added misc/experimental/tx-seq-discrepancies to identify genomic locations of reference-transcript discrepancies
 * Added variant context method to evm (temporary location, but useful for debugging)
-* HGVSInternalError now subclasses HGVSError (not Exception) [`ff6cd4dc51dc <https://bitbucket.org/biocommons/hgvs/commits/ff6cd4dc51dc>`_]
+* HGVSInternalError now subclasses HGVSError (not Exception) []
 * Lots of documentation updates.
-* Raise HGVSParserError (instead of ometa.runtime.ParseError) when parsing fails [`efa93fe29d15 <https://bitbucket.org/biocommons/hgvs/commits/efa93fe29d15>`_]
+* Raise HGVSParserError (instead of ometa.runtime.ParseError) when parsing fails []
 * The UTA data provider now checks for the requested schema on connection and provides more informative errors on failure.
 * hdp.data_version returns schema name for UTA since that that is the conventional use.
-* Use autocommit to prevent transaction overhead and locks [`65d69e41716e <https://bitbucket.org/biocommons/hgvs/commits/65d69e41716e>`_]
-
+* Use autocommit to prevent transaction overhead and locks []
 
 
 Internal and Developer Changes
@@ -76,7 +68,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 * All code will be mercilously reformmated with yapf occasionally using .style.yapf
 * Build and upload wheel packages (in addition to existing eggs and tarballs)
 * Docs significantly overhauled and moved to readthedocs.org with automatic webhook-based building
-* Enable users to set application_name when connecting [`835ac7771909 <https://bitbucket.org/biocommons/hgvs/commits/835ac7771909>`_]
+* Enable users to set application_name when connecting []
 * _UTA_URL_KEY (dev use only) will switch URLs to any in hgvs/_data/defaults.ini
-* on import of hgvs, emit logging info line w/version [`aa97f2c1cdc8 <https://bitbucket.org/biocommons/hgvs/commits/aa97f2c1cdc8>`_]
-* sped up most tests by using setUpClass() rather than setUp() [`a6d227f6a3e0 <https://bitbucket.org/biocommons/hgvs/commits/a6d227f6a3e0>`_]
+* on import of hgvs, emit logging info line w/version []
+* sped up most tests by using setUpClass() rather than setUp() []

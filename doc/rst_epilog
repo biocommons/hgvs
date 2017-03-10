@@ -1,7 +1,7 @@
-.. _`hgvs issues`: https://bitbucket.org/biocommons/hgvs/issues
-.. _`hgvs package`: https://bitbucket.org/biocommons/hgvs
+.. _`hgvs issues`: https://github.com/biocommons/hgvs/issues
+.. _`hgvs package`: https://github.com/biocommons/hgvs
 .. _`HGVS Recommendations`: http://varnomen.hgvs.org/
-.. _`issues`: https://bitbucket.org/biocommons/hgvs/issues
+.. _`issues`: https://github.com/biocommons/hgvs/issues
 .. _`semantic versioning`: http://semver.org/
 .. _`Variation Nomenclature Recommendations`: http://varnomen.hgvs.org/
 .. _`varnomen`: http://varnomen.hgvs.org/
@@ -16,7 +16,7 @@
 .. _Parsley: https://pypi.python.org/pypi/Parsley
 .. _peg: http://en.wikipedia.org/wiki/Parsing_expression_grammar
 .. _pep8: https://www.python.org/dev/peps/pep-0008/
-.. _uta: https://bitbucket.org/biocommons/uta/
+.. _uta: https://github.com/biocommons/uta/
 .. _yapf: https://github.com/google/yapf
 
 

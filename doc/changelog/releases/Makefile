@@ -39,11 +39,12 @@ next.clog:
 	clogger . | perl -pe 's/CORE-(\d+)/#\1/' >$@.tmp
 	mv $@.tmp $@
 
+# TODO: use git-mapfile to map commits
 %.rst: %.clog
 	clogger-fmt \
-		-I '`#{issue_id} <https://bitbucket.org/biocommons/hgvs/issues/{issue_id}/>`_' \
-		-C '`{cset} <https://bitbucket.org/biocommons/hgvs/commits/{cset}>`_' \
-		-M '`milestone {mstone} <https://bitbucket.org/biocommons/hgvs/issues?milestone={mstone}>`_' \
+		-I '`#{issue_id} <https://github.com/biocommons/hgvs/issues/{issue_id}/>`_' \
+		-C '`BROKEN: {cset} <https://github.com/biocommons/hgvs/commit/{cset}>`_' \
+		-M '`milestone {mstone} <https://github.com/biocommons/hgvs/milestones/{mstone}>`_' \
 		<$< >$@.tmp
 	mv $@.tmp $@
 

@@ -12,7 +12,7 @@ the Human Genome Variation Society (`varnomen`_) recommendations.
 
 .. note:: A *preview release* of hgvs 0.5.0 is available, with support
   for GRCh38 and local sequence sources.  See `installation notes
-  <https://bitbucket.org/biocommons/hgvs/src/13be956259489dfe52ae94071591023d7cc6133d/notes/hgvs-0.5dev-install.rst?at=default>`__.
+  <https://github.com/biocommons/hgvs/blob/master/notes/hgvs-0.5dev-install.rst>`__.
 
 ----
 
@@ -40,8 +40,8 @@ Important Notes
 ---------------
 
 * **You are encouraged to** `browse issues
-  <https://bitbucket.org/biocommons/hgvs/issues>`_. Please report any
-  issues you find.
+  <https://github.com/biocommons/hgvs/issues>`_.  All known issues are
+  listed there.  Please report any issues you find.
 * **Use a pip package specification to ensure stay within minor
   releases for API stability.** For example, ``hgvs >=0.4,<0.5``.
 
@@ -168,7 +168,7 @@ Other packages that manipulate HGVS variants:
 .. _docs: http://hgvs.readthedocs.org/
 .. _varnomen: http://varnomen.hgvs.org/
 .. _mailing list: https://groups.google.com/forum/#!forum/hgvs-discuss
-.. _Open Issues: https://bitbucket.org/biocommons/hgvs/issues?status=new&status=open&version=0.4.x
+.. _Open Issues: https://github.com/biocommons/hgvs/issues
 .. _code: https://bitbucket.org/biocommons/hgvs
 .. _changelog: http://hgvs.readthedocs.io/en/default/changelog/0.4.html
 .. _pypi: https://pypi.python.org/pypi/hgvs

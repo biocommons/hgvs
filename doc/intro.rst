@@ -100,7 +100,7 @@ The `hgvs-discuss mailing list
 <https://groups.google.com/forum/#!forum/hgvs-discuss>`_ is the preferred
 way to reach the ``hgvs`` package authors.  Please file bugs and feature
 requests on the `hgvs issue tracker
-<https://bitbucket.org/biocommons/hgvs/issues?status=new&status=open>`_.
+<https://github.com/biocommons/hgvs/issues>`_.
 
 If you have questions about the `Variation Nomenclature
 Recommendations <http://varnomen.hgvs.org/>`_, consider posting your
