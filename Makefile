@@ -52,7 +52,9 @@ devready:
 #=> install: install package
 #=> bdist bdist_egg bdist_wheel build sdist: distribution options
 .PHONY: bdist bdist_egg bdist_wheel build build_sphinx sdist install develop
-bdist bdist_egg bdist_wheel build sdist install develop: %:
+develop:
+	pip install -e .
+bdist bdist_egg bdist_wheel build sdist install: %:
 	python setup.py $@
 
 
