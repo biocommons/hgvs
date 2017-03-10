@@ -10,7 +10,7 @@ project = u'HGVS'
 authors = project + ' Contributors'
 copyright = u'2015, ' + authors
 
-extlinks = {'issue': ('https://bitbucket.org/biocommons/hgvs/issue/%s', 'issue '), }
+extlinks = {'issue': ('https://bitbucket.org/biocommons/hgvs/issues/%s', 'issue '), }
 
 man_pages = [('index', project, project + u' Documentation', [project + u' Contributors'], 1)]
 
