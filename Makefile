@@ -65,7 +65,6 @@ bdist bdist_egg bdist_wheel build sdist install: %:
 # see test configuration in setup.cfg
 
 
-
 #=> test: execute tests
 .PHONY: test
 test:

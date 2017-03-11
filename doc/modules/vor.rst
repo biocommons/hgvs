@@ -21,7 +21,7 @@ Variant Object Representation
 
 .. automodule:: hgvs.posedit
 
-:mod:`hgvs.variant`
-^^^^^^^^^^^^^^^^^^^
+:mod:`hgvs.sequencevariant`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: hgvs.variant
+.. automodule:: hgvs.sequencevariant
