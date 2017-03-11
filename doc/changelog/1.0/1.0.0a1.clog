@@ -1,0 +1,89 @@
+clog format: 1; -*-outline-*-
+* 1.0.0a1 (2017-03-10)
+Changes since 0.4.0 (2015-09-09).
+
+This is a major release of the hgvs package that includes bug fixes,
+behavior changes, and new features.
+
+** Special Attention
+*** VariantMapper validates variants before mapping.
+
+Several bug reports resulted from attempting to project invalid
+variants, such as as variants with insertions between non-adjacent
+nucleotides. These generated exceptions or unexpected
+results. Intrinsic validation is now peformed before mapping and
+normalization, and callers may wish to catch these.
+
+*** Local sequence database.
+
+
+
+*** hgvs version scheme.
+
+hgvs has always used `Semantic Versioning <http://semver.org/>`__. 
+
+
+*** #393: PosEdit representation of unknown p. effect
+
+  Before: `p.Met1?`; Now: `p.?` 
+  https://github.com/biocommons/hgvs/issues/393/
+  http://varnomen.hgvs.org/recommendations/protein/variant/substitution/
+
+*** #282: preserve position in "identity" variants (e.g., norm(c.123A>A) => c.123= rather than c.=) [cc523ed]
+
+*** AssemblyMapper + PAR support
+
+
+** Deprecations and Removals
+*** #349: drop support for dupN [0dbe440]
+*** #360: s/HGVSValidationError/HGVSInvalidVariantError/g [e09c41e]
+
+** Bug Fixes
+*** #284: validation fails for g variants [512b882]
+*** #292: Fix bug in validator when validating m. variants and add tests [12d9b48]
+*** #308: validation across CDS start and CDS end boundaries [ac066ee], [8c8db03]
+*** #346: ensure that alignment starts at transcript position 0 [3af24b3], [9f29c87]
+*** #381: fix bug attempting to normalize p. variants; add issue test (test_issues.py) [834bed9]
+*** #393: fix inconsistent representation of unknown p. effect when inferred by c_to_p [3f1ac48]
+
+** New Features
+*** #105: configurable formatting [c8b9fd1]
+*** #249: Move intrinsic validation to models
+*** #253: Add p. validation support [3d3b9da], [ba943ae]
+
+*** #256: rename EasyVariantMapper to AssemblyMapper to better indicate functionality [d6697d6]
+*** #326: provide special handling for disambiguating alignments in pseudoautosomal regions [acc560e]
+
+*** #258, #330, #342: ensure that start and end datums are compatible [247d8bf]
+*** #260, #322: added tests to verify that exceptions are raised when mapping invalid variants [ac37ae0]
+*** #270: add is_intronic method to BaseOffsetPosition [4e40866]
+*** #295: raise exception when validating deletion length for intronic variants [4575ed8]
+*** #309: make errors more informative when coordinate is outside sequence bounds [d667d8b], [f4cd048]
+*** #314: support parsing identity variants [9116c72]
+*** #315: Validate accession type pairs [be90d50]
+*** #316: provide generalized transcript-to-genome projects to handle coding and non-coding transcripts transparently [26006c7]
+*** #319: added PosEdit.length_change() method [c191567], [c71a48b], [c70fded]
+*** #330: datum-matching [e05674b], [461ccd7]
+*** #336: add hgvs-shell as excutable for exploration, debugging, bug submission [f6b6c3c]
+*** #356: add position comparision operators [4f7f7e4]
+*** #365: graded validation
+*** #366: move validation to variantmapper
+*** #372: rename hgvs/variant.py to hgvs/sequencevariant.py [2f69d65], [ad604fd]
+*** #379: move replace_reference to variantmapper (from evm) [c0f4be1]
+*** #386: reject discontiguous alignments [ea2527c]
+*** #399: validators should raise only HGVSInvalidVariantError exceptions
+*** Output silent p. variants according to HGVS recommendations [4babbb5]
+
+
+** Other Changes
+*** #276: raise error when user attempts to map to/from c. with non-coding transcript [aaa0ff5]
+*** #363: update railroad diagram [3e23e10]
+
+** Internal and Developer Changes
+*** #236: migrate from built-in seqfetcher to bioutils seqfetcher [5e9a951]
+*** #237: Mock testing data; dropped unmaintained sqlite-based tests
+*** #287: ensure that modules are also getting doctested (continues #287) [3cbe93a]
+*** #395: get ThreadedConnectionPool sizes from config [a2a216c]
+*** #397: use hgvs.config for VariantMapper.__init__() [154cf5e]
+*** #400: make hdp cache mode (for testing) settable via HGVS_CACHE_MODE environment variable [09303c7]
+*** use psycopg2!=2.7 until psycopg2 bug fixed [59e3fab]

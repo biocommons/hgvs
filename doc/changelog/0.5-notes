@@ -1,7 +1,0 @@
-This file contains reminders about changes in hgvs 0.5.0.  It will be
-incorporated into the 0.5.0 release notes.
-
-* 393: PosEdit representation of unknown p. effect
-Before: `p.Met1?`; Now: `p.?` 
-https://github.com/biocommons/hgvs/issues/393/
-http://varnomen.hgvs.org/recommendations/protein/variant/substitution/
