@@ -2,41 +2,63 @@ clog format: 1; -*-outline-*-
 * 1.0.0a1 (2017-03-10)
 Changes since 0.4.0 (2015-09-09).
 
-This is a major release of the hgvs package that includes bug fixes,
-behavior changes, and new features.
+This is a major release of the hgvs package that includes new features
+and behavior changes.  Some client code may require minor modification.
 
-** Special Attention
-*** VariantMapper validates variants before mapping.
+(Note: Previously, we had tentatively called this release 0.5.0.  The
+magnitude of the changes and the desire to migrate to public API
+versioning led us release as 1.0.0.)
 
-Several bug reports resulted from attempting to project invalid
-variants, such as as variants with insertions between non-adjacent
-nucleotides. These generated exceptions or unexpected
-results. Intrinsic validation is now peformed before mapping and
-normalization, and callers may wish to catch these.
-
-*** Local sequence database.
+- installation instructions 0.5.0 notes
+- add links herein to am, etc
 
 
+** Major Features and Changes
 
-*** hgvs version scheme.
+  **★ EasyVariantMapper renamed to AssemblyMapper, now with GRCh38 and
+PAR support.** EasyVariantMapper was renamed to AssemblyMapper to
+better reflect its role.  AssemblyMapper defaults to GRCh38.
+Transcripts in pseudoautosomal regions have alignments to X and Y.
+Previously, EVM would refuse to guess which alignment to use and raise
+an exception.  AssemblyMapper has a new argument, `in_par_assume`,
+which enables callers to prefer X or Y alignments.
 
-hgvs has always used `Semantic Versioning <http://semver.org/>`__. 
+  **★ VariantMapper validates variants before mapping.** Several bug
+reports resulted from attempting to project invalid variants, such as
+as variants with insertions between non-adjacent nucleotides. These
+generated exceptions or unexpected results. Intrinsic validation is
+now peformed before mapping and normalization, and callers may wish to
+catch these.
 
+  **★ Fully local installations -- no network access required.**
+`hgvs` requires access to transcripts and sequences for most
+operations.  By default, hgvs will use public remote resources at
+runtime, which incurs significant latency and, in principle, presents
+a minor privacy concern.  While UTA has always been available for
+local installation, the more significant delay was in sequence lookup.
+A new package, `SeqRepo <https://github.com/biocommons/seqrepo/>`__,
+provides a local sequence database that is synchronized with UTA.
+When used together, these packages completely obviate network
+connectivity and improve speed by approximately 50x.
 
-*** #393: PosEdit representation of unknown p. effect
+  **★ hgvs transitions to public API versioning conventions.** By
+transitioning from major version 0 ("initial development") to 1
+("public API"), we are indicating that the API is expected to be
+stable.  In practice, this change will mean that x.y.z versions will
+clearly distinguish bug fix releases (increment z),
+backward-compatible feature additions (increment y), and API
+incompatible changes (increment x).  See `Semantic Versioning
+<http://semver.org/>`__ for more information.
 
-  Before: `p.Met1?`; Now: `p.?` 
-  https://github.com/biocommons/hgvs/issues/393/
-  http://varnomen.hgvs.org/recommendations/protein/variant/substitution/
+  **★ Unknown p. effect now represented with `p.?`.** This follows
+current `varnomen recommendations <http://varnomen.org/>`__.  See
+#393.
 
-*** #282: preserve position in "identity" variants (e.g., norm(c.123A>A) => c.123= rather than c.=) [cc523ed]
-
-*** AssemblyMapper + PAR support
 
 
 ** Deprecations and Removals
 *** #349: drop support for dupN [0dbe440]
-*** #360: s/HGVSValidationError/HGVSInvalidVariantError/g [e09c41e]
+*** #360: HGVSValidationError removed; used HGVSInvalidVariantError instead.
 
 ** Bug Fixes
 *** #284: validation fails for g variants [512b882]
@@ -50,19 +72,18 @@ hgvs has always used `Semantic Versioning <http://semver.org/>`__.
 *** #105: configurable formatting [c8b9fd1]
 *** #249: Move intrinsic validation to models
 *** #253: Add p. validation support [3d3b9da], [ba943ae]
-
 *** #256: rename EasyVariantMapper to AssemblyMapper to better indicate functionality [d6697d6]
-*** #326: provide special handling for disambiguating alignments in pseudoautosomal regions [acc560e]
-
 *** #258, #330, #342: ensure that start and end datums are compatible [247d8bf]
 *** #260, #322: added tests to verify that exceptions are raised when mapping invalid variants [ac37ae0]
 *** #270: add is_intronic method to BaseOffsetPosition [4e40866]
+*** #282: preserve position in "identity" variants (e.g., norm(c.123A>A) => c.123= rather than c.=) [cc523ed]
 *** #295: raise exception when validating deletion length for intronic variants [4575ed8]
 *** #309: make errors more informative when coordinate is outside sequence bounds [d667d8b], [f4cd048]
 *** #314: support parsing identity variants [9116c72]
 *** #315: Validate accession type pairs [be90d50]
 *** #316: provide generalized transcript-to-genome projects to handle coding and non-coding transcripts transparently [26006c7]
 *** #319: added PosEdit.length_change() method [c191567], [c71a48b], [c70fded]
+*** #326: provide special handling for disambiguating alignments in pseudoautosomal regions [acc560e]
 *** #330: datum-matching [e05674b], [461ccd7]
 *** #336: add hgvs-shell as excutable for exploration, debugging, bug submission [f6b6c3c]
 *** #356: add position comparision operators [4f7f7e4]
@@ -73,7 +94,6 @@ hgvs has always used `Semantic Versioning <http://semver.org/>`__.
 *** #386: reject discontiguous alignments [ea2527c]
 *** #399: validators should raise only HGVSInvalidVariantError exceptions
 *** Output silent p. variants according to HGVS recommendations [4babbb5]
-
 
 ** Other Changes
 *** #276: raise error when user attempts to map to/from c. with non-coding transcript [aaa0ff5]

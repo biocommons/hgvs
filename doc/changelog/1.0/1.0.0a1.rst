@@ -1,54 +1,76 @@
 
 1.0.0a1 (2017-03-10)
-####################
+#####################
 
 Changes since 0.4.0 (2015-09-09).
 
-This is a major release of the hgvs package that includes bug fixes,
-behavior changes, and new features.
+This is a major release of the hgvs package that includes new features
+and behavior changes.  Some client code may require minor modification.
 
+(Note: Previously, we had tentatively called this release 0.5.0.  The
+magnitude of the changes and the desire to migrate to public API
+versioning led us release as 1.0.0.)
 
-Special Attention
-$$$$$$$$$$$$$$$$$
-
-* VariantMapper validates variants before mapping.
-
-Several bug reports resulted from attempting to project invalid
-variants, such as as variants with insertions between non-adjacent
-nucleotides. These generated exceptions or unexpected
-results. Intrinsic validation is now peformed before mapping and
-normalization, and callers may wish to catch these.
-
-* Local sequence database.
+- installation instructions 0.5.0 notes
+- add links herein to am, etc
 
 
 
-* hgvs version scheme.
+Major Features and Changes
+$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-hgvs has always used `Semantic Versioning <http://semver.org/>`__.
 
+**★ EasyVariantMapper renamed to AssemblyMapper, now with GRCh38 and
+PAR support.** EasyVariantMapper was renamed to AssemblyMapper to
+better reflect its role.  AssemblyMapper defaults to GRCh38.
+Transcripts in pseudoautosomal regions have alignments to X and Y.
+Previously, EVM would refuse to guess which alignment to use and raise
+an exception.  AssemblyMapper has a new argument, `in_par_assume`,
+which enables callers to prefer X or Y alignments.
 
-* `#393 <https://github.com/biocommons/hgvs/issues/393/>`_: PosEdit representation of unknown p. effect
+**★ VariantMapper validates variants before mapping.** Several bug
+reports resulted from attempting to project invalid variants, such as
+as variants with insertions between non-adjacent nucleotides. These
+generated exceptions or unexpected results. Intrinsic validation is
+now peformed before mapping and normalization, and callers may wish to
+catch these.
 
-Before: `p.Met1?`; Now: `p.?`
-https://github.com/biocommons/hgvs/issues/393/
-http://varnomen.hgvs.org/recommendations/protein/variant/substitution/
+**★ Fully local installations -- no network access required.**
+`hgvs` requires access to transcripts and sequences for most
+operations.  By default, hgvs will use public remote resources at
+runtime, which incurs significant latency and, in principle, presents
+a minor privacy concern.  While UTA has always been available for
+local installation, the more significant delay was in sequence lookup.
+A new package, `SeqRepo <https://github.com/biocommons/seqrepo/>`__,
+provides a local sequence database that is synchronized with UTA.
+When used together, these packages completely obviate network
+connectivity and improve speed by approximately 50x.
 
-* `#282 <https://github.com/biocommons/hgvs/issues/282/>`_: preserve position in "identity" variants (e.g., norm(c.123A>A) => c.123= rather than c.=) [`cc523ed <https://github.com/biocommons/hgvs/commit/cc523ed>`_]
+**★ hgvs transitions to public API versioning conventions.** By
+transitioning from major version 0 ("initial development") to 1
+("public API"), we are indicating that the API is expected to be
+stable.  In practice, this change will mean that x.y.z versions will
+clearly distinguish bug fix releases (increment z),
+backward-compatible feature additions (increment y), and API
+incompatible changes (increment x).  See `Semantic Versioning
+<http://semver.org/>`__ for more information.
 
-* AssemblyMapper + PAR support
+**★ Unknown p. effect now represented with `p.?`.** This follows
+current `varnomen recommendations <http://varnomen.org/>`__.  See
+393.
+
 
 
 
 Deprecations and Removals
-$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 * `#349 <https://github.com/biocommons/hgvs/issues/349/>`_: drop support for dupN [`0dbe440 <https://github.com/biocommons/hgvs/commit/0dbe440>`_]
-* `#360 <https://github.com/biocommons/hgvs/issues/360/>`_: s/HGVSValidationError/HGVSInvalidVariantError/g [`e09c41e <https://github.com/biocommons/hgvs/commit/e09c41e>`_]
+* `#360 <https://github.com/biocommons/hgvs/issues/360/>`_: HGVSValidationError removed; used HGVSInvalidVariantError instead.
 
 
 Bug Fixes
-$$$$$$$$$
+$$$$$$$$$$
 
 * `#284 <https://github.com/biocommons/hgvs/issues/284/>`_: validation fails for g variants [`512b882 <https://github.com/biocommons/hgvs/commit/512b882>`_]
 * `#292 <https://github.com/biocommons/hgvs/issues/292/>`_: Fix bug in validator when validating m. variants and add tests [`12d9b48 <https://github.com/biocommons/hgvs/commit/12d9b48>`_]
@@ -59,24 +81,23 @@ $$$$$$$$$
 
 
 New Features
-$$$$$$$$$$$$
+$$$$$$$$$$$$$
 
 * `#105 <https://github.com/biocommons/hgvs/issues/105/>`_: configurable formatting [`c8b9fd1 <https://github.com/biocommons/hgvs/commit/c8b9fd1>`_]
 * `#249 <https://github.com/biocommons/hgvs/issues/249/>`_: Move intrinsic validation to models
 * `#253 <https://github.com/biocommons/hgvs/issues/253/>`_: Add p. validation support [`3d3b9da <https://github.com/biocommons/hgvs/commit/3d3b9da>`_], [`ba943ae <https://github.com/biocommons/hgvs/commit/ba943ae>`_]
-
 * `#256 <https://github.com/biocommons/hgvs/issues/256/>`_: rename EasyVariantMapper to AssemblyMapper to better indicate functionality [`d6697d6 <https://github.com/biocommons/hgvs/commit/d6697d6>`_]
-* `#326 <https://github.com/biocommons/hgvs/issues/326/>`_: provide special handling for disambiguating alignments in pseudoautosomal regions [`acc560e <https://github.com/biocommons/hgvs/commit/acc560e>`_]
-
 * `#258 <https://github.com/biocommons/hgvs/issues/258/>`_, `#330 <https://github.com/biocommons/hgvs/issues/330/>`_, `#342 <https://github.com/biocommons/hgvs/issues/342/>`_: ensure that start and end datums are compatible [`247d8bf <https://github.com/biocommons/hgvs/commit/247d8bf>`_]
 * `#260 <https://github.com/biocommons/hgvs/issues/260/>`_, `#322 <https://github.com/biocommons/hgvs/issues/322/>`_: added tests to verify that exceptions are raised when mapping invalid variants [`ac37ae0 <https://github.com/biocommons/hgvs/commit/ac37ae0>`_]
 * `#270 <https://github.com/biocommons/hgvs/issues/270/>`_: add is_intronic method to BaseOffsetPosition [`4e40866 <https://github.com/biocommons/hgvs/commit/4e40866>`_]
+* `#282 <https://github.com/biocommons/hgvs/issues/282/>`_: preserve position in "identity" variants (e.g., norm(c.123A>A) => c.123= rather than c.=) [`cc523ed <https://github.com/biocommons/hgvs/commit/cc523ed>`_]
 * `#295 <https://github.com/biocommons/hgvs/issues/295/>`_: raise exception when validating deletion length for intronic variants [`4575ed8 <https://github.com/biocommons/hgvs/commit/4575ed8>`_]
 * `#309 <https://github.com/biocommons/hgvs/issues/309/>`_: make errors more informative when coordinate is outside sequence bounds [`d667d8b <https://github.com/biocommons/hgvs/commit/d667d8b>`_], [`f4cd048 <https://github.com/biocommons/hgvs/commit/f4cd048>`_]
 * `#314 <https://github.com/biocommons/hgvs/issues/314/>`_: support parsing identity variants [`9116c72 <https://github.com/biocommons/hgvs/commit/9116c72>`_]
 * `#315 <https://github.com/biocommons/hgvs/issues/315/>`_: Validate accession type pairs [`be90d50 <https://github.com/biocommons/hgvs/commit/be90d50>`_]
 * `#316 <https://github.com/biocommons/hgvs/issues/316/>`_: provide generalized transcript-to-genome projects to handle coding and non-coding transcripts transparently [`26006c7 <https://github.com/biocommons/hgvs/commit/26006c7>`_]
 * `#319 <https://github.com/biocommons/hgvs/issues/319/>`_: added PosEdit.length_change() method [`c191567 <https://github.com/biocommons/hgvs/commit/c191567>`_], [`c71a48b <https://github.com/biocommons/hgvs/commit/c71a48b>`_], [`c70fded <https://github.com/biocommons/hgvs/commit/c70fded>`_]
+* `#326 <https://github.com/biocommons/hgvs/issues/326/>`_: provide special handling for disambiguating alignments in pseudoautosomal regions [`acc560e <https://github.com/biocommons/hgvs/commit/acc560e>`_]
 * `#330 <https://github.com/biocommons/hgvs/issues/330/>`_: datum-matching [`e05674b <https://github.com/biocommons/hgvs/commit/e05674b>`_], [`461ccd7 <https://github.com/biocommons/hgvs/commit/461ccd7>`_]
 * `#336 <https://github.com/biocommons/hgvs/issues/336/>`_: add hgvs-shell as excutable for exploration, debugging, bug submission [`f6b6c3c <https://github.com/biocommons/hgvs/commit/f6b6c3c>`_]
 * `#356 <https://github.com/biocommons/hgvs/issues/356/>`_: add position comparision operators [`4f7f7e4 <https://github.com/biocommons/hgvs/commit/4f7f7e4>`_]
@@ -89,16 +110,15 @@ $$$$$$$$$$$$
 * Output silent p. variants according to HGVS recommendations [`4babbb5 <https://github.com/biocommons/hgvs/commit/4babbb5>`_]
 
 
-
 Other Changes
-$$$$$$$$$$$$$
+$$$$$$$$$$$$$$
 
 * `#276 <https://github.com/biocommons/hgvs/issues/276/>`_: raise error when user attempts to map to/from c. with non-coding transcript [`aaa0ff5 <https://github.com/biocommons/hgvs/commit/aaa0ff5>`_]
 * `#363 <https://github.com/biocommons/hgvs/issues/363/>`_: update railroad diagram [`3e23e10 <https://github.com/biocommons/hgvs/commit/3e23e10>`_]
 
 
 Internal and Developer Changes
-$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 * `#236 <https://github.com/biocommons/hgvs/issues/236/>`_: migrate from built-in seqfetcher to bioutils seqfetcher [`5e9a951 <https://github.com/biocommons/hgvs/commit/5e9a951>`_]
 * `#237 <https://github.com/biocommons/hgvs/issues/237/>`_: Mock testing data; dropped unmaintained sqlite-based tests

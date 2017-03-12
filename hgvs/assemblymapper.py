@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-"""Provides VariantMapper and AssemblyMapper to project variants
-between sequences using TranscriptMapper.
-
-"""
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -34,11 +30,6 @@ class AssemblyMapper(VariantMapper):
       transcript accessions available for the specified variant. These
       accessions are candidates mapping from genomic to trancript
       coordinates (i.e., g_to_c(...) and g_to_n(...)).
-
-    IMPORTANT: Callers should be prepared to catch HGVSError
-    exceptions. These will be thrown whenever a transcript maps
-    ambiguously to a chromosome, such as for pseudoautosomal region
-    transcripts.
 
     """
 

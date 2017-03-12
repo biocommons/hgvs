@@ -1,6 +1,12 @@
 Mapping
 .......
 
+:mod:`hgvs.assemblymapper`
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: hgvs.assemblymapper
+
+
 :mod:`hgvs.variantmapper`
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 

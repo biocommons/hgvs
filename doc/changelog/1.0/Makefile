@@ -31,7 +31,7 @@ index.rst ${XY_RST}: %.rst:
 	mv $@.tmp $@
 
 
-hg-git-remap.pl: ../../../.hg/git-mapfile
+hg-git-remap.pl:  # ../../../.hg/git-mapfile <-- causes unintended clog rebuilds
 	perl -ane 'printf("s/%.12s/%.7s/g;\n", $$F[1], $$F[0])' <$< | sort >$@
 
 
