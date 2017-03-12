@@ -11,8 +11,7 @@ and behavior changes.  Some client code may require minor modification.
 magnitude of the changes and the desire to migrate to public API
 versioning led us release as 1.0.0.)
 
-- installation instructions 0.5.0 notes
-- add links herein to am, etc
+See :ref:`Installing HGVS` for installation instructions.
 
 
 

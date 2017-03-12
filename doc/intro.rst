@@ -27,7 +27,7 @@ breadth of the varnomen standard makes it difficult to implement the
 standard in software, which in turn makes using the standard in
 high-throughput analyses difficult.
 
-This package, ``hgvs``, is an easy-to-use Python library for parsing,
+This package, `hgvs`, is an easy-to-use Python library for parsing,
 representing, formatting, and mapping variants between genome, transcript,
 and protein sequences.  The current implementation handles most (but not
 all) of the varnomen standard for precisely defined sequence variants.
@@ -94,11 +94,11 @@ Related tools
 Getting Help
 @@@@@@@@@@@@
 
-There are several ways to get help with the ``hgvs`` package.
+There are several ways to get help with the `hgvs` package.
 
 The `hgvs-discuss mailing list
 <https://groups.google.com/forum/#!forum/hgvs-discuss>`_ is the preferred
-way to reach the ``hgvs`` package authors.  Please file bugs and feature
+way to reach the `hgvs` package authors.  Please file bugs and feature
 requests on the `hgvs issue tracker
 <https://github.com/biocommons/hgvs/issues>`_.
 

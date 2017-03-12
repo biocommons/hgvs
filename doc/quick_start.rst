@@ -49,7 +49,7 @@ Parse the variant
 To parse variants, we need to create an instance of the
 :class:`hgvs.parser.Parser`.  Since building the grammar is
 computationally expensive, you should create only one instance and use it for
-all parsing operations.  Start ``ipython``, then do this:
+all parsing operations.  Start `ipython`, then do this:
 
 >>> import hgvs.parser
 >>> hgvsparser = hgvs.parser.Parser()

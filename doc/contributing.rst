@@ -209,7 +209,7 @@ base is periodically automatically reformatted for consistency.
 Variables
 #########
 
-The following code variable conventions are used for most of the ``hgvs``
+The following code variable conventions are used for most of the `hgvs`
 code base.  They should be considered aspirations rather than reality or
 policy.  Understanding these conventions will help uses and developers
 understand the code.
@@ -234,11 +234,11 @@ understand the code.
 Release Process
 @@@@@@@@@@@@@@@
 
-``hgvs`` uses a home-grown tool, ``clogger``, to generate change logs.
+`hgvs` uses a home-grown tool, `clogger`, to generate change logs.
 This section documents the process.  (Clogger will be released at some
 point, but it is currently really only executable by Reece.)
 
-``clogger``\'s primary goal is to propose a preliminary changelog
+`clogger`\'s primary goal is to propose a preliminary changelog
 based on commit messages between specified release tags.  That
 ``.clog`` file is a simple format like this::
 
