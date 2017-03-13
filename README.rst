@@ -54,7 +54,7 @@ Some Examples
 .. note:: These examples are for the upcoming 0.5.0 release.
 
 See `Installation instructions
-<http://hgvs.readthedocs.org/en/default/installation.html>`_ if you
+<http://hgvs.readthedocs.org/en/master/installation.html>`_ if you
 have installation troubles.
 
 ::
@@ -132,7 +132,7 @@ have installation troubles.
   SequenceVariant(ac=NM_001166478.1, type=c, posedit=35delT)
 
 
-There are `more examples in the documentation <http://hgvs.readthedocs.org/en/default/examples.html>`_.
+There are `more examples in the documentation <http://hgvs.readthedocs.org/en/master/examples.html>`_.
 
 ----
 
@@ -150,7 +150,7 @@ Contributing
 
 The hgvs package is intended to be a community project.  Please see
 `Contributing
-<http://hgvs.readthedocs.org/en/default/contributing.html>`__ to get
+<http://hgvs.readthedocs.org/en/master/contributing.html>`__ to get
 started in submitting source code, tests, or documentation.  Thanks
 for getting involved!
 
@@ -170,7 +170,7 @@ Other packages that manipulate HGVS variants:
 .. _mailing list: https://groups.google.com/forum/#!forum/hgvs-discuss
 .. _Open Issues: https://github.com/biocommons/hgvs/issues
 .. _code: https://github.com/biocommons/hgvs
-.. _changelog: http://hgvs.readthedocs.io/en/default/changelog/0.4.html
+.. _changelog: http://hgvs.readthedocs.io/en/master/changelog/0.4.html
 .. _pypi: https://pypi.python.org/pypi/hgvs
 
 
