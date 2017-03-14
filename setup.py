@@ -21,7 +21,7 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
           ],
       },
       classifiers=[
-          "Development Status :: 3 - Alpha",
+          "Development Status :: 5 - Production/Stable",
           "Intended Audience :: Developers",
           "Intended Audience :: Healthcare Industry",
           "Intended Audience :: Science/Research",

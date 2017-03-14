@@ -64,6 +64,7 @@ have installation troubles.
   (hgvs-test)$ pip install hgvs
   (hgvs-test)$ python
 
+  >>> import hgvs.assemblymapper
   >>> import hgvs.dataproviders.uta
   >>> import hgvs.parser
   >>> import hgvs.variantmapper
