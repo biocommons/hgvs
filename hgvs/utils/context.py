@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 """Internal utility to display textual representation of variant context
 
+This code requires uta-align and pysam packages, which are NOT part of
+a typical hgvs installation because they change periodically in ways
+that break dependencies. 
+
+
 Something like this:
 
 (default-2.7)snafu$ ./sbin/hgvs-shell 
@@ -8,7 +13,7 @@ In [1]: import hgvs.utils.context as huc
 In [2]: h = 'NM_000399.3:n.2689_2690insA'
 In [3]: v = hp.parse_hgvs_variant(h)
 In [4]: vn = hn.normalize(v)
-In [5]: print(huc.variant_context_w_alignment(evm, vn))
+In [5]: print(huc.variant_context_w_alignment(am, vn))
                                               v                               NC_000010.10:g.64572045dupT
 NC_000010.10 g 64572025 > ACTCAGGGAGTGATTTTTTTTCTCCATAATAAGGCAACCCA          > 64572065 NC_000010.10:g.64572045dupT
 NC_000010.10 g 64572025 < TGAGTCCCTCACTAAAAAAAAGAGGTATTATTCCGTTGGGT          < 64572065 NC_000010.10:g.64572045dupT
@@ -27,32 +32,32 @@ from bioutils.sequences import complement
 from ..location import Interval, SimplePosition
 
 
-def full_house(evm, var, tx_ac=None):
+def full_house(am, var, tx_ac=None):
     if var.type == 'g':
         var_g = var
         if tx_ac is None:
-            rtx = evm.relevant_transcripts(var)
+            rtx = am.relevant_transcripts(var)
             if len(rtx) == 0:
                 raise RuntimeError("no relevant transcripts for {var.ac}".format(var=var))
             if len(rtx) > 1:
                 raise RuntimeError(
                     "{n} relevant transcripts for {var.ac}; you need to pick one".format(n=len(rtx), var=var))
             tx_ac = rtx[0]
-        var_n = evm.g_to_n(var_g, tx_ac)
-        var_c = evm.n_to_c(var_n)
+        var_n = am.g_to_n(var_g, tx_ac)
+        var_c = am.n_to_c(var_n)
     elif var.type == 'n':
         var_n = var
-        var_g = evm.n_to_g(var_n)
-        var_c = evm.n_to_c(var_n)
+        var_g = am.n_to_g(var_n)
+        var_c = am.n_to_c(var_n)
     elif var.type == 'c':
         var_c = var
-        var_g = evm.c_to_g(var_c)
-        var_n = evm.c_to_n(var_c)
-    var_p = evm.c_to_p(var_c)
+        var_g = am.c_to_g(var_c)
+        var_n = am.c_to_n(var_c)
+    var_p = am.c_to_p(var_c)
     return {'g': var_g, 'c': var_c, 'n': var_n, 'p': var_p}
 
 
-# def variant_context(evm, var, margin=20):
+# def variant_context(am, var, margin=20):
 #     span = _span(var, margin)
 #     span_g = _ival_to_span(fh['g'])
 #     span_g[0] -= margin
@@ -60,17 +65,17 @@ def full_house(evm, var, tx_ac=None):
 #     return '\n'.join([
 #         seq_line_fmt(var=var,
 #                      span=span,
-#                      content=evm.hdp.get_seq(var.ac, *span),
+#                      content=am.hdp.get_seq(var.ac, *span),
 #                      post=''), pointer_line(var, span)
 #     ])
 
 
-def variant_context_w_alignment(evm, var, margin=20, tx_ac=None):
+def variant_context_w_alignment(am, var, margin=20, tx_ac=None):
     """This module is experimental. It requires the uta_align package from pypi."""
     from uta_align.align.algorithms import align, cigar_alignment
 
-    fh = full_house(evm, var, tx_ac=tx_ac)
-    tm = evm._fetch_TranscriptMapper(fh['n'].ac, fh['g'].ac, evm.alt_aln_method)
+    fh = full_house(am, var, tx_ac=tx_ac)
+    tm = am._fetch_TranscriptMapper(fh['n'].ac, fh['g'].ac, am.alt_aln_method)
     strand = tm.strand
     span_g = _ival_to_span(fh['g'].posedit.pos)
     span_g = (span_g[0] - margin, span_g[1] + margin)
@@ -80,9 +85,9 @@ def variant_context_w_alignment(evm, var, margin=20, tx_ac=None):
     span_n = _ival_to_span(ival_n)
     ival_c = tm.g_to_c(ival_g)
     span_c = _ival_to_span(ival_c)
-    seq_gt = evm.hdp.get_seq(fh['g'].ac, span_g[0] - 1, span_g[1])
+    seq_gt = am.hdp.get_seq(fh['g'].ac, span_g[0] - 1, span_g[1])
     seq_gb = complement(seq_gt)
-    seq_n = evm.hdp.get_seq(fh['n'].ac, span_n[0] - 1, span_n[1])
+    seq_n = am.hdp.get_seq(fh['n'].ac, span_n[0] - 1, span_n[1])
     if strand == 1:
         a = align(bytes(seq_gt), bytes(seq_n), b'global', extended_cigar=True)
     else:

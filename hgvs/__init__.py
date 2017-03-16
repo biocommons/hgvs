@@ -27,17 +27,17 @@ SimplePosition(base=36561662, uncertain=False)
 
 # initialize the mapper for GRCh37 with splign-based alignments
 >>> hdp = hgvs.dataproviders.uta.connect()
->>> evm = hgvs.assemblymapper.AssemblyMapper(hdp,
+>>> am = hgvs.assemblymapper.AssemblyMapper(hdp,
 ...          assembly_name="GRCh37", alt_aln_method="splign",
 ...          replace_reference=True)
 
 # identify transcripts that overlap this genomic variant
->>> transcripts = evm.relevant_transcripts(var_g)
+>>> transcripts = am.relevant_transcripts(var_g)
 >>> sorted(transcripts)
 ['NM_001177506.1', 'NM_001177507.1', 'NM_001637.3']
 
 # map genomic variant to one of these transcripts
->>> var_c = evm.g_to_c(var_g, "NM_001637.3")
+>>> var_c = am.g_to_c(var_g, "NM_001637.3")
 >>> var_c
 SequenceVariant(ac=NM_001637.3, type=c, posedit=1582G>A)
 >>> str(var_c)

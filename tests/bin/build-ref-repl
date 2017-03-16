@@ -19,13 +19,13 @@ logging.basicConfig(level=logging.DEBUG)
 hdp = hgvs.dataproviders.uta.connect()
 hp = hgvsparser = hgvs.parser.Parser()
 vm = variantmapper = hgvs.variantmapper.VariantMapper(hdp)
-evm = easyvariantmapper = hgvs.variantmapper.AssemblyMapper(hdp,
+am = easyvariantmapper = hgvs.variantmapper.AssemblyMapper(hdp,
                                                                assembly_name='GRCh37',
                                                                alt_aln_method='splign')
 
 def vset(hs):
-    v = evm._replace_reference_sequence(hp.parse_hgvs_variant(hs))
-    return {'n': str(v), 'g': str(evm.n_to_g(v)), 'c': str(evm.n_to_c(v))}
+    v = am._replace_reference_sequence(hp.parse_hgvs_variant(hs))
+    return {'n': str(v), 'g': str(am.n_to_g(v)), 'c': str(am.n_to_c(v))}
 
 
 n_vars = [

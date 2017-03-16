@@ -55,11 +55,8 @@ Important Notes
 Some Examples
 -------------
 
-.. note:: These examples are for the upcoming 0.5.0 release.
-
 See `Installation instructions
-<http://hgvs.readthedocs.org/en/master/installation.html>`_ if you
-have installation troubles.
+<http://hgvs.readthedocs.org/en/master/installation.html>`__.
 
 ::
 
@@ -92,17 +89,17 @@ have installation troubles.
 
   # initialize the mapper for GRCh37 with splign-based alignments
   >>> hdp = hgvs.dataproviders.uta.connect()
-  >>> evm = hgvs.assemblymapper.AssemblyMapper(hdp,
+  >>> am = hgvs.assemblymapper.AssemblyMapper(hdp,
   ...          assembly_name='GRCh37', alt_aln_method='splign',
   ...          replace_reference=True)
   
   # identify transcripts that overlap this genomic variant
-  >>> transcripts = evm.relevant_transcripts(var_g)
+  >>> transcripts = am.relevant_transcripts(var_g)
   >>> sorted(transcripts)
   ['NM_001177506.1', 'NM_001177507.1', 'NM_001637.3']
 
   # map genomic variant to one of these transcripts
-  >>> var_c = evm.g_to_c(var_g, 'NM_001637.3')
+  >>> var_c = am.g_to_c(var_g, 'NM_001637.3')
   >>> var_c
   SequenceVariant(ac=NM_001637.3, type=c, posedit=1582G>A)
   >>> str(var_c)
@@ -129,10 +126,10 @@ have installation troubles.
   >>> c1n = hn.normalize(c1)
   >>> c1n
   SequenceVariant(ac=NM_001166478.1, type=c, posedit=35delT)
-  >>> g = evm.c_to_g(c1)
+  >>> g = am.c_to_g(c1)
   >>> g
   SequenceVariant(ac=NC_000006.11, type=g, posedit=49917127delA)
-  >>> c2 = evm.g_to_c(g, c1.ac)
+  >>> c2 = am.g_to_c(g, c1.ac)
   >>> c2
   SequenceVariant(ac=NM_001166478.1, type=c, posedit=35delT)
 

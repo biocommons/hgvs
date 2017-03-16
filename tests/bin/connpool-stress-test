@@ -32,7 +32,7 @@ _logger = logging.getLogger(__name__)
 if __name__ == "__main__":
     hp = hgvs.parser.Parser()
     hdp = hgvs.dataproviders.uta.connect(pooling=True)
-    evm = hgvs.variantmapper.AssemblyMapper(
+    am = hgvs.variantmapper.AssemblyMapper(
         hdp, primary_assembly='GRCh37', alt_aln_method='splign')
     
     keep_going = True
@@ -42,16 +42,16 @@ if __name__ == "__main__":
         hset = [l.strip() for l in fh]
     _logger.info("read {n} variants from {fn}".format(n=len(hset), fn=fn))
 
-    def workworkwork(hp, evm, h):
+    def workworkwork(hp, am, h):
         v = hp.parse_hgvs_variant(h)
         if v.type == "g":
-            tvars = [evm.g_to_c(v, tx) for tx in evm.relevant_transcripts(v) if tx.startswith("NM")]
+            tvars = [am.g_to_c(v, tx) for tx in am.relevant_transcripts(v) if tx.startswith("NM")]
             _logger.info("{v} -> {n} transcripts".format(v=v, n=len(tvars)))
         elif v.type == "c":
-            gv = evm.c_to_g(v)
+            gv = am.c_to_g(v)
             _logger.info("{v} -> {gv}".format(v=v, gv=gv))
         elif v.type == "n":
-            gv = evm.n_to_g(v)
+            gv = am.n_to_g(v)
             _logger.info("{v} -> {gv}".format(v=v, gv=gv))
         return None
 
@@ -60,7 +60,7 @@ if __name__ == "__main__":
         while keep_going:
             hgvs = random.choice(hset)
             try:
-                workworkwork(hp, evm, hgvs)
+                workworkwork(hp, am, hgvs)
             except HGVSError as e:
                 _logger.info("{h} raised {e}".format(h=hgvs, e=e))
             except Exception as e:

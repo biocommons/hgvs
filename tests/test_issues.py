@@ -202,7 +202,7 @@ class Test_Issues(unittest.TestCase):
 
 
     def test_379_move_replace_reference_to_variantmapper(self):
-        # replace_reference code was in evm, not vm. That meant that using vm directly
+        # replace_reference code was in am, not vm. That meant that using vm directly
         # resulted in variants that were not reference corrected.
         g_var = self.hp.parse_hgvs_variant("NC_000006.11:g.44275011T=")
         c_var = self.hp.parse_hgvs_variant("NM_020745.3:c.1015G>A")  # correct projection with ref replacement

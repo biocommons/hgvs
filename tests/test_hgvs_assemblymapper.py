@@ -18,7 +18,7 @@ class Test_VariantMapper(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache="tests/data/cache.hdp")
-        cls.evm = hgvs.assemblymapper.AssemblyMapper(cls.hdp)
+        cls.am = hgvs.assemblymapper.AssemblyMapper(cls.hdp)
         cls.hp = hgvs.parser.Parser()
 
     def test_VariantMapper_quick(self):
@@ -28,20 +28,20 @@ class Test_VariantMapper(unittest.TestCase):
         hgvs_p = "NP_001628.1:p.(Gly528Arg)"    # from Mutalyzer
 
         var_g = self.hp.parse_hgvs_variant(hgvs_g)
-        var_c = self.evm.g_to_c(var_g, "NM_001637.3")
-        var_p = self.evm.c_to_p(var_c)
+        var_c = self.am.g_to_c(var_g, "NM_001637.3")
+        var_p = self.am.c_to_p(var_c)
 
         self.assertEqual(str(var_c), hgvs_c)
         self.assertEqual(str(var_p), hgvs_p)
 
         with self.assertRaises(HGVSInvalidVariantError):
-            self.evm.c_to_p(self.hp.parse_hgvs_variant("NM_000059.3:c.7790delAAG"))
+            self.am.c_to_p(self.hp.parse_hgvs_variant("NM_000059.3:c.7790delAAG"))
 
         hgvs_c = "NM_000059.3:c.7791A>G"
         hgvs_p = "NP_000050.2:p.(Lys2597=)"
 
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
-        var_p = self.evm.c_to_p(var_c)
+        var_p = self.am.c_to_p(var_c)
 
         self.assertEqual(str(var_p), hgvs_p)
 
@@ -49,7 +49,7 @@ class Test_VariantMapper(unittest.TestCase):
         hgvs_p = "NP_000293.2:p.(Glu532del)"
 
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
-        var_p = self.evm.c_to_p(var_c)
+        var_p = self.am.c_to_p(var_c)
 
         self.assertEqual(str(var_p), hgvs_p)
 
@@ -57,7 +57,7 @@ class Test_VariantMapper(unittest.TestCase):
         hgvs_p = "NP_000081.1:p.(Glu832_Gly840del)"
 
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
-        var_p = self.evm.c_to_p(var_c)
+        var_p = self.am.c_to_p(var_c)
 
         self.assertEqual(str(var_p), hgvs_p)
 
@@ -139,7 +139,7 @@ class Test_RefReplacement(unittest.TestCase):
             return rec
 
         cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache="tests/data/cache.hdp")
-        cls.evm = hgvs.assemblymapper.AssemblyMapper(cls.hdp, replace_reference=True, assembly_name="GRCh37", alt_aln_method="splign")
+        cls.am = hgvs.assemblymapper.AssemblyMapper(cls.hdp, replace_reference=True, assembly_name="GRCh37", alt_aln_method="splign")
         cls.hp = hgvs.parser.Parser()
         cls.tests = [_parse_rec(rec) for rec in cls.test_cases]
 
@@ -152,7 +152,7 @@ class Test_RefReplacement(unittest.TestCase):
                 if pv.posedit.edit.ref:
                     # replace ref with junk
                     pv.posedit.edit.ref = "NNNNNN"
-                self.evm._replace_reference(pv)
+                self.am._replace_reference(pv)
                 self.assertEqual(rec[x], str(pv))
 
 
@@ -162,7 +162,7 @@ class Test_AssemblyMapper(unittest.TestCase):
     def setUpClass(cls):
         hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache="tests/data/cache.hdp")
         cls.hp = hgvs.parser.Parser()
-        cls.evm = hgvs.assemblymapper.AssemblyMapper(hdp, assembly_name="GRCh37", alt_aln_method="splign")
+        cls.am = hgvs.assemblymapper.AssemblyMapper(hdp, assembly_name="GRCh37", alt_aln_method="splign")
     
     def _test_mapping(self, hgvs_set):
         """given list of variant strings, test all valid combinations of
@@ -174,16 +174,16 @@ class Test_AssemblyMapper(unittest.TestCase):
         pvs  = {v.type:  v for hv,v in parsed_variants}
     
         if "g" in pvs and "c" in pvs:
-            self.assertEqual(hgvs["g"], str(self.evm.c_to_g(pvs["c"])))
-            self.assertEqual(hgvs["c"], str(self.evm.g_to_c(pvs["g"], pvs["c"].ac)))
+            self.assertEqual(hgvs["g"], str(self.am.c_to_g(pvs["c"])))
+            self.assertEqual(hgvs["c"], str(self.am.g_to_c(pvs["g"], pvs["c"].ac)))
         if "g" in pvs and "n" in pvs:
-            self.assertEqual(hgvs["g"], str(self.evm.n_to_g(pvs["n"])))
-            self.assertEqual(hgvs["n"], str(self.evm.g_to_n(pvs["g"], pvs["n"].ac)))
+            self.assertEqual(hgvs["g"], str(self.am.n_to_g(pvs["n"])))
+            self.assertEqual(hgvs["n"], str(self.am.g_to_n(pvs["g"], pvs["n"].ac)))
         if "c" in pvs and "n" in pvs:
-            self.assertEqual(hgvs["n"], str(self.evm.c_to_n(pvs["c"])))
-            self.assertEqual(hgvs["c"], str(self.evm.n_to_c(pvs["n"])))
+            self.assertEqual(hgvs["n"], str(self.am.c_to_n(pvs["c"])))
+            self.assertEqual(hgvs["c"], str(self.am.n_to_c(pvs["n"])))
         if "c" in pvs and "p" in pvs:
-            self.assertEqual(hgvs["p"], str(self.evm.c_to_p(pvs["c"])))
+            self.assertEqual(hgvs["p"], str(self.am.c_to_p(pvs["c"])))
 
     def test_SNV(self):
         """AssemblyMapper: smoketest with SNVs"""
