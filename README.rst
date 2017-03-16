@@ -10,9 +10,13 @@ the Human Genome Variation Society (`varnomen`_) recommendations.
 
 ----
 
-.. note:: A *preview release* of hgvs 0.5.0 is available, with support
-  for GRCh38 and local sequence sources.  See `installation notes
-  <https://github.com/biocommons/hgvs/blob/master/notes/hgvs-0.5dev-install.rst>`__.
+.. note:: 1.0.0a1 is available for testing.  See `1.0.0a1 Change Log
+          <http://hgvs.readthedocs.io/en/master/changelog/1.0/1.0.0a1.html>`__
+          for new features. ``pip install hgvs==1.0.0a1`` should get
+          you started, but see `installation instructions
+          <https://hgvs.readthedocs.io/en/master/installation.html>`__
+          for details re: local UTA and SeqRepo for speed. Send
+          feedback to the `mailing list`_!
 
 ----
 
@@ -171,12 +175,12 @@ Other packages that manipulate HGVS variants:
 .. _mailing list: https://groups.google.com/forum/#!forum/hgvs-discuss
 .. _Open Issues: https://github.com/biocommons/hgvs/issues
 .. _code: https://github.com/biocommons/hgvs
-.. _changelog: http://hgvs.readthedocs.io/en/master/changelog/0.4.html
+.. _changelog: https://hgvs.readthedocs.io/en/master/changelog/
 .. _pypi: https://pypi.python.org/pypi/hgvs
 
 
-.. |rtd_badge_rel| image:: https://readthedocs.org/projects/hgvs/badge/?version=0.4.x
-  :target: http://hgvs.readthedocs.org/en/0.4.x
+.. |rtd_badge_rel| image:: https://readthedocs.org/projects/hgvs/badge/
+  :target: http://hgvs.readthedocs.io/
   :align: middle
 
 .. |pypi_badge_rel| image:: https://badge.fury.io/py/hgvs.png
