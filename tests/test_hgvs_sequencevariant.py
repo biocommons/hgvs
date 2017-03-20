@@ -77,7 +77,7 @@ class Test_SequenceVariant(unittest.TestCase):
         var = hp.parse_hgvs_variant("NM_001166478.1:c.31T=")
         self.assertEqual(var.format(conf = {'remove_ref_seq' : True}), "NM_001166478.1:c.31=")
         self.assertEqual(var.format(), "NM_001166478.1:c.31T=")
-        
+
 
 
 if __name__ == "__main__":

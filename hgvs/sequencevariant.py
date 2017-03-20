@@ -32,10 +32,11 @@ class SequenceVariant(recordtype.recordtype("SequenceVariant", ["ac", "type", "p
         if conf and "remove_ref_seq" in conf and conf["remove_ref_seq"] is not None:
             remove_ref_seq = conf["remove_ref_seq"]
         ref = None
-        if remove_ref_seq and self.posedit.edit.type in ["del", "delins", "identity", "dup", "repeat"]:
+        type = self.posedit.edit.type
+        if remove_ref_seq and type in ["del", "delins", "identity", "dup", "repeat"]:
             ref = self.posedit.edit.ref
             self.posedit.edit.ref = ''
-            if self.posedit.edit.type == "identity" and isinstance(self.posedit.edit, hgvs.edit.NARefAlt):
+            if type == "identity" and isinstance(self.posedit.edit, hgvs.edit.NARefAlt):
                 self.posedit.edit.alt = ''
         if self.ac is not None:
             var_str = "{ac}:{type}.{posedit}".format(ac=self.ac, type=self.type, posedit=self.posedit.format(conf))
@@ -43,7 +44,7 @@ class SequenceVariant(recordtype.recordtype("SequenceVariant", ["ac", "type", "p
             var_str = "{type}.{posedit}".format(type=self.type, posedit=self.posedit.format(conf))
         if ref is not None:
             self.posedit.edit.ref = ref
-            if self.posedit.edit.type == "identity" and isinstance(self.posedit.edit, hgvs.edit.NARefAlt):
+            if type == "identity" and isinstance(self.posedit.edit, hgvs.edit.NARefAlt):
                 self.posedit.edit.alt = ref
         return var_str
 
