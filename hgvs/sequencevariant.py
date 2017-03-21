@@ -8,7 +8,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import recordtype
 import re
 
-import hgvs
 import hgvs.variantmapper
 from hgvs.enums import ValidationLevel
 from hgvs.utils.validation import validate_type_ac_pair
@@ -28,27 +27,10 @@ class SequenceVariant(recordtype.recordtype("SequenceVariant", ["ac", "type", "p
 
         See :class:`hgvs.config`.
         """
-        remove_ref_seq = hgvs.global_config.formatting.remove_ref_seq
-        if conf and "remove_ref_seq" in conf and conf["remove_ref_seq"] is not None:
-            remove_ref_seq = conf["remove_ref_seq"]
-        ref = None
-        type = None
-        if isinstance(self.posedit, hgvs.posedit.PosEdit) and isinstance(self.posedit.edit, hgvs.edit.Edit):
-            type = self.posedit.edit.type
-        if remove_ref_seq and type in ["del", "delins", "identity", "dup", "repeat"]:
-            ref = self.posedit.edit.ref
-            self.posedit.edit.ref = ''
-            if type == "identity" and isinstance(self.posedit.edit, hgvs.edit.NARefAlt):
-                self.posedit.edit.alt = ''
         if self.ac is not None:
-            var_str = "{ac}:{type}.{posedit}".format(ac=self.ac, type=self.type, posedit=self.posedit.format(conf))
+            return "{ac}:{type}.{posedit}".format(ac=self.ac, type=self.type, posedit=self.posedit.format(conf))
         else:
-            var_str = "{type}.{posedit}".format(type=self.type, posedit=self.posedit.format(conf))
-        if ref is not None:
-            self.posedit.edit.ref = ref
-            if type == "identity" and isinstance(self.posedit.edit, hgvs.edit.NARefAlt):
-                self.posedit.edit.alt = ref
-        return var_str
+            return "{type}.{posedit}".format(type=self.type, posedit=self.posedit.format(conf))
 
     __str__ = format
 

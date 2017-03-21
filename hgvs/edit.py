@@ -23,7 +23,13 @@ class Edit(object):
     def format(self, conf=None):
         return str(self)
 
-    def _format_config(self, conf=None):
+    def _format_config_na(self, conf=None):
+        max_ref_length = hgvs.global_config.formatting.max_ref_length
+        if conf and "max_ref_length" in conf and conf["max_ref_length"] is not None:
+            max_ref_length = conf["max_ref_length"]
+        return max_ref_length
+
+    def _format_config_aa(self, conf=None):
         p_3_letter = hgvs.global_config.formatting.p_3_letter
         p_term_asterisk = hgvs.global_config.formatting.p_term_asterisk
         if conf and "p_3_letter" in conf and conf["p_3_letter"] is not None:
@@ -84,27 +90,38 @@ class NARefAlt(Edit, recordtype.recordtype("NARefAlt", [("ref", None), ("alt", N
         except ValueError:
             return len(self.ref) if self.ref else None
 
-    def __str__(self):
+    def format(self, conf=None):
         if self.ref is None and self.alt is None:
             raise HGVSError("RefAlt: ref and alt sequences are both undefined")
+
+        max_ref_length = self._format_config_na(conf)
+
+        if max_ref_length is not None:
+            ref = self.ref_s()
+            if ref is None or len(ref) > max_ref_length:
+                ref = ''
+        else:
+            ref = self.ref
 
         # subst and delins
         if self.ref is not None and self.alt is not None:
             if self.ref == self.alt:
-                s = "{self.ref}=".format(self=self)
+                s = "{ref}=".format(ref=ref)
             elif len(self.alt) == 1 and len(self.ref) == 1 and not self.ref.isdigit():    # don't turn del5insT into 5>T
                 s = "{self.ref}>{self.alt}".format(self=self)
             else:
-                s = "del{self.ref}ins{self.alt}".format(self=self)
+                s = "del{ref}ins{alt}".format(ref=ref, alt=self.alt)
         # del case
         elif self.ref is not None:
-            s = "del{self.ref}".format(self=self)
+            s = "del{ref}".format(ref=ref)
 
         # ins case
         else:    # self.alt is not None
             s = "ins{self.alt}".format(self=self)
 
         return "(" + s + ")" if self.uncertain else s
+
+    __str__ = format
 
     def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
@@ -151,7 +168,7 @@ class AARefAlt(Edit, recordtype.recordtype("AARefAlt", [("ref", None), ("alt", N
             # raise HGVSError("RefAlt: ref and alt sequences are both undefined")
             return "="
 
-        p_3_letter, p_term_asterisk = self._format_config(conf)
+        p_3_letter, p_term_asterisk = self._format_config_aa(conf)
 
         # subst and delins
         if self.ref is not None and self.alt is not None:
@@ -235,7 +252,7 @@ class AARefAlt(Edit, recordtype.recordtype("AARefAlt", [("ref", None), ("alt", N
 
 class AASub(AARefAlt):
     def format(self, conf=None):
-        p_3_letter, p_term_asterisk = self._format_config(conf)
+        p_3_letter, p_term_asterisk = self._format_config_aa(conf)
 
         if p_3_letter:
             s = aa1_to_aa3(self.alt) if self.alt != "?" else self.alt
@@ -261,7 +278,7 @@ class AAFs(Edit, recordtype.recordtype("AAFs", [("ref", None), ("alt", None), ("
         super(AAFs, self).__init__(ref=aa_to_aa1(ref), alt=aa_to_aa1(alt), length=length, uncertain=uncertain)
 
     def format(self, conf=None):
-        p_3_letter, p_term_asterisk = self._format_config(conf)
+        p_3_letter, p_term_asterisk = self._format_config_aa(conf)
 
         st_length = self.length or ""
         if p_3_letter:
@@ -300,7 +317,7 @@ class AAExt(Edit,
             ref=aa_to_aa1(ref), alt=aa_to_aa1(alt), aaterm=aa_to_aa1(aaterm), length=length, uncertain=uncertain)
 
     def format(self, conf=None):
-        p_3_letter, p_term_asterisk = self._format_config(conf)
+        p_3_letter, p_term_asterisk = self._format_config_aa(conf)
 
         st_alt = self.alt or ""
         st_aaterm = self.aaterm or ""
@@ -348,8 +365,17 @@ class Dup(Edit, recordtype.recordtype('Dup', [('ref', None), ('uncertain', False
             uncertain = edit.uncertain
         super(Dup, self).__init__(ref=ref, uncertain=uncertain)
 
-    def __str__(self):
-        return "dup" + (self.ref or "")
+    def format(self, conf=None):
+        max_ref_length = self._format_config_na(conf)
+        if max_ref_length is not None:
+            ref = self.ref_s()
+            if ref is None or len(ref) > max_ref_length:
+                ref = ''
+        else:
+            ref = self.ref
+        return "dup" + (ref or "")
+
+    __str__ = format
 
     @property
     def ref_s(self):
@@ -385,12 +411,18 @@ class Dup(Edit, recordtype.recordtype('Dup', [('ref', None), ('uncertain', False
 
 class Repeat(Edit, recordtype.recordtype('Repeat', [('ref', None), ('min', None), ('max', None),
                                                     ('uncertain', False)])):
-    def __str__(self):
+    def format(self, conf=None):
         if self.min > self.max:
             raise HGVSError("Repeat min count must be less than or equal to max count")
+        max_ref_length = self._format_config_na(conf)
+        ref = self.ref
+        if max_ref_length is not None and (ref is None or len(ref) > max_ref_length):
+            ref = ''
         if self.min == self.max:
-            return "{self.ref}[{self.min}]".format(self=self)
-        return "{self.ref}({self.min}_{self.max})".format(self=self)
+            return "{ref}[{min}]".format(ref=ref, min=self.min)
+        return "{ref}({min}_{max})".format(ref=ref, min=self.min, max=self.max)
+    
+    __str__ = format
 
     def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar

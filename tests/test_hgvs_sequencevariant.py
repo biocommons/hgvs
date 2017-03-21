@@ -69,13 +69,21 @@ class Test_SequenceVariant(unittest.TestCase):
 
         # Remove reference sequence
         var = hp.parse_hgvs_variant("NM_001166478.1:c.31_32delTT")
-        self.assertEqual(var.format(conf = {'remove_ref_seq' : True}), "NM_001166478.1:c.31_32del")
+        self.assertEqual(var.format(conf = {'max_ref_length' : 0}), "NM_001166478.1:c.31_32del")
+        self.assertEqual(var.format(conf = {'max_ref_length' : 1}), "NM_001166478.1:c.31_32del")
+        self.assertEqual(var.format(conf = {'max_ref_length' : 2}), "NM_001166478.1:c.31_32delTT")
+        self.assertEqual(var.format(conf = {'max_ref_length' : None}), "NM_001166478.1:c.31_32delTT")
+
+        var = hp.parse_hgvs_variant("NM_001166478.1:c.31_32del2")
+        self.assertEqual(var.format(conf = {'max_ref_length' : 0}), "NM_001166478.1:c.31_32del")
+        self.assertEqual(var.format(conf = {'max_ref_length' : None}), "NM_001166478.1:c.31_32del2")
+        
         var = hp.parse_hgvs_variant("NM_001166478.1:c.31_32delTTinsAA")
-        self.assertEqual(var.format(conf = {'remove_ref_seq' : True}), "NM_001166478.1:c.31_32delinsAA")
+        self.assertEqual(var.format(conf = {'max_ref_length' : 0}), "NM_001166478.1:c.31_32delinsAA")
         var = hp.parse_hgvs_variant("NM_001166478.1:c.35_36dupTC")
-        self.assertEqual(var.format(conf = {'remove_ref_seq' : True}), "NM_001166478.1:c.35_36dup")
+        self.assertEqual(var.format(conf = {'max_ref_length' : 0}), "NM_001166478.1:c.35_36dup")
         var = hp.parse_hgvs_variant("NM_001166478.1:c.31T=")
-        self.assertEqual(var.format(conf = {'remove_ref_seq' : True}), "NM_001166478.1:c.31=")
+        self.assertEqual(var.format(conf = {'max_ref_length' : 0}), "NM_001166478.1:c.31=")
         self.assertEqual(var.format(), "NM_001166478.1:c.31T=")
 
 
