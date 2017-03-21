@@ -97,7 +97,7 @@ class NARefAlt(Edit, recordtype.recordtype("NARefAlt", [("ref", None), ("alt", N
         max_ref_length = self._format_config_na(conf)
 
         if max_ref_length is not None:
-            ref = self.ref_s()
+            ref = self.ref_s
             if ref is None or len(ref) > max_ref_length:
                 ref = ''
         else:
@@ -368,7 +368,7 @@ class Dup(Edit, recordtype.recordtype('Dup', [('ref', None), ('uncertain', False
     def format(self, conf=None):
         max_ref_length = self._format_config_na(conf)
         if max_ref_length is not None:
-            ref = self.ref_s()
+            ref = self.ref_s
             if ref is None or len(ref) > max_ref_length:
                 ref = ''
         else:
