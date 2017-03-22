@@ -153,7 +153,7 @@ class Test_RefReplacement(unittest.TestCase):
                     # replace ref with junk
                     pv.posedit.edit.ref = "NNNNNN"
                 self.am._replace_reference(pv)
-                self.assertEqual(rec[x], str(pv))
+                self.assertEqual(rec[x], pv.format(conf={'max_ref_length' : None}))
 
 
 @attr(tags=["quick"])

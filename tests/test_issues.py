@@ -73,7 +73,7 @@ class Test_Issues(unittest.TestCase):
         self.assertEqual(str(v), "NM_206933.2:c.6317=")
 
         v = self.hp.parse_hgvs_variant("NM_206933.2:c.6317C=")
-        self.assertEqual(str(v), "NM_206933.2:c.6317C=")
+        self.assertEqual(str(v), "NM_206933.2:c.6317=")
                                                    
 
     def test_316_provide_ttog_and_gtot_methods(self):
@@ -172,7 +172,7 @@ class Test_Issues(unittest.TestCase):
         # also tests 335 re: inv including sequence (e.g., NC_000009.11:g.36233991_36233992invCA)
         v = self.hp.parse_hgvs_variant("NC_000009.11:g.36233991_36233992delCAinsAC")
         vn = self.vn.normalize(v)
-        self.assertEqual(str(vn), "NC_000009.11:g.36233991_36233992delCAinsAC")
+        self.assertEqual(str(vn), "NC_000009.11:g.36233991_36233992delinsAC")
 
         v = self.hp.parse_hgvs_variant("NM_000535.5:c.1673_1674delCCinsGG")
         vn = self.vn.normalize(v)

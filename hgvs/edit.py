@@ -25,7 +25,7 @@ class Edit(object):
 
     def _format_config_na(self, conf=None):
         max_ref_length = hgvs.global_config.formatting.max_ref_length
-        if conf and "max_ref_length" in conf and conf["max_ref_length"] is not None:
+        if conf and "max_ref_length" in conf:
             max_ref_length = conf["max_ref_length"]
         return max_ref_length
 

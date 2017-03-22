@@ -74,7 +74,7 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
         hgvs_c = "NM_003777.3:c.13552_*36del57"
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
         var_g = self.vm.c_to_g(var_c, "NC_000007.13")
-        self.assertEqual(str(var_g), "NC_000007.13:g.21940852_21940908delGCTCTGCTTCTAGAAGCGTAAGGTAACACTGGCATTCCTCTAGCCTCTGCTGGAGTG")
+        self.assertEqual(str(var_g), "NC_000007.13:g.21940852_21940908del")
 
 
 if __name__ == "__main__":

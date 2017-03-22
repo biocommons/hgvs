@@ -19,7 +19,7 @@ class Test_PosEdit(unittest.TestCase):
                                                                                            offset=-78))
         edit = hgvs.edit.NARefAlt("AA", None)
         pe = hgvs.posedit.PosEdit(pos=pos, edit=edit)
-        self.assertEqual(str(pe), "12+34_56-78delAA")
+        self.assertEqual(pe.format(conf = {'max_ref_length' : None}), "12+34_56-78delAA")
 
 
 if __name__ == "__main__":
