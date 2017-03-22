@@ -101,6 +101,8 @@ def _val_xform(v):
         return True
     if v == "False":
         return False
+    if v == "None":
+        return None
     try:
         return int(v)
     except ValueError:

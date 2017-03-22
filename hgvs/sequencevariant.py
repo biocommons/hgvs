@@ -36,8 +36,10 @@ class SequenceVariant(recordtype.recordtype("SequenceVariant", ["ac", "type", "p
 
     def fill_ref(self, hdp):
         hm = hgvs.variantmapper.VariantMapper(hdp)
-        type = self.posedit.edit.type
-        if type in ["del", "delins", "identity", "dup", "inv"] and self.posedit.edit.ref_s is None:
+        type = None
+        if isinstance(self.posedit, hgvs.posedit.PosEdit) and isinstance(self.posedit.edit, hgvs.edit.Edit):
+            type = self.posedit.edit.type
+        if type in ["del", "delins", "identity", "dup", "repeat"] and self.posedit.edit.ref_s is None:
             hm._replace_reference(self)
         if type == "identity" and isinstance(self.posedit.edit, hgvs.edit.NARefAlt):
             self.posedit.edit.alt = self.posedit.edit.ref
