@@ -17,12 +17,12 @@ class Test_Edit(unittest.TestCase):
             edit = str(hgvs.edit.NARefAlt(None, None))
 
     def test_NARefAlt(self):
-        self.assertEqual(str(hgvs.edit.NARefAlt("A", "A")), "A=")
-        self.assertEqual(str(hgvs.edit.NARefAlt("A", "T")), "A>T")
-        self.assertEqual(str(hgvs.edit.NARefAlt("AA", None)), "delAA")
-        self.assertEqual(str(hgvs.edit.NARefAlt(None, "TT")), "insTT")
-        self.assertEqual(str(hgvs.edit.NARefAlt("AA", "T")), "delAAinsT")
-        self.assertEqual(str(hgvs.edit.NARefAlt("A", "TT")), "delAinsTT")
+        self.assertEqual(hgvs.edit.NARefAlt("A", "A").format(conf = {'max_ref_length' : None}), "A=")
+        self.assertEqual(hgvs.edit.NARefAlt("A", "T").format(conf = {'max_ref_length' : None}), "A>T")
+        self.assertEqual(hgvs.edit.NARefAlt("AA", None).format(conf = {'max_ref_length' : None}), "delAA")
+        self.assertEqual(hgvs.edit.NARefAlt(None, "TT").format(conf = {'max_ref_length' : None}), "insTT")
+        self.assertEqual(hgvs.edit.NARefAlt("AA", "T").format(conf = {'max_ref_length' : None}), "delAAinsT")
+        self.assertEqual(hgvs.edit.NARefAlt("A", "TT").format(conf = {'max_ref_length' : None}), "delAinsTT")
         # edit types
         self.assertEqual(str(hgvs.edit.NARefAlt("A", "A").type), "identity")
         self.assertEqual(str(hgvs.edit.NARefAlt("A", "T").type), "sub")
@@ -73,13 +73,13 @@ class Test_Edit(unittest.TestCase):
 
     def test_Dup(self):
         self.assertEqual(str(hgvs.edit.Dup()), "dup")
-        self.assertEqual(str(hgvs.edit.Dup("T")), "dupT")
+        self.assertEqual(hgvs.edit.Dup("T").format(conf = {'max_ref_length' : None}), "dupT")
         # edit types
         self.assertEqual(str(hgvs.edit.Dup().type), "dup")
         self.assertEqual(str(hgvs.edit.Dup("T").type), "dup")
 
     def test_Repeat(self):
-        self.assertEqual(str(hgvs.edit.Repeat("CAG", 12, 34)), "CAG(12_34)")
+        self.assertEqual(hgvs.edit.Repeat("CAG", 12, 34).format(conf = {'max_ref_length' : None}), "CAG(12_34)")
         # edit types
         self.assertEqual(str(hgvs.edit.Repeat("CAG", 12, 34).type), "repeat")
 
