@@ -79,6 +79,8 @@ class Normalizer(object):
         if var.posedit.edit.type == "con":
             raise HGVSUnsupportedOperationError("Unsupported normalization of conversion variants: {0}", format(var))
 
+        var.fill_ref(self.hdp)
+
         if var.posedit.edit.type == "identity":
             var_norm = copy.deepcopy(var)
             return var_norm
