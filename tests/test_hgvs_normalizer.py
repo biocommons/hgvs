@@ -128,6 +128,8 @@ class Test_HGVSNormalizer(unittest.TestCase):
                          "NC_000006.11:g.49917099del")
         self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant(
             "NC_000006.11:g.49917151_49917156delinsTCTAAA"))), "NC_000006.11:g.49917154_49917155delinsAA")
+        self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant(
+            "NC_000003.12:g.46709584_46709610del27insAAGAAGAAGAAGAAGAAGAAGAAGAAG"))), "NC_000003.12:g.46709584_46709610=")
 
         #5' shuffling
         self.assertEqual(str(self.norm5.normalize(self.hp.parse_hgvs_variant("NC_000006.11:g.49917122_49917123insA"))),
@@ -142,6 +144,8 @@ class Test_HGVSNormalizer(unittest.TestCase):
                          "NC_000006.11:g.49917098del")
         self.assertEqual(str(self.norm5.normalize(self.hp.parse_hgvs_variant(
             "NC_000006.11:g.49917151_49917156delinsTCTAAA"))), "NC_000006.11:g.49917154_49917155delinsAA")
+        self.assertEqual(str(self.norm5.normalize(self.hp.parse_hgvs_variant(
+            "NC_000003.12:g.46709584_46709610del27insAAGAAGAAGAAGAAGAAGAAGAAGAAG"))), "NC_000003.12:g.46709584_46709610=")
 
         self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant(
             "NC_000009.11:g.36233991_36233992delCAinsTG"))), "NC_000009.11:g.36233991_36233992inv")
