@@ -151,7 +151,7 @@ measured from sequence start, CDS start, or CDS end (stop codon),
 coordinates are more complex:
 
 >>> var_c1.posedit.pos.start
-BaseOffsetPosition(base=281, offset=0, datum=1, uncertain=False)
+BaseOffsetPosition(base=281, offset=0, datum=Datum.CDS_START, uncertain=False)
 
 Either way, the sequence coordinate may be accessed via the ``base`` attribute:
 
