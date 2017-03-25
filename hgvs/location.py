@@ -24,12 +24,7 @@ from bioutils.sequences import aa1_to_aa3
 
 import hgvs
 from hgvs.exceptions import HGVSUnsupportedOperationError, HGVSInvalidIntervalError
-from hgvs.enums import ValidationLevel
-
-
-SEQ_START = 0
-CDS_START = 1
-CDS_END = 2
+from hgvs.enums import Datum, ValidationLevel
 
 
 @total_ordering
@@ -78,7 +73,7 @@ class SimplePosition(recordtype.recordtype("SimplePosition", field_names=[("base
 class BaseOffsetPosition(
         recordtype.recordtype(
             'BaseOffsetPosition',
-            field_names=[('base', None), ('offset', 0), ('datum', SEQ_START), ('uncertain', False)])):
+            field_names=[('base', None), ('offset', 0), ('datum', Datum.SEQ_START), ('uncertain', False)])):
     """
     Class for dealing with CDS coordinates in transcript variants.
 
@@ -115,13 +110,13 @@ class BaseOffsetPosition(
     def validate(self):
         if self.base is not None and self.base == 0:
             return (ValidationLevel.ERROR, "BaseOffsetPosition base may not be 0")
-        if self.base is not None and self.datum != CDS_START and self.base < 1:
+        if self.base is not None and self.datum != Datum.CDS_START and self.base < 1:
             return (ValidationLevel.ERROR, "BaseOffsetPosition base must be >=1 for datum = SEQ_START or CDS_END")
         return (ValidationLevel.VALID, None)
 
     def __str__(self):
         self.validate()
-        base_str = ("?" if self.base is None else "*" + str(self.base) if self.datum == CDS_END else str(self.base))
+        base_str = ("?" if self.base is None else "*" + str(self.base) if self.datum == Datum.CDS_END else str(self.base))
         offset_str = ("+?" if self.offset is None else "" if self.offset == 0 else "%+d" % self.offset)
         pos = base_str + offset_str
         return "(" + pos + ")" if self.uncertain else pos
@@ -177,7 +172,7 @@ class BaseOffsetPosition(
                 else:
                     return lhs.base < rhs.base
         else:
-            if lhs.datum == SEQ_START or rhs.datum == SEQ_START:
+            if lhs.datum == Datum.SEQ_START or rhs.datum == Datum.SEQ_START:
                 raise HGVSUnsupportedOperationError(
                     "Cannot compare coordinates of datum SEQ_START with CDS_START or CDS_END")
             else:
@@ -302,18 +297,18 @@ class BaseOffsetInterval(Interval):
         # #330: In a post-ter interval like *87_91, the * binds only
         # to the start. This means that the start.datum is CDS_END,
         # but the end.datum is CDS_START (the default). 
-        if self.start.datum == CDS_END:
-            self.end.datum = CDS_END
+        if self.start.datum == Datum.CDS_END:
+            self.end.datum = Datum.CDS_END
 
         self.check_datum()
 
     def check_datum(self):
         # check for valid combinations of start and end datums
         if (self.start.datum, self.end.datum) not in [
-            (SEQ_START, SEQ_START),
-            (CDS_START, CDS_START),
-            (CDS_START, CDS_END),
-            (CDS_END, CDS_END),
+            (Datum.SEQ_START, Datum.SEQ_START),
+            (Datum.CDS_START, Datum.CDS_START),
+            (Datum.CDS_START, Datum.CDS_END),
+            (Datum.CDS_END, Datum.CDS_END),
         ]:
             raise HGVSInvalidIntervalError("BaseOffsetInterval start datum and end datum are incompatible")
 

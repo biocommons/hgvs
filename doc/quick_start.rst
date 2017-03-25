@@ -151,7 +151,7 @@ measured from sequence start, CDS start, or CDS end (stop codon),
 coordinates are more complex:
 
 >>> var_c1.posedit.pos.start
-BaseOffsetPosition(base=281, offset=0, datum=1, uncertain=False)
+BaseOffsetPosition(base=281, offset=0, datum=Datum.CDS_START, uncertain=False)
 
 Either way, the sequence coordinate may be accessed via the ``base`` attribute:
 
@@ -177,7 +177,7 @@ Let's map to the transcript for which this is an intronic variant.
 >>> var_c2
 SequenceVariant(ac=NM_182763.2, type=c, posedit=688+403C>T)
 >>> var_c2.posedit.pos.start
-BaseOffsetPosition(base=688, offset=403, datum=1, uncertain=False)
+BaseOffsetPosition(base=688, offset=403, datum=Datum.CDS_START, uncertain=False)
 
 And, if we attempt to infer a protein consequence for this variant, we get
 the expected uncertain interpretation:

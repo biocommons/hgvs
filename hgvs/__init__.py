@@ -45,7 +45,7 @@ SequenceVariant(ac=NM_001637.3, type=c, posedit=1582G>A)
 
 # CDS coordinates use BaseOffsetPosition to support intronic offsets
 >>> var_c.posedit.pos.start
-BaseOffsetPosition(base=1582, offset=0, datum=1, uncertain=False)
+BaseOffsetPosition(base=1582, offset=0, datum=Datum.CDS_START, uncertain=False)
 
 """
 

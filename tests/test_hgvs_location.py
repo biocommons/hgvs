@@ -6,6 +6,7 @@ import unittest
 from nose.plugins.attrib import attr
 
 from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError
+from hgvs.enums import Datum
 import hgvs.location
 import hgvs.parser
 
@@ -55,7 +56,7 @@ class Test_BaseOffsetPosition(unittest.TestCase):
     def test_success(self):
         # r.5
         cdsp = hgvs.location.BaseOffsetPosition(5)
-        self.assertEqual(cdsp.datum, hgvs.location.SEQ_START)
+        self.assertEqual(cdsp.datum, Datum.SEQ_START)
         self.assertEqual(cdsp.base, 5)
         self.assertEqual(cdsp.offset, 0)
         self.assertEqual(str(cdsp), "5")
@@ -76,8 +77,8 @@ class Test_BaseOffsetPosition(unittest.TestCase):
         self.assertEqual(str(cdsp), "(5+?)")
 
         # c.*5
-        cdsp = hgvs.location.BaseOffsetPosition(5, datum=hgvs.location.CDS_END)
-        self.assertEqual(cdsp.datum, hgvs.location.CDS_END)
+        cdsp = hgvs.location.BaseOffsetPosition(5, datum=Datum.CDS_END)
+        self.assertEqual(cdsp.datum, Datum.CDS_END)
         self.assertEqual(cdsp.base, 5)
         self.assertEqual(cdsp.offset, 0)
         self.assertEqual(str(cdsp), "*5")

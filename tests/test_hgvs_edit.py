@@ -7,6 +7,7 @@ from nose.plugins.attrib import attr
 
 import hgvs.edit
 import hgvs.location
+from hgvs.enums import Datum
 from hgvs.exceptions import HGVSError
 
 
@@ -93,8 +94,8 @@ class Test_Edit(unittest.TestCase):
         self.assertEqual(str(hgvs.edit.Inv().type), "inv")
 
     def test_Conv(self):
-        start = hgvs.location.BaseOffsetPosition(base=61, offset=-6, datum=hgvs.location.CDS_START)
-        end = hgvs.location.BaseOffsetPosition(base=22, datum=hgvs.location.CDS_END)
+        start = hgvs.location.BaseOffsetPosition(base=61, offset=-6, datum=Datum.CDS_START)
+        end = hgvs.location.BaseOffsetPosition(base=22, datum=Datum.CDS_END)
         pos = hgvs.location.Interval(start=start, end=end)
         self.assertEqual(str(hgvs.edit.Conv("NM_001166478.1", "c", pos)), "conNM_001166478.1:c.61-6_*22")
         # edit types

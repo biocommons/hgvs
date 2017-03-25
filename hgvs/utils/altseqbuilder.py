@@ -14,7 +14,7 @@ import recordtype
 from Bio.Seq import Seq
 
 from ..edit import (Dup, NARefAlt, Repeat)
-from ..location import CDS_START, CDS_END
+from ..enums import Datum
 
 DBG = False
 
@@ -170,11 +170,11 @@ class AltSeqBuilder(object):
         :return "exon", "intron", "five_utr", "three_utr", "whole_gene"
         :rtype str
         """
-        if self._var_c.posedit.pos.start.datum == CDS_END and self._var_c.posedit.pos.end.datum == CDS_END:
+        if self._var_c.posedit.pos.start.datum == Datum.CDS_END and self._var_c.posedit.pos.end.datum == Datum.CDS_END:
             result = self.T_UTR
         elif self._var_c.posedit.pos.start.base < 0 and self._var_c.posedit.pos.end.base < 0:
             result = self.F_UTR
-        elif self._var_c.posedit.pos.start.base < 0 and self._var_c.posedit.pos.end.datum == CDS_END:
+        elif self._var_c.posedit.pos.start.base < 0 and self._var_c.posedit.pos.end.datum == Datum.CDS_END:
             result = self.WHOLE_GENE
         elif self._var_c.posedit.pos.start.offset != 0 or self._var_c.posedit.pos.end.offset != 0:
             # leave out anything intronic for now
@@ -277,7 +277,7 @@ class AltSeqBuilder(object):
         start_end = []
         for pos in (self._var_c.posedit.pos.start, self._var_c.posedit.pos.end):
             # list is zero-based; seq pos is 1-based
-            if pos.datum == CDS_START:
+            if pos.datum == Datum.CDS_START:
                 if pos.base < 0:    # 5' UTR
                     result = cds_start - 1
                 else:    # cds/intron
@@ -285,7 +285,7 @@ class AltSeqBuilder(object):
                         result = (cds_start - 1) + pos.base - 1
                     else:
                         result = (cds_start - 1) + pos.base
-            elif pos.datum == CDS_END:    # 3' UTR
+            elif pos.datum == Datum.CDS_END:    # 3' UTR
                 result = cds_stop + pos.base - 1
             else:
                 raise NotImplementedError("Unsupported/unexpected location")

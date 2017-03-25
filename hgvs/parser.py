@@ -19,6 +19,7 @@ from hgvs.exceptions import HGVSParseError
 
 # The following imports are referenced by fully-qualified name in the
 # hgvs grammar.
+import hgvs.enums
 import hgvs.edit
 import hgvs.hgvsposition
 import hgvs.location
