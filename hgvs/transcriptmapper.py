@@ -13,6 +13,7 @@ import hgvs.location
 
 from hgvs.exceptions import HGVSError, HGVSUsageError, HGVSDataNotAvailableError
 from hgvs.utils import build_tx_cigar
+from hgvs.enums import Datum
 
 
 class TranscriptMapper(object):
@@ -148,8 +149,8 @@ class TranscriptMapper(object):
             start_bo, end_bo = end_bo, start_bo
 
         return hgvs.location.BaseOffsetInterval(
-            start=hgvs.location.BaseOffsetPosition(base=start_bo[0], offset=start_bo[1], datum=hgvs.location.SEQ_START),
-            end=hgvs.location.BaseOffsetPosition(base=end_bo[0], offset=end_bo[1], datum=hgvs.location.SEQ_START),
+            start=hgvs.location.BaseOffsetPosition(base=start_bo[0], offset=start_bo[1], datum=Datum.SEQ_START),
+            end=hgvs.location.BaseOffsetPosition(base=end_bo[0], offset=end_bo[1], datum=Datum.SEQ_START),
             uncertain=g_interval.uncertain)
 
     def n_to_g(self, n_interval):
@@ -187,23 +188,23 @@ class TranscriptMapper(object):
         # start
         if n_interval.start.base <= self.cds_start_i:
             cs = n_interval.start.base - (self.cds_start_i + 1)
-            cs_datum = hgvs.location.CDS_START
+            cs_datum = Datum.CDS_START
         elif n_interval.start.base > self.cds_start_i and n_interval.start.base <= self.cds_end_i:
             cs = n_interval.start.base - self.cds_start_i
-            cs_datum = hgvs.location.CDS_START
+            cs_datum = Datum.CDS_START
         else:
             cs = n_interval.start.base - self.cds_end_i
-            cs_datum = hgvs.location.CDS_END
+            cs_datum = Datum.CDS_END
         # end
         if n_interval.end.base <= self.cds_start_i:
             ce = n_interval.end.base - (self.cds_start_i + 1)
-            ce_datum = hgvs.location.CDS_START
+            ce_datum = Datum.CDS_START
         elif n_interval.end.base > self.cds_start_i and n_interval.end.base <= self.cds_end_i:
             ce = n_interval.end.base - self.cds_start_i
-            ce_datum = hgvs.location.CDS_START
+            ce_datum = Datum.CDS_START
         else:
             ce = n_interval.end.base - self.cds_end_i
-            ce_datum = hgvs.location.CDS_END
+            ce_datum = Datum.CDS_END
 
         c_interval = hgvs.location.BaseOffsetInterval(
             start=hgvs.location.BaseOffsetPosition(base=cs, offset=n_interval.start.offset, datum=cs_datum),
@@ -220,18 +221,18 @@ class TranscriptMapper(object):
                     self=self))
 
         # start
-        if c_interval.start.datum == hgvs.location.CDS_START and c_interval.start.base < 0:
+        if c_interval.start.datum == Datum.CDS_START and c_interval.start.base < 0:
             rs = c_interval.start.base + self.cds_start_i + 1
-        elif c_interval.start.datum == hgvs.location.CDS_START and c_interval.start.base > 0:
+        elif c_interval.start.datum == Datum.CDS_START and c_interval.start.base > 0:
             rs = c_interval.start.base + self.cds_start_i
-        elif c_interval.start.datum == hgvs.location.CDS_END:
+        elif c_interval.start.datum == Datum.CDS_END:
             rs = c_interval.start.base + self.cds_end_i
         # end
-        if c_interval.end.datum == hgvs.location.CDS_START and c_interval.end.base < 0:
+        if c_interval.end.datum == Datum.CDS_START and c_interval.end.base < 0:
             re = c_interval.end.base + self.cds_start_i + 1
-        elif c_interval.end.datum == hgvs.location.CDS_START and c_interval.end.base > 0:
+        elif c_interval.end.datum == Datum.CDS_START and c_interval.end.base > 0:
             re = c_interval.end.base + self.cds_start_i
-        elif c_interval.end.datum == hgvs.location.CDS_END:
+        elif c_interval.end.datum == Datum.CDS_END:
             re = c_interval.end.base + self.cds_end_i
 
         if rs <= 0 or re > self.tgt_len:
@@ -239,8 +240,8 @@ class TranscriptMapper(object):
 
         n_interval = hgvs.location.BaseOffsetInterval(
             start=hgvs.location.BaseOffsetPosition(
-                base=rs, offset=c_interval.start.offset, datum=hgvs.location.SEQ_START),
-            end=hgvs.location.BaseOffsetPosition(base=re, offset=c_interval.end.offset, datum=hgvs.location.SEQ_START),
+                base=rs, offset=c_interval.start.offset, datum=Datum.SEQ_START),
+            end=hgvs.location.BaseOffsetPosition(base=re, offset=c_interval.end.offset, datum=Datum.SEQ_START),
             uncertain=c_interval.uncertain)
         return n_interval
 

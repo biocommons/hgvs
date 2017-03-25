@@ -12,6 +12,7 @@ import unittest
 from nose.plugins.attrib import attr
 
 from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError, HGVSParseError, HGVSInvalidVariantError, HGVSInvalidVariantError
+from hgvs.enums import Datum
 import hgvs.dataproviders.uta
 import hgvs.normalizer
 import hgvs.parser
@@ -164,8 +165,8 @@ class Test_Issues(unittest.TestCase):
         # start and end are parsed independently. The * binds to
         # start but not end, causing end to have an incorrect datum.
         v = self.hp.parse_hgvs_variant("NM_004006.2:c.*87_91del")
-        self.assertEqual(v.posedit.pos.start.datum, hgvs.location.CDS_END)
-        self.assertEqual(v.posedit.pos.end.datum,   hgvs.location.CDS_END)
+        self.assertEqual(v.posedit.pos.start.datum, Datum.CDS_END)
+        self.assertEqual(v.posedit.pos.end.datum,   Datum.CDS_END)
         
 
     def test_334_delins_normalization(self):

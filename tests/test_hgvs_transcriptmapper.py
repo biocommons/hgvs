@@ -13,6 +13,7 @@ import hgvs.location
 import hgvs.parser
 from hgvs.exceptions import HGVSError
 from hgvs.transcriptmapper import TranscriptMapper
+from hgvs.enums import Datum
 
 
 @attr(tags=["quick"])
@@ -357,24 +358,24 @@ if __name__ == "__main__":
     #    cds = 24 + 1 # hgvs
     #    # gs, ge = genomic start/end; rs,re = rna start/end; cs, ce = cdna start/end; so, eo = start offset/end offset
     #    test_cases = [
-    #        {"gs": 278204, "ge": 278204, "rs": 1, "re": 1, "so": 0, "eo": 0, "d": hgvs.location.SEQ_START, "cs": 1-cds, "ce": 1-cds},
-    #        {"gs": 278214, "ge": 278214, "rs": 11, "re": 11, "so": 0, "eo": 0, "d": hgvs.location.SEQ_START, "cs": 11-cds, "ce": 11-cds},
-    #        {"gs": 278204, "ge": 278214, "rs": 1, "re": 11, "so": 0, "eo": 0, "d": hgvs.location.SEQ_START, "cs": 1-cds, "ce": 11-cds},
+    #        {"gs": 278204, "ge": 278204, "rs": 1, "re": 1, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 1-cds, "ce": 1-cds},
+    #        {"gs": 278214, "ge": 278214, "rs": 11, "re": 11, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 11-cds, "ce": 11-cds},
+    #        {"gs": 278204, "ge": 278214, "rs": 1, "re": 11, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 1-cds, "ce": 11-cds},
     #
     #        # around cds (cds can"t be zero)
-    #        {"gs": 278227, "ge": 278227, "rs": 24, "re": 24, "so": 0, "eo": 0, "d": hgvs.location.SEQ_START, "cs": 24-cds, "ce": 24-cds},
+    #        {"gs": 278227, "ge": 278227, "rs": 24, "re": 24, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 24-cds, "ce": 24-cds},
     #
     #        # beyond cds add 1 due to hgvs
-    #        {"gs": 278228, "ge": 278228, "rs": 25, "re": 25, "so": 0, "eo": 0, "d": hgvs.location.SEQ_START, "cs": 25-cds+1, "ce": 25-cds+1},
-    #        {"gs": 278229, "ge": 278229, "rs": 26, "re": 26, "so": 0, "eo": 0, "d": hgvs.location.SEQ_START, "cs": 26-cds+1, "ce": 26-cds+1},
-    #        {"gs": 280966, "ge": 280966, "rs": 2760, "re": 2760, "so": 0, "eo": 0, "d": hgvs.location.SEQ_START, "cs": 2760-cds+1, "ce": 2760-cds+1},
-    #        {"gs": 278687, "ge": 278687, "rs": 484, "re": 484, "so": 0, "eo": 0, "d": hgvs.location.SEQ_START, "cs": 484-cds+1, "ce": 484-cds+1},
-    #        {"gs": 278687, "ge": 278688, "rs": 484, "re": 485, "so": 0, "eo": 0, "d": hgvs.location.SEQ_START, "cs": 484-cds+1, "ce": 485-cds+1},
-    #        {"gs": 278688, "ge":278691, "rs": 485, "re": 485, "so": 0, "eo": 0, "d": hgvs.location.SEQ_START, "cs": 485-cds+1, "ce": 485-cds+1},
+    #        {"gs": 278228, "ge": 278228, "rs": 25, "re": 25, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 25-cds+1, "ce": 25-cds+1},
+    #        {"gs": 278229, "ge": 278229, "rs": 26, "re": 26, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 26-cds+1, "ce": 26-cds+1},
+    #        {"gs": 280966, "ge": 280966, "rs": 2760, "re": 2760, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 2760-cds+1, "ce": 2760-cds+1},
+    #        {"gs": 278687, "ge": 278687, "rs": 484, "re": 484, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 484-cds+1, "ce": 484-cds+1},
+    #        {"gs": 278687, "ge": 278688, "rs": 484, "re": 485, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 484-cds+1, "ce": 485-cds+1},
+    #        {"gs": 278688, "ge":278691, "rs": 485, "re": 485, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 485-cds+1, "ce": 485-cds+1},
     #
     #        # around cds_start (24) and cds_end (1236), mindful of *coding* del (3D)
-    #        {"gs": 278204+24, "ge": 278204+1236, "rs": 25, "re": 1237-3, "so": 0, "eo": 0, "d": hgvs.location.SEQ_START, "cs": 25-cds+1, "ce": 1237-cds-3+1},
-    #        {"gs": 280956, "ge": 280966, "rs": 2750, "re": 2760, "so": 0, "eo": 0, "d": hgvs.location.SEQ_START, "cs": 2750-cds+1, "ce': 2760-cds+1},
+    #        {"gs": 278204+24, "ge": 278204+1236, "rs": 25, "re": 1237-3, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 25-cds+1, "ce": 1237-cds-3+1},
+    #        {"gs": 280956, "ge": 280966, "rs": 2750, "re": 2760, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 2750-cds+1, "ce': 2760-cds+1},
     #    ]
     #    self.run_cases(tm, test_cases)
     #
@@ -398,27 +399,27 @@ if __name__ == "__main__":
     #    tm = TranscriptMapper(self.hdp, ac, self.ref)
     #    cds = 208 + 1 # hgvs
     #    test_cases = [
-    #        {"gs": 150552215, "ge": 150552215, "rs": 1, "re": 1, "so": 0, "eo": 0, "d": hgvs.location.SEQ_START , "cs": 1-cds, "ce": 1-cds},
-    #        {"gs": 150552214, "ge": 150552214, "rs": 2, "re": 2, "so": 0, "eo": 0, "d": hgvs.location.SEQ_START , "cs": 2-cds, "ce": 2-cds},
+    #        {"gs": 150552215, "ge": 150552215, "rs": 1, "re": 1, "so": 0, "eo": 0, "d": Datum.SEQ_START , "cs": 1-cds, "ce": 1-cds},
+    #        {"gs": 150552214, "ge": 150552214, "rs": 2, "re": 2, "so": 0, "eo": 0, "d": Datum.SEQ_START , "cs": 2-cds, "ce": 2-cds},
     #
     #        # beyond cds add 1 due to hgvs
-    #        {"gs": 150552007, "ge": 150552007, "rs": 209, "re": 209, "so": 0, "eo": 0, "d": hgvs.location.SEQ_START , "cs": 209-cds+1, "ce": 209-cds+1},
-    #        {"gs": 150547027, "ge": 150547027, "rs": 3842, "re": 3842, "so": 0, "eo": 0, "d": hgvs.location.SEQ_START , "cs": 3842-cds+1, "ce": 3842-cds+1},
+    #        {"gs": 150552007, "ge": 150552007, "rs": 209, "re": 209, "so": 0, "eo": 0, "d": Datum.SEQ_START , "cs": 209-cds+1, "ce": 209-cds+1},
+    #        {"gs": 150547027, "ge": 150547027, "rs": 3842, "re": 3842, "so": 0, "eo": 0, "d": Datum.SEQ_START , "cs": 3842-cds+1, "ce": 3842-cds+1},
     #
-    #        #{"gs": 150549968, "ge": 150549968, "rs": 897, "re": 897, "so": 0, "eo": 0, "d": hgvs.location.SEQ_START , "cs": 897-cds+1, "ce": 897-cds+1},
-    #        {"gs": 150551318, "ge": 150551318, "rs": 897, "re": 897, "so": 1, "eo": 1, "d": hgvs.location.SEQ_START , "cs": 897-cds+1, "ce": 897-cds+1},
-    #        {"gs": 150551318, "ge": 150551319, "rs": 897, "re": 897, "so": 1, "eo": 0, "d": hgvs.location.SEQ_START , "cs": 897-cds+1, "ce": 897-cds+1},
-    #        {"gs": 150551317, "ge": 150551318, "rs": 897, "re": 897, "so": 2, "eo": 1, "d": hgvs.location.SEQ_START , "cs": 897-cds+1, "ce": 897-cds+1},
-    #        {"gs": 150549968, "ge": 150549969, "rs": 897, "re": 897, "so": 0, "eo": -1, "d": hgvs.location.SEQ_START , "cs": 897-cds+1, "ce": 897-cds+1},
-    #        {"gs": 150549969, "ge": 150549970, "rs": 897, "re": 897, "so": -1, "eo": -2, "d": hgvs.location.SEQ_START , "cs": 897-cds+1, "ce": 897-cds+1},
+    #        #{"gs": 150549968, "ge": 150549968, "rs": 897, "re": 897, "so": 0, "eo": 0, "d": Datum.SEQ_START , "cs": 897-cds+1, "ce": 897-cds+1},
+    #        {"gs": 150551318, "ge": 150551318, "rs": 897, "re": 897, "so": 1, "eo": 1, "d": Datum.SEQ_START , "cs": 897-cds+1, "ce": 897-cds+1},
+    #        {"gs": 150551318, "ge": 150551319, "rs": 897, "re": 897, "so": 1, "eo": 0, "d": Datum.SEQ_START , "cs": 897-cds+1, "ce": 897-cds+1},
+    #        {"gs": 150551317, "ge": 150551318, "rs": 897, "re": 897, "so": 2, "eo": 1, "d": Datum.SEQ_START , "cs": 897-cds+1, "ce": 897-cds+1},
+    #        {"gs": 150549968, "ge": 150549969, "rs": 897, "re": 897, "so": 0, "eo": -1, "d": Datum.SEQ_START , "cs": 897-cds+1, "ce": 897-cds+1},
+    #        {"gs": 150549969, "ge": 150549970, "rs": 897, "re": 897, "so": -1, "eo": -2, "d": Datum.SEQ_START , "cs": 897-cds+1, "ce": 897-cds+1},
     #
     #        # exon 2, 4nt insertion ~ r.2760
     #        # See http://tinyurl.com/mwegybw
     #        # The coords of this indel via NW alignment differ from those at NCBI, but are the same canonicalized
     #        # variant.  Nothing to do about that short of running Splign ourselves.  Test a few examples.
-    #        {"gs": 150548892, "ge": 150548892, "rs": 1973, "re": 1973, "so": 0, "eo":0, "d": hgvs.location.SEQ_START , "cs": 1973-cds+1, "ce": 1973-cds+1},
-    #        #? {"gs": 150548891, "ge": 150548892, "rs": 1972, "re": 1973, "so": 0, "eo":0, "d": hgvs.location.SEQ_START , "cs": 1972-cds+1, "ce": 1973-cds+1},
-    #        {"gs": 150548890, "ge": 150548892, "rs": 1973, "re": 1979, "so": 0, "eo":0, "d": hgvs.location.SEQ_START , "cs": 1973-cds+1, "ce": 1979-cds+1},
+    #        {"gs": 150548892, "ge": 150548892, "rs": 1973, "re": 1973, "so": 0, "eo":0, "d": Datum.SEQ_START , "cs": 1973-cds+1, "ce": 1973-cds+1},
+    #        #? {"gs": 150548891, "ge": 150548892, "rs": 1972, "re": 1973, "so": 0, "eo":0, "d": Datum.SEQ_START , "cs": 1972-cds+1, "ce": 1973-cds+1},
+    #        {"gs": 150548890, "ge": 150548892, "rs": 1973, "re": 1979, "so": 0, "eo":0, "d": Datum.SEQ_START , "cs": 1973-cds+1, "ce": 1979-cds+1},
     #    ]
     #    self.run_cases(tm, test_cases)
     #
@@ -474,17 +475,17 @@ if __name__ == "__main__":
     #    tm = TranscriptMapper(self.hdp, ac, self.ref)
     #    cds = 254 + 1 # hgvs
     #    test_cases = [
-    #        #{"gs": 94547639, "ge": 94547639, "rs": 1, "re": 1, "so": 0, "eo": 0, "d": hgvs.location.SEQ_START, "cs": 1-cds, "ce": 1-cds},
-    #        #{"gs": 94547796, "ge": 94547796, "rs": 158, "re": 158, "so": 0, "eo": 0, "d": hgvs.location.SEQ_START, "cs": 158-cds, "ce": 158-cds},
-    #        #{"gs": 94563185, "ge": 94563185, "rs": 159, "re": 159, "so": -2, "eo": -2, "d": hgvs.location.SEQ_START, "cs": 159-cds, "ce": 159-cds},
+    #        #{"gs": 94547639, "ge": 94547639, "rs": 1, "re": 1, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 1-cds, "ce": 1-cds},
+    #        #{"gs": 94547796, "ge": 94547796, "rs": 158, "re": 158, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 158-cds, "ce": 158-cds},
+    #        #{"gs": 94563185, "ge": 94563185, "rs": 159, "re": 159, "so": -2, "eo": -2, "d": Datum.SEQ_START, "cs": 159-cds, "ce": 159-cds},
     #
     #        # beyond cds add 1 due to hgvs
-    #        #{"gs": 94567118, "ge": 94567120, "rs": 316, "re": 316, "so": 0, "eo": 2, "d": hgvs.location.SEQ_START, "cs": 316-cds+1, "ce": 316-cds+1},
-    #        {"gs": 94567115, "ge": 94567118, "rs": 313, "re": 316, "so": 0, "eo": 0, "d": hgvs.location.SEQ_START, "cs": 313-cds+1, "ce": 316-cds+1},
+    #        #{"gs": 94567118, "ge": 94567120, "rs": 316, "re": 316, "so": 0, "eo": 2, "d": Datum.SEQ_START, "cs": 316-cds+1, "ce": 316-cds+1},
+    #        {"gs": 94567115, "ge": 94567118, "rs": 313, "re": 316, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 313-cds+1, "ce": 316-cds+1},
     #
     #        # intron in the middle between exon 1 and 2
-    #        #{"gs": 94555500, "ge": 94555501, "rs": 157, "re": 158, "so": 7686, "eo": -7685, "d": hgvs.location.SEQ_START, "cs": 157-cds+1, "ce": 158-cds+1},
-    #        #{"gs": 94555481, "ge": 94555501, "rs": 157, "re": 158, "so": 7686, "eo": -7685, "d": hgvs.location.SEQ_START, "cs": 157-cds+1, "ce": 158-cds+1},
+    #        #{"gs": 94555500, "ge": 94555501, "rs": 157, "re": 158, "so": 7686, "eo": -7685, "d": Datum.SEQ_START, "cs": 157-cds+1, "ce": 158-cds+1},
+    #        #{"gs": 94555481, "ge": 94555501, "rs": 157, "re": 158, "so": 7686, "eo": -7685, "d": Datum.SEQ_START, "cs": 157-cds+1, "ce": 158-cds+1},
     #    ]
     #    self.run_cases(tm, test_cases)
 
