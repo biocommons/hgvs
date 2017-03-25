@@ -80,8 +80,8 @@ PosEdit(pos=281, edit=C>T, uncertain=False)
 >>> var.posedit.pos
 Interval(start=281, end=281, uncertain=False)
 >>> var.posedit.pos.start, var.posedit.pos.end
-(BaseOffsetPosition(base=281, offset=0, datum=1, uncertain=False),
- BaseOffsetPosition(base=281, offset=0, datum=1, uncertain=False))
+(BaseOffsetPosition(base=281, offset=0, datum=Datum.CDS_START, uncertain=False),
+ BaseOffsetPosition(base=281, offset=0, datum=Datum.CDS_START, uncertain=False))
 >>> var.posedit.edit
 NARefAlt(ref=C, alt=T, uncertain=False)
 
