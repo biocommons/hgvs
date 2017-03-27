@@ -11,7 +11,7 @@ and behavior changes.  Some client code may require minor modification.
 magnitude of the changes and the desire to migrate to public API
 versioning led us release as 1.0.0.)
 
-See :ref:`Installing HGVS` for installation instructions.
+See :ref:`Installing hgvs` for installation instructions.
 
 
 
@@ -54,10 +54,11 @@ backward-compatible feature additions (increment y), and API
 incompatible changes (increment x).  See `Semantic Versioning
 <http://semver.org/>`__ for more information.
 
-**★ Unknown p. effect now represented with `p.?`.** This follows
-current `varnomen recommendations <http://varnomen.org/>`__.  See
-393.
-
+**★ Changes in p. formatting to better conform to current `varnomen
+recommendations <http://varnomen.org/>`__.** Inferred changes with
+unknown p. effects are now represented with `p.?` rather than `p.(?)`
+(`#393 <https://github.com/biocommons/hgvs/issues/393/>`_).  In addition, silent SNV mutations now include the amino acid,
+as in `NP_000050.2:p.Lys2597=` rather than `NP_000050.2:p.(=)` (`#317 <https://github.com/biocommons/hgvs/issues/317/>`_).
 
 
 
