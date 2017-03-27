@@ -49,11 +49,13 @@ backward-compatible feature additions (increment y), and API
 incompatible changes (increment x).  See `Semantic Versioning
 <http://semver.org/>`__ for more information.
 
-  **★ Changes in p. formatting to better conform to current `varnomen
-recommendations <http://varnomen.org/>`__.** Inferred changes with
-unknown p. effects are now represented with `p.?` rather than `p.(?)`
-(#393).  In addition, silent SNV mutations now include the amino acid,
-as in `NP_000050.2:p.Lys2597=` rather than `NP_000050.2:p.(=)` (#317).
+  **★ Changes in p. formatting to better conform to current varnomen
+recommendations.** Inferred changes with unknown p. effects are now
+represented with `p.?` rather than `p.(?)` (#393).  In addition,
+silent SNV mutations now include the amino acid, as in
+`NP_000050.2:p.Lys2597=` rather than `NP_000050.2:p.(=)` (#317).  Both
+changes improve conformance with current `varnome recommendations
+<http://varnomen.org/>`__.
 
 
 ** Deprecations and Removals
