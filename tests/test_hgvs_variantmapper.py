@@ -76,6 +76,14 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
         var_g = self.vm.c_to_g(var_c, "NC_000007.13")
         self.assertEqual(str(var_g), "NC_000007.13:g.21940852_21940908del")
 
+    def test_map_to_unknown_p_effect(self):
+        hgvs_c = "NM_020975.4:c.625+9C>T"
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.vm.c_to_p(var_c)
+        self.assertEqual(str(var_p), "NP_066124.1:p.?")
+        var_p.posedit.uncertain=False
+        self.assertEqual(str(var_p), "NP_066124.1:p.?")
+
 
 if __name__ == "__main__":
     unittest.main()
