@@ -183,7 +183,7 @@ class AAPosition(recordtype.recordtype("AAPosition", field_names=[("base", None)
     def validate(self):
         if self.base is not None and self.base < 1:
             return (ValidationLevel.ERROR, "AAPosition location must be >=1")
-        if len(self.aa) != 1:
+        if self.aa is not None and len(self.aa) != 1:
             return (ValidationLevel.ERROR, "More than 1 AA associated with position")
         return (ValidationLevel.VALID, None)
 

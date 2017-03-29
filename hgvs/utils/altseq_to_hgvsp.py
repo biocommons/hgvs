@@ -129,12 +129,12 @@ class AltSeqToHgvsp(object):
                 print(variants)
 
         if self._is_ambiguous:
-            var_ps = [ self._create_variant('', '', '', '',
+            var_ps = [ self._create_variant(None, None, '', '',
                                             acc=self._protein_accession,
                                             is_ambiguous=self._is_ambiguous)
             ]
         elif len(self._alt_seq) == 0:
-            var_ps = [ self._create_variant( '', '', '', '',
+            var_ps = [ self._create_variant( None, None, '', '',
                                              acc=self._protein_accession,
                                              is_ambiguous=self._is_ambiguous,
                                              is_no_protein=True) ]
@@ -311,7 +311,10 @@ class AltSeqToHgvsp(object):
                         is_ext=False,
                         is_no_protein=False):
         """Creates a SequenceVariant object"""
-        interval = Interval(start=start, end=end)
+        if start is None:
+            interval = None
+        else:
+            interval = Interval(start=start, end=end)
         uncertain = False
         # Note - order matters
         if is_no_protein:
@@ -333,7 +336,7 @@ class AltSeqToHgvsp(object):
         else:
             edit = AARefAlt(ref=ref, alt=alt)
         posedit = PosEdit(pos=interval, edit=edit, uncertain=uncertain)
-        if not (is_ambiguous and start == ''):
+        if not (is_ambiguous and start is None):
             posedit.uncertain = hgvs.global_config.mapping.inferred_p_is_uncertain
         var_p = hgvs.sequencevariant.SequenceVariant(acc, 'p', posedit)
 
