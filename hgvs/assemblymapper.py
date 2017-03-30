@@ -31,6 +31,10 @@ class AssemblyMapper(VariantMapper):
       accessions are candidates mapping from genomic to trancript
       coordinates (i.e., g_to_c(...) and g_to_n(...)).
 
+    Note: AssemblyMapper supports only chromosomal references (e.g.,
+    NC_000006.11). It does not support contigs or other genomic
+    sequences (e.g., NT_167249.1).
+
     """
 
     def __init__(self,
@@ -62,7 +66,9 @@ class AssemblyMapper(VariantMapper):
         self._norm = None
         if self.normalize:
             self._norm = hgvs.normalizer.Normalizer(hdp, alt_aln_method=alt_aln_method, validate=False)
-        self._assembly_map = hdp.get_assembly_map(self.assembly_name)
+        self._assembly_map = {k: v for k, v in
+                              hdp.get_assembly_map(self.assembly_name).items()
+                              if k.startswith("NC_")}
         self._assembly_accessions = set(self._assembly_map.keys())
 
     def __repr__(self):
@@ -134,9 +140,10 @@ class AssemblyMapper(VariantMapper):
         if len(alt_acs) > 1:
             names = set(self._assembly_map[ac] for ac in alt_acs)
             if names != set("XY"):
+                alts = ", ".join(["{ac} ({n})".format(ac=ac, n=self._assembly_map[ac]) for ac in alt_acs])
                 raise HGVSError("Multiple chromosomal alignments for {tx_ac} in {an}"
-                                " using {am} (non-pseudoautosomal region, paralogs)".format(
-                                    tx_ac=tx_ac, an=self.assembly_name, am=self.alt_aln_method))
+                                " using {am} (non-pseudoautosomal region) [{alts}]".format(
+                                    tx_ac=tx_ac, an=self.assembly_name, am=self.alt_aln_method, alts=alts))
 
             # assume PAR
             if self.in_par_assume is None:
