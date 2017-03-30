@@ -1,0 +1,11 @@
+clog format: 1; -*-outline-*-
+* 1.0.0a2 (2017-03-30)
+Changes since 1.0.0a1 (2017-03-11).
+** Bug Fixes
+*** Closed #403: Add missing import [3e363f57edf8]
+*** Closed #409: Fix bug in normalizer when normalizing ident variant that is written as delins [94607ecc30da]
+*** Closed #415: Limit assembly mapper to NC_ accessions [6056fd4414df]
+** New Features
+*** Closed #404: Implement max_ref_length in formatter and don't show reference sequence by default
+** Internal and Developer Changes
+*** 396-use enum34 for datums (#411)
