@@ -160,7 +160,7 @@ class Test_VariantMapper(unittest.TestCase):
             hgvs_p_exp = str(var_p)
             var_p_test = self.hm.c_to_p(var_x, var_p.ac)
 
-            if not var_p.posedit.uncertain:
+            if var_p.posedit and not var_p.posedit.uncertain:
                 # if expected value isn't uncertain, strip uncertain from test
                 var_p_test.posedit.uncertain = False
 

@@ -184,7 +184,7 @@ the expected uncertain interpretation:
 
 >>> var_p2 = variantmapper.c_to_p(var_c2)
 >>> var_p2
-SequenceVariant(ac=NP_877495.1, type=p, posedit=?)
+SequenceVariant(ac=NP_877495.1, type=p, posedit=None)
 >>> str(var_p2)
 'NP_877495.1:p.?'
 
