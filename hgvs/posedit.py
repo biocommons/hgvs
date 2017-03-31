@@ -20,13 +20,17 @@ class PosEdit(recordtype.recordtype('PosEdit', [('pos', None), ('edit', None), (
         """Formatting the string of PosEdit
         """
         if self.pos is None:
-            rv = str(self.edit.format(conf))
+            if self.edit == "":
+                rv = "?"
+            else:
+                rv = self.edit.format(conf)
         else:
             rv = "{pos}{edit}".format(pos=self.pos.format(conf), edit=self.edit.format(conf))
 
         if self.uncertain:
             if self.edit in ["0", ""]:
-                rv = rv + "?"
+                if rv != "?":
+                    rv = rv + "?"
             else:
                 rv = "(" + rv + ")"
         return rv
