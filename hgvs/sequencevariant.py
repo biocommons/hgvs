@@ -27,10 +27,14 @@ class SequenceVariant(recordtype.recordtype("SequenceVariant", ["ac", "type", "p
 
         See :class:`hgvs.config`.
         """
-        if self.ac is not None:
-            return "{ac}:{type}.{posedit}".format(ac=self.ac, type=self.type, posedit=self.posedit.format(conf))
+        if self.posedit is not None:
+            posedit = self.posedit.format(conf)
         else:
-            return "{type}.{posedit}".format(type=self.type, posedit=self.posedit.format(conf))
+            posedit = "?"
+        if self.ac is not None:
+            return "{ac}:{type}.{posedit}".format(ac=self.ac, type=self.type, posedit=posedit)
+        else:
+            return "{type}.{posedit}".format(type=self.type, posedit=posedit)
 
     __str__ = format
 
@@ -51,6 +55,8 @@ class SequenceVariant(recordtype.recordtype("SequenceVariant", ["ac", "type", "p
             (res, msg) = validate_type_ac_pair(self.type, self.ac)
             if res == ValidationLevel.ERROR:
                 return (res, msg)
+        if self.posedit is None:
+            return (res, msg)
         (pe_res, pe_msg) = self.posedit.validate()
         if pe_res == ValidationLevel.VALID:
             return (res, msg)

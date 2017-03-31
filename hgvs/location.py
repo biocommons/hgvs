@@ -183,7 +183,7 @@ class AAPosition(recordtype.recordtype("AAPosition", field_names=[("base", None)
     def validate(self):
         if self.base is not None and self.base < 1:
             return (ValidationLevel.ERROR, "AAPosition location must be >=1")
-        if len(self.aa) != 1:
+        if self.aa is not None and len(self.aa) != 1:
             return (ValidationLevel.ERROR, "More than 1 AA associated with position")
         return (ValidationLevel.VALID, None)
 
@@ -263,6 +263,8 @@ class Interval(recordtype.recordtype("Interval", field_names=["start", ("end", N
             return (ValidationLevel.WARNING, str(err))
 
     def format(self, conf=None):
+        if self.start is None:
+            return ""
         if self.end is None or self.start == self.end:
             return self.start.format(conf)
         iv = self.start.format(conf) + "_" + self.end.format(conf)

@@ -45,9 +45,7 @@ class Test_Position(unittest.TestCase):
         self.assertEqual(str(self.parser.parse_p_posedit("0?")), "0?")
         #self.assertEqual( str(self.parser.parse_p_posedit("(0)")), "0?" )
 
-        self.assertEqual(str(self.parser.parse_p_posedit("?")), "?")
-        #self.assertEqual( str(self.parser.parse_p_posedit("??")), "?" )
-        #self.assertEqual( str(self.parser.parse_p_posedit("(?)")), "?" )
+        self.assertIsNone(self.parser.parse_p_posedit("?"))
 
         self.assertEqual(str(self.parser.parse_p_posedit("=")), "=")
         #self.assertEqual( str(self.parser.parse_p_posedit("=?")), "(=)" )

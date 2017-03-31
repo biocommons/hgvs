@@ -79,7 +79,7 @@ class ExtrinsicValidator():
 
         ref_checks = []
         if var.type == 'p':
-            if not var.posedit.pos or not var.posedit.pos.start or not var.posedit.pos.end:
+            if not var.posedit or not var.posedit.pos or not var.posedit.pos.start or not var.posedit.pos.end:
                 return (ValidationLevel.VALID, None)
             ref_checks.append((var.ac, var.posedit.pos.start.pos, var.posedit.pos.start.pos, var.posedit.pos.start.aa))
             if var.posedit.pos.start.pos != var.posedit.pos.end.pos:
