@@ -70,7 +70,7 @@ p_posedit_special =
 	| '(' '=':x ')' -> hgvs.posedit.PosEdit(pos=None,edit=x,uncertain=True)
 	| '0':x '?' -> hgvs.posedit.PosEdit(pos=None,edit=x,uncertain=True)
 	| '0':x -> hgvs.posedit.PosEdit(pos=None,edit=x,uncertain=False)
-	| '?':x -> hgvs.posedit.PosEdit(pos=None,edit='',uncertain=True)
+	| '?':x -> None
 
 
 ############################################################################

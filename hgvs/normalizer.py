@@ -69,7 +69,7 @@ class Normalizer(object):
         if self.validator:
             self.validator.validate(var)
 
-        if var.posedit.uncertain or var.posedit.pos is None:
+        if var.posedit is None or var.posedit.uncertain or var.posedit.pos is None:
             return var
 
         type = var.type

@@ -129,12 +129,12 @@ class AltSeqToHgvsp(object):
                 print(variants)
 
         if self._is_ambiguous:
-            var_ps = [ self._create_variant('', '', '', '',
+            var_ps = [ self._create_variant(None, None, '', '',
                                             acc=self._protein_accession,
                                             is_ambiguous=self._is_ambiguous)
             ]
         elif len(self._alt_seq) == 0:
-            var_ps = [ self._create_variant( '', '', '', '',
+            var_ps = [ self._create_variant( None, None, '', '',
                                              acc=self._protein_accession,
                                              is_ambiguous=self._is_ambiguous,
                                              is_no_protein=True) ]
@@ -311,32 +311,28 @@ class AltSeqToHgvsp(object):
                         is_ext=False,
                         is_no_protein=False):
         """Creates a SequenceVariant object"""
-        interval = Interval(start=start, end=end)
-        uncertain = False
-        # Note - order matters
-        if is_no_protein:
-            edit = '0'
-        elif is_ambiguous:
-            edit = ""
-            interval = None
-            uncertain = True
-        elif is_sub:
-            edit = AASub(ref=ref, alt=alt)
-        elif is_ext:
-            edit = AAExt(ref=ref, alt=alt, aaterm='*', length=fsext_len)
-        elif self._is_frameshift:
-            edit = AAFs(ref=ref, alt=alt, length=fsext_len)
-        elif is_dup:
-            edit = Dup()
-        elif ref == alt == '':
-            edit = AARefAlt(ref='', alt='')
+        if is_ambiguous:
+            posedit = None
         else:
-            edit = AARefAlt(ref=ref, alt=alt)
-        posedit = PosEdit(pos=interval, edit=edit, uncertain=uncertain)
-        if not (is_ambiguous and start == ''):
-            posedit.uncertain = hgvs.global_config.mapping.inferred_p_is_uncertain
+            interval = Interval(start=start, end=end)
+            # Note - order matters
+            if is_no_protein:
+                edit = '0'
+            elif is_sub:
+                edit = AASub(ref=ref, alt=alt)
+            elif is_ext:
+                edit = AAExt(ref=ref, alt=alt, aaterm='*', length=fsext_len)
+            elif self._is_frameshift:
+                edit = AAFs(ref=ref, alt=alt, length=fsext_len)
+            elif is_dup:
+                edit = Dup()
+            elif ref == alt == '':
+                edit = AARefAlt(ref='', alt='')
+            else:
+                edit = AARefAlt(ref=ref, alt=alt)
+            posedit = PosEdit(pos=interval, edit=edit,
+                              uncertain=hgvs.global_config.mapping.inferred_p_is_uncertain)
         var_p = hgvs.sequencevariant.SequenceVariant(acc, 'p', posedit)
-
         return var_p
 
 
