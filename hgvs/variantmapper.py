@@ -11,7 +11,7 @@ import logging
 
 from Bio.Seq import Seq
 from bioutils.sequences import reverse_complement
-import recordtype
+import attr
 
 import hgvs
 import hgvs.location
@@ -271,10 +271,14 @@ class VariantMapper(object):
 
         """
 
-        class RefTranscriptData(
-                recordtype.recordtype("RefTranscriptData", [
-                    "transcript_sequence", "aa_sequence", "cds_start", "cds_stop", "protein_accession"
-                ])):
+        @attr.s(slots=True)
+        class RefTranscriptData(object):
+            transcript_sequence = attr.ib()
+            aa_sequence = attr.ib()
+            cds_start = attr.ib()
+            cds_stop = attr.ib()
+            protein_accession = attr.ib()
+
             @classmethod
             def setup_transcript_data(cls, hdp, tx_ac, pro_ac):
                 """helper for generating RefTranscriptData from for c_to_p"""

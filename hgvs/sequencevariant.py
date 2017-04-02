@@ -5,7 +5,7 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import recordtype
+import attr
 import re
 
 import hgvs.variantmapper
@@ -13,12 +13,16 @@ from hgvs.enums import ValidationLevel
 from hgvs.utils.validation import validate_type_ac_pair
 
 
-class SequenceVariant(recordtype.recordtype("SequenceVariant", ["ac", "type", "posedit"])):
+@attr.s(slots=True, repr=False)
+class SequenceVariant(object):
     """
     represents a basic HGVS variant.  The only requirement is that each
     component can be stringified; for example, passing pos as either a string
     or an hgvs.location.CDSInterval (for example) are both intended uses
     """
+    ac = attr.ib()
+    type = attr.ib()
+    posedit = attr.ib()
 
     def format(self, conf=None):
         """Formatting the stringification of sequence variants
@@ -37,6 +41,10 @@ class SequenceVariant(recordtype.recordtype("SequenceVariant", ["ac", "type", "p
             return "{type}.{posedit}".format(type=self.type, posedit=posedit)
 
     __str__ = format
+
+    def __repr__(self):
+        return "{0}({1})".format(self.__class__.__name__, ", ".join(
+               (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
 
     def fill_ref(self, hdp):
         hm = hgvs.variantmapper.VariantMapper(hdp)

@@ -51,7 +51,7 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
           "ipython",            # for hgvs-shell
           "parsley",
           "psycopg2!=2.7",  # 2.7 bug: https://github.com/psycopg/psycopg2/issues/517
-          "recordtype>=1.1",
+          "attrs>=16.3.0",
           "unicodecsv",
           "enum34",
       ],

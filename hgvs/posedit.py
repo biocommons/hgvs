@@ -5,16 +5,20 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import recordtype
+import attr
 
 from hgvs.exceptions import HGVSUnsupportedOperationError
 from hgvs.enums import ValidationLevel
 
 
-class PosEdit(recordtype.recordtype('PosEdit', [('pos', None), ('edit', None), ('uncertain', False)])):
+@attr.s(slots=True, repr=False)
+class PosEdit(object):
     """
     represents a **simple** variant, consisting of a single position and edit pair
     """
+    pos = attr.ib(default=None)
+    edit = attr.ib(default=None)
+    uncertain = attr.ib(default=False)
 
     def format(self, conf=None):
         """Formatting the string of PosEdit
@@ -32,6 +36,10 @@ class PosEdit(recordtype.recordtype('PosEdit', [('pos', None), ('edit', None), (
         return rv
 
     __str__ = format
+
+    def __repr__(self):
+        return "{0}({1})".format(self.__class__.__name__, ", ".join(
+               (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
 
     def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar

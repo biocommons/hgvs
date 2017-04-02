@@ -17,7 +17,7 @@ Classes:
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import recordtype
+import attr
 
 from functools import total_ordering
 from bioutils.sequences import aa1_to_aa3
@@ -27,8 +27,12 @@ from hgvs.exceptions import HGVSUnsupportedOperationError, HGVSInvalidIntervalEr
 from hgvs.enums import Datum, ValidationLevel
 
 
+@attr.s(slots=True, repr=False, cmp=False)
 @total_ordering
-class SimplePosition(recordtype.recordtype("SimplePosition", field_names=[("base", None), ("uncertain", False)])):
+class SimplePosition(object):
+    base = attr.ib(default=None)
+    uncertain = attr.ib(default=False)
+
     def __str__(self):
         self.validate()
         s = "?" if self.base is None else str(self.base)
@@ -36,6 +40,10 @@ class SimplePosition(recordtype.recordtype("SimplePosition", field_names=[("base
 
     def format(self, conf):
         return str(self)
+
+    def __repr__(self):
+        return "{0}({1})".format(self.__class__.__name__, ", ".join(
+               (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
 
     @property
     def is_uncertain(self):
@@ -69,11 +77,9 @@ class SimplePosition(recordtype.recordtype("SimplePosition", field_names=[("base
         return lhs.base < rhs.base
 
 
+@attr.s(slots=True, repr=False, cmp=False)
 @total_ordering
-class BaseOffsetPosition(
-        recordtype.recordtype(
-            'BaseOffsetPosition',
-            field_names=[('base', None), ('offset', 0), ('datum', Datum.SEQ_START), ('uncertain', False)])):
+class BaseOffsetPosition(object):
     """
     Class for dealing with CDS coordinates in transcript variants.
 
@@ -106,6 +112,10 @@ class BaseOffsetPosition(
     | c.*55    | CDS_END    |    0  |     55  | 3' UTR variant, 55 nt after STOP         |
     +----------+------------+-------+---------+------------------------------------------+
     """
+    base = attr.ib(default=None)
+    offset = attr.ib(default=0)
+    datum = attr.ib(default=Datum.SEQ_START)
+    uncertain = attr.ib(default=False)
 
     def validate(self):
         if self.base is not None and self.base == 0:
@@ -123,6 +133,10 @@ class BaseOffsetPosition(
 
     def format(self, conf):
         return str(self)
+
+    def __repr__(self):
+        return "{0}({1})".format(self.__class__.__name__, ", ".join(
+               (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
 
     def _set_uncertain(self):
         "mark this location as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"
@@ -179,7 +193,12 @@ class BaseOffsetPosition(
                 return lhs.datum < rhs.datum
 
 
-class AAPosition(recordtype.recordtype("AAPosition", field_names=[("base", None), ("aa", None), ("uncertain", False)])):
+@attr.s(slots=True, repr=False, cmp=False)
+class AAPosition(object):
+    base = attr.ib(default=None)
+    aa = attr.ib(default=None)
+    uncertain = attr.ib(default=False)
+
     def validate(self):
         if self.base is not None and self.base < 1:
             return (ValidationLevel.ERROR, "AAPosition location must be >=1")
@@ -209,6 +228,10 @@ class AAPosition(recordtype.recordtype("AAPosition", field_names=[("base", None)
 
     __str__ = format
 
+    def __repr__(self):
+        return "{0}({1})".format(self.__class__.__name__, ", ".join(
+               (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
+
     @property
     def pos(self):
         """return base, for backward compatibility"""
@@ -228,6 +251,12 @@ class AAPosition(recordtype.recordtype("AAPosition", field_names=[("base", None)
         assert type(lhs) == type(rhs), "Cannot substract coordinates of different representations"
         return lhs.base - rhs.base
 
+    def __eq__(lhs, rhs):
+        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+        if lhs.uncertain or rhs.uncertain:
+            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+        return lhs.base == rhs.base and lhs.aa == rhs.aa
+
     def __lt__(lhs, rhs):
         assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
         if lhs.uncertain or rhs.uncertain:
@@ -241,7 +270,12 @@ class AAPosition(recordtype.recordtype("AAPosition", field_names=[("base", None)
         return lhs.base > rhs.base
 
 
-class Interval(recordtype.recordtype("Interval", field_names=["start", ("end", None), ("uncertain", False)])):
+@attr.s(slots=True, repr=False)
+class Interval(object):
+    start = attr.ib(default=None)
+    end = attr.ib(default=None)
+    uncertain = attr.ib(default=False)
+
     def validate(self):
         if self.start:
             (res, msg) = self.start.validate()
@@ -272,6 +306,10 @@ class Interval(recordtype.recordtype("Interval", field_names=["start", ("end", N
 
     __str__ = format
 
+    def __repr__(self):
+        return "{0}({1})".format(self.__class__.__name__, ", ".join(
+               (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
+
     def _set_uncertain(self):
         "mark this interval as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"
         self.uncertain = True
@@ -286,6 +324,7 @@ class Interval(recordtype.recordtype("Interval", field_names=["start", ("end", N
         return self.uncertain or self.start.is_uncertain or self.end.is_uncertain
 
 
+@attr.s(slots=True, repr=False)
 class BaseOffsetInterval(Interval):
     """BaseOffsetInterval isa Interval of BaseOffsetPositions.  The only
     additional functionality over Interval is to ensure that the dutum
@@ -293,15 +332,12 @@ class BaseOffsetInterval(Interval):
 
     """
 
-    def __init__(self, *args, **kwargs):
-        super(BaseOffsetInterval, self).__init__(*args, **kwargs)
-
+    def __attrs_post_init__(self):
         # #330: In a post-ter interval like *87_91, the * binds only
         # to the start. This means that the start.datum is CDS_END,
         # but the end.datum is CDS_START (the default). 
         if self.start.datum == Datum.CDS_END:
             self.end.datum = Datum.CDS_END
-
         self.check_datum()
 
     def check_datum(self):
