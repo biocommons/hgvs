@@ -9,7 +9,7 @@ Used in hgvsc to hgvsp conversion.
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import math
-import recordtype
+import attr
 
 from Bio.Seq import Seq
 
@@ -19,12 +19,19 @@ from ..enums import Datum
 DBG = False
 
 
-class AltTranscriptData(
-        recordtype.recordtype('AltTranscriptData', [
-            'transcript_sequence', 'aa_sequence', 'cds_start', 'cds_stop', 'protein_accession',
-            ('is_frameshift', False), ('variant_start_aa', None), ('frameshift_start', None),
-            ('is_substitution', False), ('is_ambiguous', False)
-        ])):
+@attr.s(slots=True)
+class AltTranscriptData(object):
+    transcript_sequence = attr.ib()
+    aa_sequence = attr.ib()
+    cds_start = attr.ib()
+    cds_stop = attr.ib()
+    protein_accession = attr.ib()
+    is_frameshift = attr.ib(default=False)
+    variant_start_aa = attr.ib(default=None)
+    frameshift_start = attr.ib(default=None)
+    is_substitution = attr.ib(default=False)
+    is_ambiguous = attr.ib(default=False)
+
     @classmethod
     def create_for_variant_inserter(cls,
                                     seq,
@@ -53,7 +60,7 @@ class AltTranscriptData(
         :param is_ambiguous: flag if variant is "?"
         :type is_ambiguous: bool
         :return variant sequence data
-        :rtype recordtype
+        :rtype attrs
         """
         if len(seq) > 0:
             if isinstance(seq, basestring):
@@ -97,7 +104,7 @@ class AltSeqBuilder(object):
         :param var_c: representation of hgvs variant
         :type var_c: SequenceVariant
         :param transcript_data: representation of transcript
-        :type transcript_data: recordtype
+        :type transcript_data: attrs
 
         """
         self._var_c = var_c
@@ -322,9 +329,9 @@ class AltSeqBuilder(object):
         """Get starting position (AA ref index) of the last frameshift
         which affects the rest of the sequence, i.e. not offset by subsequent frameshifts
         :param variant_data: info on each variant
-        :type variant_data: recordtype
+        :type variant_data: attrs
         :return variant data with additional field for AA index (1-based) of the frameshift start
-        :rtype recordtype
+        :rtype attrs
         """
 
         if DBG:

@@ -42,10 +42,10 @@ class Parser(object):
     >>> v
     SequenceVariant(ac=NM_01234.5, type=c, posedit=22+1A>T)
     >>> v.posedit.pos
-    Interval(start=22+1, end=22+1, uncertain=False)
+    BaseOffsetInterval(start=22+1, end=22+1, uncertain=False)
     >>> i = hp.parse_c_interval("22+1")
     >>> i
-    Interval(start=22+1, end=22+1, uncertain=False)
+    BaseOffsetInterval(start=22+1, end=22+1, uncertain=False)
 
     The `parse_hgvs_variant` and `parse_c_interval` methods correspond
     to the `hgvs_variant` and `c_interval rules` in the grammar,
@@ -78,7 +78,7 @@ class Parser(object):
       >>> hp.parse_c_posedit("22+1A>T")
       PosEdit(pos=22+1, edit=A>T, uncertain=False)
       >>> hp.parse_c_interval("22+1")
-      Interval(start=22+1, end=22+1, uncertain=False)
+      BaseOffsetInterval(start=22+1, end=22+1, uncertain=False)
 
     """
 

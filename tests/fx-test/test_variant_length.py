@@ -18,14 +18,14 @@ class Test_VariantLengths(unittest.TestCase):
     """test length_change method for all variant types and cases"""
 
     success_tests = [
-        # class AAExt(Edit, recordtype.recordtype('AAExt', [('ref', None), ('alt', None), ('aaterm', None), ('length', None),
+        # class AAExt(Edit),
         ("NP_000040.1:p.Ter314Trpext*45", 45),
         ("NP_000040.1:p.Met1ext-12", 12),
 
-        # class AAFs(Edit, recordtype.recordtype('AAFs', [('ref', None), ('alt', None), ('length', None), ('uncertain', False)])):
+        # class AAFs(Edit):
         # UNSUPPORTED: ("NP_000001.1:p.Gly25Trpfs*10", ),   # requires seq fetch for length :-(
 
-        # class AARefAlt(Edit, recordtype.recordtype('AARefAlt', [('ref', None), ('alt', None), ('uncertain', False)])):
+        # class AARefAlt(Edit):
         ("NP_006149.2:p.(Glu396delinsLysLys)", 1),   # NM_006158.3:c.1186delGinsAAAA
         ("NP_006149.2:p.(Glu397del)", -1),  # NM_006158.3:n.1288_1290delGAG
         ("NP_006149.2:p.(Glu397dup)", 1),  # NM_006158.3:n.1288_1290delGAGinsGAGGAG
@@ -33,20 +33,20 @@ class Test_VariantLengths(unittest.TestCase):
         # class AASub(AARefAlt):
         ("NP_006149.2:p.(Glu396Lys)", 0),  # NM_006158.3:c.1186delGinsA
 
-        # class Conv(Edit, recordtype.recordtype('Conv', [('from_ac', None), ('from_type', None), ('from_pos', None),
+        # class Conv(Edit),
         # UNSUPPORTED
 
-        # class Dup(Edit, recordtype.recordtype('Dup', [('ref', None), ('uncertain', False)])):
+        # class Dup(Edit):
         ("NM_006158.3:n.1291_1293dup", 3),
         ("NM_006158.3:n.1291_1293dupGAG", 3),
         
-        # class Inv(Edit, recordtype.recordtype('Inv', [('ref', None), ('uncertain', False)])):
+        # class Inv(Edit):
         ("NM_006158.3:n.1291_1293inv", 0),
 
-        # class NACopy(Edit, recordtype.recordtype('NACopy', ['copy', ('uncertain', False)])):
+        # class NACopy(Edit):
         ("NC_000014.8:g.88401076_88459508copy4", (88459508-88401076+1) * 4),
 
-        # class    NARefAlt(Edit, recordtype.recordtype('NARefAlt', [('ref', None), ('alt', None), ('uncertain', False)])):
+        # class    NARefAlt(Edit):
         ("NM_000314.4:c.706G>T", 0),
         ("NM_000314.4:c.706delG", -1),
         ("NM_000314.4:c.706delGinsT", 0),

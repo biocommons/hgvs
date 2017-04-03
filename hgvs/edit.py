@@ -11,7 +11,7 @@ location).
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import recordtype
+import attr
 
 from bioutils.sequences import aa_to_aa1, aa1_to_aa3
 
@@ -19,6 +19,7 @@ import hgvs
 from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError
 
 
+@attr.s(slots=True)
 class Edit(object):
     def format(self, conf=None):
         return str(self)
@@ -42,7 +43,8 @@ class Edit(object):
         raise HGVSUnsupportedOperationError("internal function _del_ins_lengths not implemented for this variant type")
 
 
-class NARefAlt(Edit, recordtype.recordtype("NARefAlt", [("ref", None), ("alt", None), ("uncertain", False)])):
+@attr.s(slots=True)
+class NARefAlt(Edit):
     """
     represents substitutions, deletions, insertions, and indels.
 
@@ -50,13 +52,9 @@ class NARefAlt(Edit, recordtype.recordtype("NARefAlt", [("ref", None), ("alt", N
     :ivar alt: alternate sequence
     :ivar uncertain: boolean indicating whether the variant is uncertain/undetermined
     """
-
-    def __init__(self, ref=None, alt=None, uncertain=False, edit=None):
-        if edit:
-            ref = edit.ref
-            alt = edit.alt
-            uncertain = edit.uncertain
-        super(NARefAlt, self).__init__(ref=ref, alt=alt, uncertain=uncertain)
+    ref = attr.ib(default=None)
+    alt = attr.ib(default=None)
+    uncertain = attr.ib(default=False)
 
     @property
     def ref_s(self):
@@ -159,9 +157,15 @@ class NARefAlt(Edit, recordtype.recordtype("NARefAlt", [("ref", None), ("alt", N
         return (del_len, ins_len)
 
 
-class AARefAlt(Edit, recordtype.recordtype("AARefAlt", [("ref", None), ("alt", None), ("uncertain", False)])):
-    def __init__(self, ref, alt, uncertain=False):
-        super(AARefAlt, self).__init__(ref=aa_to_aa1(ref), alt=aa_to_aa1(alt), uncertain=uncertain)
+@attr.s(slots=True)
+class AARefAlt(Edit):
+    ref = attr.ib(default=None)
+    alt = attr.ib(default=None)
+    uncertain = attr.ib(default=False)
+
+    def __attrs_post_init__(self):
+        self.ref = aa_to_aa1(self.ref)
+        self.alt = aa_to_aa1(self.alt)
 
     def format(self, conf=None):
         if self.ref is None and self.alt is None:
@@ -250,6 +254,7 @@ class AARefAlt(Edit, recordtype.recordtype("AARefAlt", [("ref", None), ("alt", N
         return (del_len, ins_len)
 
 
+@attr.s(slots=True)
 class AASub(AARefAlt):
     def format(self, conf=None):
         p_3_letter, p_term_asterisk = self._format_config_aa(conf)
@@ -273,9 +278,16 @@ class AASub(AARefAlt):
         return "sub"
 
 
-class AAFs(Edit, recordtype.recordtype("AAFs", [("ref", None), ("alt", None), ("length", None), ("uncertain", False)])):
-    def __init__(self, ref, alt, length=None, uncertain=False):
-        super(AAFs, self).__init__(ref=aa_to_aa1(ref), alt=aa_to_aa1(alt), length=length, uncertain=uncertain)
+@attr.s(slots=True)
+class AAFs(Edit):
+    ref = attr.ib(default=None)
+    alt = attr.ib(default=None)
+    length = attr.ib(default=None)
+    uncertain = attr.ib(default=False)
+
+    def __attrs_post_init__(self):
+        self.ref = aa_to_aa1(self.ref)
+        self.alt = aa_to_aa1(self.alt)
 
     def format(self, conf=None):
         p_3_letter, p_term_asterisk = self._format_config_aa(conf)
@@ -309,12 +321,18 @@ class AAFs(Edit, recordtype.recordtype("AAFs", [("ref", None), ("alt", None), ("
         return "fs"
 
 
-class AAExt(Edit,
-            recordtype.recordtype("AAExt", [("ref", None), ("alt", None), ("aaterm", None), ("length", None),
-                                            ("uncertain", False)])):
-    def __init__(self, ref, alt, aaterm=None, length=None, uncertain=False):
-        super(AAExt, self).__init__(
-            ref=aa_to_aa1(ref), alt=aa_to_aa1(alt), aaterm=aa_to_aa1(aaterm), length=length, uncertain=uncertain)
+@attr.s(slots=True)
+class AAExt(Edit):
+    ref = attr.ib(default=None)
+    alt = attr.ib(default=None)
+    aaterm = attr.ib(default=None)
+    length = attr.ib(default=None)
+    uncertain = attr.ib(default=False)
+
+    def __attrs_post_init__(self):
+        self.ref = aa_to_aa1(self.ref)
+        self.alt = aa_to_aa1(self.alt)
+        self.aaterm=aa_to_aa1(self.aaterm)
 
     def format(self, conf=None):
         p_3_letter, p_term_asterisk = self._format_config_aa(conf)
@@ -358,12 +376,10 @@ class AAExt(Edit,
         return (0, abs(self.length))
 
 
-class Dup(Edit, recordtype.recordtype('Dup', [('ref', None), ('uncertain', False)])):
-    def __init__(self, ref=None, uncertain=False, edit=None):
-        if edit:
-            ref = edit.ref
-            uncertain = edit.uncertain
-        super(Dup, self).__init__(ref=ref, uncertain=uncertain)
+@attr.s(slots=True)
+class Dup(Edit):
+    ref = attr.ib(default=None)
+    uncertain = attr.ib(default=False)
 
     def format(self, conf=None):
         max_ref_length = self._format_config_na(conf)
@@ -409,8 +425,13 @@ class Dup(Edit, recordtype.recordtype('Dup', [('ref', None), ('uncertain', False
         return (0, ilen)
 
 
-class Repeat(Edit, recordtype.recordtype('Repeat', [('ref', None), ('min', None), ('max', None),
-                                                    ('uncertain', False)])):
+@attr.s(slots=True)
+class Repeat(Edit):
+    ref = attr.ib(default=None)
+    min = attr.ib(default=None)
+    max = attr.ib(default=None)
+    uncertain = attr.ib(default=False)
+
     def format(self, conf=None):
         if self.min > self.max:
             raise HGVSError("Repeat min count must be less than or equal to max count")
@@ -441,7 +462,8 @@ class Repeat(Edit, recordtype.recordtype('Repeat', [('ref', None), ('min', None)
         return "repeat"
 
 
-class NACopy(Edit, recordtype.recordtype("NACopy", ["copy", ("uncertain", False)])):
+@attr.s(slots=True)
+class NACopy(Edit):
     """Represent copy number variants (Invitae-specific use)
 
     This class is intended for Invitae use only and does not represent
@@ -449,6 +471,8 @@ class NACopy(Edit, recordtype.recordtype("NACopy", ["copy", ("uncertain", False)
     removed without notice.
 
     """
+    copy = attr.ib(default=None)
+    uncertain = attr.ib(default=False)
 
     def __str__(self):
         s = "copy{}".format(self.copy)
@@ -477,15 +501,12 @@ class NACopy(Edit, recordtype.recordtype("NACopy", ["copy", ("uncertain", False)
         return (0, ilen * self.copy)
 
 
-class Inv(Edit, recordtype.recordtype('Inv', [('ref', None), ('uncertain', False)])):
+@attr.s(slots=True)
+class Inv(Edit):
     """Inversion
     """
-
-    def __init__(self, ref=None, uncertain=False, edit=None):
-        if edit:
-            ref = edit.ref
-            uncertain = edit.uncertain
-        super(Inv, self).__init__(ref=ref, uncertain=uncertain)
+    ref = attr.ib(default=None)
+    uncertain = attr.ib(default=False)
 
     def __str__(self):
         return "inv"
@@ -528,19 +549,14 @@ class Inv(Edit, recordtype.recordtype('Inv', [('ref', None), ('uncertain', False
         return (ilen, ilen)
 
 
-class Conv(Edit,
-           recordtype.recordtype('Conv', [('from_ac', None), ('from_type', None), ('from_pos', None),
-                                          ('uncertain', False)])):
+@attr.s(slots=True)
+class Conv(Edit):
     """Conversion
     """
-
-    def __init__(self, from_ac=None, from_type=None, from_pos=None, uncertain=False, edit=None):
-        if edit:
-            from_ac = edit.from_ac
-            from_type = edit.from_type
-            from_pos = edit.from_pos
-            uncertain = edit.uncertain
-        super(Conv, self).__init__(from_ac=from_ac, from_type=from_type, from_pos=from_pos, uncertain=uncertain)
+    from_ac = attr.ib(default=None)
+    from_type = attr.ib(default=None)
+    from_pos = attr.ib(default=None)
+    uncertain = attr.ib(default=False)
 
     def __str__(self):
         if self.from_ac and self.from_type and self.from_pos:

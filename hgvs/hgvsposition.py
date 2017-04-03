@@ -5,10 +5,11 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import recordtype
+import attr
 
 
-class HGVSPosition(recordtype.recordtype("HGVSPosition", ["ac", "type", "pos"])):
+@attr.s(slots=True, repr=False)
+class HGVSPosition(object):
     """
     HGVSPosition -- Represent partial HGVS tags that refer to a position without alleles
 
@@ -17,9 +18,16 @@ class HGVSPosition(recordtype.recordtype("HGVSPosition", ["ac", "type", "pos"]))
     :param str pos: sequence position
 
     """
+    ac = attr.ib()
+    type = attr.ib()
+    pos = attr.ib()
 
     def __str__(self):
         return "{self.ac}:{self.type}.{self.pos}".format(self=self)
+
+    def __repr__(self):
+        return "{0}({1})".format(self.__class__.__name__, ", ".join(
+               (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
 
 
 # <LICENSE>
