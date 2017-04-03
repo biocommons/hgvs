@@ -1,0 +1,16 @@
+
+1.0.0a4 (2017-04-02)
+#####################
+
+Changes since 1.0.0a3 (2017-03-31).
+
+New Features
+$$$$$$$$$$$$$
+
+* Closed `#391 <https://github.com/biocommons/hgvs/issues/391/>`_: Attempt reconnection if db connection is lost [`2aef5fac3a61 <https://github.com/biocommons/hgvs/commit/2aef5fac3a61>`_]
+
+Internal and Developer Changes
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+* removed sqlite-based uta dataprovider; updated reqs in etc [`e8c9d8d85d35 <https://github.com/biocommons/hgvs/commit/e8c9d8d85d35>`_]
+* Closed `#347 <https://github.com/biocommons/hgvs/issues/347/>`_: Replace recordtype with attrs

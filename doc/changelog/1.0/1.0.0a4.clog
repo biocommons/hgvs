@@ -1,0 +1,8 @@
+clog format: 1; -*-outline-*-
+* 1.0.0a4 (2017-04-02)
+Changes since 1.0.0a3 (2017-03-31).
+** New Features
+*** Closed #391: Attempt reconnection if db connection is lost [2aef5fac3a61]
+** Internal and Developer Changes
+*** removed sqlite-based uta dataprovider; updated reqs in etc [e8c9d8d85d35]
+*** Closed #347: Replace recordtype with attrs
