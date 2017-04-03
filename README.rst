@@ -65,10 +65,9 @@ See `Installation instructions
   (hgvs-test)$ pip install hgvs
   (hgvs-test)$ python
 
-  >>> import hgvs.assemblymapper
   >>> import hgvs.dataproviders.uta
   >>> import hgvs.parser
-  >>> import hgvs.variantmapper
+  >>> import hgvs.assemblymapper
 
   # start with these variants as strings
   >>> hgvs_g, hgvs_c = 'NC_000007.13:g.36561662C>T', 'NM_001637.3:c.1582G>A'
@@ -107,7 +106,7 @@ See `Installation instructions
 
   # CDS coordinates use BaseOffsetPosition to support intronic offsets
   >>> var_c.posedit.pos.start
-  BaseOffsetPosition(base=1582, offset=0, datum=1, uncertain=False)
+  BaseOffsetPosition(base=1582, offset=0, datum=Datum.CDS_START, uncertain=False)
 
 
 
@@ -117,7 +116,7 @@ See `Installation instructions
   >>> import hgvs.normalizer
   >>> hn = hgvs.normalizer.Normalizer(hdp)
   >>> hn.normalize(hp.parse_hgvs_variant('NM_001166478.1:c.35_36insT'))
-  SequenceVariant(ac=NM_001166478.1, type=c, posedit=35dupT)
+  SequenceVariant(ac=NM_001166478.1, type=c, posedit=35dup)
 
   # during mapping, variants are normalized (by default)
   >>> c1 = hp.parse_hgvs_variant('NM_001166478.1:c.31del')
@@ -125,13 +124,13 @@ See `Installation instructions
   SequenceVariant(ac=NM_001166478.1, type=c, posedit=31del)
   >>> c1n = hn.normalize(c1)
   >>> c1n
-  SequenceVariant(ac=NM_001166478.1, type=c, posedit=35delT)
+  SequenceVariant(ac=NM_001166478.1, type=c, posedit=35del)
   >>> g = am.c_to_g(c1)
   >>> g
-  SequenceVariant(ac=NC_000006.11, type=g, posedit=49917127delA)
+  SequenceVariant(ac=NC_000006.11, type=g, posedit=49917127del)
   >>> c2 = am.g_to_c(g, c1.ac)
   >>> c2
-  SequenceVariant(ac=NM_001166478.1, type=c, posedit=35delT)
+  SequenceVariant(ac=NM_001166478.1, type=c, posedit=35del)
 
 
 There are `more examples in the documentation <http://hgvs.readthedocs.org/en/master/examples.html>`_.
