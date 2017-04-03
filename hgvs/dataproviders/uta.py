@@ -507,7 +507,7 @@ class UTA_postgresql(UTABase):
             "specified schema ({}) does not exist (url={})".format(self.url.schema, self.url))
 
     @contextlib.contextmanager
-    def _get_cursor(self):
+    def _get_cursor(self, n_retries=1):
         """Returns a context manager for obtained from a single or pooled
         connection, and sets the PostgreSQL search_path to the schema
         specified in the connection URL.
@@ -516,24 +516,52 @@ class UTA_postgresql(UTABase):
         connections and are *not* threadsafe. Do not share cursors
         across threads.
 
+        Use this funciton like this::
+
+            with hdp._get_cursor() as cur:
+                # your code
+
+        Do not call this function outside a contextmanager.
+
         """
 
-        conn = self._pool.getconn() if self.pooling else self._conn
+        n_tries_rem = n_retries + 1
+        while n_tries_rem > 0:
+            try:
 
-        # setting autocommit obviates explicitly closing the
-        # transaction
-        conn.autocommit = True
+                conn = self._pool.getconn() if self.pooling else self._conn
 
-        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cur.execute("set search_path = " + self.url.schema + ";")
+                # autocommit=True obviates closing explicitly
+                conn.autocommit = True
 
-        yield cur
+                cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+                cur.execute("set search_path = {self.url.schema};".format(self=self))
 
-        # the contextmanager will ensure that these are executed
-        # when the context is exited
-        cur.close()
-        if self.pooling:
-            self._pool.putconn(conn)
+                yield cur
+
+                # contextmanager executes these when context exits
+                cur.close()
+                if self.pooling:
+                    self._pool.putconn(conn)
+
+                break
+
+            except psycopg2.OperationalError:
+
+                _logger.warn("Lost connection to {url}; attempting reconnect".format(url=self.url))
+                if self.pooling:
+                    self._pool.closeall()
+                self._connect()
+                _logger.warn("Reconnected to {url}".format(url=self.url))
+
+            n_tries_rem -= 1
+
+        else:
+
+            # N.B. Probably never reached
+            raise HGVSError("Permanently lost connection to {url} ({n} retries)".format(
+                url=self.url, n=n_retries))
+
 
 
 class ParseResult(urlparse.ParseResult):
