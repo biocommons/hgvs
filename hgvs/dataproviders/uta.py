@@ -11,7 +11,6 @@ import inspect
 import logging
 import os
 import re
-import sqlite3
 import urlparse
 
 import psycopg2
@@ -535,29 +534,6 @@ class UTA_postgresql(UTABase):
         cur.close()
         if self.pooling:
             self._pool.putconn(conn)
-
-
-class UTA_sqlite(UTABase):
-    # The current sqlite db was based on schema v1. No tests currently
-    # use 1.1 features from sqlite, so we override the
-    # required_version here.  Total hack.  This should go away with
-    # #237.
-
-    required_version = "1"
-
-    def _connect(self):
-        def _sqlite3_row_dict_factory(cur, row):
-            "convert sqlite row to dict"
-            return dict((d[0], row[i]) for i, d in enumerate(cur.description))
-
-        if not os.path.exists(self.url.path):
-            raise IOError(self.url.path + ': Non-existent database file')
-        self._conn = sqlite3.connect(self.url.path)
-        self._conn.row_factory = _sqlite3_row_dict_factory
-
-    @contextlib.contextmanager
-    def _get_cursor(self):
-        yield self._conn.cursor()
 
 
 class ParseResult(urlparse.ParseResult):
