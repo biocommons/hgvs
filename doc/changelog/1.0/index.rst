@@ -4,6 +4,7 @@
 .. toctree::
    :maxdepth: 1
 
+   1.0.0rc1
    1.0.0a4
    1.0.0a3
    1.0.0a2
