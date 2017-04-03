@@ -65,16 +65,16 @@ silent SNV mutations now include the amino acid, as in
 changes improve conformance with current `varnome recommendations
 <http://varnomen.org/>`__.
 
-** ★ By default, do not show reference sequence in dels and dups.
+**★ By default, do not show reference sequence in dels and dups.
 For example, `NM_000059.3:c.22_23delAAinsT` would be shown as
 `NM_000059.3:c.22_23delinsT`. Users may configure `max_ref_length`
 (default 0) order to change this behavior (`#404 <https://github.com/biocommons/hgvs/issues/404/>`_).
 
-** ★ BaseOffsetPosition datums now use enums, defined in hgvs.enums.
+**★ BaseOffsetPosition datums now use enums, defined in hgvs.enums.
 For example, previous `hgvs.location.SEQ_START` must be replaced with
 `hgvs.enums.Datum.SEQ_START` (`#396 <https://github.com/biocommons/hgvs/issues/396/>`_).
 
-** ★ Unknown protein effect are now internally represented with
+**★ Unknown protein effect are now internally represented with
 `var.posedit=None`. This case is printed as `NP_01234.5:p.?` (`#412 <https://github.com/biocommons/hgvs/issues/412/>`_).
 
 
