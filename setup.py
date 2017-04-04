@@ -44,6 +44,7 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
           "hgvs",
       ],
       install_requires=[
+          "attrs>=16.3.0",
           "biocommons.seqrepo",
           "biopython>=1.66",
           "bioutils>=0.2.2",
@@ -52,15 +53,12 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
           "ipython",            # for hgvs-shell
           "parsley",
           "psycopg2!=2.7",  # 2.7 bug: https://github.com/psycopg/psycopg2/issues/517
-          "attrs>=16.3.0",
           "unicodecsv",
       ],
       setup_requires=[
-          "setuptools_scm",
           "nose",
+          "setuptools_scm",
           "wheel",
-      ],
-      tests_require=[
       ],
 )
 
