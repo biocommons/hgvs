@@ -10,13 +10,12 @@ the Human Genome Variation Society (`varnomen`_) recommendations.
 
 ----
 
-.. note:: 1.0.0a1 is available for testing.  See `1.0.0a1 Change Log
-          <http://hgvs.readthedocs.io/en/master/changelog/1.0/1.0.0a1.html>`__
-          for new features. ``pip install hgvs==1.0.0a1`` should get
-          you started, but see `installation instructions
+.. note:: hgvs 1.0.0 was released with `major new features
+          <http://hgvs.readthedocs.io/en/master/changelog/1.0/1.0.0.html>`__.
+          ``pip install 'hgvs>=1.0.0'`` will get you started; see
+          `installation instructions
           <https://hgvs.readthedocs.io/en/master/installation.html>`__
-          for details re: local UTA and SeqRepo for speed. Send
-          feedback to the `mailing list`_!
+          for details. Send feedback to the `mailing list`_!
 
 ----
 
@@ -37,6 +36,10 @@ Features
   data
 * Extensive automated tests, including those for all variant types and
   "problematic" transcripts
+* Easily installed using remote data sources.  Installation with local
+  data sources are straightforward and completely obviate network
+  communications.
+
 
 ----
 
