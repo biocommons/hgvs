@@ -1,5 +1,0 @@
-clog format: 1; -*-outline-*-
-* 1.0.0a3 (2017-03-31)
-Changes since 1.0.0a2 (2017-03-30).
-** Special Attention
-*** #412: Use posedit=None for unknown effect var_p
