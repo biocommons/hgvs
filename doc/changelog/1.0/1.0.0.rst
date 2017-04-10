@@ -96,7 +96,7 @@ $$$$$$$$$$
 * `#381 <https://github.com/biocommons/hgvs/issues/381/>`_: fix bug attempting to normalize p. variants; add issue test (test_issues.py) [`834bed9 <https://github.com/biocommons/hgvs/commit/834bed9>`_]
 * `#393 <https://github.com/biocommons/hgvs/issues/393/>`_: fix inconsistent representation of unknown p. effect when inferred by c_to_p [`3f1ac48 <https://github.com/biocommons/hgvs/commit/3f1ac48>`_]
 * `#409 <https://github.com/biocommons/hgvs/issues/409/>`_: Fix bug in normalizer when normalizing ident variant that is written as delins [`94607ecc30da <https://github.com/biocommons/hgvs/commit/94607ecc30da>`_]
-* `#415 <https://github.com/biocommons/hgvs/issues/415/>`_: Limit assembly mapper to NC_ accessions [`6056fd4414df <https://github.com/biocommons/hgvs/commit/6056fd4414df>`_]
+* `#415 <https://github.com/biocommons/hgvs/issues/415/>`_: Limit assembly mapper to NC accessions [`6056fd4414df <https://github.com/biocommons/hgvs/commit/6056fd4414df>`_]
 
 
 New Features

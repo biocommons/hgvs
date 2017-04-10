@@ -85,7 +85,7 @@ For example, previous `hgvs.location.SEQ_START` must be replaced with
 *** #381: fix bug attempting to normalize p. variants; add issue test (test_issues.py) [834bed9]
 *** #393: fix inconsistent representation of unknown p. effect when inferred by c_to_p [3f1ac48]
 *** #409: Fix bug in normalizer when normalizing ident variant that is written as delins [94607ecc30da]
-*** #415: Limit assembly mapper to NC_ accessions [6056fd4414df]
+*** #415: Limit assembly mapper to NC accessions [6056fd4414df]
 
 ** New Features
 *** #105: configurable formatting [c8b9fd1]
