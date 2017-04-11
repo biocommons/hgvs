@@ -1,8 +1,8 @@
 flake8
 ipython
-pytest
-pytest-cov
 restview
 setuptools
-tox
+sphinx
+sphinx_rtd_theme
+sphinxcontrib-fulltoc>=1.1
 yapf
