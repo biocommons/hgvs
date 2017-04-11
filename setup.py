@@ -50,7 +50,7 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
           "bioutils>=0.2.2",
           "configparser>=3.3.0",
           "enum34",
-          "ipython",            # for hgvs-shell
+          "ipython<6",          # for hgvs-shell; >=6 for Py3 only
           "parsley",
           "psycopg2!=2.7",  # 2.7 bug: https://github.com/psycopg/psycopg2/issues/517
           "unicodecsv",
