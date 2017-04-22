@@ -69,14 +69,19 @@ class VariantMapper(object):
     """
 
     def __init__(self, hdp,
-                 replace_reference=hgvs.global_config.mapping.replace_reference):
+                 replace_reference=hgvs.global_config.mapping.replace_reference,
+                 ext_validate=hgvs.global_config.mapping.ext_validate):
         """
         :param bool replace_reference: replace reference (entails additional network access)
+        :param bool ext_validate: whether enable extrinsic validator (entails additional network access)
 
         """
         self.hdp = hdp
         self.replace_reference = replace_reference
-        self._validator = hgvs.validator.IntrinsicValidator(strict=False)
+        if ext_validate:
+            self._validator = hgvs.validator.Validator(self.hdp, strict=False)
+        else:
+            self._validator = hgvs.validator.IntrinsicValidator(strict=False)
 
     # ############################################################################
     # g⟷t
