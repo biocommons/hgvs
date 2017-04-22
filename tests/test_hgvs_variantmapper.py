@@ -7,7 +7,7 @@ import unittest
 
 from nose.plugins.attrib import attr
 
-from hgvs.exceptions import HGVSInvalidVariantError
+from hgvs.exceptions import HGVSError, HGVSInvalidVariantError
 import hgvs.dataproviders.uta
 import hgvs.parser
 import hgvs.variantmapper
@@ -81,6 +81,18 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
         var_p = self.vm.c_to_p(var_c)
         self.assertEqual(str(var_p), "NP_066124.1:p.?")
+
+    def test_map_of_c_out_of_cds_bound(self):
+        hgvs_c = "NM_145901.2:c.343T>C"
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        with self.assertRaises(HGVSInvalidVariantError):
+            self.vm.c_to_p(var_c)
+
+    def test_map_of_c_out_of_reference_bound(self):
+        hgvs_c = "NM_000249.3:c.-73960_*46597del"
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        with self.assertRaisesRegexp(HGVSError, 'The given coordinate is outside the bounds of the reference sequence.'):
+            self.vm.c_to_p(var_c)
 
 
 if __name__ == "__main__":
