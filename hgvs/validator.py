@@ -10,10 +10,11 @@ import hgvs.parser
 import hgvs.edit
 import hgvs.variantmapper
 from hgvs.exceptions import HGVSInvalidVariantError, HGVSUnsupportedOperationError
-from hgvs.enums import ValidationLevel
+from hgvs.enums import ValidationLevel, Datum
 
 
 SEQ_ERROR_MSG = "Variant reference ({var_ref_seq}) does not agree with reference sequence ({ref_seq})"
+CDS_BOUND_ERROR_MSG = "Variant coordinate is out of the bound of CDS region (CDS length : {cds_length})"
 
 BASE_OFFSET_COORD_TYPES = "cnr"
 SIMPLE_COORD_TYPES = "gmp"
@@ -69,6 +70,10 @@ class ExtrinsicValidator():
         (res, msg) = self._ref_is_valid(var)
         if res >= fail_level:
             raise HGVSInvalidVariantError(msg)
+        else:
+            (res, msg) = self._c_within_cds_bound(var)
+            if res >= fail_level:
+                raise HGVSInvalidVariantError(msg)
         return True
 
     def _ref_is_valid(self, var):
@@ -105,6 +110,19 @@ class ExtrinsicValidator():
                 return (ValidationLevel.ERROR,
                     str(var) + ": " + SEQ_ERROR_MSG.format(ref_seq=ref_seq, var_ref_seq=var_ref_seq))
 
+        return (ValidationLevel.VALID, None)
+
+    def _c_within_cds_bound(self, var):
+        if var.type != 'c':
+            return (ValidationLevel.VALID, None)
+        tx_info = self.hdp.get_tx_identity_info(var.ac)
+        if tx_info is None:
+            return (ValidationLevel.WARNING, "No transcript data for accession: {ac}".format(ac=var.ac))
+        cds_length = tx_info["cds_end_i"] - tx_info["cds_start_i"]
+        if var.posedit.pos.start.datum == Datum.CDS_START and var.posedit.pos.start.base > cds_length:
+            return (ValidationLevel.ERROR, CDS_BOUND_ERROR_MSG.format(cds_length=cds_length))
+        if var.posedit.pos.end.datum == Datum.CDS_START and var.posedit.pos.end.base > cds_length:
+            return (ValidationLevel.ERROR, CDS_BOUND_ERROR_MSG.format(cds_length=cds_length))
         return (ValidationLevel.VALID, None)
 
 
