@@ -78,7 +78,8 @@ class VariantMapper(object):
         """
         self.hdp = hdp
         self.replace_reference = replace_reference
-        if ext_validate:
+        self.ext_validate = ext_validate
+        if self.ext_validate:
             self._validator = hgvs.validator.Validator(self.hdp, strict=False)
         else:
             self._validator = hgvs.validator.IntrinsicValidator(strict=False)
