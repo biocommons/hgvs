@@ -25,6 +25,7 @@ import hgvs.validator
 
 from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
 from hgvs.decorators.lru_cache import lru_cache
+from hgvs.enums import PrevalidationLevel
 
 _logger = logging.getLogger(__name__)
 
@@ -70,26 +71,32 @@ class VariantMapper(object):
 
     def __init__(self, hdp,
                  replace_reference=hgvs.global_config.mapping.replace_reference,
-                 ext_validate=hgvs.global_config.mapping.ext_validate):
+                 prevalidation_level = hgvs.global_config.mapping.prevalidation_level):
         """
         :param bool replace_reference: replace reference (entails additional network access)
-        :param bool ext_validate: whether enable extrinsic validator (entails additional network access)
+        :param str prevalidation_level: None or Intrinsic or Extrinsic validation before mapping
 
         """
         self.hdp = hdp
         self.replace_reference = replace_reference
-        self.ext_validate = ext_validate
-        if self.ext_validate:
-            self._validator = hgvs.validator.Validator(self.hdp, strict=False)
+        if prevalidation_level is None:
+            self.prevalidation_level = PrevalidationLevel.NONE
         else:
+            self.prevalidation_level = PrevalidationLevel[prevalidation_level.upper()]
+        if self.prevalidation_level == PrevalidationLevel.NONE:
+            self._validator = None
+        elif self.prevalidation_level == PrevalidationLevel.INTRINSIC:
             self._validator = hgvs.validator.IntrinsicValidator(strict=False)
+        else:
+            self._validator = hgvs.validator.Validator(self.hdp, strict=False)
 
     # ############################################################################
     # g⟷t
     def g_to_t(self, var_g, tx_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
         if not (var_g.type == "g"):
             raise HGVSInvalidVariantError("Expected a g. variant; got " + str(var_g))
-        self._validator.validate(var_g)
+        if self._validator:
+            self._validator.validate(var_g)
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
         if tm.is_coding_transcript:
             var_out = VariantMapper.g_to_c(self, var_g=var_g, tx_ac=tx_ac, alt_aln_method=alt_aln_method)
@@ -100,7 +107,8 @@ class VariantMapper(object):
     def t_to_g(self, var_t, alt_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
         if var_t.type not in "cn":
             raise HGVSInvalidVariantError("Expected a c. or n. variant; got " + str(var_t))
-        self._validator.validate(var_t)
+        if self._validator:
+            self._validator.validate(var_t)
         tm = self._fetch_TranscriptMapper(tx_ac=var_t.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         if tm.is_coding_transcript:
             var_out = VariantMapper.c_to_g(self, var_c=var_t, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
@@ -125,7 +133,8 @@ class VariantMapper(object):
 
         if not (var_g.type == "g"):
             raise HGVSInvalidVariantError("Expected a g. variant; got " + str(var_g))
-        self._validator.validate(var_g)
+        if self._validator:
+            self._validator.validate(var_g)
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
         pos_n = tm.g_to_n(var_g.posedit.pos)
         edit_n = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
@@ -149,7 +158,8 @@ class VariantMapper(object):
 
         if not (var_n.type == "n"):
             raise HGVSInvalidVariantError("Expected a n. variant; got " + str(var_n))
-        self._validator.validate(var_n)
+        if self._validator:
+            self._validator.validate(var_n)
         tm = self._fetch_TranscriptMapper(tx_ac=var_n.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         pos_g = tm.n_to_g(var_n.posedit.pos)
         edit_g = self._convert_edit_check_strand(tm.strand, var_n.posedit.edit)
@@ -175,7 +185,8 @@ class VariantMapper(object):
 
         if not (var_g.type == "g"):
             raise HGVSInvalidVariantError("Expected a g. variant; got " + str(var_g))
-        self._validator.validate(var_g)
+        if self._validator:
+            self._validator.validate(var_g)
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
         pos_c = tm.g_to_c(var_g.posedit.pos)
         edit_c = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
@@ -199,7 +210,8 @@ class VariantMapper(object):
 
         if not (var_c.type == "c"):
             raise HGVSInvalidVariantError("Expected a cDNA (c.); got " + str(var_c))
-        self._validator.validate(var_c)
+        if self._validator:
+            self._validator.validate(var_c)
         tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
 
         pos_g = tm.c_to_g(var_c.posedit.pos)
@@ -225,7 +237,8 @@ class VariantMapper(object):
 
         if not (var_c.type == "c"):
             raise HGVSInvalidVariantError("Expected a cDNA (c.); got " + str(var_c))
-        self._validator.validate(var_c)
+        if self._validator:
+            self._validator.validate(var_c)
         tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=var_c.ac, alt_aln_method="transcript")
         pos_n = tm.c_to_n(var_c.posedit.pos)
         if (isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_c.posedit.edit, hgvs.edit.Dup) or
@@ -251,7 +264,8 @@ class VariantMapper(object):
 
         if not (var_n.type == "n"):
             raise HGVSInvalidVariantError("Expected n. variant; got " + str(var_n))
-        self._validator.validate(var_n)
+        if self._validator:
+            self._validator.validate(var_n)
         tm = self._fetch_TranscriptMapper(tx_ac=var_n.ac, alt_ac=var_n.ac, alt_aln_method="transcript")
         pos_c = tm.n_to_c(var_n.posedit.pos)
         if (isinstance(var_n.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_n.posedit.edit, hgvs.edit.Dup) or
@@ -316,7 +330,8 @@ class VariantMapper(object):
 
         if not (var_c.type == "c"):
             raise HGVSInvalidVariantError("Expected a cDNA (c.); got " + str(var_c))
-        self._validator.validate(var_c)
+        if self._validator:
+            self._validator.validate(var_c)
         reference_data = RefTranscriptData.setup_transcript_data(self.hdp, var_c.ac, pro_ac)
         builder = altseqbuilder.AltSeqBuilder(var_c, reference_data)
 

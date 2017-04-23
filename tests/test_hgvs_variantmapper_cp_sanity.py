@@ -17,7 +17,7 @@ class TestHgvsCToP(unittest.TestCase):
 
     fn = os.path.join(os.path.dirname(__file__), "data", "sanity_cp.tsv")
     _datasource = mock_input_data_source.MockInputSource(fn)
-    _mapper = variantmapper.VariantMapper(_datasource, ext_validate=False)
+    _mapper = variantmapper.VariantMapper(_datasource, prevalidation_level="INTRINSIC")
     _parser = hgvs.parser.Parser()
 
     def test_silent(self):

@@ -61,7 +61,7 @@ class ExtrinsicValidator():
     def __init__(self, hdp, strict=hgvs.global_config.validator.strict):
         self.strict = strict
         self.hdp = hdp
-        self.vm = hgvs.variantmapper.VariantMapper(self.hdp, ext_validate=False)
+        self.vm = hgvs.variantmapper.VariantMapper(self.hdp, prevalidation_level=None)
 
     def validate(self, var, strict=None):
         assert isinstance(var, hgvs.sequencevariant.SequenceVariant), "variant must be a parsed HGVS sequence variant object"
