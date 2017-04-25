@@ -108,7 +108,7 @@ class TestUTACache(Test_hgvs_dataproviders_uta_UTA_default):
         start = hgvs.location.SimplePosition(118898437)
         end = hgvs.location.SimplePosition(118898437)
         iv = hgvs.location.Interval(start=start, end=end)
-        edit = hgvs.edit.NARefAlt(ref="G", alt="T")
+        edit = hgvs.edit.NARefAlt(ref="C", alt="T")
         posedit = hgvs.posedit.PosEdit(pos=iv, edit=edit)
         genomic_variant = hgvs.sequencevariant.SequenceVariant(ac="NC_000011.9", type="g", posedit=posedit, )
         variantmapper = hgvs.variantmapper.VariantMapper(self.hdp)

@@ -150,6 +150,16 @@ class Test_HGVSExtrinsicValidator(unittest.TestCase):
             with self.assertRaises(HGVSInvalidVariantError):
                 self.validate_ext.validate(var)
 
+    def test_c_within_cds_bound(self):
+        """Test c. variants within and out of cds bound."""
+        with self.assertRaises(HGVSInvalidVariantError):
+            self.validate_ext.validate(self.hp.parse_hgvs_variant("NM_145901.2:c.343T>C"))
+        with self.assertRaises(HGVSInvalidVariantError):
+            self.validate_ext.validate(self.hp.parse_hgvs_variant("NM_145901.2:c.325C>A"))
+        self.assertTrue(self.validate_ext.validate(self.hp.parse_hgvs_variant("NM_145901.2:c.324A>G")))
+        self.assertTrue(self.validate_ext.validate(self.hp.parse_hgvs_variant("NM_145901.2:c.*1C>T")))
+        self.assertTrue(self.validate_ext.validate(self.hp.parse_hgvs_variant("NM_145901.2:c.-22C>T")))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -42,6 +42,7 @@ class AssemblyMapper(VariantMapper):
                  assembly_name=hgvs.global_config.mapping.assembly,
                  alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
                  normalize=hgvs.global_config.mapping.normalize,
+                 prevalidation_level = hgvs.global_config.mapping.prevalidation_level,
                  in_par_assume=hgvs.global_config.mapping.in_par_assume,
                  replace_reference=hgvs.global_config.mapping.replace_reference,
                  *args,
@@ -53,12 +54,13 @@ class AssemblyMapper(VariantMapper):
         :param str assembly_name: name of assembly ("GRCh38.p5")
         :param str alt_aln_method: genome-transcript alignment method ("splign", "blat", "genewise")
         :param bool normalize: normalize variants
+        :param str prevalidation_level: None or Intrinsic or Extrinsic validation before mapping
         :param str in_par_assume: during x_to_g, assume this chromosome name if alignment is ambiguous
 
         :raises HGVSError subclasses: for a variety of mapping and data lookup failures
         """
 
-        super(AssemblyMapper, self).__init__(hdp=hdp, replace_reference=replace_reference, *args, **kwargs)
+        super(AssemblyMapper, self).__init__(hdp=hdp, replace_reference=replace_reference, prevalidation_level=prevalidation_level, *args, **kwargs)
         self.assembly_name = assembly_name
         self.alt_aln_method = alt_aln_method
         self.normalize = normalize
@@ -74,6 +76,7 @@ class AssemblyMapper(VariantMapper):
     def __repr__(self):
         return ("{self.__module__}.{t.__name__}(alt_aln_method={self.alt_aln_method}, "
                 "assembly_name={self.assembly_name}, normalize={self.normalize}, "
+                "prevalidation_level={self.prevalidation_level}, "
                 "replace_reference={self.replace_reference})".format(self=self, t=type(self)))
 
     def g_to_c(self, var_g, tx_ac):
