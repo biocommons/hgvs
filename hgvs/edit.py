@@ -104,7 +104,7 @@ class NARefAlt(Edit):
         # subst and delins
         if self.ref is not None and self.alt is not None:
             if self.ref == self.alt:
-                s = "{ref}=".format(ref=ref)
+                s = "{self.ref}=".format(self=self)
             elif len(self.alt) == 1 and len(self.ref) == 1 and not self.ref.isdigit():    # don't turn del5insT into 5>T
                 s = "{self.ref}>{self.alt}".format(self=self)
             else:
@@ -435,13 +435,9 @@ class Repeat(Edit):
     def format(self, conf=None):
         if self.min > self.max:
             raise HGVSError("Repeat min count must be less than or equal to max count")
-        max_ref_length = self._format_config_na(conf)
-        ref = self.ref
-        if max_ref_length is not None and (ref is None or len(ref) > max_ref_length):
-            ref = ''
         if self.min == self.max:
-            return "{ref}[{min}]".format(ref=ref, min=self.min)
-        return "{ref}({min}_{max})".format(ref=ref, min=self.min, max=self.max)
+            return "{ref}[{min}]".format(ref=self.ref, min=self.min)
+        return "{ref}({min}_{max})".format(ref=self.ref, min=self.min, max=self.max)
     
     __str__ = format
 
