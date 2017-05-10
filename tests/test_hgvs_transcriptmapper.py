@@ -6,6 +6,7 @@ import os
 import unittest
 
 from nose.plugins.attrib import attr
+import pytest
 
 import hgvs.dataproviders.uta
 
@@ -16,6 +17,7 @@ from hgvs.transcriptmapper import TranscriptMapper
 from hgvs.enums import Datum
 
 
+@pytest.mark.quick
 @attr(tags=["quick"])
 class Test_transcriptmapper(unittest.TestCase):
     ref = "GRCh37.p10"

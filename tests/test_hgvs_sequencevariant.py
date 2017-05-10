@@ -6,6 +6,7 @@ import os
 import unittest
 
 from nose.plugins.attrib import attr
+import pytest
 
 import hgvs
 import hgvs.sequencevariant
@@ -13,6 +14,8 @@ import hgvs.parser
 import hgvs.dataproviders.uta
 
 
+@pytest.mark.quick
+@pytest.mark.models
 @attr(tags=["quick", "models"])
 class Test_SequenceVariant(unittest.TestCase):
     def test_SequenceVariant(self):

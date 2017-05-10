@@ -4,12 +4,15 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import unittest
 
 from nose.plugins.attrib import attr
+import pytest
 
 import hgvs.edit
 import hgvs.location
 import hgvs.posedit
 
 
+@pytest.mark.quick
+@pytest.mark.models
 @attr(tags=["quick", "models", "models"])
 class Test_PosEdit(unittest.TestCase):
     def test_PosEdit(self):
