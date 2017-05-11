@@ -10,7 +10,7 @@ SELF:=$(firstword $(MAKEFILE_LIST))
 
 PKG=hgvs
 PKGD=$(subst .,/,${PKG})
-TEST_DIRS:=.,doc,hgvs,tests
+TEST_DIRS:=doc hgvs tests
 
 
 ############################################################################
@@ -68,11 +68,11 @@ bdist bdist_egg bdist_wheel build sdist install: %:
 #=> test: execute tests
 .PHONY: test
 test:
-	python setup.py nosetests -A '(not tags) or ("extra" not in tags)' --tests ${TEST_DIRS}
+	tox -- -m "not extra" $(TEST_DIRS)
 
 #=> test-* -- run tests with specified tag
 test-%:
-	python setup.py nosetests -a 'tags=$*' --tests ${TEST_DIRS}
+	tox -- -m $* $(TEST_DIRS)
 
 
 
