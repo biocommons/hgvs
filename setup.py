@@ -56,9 +56,13 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
           "unicodecsv",
       ],
       setup_requires=[
-          "pytest",
+          "pytest-runner",
           "setuptools_scm",
           "wheel",
+      ],
+      tests_require=[
+          "pytest",
+          "pytest-cov",
       ],
 )
 

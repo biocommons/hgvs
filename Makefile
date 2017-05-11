@@ -10,7 +10,7 @@ SELF:=$(firstword $(MAKEFILE_LIST))
 
 PKG=hgvs
 PKGD=$(subst .,/,${PKG})
-TEST_DIRS:=doc hgvs tests ./*.rst
+TEST_DIRS:=doc hgvs tests ./README.rst
 
 
 ############################################################################
@@ -68,10 +68,11 @@ bdist bdist_egg bdist_wheel build sdist install: %:
 #=> test: execute tests
 .PHONY: test
 test:
-	tox -- -m "not extra" $(TEST_DIRS)
+	python setup.py pytest --addopts="--cov=hgvs -m 'not extra' ${TEST_DIRS}"
 
 #=> test-* -- run tests with specified tag
 test-%:
+	python setup.py pytest --addopts="--cov=hgvs -m ${*} ${TEST_DIRS}"
 	tox -- -m $* $(TEST_DIRS)
 
 
