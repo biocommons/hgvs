@@ -56,7 +56,6 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
           "unicodecsv",
       ],
       setup_requires=[
-          "nose",
           "pytest",
           "setuptools_scm",
           "wheel",

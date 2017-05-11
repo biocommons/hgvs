@@ -5,7 +5,6 @@ import os
 
 import unittest
 
-from nose.plugins.attrib import attr
 import pytest
 
 from hgvs.exceptions import HGVSUnsupportedOperationError
@@ -15,7 +14,6 @@ import hgvs.variantmapper
 
 
 @pytest.mark.fx
-@attr(tags=["fx"])
 class Test_VariantLengths(unittest.TestCase):
     """test length_change method for all variant types and cases"""
 

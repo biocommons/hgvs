@@ -3,7 +3,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import unittest
 
-from nose.plugins.attrib import attr
 import pytest
 
 import hgvs.edit
@@ -14,7 +13,6 @@ from hgvs.exceptions import HGVSError
 
 @pytest.mark.quick
 @pytest.mark.models
-@attr(tags=["quick", "models"])
 class Test_Edit(unittest.TestCase):
     def test_NARefAlt_exceptions(self):
         with self.assertRaises(HGVSError):

@@ -3,7 +3,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import unittest
 
-from nose.plugins.attrib import attr
 import pytest
 
 import hgvs.exceptions
@@ -11,7 +10,6 @@ import hgvs.intervalmapper
 
 
 @pytest.mark.quick
-@attr(tags=["quick"])
 class Test_IntervalMapper(unittest.TestCase):
     longMessage = True
 

@@ -3,14 +3,12 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import unittest
 
-from nose.plugins.attrib import attr
 import pytest
 
 import hgvs.hgvsposition
 
 
 class Test_HGVSPosition(unittest.TestCase):
-    @attr(tags=["quick", "models"])
     @pytest.mark.quick
     @pytest.mark.models
     def test_hgvsposition(self):

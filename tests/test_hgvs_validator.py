@@ -5,7 +5,6 @@ import os
 
 import unittest
 
-from nose.plugins.attrib import attr
 import pytest
 
 from hgvs.exceptions import HGVSInvalidVariantError
@@ -41,7 +40,6 @@ class Test_HGVSValidator(unittest.TestCase):
 
 @pytest.mark.quick
 @pytest.mark.validation
-@attr(tags=["quick", "validation"])
 class Test_HGVSIntrinsicValidator(unittest.TestCase):
     """Tests for internal validation"""
 
@@ -112,7 +110,6 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
 
 
 @pytest.mark.validation
-@attr(tags=["validation"])
 class Test_HGVSExtrinsicValidator(unittest.TestCase):
     """Tests for external validation"""
 
