@@ -10,7 +10,7 @@ SELF:=$(firstword $(MAKEFILE_LIST))
 
 PKG=hgvs
 PKGD=$(subst .,/,${PKG})
-TEST_DIRS:=doc hgvs tests
+TEST_DIRS:=doc hgvs tests ./*.rst
 
 
 ############################################################################
