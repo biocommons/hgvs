@@ -5,7 +5,7 @@ import os
 
 import unittest
 
-from nose.plugins.attrib import attr
+import pytest
 
 from hgvs.exceptions import HGVSUnsupportedOperationError, HGVSInvalidVariantError, HGVSInvalidVariantError
 import hgvs.dataproviders.uta
@@ -16,7 +16,7 @@ import hgvs.normalizer
 hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache="tests/data/cache.hdp")
 
 
-@attr(tags=["normalization"])
+@pytest.mark.normalization
 class Test_HGVSNormalizer(unittest.TestCase):
     """Tests for normalizer"""
 

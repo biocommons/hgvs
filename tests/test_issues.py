@@ -9,7 +9,7 @@ import os
 
 import unittest
 
-from nose.plugins.attrib import attr
+import pytest
 
 from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError, HGVSParseError, HGVSInvalidVariantError, HGVSInvalidVariantError
 from hgvs.enums import Datum
@@ -23,7 +23,7 @@ import hgvs.validator
 import hgvs.variantmapper
 
 
-@attr(tags=["issues"])
+@pytest.mark.issues
 class Test_Issues(unittest.TestCase):
     def setUp(self):
         self.hdp = hgvs.dataproviders.uta.connect(mode="store", cache="tests/data/cache.hdp")

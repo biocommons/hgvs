@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import unittest
 
-from nose.plugins.attrib import attr
+import pytest
 
 from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError
 from hgvs.enums import Datum
@@ -11,7 +11,8 @@ import hgvs.location
 import hgvs.parser
 
 
-@attr(tags=["quick", "models"])
+@pytest.mark.quick
+@pytest.mark.models
 class Test_SimplePosition(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -47,7 +48,7 @@ class Test_SimplePosition(unittest.TestCase):
         self.assertTrue(var.posedit.pos.start >= var.posedit.pos.end)
 
 
-@attr(tags=["quick"])
+@pytest.mark.quick
 class Test_BaseOffsetPosition(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -158,8 +159,7 @@ class Test_BaseOffsetPosition(unittest.TestCase):
 
         
 
-
-@attr(tags=["quick"])
+@pytest.mark.quick
 class Test_AAPosition(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -185,7 +185,7 @@ class Test_AAPosition(unittest.TestCase):
         self.assertFalse(var.posedit.pos.start > var.posedit.pos.end)
 
 
-@attr(tags=["quick"])
+@pytest.mark.quick
 class Test_Interval(unittest.TestCase):
     def test_Interval(self):
         ival = hgvs.location.Interval(hgvs.location.BaseOffsetPosition(base=12,

@@ -6,12 +6,12 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import unittest
 
-from nose.plugins.attrib import attr
+import pytest
 
 import hgvs.parser
 
 
-@attr(tags=["quick"])
+@pytest.mark.quick
 class Test_Parser(unittest.TestCase):
     longMessage = True
 

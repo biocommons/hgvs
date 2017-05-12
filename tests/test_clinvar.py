@@ -10,7 +10,7 @@ import sys
 import types
 import unittest
 
-from nose.plugins.attrib import attr
+import pytest
 
 import hgvs
 import hgvs.dataproviders.uta
@@ -30,7 +30,7 @@ class Test_Clinvar(unittest.TestCase, CrossChecker):
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp)
         self.hp = hgvs.parser.Parser()
 
-    @attr(tags=["extra"])
+    @pytest.mark.extra
     def test_clinvar(self, fn=data_fn, mod=None):
         """Test genome-transcript projections for 7498 clinvar variants in 4676 against genes
         for both GRCh37 and GRCh38 (when both are available).

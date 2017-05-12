@@ -3,14 +3,15 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import unittest
 
-from nose.plugins.attrib import attr
+import pytest
 
 import hgvs.edit
 import hgvs.location
 import hgvs.posedit
 
 
-@attr(tags=["quick", "models", "models"])
+@pytest.mark.quick
+@pytest.mark.models
 class Test_PosEdit(unittest.TestCase):
     def test_PosEdit(self):
         pos = hgvs.location.Interval(

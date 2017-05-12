@@ -5,7 +5,7 @@ import os
 
 import unittest
 
-from nose.plugins.attrib import attr
+import pytest
 
 from hgvs.exceptions import HGVSError, HGVSInvalidVariantError
 import hgvs.dataproviders.uta
@@ -13,7 +13,7 @@ import hgvs.parser
 import hgvs.variantmapper
 
 
-@attr(tags=["quick"])
+@pytest.mark.quick
 class Test_VariantMapper_Exceptions(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

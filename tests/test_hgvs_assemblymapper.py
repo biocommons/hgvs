@@ -5,7 +5,7 @@ import os
 
 import unittest
 
-from nose.plugins.attrib import attr
+import pytest
 
 from hgvs.exceptions import HGVSInvalidVariantError
 import hgvs.dataproviders.uta
@@ -13,7 +13,7 @@ import hgvs.parser
 import hgvs.variantmapper
 
 
-@attr(tags=["quick"])
+@pytest.mark.quick
 class Test_VariantMapper(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -156,7 +156,7 @@ class Test_RefReplacement(unittest.TestCase):
                 self.assertEqual(rec[x], pv.format(conf={'max_ref_length' : None}))
 
 
-@attr(tags=["quick"])
+@pytest.mark.quick
 class Test_AssemblyMapper(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

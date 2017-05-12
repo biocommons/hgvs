@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import unittest
 
-from nose.plugins.attrib import attr
+import pytest
 
 import hgvs.edit
 import hgvs.location
@@ -11,7 +11,8 @@ from hgvs.enums import Datum
 from hgvs.exceptions import HGVSError
 
 
-@attr(tags=["quick", "models"])
+@pytest.mark.quick
+@pytest.mark.models
 class Test_Edit(unittest.TestCase):
     def test_NARefAlt_exceptions(self):
         with self.assertRaises(HGVSError):

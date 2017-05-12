@@ -11,7 +11,7 @@ import unittest
 
 import unicodecsv as csv
 
-from nose.plugins.attrib import attr
+import pytest
 
 from hgvs.exceptions import HGVSError
 import hgvs.dataproviders.uta
@@ -28,7 +28,7 @@ def gxp_file_reader(fn):
         yield rec
 
 
-@attr(tags=["mapping"])
+@pytest.mark.mapping
 class Test_VariantMapper(unittest.TestCase):
     def setUp(self):
         self.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache="tests/data/cache.hdp")
@@ -108,12 +108,12 @@ class Test_VariantMapper(unittest.TestCase):
         for rec in gxp_file_reader("tests/data/gcp/DNAH11-dbSNP-NM_001277115.tsv"):
             self._test_gxp_mapping(rec)
 
-    @attr(tags=["regression"])
+    @pytest.mark.regression
     def test_regression(self):
         for rec in gxp_file_reader("tests/data/gcp/regression.tsv"):
             self._test_gxp_mapping(rec)
 
-    @attr(tags=["extra"])
+    @pytest.mark.extra
     def test_DNAH11_dbSNP_full(self):
         for rec in gxp_file_reader("tests/data/gcp/DNAH11-dbSNP.tsv"):
             self._test_gxp_mapping(rec)

@@ -4,8 +4,6 @@ import itertools
 import re
 import unittest
 
-from nose.plugins.attrib import attr
-
 from hgvs.exceptions import HGVSDataNotAvailableError
 import hgvs.dataproviders.uta
 import hgvs.edit
