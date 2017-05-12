@@ -56,7 +56,12 @@ class Config(object):
         """read configuration from ini-formatted file-like object
 
         """
-        self._cp.read_file(flo)
+        self._cp.read_string(flo.read().decode('ascii'))
+
+    def __copy__(self):
+        new_config = Config.__new__(Config)
+        new_config._cp = object.__getattribute__(self, '_cp')
+        return new_config
 
     def __dir__(self):
         return list(self._cp.keys())
