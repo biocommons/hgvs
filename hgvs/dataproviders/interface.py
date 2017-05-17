@@ -12,9 +12,10 @@ import hgvs
 from ..decorators.lru_cache import lru_cache, LEARN, RUN, VERIFY
 from ..utils.PersistentDict import PersistentDict
 from six.moves import map
+import six
 
 
-class Interface(object):
+class Interface(six.with_metaclass(abc.ABCMeta, object)):
     """Variant mapping and validation requires access to external data,
     specifically exon structures, transcript alignments, and protein
     accessions.  In order to isolate the hgvs package from the myriad
@@ -36,8 +37,6 @@ class Interface(object):
     .. _`Universal Transcript Archive (UTA)`: https://github.com/biocommons/uta
     .. _Invitae: http://invitae.com/
     """
-
-    __metaclass__ = abc.ABCMeta
 
     def interface_version(self):
         return 4
