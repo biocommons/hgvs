@@ -32,6 +32,7 @@ import unittest
 import unicodecsv as csv
 
 import hgvs.parser
+from six.moves import map
 
 
 class TestGrammarFull(unittest.TestCase):

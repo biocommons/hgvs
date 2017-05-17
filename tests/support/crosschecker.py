@@ -10,6 +10,7 @@ import hgvs.edit
 import hgvs.parser
 import hgvs.sequencevariant
 import hgvs.variantmapper
+from six.moves import map
 
 
 class LineIterator(object):
