@@ -11,7 +11,6 @@ import inspect
 import logging
 import os
 import re
-import urlparse
 
 import psycopg2
 import psycopg2.extras
@@ -19,6 +18,7 @@ import psycopg2.pool
 
 from bioutils.assemblies import make_ac_name_map
 from bioutils.digests import seq_md5
+from six.moves.urllib import parse as urlparse
 
 import hgvs
 from ..dataproviders.interface import Interface
