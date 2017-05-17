@@ -59,7 +59,7 @@ class Config(object):
         self._cp.read_file(flo)
 
     def __dir__(self):
-        return self._cp.keys()
+        return list(self._cp.keys())
 
     def __getattr__(self, k):
         # Work around PyCharm bug https://youtrack.jetbrains.com/issue/PY-4213
@@ -75,7 +75,7 @@ class ConfigGroup(object):
         self.__dict__["_section"] = section
 
     def __dir__(self):
-        return self.__dict__["_section"].keys()
+        return list(self.__dict__["_section"].keys())
 
     def __getattr__(self, k):
         return _val_xform(self.__dict__["_section"][k])

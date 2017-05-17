@@ -24,6 +24,7 @@ import hgvs
 from ..dataproviders.interface import Interface
 from ..exceptions import HGVSError, HGVSDataNotAvailableError
 from .seqfetcher import SeqFetcher
+import six
 
 _logger = logging.getLogger(__name__)
 
@@ -496,7 +497,7 @@ class UTA_postgresql(UTABase):
         self._ensure_schema_exists()
 
         # remap sqlite's ? placeholders to psycopg2's %s
-        self._queries = {k: v.replace('?', '%s') for k, v in self._queries.iteritems()}
+        self._queries = {k: v.replace('?', '%s') for k, v in six.iteritems(self._queries)}
 
     def _ensure_schema_exists(self):
         # N.B. On AWS RDS, information_schema.schemata always returns zero rows
