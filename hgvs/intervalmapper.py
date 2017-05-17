@@ -47,6 +47,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import re
 
 from hgvs.exceptions import HGVSInvalidIntervalError
+from six.moves import range
 
 
 # N.B. This Interval is internal to intervalmapper.py. It is *NOT* the

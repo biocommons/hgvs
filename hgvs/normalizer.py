@@ -13,6 +13,7 @@ import hgvs
 import hgvs.validator
 import hgvs.variantmapper
 from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
+from six.moves import range
 
 _logger = logging.getLogger(__name__)
 
