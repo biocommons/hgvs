@@ -61,7 +61,7 @@ setup(
     ],
 
     setup_requires = [
-        'setuptools_scm',
+        'setuptools_scm==1.10.1',
         'nose',
         'sphinx',
         'sphinx_rtd_theme',

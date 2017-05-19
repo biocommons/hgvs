@@ -503,6 +503,17 @@ class UTA_postgresql(UTABase):
         self.application_name = application_name
         super(UTA_postgresql, self).__init__(url)
 
+    def __del__(self):
+        self.close()
+        
+    def close(self):
+        if self.pooling:
+            _logger.warning("Closing pool; future mapping and validation will fail.")
+            self._pool.closeall()
+        else:
+            _logger.warning("Closing connection; future mapping and validation will fail.")
+            self._conn.close()
+
     def _connect(self):
         if self.application_name is None:
             st = inspect.stack()
