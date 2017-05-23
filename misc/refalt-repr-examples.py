@@ -3,6 +3,7 @@
 import hgvs
 import hgvs.parser
 from tabulate import tabulate
+from six.moves import map
 
 hp = hgvs.parser.Parser()
 
@@ -31,6 +32,6 @@ def gen1(h):
     return [h, v.posedit.edit.ref, v.posedit.edit.alt, v.posedit.edit.type, v.posedit.length_change()]
 
 
-rows = [map(str, gen1(h)) for h in variants]
+rows = [list(map(str, gen1(h))) for h in variants]
 
 print(tabulate(rows, headers=headers)) #, tablefmt="pipe"))

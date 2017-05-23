@@ -14,6 +14,7 @@ import hgvs.location
 from hgvs.exceptions import HGVSError, HGVSUsageError, HGVSDataNotAvailableError
 from hgvs.utils import build_tx_cigar
 from hgvs.enums import Datum
+from six.moves import range
 
 
 class TranscriptMapper(object):

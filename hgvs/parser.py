@@ -111,7 +111,7 @@ class Parser(object):
                     raise HGVSParseError(
                         "{s}: char {exc.position}: {reason}".format(s=s, exc=exc, reason=exc.formatReason()))
 
-            rule_fxn.func_doc = "parse string s using `%s' rule" % rule_name
+            rule_fxn.__doc__ = "parse string s using `%s' rule" % rule_name
             return rule_fxn
 
         exposed_rule_re = re.compile("hgvs_(variant|position)|(c|g|m|n|p|r)"

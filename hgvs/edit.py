@@ -17,6 +17,7 @@ from bioutils.sequences import aa_to_aa1, aa1_to_aa3
 
 import hgvs
 from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError
+import six
 
 
 @attr.s(slots=True)
@@ -67,7 +68,7 @@ class NARefAlt(Edit):
         >>> NARefAlt(7).ref_s
 
         """
-        return self.ref if (isinstance(self.ref, basestring) and self.ref and self.ref[0] in "ACGTUN") else None
+        return self.ref if (isinstance(self.ref, six.string_types) and self.ref and self.ref[0] in "ACGTUN") else None
 
     @property
     def ref_n(self):
@@ -398,7 +399,7 @@ class Dup(Edit):
         """
         returns a string representing the ref sequence, if it is not None and smells like a sequence
         """
-        return self.ref if (isinstance(self.ref, basestring) and self.ref and self.ref[0] in "ACGTUN") else None
+        return self.ref if (isinstance(self.ref, six.string_types) and self.ref and self.ref[0] in "ACGTUN") else None
 
     def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
@@ -521,7 +522,7 @@ class Inv(Edit):
 
     @property
     def ref_s(self):
-        return self.ref if (isinstance(self.ref, basestring) and self.ref and self.ref[0] in "ACGTUN") else None
+        return self.ref if (isinstance(self.ref, six.string_types) and self.ref and self.ref[0] in "ACGTUN") else None
 
     @property
     def ref_n(self):

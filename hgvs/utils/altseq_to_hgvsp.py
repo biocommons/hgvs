@@ -12,6 +12,7 @@ from ..edit import (AAExt, AAFs, AARefAlt, AASub, Dup)
 from ..exceptions import (HGVSError)
 from ..location import (AAPosition, Interval)
 from ..posedit import (PosEdit)
+from six.moves import range
 
 DBG = False
 
@@ -65,7 +66,7 @@ class AltSeqToHgvsp(object):
                 do_delins = False
             elif self._is_substitution:
                 if len(self._ref_seq) == len(self._alt_seq):
-                    diff_pos = [(i, self._ref_seq[i], self._alt_seq[i]) for i in xrange(len(self._ref_seq))
+                    diff_pos = [(i, self._ref_seq[i], self._alt_seq[i]) for i in range(len(self._ref_seq))
                                 if self._ref_seq[i] != self._alt_seq[i]]
                     if len(diff_pos) == 1:
                         (start, deletion, insertion) = diff_pos[0]
@@ -117,7 +118,7 @@ class AltSeqToHgvsp(object):
                         alt_sub = self._alt_seq[start:]
 
                     # from start, get del/ins out to last difference
-                    diff_indices = [i for i in xrange(len(ref_sub)) if ref_sub[i] != alt_sub[i]]
+                    diff_indices = [i for i in range(len(ref_sub)) if ref_sub[i] != alt_sub[i]]
                     if diff_indices:
                         max_diff = diff_indices[-1] + 1
                         insertion.extend(list(alt_sub[:max_diff]))

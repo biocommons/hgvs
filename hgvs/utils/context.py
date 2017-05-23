@@ -30,6 +30,7 @@ import re
 from bioutils.sequences import complement
 
 from ..location import Interval, SimplePosition
+from six.moves import range
 
 
 def full_house(am, var, tx_ac=None):

@@ -51,7 +51,7 @@ class Test_Clinvar(unittest.TestCase, CrossChecker):
                 continue
             print(rec["gene"])
             variants = (self.hp.parse_hgvs_variant(vs) for vs in rec["hgvs_variants"].split())
-            variants = filter(lambda v: v.type in "cg" and not v.ac.startswith("NG"), variants)
+            variants = [v for v in variants if v.type in "cg" and not v.ac.startswith("NG")]
             try:
                 msg = self.crosscheck_variant_group(list(variants))
             except Exception as e:

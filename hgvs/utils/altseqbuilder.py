@@ -15,6 +15,7 @@ from Bio.Seq import Seq
 
 from ..edit import (Dup, NARefAlt, Repeat)
 from ..enums import Datum
+import six
 
 DBG = False
 
@@ -63,7 +64,7 @@ class AltTranscriptData(object):
         :rtype attrs
         """
         if len(seq) > 0:
-            if isinstance(seq, basestring):
+            if isinstance(seq, six.string_types):
                 seq = list(seq)
             seq_cds = seq[cds_start - 1:]
             if len(seq_cds) % 3 != 0:    # padding so biopython won't complain during the conversion

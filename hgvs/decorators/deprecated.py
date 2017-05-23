@@ -39,13 +39,13 @@ class deprecated(object):
             msg += '; use ' + self.use_instead + ' instead'
 
         def wrapper(*args, **kwargs):
-            fingerprint = (func.__name__, func.func_code.co_filename, func.func_code.co_firstlineno)
+            fingerprint = (func.__name__, func.__code__.co_filename, func.__code__.co_firstlineno)
             if fingerprint not in self.seen:
                 warnings.warn_explicit(
                     msg,
                     category=DeprecationWarning,
-                    filename=func.func_code.co_filename,
-                    lineno=func.func_code.co_firstlineno + 1)
+                    filename=func.__code__.co_filename,
+                    lineno=func.__code__.co_firstlineno + 1)
             self.seen.update([fingerprint])
             return func(*args, **kwargs)
 

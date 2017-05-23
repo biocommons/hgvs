@@ -11,7 +11,6 @@ import inspect
 import logging
 import os
 import re
-import urlparse
 
 import psycopg2
 import psycopg2.extras
@@ -19,11 +18,13 @@ import psycopg2.pool
 
 from bioutils.assemblies import make_ac_name_map
 from bioutils.digests import seq_md5
+from six.moves.urllib import parse as urlparse
 
 import hgvs
 from ..dataproviders.interface import Interface
 from ..exceptions import HGVSError, HGVSDataNotAvailableError
 from .seqfetcher import SeqFetcher
+import six
 
 _logger = logging.getLogger(__name__)
 
@@ -507,7 +508,7 @@ class UTA_postgresql(UTABase):
         self._ensure_schema_exists()
 
         # remap sqlite's ? placeholders to psycopg2's %s
-        self._queries = {k: v.replace('?', '%s') for k, v in self._queries.iteritems()}
+        self._queries = {k: v.replace('?', '%s') for k, v in six.iteritems(self._queries)}
 
     def _ensure_schema_exists(self):
         # N.B. On AWS RDS, information_schema.schemata always returns zero rows
