@@ -131,9 +131,9 @@ class Normalizer(object):
             # ins or dup
             if ref_len == 0:
                 if self.shuffle_direction == 3:
-                    adj_seq = self._fetch_bounded_seq(var, start - alt_len - 1, end - 1, boundary)
+                    adj_seq = self._fetch_bounded_seq(var, start - alt_len - 1, end - 1, 0, boundary)
                 else:
-                    adj_seq = self._fetch_bounded_seq(var, start - 1, start + alt_len - 1, boundary)
+                    adj_seq = self._fetch_bounded_seq(var, start - 1, start + alt_len - 1, 0, boundary)
                 # ins
                 if alt != adj_seq:
                     ref_start = start - 1
@@ -236,11 +236,12 @@ class Normalizer(object):
             # For variant type of g and m etc.
             return 0, float("inf")
 
-    def _fetch_bounded_seq(self, var, start, end, boundary):
+    def _fetch_bounded_seq(self, var, start, end, window_size, boundary):
         """Fetch reference sequence from hgvs data provider.
 
         The start position is 0 and the interval is half open
         """
+        var_len = end - start - window_size
 
         start = start if start >= boundary[0] else boundary[0]
         end = end if end <= boundary[1] else boundary[1]
@@ -249,7 +250,7 @@ class Normalizer(object):
 
         seq = self.hdp.get_seq(var.ac, start, end)
 
-        if len(seq) < end - start:
+        if len(seq) < var_len:
             raise HGVSInvalidVariantError("Variant span is outside sequence bounds ({var})".format(var=var))
 
         return seq
@@ -264,7 +265,7 @@ class Normalizer(object):
         else:
             # For NARefAlt and Inv
             if var.posedit.edit.ref_s is None or var.posedit.edit.ref == "":
-                ref = self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, boundary)
+                ref = self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, 0, boundary)
             else:
                 ref = var.posedit.edit.ref
 
@@ -275,7 +276,7 @@ class Normalizer(object):
             alt = ""
         elif var.posedit.edit.type == "dup":
             alt = var.posedit.edit.ref or self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1,
-                                                                  var.posedit.pos.end.base, boundary)
+                                                                  var.posedit.pos.end.base, 0, boundary)
         elif var.posedit.edit.type == "inv":
             alt = reverse_complement(ref)
         elif var.posedit.edit.type == "identity":
@@ -305,7 +306,7 @@ class Normalizer(object):
                 stop = var.posedit.pos.end.base - base + 1
 
             while True:
-                ref_seq = self._fetch_bounded_seq(var, base - 1, base + stop - 1 + win_size, boundary)
+                ref_seq = self._fetch_bounded_seq(var, base - 1, base + stop - 1 + win_size, win_size, boundary)
                 if ref_seq == "":
                     break
                 orig_start, orig_stop = start, stop
@@ -337,7 +338,7 @@ class Normalizer(object):
                     start -= boundary[0] + 1 - base
                     stop -= boundary[0] + 1 - base
                     base = boundary[0] + 1
-                ref_seq = self._fetch_bounded_seq(var, base - 1, base + stop - 1, boundary)
+                ref_seq = self._fetch_bounded_seq(var, base - 1, base + stop - 1, start, boundary)
                 if ref_seq == "":
                     break
                 orig_start, orig_stop = start, stop
