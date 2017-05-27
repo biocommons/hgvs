@@ -250,7 +250,7 @@ class Normalizer(object):
 
         seq = self.hdp.get_seq(var.ac, start, end)
 
-        if len(seq) < var_len:
+        if len(seq) < end - start and len(seq) < var_len:
             raise HGVSInvalidVariantError("Variant span is outside sequence bounds ({var})".format(var=var))
 
         return seq
