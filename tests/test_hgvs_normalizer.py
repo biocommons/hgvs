@@ -7,7 +7,7 @@ import unittest
 
 import pytest
 
-from hgvs.exceptions import HGVSUnsupportedOperationError, HGVSInvalidVariantError, HGVSInvalidVariantError
+from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError, HGVSInvalidVariantError, HGVSInvalidVariantError
 import hgvs.dataproviders.uta
 import hgvs.variantmapper
 import hgvs.parser
@@ -154,6 +154,52 @@ class Test_HGVSNormalizer(unittest.TestCase):
 
         with self.assertRaises(HGVSInvalidVariantError):
             self.norm.normalize(self.hp.parse_hgvs_variant("NG_032871.1:g.32476_53457delinsAATTAAGGTATA"))
+
+    def test_norm_var_near_bound(self):
+        """Test normalizing variants near the end or start of transcript"""
+        self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant("NM_001001656.1:c.935T>C"))),
+                         "NM_001001656.1:c.935T>C")
+        self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant("NM_001001656.1:c.945G>C"))),
+                         "NM_001001656.1:c.945G>C")
+        self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant("NM_001001656.1:c.945dup"))),
+                         "NM_001001656.1:c.945dup")
+        self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant("NM_001001656.1:c.935_945del"))),
+                         "NM_001001656.1:c.935_945del")
+        with self.assertRaises(HGVSError):
+            self.norm.normalize(self.hp.parse_hgvs_variant("NM_001001656.1:c.946G>C"))
+        with self.assertRaises(HGVSError):
+            self.norm.normalize(self.hp.parse_hgvs_variant("NM_001001656.1:c.946dup"))
+        with self.assertRaises(HGVSError):
+            self.norm.normalize(self.hp.parse_hgvs_variant("NM_001001656.1:c.935_946del"))
+
+        self.assertEqual(str(self.normc.normalize(self.hp.parse_hgvs_variant("NM_001001656.1:c.935T>C"))),
+                         "NM_001001656.1:c.935T>C")
+        self.assertEqual(str(self.normc.normalize(self.hp.parse_hgvs_variant("NM_001001656.1:c.945G>C"))),
+                         "NM_001001656.1:c.945G>C")
+        self.assertEqual(str(self.normc.normalize(self.hp.parse_hgvs_variant("NM_001001656.1:c.945dup"))),
+                         "NM_001001656.1:c.945dup")
+        self.assertEqual(str(self.normc.normalize(self.hp.parse_hgvs_variant("NM_001001656.1:c.935_945del"))),
+                         "NM_001001656.1:c.935_945del")
+        with self.assertRaises(HGVSError):
+            self.normc.normalize(self.hp.parse_hgvs_variant("NM_001001656.1:c.946G>C"))
+        with self.assertRaises(HGVSError):
+            self.normc.normalize(self.hp.parse_hgvs_variant("NM_001001656.1:c.946dup"))
+        with self.assertRaises(HGVSError):
+            self.normc.normalize(self.hp.parse_hgvs_variant("NM_001001656.1:c.935_946del"))
+
+        self.assertEqual(str(self.norm5.normalize(self.hp.parse_hgvs_variant("NM_001001656.1:c.1A>T"))),
+                         "NM_001001656.1:c.1A>T")
+        self.assertEqual(str(self.norm5.normalize(self.hp.parse_hgvs_variant("NM_001001656.1:c.1del"))),
+                         "NM_001001656.1:c.1del")
+        self.assertEqual(str(self.norm5.normalize(self.hp.parse_hgvs_variant("NM_001001656.1:c.1dup"))),
+                         "NM_001001656.1:c.1dup")
+
+        self.assertEqual(str(self.norm5c.normalize(self.hp.parse_hgvs_variant("NM_001001656.1:c.1A>T"))),
+                         "NM_001001656.1:c.1A>T")
+        self.assertEqual(str(self.norm5c.normalize(self.hp.parse_hgvs_variant("NM_001001656.1:c.1del"))),
+                         "NM_001001656.1:c.1del")
+        self.assertEqual(str(self.norm5c.normalize(self.hp.parse_hgvs_variant("NM_001001656.1:c.1dup"))),
+                         "NM_001001656.1:c.1dup")
 
 if __name__ == "__main__":
     unittest.main()
