@@ -155,6 +155,14 @@ class Normalizer(object):
                 ref_end = end - 1
                 edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
 
+        # ensure the start is not 0
+        if ref_start == 0:
+            ref = self._fetch_bounded_seq(var, 0, 1, 0, boundary)
+            alt = alt + ref
+            edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
+            ref_start = 1
+            ref_end = 1
+
         var_norm = copy.deepcopy(var)
         var_norm.posedit.edit = edit
         var_norm.posedit.pos.start.base = ref_start
