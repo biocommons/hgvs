@@ -84,7 +84,7 @@ class Test_SequenceVariant(unittest.TestCase):
         var = hp.parse_hgvs_variant("NM_001166478.1:c.35_36dupTC")
         self.assertEqual(str(var), "NM_001166478.1:c.35_36dup")
         var = hp.parse_hgvs_variant("NM_001166478.1:c.31T=")
-        self.assertEqual(str(var), "NM_001166478.1:c.31=")
+        self.assertEqual(str(var), "NM_001166478.1:c.31T=")
         self.assertEqual(var.format(conf = {'max_ref_length' : None}), "NM_001166478.1:c.31T=")
 
 

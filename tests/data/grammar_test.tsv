@@ -157,7 +157,7 @@ dna_edit	A>C|delAAinsC|insA|delA|dupA	True	list	A>C|delinsC|insA|del|dup
 dna_edit	A>U|del5A	False	list	
 dna_edit_mu	(A>C)	True	one	
 dna_edit_mu	A>C	True	one	
-dna_ident	=|T=|ACG=	True	list	=|=|=
+dna_ident	=|T=|ACG=	True	list	
 dna_ins	insA|insC|insG|insT	True	list	
 dna_ins	insU	False	one	
 dna_inv	inv	True	list	
@@ -211,7 +211,7 @@ rna_edit	A>C|delAAinsC|insA|delA|dupA	True	list	A>C|delinsC|insA|del|dup
 rna_edit	A>T|del5A	False	list	
 rna_edit_mu	(A>C)	True	one		
 rna_edit_mu	A>C	True	one
-rna_ident	=|U=|UGG=	True	list	=|=|=
+rna_ident	=|U=|UGG=	True	list	
 rna_ins	insAA	True	one	
 rna_ins	insA|insC|insG|insU	True	list	
 rna_ins	insT	False	one	

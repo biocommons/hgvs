@@ -74,7 +74,7 @@ class Test_Issues(unittest.TestCase):
         self.assertEqual(str(v), "NM_206933.2:c.6317=")
 
         v = self.hp.parse_hgvs_variant("NM_206933.2:c.6317C=")
-        self.assertEqual(str(v), "NM_206933.2:c.6317=")
+        self.assertEqual(str(v), "NM_206933.2:c.6317C=")
                                                    
 
     def test_316_provide_ttog_and_gtot_methods(self):
