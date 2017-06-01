@@ -32,6 +32,9 @@ class _HashedSeq(list):
     def __hash__(self):
         return self.hashvalue
 
+    def __repr__(self):
+        return '_HashedSeq({tuple!r})'.format(self=self, tuple=tuple(self))
+
 
 def _make_key(func,
               args,
