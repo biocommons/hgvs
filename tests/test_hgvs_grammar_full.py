@@ -28,8 +28,12 @@ import pkg_resources
 import pprint
 import re
 import unittest
+from sys import version_info
 
-import unicodecsv as csv
+if version_info < (3, ):
+    import unicodecsv as csv
+else:
+    import csv
 
 import hgvs.parser
 from six.moves import map

@@ -6,8 +6,12 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import os
 import re
 import unittest
+from sys import version_info
 
-import unicodecsv as csv
+if version_info < (3, ):
+    import unicodecsv as csv
+else:
+    import csv
 
 import hgvs.dataproviders.uta
 import hgvs.variantmapper

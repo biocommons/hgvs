@@ -9,7 +9,10 @@ import os
 
 import unittest
 
-import unicodecsv as csv
+if sys.version_info < (3, ):
+    import unicodecsv as csv
+else:
+    import csv
 
 import pytest
 
