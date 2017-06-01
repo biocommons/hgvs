@@ -32,6 +32,12 @@ class _HashedSeq(list):
     def __hash__(self):
         return self.hashvalue
 
+    def __getstate__(self):
+        return True  # needs to be truthy for __setstate__ to be called
+
+    def __setstate__(self, _):
+        self.hashvalue = hash(tuple(self))
+
     def __repr__(self):
         return '_HashedSeq({tuple!r})'.format(self=self, tuple=tuple(self))
 
