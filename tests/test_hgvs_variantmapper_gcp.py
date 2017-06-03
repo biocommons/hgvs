@@ -21,7 +21,7 @@ import hgvs.dataproviders.uta
 import hgvs.parser
 import hgvs.sequencevariant
 import hgvs.variantmapper
-
+from support import CACHE
 
 def gxp_file_reader(fn):
     rdr = csv.DictReader(open(fn, "r"), delimiter=str("\t"))
@@ -34,7 +34,7 @@ def gxp_file_reader(fn):
 @pytest.mark.mapping
 class Test_VariantMapper(unittest.TestCase):
     def setUp(self):
-        self.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache="tests/data/cache.hdp")
+        self.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache=CACHE)
         self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
         self.hp = hgvs.parser.Parser()
 

@@ -14,6 +14,7 @@ import hgvs.parser
 from hgvs.exceptions import HGVSError
 from hgvs.transcriptmapper import TranscriptMapper
 from hgvs.enums import Datum
+from support import CACHE
 
 
 @pytest.mark.quick
@@ -22,7 +23,7 @@ class Test_transcriptmapper(unittest.TestCase):
 
     @classmethod
     def setUp(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache="tests/data/cache.hdp")
+        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache=CACHE)
 
     def test_transcriptmapper_failures(self):
         with self.assertRaises(HGVSError):

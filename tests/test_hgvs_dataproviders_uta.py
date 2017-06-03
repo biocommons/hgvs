@@ -16,6 +16,7 @@ import hgvs.location
 import hgvs.posedit
 import hgvs.variantmapper
 import hgvs.sequencevariant
+from support import CACHE
 
 
 class UTA_Base(object):
@@ -94,13 +95,13 @@ class UTA_Base(object):
 class Test_hgvs_dataproviders_uta_UTA_default(unittest.TestCase, UTA_Base):
     @classmethod
     def setUpClass(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache="tests/data/cache.hdp")
+        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache=CACHE)
 
 
 class Test_hgvs_dataproviders_uta_UTA_default_with_pooling(unittest.TestCase, UTA_Base):
     @classmethod
     def setUpClass(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect(pooling=True, mode="run", cache="tests/data/cache.hdp")
+        cls.hdp = hgvs.dataproviders.uta.connect(pooling=True, mode="run", cache=CACHE)
 
 
 class TestUTACache(Test_hgvs_dataproviders_uta_UTA_default):

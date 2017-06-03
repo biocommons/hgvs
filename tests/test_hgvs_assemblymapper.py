@@ -11,13 +11,14 @@ from hgvs.exceptions import HGVSInvalidVariantError
 import hgvs.dataproviders.uta
 import hgvs.parser
 import hgvs.variantmapper
+from support import CACHE
 
 
 @pytest.mark.quick
 class Test_VariantMapper(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache="tests/data/cache.hdp")
+        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache=CACHE)
         cls.am = hgvs.assemblymapper.AssemblyMapper(cls.hdp)
         cls.hp = hgvs.parser.Parser()
 
@@ -138,7 +139,7 @@ class Test_RefReplacement(unittest.TestCase):
             rec["pv"] = {x: cls.hp.parse_hgvs_variant(rec[x]) for x in "cgn"}
             return rec
 
-        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache="tests/data/cache.hdp")
+        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache=CACHE)
         cls.am = hgvs.assemblymapper.AssemblyMapper(cls.hdp, replace_reference=True, assembly_name="GRCh37", alt_aln_method="splign")
         cls.hp = hgvs.parser.Parser()
         cls.tests = [_parse_rec(rec) for rec in cls.test_cases]
@@ -160,7 +161,7 @@ class Test_RefReplacement(unittest.TestCase):
 class Test_AssemblyMapper(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache="tests/data/cache.hdp")
+        hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache=CACHE)
         cls.hp = hgvs.parser.Parser()
         cls.am = hgvs.assemblymapper.AssemblyMapper(hdp, assembly_name="GRCh37", alt_aln_method="splign")
     

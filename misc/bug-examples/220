@@ -11,7 +11,7 @@ import hgvs.posedit
 import hgvs.edit
 import hgvs.sequencevariant
 import hgvs.variantmapper
-
+from support import CACHE
 
 def create_genomic_variant():
     start = hgvs.location.SimplePosition(118898437)
@@ -25,7 +25,7 @@ def create_genomic_variant():
 
 gvar = create_genomic_variant()
 
-hdp = hgvs.dataproviders.uta.connect(mode="run", cache="tests/data/cache.hdp")
+hdp = hgvs.dataproviders.uta.connect(mode="run", cache=CACHE)
 
 print("build a variant mapper once for the given transcript: all okay")
 variantmapper = hgvs.variantmapper.VariantMapper(hdp)

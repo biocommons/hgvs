@@ -20,13 +20,13 @@ import hgvs.variantmapper
 from hgvs.exceptions import HGVSError
 
 from support.crosschecker import CrossChecker, LineIterator
-
+from support import CACHE
 
 data_fn = os.path.join(os.path.dirname(__file__), "data", "clinvar.gz")
 
 class Test_Clinvar(unittest.TestCase, CrossChecker):
     def setUp(self):
-        self.hdp = hgvs.dataproviders.uta.connect(mode="learn", cache="tests/data/cache.hdp")
+        self.hdp = hgvs.dataproviders.uta.connect(mode="learn", cache=CACHE)
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp)
         self.hp = hgvs.parser.Parser()
 
