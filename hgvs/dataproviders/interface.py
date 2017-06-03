@@ -49,11 +49,6 @@ class Interface(six.with_metaclass(abc.ABCMeta, object)):
         :type cache: str
         """
         self.mode = None
-        if cache is not None:
-            import sys
-            if sys.version_info >= (3, ):
-                assert cache == 'tests/data/cache-py3.hdp'
-                mode = 'learn'
         if mode == 'learn':
             self.mode = LEARN
         elif mode == 'run':
