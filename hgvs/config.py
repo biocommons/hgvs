@@ -70,7 +70,10 @@ class Config(object):
         # Work around PyCharm bug https://youtrack.jetbrains.com/issue/PY-4213
         if k == "_cp":
             return
-        return ConfigGroup(self._cp[k])
+        try:
+            return ConfigGroup(self._cp[k])
+        except KeyError:
+            raise AttributeError(k)
 
     __getitem__ = __getattr__
 
