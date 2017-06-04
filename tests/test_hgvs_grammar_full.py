@@ -83,11 +83,11 @@ class TestGrammarFull(unittest.TestCase):
                 is_valid = True if row["Valid"].lower() == "true" else False
 
                 for key in expected_map:
-                    expected_result = six.text_type(expected_map[key])
+                    expected_result = six.text_type(expected_map[key]).replace("u'", "'")
                     function_to_test = getattr(self.p._grammar(key), row["Func"])
                     row_str = u"{}\t{}\t{}\t{}\t{}".format(row["Func"], key, row["Valid"], "one", expected_result)
                     try:
-                        actual_result = six.text_type(function_to_test())
+                        actual_result = six.text_type(function_to_test()).replace("u'", "'")
                         if not is_valid or (expected_result != actual_result):
                             print("expected: {} actual:{}".format(expected_result, actual_result))
                             fail_cases.append(row_str)
