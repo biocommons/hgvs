@@ -157,8 +157,8 @@ Either way, the sequence coordinate may be accessed via the ``base`` attribute:
 
 >>> var_g.posedit.pos.start.base
 150550916
->>> type(var_g.posedit.pos.start.base)
-<type 'int'>
+>>> isinstance(var_g.posedit.pos.start.base, int)
+True
 
 
 Map the genomic variant to another transcript
