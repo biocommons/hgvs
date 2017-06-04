@@ -101,7 +101,7 @@ class Test_hgvs_dataproviders_uta_UTA_default(unittest.TestCase, UTA_Base):
 class Test_hgvs_dataproviders_uta_UTA_default_with_pooling(unittest.TestCase, UTA_Base):
     @classmethod
     def setUpClass(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect(pooling=True, mode="run", cache=CACHE)
+        cls.hdp = hgvs.dataproviders.uta.connect(pooling=True, mode=os.environ.get("HGVS_CACHE_MODE","run"), cache=CACHE)
 
 
 class TestUTACache(Test_hgvs_dataproviders_uta_UTA_default):
