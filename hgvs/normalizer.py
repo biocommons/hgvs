@@ -163,6 +163,15 @@ class Normalizer(object):
             ref_start = 1
             ref_end = 1
 
+        # ensure the end is not outside of reference sequence
+        tgt_len = self._get_tgt_length(var)
+        if ref_end == tgt_len + 1:
+            ref = self._fetch_bounded_seq(var, tgt_len-1, tgt_len, 0, boundary)
+            alt = ref + alt
+            edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
+            ref_start = tgt_len
+            ref_end = tgt_len
+
         var_norm = copy.deepcopy(var)
         var_norm.posedit.edit = edit
         var_norm.posedit.pos.start.base = ref_start
@@ -243,6 +252,19 @@ class Normalizer(object):
         else:
             # For variant type of g and m etc.
             return 0, float("inf")
+
+    def _get_tgt_length(self, var):
+        """Get the total length of the whole reference sequence
+        """
+        if var.type == "g":
+            return float("inf")
+        else:
+            # Get genomic sequence access number for this transcript
+            identity_info = self.hdp.get_tx_identity_info(var.ac)
+            if not identity_info:
+                raise HGVSDataNotAvailableError("No identity info available for {ac}".format(ac=var.ac))
+            tgt_len = sum(identity_info["lengths"])
+            return tgt_len
 
     def _fetch_bounded_seq(self, var, start, end, window_size, boundary):
         """Fetch reference sequence from hgvs data provider.
