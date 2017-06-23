@@ -471,20 +471,22 @@ class UTA_postgresql(UTABase):
     def __init__(self, url, pooling=hgvs.global_config.uta.pooling, application_name=None, mode=None, cache=None):
         if url.schema is None:
             raise Exception("No schema name provided in {url}".format(url=url))
-        self.pooling = pooling
         self.application_name = application_name
+        self.pooling = pooling
+        self._conn = None
         super(UTA_postgresql, self).__init__(url, mode, cache)
 
     def __del__(self):
         self.close()
-        
+
     def close(self):
         if self.pooling:
             _logger.warning("Closing pool; future mapping and validation will fail.")
             self._pool.closeall()
         else:
             _logger.warning("Closing connection; future mapping and validation will fail.")
-            self._conn.close()
+            if self._conn is not None:
+                self._conn.close()
 
     def _connect(self):
         if self.application_name is None:
