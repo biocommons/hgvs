@@ -201,6 +201,25 @@ class Test_HGVSNormalizer(unittest.TestCase):
         self.assertEqual(str(self.norm5c.normalize(self.hp.parse_hgvs_variant("NM_001001656.1:c.1dup"))),
                          "NM_001001656.1:c.1dup")
 
+        self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant("NM_212556.2:c.1_2insCA"))),
+                         "NM_212556.2:c.1_2insCA")
+        self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant("NM_212556.2:c.2_3insCAT"))),
+                         "NM_212556.2:c.2_3insCAT")
+        self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant("NM_212556.2:c.1delinsCA"))),
+                         "NM_212556.2:c.1delinsCA")
+
+        self.assertEqual(str(self.norm5.normalize(self.hp.parse_hgvs_variant("NM_212556.2:c.1_2insCA"))),
+                         "NM_212556.2:c.1delinsACA")
+        self.assertEqual(str(self.norm5.normalize(self.hp.parse_hgvs_variant("NM_212556.2:c.2_3insCAT"))),
+                         "NM_212556.2:c.1delinsATCA")
+        self.assertEqual(str(self.norm5.normalize(self.hp.parse_hgvs_variant("NM_212556.2:c.1delinsCA"))),
+                         "NM_212556.2:c.1delinsCA")
+
+        self.assertEqual(str(self.norm.normalize(self.hp.parse_hgvs_variant("NM_212556.2:c.1400_1401insAC"))),
+                         "NM_212556.2:c.1401delinsACA")
+        self.assertEqual(str(self.normc.normalize(self.hp.parse_hgvs_variant("NM_212556.2:c.1400_1401insAC"))),
+                         "NM_212556.2:c.1401delinsACA")
+
 if __name__ == "__main__":
     unittest.main()
 
