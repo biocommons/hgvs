@@ -19,42 +19,41 @@ class Test_VariantLengths(unittest.TestCase):
     """test length_change method for all variant types and cases"""
 
     success_tests = [
-        # class AAExt(Edit),
+    # class AAExt(Edit),
         ("NP_000040.1:p.Ter314Trpext*45", 45),
         ("NP_000040.1:p.Met1ext-12", 12),
 
-        # class AAFs(Edit):
-        # UNSUPPORTED: ("NP_000001.1:p.Gly25Trpfs*10", ),   # requires seq fetch for length :-(
+    # class AAFs(Edit):
+    # UNSUPPORTED: ("NP_000001.1:p.Gly25Trpfs*10", ),   # requires seq fetch for length :-(
 
-        # class AARefAlt(Edit):
-        ("NP_006149.2:p.(Glu396delinsLysLys)", 1),   # NM_006158.3:c.1186delGinsAAAA
-        ("NP_006149.2:p.(Glu397del)", -1),  # NM_006158.3:n.1288_1290delGAG
-        ("NP_006149.2:p.(Glu397dup)", 1),  # NM_006158.3:n.1288_1290delGAGinsGAGGAG
+    # class AARefAlt(Edit):
+        ("NP_006149.2:p.(Glu396delinsLysLys)", 1),    # NM_006158.3:c.1186delGinsAAAA
+        ("NP_006149.2:p.(Glu397del)", -1),    # NM_006158.3:n.1288_1290delGAG
+        ("NP_006149.2:p.(Glu397dup)", 1),    # NM_006158.3:n.1288_1290delGAGinsGAGGAG
 
-        # class AASub(AARefAlt):
-        ("NP_006149.2:p.(Glu396Lys)", 0),  # NM_006158.3:c.1186delGinsA
+    # class AASub(AARefAlt):
+        ("NP_006149.2:p.(Glu396Lys)", 0),    # NM_006158.3:c.1186delGinsA
 
-        # class Conv(Edit),
-        # UNSUPPORTED
+    # class Conv(Edit),
+    # UNSUPPORTED
 
-        # class Dup(Edit):
+    # class Dup(Edit):
         ("NM_006158.3:n.1291_1293dup", 3),
         ("NM_006158.3:n.1291_1293dupGAG", 3),
-        
-        # class Inv(Edit):
+
+    # class Inv(Edit):
         ("NM_006158.3:n.1291_1293inv", 0),
 
-        # class NACopy(Edit):
-        ("NC_000014.8:g.88401076_88459508copy4", (88459508-88401076+1) * 4),
+    # class NACopy(Edit):
+        ("NC_000014.8:g.88401076_88459508copy4", (88459508 - 88401076 + 1) * 4),
 
-        # class    NARefAlt(Edit):
+    # class    NARefAlt(Edit):
         ("NM_000314.4:c.706G>T", 0),
         ("NM_000314.4:c.706delG", -1),
         ("NM_000314.4:c.706delGinsT", 0),
         ("NM_000314.4:c.706_708del", -3),
         ("NM_000314.4:c.706_706delG", -1),
         ("NM_000314.4:c.706_708delGAC", -3),
-
         ("NM_000314.4:c.706_708delGACinsT", -2),
         ("NM_000314.4:c.706_708delGACinsTT", -1),
         ("NM_000314.4:c.706_708delGACinsTTG", 0),
@@ -62,21 +61,20 @@ class Test_VariantLengths(unittest.TestCase):
         ("NM_000314.4:c.706_708del3insTTGT", +1),
         ("NM_000314.4:c.706_708del3", -3),
         ("NM_004655.3:c.-12_8delAGCTCCCTCACCATGAGTAG", -20),
-
         ("NM_000314.4:c.706_707insT", +1),
         ("NM_000314.4:c.706_707insTT", +2),
-        #See #319:: ("NM_000249.3:c.1897-3del", ),
-        #See #319:: ("NM_000249.3:c.1897-3_1897-1del", ),
-        #See #319:: ("NM_000249.3:c.1897-3_1897-1delinsACGT", ),
-        ]
+    #See #319:: ("NM_000249.3:c.1897-3del", ),
+    #See #319:: ("NM_000249.3:c.1897-3_1897-1del", ),
+    #See #319:: ("NM_000249.3:c.1897-3_1897-1delinsACGT", ),
+    ]
 
     error_tests = [
         "NM_003777.3:c.13552_*36del57",
-        ]
+    ]
 
     @classmethod
     def setUpClass(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache=CACHE)
+        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
         cls.vm = hgvs.variantmapper.VariantMapper(cls.hdp)
         cls.hp = hgvs.parser.Parser()
 

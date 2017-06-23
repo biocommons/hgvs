@@ -69,9 +69,10 @@ class VariantMapper(object):
 
     """
 
-    def __init__(self, hdp,
+    def __init__(self,
+                 hdp,
                  replace_reference=hgvs.global_config.mapping.replace_reference,
-                 prevalidation_level = hgvs.global_config.mapping.prevalidation_level):
+                 prevalidation_level=hgvs.global_config.mapping.prevalidation_level):
         """
         :param bool replace_reference: replace reference (entails additional network access)
         :param str prevalidation_level: None or Intrinsic or Extrinsic validation before mapping
@@ -241,8 +242,8 @@ class VariantMapper(object):
             self._validator.validate(var_c)
         tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=var_c.ac, alt_aln_method="transcript")
         pos_n = tm.c_to_n(var_c.posedit.pos)
-        if (isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_c.posedit.edit, hgvs.edit.Dup) or
-                isinstance(var_c.posedit.edit, hgvs.edit.Inv)):
+        if (isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_c.posedit.edit, hgvs.edit.Dup)
+                or isinstance(var_c.posedit.edit, hgvs.edit.Inv)):
             edit_n = copy.deepcopy(var_c.posedit.edit)
         else:
             raise HGVSUnsupportedOperationError("Only NARefAlt/Dup/Inv types are currently implemented")
@@ -268,8 +269,8 @@ class VariantMapper(object):
             self._validator.validate(var_n)
         tm = self._fetch_TranscriptMapper(tx_ac=var_n.ac, alt_ac=var_n.ac, alt_aln_method="transcript")
         pos_c = tm.n_to_c(var_n.posedit.pos)
-        if (isinstance(var_n.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_n.posedit.edit, hgvs.edit.Dup) or
-                isinstance(var_n.posedit.edit, hgvs.edit.Inv)):
+        if (isinstance(var_n.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_n.posedit.edit, hgvs.edit.Dup)
+                or isinstance(var_n.posedit.edit, hgvs.edit.Inv)):
             edit_c = copy.deepcopy(var_n.posedit.edit)
         else:
             raise HGVSUnsupportedOperationError("Only NARefAlt/Dup/Inv types are currently implemented")
@@ -367,8 +368,8 @@ class VariantMapper(object):
             return var
 
         pos = var.posedit.pos
-        if ((isinstance(pos.start, hgvs.location.BaseOffsetPosition) and pos.start.offset != 0) or
-            (isinstance(pos.end, hgvs.location.BaseOffsetPosition) and pos.end.offset != 0)):
+        if ((isinstance(pos.start, hgvs.location.BaseOffsetPosition) and pos.start.offset != 0)
+                or (isinstance(pos.end, hgvs.location.BaseOffsetPosition) and pos.end.offset != 0)):
             _logger.info("Can't update reference sequence for intronic variant {}".format(var))
             return var
 
@@ -435,16 +436,15 @@ class VariantMapper(object):
         return edit_out
 
 
-
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.

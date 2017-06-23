@@ -65,7 +65,8 @@ class Normalizer(object):
     def normalize(self, var):
         """Perform sequence variants normalization for single variant
         """
-        assert isinstance(var, hgvs.sequencevariant.SequenceVariant), "variant must be a parsed HGVS sequence variant object"
+        assert isinstance(var,
+                          hgvs.sequencevariant.SequenceVariant), "variant must be a parsed HGVS sequence variant object"
 
         if self.validator:
             self.validator.validate(var)
@@ -166,7 +167,7 @@ class Normalizer(object):
         # ensure the end is not outside of reference sequence
         tgt_len = self._get_tgt_length(var)
         if ref_end == tgt_len + 1:
-            ref = self._fetch_bounded_seq(var, tgt_len-1, tgt_len, 0, boundary)
+            ref = self._fetch_bounded_seq(var, tgt_len - 1, tgt_len, 0, boundary)
             alt = ref + alt
             edit = hgvs.edit.NARefAlt(ref=ref, alt=alt)
             ref_start = tgt_len
@@ -216,8 +217,8 @@ class Normalizer(object):
 
                 # TODO: #242: implement methods to find tx regions
                 for i in range(0, len(exon_starts)):
-                    if (var.posedit.pos.start.base - 1 >= exon_starts[i] and
-                            var.posedit.pos.start.base - 1 < exon_ends[i]):
+                    if (var.posedit.pos.start.base - 1 >= exon_starts[i]
+                            and var.posedit.pos.start.base - 1 < exon_ends[i]):
                         break
 
                 for j in range(0, len(exon_starts)):
@@ -299,7 +300,8 @@ class Normalizer(object):
         else:
             # For NARefAlt and Inv
             if var.posedit.edit.ref_s is None or var.posedit.edit.ref == "":
-                ref = self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, 0, boundary)
+                ref = self._fetch_bounded_seq(var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, 0,
+                                              boundary)
             else:
                 ref = var.posedit.edit.ref
 

@@ -28,9 +28,7 @@ class Test_SimplePosition(unittest.TestCase):
             self.assertEqual(hgvs.location.SimplePosition(-1), "SHOULD FAIL")
 
     def test_simple_subtraction(self):
-        self.assertEqual(
-            hgvs.location.SimplePosition(5) - hgvs.location.SimplePosition(3),
-            2)
+        self.assertEqual(hgvs.location.SimplePosition(5) - hgvs.location.SimplePosition(3), 2)
 
     def test_simple_comparision(self):
         var = self.hp.parse_hgvs_variant("NC_000007.13:g.36561662_36561683del")
@@ -90,17 +88,16 @@ class Test_BaseOffsetPosition(unittest.TestCase):
         cdsp.offset = 7
         self.assertEqual(str(cdsp), "(*5+7)")
 
-
     def test_baseoffset_subtraction(self):
-        v30 = hgvs.location.BaseOffsetPosition(3,0)
-        v50 = hgvs.location.BaseOffsetPosition(5,0)
-        v52 = hgvs.location.BaseOffsetPosition(5,2)
-        v54 = hgvs.location.BaseOffsetPosition(5,4)
+        v30 = hgvs.location.BaseOffsetPosition(3, 0)
+        v50 = hgvs.location.BaseOffsetPosition(5, 0)
+        v52 = hgvs.location.BaseOffsetPosition(5, 2)
+        v54 = hgvs.location.BaseOffsetPosition(5, 4)
 
-        self.assertEqual(v50-v30, 2)
-        
+        self.assertEqual(v50 - v30, 2)
+
         with self.assertRaises(HGVSError):
-            _ = v54-v30
+            _ = v54 - v30
 
     def test_baseoffset_comparision(self):
         var = self.hp.parse_hgvs_variant("NM_000030.2:c.669_680del")
@@ -155,9 +152,7 @@ class Test_BaseOffsetPosition(unittest.TestCase):
         var = self.hp.parse_hgvs_variant("NM_000030.2:c.680+2_681-32del")
         with self.assertRaises(HGVSUnsupportedOperationError):
             var.posedit.pos.start < var.posedit.pos.end
-        
 
-        
 
 @pytest.mark.quick
 class Test_AAPosition(unittest.TestCase):
@@ -173,7 +168,7 @@ class Test_AAPosition(unittest.TestCase):
     def test_aaposition_subtraction(self):
         l1 = hgvs.location.AAPosition(15, 'S')
         l2 = hgvs.location.AAPosition(20, 'S')
-        self.assertEqual(l2-l1, 5)
+        self.assertEqual(l2 - l1, 5)
 
     def test_aaposition_comparision(self):
         var = self.hp.parse_hgvs_variant("NP_000042.3:p.His1082_Val1085delinsLeuHisGlnAla")
@@ -188,10 +183,9 @@ class Test_AAPosition(unittest.TestCase):
 @pytest.mark.quick
 class Test_Interval(unittest.TestCase):
     def test_Interval(self):
-        ival = hgvs.location.Interval(hgvs.location.BaseOffsetPosition(base=12,
-                                                                       offset=+34),
-                                      hgvs.location.BaseOffsetPosition(base=56,
-                                                                       offset=-78))
+        ival = hgvs.location.Interval(
+            hgvs.location.BaseOffsetPosition(base=12, offset=+34), hgvs.location.BaseOffsetPosition(
+                base=56, offset=-78))
         self.assertEqual(ival.start.base, 12)
         self.assertEqual(ival.start.offset, 34)
         self.assertEqual(ival.end.base, 56)
@@ -199,10 +193,8 @@ class Test_Interval(unittest.TestCase):
         self.assertEqual(str(ival), "12+34_56-78")
 
     def test_length(self):
-        ival = hgvs.location.Interval(hgvs.location.BaseOffsetPosition(base=12,
-                                                                       offset=0),
-                                      hgvs.location.BaseOffsetPosition(base=50,
-                                                                       offset=0))
+        ival = hgvs.location.Interval(
+            hgvs.location.BaseOffsetPosition(base=12, offset=0), hgvs.location.BaseOffsetPosition(base=50, offset=0))
         self.assertEqual(ival._length(), 39)
 
 
@@ -211,13 +203,13 @@ if __name__ == "__main__":
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.

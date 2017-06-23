@@ -33,7 +33,7 @@ class _HashedSeq(list):
         return self.hashvalue
 
     def __getstate__(self):
-        return True  # needs to be truthy for __setstate__ to be called
+        return True    # needs to be truthy for __setstate__ to be called
 
     def __setstate__(self, _):
         self.hashvalue = hash(tuple(self))

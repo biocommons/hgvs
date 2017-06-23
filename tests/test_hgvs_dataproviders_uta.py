@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-
 """Tests uta postgresql client"""
-
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -95,13 +93,14 @@ class UTA_Base(object):
 class Test_hgvs_dataproviders_uta_UTA_default(unittest.TestCase, UTA_Base):
     @classmethod
     def setUpClass(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache=CACHE)
+        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
 
 
 class Test_hgvs_dataproviders_uta_UTA_default_with_pooling(unittest.TestCase, UTA_Base):
     @classmethod
     def setUpClass(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect(pooling=True, mode=os.environ.get("HGVS_CACHE_MODE","run"), cache=CACHE)
+        cls.hdp = hgvs.dataproviders.uta.connect(
+            pooling=True, mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
 
 
 class TestUTACache(Test_hgvs_dataproviders_uta_UTA_default):
@@ -111,7 +110,10 @@ class TestUTACache(Test_hgvs_dataproviders_uta_UTA_default):
         iv = hgvs.location.Interval(start=start, end=end)
         edit = hgvs.edit.NARefAlt(ref="C", alt="T")
         posedit = hgvs.posedit.PosEdit(pos=iv, edit=edit)
-        genomic_variant = hgvs.sequencevariant.SequenceVariant(ac="NC_000011.9", type="g", posedit=posedit, )
+        genomic_variant = hgvs.sequencevariant.SequenceVariant(
+            ac="NC_000011.9",
+            type="g",
+            posedit=posedit, )
         variantmapper = hgvs.variantmapper.VariantMapper(self.hdp)
         return variantmapper.g_to_c(genomic_variant, "NM_001164277.1")
 
@@ -129,13 +131,13 @@ if __name__ == "__main__":
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.

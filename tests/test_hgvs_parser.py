@@ -25,7 +25,10 @@ class Test_Position(unittest.TestCase):
             if var.startswith("#") or var == "":
                 continue
             v = self.parser.parse_hgvs_variant(var)
-            self.assertEqual(var, v.format(conf = {'max_ref_length' : None}), "parse-format roundtrip failed:" + pprint.pformat(v.posedit))
+            self.assertEqual(
+                var,
+                v.format(conf={'max_ref_length': None}),
+                "parse-format roundtrip failed:" + pprint.pformat(v.posedit))
 
     @pytest.mark.quick
     def test_parser_reject(self):
@@ -57,13 +60,13 @@ if __name__ == "__main__":
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.

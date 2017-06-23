@@ -71,11 +71,17 @@ class Test_IntervalMapper(unittest.TestCase):
 
     @staticmethod
     def _build_mock_intervalmapper():
-        iv1 = [hgvs.intervalmapper.Interval(1, 5), hgvs.intervalmapper.Interval(5, 6),
-               hgvs.intervalmapper.Interval(6, 10)]
+        iv1 = [
+            hgvs.intervalmapper.Interval(1, 5),
+            hgvs.intervalmapper.Interval(5, 6),
+            hgvs.intervalmapper.Interval(6, 10)
+        ]
 
-        iv2 = [hgvs.intervalmapper.Interval(1, 5), hgvs.intervalmapper.Interval(5, 5),
-               hgvs.intervalmapper.Interval(5, 9)]
+        iv2 = [
+            hgvs.intervalmapper.Interval(1, 5),
+            hgvs.intervalmapper.Interval(5, 5),
+            hgvs.intervalmapper.Interval(5, 9)
+        ]
 
         ivp = [hgvs.intervalmapper.IntervalPair(iv1[i], iv2[i]) for i in range(len(iv1))]
         ivm = hgvs.intervalmapper.IntervalMapper(ivp)
@@ -87,13 +93,13 @@ if __name__ == "__main__":
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.

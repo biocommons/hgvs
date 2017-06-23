@@ -12,7 +12,6 @@ import hgvs.variantmapper
 from hgvs.exceptions import HGVSInvalidVariantError, HGVSUnsupportedOperationError
 from hgvs.enums import ValidationLevel, Datum
 
-
 SEQ_ERROR_MSG = "Variant reference ({var_ref_seq}) does not agree with reference sequence ({ref_seq})"
 CDS_BOUND_ERROR_MSG = "Variant coordinate is out of the bound of CDS region (CDS length : {cds_length})"
 
@@ -39,11 +38,13 @@ class IntrinsicValidator(object):
     Attempts to determine if the HGVS name is internally consistent
 
     """
+
     def __init__(self, strict=hgvs.global_config.validator.strict):
         self.strict = strict
 
     def validate(self, var, strict=None):
-        assert isinstance(var, hgvs.sequencevariant.SequenceVariant), "variant must be a parsed HGVS sequence variant object"
+        assert isinstance(var,
+                          hgvs.sequencevariant.SequenceVariant), "variant must be a parsed HGVS sequence variant object"
         if strict is None:
             strict = self.strict
         fail_level = ValidationLevel.WARNING if strict else ValidationLevel.ERROR
@@ -64,7 +65,8 @@ class ExtrinsicValidator():
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp, prevalidation_level=None)
 
     def validate(self, var, strict=None):
-        assert isinstance(var, hgvs.sequencevariant.SequenceVariant), "variant must be a parsed HGVS sequence variant object"
+        assert isinstance(var,
+                          hgvs.sequencevariant.SequenceVariant), "variant must be a parsed HGVS sequence variant object"
         if strict is None: strict = self.strict
         fail_level = ValidationLevel.WARNING if strict else ValidationLevel.ERROR
         (res, msg) = self._ref_is_valid(var)
@@ -78,8 +80,8 @@ class ExtrinsicValidator():
 
     def _ref_is_valid(self, var):
         # use reference sequence of original variant, even if later converted (eg c_to_n)
-        if (var.type in BASE_OFFSET_COORD_TYPES and var.posedit.pos is not None and
-            (var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0)):
+        if (var.type in BASE_OFFSET_COORD_TYPES and var.posedit.pos is not None
+                and (var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0)):
             return (ValidationLevel.WARNING, "Cannot validate sequence of an intronic variant ({})".format(str(var)))
 
         ref_checks = []
@@ -108,7 +110,7 @@ class ExtrinsicValidator():
             ref_seq = self.hdp.get_seq(ac, var_ref_start - 1, var_ref_end)
             if ref_seq != var_ref_seq:
                 return (ValidationLevel.ERROR,
-                    str(var) + ": " + SEQ_ERROR_MSG.format(ref_seq=ref_seq, var_ref_seq=var_ref_seq))
+                        str(var) + ": " + SEQ_ERROR_MSG.format(ref_seq=ref_seq, var_ref_seq=var_ref_seq))
 
         return (ValidationLevel.VALID, None)
 

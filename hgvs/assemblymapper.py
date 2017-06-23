@@ -42,7 +42,7 @@ class AssemblyMapper(VariantMapper):
                  assembly_name=hgvs.global_config.mapping.assembly,
                  alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
                  normalize=hgvs.global_config.mapping.normalize,
-                 prevalidation_level = hgvs.global_config.mapping.prevalidation_level,
+                 prevalidation_level=hgvs.global_config.mapping.prevalidation_level,
                  in_par_assume=hgvs.global_config.mapping.in_par_assume,
                  replace_reference=hgvs.global_config.mapping.replace_reference,
                  *args,
@@ -60,7 +60,8 @@ class AssemblyMapper(VariantMapper):
         :raises HGVSError subclasses: for a variety of mapping and data lookup failures
         """
 
-        super(AssemblyMapper, self).__init__(hdp=hdp, replace_reference=replace_reference, prevalidation_level=prevalidation_level, *args, **kwargs)
+        super(AssemblyMapper, self).__init__(
+            hdp=hdp, replace_reference=replace_reference, prevalidation_level=prevalidation_level, *args, **kwargs)
         self.assembly_name = assembly_name
         self.alt_aln_method = alt_aln_method
         self.normalize = normalize
@@ -68,9 +69,7 @@ class AssemblyMapper(VariantMapper):
         self._norm = None
         if self.normalize:
             self._norm = hgvs.normalizer.Normalizer(hdp, alt_aln_method=alt_aln_method, validate=False)
-        self._assembly_map = {k: v for k, v in
-                              hdp.get_assembly_map(self.assembly_name).items()
-                              if k.startswith("NC_")}
+        self._assembly_map = {k: v for k, v in hdp.get_assembly_map(self.assembly_name).items() if k.startswith("NC_")}
         self._assembly_accessions = set(self._assembly_map.keys())
 
     def __repr__(self):
@@ -181,7 +180,6 @@ class AssemblyMapper(VariantMapper):
         return super(AssemblyMapper, self)._fetch_TranscriptMapper(tx_ac, alt_ac, alt_aln_method)
 
     def _maybe_normalize(self, var):
-
         """normalize variant if requested, and ignore HGVSUnsupportedOperationError
         This is better than checking whether the variant is intronic because
         future UTAs will support LRG, which will enable checking intronic variants.
@@ -197,13 +195,13 @@ class AssemblyMapper(VariantMapper):
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.

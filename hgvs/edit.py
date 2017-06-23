@@ -333,7 +333,7 @@ class AAExt(Edit):
     def __attrs_post_init__(self):
         self.ref = aa_to_aa1(self.ref)
         self.alt = aa_to_aa1(self.alt)
-        self.aaterm=aa_to_aa1(self.aaterm)
+        self.aaterm = aa_to_aa1(self.aaterm)
 
     def format(self, conf=None):
         p_3_letter, p_term_asterisk = self._format_config_aa(conf)
@@ -443,7 +443,7 @@ class Repeat(Edit):
         if self.min == self.max:
             return "{ref}[{min}]".format(ref=ref, min=self.min)
         return "{ref}({min}_{max})".format(ref=ref, min=self.min, max=self.max)
-    
+
     __str__ = format
 
     def _set_uncertain(self):
@@ -589,13 +589,13 @@ if __name__ == "__main__":
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.

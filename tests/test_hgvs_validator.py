@@ -14,7 +14,7 @@ import hgvs.parser
 import hgvs.validator
 from support import CACHE
 
-hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache=CACHE)
+hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
 
 
 class Test_HGVSValidator(unittest.TestCase):
@@ -54,7 +54,8 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("NC_000007.13:g.36561662C>T")))
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("NC_000007.13:g.36561662_36561663insT")))
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("NM_01234.5:c.76_77insT")))
-        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.123+54_123+55insT"), strict=False))
+        self.assertTrue(
+            self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.123+54_123+55insT"), strict=False))
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.123+54A>T"), strict=False))
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("NC_012920.1:m.54G>C")))
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("NC_012920.1:m.57_58insC")))
@@ -72,8 +73,10 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
         """Test if insertion length = 1"""
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("NC_000007.13:g.36561662_36561663insT")))
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.76_77insT"), strict=False))
-        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.123+54_123+55insT"), strict=False))
-        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.123-54_123-53insT"), strict=False))
+        self.assertTrue(
+            self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.123+54_123+55insT"), strict=False))
+        self.assertTrue(
+            self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.123-54_123-53insT"), strict=False))
 
         with self.assertRaises(HGVSInvalidVariantError):
             self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.76_78insTT"), strict=False)
@@ -83,8 +86,10 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
 
     def test_del_length(self):
         """Test if del length agrees with position range"""
-        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.76_78delACT"), strict=False))
-        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.123+54_123+55delTA"), strict=False))
+        self.assertTrue(
+            self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.76_78delACT"), strict=False))
+        self.assertTrue(
+            self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.123+54_123+55delTA"), strict=False))
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.76_78del"), strict=False))
         self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant('NM_003060.3:c.-91_22del113')))
 
@@ -121,32 +126,34 @@ class Test_HGVSExtrinsicValidator(unittest.TestCase):
 
     def test_valid_ref(self):
         """Test variants with valid reference seqeuences."""
-        hgvs_variants = ["NM_001005405.2:c.6C>A",
-                         "NM_001005405.2:c.-38T>A",
-                         "NM_001005405.2:c.*3C>G",
-                         "NM_001005405.2:c.435_440delCTGCTG",
-                         "NM_000187.3:c.457dupG",
-                         "NR_002728.3:r.55A>U",
-                         "NM_000495.3:c.610_628del19",
-                         "NM_000059.3:c.44_45insATT",
-                         "NC_000001.10:g.156104193G>A",
-                         "NP_000010.1:p.Asn158Ser",
-                         "NP_000042.3:p.His1082_Val1085delinsLeuHisGlnAla",
-                         "NP_000042.3:p.His1082ArgfsTer2",
-                         ]
+        hgvs_variants = [
+            "NM_001005405.2:c.6C>A",
+            "NM_001005405.2:c.-38T>A",
+            "NM_001005405.2:c.*3C>G",
+            "NM_001005405.2:c.435_440delCTGCTG",
+            "NM_000187.3:c.457dupG",
+            "NR_002728.3:r.55A>U",
+            "NM_000495.3:c.610_628del19",
+            "NM_000059.3:c.44_45insATT",
+            "NC_000001.10:g.156104193G>A",
+            "NP_000010.1:p.Asn158Ser",
+            "NP_000042.3:p.His1082_Val1085delinsLeuHisGlnAla",
+            "NP_000042.3:p.His1082ArgfsTer2",
+        ]
         for var in [self.hp.parse_hgvs_variant(h) for h in hgvs_variants]:
             self.assertTrue(self.validate_ext.validate(var))
 
     def test_invalid_ref(self):
         """Test variants with invalid reference sequences."""
-        hgvs_variants = ["NM_001005405.2:c.435_440delCTGCT",
-                         "NR_002728.3:r.55C>U",
-                         "NC_000001.10:g.156104193C>A",
-                         "NP_000010.1:p.Ser158Arg",
-                         "NP_000042.3:p.Arg1082_Val1085delinsLeuHisGlnAla",
-                         "NP_000042.3:p.His1082_Arg1085delinsLeuHisGlnAla",
-                         "NP_000042.3:p.Ser1082ArgfsTer2",
-                         ]
+        hgvs_variants = [
+            "NM_001005405.2:c.435_440delCTGCT",
+            "NR_002728.3:r.55C>U",
+            "NC_000001.10:g.156104193C>A",
+            "NP_000010.1:p.Ser158Arg",
+            "NP_000042.3:p.Arg1082_Val1085delinsLeuHisGlnAla",
+            "NP_000042.3:p.His1082_Arg1085delinsLeuHisGlnAla",
+            "NP_000042.3:p.Ser1082ArgfsTer2",
+        ]
 
         for var in [self.hp.parse_hgvs_variant(h) for h in hgvs_variants]:
             with self.assertRaises(HGVSInvalidVariantError):
@@ -165,7 +172,6 @@ class Test_HGVSExtrinsicValidator(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)

@@ -23,6 +23,7 @@ import hgvs.sequencevariant
 import hgvs.variantmapper
 from support import CACHE
 
+
 def gxp_file_reader(fn):
     rdr = csv.DictReader(open(fn, "r"), delimiter=str("\t"))
     for rec in rdr:
@@ -34,7 +35,7 @@ def gxp_file_reader(fn):
 @pytest.mark.mapping
 class Test_VariantMapper(unittest.TestCase):
     def setUp(self):
-        self.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache=CACHE)
+        self.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
         self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
         self.hp = hgvs.parser.Parser()
 
@@ -147,16 +148,20 @@ class Test_VariantMapper(unittest.TestCase):
             var_x_test = self.hm.g_to_c(var_g, var_x.ac)
         elif var_x.type == "n":
             var_x_test = self.hm.g_to_n(var_g, var_x.ac)
-        self.assertEquals(_rm_del_seq(str(var_x)), _rm_del_seq(str(var_x_test)),
-                          msg="%s != %s (%s; HGVSg=%s)" % (str(var_x_test), str(var_x), rec["id"], rec["HGVSg"]))
+        self.assertEquals(
+            _rm_del_seq(str(var_x)),
+            _rm_del_seq(str(var_x_test)),
+            msg="%s != %s (%s; HGVSg=%s)" % (str(var_x_test), str(var_x), rec["id"], rec["HGVSg"]))
 
         # c,n -> g
         if var_x.type == "c":
             var_g_test = self.hm.c_to_g(var_x, var_g.ac)
         elif var_x.type == "n":
             var_g_test = self.hm.n_to_g(var_x, var_g.ac)
-        self.assertEquals(_rm_del_seq(str(var_g)), _rm_del_seq(str(var_g_test)),
-                          msg="%s != %s (%s; HGVSc=%s)" % (str(var_g_test), str(var_g), rec["id"], rec["HGVSc"]))
+        self.assertEquals(
+            _rm_del_seq(str(var_g)),
+            _rm_del_seq(str(var_g_test)),
+            msg="%s != %s (%s; HGVSc=%s)" % (str(var_g_test), str(var_g), rec["id"], rec["HGVSc"]))
 
         if var_p is not None:
             # c -> p
@@ -181,13 +186,13 @@ if __name__ == "__main__":
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.

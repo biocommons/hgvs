@@ -19,12 +19,12 @@ class Test_Edit(unittest.TestCase):
             edit = str(hgvs.edit.NARefAlt(None, None))
 
     def test_NARefAlt(self):
-        self.assertEqual(hgvs.edit.NARefAlt("A", "A").format(conf = {'max_ref_length' : None}), "A=")
-        self.assertEqual(hgvs.edit.NARefAlt("A", "T").format(conf = {'max_ref_length' : None}), "A>T")
-        self.assertEqual(hgvs.edit.NARefAlt("AA", None).format(conf = {'max_ref_length' : None}), "delAA")
-        self.assertEqual(hgvs.edit.NARefAlt(None, "TT").format(conf = {'max_ref_length' : None}), "insTT")
-        self.assertEqual(hgvs.edit.NARefAlt("AA", "T").format(conf = {'max_ref_length' : None}), "delAAinsT")
-        self.assertEqual(hgvs.edit.NARefAlt("A", "TT").format(conf = {'max_ref_length' : None}), "delAinsTT")
+        self.assertEqual(hgvs.edit.NARefAlt("A", "A").format(conf={'max_ref_length': None}), "A=")
+        self.assertEqual(hgvs.edit.NARefAlt("A", "T").format(conf={'max_ref_length': None}), "A>T")
+        self.assertEqual(hgvs.edit.NARefAlt("AA", None).format(conf={'max_ref_length': None}), "delAA")
+        self.assertEqual(hgvs.edit.NARefAlt(None, "TT").format(conf={'max_ref_length': None}), "insTT")
+        self.assertEqual(hgvs.edit.NARefAlt("AA", "T").format(conf={'max_ref_length': None}), "delAAinsT")
+        self.assertEqual(hgvs.edit.NARefAlt("A", "TT").format(conf={'max_ref_length': None}), "delAinsTT")
         # edit types
         self.assertEqual(str(hgvs.edit.NARefAlt("A", "A").type), "identity")
         self.assertEqual(str(hgvs.edit.NARefAlt("A", "T").type), "sub")
@@ -75,13 +75,13 @@ class Test_Edit(unittest.TestCase):
 
     def test_Dup(self):
         self.assertEqual(str(hgvs.edit.Dup()), "dup")
-        self.assertEqual(hgvs.edit.Dup("T").format(conf = {'max_ref_length' : None}), "dupT")
+        self.assertEqual(hgvs.edit.Dup("T").format(conf={'max_ref_length': None}), "dupT")
         # edit types
         self.assertEqual(str(hgvs.edit.Dup().type), "dup")
         self.assertEqual(str(hgvs.edit.Dup("T").type), "dup")
 
     def test_Repeat(self):
-        self.assertEqual(hgvs.edit.Repeat("CAG", 12, 34).format(conf = {'max_ref_length' : None}), "CAG(12_34)")
+        self.assertEqual(hgvs.edit.Repeat("CAG", 12, 34).format(conf={'max_ref_length': None}), "CAG(12_34)")
         # edit types
         self.assertEqual(str(hgvs.edit.Repeat("CAG", 12, 34).type), "repeat")
 
@@ -103,19 +103,18 @@ class Test_Edit(unittest.TestCase):
         self.assertEqual(str(hgvs.edit.Conv("NM_001166478.1", "c", pos).type), "con")
 
 
-
 if __name__ == "__main__":
     unittest.main()
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.

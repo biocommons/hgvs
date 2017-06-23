@@ -18,7 +18,7 @@ from support import CACHE
 class Test_VariantMapper(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache=CACHE)
+        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
         cls.am = hgvs.assemblymapper.AssemblyMapper(cls.hdp)
         cls.hp = hgvs.parser.Parser()
 
@@ -65,73 +65,194 @@ class Test_VariantMapper(unittest.TestCase):
 
 class Test_RefReplacement(unittest.TestCase):
     test_cases = [
-        # These casese attempt to test reference update in four dimensions:
-        # - variant type: n, c, g
-        # - major mapping paths: c<->n, c<->g, n<->g
-        # - variant class: sub, del, ins, delins, dup
-        # - strand: +/-
+    # These casese attempt to test reference update in four dimensions:
+    # - variant type: n, c, g
+    # - major mapping paths: c<->n, c<->g, n<->g
+    # - variant class: sub, del, ins, delins, dup
+    # - strand: +/-
 
-        # ADRB2    │ NM_000024.5 │  239 │ 1481 │ NC_000005.9  │  1 │ 148206155,148208197 | 284=1X32=1X1724=
-        # cseq = hdp.fetch_seq("NM_000024.5")
-        # gseq = hdp.fetch_seq("NC_000005.9",148206155,148208197)
-        # cseq[280:290] = "CAATAGAAGC"
-        # gseq[280:290] = "CAATGGAAGC"
-        #                      ^ @ n.285
-        # These variants are in and around the first sub: 
-        {u"c": "NM_000024.5:c.42C>N",  u"g": "NC_000005.9:g.148206436C>N",  u"n": u"NM_000024.5:n.281C>N"},
-        {u"c": "NM_000024.5:c.43A>N",  u"g": "NC_000005.9:g.148206437A>N",  u"n": u"NM_000024.5:n.282A>N"},
-        {u"c": "NM_000024.5:c.44A>N",  u"g": "NC_000005.9:g.148206438A>N",  u"n": u"NM_000024.5:n.283A>N"},
-        {u"c": "NM_000024.5:c.45T>N",  u"g": "NC_000005.9:g.148206439T>N",  u"n": u"NM_000024.5:n.284T>N"},
-        {u"c": "NM_000024.5:c.46A>N",  u"g": "NC_000005.9:g.148206440G>N",  u"n": u"NM_000024.5:n.285A>N"}, # ref repl
-        {u"c": "NM_000024.5:c.47G>N",  u"g": "NC_000005.9:g.148206441G>N",  u"n": u"NM_000024.5:n.286G>N"},
-        {u"c": "NM_000024.5:c.48A>N",  u"g": "NC_000005.9:g.148206442A>N",  u"n": u"NM_000024.5:n.287A>N"},
-        {u"c": "NM_000024.5:c.49A>N",  u"g": "NC_000005.9:g.148206443A>N",  u"n": u"NM_000024.5:n.288A>N"},
-        {u"c": "NM_000024.5:c.50G>N",  u"g": "NC_000005.9:g.148206444G>N",  u"n": u"NM_000024.5:n.289G>N"},
-        {u"c": "NM_000024.5:c.51C>N",  u"g": "NC_000005.9:g.148206445C>N",  u"n": u"NM_000024.5:n.290C>N"},
+    # ADRB2    │ NM_000024.5 │  239 │ 1481 │ NC_000005.9  │  1 │ 148206155,148208197 | 284=1X32=1X1724=
+    # cseq = hdp.fetch_seq("NM_000024.5")
+    # gseq = hdp.fetch_seq("NC_000005.9",148206155,148208197)
+    # cseq[280:290] = "CAATAGAAGC"
+    # gseq[280:290] = "CAATGGAAGC"
+    #                      ^ @ n.285
+    # These variants are in and around the first sub:
+        {
+            u"c": "NM_000024.5:c.42C>N",
+            u"g": "NC_000005.9:g.148206436C>N",
+            u"n": u"NM_000024.5:n.281C>N"
+        },
+        {
+            u"c": "NM_000024.5:c.43A>N",
+            u"g": "NC_000005.9:g.148206437A>N",
+            u"n": u"NM_000024.5:n.282A>N"
+        },
+        {
+            u"c": "NM_000024.5:c.44A>N",
+            u"g": "NC_000005.9:g.148206438A>N",
+            u"n": u"NM_000024.5:n.283A>N"
+        },
+        {
+            u"c": "NM_000024.5:c.45T>N",
+            u"g": "NC_000005.9:g.148206439T>N",
+            u"n": u"NM_000024.5:n.284T>N"
+        },
+        {
+            u"c": "NM_000024.5:c.46A>N",
+            u"g": "NC_000005.9:g.148206440G>N",
+            u"n": u"NM_000024.5:n.285A>N"
+        },    # ref repl
+        {
+            u"c": "NM_000024.5:c.47G>N",
+            u"g": "NC_000005.9:g.148206441G>N",
+            u"n": u"NM_000024.5:n.286G>N"
+        },
+        {
+            u"c": "NM_000024.5:c.48A>N",
+            u"g": "NC_000005.9:g.148206442A>N",
+            u"n": u"NM_000024.5:n.287A>N"
+        },
+        {
+            u"c": "NM_000024.5:c.49A>N",
+            u"g": "NC_000005.9:g.148206443A>N",
+            u"n": u"NM_000024.5:n.288A>N"
+        },
+        {
+            u"c": "NM_000024.5:c.50G>N",
+            u"g": "NC_000005.9:g.148206444G>N",
+            u"n": u"NM_000024.5:n.289G>N"
+        },
+        {
+            u"c": "NM_000024.5:c.51C>N",
+            u"g": "NC_000005.9:g.148206445C>N",
+            u"n": u"NM_000024.5:n.290C>N"
+        },
 
-        # ins, del, delins, dup:
-        {u"c": "NM_000024.5:c.46_47insNN",  u"g": "NC_000005.9:g.148206440_148206441insNN",  u"n": "NM_000024.5:n.285_286insNN"},
-        {u"c": "NM_000024.5:c.45_47delTAG",  u"g": "NC_000005.9:g.148206439_148206441delTGG",  u"n": "NM_000024.5:n.284_286delTAG"},
-        {u"c": "NM_000024.5:c.45_47delTAGinsNNNN",  u"g": "NC_000005.9:g.148206439_148206441delTGGinsNNNN",  u"n": "NM_000024.5:n.284_286delTAGinsNNNN"},
-        {u"c": "NM_000024.5:c.45_47delTAGinsNNNN",  u"g": "NC_000005.9:g.148206439_148206441delTGGinsNNNN",  u"n": "NM_000024.5:n.284_286delTAGinsNNNN"},
-        {u"c": "NM_000024.5:c.46dupA",  u"g": "NC_000005.9:g.148206440dupG",  u"n": "NM_000024.5:n.285dupA"},
+    # ins, del, delins, dup:
+        {
+            u"c": "NM_000024.5:c.46_47insNN",
+            u"g": "NC_000005.9:g.148206440_148206441insNN",
+            u"n": "NM_000024.5:n.285_286insNN"
+        },
+        {
+            u"c": "NM_000024.5:c.45_47delTAG",
+            u"g": "NC_000005.9:g.148206439_148206441delTGG",
+            u"n": "NM_000024.5:n.284_286delTAG"
+        },
+        {
+            u"c": "NM_000024.5:c.45_47delTAGinsNNNN",
+            u"g": "NC_000005.9:g.148206439_148206441delTGGinsNNNN",
+            u"n": "NM_000024.5:n.284_286delTAGinsNNNN"
+        },
+        {
+            u"c": "NM_000024.5:c.45_47delTAGinsNNNN",
+            u"g": "NC_000005.9:g.148206439_148206441delTGGinsNNNN",
+            u"n": "NM_000024.5:n.284_286delTAGinsNNNN"
+        },
+        {
+            u"c": "NM_000024.5:c.46dupA",
+            u"g": "NC_000005.9:g.148206440dupG",
+            u"n": "NM_000024.5:n.285dupA"
+        },
 
+    # IFNA16   │ NM_002173.2 │    6 │  576 │ NC_000009.11 │ -1 │  21216371, 21217310 | 691=2X246=
+    # cseq = hdp.fetch_seq("NM_002173.2")
+    # gseq = reverse_complement(hdp.fetch_seq("NC_000009.11",21216371,21217310))
+    # cseq[685:695] = "AAATTTCAAA"
+    # gseq[685:695] = "AAATTTTCAA"
+    #                        ^^ @ n.692_693
+    # These variants are in and around the 2X substitution
+        {
+            u"c": "NM_002173.2:c.*110A>N",
+            u"g": "NC_000009.11:g.21216625T>N",
+            u"n": u"NM_002173.2:n.686A>N"
+        },
+        {
+            u"c": "NM_002173.2:c.*111A>N",
+            u"g": "NC_000009.11:g.21216624T>N",
+            u"n": u"NM_002173.2:n.687A>N"
+        },
+        {
+            u"c": "NM_002173.2:c.*112A>N",
+            u"g": "NC_000009.11:g.21216623T>N",
+            u"n": u"NM_002173.2:n.688A>N"
+        },
+        {
+            u"c": "NM_002173.2:c.*113T>N",
+            u"g": "NC_000009.11:g.21216622A>N",
+            u"n": u"NM_002173.2:n.689T>N"
+        },
+        {
+            u"c": "NM_002173.2:c.*114T>N",
+            u"g": "NC_000009.11:g.21216621A>N",
+            u"n": u"NM_002173.2:n.690T>N"
+        },
+        {
+            u"c": "NM_002173.2:c.*115T>N",
+            u"g": "NC_000009.11:g.21216620A>N",
+            u"n": u"NM_002173.2:n.691T>N"
+        },
+        {
+            u"c": "NM_002173.2:c.*116C>N",
+            u"g": "NC_000009.11:g.21216619A>N",
+            u"n": u"NM_002173.2:n.692C>N"
+        },    # ref repl
+        {
+            u"c": "NM_002173.2:c.*117A>N",
+            u"g": "NC_000009.11:g.21216618G>N",
+            u"n": u"NM_002173.2:n.693A>N"
+        },    # ref repl
+        {
+            u"c": "NM_002173.2:c.*118A>N",
+            u"g": "NC_000009.11:g.21216617T>N",
+            u"n": u"NM_002173.2:n.694A>N"
+        },
+        {
+            u"c": "NM_002173.2:c.*119A>N",
+            u"g": "NC_000009.11:g.21216616T>N",
+            u"n": u"NM_002173.2:n.695A>N"
+        },
 
-        # IFNA16   │ NM_002173.2 │    6 │  576 │ NC_000009.11 │ -1 │  21216371, 21217310 | 691=2X246=
-        # cseq = hdp.fetch_seq("NM_002173.2")
-        # gseq = reverse_complement(hdp.fetch_seq("NC_000009.11",21216371,21217310))
-        # cseq[685:695] = "AAATTTCAAA"
-        # gseq[685:695] = "AAATTTTCAA"
-        #                        ^^ @ n.692_693
-        # These variants are in and around the 2X substitution
-        {u"c": "NM_002173.2:c.*110A>N",  u"g": "NC_000009.11:g.21216625T>N",  u"n": u"NM_002173.2:n.686A>N"},
-        {u"c": "NM_002173.2:c.*111A>N",  u"g": "NC_000009.11:g.21216624T>N",  u"n": u"NM_002173.2:n.687A>N"},
-        {u"c": "NM_002173.2:c.*112A>N",  u"g": "NC_000009.11:g.21216623T>N",  u"n": u"NM_002173.2:n.688A>N"},
-        {u"c": "NM_002173.2:c.*113T>N",  u"g": "NC_000009.11:g.21216622A>N",  u"n": u"NM_002173.2:n.689T>N"},
-        {u"c": "NM_002173.2:c.*114T>N",  u"g": "NC_000009.11:g.21216621A>N",  u"n": u"NM_002173.2:n.690T>N"},
-        {u"c": "NM_002173.2:c.*115T>N",  u"g": "NC_000009.11:g.21216620A>N",  u"n": u"NM_002173.2:n.691T>N"},
-        {u"c": "NM_002173.2:c.*116C>N",  u"g": "NC_000009.11:g.21216619A>N",  u"n": u"NM_002173.2:n.692C>N"}, # ref repl
-        {u"c": "NM_002173.2:c.*117A>N",  u"g": "NC_000009.11:g.21216618G>N",  u"n": u"NM_002173.2:n.693A>N"}, # ref repl
-        {u"c": "NM_002173.2:c.*118A>N",  u"g": "NC_000009.11:g.21216617T>N",  u"n": u"NM_002173.2:n.694A>N"},
-        {u"c": "NM_002173.2:c.*119A>N",  u"g": "NC_000009.11:g.21216616T>N",  u"n": u"NM_002173.2:n.695A>N"},
+    # ins, del, delins, dup:
+        {
+            u"c": "NM_002173.2:c.*115_*117insNN",
+            u"g": "NC_000009.11:g.21216618_21216620insNN",
+            u"n": "NM_002173.2:n.691_693insNN"
+        },
+        {
+            u"c": "NM_002173.2:c.*114_*117delTTCA",
+            u"g": "NC_000009.11:g.21216618_21216621delGAAA",
+            u"n": "NM_002173.2:n.690_693delTTCA"
+        },
+        {
+            u"c": "NM_002173.2:c.*115_*117delTCAinsNN",
+            u"g": "NC_000009.11:g.21216618_21216620delGAAinsNN",
+            u"n": "NM_002173.2:n.691_693delTCAinsNN"
+        },
+        {
+            u"c": "NM_002173.2:c.*115_*117delTCAinsNN",
+            u"g": "NC_000009.11:g.21216618_21216620delGAAinsNN",
+            u"n": "NM_002173.2:n.691_693delTCAinsNN"
+        },
+        {
+            u"c": "NM_002173.2:c.*115_*117dupTCA",
+            u"g": "NC_000009.11:g.21216618_21216620dupGAA",
+            u"n": "NM_002173.2:n.691_693dupTCA"
+        },
 
-        # ins, del, delins, dup:
-        {u"c": "NM_002173.2:c.*115_*117insNN",  u"g": "NC_000009.11:g.21216618_21216620insNN",  u"n": "NM_002173.2:n.691_693insNN"},
-        {u"c": "NM_002173.2:c.*114_*117delTTCA",  u"g": "NC_000009.11:g.21216618_21216621delGAAA",  u"n": "NM_002173.2:n.690_693delTTCA"},
-        {u"c": "NM_002173.2:c.*115_*117delTCAinsNN",  u"g": "NC_000009.11:g.21216618_21216620delGAAinsNN",  u"n": "NM_002173.2:n.691_693delTCAinsNN"},
-        {u"c": "NM_002173.2:c.*115_*117delTCAinsNN",  u"g": "NC_000009.11:g.21216618_21216620delGAAinsNN",  u"n": "NM_002173.2:n.691_693delTCAinsNN"},
-        {u"c": "NM_002173.2:c.*115_*117dupTCA",  u"g": "NC_000009.11:g.21216618_21216620dupGAA",  u"n": "NM_002173.2:n.691_693dupTCA"},
-
-
-        # genomic variation within an indel discrepancy
-        # NM_032790.3  c        108 >
-        # NM_032790.3  n        301 > CGGGGAGCCCCCGGGGGCC------CCGCCACCGCCGCCGT
-        #                             |||||||||||||||||||------||||||||||||||||
-        # NC_000012.11 g  122064755 > CGGGGAGCCCCCGGGGGCCCCGCCACCGCCACCGCCGCCGT
-        #                                              **********
-        {u"c": "NM_032790.3:c.125_128delCCCC",  u"g": "NC_000012.11:g.122064772_122064781delCCCCGCCACC",  u"n": "NM_032790.3:n.318_321delCCCC"},
+    # genomic variation within an indel discrepancy
+    # NM_032790.3  c        108 >
+    # NM_032790.3  n        301 > CGGGGAGCCCCCGGGGGCC------CCGCCACCGCCGCCGT
+    #                             |||||||||||||||||||------||||||||||||||||
+    # NC_000012.11 g  122064755 > CGGGGAGCCCCCGGGGGCCCCGCCACCGCCACCGCCGCCGT
+    #                                              **********
+        {
+            u"c": "NM_032790.3:c.125_128delCCCC",
+            u"g": "NC_000012.11:g.122064772_122064781delCCCCGCCACC",
+            u"n": "NM_032790.3:n.318_321delCCCC"
+        },
     ]
-
 
     @classmethod
     def setUpClass(cls):
@@ -139,8 +260,9 @@ class Test_RefReplacement(unittest.TestCase):
             rec["pv"] = {x: cls.hp.parse_hgvs_variant(rec[x]) for x in "cgn"}
             return rec
 
-        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache=CACHE)
-        cls.am = hgvs.assemblymapper.AssemblyMapper(cls.hdp, replace_reference=True, assembly_name="GRCh37", alt_aln_method="splign")
+        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+        cls.am = hgvs.assemblymapper.AssemblyMapper(
+            cls.hdp, replace_reference=True, assembly_name="GRCh37", alt_aln_method="splign")
         cls.hp = hgvs.parser.Parser()
         cls.tests = [_parse_rec(rec) for rec in cls.test_cases]
 
@@ -154,26 +276,26 @@ class Test_RefReplacement(unittest.TestCase):
                     # replace ref with junk
                     pv.posedit.edit.ref = "NNNNNN"
                 self.am._replace_reference(pv)
-                self.assertEqual(rec[x], pv.format(conf={'max_ref_length' : None}))
+                self.assertEqual(rec[x], pv.format(conf={'max_ref_length': None}))
 
 
 @pytest.mark.quick
 class Test_AssemblyMapper(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache=CACHE)
+        hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
         cls.hp = hgvs.parser.Parser()
         cls.am = hgvs.assemblymapper.AssemblyMapper(hdp, assembly_name="GRCh37", alt_aln_method="splign")
-    
+
     def _test_mapping(self, hgvs_set):
         """given list of variant strings, test all valid combinations of
         g<->n<->c<->p mappings
 
         """
-        parsed_variants = [(hv,self.hp.parse_hgvs_variant(hv)) for hv in hgvs_set]
-        hgvs = {v.type: hv for hv,v in parsed_variants}
-        pvs  = {v.type:  v for hv,v in parsed_variants}
-    
+        parsed_variants = [(hv, self.hp.parse_hgvs_variant(hv)) for hv in hgvs_set]
+        hgvs = {v.type: hv for hv, v in parsed_variants}
+        pvs = {v.type: v for hv, v in parsed_variants}
+
         if "g" in pvs and "c" in pvs:
             self.assertEqual(hgvs["g"], str(self.am.c_to_g(pvs["c"])))
             self.assertEqual(hgvs["c"], str(self.am.g_to_c(pvs["g"], pvs["c"].ac)))
@@ -188,28 +310,31 @@ class Test_AssemblyMapper(unittest.TestCase):
 
     def test_SNV(self):
         """AssemblyMapper: smoketest with SNVs"""
-        hgvs_set = ["NC_000007.13:g.36561662C>T", "NM_001637.3:c.1582G>A", "NM_001637.3:n.1983G>A", "NP_001628.1:p.(Gly528Arg)"]
+        hgvs_set = [
+            "NC_000007.13:g.36561662C>T", "NM_001637.3:c.1582G>A", "NM_001637.3:n.1983G>A", "NP_001628.1:p.(Gly528Arg)"
+        ]
         self._test_mapping(hgvs_set)
 
     def test_intronic(self):
         """AssemblyMapper: smoketest with intronic SNVs"""
-        hgvs_set = ["NC_000010.10:g.89711873A>C", "NM_000314.4:c.493-2A>C", "NM_000314.4:n.1524-2A>C", "NP_000305.3:p.?"]
+        hgvs_set = [
+            "NC_000010.10:g.89711873A>C", "NM_000314.4:c.493-2A>C", "NM_000314.4:n.1524-2A>C", "NP_000305.3:p.?"
+        ]
         self._test_mapping(hgvs_set)
 
 
 if __name__ == "__main__":
     unittest.main()
 
-
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.

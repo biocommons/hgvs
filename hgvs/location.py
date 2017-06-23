@@ -42,8 +42,8 @@ class SimplePosition(object):
         return str(self)
 
     def __repr__(self):
-        return "{0}({1})".format(self.__class__.__name__, ", ".join(
-               (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
+        return "{0}({1})".format(self.__class__.__name__, ", ".join((a.name + "=" + str(getattr(self, a.name)))
+                                                                    for a in self.__attrs_attrs__))
 
     @property
     def is_uncertain(self):
@@ -126,7 +126,8 @@ class BaseOffsetPosition(object):
 
     def __str__(self):
         self.validate()
-        base_str = ("?" if self.base is None else "*" + str(self.base) if self.datum == Datum.CDS_END else str(self.base))
+        base_str = ("?" if self.base is None else "*" + str(self.base)
+                    if self.datum == Datum.CDS_END else str(self.base))
         offset_str = ("+?" if self.offset is None else "" if self.offset == 0 else "%+d" % self.offset)
         pos = base_str + offset_str
         return "(" + pos + ")" if self.uncertain else pos
@@ -135,8 +136,8 @@ class BaseOffsetPosition(object):
         return str(self)
 
     def __repr__(self):
-        return "{0}({1})".format(self.__class__.__name__, ", ".join(
-               (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
+        return "{0}({1})".format(self.__class__.__name__, ", ".join((a.name + "=" + str(getattr(self, a.name)))
+                                                                    for a in self.__attrs_attrs__))
 
     def _set_uncertain(self):
         "mark this location as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"
@@ -178,8 +179,8 @@ class BaseOffsetPosition(object):
             if lhs.base == rhs.base:
                 return lhs.offset < rhs.offset
             else:
-                if ((rhs.base - lhs.base == 1 and lhs.offset > 0 and rhs.offset < 0) or
-                    (lhs.base - rhs.base == 1 and rhs.offset > 0 and lhs.offset < 0)):
+                if ((rhs.base - lhs.base == 1 and lhs.offset > 0 and rhs.offset < 0)
+                        or (lhs.base - rhs.base == 1 and rhs.offset > 0 and lhs.offset < 0)):
                     raise HGVSUnsupportedOperationError(
                         "Cannot compare coordinates in the same intron with one based on end of exon and the other based on start of next exon"
                     )
@@ -229,8 +230,8 @@ class AAPosition(object):
     __str__ = format
 
     def __repr__(self):
-        return "{0}({1})".format(self.__class__.__name__, ", ".join(
-               (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
+        return "{0}({1})".format(self.__class__.__name__, ", ".join((a.name + "=" + str(getattr(self, a.name)))
+                                                                    for a in self.__attrs_attrs__))
 
     @property
     def pos(self):
@@ -307,8 +308,8 @@ class Interval(object):
     __str__ = format
 
     def __repr__(self):
-        return "{0}({1})".format(self.__class__.__name__, ", ".join(
-               (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
+        return "{0}({1})".format(self.__class__.__name__, ", ".join((a.name + "=" + str(getattr(self, a.name)))
+                                                                    for a in self.__attrs_attrs__))
 
     def _set_uncertain(self):
         "mark this interval as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"
@@ -335,7 +336,7 @@ class BaseOffsetInterval(Interval):
     def __attrs_post_init__(self):
         # #330: In a post-ter interval like *87_91, the * binds only
         # to the start. This means that the start.datum is CDS_END,
-        # but the end.datum is CDS_START (the default). 
+        # but the end.datum is CDS_START (the default).
         if self.start.datum == Datum.CDS_END:
             self.end.datum = Datum.CDS_END
         self.check_datum()
@@ -353,13 +354,13 @@ class BaseOffsetInterval(Interval):
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.

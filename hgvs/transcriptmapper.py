@@ -54,10 +54,10 @@ class TranscriptMapper(object):
             tx_exons = sorted(self.tx_exons, key=lambda e: e["ord"])
             for i in range(1, len(tx_exons)):
                 if tx_exons[i - 1]["tx_end_i"] != tx_exons[i]["tx_start_i"]:
-                    raise HGVSDataNotAvailableError(
-                        "TranscriptMapper(tx_ac={self.tx_ac}, "
-                        "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
-                        "Exons {a} and {b} are not adjacent".format(self=self, a=i, b=i + 1))
+                    raise HGVSDataNotAvailableError("TranscriptMapper(tx_ac={self.tx_ac}, "
+                                                    "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
+                                                    "Exons {a} and {b} are not adjacent".format(
+                                                        self=self, a=i, b=i + 1))
 
             self.strand = self.tx_exons[0]["alt_strand"]
             self.cds_start_i = self.tx_info["cds_start_i"]
@@ -240,8 +240,7 @@ class TranscriptMapper(object):
             raise HGVSError("The given coordinate is outside the bounds of the reference sequence.")
 
         n_interval = hgvs.location.BaseOffsetInterval(
-            start=hgvs.location.BaseOffsetPosition(
-                base=rs, offset=c_interval.start.offset, datum=Datum.SEQ_START),
+            start=hgvs.location.BaseOffsetPosition(base=rs, offset=c_interval.start.offset, datum=Datum.SEQ_START),
             end=hgvs.location.BaseOffsetPosition(base=re, offset=c_interval.end.offset, datum=Datum.SEQ_START),
             uncertain=c_interval.uncertain)
         return n_interval
@@ -280,13 +279,13 @@ def _hgvs_coord_to_ci(s, e):
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.

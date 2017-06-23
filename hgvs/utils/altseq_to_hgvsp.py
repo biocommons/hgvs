@@ -73,8 +73,8 @@ class AltSeqToHgvsp(object):
                         variants.append({"start": start + 1, "ins": insertion, "del": deletion})
                         do_delins = False
 
-                elif (self._alt_seq[self._alt_data.variant_start_aa - 1] == "*" and
-                      self._ref_seq[self._alt_data.variant_start_aa - 1] != "*"):
+                elif (self._alt_seq[self._alt_data.variant_start_aa - 1] == "*"
+                      and self._ref_seq[self._alt_data.variant_start_aa - 1] != "*"):
                     # introduced stop codon
                     deletion = self._ref_seq[self._alt_data.variant_start_aa - 1:]
                     variants.append({"start": self._alt_data.variant_start_aa, "ins": "*", "del": deletion})
@@ -130,15 +130,20 @@ class AltSeqToHgvsp(object):
                 print(variants)
 
         if self._is_ambiguous:
-            var_ps = [ self._create_variant(None, None, '', '',
-                                            acc=self._protein_accession,
-                                            is_ambiguous=self._is_ambiguous)
+            var_ps = [
+                self._create_variant(None, None, '', '', acc=self._protein_accession, is_ambiguous=self._is_ambiguous)
             ]
         elif len(self._alt_seq) == 0:
-            var_ps = [ self._create_variant( None, None, '', '',
-                                             acc=self._protein_accession,
-                                             is_ambiguous=self._is_ambiguous,
-                                             is_no_protein=True) ]
+            var_ps = [
+                self._create_variant(
+                    None,
+                    None,
+                    '',
+                    '',
+                    acc=self._protein_accession,
+                    is_ambiguous=self._is_ambiguous,
+                    is_no_protein=True)
+            ]
         else:
             var_ps = [self._convert_to_sequence_variants(x, self._protein_accession) for x in variants]
 
@@ -331,21 +336,20 @@ class AltSeqToHgvsp(object):
                 edit = AARefAlt(ref='', alt='')
             else:
                 edit = AARefAlt(ref=ref, alt=alt)
-            posedit = PosEdit(pos=interval, edit=edit,
-                              uncertain=hgvs.global_config.mapping.inferred_p_is_uncertain)
+            posedit = PosEdit(pos=interval, edit=edit, uncertain=hgvs.global_config.mapping.inferred_p_is_uncertain)
         var_p = hgvs.sequencevariant.SequenceVariant(acc, 'p', posedit)
         return var_p
 
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.

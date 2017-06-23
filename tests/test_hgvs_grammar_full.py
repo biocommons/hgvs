@@ -47,7 +47,6 @@ class TestGrammarFull(unittest.TestCase):
         cls.grammar = cls.p._grammar
         cls._test_fn = os.path.join(os.path.dirname(__file__), "data", "grammar_test.tsv")
 
-
     def test_parser_test_completeness(self):
         """ensure that all rules in grammar have tests"""
 
@@ -63,7 +62,6 @@ class TestGrammarFull(unittest.TestCase):
         untested_rules = grammar_rules - test_rules
 
         self.assertTrue(len(untested_rules) == 0, "untested rules: {}".format(untested_rules))
-
 
     def test_parser_grammar(self):
         with open(self._test_fn, "r") as f:
@@ -118,13 +116,13 @@ if __name__ == "__main__":
 
 # <LICENSE>
 # Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
