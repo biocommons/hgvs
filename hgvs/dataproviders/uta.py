@@ -583,8 +583,7 @@ class ParseResult(urlparse.ParseResult):
     """
 
     def __new__(cls, pr):
-        pr.__class__ = cls
-        return pr
+        return super(ParseResult, cls).__new__(cls, *pr)
 
     @property
     def database(self):

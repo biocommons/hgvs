@@ -232,7 +232,9 @@ class Normalizer(object):
                 left = exon_starts[i]
                 right = exon_ends[i]
 
-                if var.posedit.pos.end.base - 1 < cds_start:
+                if cds_start is None:
+                    pass
+                elif var.posedit.pos.end.base - 1 < cds_start:
                     right = min(right, cds_start)
                 elif var.posedit.pos.start.base - 1 >= cds_start:
                     left = max(left, cds_start)
@@ -240,7 +242,9 @@ class Normalizer(object):
                     raise HGVSUnsupportedOperationError(
                         "Unsupported normalization of variants spanning the UTR-exon boundary ({var})".format(var=var))
 
-                if var.posedit.pos.start.base - 1 >= cds_end:
+                if cds_end is None:
+                    pass
+                elif var.posedit.pos.start.base - 1 >= cds_end:
                     left = max(left, cds_end)
                 elif var.posedit.pos.end.base - 1 < cds_end:
                     right = min(right, cds_end)

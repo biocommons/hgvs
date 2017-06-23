@@ -1,8 +1,15 @@
 from setuptools import setup, find_packages
+from sys import version_info
 
 short_description = "HGVS Parser, Formatter, Mapper, Validator"
 with open("doc/description.txt") as f:
     long_description = f.read()
+
+if version_info < (3, ):
+    version_specific_requirements = ['unicodecsv']
+else:
+    version_specific_requirements = []
+
 
 setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
       long_description=long_description,
@@ -54,8 +61,7 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
           "parsley",
           "psycopg2!=2.7",  # 2.7 bug: https://github.com/psycopg/psycopg2/issues/517
           "six",
-          "unicodecsv",
-      ],
+      ] + version_specific_requirements,
       setup_requires=[
           "pytest-runner",
           "setuptools_scm",

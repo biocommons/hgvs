@@ -6,12 +6,17 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import os
 import re
 import unittest
+from sys import version_info
 
-import unicodecsv as csv
+if version_info < (3, ):
+    import unicodecsv as csv
+else:
+    import csv
 
 import hgvs.dataproviders.uta
 import hgvs.variantmapper
 import hgvs.parser
+from support import CACHE
 
 
 def gcp_file_reader(fn):
@@ -25,7 +30,7 @@ def gcp_file_reader(fn):
 class TestHgvsCToPReal(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache="tests/data/cache.hdp")
+        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache=CACHE)
         cls._hm = hgvs.variantmapper.VariantMapper(cls.hdp)
         cls._hp = hgvs.parser.Parser()
         cls._failed = []

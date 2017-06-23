@@ -92,8 +92,8 @@ that it is uncertain, which then causes the stringified version to
 contain the edit in parentheses:
 
 >>> var.posedit.uncertain = True
->>> unicode(var)
-u'NM_001197320.1:c.(281C>T)'
+>>> str(var)
+'NM_001197320.1:c.(281C>T)'
 
 
 

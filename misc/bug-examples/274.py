@@ -17,8 +17,9 @@ import hgvs.dataproviders.uta
 import hgvs.variantmapper
 import hgvs.parser 
 from hgvs.exceptions import HGVSUsageError
+from tests import CACHE
 
-hdp = hgvs.dataproviders.uta.connect(mode="run", cache="tests/data/cache.hdp")
+hdp = hgvs.dataproviders.uta.connect(mode="run", cache=CACHE)
 hp = hgvs.parser.Parser()
 alt_aln_method = "genebuild"
 assembly_name = 'GRCh37'

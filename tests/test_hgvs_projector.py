@@ -12,12 +12,13 @@ import hgvs.dataproviders.uta
 import hgvs.location
 import hgvs.parser
 import hgvs.projector
+from support import CACHE
 
 
 class TestHgvsProjector(unittest.TestCase):
     @classmethod
     def setUp(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache="tests/data/cache.hdp")
+        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE","run"), cache=CACHE)
         cls.alt_ac = "NC_000001.10"
         cls.alt_aln_method = "splign"
         cls.hp = hgvs.parser.Parser()

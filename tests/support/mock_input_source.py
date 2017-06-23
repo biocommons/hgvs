@@ -3,7 +3,12 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 # Mock test input source
 
-import unicodecsv as csv
+from sys import version_info
+
+if version_info < (3, ):
+    import unicodecsv as csv
+else:
+    import csv
 
 
 class MockInputSource():

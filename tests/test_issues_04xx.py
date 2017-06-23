@@ -21,12 +21,12 @@ import hgvs.sequencevariant
 import hgvs.transcriptmapper
 import hgvs.validator
 import hgvs.variantmapper
-
+from support import CACHE
 
 @pytest.mark.issues
 class Test_Issues(unittest.TestCase):
     def setUp(self):
-        self.hdp = hgvs.dataproviders.uta.connect(mode="store", cache="tests/data/cache.hdp")
+        self.hdp = hgvs.dataproviders.uta.connect(mode="store", cache=CACHE)
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp, replace_reference=False)
         self.vm_rr = hgvs.variantmapper.VariantMapper(self.hdp, replace_reference=True)
         self.hp = hgvs.parser.Parser()

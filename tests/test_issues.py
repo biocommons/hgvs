@@ -21,12 +21,12 @@ import hgvs.sequencevariant
 import hgvs.transcriptmapper
 import hgvs.validator
 import hgvs.variantmapper
-
+from support import CACHE
 
 @pytest.mark.issues
 class Test_Issues(unittest.TestCase):
     def setUp(self):
-        self.hdp = hgvs.dataproviders.uta.connect(mode="store", cache="tests/data/cache.hdp")
+        self.hdp = hgvs.dataproviders.uta.connect(mode="store", cache=CACHE)
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp, replace_reference=False)
         self.vm_rr = hgvs.variantmapper.VariantMapper(self.hdp, replace_reference=True)
         self.hp = hgvs.parser.Parser()
@@ -95,7 +95,7 @@ class Test_Issues(unittest.TestCase):
     def test_317_improve_p_repr_of_syn_variants(self):
         # from original issue:
         v317 = self.hp.parse_hgvs_variant("NM_000059.3:c.7791A>G")
-        self.assertEqual(b"NP_000050.2:p.(Lys2597=)", str(self.am37.c_to_p(v317)))
+        self.assertEqual(str("NP_000050.2:p.(Lys2597=)"), str(self.am37.c_to_p(v317)))
 
     #def test_370_handle_multicodon_syn_variants(self):
     #    # Verify behavior of syn MNVs
