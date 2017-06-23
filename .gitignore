@@ -55,7 +55,5 @@ misc/tx-ref-discrepancies
 sdist
 tests/data/*.out
 tmp
-venv
-virtualenv-*
-virtualenv.py
+venv*
 workspace
