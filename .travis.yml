@@ -9,7 +9,7 @@ cache: pip
 
 before_install:
 
-install: pip install tox-travis
+install: pip install pytest tox-travis
 
 script: make tox
 
