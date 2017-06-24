@@ -73,8 +73,13 @@ test:
 #=> test-* -- run tests with specified tag
 test-%:
 	python setup.py pytest --addopts="--cov=hgvs -m ${*} ${TEST_DIRS}"
-	tox -- -m $* $(TEST_DIRS)
 
+#=> tox -- run all tox tests
+tox:
+	tox
+
+tox-%:
+	tox -- -m $* $(TEST_DIRS)
 
 
 ############################################################################
