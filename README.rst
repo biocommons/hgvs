@@ -31,14 +31,14 @@ Features
   sequences differ)
 * Formatters that generate HGVS strings from internal representations
 * Tools to map variants between genome, transcript, and protein sequences
-* Reliable handling of regions reference-transcript discrepancy
+* Reliable handling of regions genome-transcript discrepancies
 * Pluggable data providers support alternative sources of transcript mapping
   data
 * Extensive automated tests, including those for all variant types and
   "problematic" transcripts
 * Easily installed using remote data sources.  Installation with local
-  data sources are straightforward and completely obviate network
-  communications.
+  data sources is straightforward and completely obviates network
+  access
 
 
 ----
@@ -50,7 +50,7 @@ Important Notes
   <https://github.com/biocommons/hgvs/issues>`_.  All known issues are
   listed there.  Please report any issues you find.
 * **Use a pip package specification to ensure stay within minor
-  releases for API stability.** For example, ``hgvs >=0.4,<0.5``.
+  releases for API stability.** For example, ``hgvs >=1.0,<1.1``.
 
 ----
 
