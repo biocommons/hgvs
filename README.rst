@@ -6,16 +6,12 @@ The *hgvs* package provides a Python library to facilitate the use of
 genome, transcript, and protein variants that are represented using
 the Human Genome Variation Society (`varnomen`_) recommendations.
 
-| Project: |rtd_rel| | `Mailing List`_ | `Open Issues`_
-| Release: |pypi_rel| | `Change Log`_
-| Development: `Code`_ | |status_rel|
-
 +-----------------+-------------------------------------------------+
-| **Project**     | |rtd_rel|  | `Mailing List`_  | `Open Issues`_  |
+| **Project**     | |rtd_rel|   `Mailing List`_   `Open Issues`_    |
 +-----------------+-------------------------------------------------+
-| **Release**     | |pypi_rel| | `Change Log`_                      |
+| **Release**     | |pypi_rel|  `Change Log`_                       |
 +-----------------+-------------------------------------------------+
-| **Development** | `Code`_    | |status_rel|                       |
+| **Development** | `Code`_     |status_rel|                        |
 +-----------------+-------------------------------------------------+
 
 
