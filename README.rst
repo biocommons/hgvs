@@ -6,7 +6,18 @@ The *hgvs* package provides a Python library to facilitate the use of
 genome, transcript, and protein variants that are represented using
 the Human Genome Variation Society (`varnomen`_) recommendations.
 
-`Code`_ | `Docs`_ | `PyPI`_ | `Open Issues`_ | `Changelog`_ | `Mailing List`_.
+| Project: |rtd_rel| | `Mailing List`_ | `Open Issues`_
+| Release: |pypi_rel| | `Change Log`_
+| Development: `Code`_ | |status_rel|
+
++-----------------+-------------------------------------------------+
+| **Project**     | |rtd_rel|  | `Mailing List`_  | `Open Issues`_  |
++-----------------+-------------------------------------------------+
+| **Release**     | |pypi_rel| | `Change Log`_                      |
++-----------------+-------------------------------------------------+
+| **Development** | `Code`_    | |status_rel|                       |
++-----------------+-------------------------------------------------+
+
 
 ----
 
@@ -174,22 +185,21 @@ Other packages that manipulate HGVS variants:
 .. _mailing list: https://groups.google.com/forum/#!forum/hgvs-discuss
 .. _Open Issues: https://github.com/biocommons/hgvs/issues
 .. _code: https://github.com/biocommons/hgvs
-.. _changelog: https://hgvs.readthedocs.io/en/master/changelog/
+.. _change log: https://hgvs.readthedocs.io/en/master/changelog/
 .. _pypi: https://pypi.python.org/pypi/hgvs
 
 
-.. |rtd_badge_rel| image:: https://readthedocs.org/projects/hgvs/badge/
+.. |rtd_rel| image:: https://readthedocs.org/projects/hgvs/badge/
   :target: http://hgvs.readthedocs.io/
   :align: middle
 
-.. |pypi_badge_rel| image:: https://badge.fury.io/py/hgvs.png
+.. |pypi_rel| image:: https://badge.fury.io/py/hgvs.png
   :target: https://pypi.python.org/pypi?name=hgvs
   :align: middle
 
-.. |status_rel| image:: https://drone.io/bitbucket.org/biocommons/hgvs/status.png
-  :target: https://drone.io/bitbucket.org/biocommons/hgvs
+.. |status_rel| image:: https://travis-ci.org/biocommons/hgvs.png?branch=master
+  :target: https://travis-ci.org/biocommons/hgvs.png?branch=master
   :align: middle 
-
 
 
 .. |install_status| image:: https://travis-ci.org/reece/hgvs-integration-test.png?branch=master
