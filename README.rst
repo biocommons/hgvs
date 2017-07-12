@@ -14,15 +14,9 @@ the Human Genome Variation Society (`varnomen`_) recommendations.
 | **Development** | `Code`_     |status_rel|                        |
 +-----------------+-------------------------------------------------+
 
-
-----
-
-.. note:: hgvs 1.0.0 was released with `major new features
-          <http://hgvs.readthedocs.io/en/latest/changelog/1.0/1.0.0.html>`__.
-          ``pip install 'hgvs>=1.0.0'`` will get you started; see
-          `installation instructions
-          <https://hgvs.readthedocs.io/en/master/installation.html>`__
-          for details. Send feedback to the `mailing list`_!
+.. important:: hgvs 1.1.0 was released on 2017-07-11 with Python 3
+               support and a few bug fixes.  See `Change Log
+               <http://hgvs.readthedocs.io/en/latest/changelog/1.1/1.1.0.html>`__.
 
 ----
 
