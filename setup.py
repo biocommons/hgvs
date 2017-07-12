@@ -54,7 +54,7 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
       install_requires=[
           "attrs>=16.3.0",
           "biocommons.seqrepo",
-          "biopython>=1.66",
+          "biopython==1.69",    # 1.70 fails on rtd due to numpy absence
           "bioutils>=0.2.2",
           "configparser>=3.3.0",
           "enum34",
