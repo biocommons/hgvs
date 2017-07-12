@@ -15,7 +15,7 @@ SHELL:=/bin/bash -o pipefail
 	hg tags >$@.tmp
 	mv $@.tmp $@
 
-XY:=1.0
+XY:=1.1
 XY_RST:=$(addsuffix .rst,${XY})
 XY_VTAGS:=$(filter ${XY}%,${VTAGS})
 XY_VTAGS_RST:=$(addsuffix .rst,${XY_VTAGS})

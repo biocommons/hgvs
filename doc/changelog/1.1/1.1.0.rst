@@ -1,0 +1,39 @@
+
+1.1.0 (2017-07-11)
+###################
+
+Changes since 1.0.0.post3 (2017-04-11).
+
+Special Attention
+$$$$$$$$$$$$$$$$$$
+
+This is the first version of hgvs that supports Python 3 (yay!).
+Continuous integration tests are now performed against Python 2.7,
+3.5, and 3.6. Please report any issues.
+
+Bug Fixes
+$$$$$$$$$$
+
+* Closed `#445 <https://github.com/biocommons/hgvs/issues/445/>`_: Fix normalization erros at start and end of transcript [`56ed82a62f57 <https://github.com/biocommons/hgvs/commit/56ed82a62f57>`_]
+* Closed `#444 <https://github.com/biocommons/hgvs/issues/444/>`_: Fix normalizing var near the end of transcript
+
+New Features
+$$$$$$$$$$$$$
+
+* Closed `#424 <https://github.com/biocommons/hgvs/issues/424/>`_, `#430 <https://github.com/biocommons/hgvs/issues/430/>`_: make no-change sequence optional for parsing, and do not include sequence by default on formatting [`25fcf7a96158 <https://github.com/biocommons/hgvs/commit/25fcf7a96158>`_]
+* Closed `#427 <https://github.com/biocommons/hgvs/issues/427/>`_: Ensure c. coordinate within CDS bound
+* Closed `#439 <https://github.com/biocommons/hgvs/issues/439/>`_: Add method to explicitly close database connections [`9f796476ba22 <https://github.com/biocommons/hgvs/commit/9f796476ba22>`_]
+* Handle the `cds_{start,end} is None` case explicitly, since None is not comparable to ints in python 3+. [`13de480978de <https://github.com/biocommons/hgvs/commit/13de480978de>`_]
+* Merged Python 3 support [`deb08ea1f6fa <https://github.com/biocommons/hgvs/commit/deb08ea1f6fa>`_]. Big thanks to Lucas Wiman and Counsyl for contributing Python 3 support!
+
+Other Changes
+$$$$$$$$$$$$$$
+
+* explicitly set and test _conn in UTA_postgresql.__init__. [`faf5f37b77cd <https://github.com/biocommons/hgvs/commit/faf5f37b77cd>`_] Avoids sporadic errors during runtime shutdown in Python 3 (presumably due to non-deterministic object destruction order)
+
+Internal and Developer Changes
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+* Added AssemblyMapper._fetch_TranscriptMapper() convenience method [`cd2f21f2f8b3 <https://github.com/biocommons/hgvs/commit/cd2f21f2f8b3>`_]
+* Closed `#343 <https://github.com/biocommons/hgvs/issues/343/>`_: Migrate from nose to pytest+tox [@lucaswiman] [`b2263aed8ca0 <https://github.com/biocommons/hgvs/commit/b2263aed8ca0>`_]. hgvs is now tested with tox in Python 2.7 and 3.5 environments.
+* Reactivate CI testing with travis (previously drone.io) [`ef23089c2c06 <https://github.com/biocommons/hgvs/commit/ef23089c2c06>`_]. master is currently testing on all commits https://travis-ci.org/biocommons/hgvs.png?branch=master

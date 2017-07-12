@@ -1,0 +1,22 @@
+clog format: 1; -*-outline-*-
+* 1.1.0 (2017-07-11)
+Changes since 1.0.0.post3 (2017-04-11).
+** Special Attention
+This is the first version of hgvs that supports Python 3 (yay!).
+Continuous integration tests are now performed against Python 2.7,
+3.5, and 3.6. Please report any issues.
+** Bug Fixes
+*** Closed #445: Fix normalization erros at start and end of transcript [56ed82a62f57]
+*** Closed #444: Fix normalizing var near the end of transcript
+** New Features
+*** Closed #424, #430: make no-change sequence optional for parsing, and do not include sequence by default on formatting [25fcf7a96158]
+*** Closed #427: Ensure c. coordinate within CDS bound
+*** Closed #439: Add method to explicitly close database connections [9f796476ba22]
+*** Handle the `cds_{start,end} is None` case explicitly, since None is not comparable to ints in python 3+. [13de480978de]
+*** Merged Python 3 support [deb08ea1f6fa]. Big thanks to Lucas Wiman and Counsyl for contributing Python 3 support!
+** Other Changes
+*** explicitly set and test _conn in UTA_postgresql.__init__. [faf5f37b77cd] Avoids sporadic errors during runtime shutdown in Python 3 (presumably due to non-deterministic object destruction order) 
+** Internal and Developer Changes
+*** Added AssemblyMapper._fetch_TranscriptMapper() convenience method [cd2f21f2f8b3]
+*** Closed #343: Migrate from nose to pytest+tox [@lucaswiman] [b2263aed8ca0]. hgvs is now tested with tox in Python 2.7 and 3.5 environments.
+*** Reactivate CI testing with travis (previously drone.io) [ef23089c2c06]. master is currently testing on all commits https://travis-ci.org/biocommons/hgvs.png?branch=master
