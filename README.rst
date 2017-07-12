@@ -194,7 +194,7 @@ Other packages that manipulate HGVS variants:
   :align: middle
 
 .. |status_rel| image:: https://travis-ci.org/biocommons/hgvs.png?branch=master
-  :target: https://travis-ci.org/biocommons/hgvs.png?branch=master
+  :target: https://travis-ci.org/biocommons/hgvs?branch=master
   :align: middle 
 
 
