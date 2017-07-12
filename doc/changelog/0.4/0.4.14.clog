@@ -1,5 +1,5 @@
 clog format: 1; -*-outline-*-
-* . (2017-05-19)
+* 0.4.14 (2017-05-19)
 Changes since 0.4.13 (2016-12-12).
 ** New Features
 *** Closed #439: Add method to explicitly close database connections [5a876fd2d1ec]
