@@ -1,29 +1,21 @@
-========================================================================================
-*hgvs* - Python library to parse, format, validate, normalize, and map sequence variants
-========================================================================================
+*hgvs* - manipulate biological sequence variants according to Human Genome Variation Society recommendations
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-The *hgvs* package provides a Python library to facilitate the use of
-genome, transcript, and protein variants that are represented using
-the Human Genome Variation Society (`varnomen`_) recommendations.
+The *hgvs* package provides a Python library to parse, format,
+validate, normalize, and map sequence variants according to `Variation
+Nomenclature`_ (aka Human Genome Variation Society) recommendations.
 
-+-----------------+-------------------------------------------------+
-| **Project**     | |rtd_rel|   `Mailing List`_   `Open Issues`_    |
-+-----------------+-------------------------------------------------+
-| **Release**     | |pypi_rel|  `Change Log`_                       |
-+-----------------+-------------------------------------------------+
-| **Development** | `Code`_     |status_rel|                        |
-+-----------------+-------------------------------------------------+
++-----------------+---------------------------------------------------------------------+
+| **Project**     | |rtd_rel| / `Mailing List`_ / `Open Issues`_ / `Apache License`_    |
++-----------------+---------------------------------------------------------------------+
+| **Release**     | |pypi_rel| / `Change Log`_                                          |
++-----------------+---------------------------------------------------------------------+
+| **Development** | `Code`_  /  |status_rel|                                            |
++-----------------+---------------------------------------------------------------------+
 
-----
-
-.. note:: hgvs 1.1.0 was released on 2017-07-11 with Python 3
-	  support and a few bug fixes.  See `Change Log
-	  <http://hgvs.readthedocs.io/en/latest/changelog/1.1/1.1.0.html>`__.
-
-----
 
 Features
--------- 
+@@@@@@@@
 
 * Parsing is based on formal grammar.
 * An easy-to-use object model that represents
@@ -44,25 +36,25 @@ Features
   access
 
 
-----
-
 Important Notes
----------------
+@@@@@@@@@@@@@@@
 
 * **You are encouraged to** `browse issues
   <https://github.com/biocommons/hgvs/issues>`_.  All known issues are
   listed there.  Please report any issues you find.
-* **Use a pip package specification to ensure stay within minor
-  releases for API stability.** For example, ``hgvs >=1.0,<1.1``.
+* **Use a pip package specification to stay within minor releases.**
+  For example, ``hgvs>=1.1,<1.2``. `hgvs` uses `Semantic Versioning
+  <http://semver.org/>`__.
 
-----
 
+Examples
+@@@@@@@@
 
-Some Examples
--------------
+Installation
+#############
 
-See `Installation instructions
-<http://hgvs.readthedocs.org/en/master/installation.html>`__.
+By default, `hgvs` uses remote data sources, which makes installation
+easy.  
 
 ::
 
@@ -71,12 +63,26 @@ See `Installation instructions
   (hgvs-test)$ pip install hgvs
   (hgvs-test)$ python
 
-  >>> import hgvs.dataproviders.uta
+See `Installation instructions
+<http://hgvs.readthedocs.org/en/stable/installation.html>`__ for
+details, including instructions for installing `Universal Transcript
+Archive (UTA) <https://github.com/biocommons/uta/>`__ and `SeqRepo
+<https://github.com/biocommons/biocommons.seqrepo/>`__ locally.
+
+
+Parsing and Formating
+#####################
+
+`hgvs` parses HGVS variants (as strings) into an object model, and can format
+object models back into HGVS strings.
+
+::
+
   >>> import hgvs.parser
-  >>> import hgvs.assemblymapper
 
   # start with these variants as strings
-  >>> hgvs_g, hgvs_c = 'NC_000007.13:g.36561662C>T', 'NM_001637.3:c.1582G>A'
+  >>> hgvs_g = 'NC_000007.13:g.36561662C>T'
+  >>> hgvs_c = 'NM_001637.3:c.1582G>A'
 
   # parse the genomic variant into a Python structure
   >>> hp = hgvs.parser.Parser()
@@ -91,6 +97,20 @@ See `Installation instructions
   # format by stringification 
   >>> str(var_g)
   'NC_000007.13:g.36561662C>T'
+
+
+Projecting ("Mapping") variants between aligned seqeunces
+#########################################################
+
+`hgvs` provides tools to project variants between genome, transcript,
+and protein sequences.  Non-coding and intronic variants are
+supported.  Alignment data come from the `Universal Transcript Archive
+(UTA) <https://github.com/biocommons/uta/>`__.
+
+::
+
+  >>> import hgvs.dataproviders.uta
+  >>> import hgvs.assemblymapper
 
   # initialize the mapper for GRCh37 with splign-based alignments
   >>> hdp = hgvs.dataproviders.uta.connect()
@@ -115,8 +135,15 @@ See `Installation instructions
   BaseOffsetPosition(base=1582, offset=0, datum=Datum.CDS_START, uncertain=False)
 
 
+Normalizing variants
+####################
 
-  # VARIANT NORMALIZATION
+Some variants have multiple representations due to instrinsic
+biological ambiguity (e.g., inserting a G in a poly-G run) or due to
+misunderstanding HGVS recommendations.  Normalization rewrites certain
+veriants into a single representation.
+
+::
 
   # rewrite ins as dup (depends on sequence context)
   >>> import hgvs.normalizer
@@ -139,31 +166,30 @@ See `Installation instructions
   SequenceVariant(ac=NM_001166478.1, type=c, posedit=35del)
 
 
-There are `more examples in the documentation <http://hgvs.readthedocs.org/en/master/examples.html>`_.
+There are `more examples in the documentation
+<http://hgvs.readthedocs.org/en/stable/examples.html>`_.
 
-----
 
 Citing hgvs (the package)
--------------------------
+@@@@@@@@@@@@@@@@@@@@@@@@@
 
 | **A Python Package for Parsing, Validating, Mapping, and Formatting Sequence Variants Using HGVS Nomenclature.**
 | Hart RK, Rico R, Hare E, Garcia J, Westbrook J, Fusaro VA.
 | *Bioinformatics*. 2014 Sep 30. `PubMed <http://www.ncbi.nlm.nih.gov/pubmed/25273102>`_ | `Open Access PDF <http://bioinformatics.oxfordjournals.org/content/31/2/268.full.pdf>`_
 
-----
 
 Contributing
-------------
+@@@@@@@@@@@@
 
 The hgvs package is intended to be a community project.  Please see
 `Contributing
-<http://hgvs.readthedocs.org/en/master/contributing.html>`__ to get
+<http://hgvs.readthedocs.org/en/stable/contributing.html>`__ to get
 started in submitting source code, tests, or documentation.  Thanks
 for getting involved!
 
 
 See Also
---------
+@@@@@@@@
 
 Other packages that manipulate HGVS variants:
 
@@ -173,12 +199,13 @@ Other packages that manipulate HGVS variants:
 
 
 .. _docs: http://hgvs.readthedocs.org/
-.. _varnomen: http://varnomen.hgvs.org/
+.. _Variation Nomenclature: http://varnomen.hgvs.org/
 .. _mailing list: https://groups.google.com/forum/#!forum/hgvs-discuss
 .. _Open Issues: https://github.com/biocommons/hgvs/issues
 .. _code: https://github.com/biocommons/hgvs
-.. _change log: https://hgvs.readthedocs.io/en/master/changelog/
+.. _change log: https://hgvs.readthedocs.io/en/stable/changelog/
 .. _pypi: https://pypi.python.org/pypi/hgvs
+.. _Apache License: https://github.com/biocommons/hgvs/blob/master/LICENSE.txt
 
 
 .. |rtd_rel| image:: https://readthedocs.org/projects/hgvs/badge/
