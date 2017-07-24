@@ -261,7 +261,7 @@ class Normalizer(object):
     def _get_tgt_length(self, var):
         """Get the total length of the whole reference sequence
         """
-        if var.type == "g":
+        if var.type == "g" or var.type == "m":
             return float("inf")
         else:
             # Get genomic sequence access number for this transcript
