@@ -316,7 +316,7 @@ class VariantMapper(object):
                 # padding list so biopython won't complain during the conversion
                 tx_seq_to_translate = tx_seq[cds_start - 1:cds_stop]
                 if len(tx_seq_to_translate) % 3 != 0:
-                    "".join(list(tx_seq_to_translate).extend(["N"] * ((3 - len(tx_seq_to_translate) % 3) % 3)))
+                    tx_seq_to_translate += "N" * (-len(tx_seq_to_translate) % 3)
 
                 tx_seq_cds = Seq(tx_seq_to_translate)
                 protein_seq = str(tx_seq_cds.translate())
