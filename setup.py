@@ -1,8 +1,13 @@
 from setuptools import setup, find_packages
+from pip.req import parse_requirements
 
 with open('doc/description.txt') as f:
     long_description = f.read()
 
+install_reqs = parse_requirements('requirements.txt')
+# reqs is a list of requirement
+# e.g. ['django==1.5.1', 'mezzanine==1.4.6']
+reqs = [str(ir.req) for ir in install_reqs]
 
 setup(
     license = 'Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)',
@@ -49,30 +54,23 @@ setup(
         'hgvs',
     ],
 
-    install_requires = [
-        'biopython',
-        'bioutils >=0.1.0,<0.2.0',
-        'configparser',
-        'ipython',
-        'parsley',
-        'psycopg2',
-        'recordtype',
-        'requests >=1.0.0',
-    ],
 
     setup_requires = [
         'setuptools_scm',
         'nose',
-        'sphinx',
+        'sphinx==1.1.3',
         'sphinx_rtd_theme',
         'sphinxcontrib-fulltoc>=1.1',
         'wheel',
     ],
 
+    install_requires=reqs,
+
     tests_require = [
         'coverage',
         'unicodecsv',
     ],
+
 )
 
 ## <LICENSE>

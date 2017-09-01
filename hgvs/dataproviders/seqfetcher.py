@@ -6,11 +6,12 @@ from ..exceptions import HGVSDataNotAvailableError
 from ..decorators import lru_cache
 
 # TODO: Move sequence fetching to another package.
+# TODO: it is in bioutils now
 # TODO: Consider using eutils to get request throttling.
 # N.B. >> used (rather than >>>) to not incur web requests during testing
 
 
-def _fetch_seq_ensembl(ac, start_i=None, end_i=None):
+def _fetch_seq_ensembl(ac, start_i=None, end_i=None, email=None, tool=None):
     """Fetch the specified sequence slice from Ensembl using the public
     REST interface.
 
@@ -41,8 +42,11 @@ def _fetch_seq_ensembl(ac, start_i=None, end_i=None):
     return seq if (start_i is None or end_i is None) else seq[start_i:end_i]
 
 
-def _fetch_seq_ncbi(ac, start_i=None, end_i=None):
-    """Fetch sequences from NCBI using the eutils interface.  
+def _fetch_seq_ncbi(ac, start_i=None, end_i=None, email='scalable-genetics-alerts@invitae.com', tool='hgvs'):
+    """Fetch sequences from NCBI using the eutils interface.
+
+     It is strongly recommended to provide the email and tool arguments, to properly register the API request with
+    NCBI. See https://www.ncbi.nlm.nih.gov/books/NBK25497/
 
     An interbase interval may be optionally provided with start_i and
     end_i. NCBI eutils will return just the requested subsequence,
@@ -72,13 +76,17 @@ def _fetch_seq_ncbi(ac, start_i=None, end_i=None):
     else:
         url_fmt += "&seq_start={start}&seq_stop={stop}"
         url = url_fmt.format(ac=ac, start=start_i + 1, stop=end_i)
+
+    if email and tool:
+        url += "&tool={tool}&email={email}".format(tool=tool, email=email)
+
     resp = requests.get(url)
     resp.raise_for_status()
     return ''.join(resp.content.splitlines()[1:])
 
 
 @lru_cache(maxsize=20)
-def fetch_seq(ac, start_i=None, end_i=None):
+def fetch_seq(ac, start_i=None, end_i=None, email='scalable-genetics-alerts@invitae.com', tool='hgvs'):
     """return a subsequence of the given accession for the
     interbase interval [start_i,end_i)
 
@@ -149,7 +157,7 @@ def fetch_seq(ac, start_i=None, end_i=None):
     for drec in _ac_dispatch:
         if drec['re'].match(ac):
             try:
-                return drec['fetcher'](ac, start_i, end_i)
+                return drec['fetcher'](ac, start_i, end_i, email,tool)
             except requests.HTTPError:
                 raise HGVSDataNotAvailableError("No sequence available for {ac}".format(ac=ac))
     raise HGVSDataNotAvailableError("No fetcher for accessions like {}".format(ac))
@@ -168,6 +176,6 @@ class SeqFetcher(object):
 
     """
 
-    def fetch_seq(self, ac, start_i=None, end_i=None):
+    def fetch_seq(self, ac, start_i=None, end_i=None, email='scalable-genetics-alerts@invitae.com', tool='hgvs'):
         """See fetch_seq() *function* in this module for details"""
         return fetch_seq(ac, start_i, end_i)

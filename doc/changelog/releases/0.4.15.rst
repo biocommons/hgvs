@@ -1,0 +1,10 @@
+
+0.4.13b. (2017-08-31)
+###############
+
+Changes since 0.4.13 (2016-12-12).
+
+library upgrade
+$$$$$$$$$$$$$
+
+* upgraded bioutils to 0.3.2 to support the correct access to the NCBI eutils api

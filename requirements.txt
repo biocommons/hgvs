@@ -1,0 +1,8 @@
+biopython==1.69
+configparser
+ipython==3.2.3
+parsley
+psycopg2
+recordtype
+requests >=1.0.0
+bioutils==0.1.5
