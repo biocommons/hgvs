@@ -50,7 +50,7 @@ class SeqFetcher(object):
         try:
             return self.fetcher(ac, start_i, end_i)
         except RuntimeError as ex:
-            raise HGVSDataNotAvailableError("No sequence available for {ac} ({ex})".format(ac=ac, ex=ext))
+            raise HGVSDataNotAvailableError("No sequence available for {ac} ({ex})".format(ac=ac, ex=ex))
 
 
 # <LICENSE>

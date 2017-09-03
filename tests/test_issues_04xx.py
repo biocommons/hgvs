@@ -52,3 +52,8 @@ class Test_Issues(unittest.TestCase):
         self.assertEqual("NM_012.3:c.1=", str(v))
         self.assertEqual("A", v.posedit.edit.ref)
         self.assertEqual("A", v.posedit.edit.alt)
+
+    def test_459_exception_when_ac_nonexistent(self):
+        bogus_ac = "NM_000000.99"
+        with self.assertRaises(HGVSDataNotAvailableError):
+            self.hdp.seqfetcher.fetch_seq(bogus_ac)
