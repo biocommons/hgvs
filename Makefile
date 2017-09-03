@@ -5,11 +5,13 @@
 .PRECIOUS :
 .SUFFIXES:
 
-SHELL:=/bin/bash -o pipefail
+SHELL:=/bin/bash -e -o pipefail
 SELF:=$(firstword $(MAKEFILE_LIST))
 
 PKG=hgvs
 PKGD=$(subst .,/,${PKG})
+VEDIR=venv/3.5
+
 TEST_DIRS:=tests
 DOC_TESTS:=doc hgvs ./README.rst
 
@@ -27,11 +29,18 @@ help:
 #= SETUP, INSTALLATION, PACKAGING
 
 #=> venv: make a Python 3 virtual environment
-.PHONY: venv
-venv:
-	#pyvenv venv
-	virtualenv venv
-	source venv/bin/activate; \
+.PHONY: venv/2.7
+venv/2.7:
+	virtualenv -p $$(type -p python2.7) $@; \
+	source $@/bin/activate; \
+	pip install --upgrade pip setuptools
+
+#=> venv: make a Python 3 virtual environment
+.PHONY: venv/3.5
+venv/3.5:
+	pyvenv $@; \
+	source $@/bin/activate; \
+	python -m ensurepip --upgrade; \
 	pip install --upgrade pip setuptools
 
 #=> setup: setup/upgrade packages *in current environment*
@@ -43,11 +52,10 @@ setup: etc/develop.reqs etc/install.reqs
 #=> devready: create venv, install prerequisites, install pkg in develop mode
 .PHONY: devready
 devready:
-	make venv && source venv/bin/activate && make setup develop
-	@echo '#############################################################################'
-	@echo '###  Do not forget to `source venv/bin/activate` to use this environment  ###'
-	@echo '#############################################################################'
-
+	make ${VEDIR} && source ${VEDIR}/bin/activate && make setup develop
+	@echo '#################################################################################'
+	@echo '###  Do not forget to `source ${VEDIR}/bin/activate` to use this environment  ###'
+	@echo '#################################################################################'
 
 #=> develop: install package in develop mode
 #=> install: install package
@@ -136,6 +144,7 @@ cleanest: cleaner
 	-make -C examples $@
 
 #=> pristine distclean: above, and delete anything unknown to mercurial
+.PHONY: pristine distclean
 pristine distclean: cleanest
 	if [ -d .hg ]; then hg st -inu0 | xargs -0r /bin/rm -fv; fi
 
