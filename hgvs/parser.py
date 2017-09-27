@@ -7,6 +7,7 @@ components, such as intronic-offset coordiates
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import logging
+import copy
 import re
 
 from pkg_resources import resource_filename
@@ -86,7 +87,7 @@ class Parser(object):
 
     def __init__(self, grammar_fn=__default_grammar_fn, expose_all_rules=False):
         self._grammar_fn = grammar_fn
-        self._grammar = parsley.makeGrammar(open(grammar_fn, "r").read(), {"hgvs": hgvs, "bioutils": bioutils})
+        self._grammar = parsley.makeGrammar(open(grammar_fn, "r").read(), {"hgvs": hgvs, "bioutils": bioutils, "copy": copy})
         self._logger = logging.getLogger(__name__)
         self._expose_rule_functions(expose_all_rules)
 
