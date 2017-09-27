@@ -153,6 +153,9 @@ class Test_HGVSNormalizer(unittest.TestCase):
             str(self.norm.normalize(self.hp.parse_hgvs_variant("NC_000006.11:g.49917151_49917156delinsTCTAAA"))),
             "NC_000006.11:g.49917154_49917155delinsAA")
         self.assertEqual(
+            str(self.norm.normalize(self.hp.parse_hgvs_variant("NC_000001.10:g.1647893delinsCTTTCTT"))),
+            "NC_000001.10:g.1647895_1647900dup")
+        self.assertEqual(
             str(
                 self.norm.normalize(
                     self.hp.parse_hgvs_variant("NC_000003.12:g.46709584_46709610del27insAAGAAGAAGAAGAAGAAGAAGAAGAAG"))),
