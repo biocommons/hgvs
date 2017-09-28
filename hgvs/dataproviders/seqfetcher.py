@@ -49,7 +49,7 @@ class SeqFetcher(object):
     def fetch_seq(self, ac, start_i=None, end_i=None):
         try:
             return self.fetcher(ac, start_i, end_i)
-        except RuntimeError as ex:
+        except (RuntimeError, KeyError) as ex:
             raise HGVSDataNotAvailableError("No sequence available for {ac} ({ex})".format(ac=ac, ex=ex))
 
 
