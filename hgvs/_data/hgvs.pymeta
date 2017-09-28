@@ -129,12 +129,12 @@ p_interval = def_p_interval | '(' def_p_interval:iv ')' -> iv._set_uncertain()
 r_interval = def_r_interval | '(' def_r_interval:iv ')' -> iv._set_uncertain()
 
 # definite intervals
-def_g_interval = (g_pos:start '_' g_pos:end -> hgvs.location.Interval(start,end)) | (g_pos:start -> hgvs.location.Interval(start,start))
-def_m_interval = (m_pos:start '_' m_pos:end -> hgvs.location.Interval(start,end)) | (m_pos:start -> hgvs.location.Interval(start,start))
-def_p_interval = (p_pos:start '_' p_pos:end -> hgvs.location.Interval(start,end)) | (p_pos:start -> hgvs.location.Interval(start,start))
-def_r_interval = (r_pos:start '_' r_pos:end -> hgvs.location.Interval(start,end)) | (r_pos:start -> hgvs.location.Interval(start,start))
-def_c_interval = (c_pos:start '_' c_pos:end -> hgvs.location.BaseOffsetInterval(start,end)) | (c_pos:start -> hgvs.location.BaseOffsetInterval(start,start))
-def_n_interval = (n_pos:start '_' n_pos:end -> hgvs.location.BaseOffsetInterval(start,end)) | (n_pos:start -> hgvs.location.BaseOffsetInterval(start,start))
+def_g_interval = (g_pos:start '_' g_pos:end -> hgvs.location.Interval(start,end)) | (g_pos:start -> hgvs.location.Interval(start,copy.deepcopy(start)))
+def_m_interval = (m_pos:start '_' m_pos:end -> hgvs.location.Interval(start,end)) | (m_pos:start -> hgvs.location.Interval(start,copy.deepcopy(start)))
+def_p_interval = (p_pos:start '_' p_pos:end -> hgvs.location.Interval(start,end)) | (p_pos:start -> hgvs.location.Interval(start,copy.deepcopy(start)))
+def_r_interval = (r_pos:start '_' r_pos:end -> hgvs.location.Interval(start,end)) | (r_pos:start -> hgvs.location.Interval(start,copy.deepcopy(start)))
+def_c_interval = (c_pos:start '_' c_pos:end -> hgvs.location.BaseOffsetInterval(start,end)) | (c_pos:start -> hgvs.location.BaseOffsetInterval(start,copy.deepcopy(start)))
+def_n_interval = (n_pos:start '_' n_pos:end -> hgvs.location.BaseOffsetInterval(start,end)) | (n_pos:start -> hgvs.location.BaseOffsetInterval(start,copy.deepcopy(start)))
 
 # positions
 c_pos = def_c_pos #| '(' def_c_pos:pos ')' -> pos._set_uncertain()
