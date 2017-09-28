@@ -25,7 +25,7 @@ def shell():
     import hgvs.parser
     import hgvs.variantmapper
     import hgvs.validator
-    import hgvs.utils.context
+    from hgvs.utils.context import variant_context_w_alignment
 
     hp = hgvsparser = hgvs.parser.Parser()
 
