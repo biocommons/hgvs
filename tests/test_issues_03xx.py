@@ -170,9 +170,9 @@ class Test_Issues(unittest.TestCase):
         # replace_reference code was in am, not vm. That meant that using vm directly
         # resulted in variants that were not reference corrected.
         g_var = self.hp.parse_hgvs_variant("NC_000006.11:g.44275011T=")
-        c_var = self.hp.parse_hgvs_variant("NM_020745.3:c.1015G>A")    # correct projection with ref replacement
-        self.assertEqual(c_var, self.am37.g_to_c(g_var, "NM_020745.3"))    # previously okay
-        self.assertEqual(c_var, self.vm_rr.g_to_c(g_var, "NM_020745.3"))    # previously wrong
+        c_var = self.hp.parse_hgvs_variant("NM_020745.3:c.1015=")    # correct projection with ref replacement
+        self.assertEqual(str(c_var), str(self.am37.g_to_c(g_var, "NM_020745.3")))
+        self.assertEqual(str(c_var), str(self.vm_rr.g_to_c(g_var, "NM_020745.3")))
 
     def test_381_c_to_p_error_with_del_variants(self):
         hgvs_c = "NM_000302.3:c.1594_1596del"
