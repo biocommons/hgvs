@@ -53,8 +53,6 @@ class SequenceVariant(object):
             type = self.posedit.edit.type
         if type in ["del", "delins", "identity", "dup", "repeat"] and self.posedit.edit.ref_s is None:
             hm._replace_reference(self)
-        if type == "identity" and isinstance(self.posedit.edit, hgvs.edit.NARefAlt):
-            self.posedit.edit.alt = self.posedit.edit.ref
         return self
 
     def validate(self):

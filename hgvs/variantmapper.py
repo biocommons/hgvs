@@ -382,9 +382,12 @@ class VariantMapper(object):
         seq = self.hdp.get_seq(var.ac, pos.start.base - 1, pos.end.base)
 
         edit = var.posedit.edit
+        type = edit.type
         if edit.ref != seq:
             _logger.debug("Replaced reference sequence in {var} with {seq}".format(var=var, seq=seq))
             edit.ref = seq
+            if type == "identity" and isinstance(edit, hgvs.edit.NARefAlt):
+                edit.alt = seq
 
         return var
 
