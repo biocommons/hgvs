@@ -11,6 +11,7 @@ from hgvs.exceptions import HGVSInvalidVariantError
 import hgvs.dataproviders.uta
 import hgvs.parser
 import hgvs.variantmapper
+import hgvs.assemblymapper
 from support import CACHE
 
 
@@ -61,6 +62,14 @@ class Test_VariantMapper(unittest.TestCase):
         var_p = self.am.c_to_p(var_c)
 
         self.assertEqual(str(var_p), hgvs_p)
+
+        hgvs_c = "NM_001292004.1:c.376="
+        hgvs_g = "NC_000005.10:g.74715659="
+
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_g = self.am.c_to_g(var_c)
+
+        self.assertEqual(str(var_g), hgvs_g)
 
 
 class Test_RefReplacement(unittest.TestCase):
