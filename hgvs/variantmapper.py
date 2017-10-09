@@ -341,7 +341,6 @@ class VariantMapper(object):
             raise HGVSInvalidVariantError("Expected a cDNA (c.); got " + str(var_c))
         if self._validator:
             self._validator.validate(var_c)
-        var_c.fill_ref(self.hdp)
         reference_data = RefTranscriptData.setup_transcript_data(self.hdp, var_c.ac, pro_ac)
         builder = altseqbuilder.AltSeqBuilder(var_c, reference_data)
 
