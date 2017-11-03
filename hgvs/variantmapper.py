@@ -46,7 +46,7 @@ class VariantMapper(object):
 
       g ----acgtatgcac--gtctagacgt----      ----acgtatgcac--gtctagacgt----      ----acgtatgcac--gtctagacgt----
             \         \/         /              \         \/         /              \         \/         /
-      c      acgtATGCACGTCTAGacgt         n      acgtatgcacgtctagacgt         r      acguaugcacgucuagacgu   
+      c      acgtATGCACGTCTAGacgt         n      acgtatgcacgtctagacgt         r      acguaugcacgucuagacgu
                  1                               1                                   1
       p          MetHisValTer
 
@@ -98,6 +98,7 @@ class VariantMapper(object):
             raise HGVSInvalidVariantError("Expected a g. variant; got " + str(var_g))
         if self._validator:
             self._validator.validate(var_g)
+        var_g.fill_ref(self.hdp)
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
         if tm.is_coding_transcript:
             var_out = VariantMapper.g_to_c(self, var_g=var_g, tx_ac=tx_ac, alt_aln_method=alt_aln_method)
@@ -110,6 +111,7 @@ class VariantMapper(object):
             raise HGVSInvalidVariantError("Expected a c. or n. variant; got " + str(var_t))
         if self._validator:
             self._validator.validate(var_t)
+        var_t.fill_ref(self.hdp)
         tm = self._fetch_TranscriptMapper(tx_ac=var_t.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         if tm.is_coding_transcript:
             var_out = VariantMapper.c_to_g(self, var_c=var_t, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
@@ -136,6 +138,7 @@ class VariantMapper(object):
             raise HGVSInvalidVariantError("Expected a g. variant; got " + str(var_g))
         if self._validator:
             self._validator.validate(var_g)
+        var_g.fill_ref(self.hdp)
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
         pos_n = tm.g_to_n(var_g.posedit.pos)
         edit_n = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
@@ -161,6 +164,7 @@ class VariantMapper(object):
             raise HGVSInvalidVariantError("Expected a n. variant; got " + str(var_n))
         if self._validator:
             self._validator.validate(var_n)
+        var_n.fill_ref(self.hdp)
         tm = self._fetch_TranscriptMapper(tx_ac=var_n.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         pos_g = tm.n_to_g(var_n.posedit.pos)
         edit_g = self._convert_edit_check_strand(tm.strand, var_n.posedit.edit)
@@ -188,6 +192,7 @@ class VariantMapper(object):
             raise HGVSInvalidVariantError("Expected a g. variant; got " + str(var_g))
         if self._validator:
             self._validator.validate(var_g)
+        var_g.fill_ref(self.hdp)
         tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
         pos_c = tm.g_to_c(var_g.posedit.pos)
         edit_c = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
@@ -213,6 +218,7 @@ class VariantMapper(object):
             raise HGVSInvalidVariantError("Expected a cDNA (c.); got " + str(var_c))
         if self._validator:
             self._validator.validate(var_c)
+        var_c.fill_ref(self.hdp)
         tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
 
         pos_g = tm.c_to_g(var_c.posedit.pos)
@@ -240,6 +246,7 @@ class VariantMapper(object):
             raise HGVSInvalidVariantError("Expected a cDNA (c.); got " + str(var_c))
         if self._validator:
             self._validator.validate(var_c)
+        var_c.fill_ref(self.hdp)
         tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=var_c.ac, alt_aln_method="transcript")
         pos_n = tm.c_to_n(var_c.posedit.pos)
         if (isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_c.posedit.edit, hgvs.edit.Dup)
@@ -267,6 +274,7 @@ class VariantMapper(object):
             raise HGVSInvalidVariantError("Expected n. variant; got " + str(var_n))
         if self._validator:
             self._validator.validate(var_n)
+        var_n.fill_ref(self.hdp)
         tm = self._fetch_TranscriptMapper(tx_ac=var_n.ac, alt_ac=var_n.ac, alt_aln_method="transcript")
         pos_c = tm.n_to_c(var_n.posedit.pos)
         if (isinstance(var_n.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_n.posedit.edit, hgvs.edit.Dup)
