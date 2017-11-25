@@ -1,0 +1,14 @@
+clog format: 1; -*-outline-*-
+* 1.1.1 (2017-11-24)
+Changes since 1.1.0.post1 (2017-07-11).
+** Bug Fixes
+*** Fixes #453: Fix get_tgt_length for m. var in normalizer [f7ec2a7a5037]
+*** Fixes #459: fix bug when raising exception on fetch_seq failure [650a97c715dc]
+*** Fixes #466: Wrong mapping result of identity variant without ref given (#468)
+*** Fixes #464: Make start and end position independent when start and end are equal [682f730bcfdb]
+** Other Changes
+*** Fixes #473: Pin attrs <17.3.0 due to 'ValueError: Cell is empty' [0ac8cffd262d]
+** Internal and Developer Changes
+*** tox now tests 2.7, 3.5 and 3.6
+*** catch KeyError from SeqFetcher (API change in seqfetcher) [da25364c6607]
+*** Invitae Only: Adds a new ncbi dataprovider that has been modeled on the uta dataprovider. (#472) [63b9c4a334eb]

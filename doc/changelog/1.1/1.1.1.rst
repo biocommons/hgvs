@@ -1,0 +1,25 @@
+
+1.1.1 (2017-11-24)
+###################
+
+Changes since 1.1.0.post1 (2017-07-11).
+
+Bug Fixes
+$$$$$$$$$$
+
+* Fixes `#453 <https://github.com/biocommons/hgvs/issues/453/>`_: Fix get_tgt_length for m. var in normalizer [`f7ec2a7a5037 <https://github.com/biocommons/hgvs/commit/f7ec2a7a5037>`_]
+* Fixes `#459 <https://github.com/biocommons/hgvs/issues/459/>`_: fix bug when raising exception on fetch_seq failure [`650a97c715dc <https://github.com/biocommons/hgvs/commit/650a97c715dc>`_]
+* Fixes `#466 <https://github.com/biocommons/hgvs/issues/466/>`_: Wrong mapping result of identity variant without ref given (`#468 <https://github.com/biocommons/hgvs/issues/468/>`_)
+* Fixes `#464 <https://github.com/biocommons/hgvs/issues/464/>`_: Make start and end position independent when start and end are equal [`682f730bcfdb <https://github.com/biocommons/hgvs/commit/682f730bcfdb>`_]
+
+Other Changes
+$$$$$$$$$$$$$$
+
+* Fixes `#473 <https://github.com/biocommons/hgvs/issues/473/>`_: Pin attrs <17.3.0 due to 'ValueError: Cell is empty' [`0ac8cffd262d <https://github.com/biocommons/hgvs/commit/0ac8cffd262d>`_]
+
+Internal and Developer Changes
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+* tox now tests 2.7, 3.5 and 3.6
+* catch KeyError from SeqFetcher (API change in seqfetcher) [`da25364c6607 <https://github.com/biocommons/hgvs/commit/da25364c6607>`_]
+* Invitae Only: Adds a new ncbi dataprovider that has been modeled on the uta dataprovider. (`#472 <https://github.com/biocommons/hgvs/issues/472/>`_) [`63b9c4a334eb <https://github.com/biocommons/hgvs/commit/63b9c4a334eb>`_]
