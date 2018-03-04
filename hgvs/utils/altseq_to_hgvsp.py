@@ -60,8 +60,14 @@ class AltSeqToHgvsp(object):
             if self._ref_seq == self._alt_seq:
                 # Silent p. variant
                 start = self._alt_data.variant_start_aa
-                deletion = self._ref_seq[start - 1]
-                insertion = deletion
+                if start - 1 < len(self._ref_seq):
+                    deletion = self._ref_seq[start - 1]
+                    insertion = deletion
+                else:
+                    start = ""
+                    deletion = ""
+                    insertion = ""
+                    self._is_frameshift = False
                 variants.append({"start": start, "ins": insertion, "del": deletion})
                 do_delins = False
             elif self._is_substitution:
@@ -211,15 +217,15 @@ class AltSeqToHgvsp(object):
             alt = insertion[0]
 
         else:    # no frameshift - sub/delins/dup
-            if len(insertion) == len(deletion) == 1:
-                if insertion == deletion:    # silent
-                    aa_start = aa_end = AAPosition(base=start, aa=deletion)
-                    ref = alt = ''
-                else:    # substitution
-                    aa_start = aa_end = AAPosition(base=start, aa=deletion)
-                    ref = ''
-                    alt = insertion
-                    is_sub = True
+            if insertion == deletion:    # silent
+                aa_start = aa_end = AAPosition(base=start, aa=deletion)
+                ref = alt = ''
+
+            elif len(insertion) == len(deletion) == 1:    # substitution
+                aa_start = aa_end = AAPosition(base=start, aa=deletion)
+                ref = ''
+                alt = insertion
+                is_sub = True
 
             elif len(deletion) > 0:    # delins OR deletion OR stop codon at variant position
                 ref = deletion
