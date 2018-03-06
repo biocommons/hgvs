@@ -65,7 +65,7 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
       ] + version_specific_requirements,
       setup_requires=[
           "pytest-runner",
-          "setuptools_scm",
+          "setuptools_scm==1.11.1",  # bug in >1.13.1 https://github.com/pypa/setuptools_scm/issues/134
           "wheel",
       ],
       tests_require=[
