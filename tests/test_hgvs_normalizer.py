@@ -257,6 +257,8 @@ class Test_HGVSNormalizer(unittest.TestCase):
             "NM_212556.2:c.1delinsATCA")
         self.assertEqual(
             str(self.norm5.normalize(self.hp.parse_hgvs_variant("NM_212556.2:c.1delinsCA"))), "NM_212556.2:c.1delinsCA")
+        self.assertEqual(
+            str(self.norm5.normalize(self.hp.parse_hgvs_variant("NM_212556.2:c.1delinsAA"))), "NM_212556.2:c.1dup")
 
         self.assertEqual(
             str(self.norm.normalize(self.hp.parse_hgvs_variant("NM_212556.2:c.1400_1401insAC"))),
@@ -264,6 +266,9 @@ class Test_HGVSNormalizer(unittest.TestCase):
         self.assertEqual(
             str(self.normc.normalize(self.hp.parse_hgvs_variant("NM_212556.2:c.1400_1401insAC"))),
             "NM_212556.2:c.1401delinsACA")
+        self.assertEqual(
+            str(self.normc.normalize(self.hp.parse_hgvs_variant("NM_212556.2:c.1401delinsAA"))),
+            "NM_212556.2:c.1401dup")
 
 
 if __name__ == "__main__":
