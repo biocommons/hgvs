@@ -29,6 +29,7 @@ class Test_HGVSValidator(unittest.TestCase):
         """Test that validator wrapper is working"""
         self.assertTrue(self.vr.validate(self.hp.parse_hgvs_variant("NM_001005405.2:c.6C>A")))
         self.assertTrue(self.vr.validate(self.hp.parse_hgvs_variant("NP_000305.3:p.?")))
+        self.assertTrue(self.vr.validate(self.hp.parse_hgvs_variant("NP_000542.1:p.Asn131Ser")))
 
     def test_not_strict_mode(self):
         """Test that validator is working when in not strict mode"""
