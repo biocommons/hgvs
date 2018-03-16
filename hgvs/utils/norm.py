@@ -52,7 +52,7 @@ def normalize_alleles_left(ref, start, stop, alleles, bound, ref_step, shuffle=T
 
     normalized_alleles = namedtuple('shuffled_alleles', 'start stop alleles')
 
-    if len(alleles) < 2 or start <= 0 or stop <= 0:
+    if len(alleles) < 2:
         return normalized_alleles(start, stop, alleles)
 
     # STEP 1: Trim common suffix
@@ -98,7 +98,7 @@ def normalize_alleles_right(ref, start, stop, alleles, bound, ref_step, shuffle=
 
     chrom_stop = len(ref)
 
-    if len(alleles) < 2 or stop >= chrom_stop:
+    if len(alleles) < 2:
         return normalized_alleles(start, stop, alleles)
 
     # STEP 1: Trim common prefix
