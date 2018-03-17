@@ -12,23 +12,9 @@ from bioutils.sequences import reverse_complement
 import hgvs
 import hgvs.validator
 import hgvs.variantmapper
+from hgvs.utils.norm import normalize_alleles
 from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
 from six.moves import range
-
-_logger = logging.getLogger(__name__)
-
-try:
-    from vgraph.norm import normalize_alleles as _normalize_alleles_vgraph
-
-    def normalize_alleles(ref, start, stop, alleles, bound, ref_step, left, shuffle=True):
-        """wraps vgraph.norm.normalize_alleles to pass ascii-encoded strings"""
-        return _normalize_alleles_vgraph(
-            ref.encode("ascii"), start, stop, [a.encode("ascii") for a in alleles], bound, ref_step, left, shuffle)
-
-    _logger.debug("Using normalize_alleles from vgraph (https://github.com/bioinformed/vgraph)")
-except ImportError:
-    from .utils.norm import normalize_alleles
-    _logger.debug("Using built-in normalize_alleles")
 
 
 class Normalizer(object):
