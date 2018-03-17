@@ -270,6 +270,18 @@ class AAPosition(object):
             raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
         return lhs.base > rhs.base
 
+    def __le__(lhs, rhs):
+        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+        if lhs.uncertain or rhs.uncertain:
+            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+        return lhs.base <= rhs.base
+
+    def __ge__(lhs, rhs):
+        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+        if lhs.uncertain or rhs.uncertain:
+            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+        return lhs.base >= rhs.base
+
 
 @attr.s(slots=True, repr=False)
 class Interval(object):
