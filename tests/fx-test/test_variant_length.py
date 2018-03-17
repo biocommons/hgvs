@@ -66,6 +66,12 @@ class Test_VariantLengths(unittest.TestCase):
     #See #319:: ("NM_000249.3:c.1897-3del", ),
     #See #319:: ("NM_000249.3:c.1897-3_1897-1del", ),
     #See #319:: ("NM_000249.3:c.1897-3_1897-1delinsACGT", ),
+
+    # identity variants:
+        ("NM_000314.4:c.1=", 0),
+        ("NM_000314.4:c.1C=", 0),
+        ("NM_000314.4:c.1_2CC=", 0),
+        ("NM_000314.4:c.1_2delinsCC", 0),
     ]
 
     error_tests = [

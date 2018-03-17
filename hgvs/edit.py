@@ -153,8 +153,11 @@ class NARefAlt(Edit):
         """returns (del_len, ins_len).
         Unspecified ref or alt returns None for del_len or ins_len respectively.
         """
-        del_len = 0 if self.ref is None else ilen
-        ins_len = 0 if self.alt is None else len(self.alt)
+        if self.ref == self.alt:
+            del_len = ins_len = 0
+        else:
+            del_len = 0 if self.ref is None else ilen
+            ins_len = 0 if self.alt is None else len(self.alt)
         return (del_len, ins_len)
 
 
@@ -250,8 +253,11 @@ class AARefAlt(Edit):
         """returns (del_len, ins_len).
         Unspecified ref or alt returns None for del_len or ins_len respectively.
         """
-        del_len = 0 if (self.ref is None or self.alt == "") else ilen
-        ins_len = 0 if self.alt is None else len(self.alt)
+        if self.ref == self.alt:
+            del_len = ins_len = 0
+        else:
+            del_len = 0 if (self.ref is None or self.alt == "") else ilen
+            ins_len = 0 if self.alt is None else len(self.alt)
         return (del_len, ins_len)
 
 
