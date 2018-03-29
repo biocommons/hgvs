@@ -225,3 +225,8 @@ Other packages that manipulate HGVS variants:
   :target: https://travis-ci.org/reece/hgvs-integration-test
   :align: middle
 
+
+
+.. image:: https://badges.gitter.im/biocommons/hgvs.svg
+   :alt: Join the chat at https://gitter.im/biocommons/hgvs
+   :target: https://gitter.im/biocommons/hgvs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
