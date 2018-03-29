@@ -5,13 +5,13 @@ The *hgvs* package provides a Python library to parse, format,
 validate, normalize, and map sequence variants according to `Variation
 Nomenclature`_ (aka Human Genome Variation Society) recommendations.
 
-+-----------------+---------------------------------------------------------------------+
-| **Project**     | |rtd_rel| / `Mailing List`_ / `Open Issues`_ / `Apache License`_    |
-+-----------------+---------------------------------------------------------------------+
-| **Release**     | |pypi_rel| / `Change Log`_                                          |
-+-----------------+---------------------------------------------------------------------+
-| **Development** | `Code`_  /  |status_rel|                                            |
-+-----------------+---------------------------------------------------------------------+
++-----------------+-------------------------------------------------------------------------------+
+| **Project**     | |rtd_rel| / |gitter| / `Mailing List`_ / `Open Issues`_ / `Apache License`_   |
++-----------------+-------------------------------------------------------------------------------+
+| **Release**     | |pypi_rel| / `Change Log`_                                                    |
++-----------------+-------------------------------------------------------------------------------+
+| **Development** | `Code`_  / |status_rel|                                                       |
++-----------------+-------------------------------------------------------------------------------+
 
 
 Features
@@ -227,6 +227,6 @@ Other packages that manipulate HGVS variants:
 
 
 
-.. image:: https://badges.gitter.im/biocommons/hgvs.svg
+.. |gitter| image:: https://badges.gitter.im/biocommons/hgvs.svg
    :alt: Join the chat at https://gitter.im/biocommons/hgvs
    :target: https://gitter.im/biocommons/hgvs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
