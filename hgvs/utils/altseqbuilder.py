@@ -9,7 +9,6 @@ Used in hgvsc to hgvsp conversion.
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import math
-import attr
 
 from Bio.Seq import Seq
 
@@ -20,29 +19,16 @@ import six
 DBG = False
 
 
-@attr.s(slots=True)
 class AltTranscriptData(object):
-    transcript_sequence = attr.ib()
-    aa_sequence = attr.ib()
-    cds_start = attr.ib()
-    cds_stop = attr.ib()
-    protein_accession = attr.ib()
-    is_frameshift = attr.ib(default=False)
-    variant_start_aa = attr.ib(default=None)
-    frameshift_start = attr.ib(default=None)
-    is_substitution = attr.ib(default=False)
-    is_ambiguous = attr.ib(default=False)
-
-    @classmethod
-    def create_for_variant_inserter(cls,
-                                    seq,
-                                    cds_start,
-                                    cds_stop,
-                                    is_frameshift,
-                                    variant_start_aa,
-                                    accession,
-                                    is_substitution=False,
-                                    is_ambiguous=False):
+    def __init__(self,
+                 seq,
+                 cds_start,
+                 cds_stop,
+                 is_frameshift,
+                 variant_start_aa,
+                 accession,
+                 is_substitution=False,
+                 is_ambiguous=False):
         """Create a variant sequence using inputs from VariantInserter
         :param seq: DNA sequence wiith variant incorporated
         :type seq: str or list
@@ -63,6 +49,8 @@ class AltTranscriptData(object):
         :return variant sequence data
         :rtype attrs
         """
+
+
         if len(seq) > 0:
             if isinstance(seq, six.string_types):
                 seq = list(seq)
@@ -77,18 +65,17 @@ class AltTranscriptData(object):
         else:
             seq_aa = []
 
-        alt_data = AltTranscriptData(
-            ''.join(seq),
-            seq_aa,
-            cds_start,
-            cds_stop,
-            accession,
-            is_frameshift=is_frameshift,
-            variant_start_aa=variant_start_aa,
-            is_substitution=is_substitution,
-            is_ambiguous=is_ambiguous)
+        self.transcript_sequence = ''.join(seq)
+        self.aa_sequence = seq_aa
+        self.cds_start = cds_start
+        self.cds_stop = cds_stop
+        self.protein_accession = accession
+        self.is_frameshift = is_frameshift
+        self.variant_start_aa = variant_start_aa
+        self.frameshift_start = None
+        self.is_substitution = is_substitution
+        self.is_ambiguous = is_ambiguous
 
-        return alt_data
 
 
 class AltSeqBuilder(object):
@@ -235,7 +222,7 @@ class AltSeqBuilder(object):
         # use max of mod 3 value and 1 (in event that indel starts in the 5'utr range)
         variant_start_aa = max(int(math.ceil((self._var_c.posedit.pos.start.base) / 3.0)), 1)
 
-        alt_data = AltTranscriptData.create_for_variant_inserter(
+        alt_data = AltTranscriptData(
             seq,
             cds_start,
             cds_stop,
@@ -256,7 +243,7 @@ class AltSeqBuilder(object):
         is_frameshift = len(dup_seq) % 3 != 0
         variant_start_aa = int(math.ceil((self._var_c.posedit.pos.end.base + 1) / 3.0))
 
-        alt_data = AltTranscriptData.create_for_variant_inserter(
+        alt_data = AltTranscriptData(
             seq,
             cds_start,
             cds_stop,
@@ -310,7 +297,7 @@ class AltSeqBuilder(object):
 
     def _create_alt_equals_ref_noncds(self):
         """Create an alt seq that matches the reference (for non-cds variants)"""
-        alt_data = AltTranscriptData.create_for_variant_inserter(
+        alt_data = AltTranscriptData(
             list(self._transcript_data.transcript_sequence),
             self._transcript_data.cds_start,
             self._transcript_data.cds_stop,
@@ -322,7 +309,7 @@ class AltSeqBuilder(object):
 
     def _create_no_protein(self):
         """Create a no-protein result"""
-        alt_data = AltTranscriptData.create_for_variant_inserter(
+        alt_data = AltTranscriptData(
             [], None, None, False, None, self._transcript_data.protein_accession, is_ambiguous=False)
         return alt_data
 

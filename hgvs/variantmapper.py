@@ -9,9 +9,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import copy
 import logging
 
-from Bio.Seq import Seq
 from bioutils.sequences import reverse_complement
-import attr
 
 import hgvs
 import hgvs.location
@@ -23,9 +21,11 @@ import hgvs.utils.altseqbuilder as altseqbuilder
 import hgvs.sequencevariant
 import hgvs.validator
 
-from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
+from hgvs.exceptions import HGVSUnsupportedOperationError, HGVSInvalidVariantError
 from hgvs.decorators.lru_cache import lru_cache
 from hgvs.enums import PrevalidationLevel
+from hgvs.utils.reftranscriptdata import RefTranscriptData
+
 
 _logger = logging.getLogger(__name__)
 
@@ -300,48 +300,11 @@ class VariantMapper(object):
 
         """
 
-        @attr.s(slots=True)
-        class RefTranscriptData(object):
-            transcript_sequence = attr.ib()
-            aa_sequence = attr.ib()
-            cds_start = attr.ib()
-            cds_stop = attr.ib()
-            protein_accession = attr.ib()
-
-            @classmethod
-            def setup_transcript_data(cls, hdp, tx_ac, pro_ac):
-                """helper for generating RefTranscriptData from for c_to_p"""
-                tx_info = hdp.get_tx_identity_info(var_c.ac)
-                tx_seq = hdp.get_seq(tx_ac)
-
-                if tx_info is None or tx_seq is None:
-                    raise HGVSDataNotAvailableError("Missing transcript data for accession: {}".format(tx_ac))
-
-                # use 1-based hgvs coords
-                cds_start = tx_info["cds_start_i"] + 1
-                cds_stop = tx_info["cds_end_i"]
-
-                # padding list so biopython won't complain during the conversion
-                tx_seq_to_translate = tx_seq[cds_start - 1:cds_stop]
-                if len(tx_seq_to_translate) % 3 != 0:
-                    "".join(list(tx_seq_to_translate).extend(["N"] * ((3 - len(tx_seq_to_translate) % 3) % 3)))
-
-                tx_seq_cds = Seq(tx_seq_to_translate)
-                protein_seq = str(tx_seq_cds.translate())
-
-                if pro_ac is None:
-                    # get_acs... will always return at least the MD5_ accession
-                    pro_ac = (hdp.get_pro_ac_for_tx_ac(tx_ac) or hdp.get_acs_for_protein_seq(protein_seq)[0])
-
-                transcript_data = RefTranscriptData(tx_seq, protein_seq, cds_start, cds_stop, pro_ac)
-
-                return transcript_data
-
         if not (var_c.type == "c"):
             raise HGVSInvalidVariantError("Expected a cDNA (c.); got " + str(var_c))
         if self._validator:
             self._validator.validate(var_c)
-        reference_data = RefTranscriptData.setup_transcript_data(self.hdp, var_c.ac, pro_ac)
+        reference_data = RefTranscriptData(self.hdp, var_c.ac, pro_ac)
         builder = altseqbuilder.AltSeqBuilder(var_c, reference_data)
 
         # TODO: handle case where you get 2+ alt sequences back;

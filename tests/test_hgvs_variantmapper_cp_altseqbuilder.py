@@ -9,6 +9,7 @@ import attr
 
 import hgvs.parser
 import hgvs.utils.altseqbuilder as altseqbuilder
+from hgvs.utils.reftranscriptdata import RefTranscriptData
 
 import support.mock_input_source as mock_input_data_source
 
@@ -113,43 +114,9 @@ class TestAltSeqBuilder(unittest.TestCase):
 
     def _run_comparison(self, hgvsc, expected_sequence):
 
-        # test replicates the internal class of p_to_c
-        @attr.s(slots=True)
-        class RefTranscriptData(object):
-            transcript_sequence = attr.ib()
-            aa_sequence = attr.ib()
-            cds_start = attr.ib()
-            cds_stop = attr.ib()
-            protein_accession = attr.ib()
-
-            @classmethod
-            def setup_transcript_data(cls, ac, ac_p, db, ref="GRCh37.p10"):
-                """helper for generating RefTranscriptData from for c_to_p"""
-                tx_info = db.get_tx_info(ac)
-                tx_seq = db.get_tx_seq(ac)
-
-                if tx_info is None or tx_seq is None:
-                    raise hgvs.exceptions.HGVSError("Missing transcript data for accession: {}".format(ac))
-
-                # use 1-based hgvs coords
-                cds_start = tx_info["cds_start_i"] + 1
-                cds_stop = tx_info["cds_end_i"]
-
-                # padding list so biopython won't complain during the conversion
-                tx_seq_to_translate = tx_seq[cds_start - 1:cds_stop]
-                if len(tx_seq_to_translate) % 3 != 0:
-                    "".join(list(tx_seq_to_translate).extend(["N"] * ((3 - len(tx_seq_to_translate) % 3) % 3)))
-
-                tx_seq_cds = Seq(tx_seq_to_translate)
-                protein_seq = str(tx_seq_cds.translate())
-
-                transcript_data = RefTranscriptData(tx_seq, protein_seq, cds_start, cds_stop, ac_p)
-
-                return transcript_data
-
         ac_p = "DUMMY"
         var = self._parser.parse_hgvs_variant(hgvsc)
-        transcript_data = RefTranscriptData.setup_transcript_data(var.ac, ac_p, self._datasource)
+        transcript_data = RefTranscriptData(hdp=self._datasource, tx_ac=var.ac, pro_ac=ac_p)
 
         builder = altseqbuilder.AltSeqBuilder(var, transcript_data)
         insert_result = builder.build_altseq()
