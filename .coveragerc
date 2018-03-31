@@ -1,0 +1,11 @@
+[run]
+omit =
+     hgvs/__init__.py
+     hgvs/dataproviders/interface.py
+     hgvs/dataproviders/ncbi.py
+     hgvs/dataproviders/uta.py
+     hgvs/decorators/*
+     hgvs/shell.py
+     hgvs/utils/PersistentDict.py
+     hgvs/utils/context.py
+     hgvs/utils/orderedenum.py
