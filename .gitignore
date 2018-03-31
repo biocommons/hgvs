@@ -20,6 +20,7 @@
 .idea
 .installed.cfg
 .ipynb_checkpoints
+.pytest_cache
 .tags
 .tags.mk
 .tox
