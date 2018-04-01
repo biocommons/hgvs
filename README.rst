@@ -204,7 +204,7 @@ Other packages that manipulate HGVS variants:
 .. _Open Issues: https://github.com/biocommons/hgvs/issues
 .. _code: https://github.com/biocommons/hgvs
 .. _change log: https://hgvs.readthedocs.io/en/stable/changelog/
-.. _pypi: https://pypi.python.org/pypi/hgvs
+.. _pypi: https://pypi.org/project/hgvs/
 .. _Apache License: https://github.com/biocommons/hgvs/blob/master/LICENSE.txt
 
 
@@ -213,7 +213,7 @@ Other packages that manipulate HGVS variants:
   :align: middle
 
 .. |pypi_rel| image:: https://badge.fury.io/py/hgvs.png
-  :target: https://pypi.python.org/pypi?name=hgvs
+  :target: https://pypi.org/project/hgvs/
   :align: middle
 
 .. |status_rel| image:: https://travis-ci.org/biocommons/hgvs.png?branch=master
