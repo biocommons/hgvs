@@ -1,0 +1,21 @@
+
+1.1.2 (2018-03-31)
+###################
+
+Changes since 1.1.1 (2017-11-24).
+
+Bug Fixes
+$$$$$$$$$$
+
+* Fix `#483 <https://github.com/biocommons/hgvs/issues/483/>`_: fix bug when normalizing at first and last base (`#484 <https://github.com/biocommons/hgvs/issues/484/>`_)
+* Fix `#480 <https://github.com/biocommons/hgvs/issues/480/>`_: fix validation of AAPosition (`#485 <https://github.com/biocommons/hgvs/issues/485/>`_)
+* Fix `#431 <https://github.com/biocommons/hgvs/issues/431/>`_: fix length_change for ident var (`#486 <https://github.com/biocommons/hgvs/issues/486/>`_) [`5e59104cc739 <https://github.com/biocommons/hgvs/commit/5e59104cc739>`_]
+* Fix `#476 <https://github.com/biocommons/hgvs/issues/476/>`_: fix c_to_p for dup at the end of cds (`#478 <https://github.com/biocommons/hgvs/issues/478/>`_)
+* Fix `#488 <https://github.com/biocommons/hgvs/issues/488/>`_: unpin attrs package version by refactoring reftranscriptdata and altseqbuilder to not use closures or attrs [`0e1d9f137642 <https://github.com/biocommons/hgvs/commit/0e1d9f137642>`_]
+
+Internal and Developer Changes
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+* drop py3.5 from tox testing (Python 3.5 devel not available on Ubuntu 17.10) [`3d311f8d2b26 <https://github.com/biocommons/hgvs/commit/3d311f8d2b26>`_]
+* omit coverage for utility and external source files [`23b8b55eee87 <https://github.com/biocommons/hgvs/commit/23b8b55eee87>`_]
+* pin setuptools_scm to 1.11.1, the last version known to work with hgvs [`51ad9ad4b07a <https://github.com/biocommons/hgvs/commit/51ad9ad4b07a>`_]
