@@ -5,14 +5,16 @@ The *hgvs* package provides a Python library to parse, format,
 validate, normalize, and map sequence variants according to `Variation
 Nomenclature`_ (aka Human Genome Variation Society) recommendations.
 
-+--------------------+---------------------------------------------------------------+
-| **Information**    | |rtd|   |gitter|   |group|   |github_license|                 |
-+--------------------+---------------------------------------------------------------+
-| **Latest Release** | |github_tag|   |pypi_rel|   |changelog|                       |
-+--------------------+---------------------------------------------------------------+
-| **Development**    | |status_rel|  |coveralls|  |github_issues|  |github_open_pr|  |
-|                    |  |github_stars|  |github_forks|   |github_contrib|            |
-+--------------------+---------------------------------------------------------------+
++--------------------+--------------------------------------------------------------------+
+| **Information**    | | |rtd|   |changelog|  |github_license|                            |
+|                    | | |gitter|   |group|                                               |
++--------------------+--------------------------------------------------------------------+
+| **Latest Release** | |github_tag|   |pypi_rel|                                          |
++--------------------+--------------------------------------------------------------------+
+| **Development**    | | |status_rel|  |coveralls|                                        |
+|                    | | |github_issues|  |github_open_pr|                                |
+|                    | | |github_stars|  |github_forks|   |github_contrib|                |
++--------------------+--------------------------------------------------------------------+
 
 
 
@@ -199,25 +201,39 @@ Other packages that manipulate HGVS variants:
 * `Mutalyzer <https://mutalyzer.nl/>`__
 
 
-
 .. _docs: http://hgvs.readthedocs.org/
 .. _Variation Nomenclature: http://varnomen.hgvs.org/
-.. _mailing list: https://groups.google.com/forum/#!forum/hgvs-discuss
-.. _Open Issues: https://github.com/biocommons/hgvs/issues
-.. _code: https://github.com/biocommons/hgvs
-.. _change log: https://hgvs.readthedocs.io/en/stable/changelog/
-.. _pypi: https://pypi.org/project/hgvs/
-.. _Apache License: https://github.com/biocommons/hgvs/blob/master/LICENSE.txt
 
+
+.. |rtd| image:: https://img.shields.io/badge/docs-readthedocs-green.svg
+   :target: http://hgvs.readthedocs.io/
+
+.. |changelog| image:: https://img.shields.io/badge/docs-changelog-green.svg
+   :target: https://hgvs.readthedocs.io/en/stable/changelog/
+
+.. |github_license| image:: https://img.shields.io/github/license/biocommons/hgvs.svg
+   :alt: GitHub license
+   :target: https://github.com/biocommons/hgvs/blob/master/LICENSE)
+
+.. |group| image:: https://img.shields.io/badge/group-hgvs%20discuss-green.svg
+   :alt: Mailing list
+   :target: https://groups.google.com/forum/#!forum/hgvs-discuss
+
+.. |gitter| image:: https://img.shields.io/badge/chat-gitter-green.svg
+   :alt: Join the chat at https://gitter.im/biocommons/hgvs
+   :target: https://gitter.im/biocommons/hgvs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
+
+.. |github_tag| image:: https://img.shields.io/github/tag/biocommons/hgvs.svg
+   :alt: GitHub tag
+   :target: https://github.com/biocommons/hgvs
 
 .. |pypi_rel| image:: https://img.shields.io/pypi/v/hgvs.svg
    :target: https://pypi.org/project/hgvs/
 
+
 .. |status_rel| image:: https://img.shields.io/travis/biocommons/hgvs/master.svg
    :target: https://travis-ci.org/biocommons/hgvs?branch=master
-
-.. |install_status| image:: https://travis-ci.org/reece/hgvs-integration-test.png?branch=master
-   :target: https://travis-ci.org/reece/hgvs-integration-test
 
 .. |coveralls| image:: https://img.shields.io/coveralls/github/biocommons/hgvs.svg
    :target: https://coveralls.io/github/biocommons/hgvs
@@ -225,18 +241,6 @@ Other packages that manipulate HGVS variants:
 .. |github_issues| image:: https://img.shields.io/github/issues-raw/biocommons/hgvs.svg
    :alt: GitHub issues
    :target: https://github.com/biocommons/hgvs/issues
-
-.. |github_tag| image:: https://img.shields.io/github/tag/biocommons/hgvs.svg
-   :alt: GitHub tag
-   :target: https://github.com/biocommons/hgvs
-
-.. |github_license| image:: https://img.shields.io/github/license/biocommons/hgvs.svg
-   :alt: GitHub license
-   :target: https://github.com/biocommons/hgvs/blob/master/LICENSE)
-
-.. |github_contrib| image:: https://img.shields.io/github/contributors/biocommons/hgvs.svg
-   :alt: GitHub license
-   :target: https://github.com/biocommons/hgvs/graphs/contributors/
 
 .. |github_open_pr| image:: https://img.shields.io/github/issues-pr/biocommons/hgvs.svg
    :alt: GitHub Open Pull Requests
@@ -250,16 +254,12 @@ Other packages that manipulate HGVS variants:
    :alt: GitHub forks
    :target: https://github.com/biocommons/hgvs/forks
 
-.. |group| image:: https://img.shields.io/badge/group-hgvs%20discuss-blue.svg
-   :alt: Mailing list
-   :target: https://groups.google.com/forum/#!forum/hgvs-discuss
+.. |github_contrib| image:: https://img.shields.io/github/contributors/biocommons/hgvs.svg
+   :alt: GitHub license
+   :target: https://github.com/biocommons/hgvs/graphs/contributors/
 
-.. |rtd| image:: https://img.shields.io/badge/docs-readthedocs-green.svg
-   :target: http://hgvs.readthedocs.io/
 
-.. |changelog| image:: https://img.shields.io/badge/docs-changelog-green.svg
-   :target: https://hgvs.readthedocs.io/en/stable/changelog/
 
-.. |gitter| image:: https://img.shields.io/badge/chat-gitter-green.svg
-   :alt: Join the chat at https://gitter.im/biocommons/hgvs
-   :target: https://gitter.im/biocommons/hgvs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+.. |install_status| image:: https://travis-ci.org/reece/hgvs-integration-test.png?branch=master
+   :target: https://travis-ci.org/reece/hgvs-integration-test
+
