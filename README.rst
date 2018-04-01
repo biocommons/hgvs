@@ -5,13 +5,15 @@ The *hgvs* package provides a Python library to parse, format,
 validate, normalize, and map sequence variants according to `Variation
 Nomenclature`_ (aka Human Genome Variation Society) recommendations.
 
-+-----------------+-------------------------------------------------------------------------------+
-| **Project**     | |rtd_rel| / |gitter| / `Mailing List`_ / `Open Issues`_ / `Apache License`_   |
-+-----------------+-------------------------------------------------------------------------------+
-| **Release**     | |pypi_rel| / `Change Log`_                                                    |
-+-----------------+-------------------------------------------------------------------------------+
-| **Development** | `Code`_  / |status_rel|                                                       |
-+-----------------+-------------------------------------------------------------------------------+
++--------------------+---------------------------------------------------------+
+| **Information**    | |rtd|   |gitter|   |group|   |github_license|           |
++--------------------+---------------------------------------------------------+
+| **Latest Release** | |github_tag| / |pypi_rel| / `Change Log`_               |
++--------------------+---------------------------------------------------------+
+| **Development**    | |github_contrib| / |github_issues| / |github_open_pr| / |
+|                    | |coveralls| / |github_stars| / |status_rel|             | 
++--------------------+---------------------------------------------------------+
+
 
 
 Features
@@ -208,25 +210,57 @@ Other packages that manipulate HGVS variants:
 .. _Apache License: https://github.com/biocommons/hgvs/blob/master/LICENSE.txt
 
 
-.. |rtd_rel| image:: https://readthedocs.org/projects/hgvs/badge/
-  :target: http://hgvs.readthedocs.io/
-  :align: middle
-
 .. |pypi_rel| image:: https://badge.fury.io/py/hgvs.png
-  :target: https://pypi.org/project/hgvs/
-  :align: middle
+   :target: https://pypi.org/project/hgvs/
+   :align: middle
 
-.. |status_rel| image:: https://travis-ci.org/biocommons/hgvs.png?branch=master
-  :target: https://travis-ci.org/biocommons/hgvs?branch=master
-  :align: middle 
+.. .. |status_rel| image:: https://travis-ci.org/biocommons/hgvs.png?branch=master
+.. |status_rel| image:: https://img.shields.io/travis/biocommons/hgvs/master.svg
+   :target: https://travis-ci.org/biocommons/hgvs?branch=master
+   :align: middle 
 
 .. |install_status| image:: https://travis-ci.org/reece/hgvs-integration-test.png?branch=master
-  :target: https://travis-ci.org/reece/hgvs-integration-test
-  :align: middle
+   :target: https://travis-ci.org/reece/hgvs-integration-test
+   :align: middle
 
-.. |gitter| image:: https://badges.gitter.im/biocommons/hgvs.svg
+.. |coveralls| image:: https://img.shields.io/coveralls/github/biocommons/hgvs.svg
+   :target: https://coveralls.io/github/biocommons/hgvs
+
+.. |github_issues| image:: https://img.shields.io/github/issues-raw/biocommons/hgvs.svg
+   :alt: GitHub issues
+   :target: https://github.com/biocommons/hgvs/issues
+
+.. |github_tag| image:: https://img.shields.io/github/tag/biocommons/hgvs.svg
+   :alt: GitHub tag
+   :target: https://github.com/biocommons/hgvs
+
+.. |github_license| image:: https://img.shields.io/github/license/biocommons/hgvs.svg
+   :alt: GitHub license
+   :target: https://github.com/biocommons/hgvs/blob/master/LICENSE)
+
+.. |github_contrib| image:: https://img.shields.io/github/contributors/biocommons/hgvs.svg
+   :alt: GitHub license
+   :target: https://GitHub.com/biocommons/hgvs/graphs/contributors/
+
+.. |github_open_pr| image:: https://img.shields.io/github/issues-pr/biocommons/hgvs.svg
+   :alt: GitHub Open Pull Requests
+   :target: https://GitHub.com/biocommons/hgvs/pull/
+
+.. |github_stars| image:: https://img.shields.io/github/stars/biocommons/hgvs.svg?style=social&label=Stars
+   :alt: GitHub stars
+   :target: https://github.com/biocommons/hgvs
+
+.. |group| image:: https://img.shields.io/badge/group-hgvs%20discuss-blue.svg
+   :alt: Mailing list
+   :target: https://groups.google.com/forum/#!forum/hgvs-discuss
+
+
+.. .. |rtd| image:: https://readthedocs.org/projects/hgvs/badge/
+.. |rtd| image:: https://img.shields.io/badge/docs-readthedocs-green.svg
+   :target: http://hgvs.readthedocs.io/
+   :align: middle
+
+.. .. |gitter| image:: https://badges.gitter.im/biocommons/hgvs.svg
+.. |gitter| image:: https://img.shields.io/badge/chat-gitter-green.svg
    :alt: Join the chat at https://gitter.im/biocommons/hgvs
    :target: https://gitter.im/biocommons/hgvs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-
-.. |coveralls| image:: https://coveralls.io/repos/github/biocommons/hgvs/badge.svg
-   :target: https://coveralls.io/github/biocommons/hgvs
