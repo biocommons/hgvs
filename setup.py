@@ -60,7 +60,7 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
           "enum34",
           "ipython<6",          # for hgvs-shell; >=6 for Py3 only
           "parsley",
-          "psycopg2!=2.7",  # 2.7 bug: https://github.com/psycopg/psycopg2/issues/517
+          "psycopg2-binary",
           "six",
       ] + version_specific_requirements,
       setup_requires=[
