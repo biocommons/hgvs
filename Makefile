@@ -10,7 +10,8 @@ SELF:=$(firstword $(MAKEFILE_LIST))
 
 PKG=hgvs
 PKGD=$(subst .,/,${PKG})
-VEDIR=venv/3.5
+PYV:=3.6
+VEDIR=venv/${PYV}
 
 TEST_DIRS:=tests
 DOC_TESTS:=doc hgvs ./README.rst
@@ -28,17 +29,15 @@ help:
 ############################################################################
 #= SETUP, INSTALLATION, PACKAGING
 
-#=> venv: make a Python 3 virtual environment
-.PHONY: venv/2.7
-venv/2.7:
-	virtualenv -p $$(type -p python2.7) $@; \
+#=> venv: make a Python 2.7 virtual environment
+venv/2.7: venv/%:
+	virtualenv -p $$(type -p python$*) $@; \
 	source $@/bin/activate; \
 	pip install --upgrade pip setuptools
 
 #=> venv: make a Python 3 virtual environment
-.PHONY: venv/3.5
-venv/3.5:
-	pyvenv $@; \
+venv/3.5 venv/3.6: venv/%:
+	python$* -mvenv $@; \
 	source $@/bin/activate; \
 	python -m ensurepip --upgrade; \
 	pip install --upgrade pip setuptools
