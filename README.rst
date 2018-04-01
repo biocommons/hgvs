@@ -252,7 +252,7 @@ Other packages that manipulate HGVS variants:
 
 .. |github_forks| image:: https://img.shields.io/github/forks/biocommons/hgvs.svg?style=social&label=Forks
    :alt: GitHub forks
-   :target: https://github.com/biocommons/hgvs/forks
+   :target: https://github.com/biocommons/hgvs/network
 
 .. |github_contrib| image:: https://img.shields.io/github/contributors/biocommons/hgvs.svg
    :alt: GitHub license
