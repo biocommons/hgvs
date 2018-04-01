@@ -5,14 +5,14 @@ The *hgvs* package provides a Python library to parse, format,
 validate, normalize, and map sequence variants according to `Variation
 Nomenclature`_ (aka Human Genome Variation Society) recommendations.
 
-+--------------------+---------------------------------------------------------+
-| **Information**    | |rtd|   |gitter|   |group|   |github_license|           |
-+--------------------+---------------------------------------------------------+
-| **Latest Release** | |github_tag| / |pypi_rel| / `Change Log`_               |
-+--------------------+---------------------------------------------------------+
-| **Development**    | |github_contrib| / |github_issues| / |github_open_pr| / |
-|                    | |coveralls| / |github_stars| / |status_rel|             | 
-+--------------------+---------------------------------------------------------+
++--------------------+---------------------------------------------------------------+
+| **Information**    | |rtd|   |gitter|   |group|   |github_license|                 |
++--------------------+---------------------------------------------------------------+
+| **Latest Release** | |github_tag|   |pypi_rel|   |changelog|                       |
++--------------------+---------------------------------------------------------------+
+| **Development**    | |status_rel|  |coveralls|  |github_issues|  |github_open_pr|  |
+|                    |  |github_stars|  |github_forks|   |github_contrib|            |
++--------------------+---------------------------------------------------------------+
 
 
 
@@ -210,18 +210,14 @@ Other packages that manipulate HGVS variants:
 .. _Apache License: https://github.com/biocommons/hgvs/blob/master/LICENSE.txt
 
 
-.. |pypi_rel| image:: https://badge.fury.io/py/hgvs.png
+.. |pypi_rel| image:: https://img.shields.io/pypi/v/hgvs.svg
    :target: https://pypi.org/project/hgvs/
-   :align: middle
 
-.. .. |status_rel| image:: https://travis-ci.org/biocommons/hgvs.png?branch=master
 .. |status_rel| image:: https://img.shields.io/travis/biocommons/hgvs/master.svg
    :target: https://travis-ci.org/biocommons/hgvs?branch=master
-   :align: middle 
 
 .. |install_status| image:: https://travis-ci.org/reece/hgvs-integration-test.png?branch=master
    :target: https://travis-ci.org/reece/hgvs-integration-test
-   :align: middle
 
 .. |coveralls| image:: https://img.shields.io/coveralls/github/biocommons/hgvs.svg
    :target: https://coveralls.io/github/biocommons/hgvs
@@ -240,27 +236,30 @@ Other packages that manipulate HGVS variants:
 
 .. |github_contrib| image:: https://img.shields.io/github/contributors/biocommons/hgvs.svg
    :alt: GitHub license
-   :target: https://GitHub.com/biocommons/hgvs/graphs/contributors/
+   :target: https://github.com/biocommons/hgvs/graphs/contributors/
 
 .. |github_open_pr| image:: https://img.shields.io/github/issues-pr/biocommons/hgvs.svg
    :alt: GitHub Open Pull Requests
-   :target: https://GitHub.com/biocommons/hgvs/pull/
+   :target: https://github.com/biocommons/hgvs/pull/
 
 .. |github_stars| image:: https://img.shields.io/github/stars/biocommons/hgvs.svg?style=social&label=Stars
    :alt: GitHub stars
-   :target: https://github.com/biocommons/hgvs
+   :target: https://github.com/biocommons/hgvs/stargazers
+
+.. |github_forks| image:: https://img.shields.io/github/forks/biocommons/hgvs.svg?style=social&label=Forks
+   :alt: GitHub forks
+   :target: https://github.com/biocommons/hgvs/forks
 
 .. |group| image:: https://img.shields.io/badge/group-hgvs%20discuss-blue.svg
    :alt: Mailing list
    :target: https://groups.google.com/forum/#!forum/hgvs-discuss
 
-
-.. .. |rtd| image:: https://readthedocs.org/projects/hgvs/badge/
 .. |rtd| image:: https://img.shields.io/badge/docs-readthedocs-green.svg
    :target: http://hgvs.readthedocs.io/
-   :align: middle
 
-.. .. |gitter| image:: https://badges.gitter.im/biocommons/hgvs.svg
+.. |changelog| image:: https://img.shields.io/badge/docs-changelog-green.svg
+   :target: https://hgvs.readthedocs.io/en/stable/changelog/
+
 .. |gitter| image:: https://img.shields.io/badge/chat-gitter-green.svg
    :alt: Join the chat at https://gitter.im/biocommons/hgvs
    :target: https://gitter.im/biocommons/hgvs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
