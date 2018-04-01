@@ -6,8 +6,10 @@ python:
 - '3.5'
 cache: pip
 before_install: 
-install: pip install pytest pytest-cov tox-travis
+install: pip install pytest pytest-cov tox-travis coveralls
 script: make tox
+after_success:
+  - coveralls
 deploy:
   provider: pypi
   user: biocommons

@@ -220,13 +220,13 @@ Other packages that manipulate HGVS variants:
   :target: https://travis-ci.org/biocommons/hgvs?branch=master
   :align: middle 
 
-
 .. |install_status| image:: https://travis-ci.org/reece/hgvs-integration-test.png?branch=master
   :target: https://travis-ci.org/reece/hgvs-integration-test
   :align: middle
 
-
-
 .. |gitter| image:: https://badges.gitter.im/biocommons/hgvs.svg
    :alt: Join the chat at https://gitter.im/biocommons/hgvs
    :target: https://gitter.im/biocommons/hgvs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
+.. |coveralls| image:: https://coveralls.io/repos/github/biocommons/hgvs/badge.svg
+   :target: https://coveralls.io/github/biocommons/hgvs
