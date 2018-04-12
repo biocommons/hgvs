@@ -16,10 +16,10 @@ class RefTranscriptData(object):
         cds_start = tx_info["cds_start_i"] + 1
         cds_stop = tx_info["cds_end_i"]
 
-        # padding list so biopython won't complain during the conversion
+        # coding sequences that are not divisable by 3 are not yet supported
         tx_seq_to_translate = tx_seq[cds_start - 1:cds_stop]
         if len(tx_seq_to_translate) % 3 != 0:
-            "".join(list(tx_seq_to_translate).extend(["N"] * ((3 - len(tx_seq_to_translate) % 3) % 3)))
+            raise NotImplementedError("Transcript {} is not supported because its sequence length of {} is not divisible by 3.".format(tx_ac, len(tx_seq_to_translate)))
 
         tx_seq_cds = Seq(tx_seq_to_translate)
         protein_seq = str(tx_seq_cds.translate())
