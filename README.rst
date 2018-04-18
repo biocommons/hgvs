@@ -103,8 +103,8 @@ object models back into HGVS strings.
   'NC_000007.13:g.36561662C>T'
 
 
-Projecting ("Mapping") variants between aligned seqeunces
-#########################################################
+Projecting ("Mapping") variants between aligned genome and transcript sequences
+###############################################################################
 
 `hgvs` provides tools to project variants between genome, transcript,
 and protein sequences.  Non-coding and intronic variants are
@@ -137,6 +137,44 @@ supported.  Alignment data come from the `Universal Transcript Archive
   # CDS coordinates use BaseOffsetPosition to support intronic offsets
   >>> var_c.posedit.pos.start
   BaseOffsetPosition(base=1582, offset=0, datum=Datum.CDS_START, uncertain=False)
+
+
+Translating coding variants to protein sequences
+################################################
+
+Coding variants may be translated to their protein consequences.  HGVS
+uses the same pairing of transcript and protein accessions as seen in
+NCBI and Ensembl.
+
+::
+
+   # translate var_c to its protein consequence
+   # The object structure of protein variants is nearly identical to
+   # that of nucleic acid variants and is converted to a string form
+   # by stringification. Per HGVS recommendations, inferred consequences
+   # must have parentheses to indicate uncertainty.
+   >>> var_p = am.c_to_p(var_c)
+   >>> var_p
+   SequenceVariant(ac=NP_001628.1, type=p, posedit=(Gly528Arg))
+   >>> str(var_p)
+   'NP_001628.1:p.(Gly528Arg)'
+
+   # setting uncertain to False removes the parentheses on the
+   # stringified form
+   >>> var_p.posedit.uncertain = False
+   >>> str(var_p)
+   'NP_001628.1:p.Gly528Arg'
+
+   # formatting can be customized, e.g., use 1 letter amino acids to
+   # format a specific variant
+   >>> var_p.format(conf={"p_3_letter": False})
+   'NP_001628.1:p.G528R'
+
+   # configuration may also be set globally
+   >>> hgvs.global_config.formatting.p_3_letter = False
+   >>> str(var_p)
+   'NP_001628.1:p.G528R'
+
 
 
 Normalizing variants
