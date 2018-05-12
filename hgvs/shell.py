@@ -13,6 +13,32 @@ hgvs_c = "NM_001637.3:c.1582G>A"
 hgvs_p = "NP_001628.1:p.(Gly528Arg)"
 
 
+header_string = """############################################################################
+hgvs-shell -- interactive hgvs
+hgvs version: {v}
+data provider url: {hdp.url}
+schema_version: {sv}
+data_version: {dv}
+sequences source: {hdp.seqfetcher.source}
+
+The following variables are defined:
+* hp -- hgvs parser
+* hdp -- hgvs data provider
+* vm -- VariantMapper
+* am37 -- AssemblyMapper, GRCh37
+* am38 -- AssemblyMapper, GRCh38
+* hv -- hgvs Validator
+* hn -- hgvs Normalizer
+
+hgvs_g, hgvs_c, hgvs_p -- sample variants as hgvs strings
+var_g, var_c, var_p -- sample variants, as parsed SequenceVariants
+
+When submitting bug reports, include the version header shown above
+and use these variables/variable names whenever possible.
+
+"""
+
+
 def shell():
     logging.basicConfig(level=logging.INFO)
 
@@ -40,7 +66,13 @@ def shell():
     var_c = hgvsparser.parse_hgvs_variant(hgvs_c)
     var_p = hgvsparser.parse_hgvs_variant(hgvs_p)
 
-    IPython.embed()
+    IPython.embed(
+        header=header_string.format(
+            v=hgvs.__version__,
+            hdp=hdp,
+            sv=hdp.schema_version(),
+            dv=hdp.data_version(),
+        ))
 
 
 ## <LICENSE>

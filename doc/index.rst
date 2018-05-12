@@ -26,6 +26,7 @@ Contents
    privacy
 
    contributing
+   getting_help
 
    changelog/index
 

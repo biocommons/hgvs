@@ -41,9 +41,11 @@ class SeqFetcher(object):
                 return sr.fetch(ac, start_i, end_i)
 
             self.fetcher = _fetch_seq_seqrepo
+            self.source = "local (SeqRepo)"
             logger.info("Using SeqRepo({}) sequence fetching".format(seqrepo_dir))
         else:
             self.fetcher = bioutils.seqfetcher.fetch_seq
+            self.source = "remote (bioutils.seqfetcher)"
             logger.info("Using remote sequence fetching")
 
     def fetch_seq(self, ac, start_i=None, end_i=None):

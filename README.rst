@@ -7,7 +7,7 @@ Nomenclature`_ (aka Human Genome Variation Society) recommendations.
 
 +--------------------+--------------------------------------------------------------------+
 | **Information**    | | |rtd|   |changelog|  |github_license|                            |
-|                    | | |gitter|   |group|                                               |
+|                    | | |gitter|   |group|     |getting_help|                            |
 +--------------------+--------------------------------------------------------------------+
 | **Latest Release** | |github_tag|   |pypi_rel|                                          |
 +--------------------+--------------------------------------------------------------------+
@@ -242,6 +242,8 @@ Other packages that manipulate HGVS variants:
 .. _docs: http://hgvs.readthedocs.org/
 .. _Variation Nomenclature: http://varnomen.hgvs.org/
 
+.. |getting_help| image:: https://img.shields.io/badge/!-help%20me-red.svg
+   :target: https://hgvs.readthedocs.io/en/stable/getting_help.html
 
 .. |rtd| image:: https://img.shields.io/badge/docs-readthedocs-green.svg
    :target: http://hgvs.readthedocs.io/
@@ -295,7 +297,6 @@ Other packages that manipulate HGVS variants:
 .. |github_contrib| image:: https://img.shields.io/github/contributors/biocommons/hgvs.svg
    :alt: GitHub license
    :target: https://github.com/biocommons/hgvs/graphs/contributors/
-
 
 
 .. |install_status| image:: https://travis-ci.org/reece/hgvs-integration-test.png?branch=master
