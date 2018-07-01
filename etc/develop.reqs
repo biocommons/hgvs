@@ -1,5 +1,6 @@
 flake8
 ipython
+jupyter
 restview
 setuptools
 sphinx
