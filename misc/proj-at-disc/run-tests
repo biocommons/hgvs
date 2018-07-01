@@ -1,0 +1,144 @@
+#!/usr/bin/env python
+# test variant projections in the vicinity of genome-transcript discrepancies
+
+# discrepencies := substitution, insertion, and deletion alignment differences
+
+# projected variant locations may be within, exactly equal to,
+# partially overlap, or subsume the discrepancy
+
+# writes to stdout, and output/hgvs.__version__ if directory exists
+
+# example:
+# (3.6) snafu$ ./run-tests
+# (3.6) snafu$ tail +2 output/1.1.3.dev12+nc0fa49f31de4.d20180617 | column -t -s$'\t'
+# disc_type  loc_type  var_n                             expected                                     got (if failed)
+# sub        within    NM_183425.2:n.41G>C               NC_000020.11:g.57391438=
+# sub        within    NM_183425.2:n.41G>T               NC_000020.11:g.57391438C>T
+# gdel       within    NM_007121.5:n.797A>T              NC_000019.10:g.50378563_50378564insATC       NC_000019.10:g.50378564_50378563delinsT
+# ...
+
+
+import io
+import os
+
+import hgvs
+import hgvs.assemblymapper
+import hgvs.dataproviders.uta
+import hgvs.parser
+
+output_dir_name = "output"
+
+tests = {
+    "sub": {
+        # substitution discrepancy
+        #
+        #            57391435  57391442
+        #                 |      |
+        # NC_000020.11    GCACGTCG
+        # NM_183425.2     GCAGCTCG
+        #                 |  ^^  |
+        #                38      45
+
+        "within": [
+            {"variant": "NM_183425.2:n.41G>C"              , "expected": "NC_000020.11:g.57391438="},
+            {"variant": "NM_183425.2:n.41G>T"              , "expected": "NC_000020.11:g.57391438C>T"},
+            {"variant": "NM_183425.2:n.41="                , "expected": "NC_000020.11:g.57391438C>G"},
+            {"variant": "NM_183425.2:n.41del"              , "expected": "NC_000020.11:g.57391438del"},
+            {"variant": "NM_183425.2:n.41_42insT"          , "expected": "NC_000020.11:g.57391438_57391439insT"},
+        ],
+        "exact": [
+            {"variant": "NM_183425.2:n.41_42delinsCG"      , "expected": "NC_000020.11:g.57391438_57391439="},
+            {"variant": "NM_183425.2:n.41_42delinsTAA"     , "expected": "NC_000020.11:g.57391438_57391439delinsTAA"},
+            {"variant": "NM_183425.2:n.41_42del"           , "expected": "NC_000020.11:g.57391438_57391439del"},
+        ],
+        "partial": [
+            {"variant": "NM_183425.2:n.40_41delinsTC"      , "expected": "NC_000020.11:g.57391437_57391438delinsTC"},
+            {"variant": "NM_183425.2:n.40_41delinsTT"      , "expected": "NC_000020.11:g.57391437_57391438delinsTT"},
+            {"variant": "NM_183425.2:n.40_41del"           , "expected": "NC_000020.11:g.57391437_57391438del"},
+            {"variant": "NM_183425.2:n.40_41insT"          , "expected": "NC_000020.11:g.57391437_57391438insT"},
+            {"variant": "NM_183425.2:n.42_43insG"          , "expected": "NC_000020.11:g.57391439_57391440insG"},
+        ],
+        "covers": [
+            {"variant": "NM_183425.2:n.40_43del"           , "expected": "NC_000020.11:g.57391437_57391440del"},
+            {"variant": "NM_183425.2:n.40_43delinsCG"      , "expected": "NC_000020.11:g.57391437_57391440delinsCG"},
+        ],
+    },
+
+    "gdel": {
+        # genomic deletion (with respect to transcript)
+        #             50378561  50378566
+        #                 |       |
+        # NC_000019.10    GGA---AAC
+        # NM_007121.5     GGAAACAAC
+        #                 |       |
+        #                793     801
+        "within":  [
+            {"variant": "NM_007121.5:n.797A>T"              , "expected": "NC_000019.10:g.50378563_50378564insATC"},
+            {"variant": "NM_007121.5:n.797del"              , "expected": "NC_000019.10:g.50378563_50378564insAC"},
+            {"variant": "NM_007121.5:n.796_797insT"         , "expected": "NC_000019.10:g.50378563_50378564insATAC"},
+        ],
+        "exact": [
+            {"variant": "NM_007121.5:n.796_798="            , "expected": "NC_000019.10:g.50378563_50378564insAAC"},
+            {"variant": "NM_007121.5:n.796_798del"          , "expected": "NC_000019.10:g.50378563_50378564="},
+            {"variant": "NM_007121.5:n.796_798delinsTCGG"   , "expected": "NC_000019.10:g.50378563_50378564insTCGG"},
+        ],
+        "partial": [
+            {"variant": "NM_007121.5:n.795_796del"          , "expected": "NC_000019.10:g.50378563delinsAC"},
+            {"variant": "NM_007121.5:n.795_796delinsTT"     , "expected": "NC_000019.10:g.50378563delinsTTAC"},
+            {"variant": "NM_007121.5:n.795_796insT"         , "expected": "NC_000019.10:g.50378563_50378564insTAAC"},
+        ],
+        "covers":  [
+            {"variant": "NM_007121.5:n.794_800del"          , "expected": "NC_000019.10:g.50378562_50378565del"},
+            {"variant": "NM_007121.5:n.794_800delinsTC"     , "expected": "NC_000019.10:g.50378562_50378565delinsTC"},
+        ],
+    },
+
+    "gins": {
+        # genomic insertion (with respect to transcript)
+        #            149779572  149779580
+        #                 |       |
+        # NC_000007.14    TGACAGCCC
+        # NM_198455.2     TGA---CCC
+        #                 |       |
+        #               1113     1118
+        "within":  [
+            {"variant": "NM_198455.2:n.1115_1116insT"       , "expected": "NC_000007.14:g.149779575_149779577delinsT"},
+        ],
+        "exact":   [
+            {"variant": "NM_198455.2:n.1115_1116insCAG"     , "expected": "NC_000007.14:g.149779574_149779578="},
+            {"variant": "NM_198455.2:n.1115_1116="          , "expected": "NC_000007.14:g.149779574_149779578delinsAC"},
+        ],
+        "partial": [
+            {"variant": "NM_198455.2:n.1115_1116insCA"      , "expected": "NC_000007.14:g.149779575_149779577delinsCA"},
+        ],
+        "cover":   [
+            {"variant": "NM_198455.2:n.1114_1117del"        , "expected": "NC_000007.14:g.149779573_149779579del"},
+            {"variant": "NM_198455.2:n.1114_1117delinsCAG"  , "expected": "NC_000007.14:g.149779573_149779579delinsCAG"},
+        ],
+
+    }
+}
+
+if os.path.exists(output_dir_name):
+    out_path = os.path.join(output_dir_name, hgvs.__version__) 
+    out_fh = io.open(out_path, "w")
+    def fprint(s):
+        out_fh.write(s+"\n")
+        print(s)
+else:
+    fprint = print
+
+
+hp = hgvsparser = hgvs.parser.Parser()
+hdp = hgvs.dataproviders.uta.connect()
+am38 = easyvariantmapper = hgvs.assemblymapper.AssemblyMapper(hdp, assembly_name='GRCh38', normalize=False)
+
+fprint(f"# {hgvs.__version__}")
+fprint("disc_type\tloc_type\tvar_n\texpected\tgot (if failed)")
+for disc_type,testset in tests.items():
+    for loc_type,tests in testset.items():
+        for test in tests:
+            var_n = hp.parse_hgvs_variant(test["variant"])
+            var_g = am38.n_to_g(var_n)
+            got = "" if str(var_g) == test["expected"] else str(var_g)
+            fprint(f"{disc_type}\t{loc_type}\t{var_n}\t{test['expected']}\t{got}")
