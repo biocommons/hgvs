@@ -1,0 +1,24 @@
+
+1.1.3 (2018-07-01)
+###################
+
+Changes since 1.1.2 (2018-03-31).
+
+Bug Fixes
+$$$$$$$$$$
+
+* Fixes `#490 <https://github.com/biocommons/hgvs/issues/490/>`_: raises a NotImplementedError when a coding sequence is not divisible by 3 (`#491 <https://github.com/biocommons/hgvs/issues/491/>`_) [`35d72a577df5 <https://github.com/biocommons/hgvs/commit/35d72a577df5>`_]
+
+Other Changes
+$$$$$$$$$$$$$$
+
+* added protein translation to README (how did we not have c_to_p there?!) [`e7b6a1c3ec7a <https://github.com/biocommons/hgvs/commit/e7b6a1c3ec7a>`_]
+* switch to psycopg2-binary [`9c1ec59a93ec <https://github.com/biocommons/hgvs/commit/9c1ec59a93ec>`_]
+
+Internal and Developer Changes
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+* added misc/proj-at-disc/ [`1bdf4c40c750 <https://github.com/biocommons/hgvs/commit/1bdf4c40c750>`_]
+* added jupyter to etc/develop.reqs [`9bdef16c24a2 <https://github.com/biocommons/hgvs/commit/9bdef16c24a2>`_]
+* update venv rules in Makefile [`296feb69b7c5 <https://github.com/biocommons/hgvs/commit/296feb69b7c5>`_]
+* update pypi link to new pypi.org site [`76beb3424615 <https://github.com/biocommons/hgvs/commit/76beb3424615>`_]

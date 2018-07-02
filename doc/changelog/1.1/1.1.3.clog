@@ -1,0 +1,13 @@
+clog format: 1; -*-outline-*-
+* 1.1.3 (2018-07-01)
+Changes since 1.1.2 (2018-03-31).
+** Bug Fixes
+*** Fixes #490: raises a NotImplementedError when a coding sequence is not divisible by 3 (#491) [35d72a577df5]
+** Other Changes
+*** added protein translation to README (how did we not have c_to_p there?!) [e7b6a1c3ec7a]
+*** switch to psycopg2-binary [9c1ec59a93ec]
+** Internal and Developer Changes
+*** added misc/proj-at-disc/ [1bdf4c40c750]
+*** added jupyter to etc/develop.reqs [9bdef16c24a2]
+*** update venv rules in Makefile [296feb69b7c5]
+*** update pypi link to new pypi.org site [76beb3424615]
