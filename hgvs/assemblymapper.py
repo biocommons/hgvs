@@ -184,7 +184,7 @@ class AssemblyMapper(VariantMapper):
         This is better than checking whether the variant is intronic because
         future UTAs will support LRG, which will enable checking intronic variants.
         """
-        if self._norm is not None:
+        if self.normalize:
             try:
                 return self._norm.normalize(var)
             except HGVSUnsupportedOperationError as e:
