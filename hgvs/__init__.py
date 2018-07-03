@@ -75,9 +75,8 @@ except pkg_resources.DistributionNotFound as e:
 warnings.filterwarnings('default', '', DeprecationWarning, '.*\Wlib\W.*\Whgvs\W.*')
 
 logger.info("hgvs " + __version__ + "; released: " + str(_is_released_version))
-
 # <LICENSE>
-# Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
+# Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

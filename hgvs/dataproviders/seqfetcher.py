@@ -53,10 +53,8 @@ class SeqFetcher(object):
             return self.fetcher(ac, start_i, end_i)
         except (RuntimeError, KeyError) as ex:
             raise HGVSDataNotAvailableError("No sequence available for {ac} ({ex})".format(ac=ac, ex=ex))
-
-
 # <LICENSE>
-# Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
+# Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

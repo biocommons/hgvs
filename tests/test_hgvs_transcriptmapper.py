@@ -506,9 +506,8 @@ if __name__ == "__main__":
 #     ac = "NM_145171.3"
 #     tm = TranscriptMapper(self.hdp,ac,self.ref)
 #     pass
-
 # <LICENSE>
-# Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
+# Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

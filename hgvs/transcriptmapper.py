@@ -275,10 +275,8 @@ def _hgvs_coord_to_ci(s, e):
         return c - 1 if c > 0 else c
 
     return (None if s is None else _hgvs_to_ci(s), None if e is None else _hgvs_to_ci(e) + 1)
-
-
 # <LICENSE>
-# Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
+# Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

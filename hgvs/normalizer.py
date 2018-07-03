@@ -382,9 +382,8 @@ if __name__ == "__main__":
     norm = Normalizer(hdp, shuffle_direction=5, cross_boundaries=False)
     res = norm.normalize(var)
     print(str(var) + "    =>    " + str(res))
-
 # <LICENSE>
-# Copyright 2015 HGVS Contributors (https://github.com/biocommons/hgvs)
+# Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
