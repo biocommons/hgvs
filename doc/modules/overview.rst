@@ -59,15 +59,10 @@ Module Overview
 |                                                                                                                                         |
 | *Coordinate, Interval, and Variant Mapping/Transformation*                                                                              |
 +-----------------------------------------+-----------------------------------------------------+-----------------------------------------+
-| :mod:`hgvs.intervalmapper`              | | :class:`hgvs.intervalmapper.IntervalMapper`       |                                         |
-|                                         | | :class:`hgvs.intervalmapper.Interval`             |                                         |
-|                                         | | :class:`hgvs.intervalmapper.IntervalPair`         |                                         |
-|                                         | | :class:`hgvs.intervalmapper.CIGARElement`         |                                         |
-+-----------------------------------------+-----------------------------------------------------+-----------------------------------------+
 | :mod:`hgvs.projector`                   | | :class:`hgvs.projector.Projector`                 |                                         |
 |                                         |                                                     |                                         |
 +-----------------------------------------+-----------------------------------------------------+-----------------------------------------+
-| :mod:`hgvs.transcriptmapper`            | | :class:`hgvs.transcriptmapper.TranscriptMapper`   |                                         |
+| :mod:`hgvs.alignmentmapper`             | | :class:`hgvs.alignmentmapper.AlignmentMapper`   |                                         |
 |                                         |                                                     |                                         |
 +-----------------------------------------+-----------------------------------------------------+-----------------------------------------+
 | :mod:`hgvs.variantmapper`               | | :class:`hgvs.variantmapper.VariantMapper`         |                                         |

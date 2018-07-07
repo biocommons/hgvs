@@ -12,32 +12,32 @@ import hgvs.dataproviders.uta
 import hgvs.location
 import hgvs.parser
 from hgvs.exceptions import HGVSError
-from hgvs.transcriptmapper import TranscriptMapper
+from hgvs.alignmentmapper import AlignmentMapper
 from hgvs.enums import Datum
 from support import CACHE
 
 
 @pytest.mark.quick
-class Test_transcriptmapper(unittest.TestCase):
+class Test_AlignmentMapper(unittest.TestCase):
     ref = "GRCh37.p10"
 
     @classmethod
     def setUp(cls):
         cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
 
-    def test_transcriptmapper_failures(self):
+    def test_alignmentmapper_failures(self):
         with self.assertRaises(HGVSError):
-            TranscriptMapper(self.hdp, tx_ac="bogus", alt_ac="NM_033089.6", alt_aln_method="splign")
+            AlignmentMapper(self.hdp, tx_ac="bogus", alt_ac="NM_033089.6", alt_aln_method="splign")
         with self.assertRaises(HGVSError):
-            TranscriptMapper(self.hdp, tx_ac="NM_033089.6", alt_ac="bogus", alt_aln_method="splign")
+            AlignmentMapper(self.hdp, tx_ac="NM_033089.6", alt_ac="bogus", alt_aln_method="splign")
         with self.assertRaises(HGVSError):
-            TranscriptMapper(self.hdp, tx_ac="NM_000051.3", alt_ac="NC_000011.9", alt_aln_method="bogus")
+            AlignmentMapper(self.hdp, tx_ac="NM_000051.3", alt_ac="NC_000011.9", alt_aln_method="bogus")
 
-    def test_transcriptmapper_TranscriptMapper_LCE3C_uncertain(self):
+    def test_alignmentmapper_AlignmentMapper_LCE3C_uncertain(self):
         """Use NM_178434.2 tests to test mapping with uncertain positions"""
         tx_ac = "NM_178434.2"
         alt_ac = "NC_000001.10"
-        tm = TranscriptMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
+        tm = AlignmentMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
         parser = hgvs.parser.Parser()
         test_cases = [
             {
@@ -56,11 +56,11 @@ class Test_transcriptmapper(unittest.TestCase):
         ]
         self.run_cases(tm, test_cases)
 
-    def test_transcriptmapper_TranscriptMapper_LCE3C(self):
+    def test_alignmentmapper_AlignmentMapper_LCE3C(self):
         """NM_178434.2: LCE3C single exon, strand = +1, all coordinate input/output are in HGVS"""
         tx_ac = "NM_178434.2"
         alt_ac = "NC_000001.10"
-        tm = TranscriptMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
+        tm = AlignmentMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
         parser = hgvs.parser.Parser()
         test_cases = [
     # 5'
@@ -109,11 +109,11 @@ class Test_transcriptmapper(unittest.TestCase):
         ]
         self.run_cases(tm, test_cases)
 
-    def test_transcriptmapper_TranscriptMapper_HIST3H2A(self):
+    def test_alignmentmapper_AlignmentMapper_HIST3H2A(self):
         """NM_033445.2: LCE3C single exon, strand = -1, all coordinate input/output are in HGVS"""
         tx_ac = "NM_033445.2"
         alt_ac = "NC_000001.10"
-        tm = TranscriptMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
+        tm = AlignmentMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
         parser = hgvs.parser.Parser()
         test_cases = [
     # 3'
@@ -162,11 +162,11 @@ class Test_transcriptmapper(unittest.TestCase):
         ]
         self.run_cases(tm, test_cases)
 
-    def test_transcriptmapper_TranscriptMapper_LCE2B(self):
+    def test_alignmentmapper_AlignmentMapper_LCE2B(self):
         """NM_014357.4: LCE2B, two exons, strand = +1, all coordinate input/output are in HGVS"""
         tx_ac = "NM_014357.4"
         alt_ac = "NC_000001.10"
-        tm = TranscriptMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
+        tm = AlignmentMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
         parser = hgvs.parser.Parser()
         test_cases = [
     # 5'
@@ -245,11 +245,11 @@ class Test_transcriptmapper(unittest.TestCase):
         ]
         self.run_cases(tm, test_cases)
 
-    def test_transcriptmapper_TranscriptMapper_PTH2(self):
+    def test_alignmentmapper_AlignmentMapper_PTH2(self):
         """NM_178449.3: PTH2, two exons, strand = -1, all coordinate input/output are in HGVS"""
         tx_ac = "NM_178449.3"
         alt_ac = "NC_000019.9"
-        tm = TranscriptMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
+        tm = AlignmentMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
         parser = hgvs.parser.Parser()
         test_cases = [
     # 3'
@@ -331,7 +331,7 @@ if __name__ == "__main__":
 
     # TODO: Reintegrate older tests, especially those with indels
     # harder tests ###
-    #def test_transcriptmapper_TranscriptMapper_1_ZCCHC3(self):
+    #def test_alignmentmapper_AlignmentMapper_1_ZCCHC3(self):
     #    """
     #    reece=> select * from uta.tx_info where ac="NM_033089.6";
     #       gene  | strand |     ac      | cds_start_i | cds_end_i |                 descr                 | summary
@@ -355,7 +355,7 @@ if __name__ == "__main__":
     #
     #    ### Add one to g., r., and c. because we are returning hgvs coordinates ###
     #    ac = "NM_033089.6"
-    #    tm = TranscriptMapper(self.hdp, ac, self.ref)
+    #    tm = AlignmentMapper(self.hdp, ac, self.ref)
     #    cds = 24 + 1 # hgvs
     #    # gs, ge = genomic start/end; rs,re = rna start/end; cs, ce = cdna start/end; so, eo = start offset/end offset
     #    test_cases = [
@@ -380,7 +380,7 @@ if __name__ == "__main__":
     #    ]
     #    self.run_cases(tm, test_cases)
     #
-    #def test_transcriptmapper_TranscriptMapper_2_MCL1(self):
+    #def test_alignmentmapper_AlignmentMapper_2_MCL1(self):
     #    """
     #    reece=> select * from uta.tx_info where ac="NM_182763.2";
     #      gene | strand |     ac      | cds_start_i | cds_end_i |                      descr                      |
@@ -397,7 +397,7 @@ if __name__ == "__main__":
     #    ### Add one to g., r., and c. because we are returning hgvs coordinates ###
     #
     #    ac = "NM_182763.2"
-    #    tm = TranscriptMapper(self.hdp, ac, self.ref)
+    #    tm = AlignmentMapper(self.hdp, ac, self.ref)
     #    cds = 208 + 1 # hgvs
     #    test_cases = [
     #        {"gs": 150552215, "ge": 150552215, "rs": 1, "re": 1, "so": 0, "eo": 0, "d": Datum.SEQ_START , "cs": 1-cds, "ce": 1-cds},
@@ -452,7 +452,7 @@ if __name__ == "__main__":
     #    #self.assertEquals(tm.c_to_g(1024 - 208, 1024 - 208), (150549967 - (1024 - 896), 150549967 - (1024 - 896)))
     #
     #
-    #def test_transcriptmapper_TranscriptMapper_3_IFI27L1(self):
+    #def test_alignmentmapper_AlignmentMapper_3_IFI27L1(self):
     #    """
     #    #reece=> select * from uta.tx_info where ac="NM_145249.2";
     #    #  gene   | chr | strand |     ac      | cds_start_i | cds_end_i |                     descr                     | summary
@@ -473,7 +473,7 @@ if __name__ == "__main__":
     #    ### Add one to g., r., and c. because we are returning hgvs coordinates ###
     #
     #    ac = "NM_145249.2"
-    #    tm = TranscriptMapper(self.hdp, ac, self.ref)
+    #    tm = AlignmentMapper(self.hdp, ac, self.ref)
     #    cds = 254 + 1 # hgvs
     #    test_cases = [
     #        #{"gs": 94547639, "ge": 94547639, "rs": 1, "re": 1, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 1-cds, "ce": 1-cds},
@@ -502,10 +502,12 @@ if __name__ == "__main__":
 #  NM_145171.3 |   3 | 3    |       261 |     543 | GRCh37.p10 |  63779548 | 63779830 | 282M      |
 #  NM_145171.3 |   2 | 2    |        56 |     261 | GRCh37.p10 |  63784360 | 63784564 | 156M1I48M | CATGAAGCTGGCATTCCTCTT...
 #  NM_145171.3 |   1 | 1    |         0 |      56 | GRCh37.p10 |  63785537 | 63785593 | 56M       |
-# def test_transcriptmapper_TranscriptMapper_GPHB5(self):
+# def test_alignmentmapper_AlignmentMapper_GPHB5(self):
 #     ac = "NM_145171.3"
-#     tm = TranscriptMapper(self.hdp,ac,self.ref)
+#     tm = AlignmentMapper(self.hdp,ac,self.ref)
 #     pass
+
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

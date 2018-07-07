@@ -18,7 +18,6 @@ import hgvs.dataproviders.uta
 import hgvs.normalizer
 import hgvs.parser
 import hgvs.sequencevariant
-import hgvs.transcriptmapper
 import hgvs.validator
 import hgvs.variantmapper
 from support import CACHE

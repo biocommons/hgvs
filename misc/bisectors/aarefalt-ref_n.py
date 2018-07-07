@@ -3,9 +3,8 @@
 import hgvs
 import hgvs.dataproviders.uta
 import hgvs.parser
-import hgvs.transcriptmapper
 import hgvs.sequencevariant
-import hgvs.variantmapper
+import hgvs.assemblymapper
 
 hdp = hgvs.dataproviders.uta.connect()
 hp = hgvs.parser.Parser()

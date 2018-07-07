@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Provides VariantMapper and AssemblyMapper to project variants
-between sequences using TranscriptMapper.
+between sequences using AlignmentMapper.
 
 """
 
@@ -15,7 +15,7 @@ import hgvs
 import hgvs.location
 import hgvs.normalizer
 import hgvs.posedit
-import hgvs.transcriptmapper
+import hgvs.alignmentmapper
 import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
 import hgvs.utils.altseqbuilder as altseqbuilder
 import hgvs.sequencevariant
@@ -99,7 +99,7 @@ class VariantMapper(object):
         if self._validator:
             self._validator.validate(var_g)
         var_g.fill_ref(self.hdp)
-        tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
+        tm = self._fetch_AlignmentMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
         if tm.is_coding_transcript:
             var_out = VariantMapper.g_to_c(self, var_g=var_g, tx_ac=tx_ac, alt_aln_method=alt_aln_method)
         else:
@@ -112,7 +112,7 @@ class VariantMapper(object):
         if self._validator:
             self._validator.validate(var_t)
         var_t.fill_ref(self.hdp)
-        tm = self._fetch_TranscriptMapper(tx_ac=var_t.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
+        tm = self._fetch_AlignmentMapper(tx_ac=var_t.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         if tm.is_coding_transcript:
             var_out = VariantMapper.c_to_g(self, var_c=var_t, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         else:
@@ -139,7 +139,7 @@ class VariantMapper(object):
         if self._validator:
             self._validator.validate(var_g)
         var_g.fill_ref(self.hdp)
-        tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
+        tm = self._fetch_AlignmentMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
         pos_n = tm.g_to_n(var_g.posedit.pos)
         edit_n = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
         var_n = hgvs.sequencevariant.SequenceVariant(ac=tx_ac, type="n", posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
@@ -165,7 +165,7 @@ class VariantMapper(object):
         if self._validator:
             self._validator.validate(var_n)
         var_n.fill_ref(self.hdp)
-        tm = self._fetch_TranscriptMapper(tx_ac=var_n.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
+        tm = self._fetch_AlignmentMapper(tx_ac=var_n.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         pos_g = tm.n_to_g(var_n.posedit.pos)
         edit_g = self._convert_edit_check_strand(tm.strand, var_n.posedit.edit)
         var_g = hgvs.sequencevariant.SequenceVariant(ac=alt_ac, type="g", posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
@@ -193,7 +193,7 @@ class VariantMapper(object):
         if self._validator:
             self._validator.validate(var_g)
         var_g.fill_ref(self.hdp)
-        tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
+        tm = self._fetch_AlignmentMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
         pos_c = tm.g_to_c(var_g.posedit.pos)
         edit_c = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
         var_c = hgvs.sequencevariant.SequenceVariant(ac=tx_ac, type="c", posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
@@ -219,7 +219,7 @@ class VariantMapper(object):
         if self._validator:
             self._validator.validate(var_c)
         var_c.fill_ref(self.hdp)
-        tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
+        tm = self._fetch_AlignmentMapper(tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
 
         pos_g = tm.c_to_g(var_c.posedit.pos)
         edit_g = self._convert_edit_check_strand(tm.strand, var_c.posedit.edit)
@@ -247,7 +247,7 @@ class VariantMapper(object):
         if self._validator:
             self._validator.validate(var_c)
         var_c.fill_ref(self.hdp)
-        tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=var_c.ac, alt_aln_method="transcript")
+        tm = self._fetch_AlignmentMapper(tx_ac=var_c.ac, alt_ac=var_c.ac, alt_aln_method="transcript")
         pos_n = tm.c_to_n(var_c.posedit.pos)
         if (isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_c.posedit.edit, hgvs.edit.Dup)
                 or isinstance(var_c.posedit.edit, hgvs.edit.Inv)):
@@ -275,7 +275,7 @@ class VariantMapper(object):
         if self._validator:
             self._validator.validate(var_n)
         var_n.fill_ref(self.hdp)
-        tm = self._fetch_TranscriptMapper(tx_ac=var_n.ac, alt_ac=var_n.ac, alt_aln_method="transcript")
+        tm = self._fetch_AlignmentMapper(tx_ac=var_n.ac, alt_ac=var_n.ac, alt_aln_method="transcript")
         pos_c = tm.n_to_c(var_n.posedit.pos)
         if (isinstance(var_n.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_n.posedit.edit, hgvs.edit.Dup)
                 or isinstance(var_n.posedit.edit, hgvs.edit.Inv)):
@@ -346,7 +346,7 @@ class VariantMapper(object):
 
         # For c. variants, we need coords on underlying sequences
         if var.type == "c":
-            tm = self._fetch_TranscriptMapper(tx_ac=var.ac, alt_ac=var.ac, alt_aln_method="transcript")
+            tm = self._fetch_AlignmentMapper(tx_ac=var.ac, alt_ac=var.ac, alt_aln_method="transcript")
             pos = tm.c_to_n(var.posedit.pos)
         else:
             pos = var.posedit.pos
@@ -360,12 +360,12 @@ class VariantMapper(object):
         return var
 
     @lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)
-    def _fetch_TranscriptMapper(self, tx_ac, alt_ac, alt_aln_method):
+    def _fetch_AlignmentMapper(self, tx_ac, alt_ac, alt_aln_method):
         """
-        Get a new TranscriptMapper for the given transcript accession (ac),
+        Get a new AlignmentMapper for the given transcript accession (ac),
         possibly caching the result.
         """
-        return hgvs.transcriptmapper.TranscriptMapper(
+        return hgvs.alignmentmapper.AlignmentMapper(
             self.hdp, tx_ac=tx_ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
 
     @staticmethod

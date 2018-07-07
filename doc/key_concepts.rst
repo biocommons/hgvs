@@ -105,15 +105,9 @@ likely be content with :class:`hgvs.variant.AssemblyMapper`.  For
 completeness, it may help to understand how all of the mappers relate
 to each other.
 
-  :class:`hgvs.intervalmapper.IntervalMapper`
+  :class:`hgvs.alignmentmapper.AlignmentMapper`
 
-     The IntervalMapper maps pairs of contiguous sequence intervals to
-     each other. It is the "lowest" component of the mapping hierarchy
-     and "knows" nothing about biological sequences.
-
-  :class:`hgvs.transcriptmapper.TranscriptMapper`
-
-     The TranscriptMapper uses IntervalMapper to map
+     The AlignmentMapper uses CIGAR to map
      pairs of exon segments (typically exons in the transcript and
      genomic sequences). It is must be instantiated with a transcript
      accession, reference accession, and alignment method, and
@@ -124,9 +118,9 @@ to each other.
   :class:`hgvs.variantmapper.VariantMapper`
 
      The VariantMapper uses
-     :class:`hgvs.transcriptmapper.TranscriptMapper` to provide g<->r,
+     :class:`hgvs.alignmentmapper.AlignmentMapper` to provide g<->r,
      r<->c, g<->c, and c->p transformations for
-     :class:`SequenceVariant` objects. As with the TranscriptMapper,
+     :class:`SequenceVariant` objects. As with the AlignmentMapper,
      it must be instantiated with an appropriate transcript,
      reference, and alignment method.
 
