@@ -142,6 +142,10 @@ class VariantMapper(object):
         tm = self._fetch_AlignmentMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
         pos_n = tm.g_to_n(var_g.posedit.pos)
         edit_n = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
+        if edit_n.type == 'ins' and pos_n.start.offset == 0 and pos_n.end.offset == 0 and pos_n.end - pos_n.start > 1:
+            pos_n.start.base += 1
+            pos_n.end.base -= 1
+            edit_n.ref = ''
         var_n = hgvs.sequencevariant.SequenceVariant(ac=tx_ac, type="n", posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
         if self.replace_reference:
             self._replace_reference(var_n)
@@ -168,6 +172,10 @@ class VariantMapper(object):
         tm = self._fetch_AlignmentMapper(tx_ac=var_n.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         pos_g = tm.n_to_g(var_n.posedit.pos)
         edit_g = self._convert_edit_check_strand(tm.strand, var_n.posedit.edit)
+        if edit_g.type == 'ins' and pos_g.end - pos_g.start > 1:
+            pos_g.start.base += 1
+            pos_g.end.base -= 1
+            edit_g.ref = ''
         var_g = hgvs.sequencevariant.SequenceVariant(ac=alt_ac, type="g", posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
         if self.replace_reference:
             self._replace_reference(var_g)
@@ -196,6 +204,10 @@ class VariantMapper(object):
         tm = self._fetch_AlignmentMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
         pos_c = tm.g_to_c(var_g.posedit.pos)
         edit_c = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
+        if edit_c.type == 'ins' and pos_c.start.offset == 0 and pos_c.end.offset == 0 and pos_c.end - pos_c.start > 1:
+            pos_c.start.base += 1
+            pos_c.end.base -= 1
+            edit_c.ref = ''
         var_c = hgvs.sequencevariant.SequenceVariant(ac=tx_ac, type="c", posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
         if self.replace_reference:
             self._replace_reference(var_c)
@@ -223,6 +235,10 @@ class VariantMapper(object):
 
         pos_g = tm.c_to_g(var_c.posedit.pos)
         edit_g = self._convert_edit_check_strand(tm.strand, var_c.posedit.edit)
+        if edit_g.type == 'ins' and pos_g.end - pos_g.start > 1:
+            pos_g.start.base += 1
+            pos_g.end.base -= 1
+            edit_g.ref = ''
 
         var_g = hgvs.sequencevariant.SequenceVariant(ac=alt_ac, type="g", posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
         if self.replace_reference:
