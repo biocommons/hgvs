@@ -151,24 +151,25 @@ class AlignmentMapper(object):
                 mapped_pos = to_pos[pos_i]
                 mapped_pos_offset = -(from_pos[pos_i + 1] - pos)
         
-        return mapped_pos, mapped_pos_offset
+        return mapped_pos, mapped_pos_offset, self.cigar_op[pos_i]
     
     def g_to_n(self, g_interval):
         """convert a genomic (g.) interval to a transcript cDNA (n.) interval"""
 
         grs, gre = g_interval.start.base - 1 - self.gc_offset, g_interval.end.base - 1 - self.gc_offset
         # frs, fre = (f)orward (r)na (s)tart & (e)nd; forward w.r.t. genome
-        frs, frs_offset = self._map(from_pos=self.ref_pos, to_pos=self.tgt_pos, pos=grs, base="start")
-        fre, fre_offset = self._map(from_pos=self.ref_pos, to_pos=self.tgt_pos, pos=gre, base="end")
+        frs, frs_offset, frs_cigar = self._map(from_pos=self.ref_pos, to_pos=self.tgt_pos, pos=grs, base="start")
+        fre, fre_offset, fre_cigar = self._map(from_pos=self.ref_pos, to_pos=self.tgt_pos, pos=gre, base="end")
 
         if self.strand == -1:
             frs, fre = self.tgt_len - fre - 1, self.tgt_len - frs - 1
             frs_offset, fre_offset = -fre_offset,  -frs_offset
 
+        # The returned interval would be uncertain when locating at alignment gaps
         return hgvs.location.BaseOffsetInterval(
             start=hgvs.location.BaseOffsetPosition(base=frs + 1, offset=frs_offset, datum=Datum.SEQ_START),
             end=hgvs.location.BaseOffsetPosition(base=fre + 1, offset=fre_offset, datum=Datum.SEQ_START),
-            uncertain=g_interval.uncertain)
+            uncertain=frs_cigar in 'DI' or fre_cigar in 'DI')
     
     def n_to_g(self, n_interval):
         """convert a transcript (n.) interval to a genomic (g.) interval"""
@@ -181,14 +182,16 @@ class AlignmentMapper(object):
             start_offset, end_offset = -end_offset, -start_offset
 
         # returns the genomic range start (grs) and end (gre)
-        grs, grs_offset = self._map(from_pos=self.tgt_pos, to_pos=self.ref_pos, pos=frs, base="start")
-        gre, gre_offset = self._map(from_pos=self.tgt_pos, to_pos=self.ref_pos, pos=fre, base="end")
+        grs, grs_offset, grs_cigar = self._map(from_pos=self.tgt_pos, to_pos=self.ref_pos, pos=frs, base="start")
+        gre, gre_offset, gre_cigar = self._map(from_pos=self.tgt_pos, to_pos=self.ref_pos, pos=fre, base="end")
         grs, gre = grs + self.gc_offset + 1, gre + self.gc_offset + 1
         gs, ge = grs + start_offset, gre + end_offset
+
+        # The returned interval would be uncertain when locating at alignment gaps
         return hgvs.location.Interval(
             start=hgvs.location.SimplePosition(gs, uncertain=n_interval.start.uncertain),
             end=hgvs.location.SimplePosition(ge, uncertain=n_interval.end.uncertain),
-            uncertain=n_interval.uncertain)
+            uncertain=grs_cigar in 'DI' or gre_cigar in 'DI')
 
     def n_to_c(self, n_interval):
         """convert a transcript cDNA (n.) interval to a transcript CDS (c.) interval"""

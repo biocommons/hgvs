@@ -40,16 +40,6 @@ class Test_AlignmentMapper(unittest.TestCase):
         tm = AlignmentMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
         parser = hgvs.parser.Parser()
         test_cases = [
-            {
-                "g": parser.parse_g_interval("(152573138)"),
-                "n": parser.parse_n_interval("(1)"),
-                "c": parser.parse_c_interval("(-70)")
-            },
-            {
-                "g": parser.parse_g_interval("(152573138_152573139)"),
-                "n": parser.parse_n_interval("(1_2)"),
-                "c": parser.parse_c_interval("(-70_-69)")
-            },
     # ? is not yet supported
     # {"g": parser.parse_g_interval("(?_152573139)"), "n": parser.parse_n_interval("(?_2)"), "c": parser.parse_c_interval("(?_-69)")},
     # {"g": parser.parse_g_interval("(152573138_?)"), "n": parser.parse_n_interval("(1_?)"), "c": parser.parse_c_interval("(-70_?)")},
