@@ -95,7 +95,7 @@ class AlignmentMapper(object):
                     (self.cds_end_i is None)), "CDS start and end must both be defined or neither defined"
     
     def __str__(self):
-        return "{self.__class__.__name__}: {self.tx_ac} ~ {self.alt_ac} ~ {self.alt_aln_method); " \
+        return "{self.__class__.__name__}: {self.tx_ac} ~ {self.alt_ac} ~ {self.alt_aln_method}; " \
                "{strand_pm} strand; offset={self.gc_offset}".format(
                     self=self, strand_pm=strand_int_to_pm(self.strand))
     

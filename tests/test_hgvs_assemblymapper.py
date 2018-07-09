@@ -21,6 +21,7 @@ class Test_VariantMapper(unittest.TestCase):
     def setUpClass(cls):
         cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
         cls.am = hgvs.assemblymapper.AssemblyMapper(cls.hdp)
+        cls.am37 = hgvs.assemblymapper.AssemblyMapper(cls.hdp, assembly_name="GRCh37")
         cls.hp = hgvs.parser.Parser()
 
     def test_VariantMapper_quick(self):
@@ -68,6 +69,42 @@ class Test_VariantMapper(unittest.TestCase):
 
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
         var_g = self.am.c_to_g(var_c)
+
+        self.assertEqual(str(var_g), hgvs_g)
+    
+    def test_projection_at_alignment_discrepancy(self):
+        # issue-353
+        hgvs_g = "NC_000012.11:g.122064775C>T"
+        hgvs_c = "NM_032790.3:c.127_128insTGCCAC"
+
+        var_g = self.hp.parse_hgvs_variant(hgvs_g)
+        var_c = self.am.g_to_c(var_g, 'NM_032790.3')
+
+        self.assertEqual(str(var_c), hgvs_c)
+
+        # issue-461
+        hgvs_g = "NC_000002.11:g.73675227_73675228insCTC"
+        hgvs_c = "NM_015120.4:c.1574_1576="
+
+        var_g = self.hp.parse_hgvs_variant(hgvs_g)
+        var_c = self.am37.g_to_c(var_g, 'NM_015120.4')
+
+        self.assertEqual(str(var_c), hgvs_c)
+
+        # issue-259
+        hgvs_c = "NM_000116.4:c.-120_-119insT"
+        hgvs_g = "NC_000023.10:g.153640061="
+
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_g = self.am37.c_to_g(var_c)
+
+        self.assertEqual(str(var_g), hgvs_g)
+
+        hgvs_c = "NM_000348.3:c.88del"
+        hgvs_g = "NC_000002.11:g.31805882_31805883="
+
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_g = self.am37.c_to_g(var_c)
 
         self.assertEqual(str(var_g), hgvs_g)
 

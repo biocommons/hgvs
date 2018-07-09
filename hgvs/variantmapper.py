@@ -265,10 +265,13 @@ class VariantMapper(object):
                 edit_g.ref = ''
         else:
             # variant at alignment gap
-            pos_c = tm.g_to_c(pos_g)
+            var_n = copy.deepcopy(var_c)
+            var_n.posedit.pos = tm.c_to_n(var_c.posedit.pos)
+            var_n.type = 'n'
+            pos_n = tm.g_to_n(pos_g)
             edit_g = copy.deepcopy(var_c.posedit.edit)
             edit_g.ref = ''
-            edit_g.alt = self._get_altered_sequence(tm.strand, pos_c, var_c)
+            edit_g.alt = self._get_altered_sequence(tm.strand, pos_n, var_n)
         pos_g.uncertain = var_c.posedit.pos.uncertain
         var_g = hgvs.sequencevariant.SequenceVariant(ac=alt_ac, type="g", posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
         if self.replace_reference:
