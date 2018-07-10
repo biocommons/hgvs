@@ -32,8 +32,10 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
         cases = {
             "gc": (self.vm.g_to_c, (var_c, "NM_001637.3")),
             "gr": (self.vm.g_to_n, (var_c, "NM_001637.3")),
+            "gt": (self.vm.g_to_t, (var_c, "NM_001637.3")),
             "rg": (self.vm.n_to_g, (var_c, "NM_001637.3")),
             "cg": (self.vm.c_to_g, (var_g, "NM_001637.3")),
+            "tg": (self.vm.t_to_g, (var_g, "NM_001637.3")),
             "cr": (self.vm.c_to_n, (var_g, )),
             "rc": (self.vm.n_to_c, (var_g, )),
             "cp": (self.vm.c_to_p, (var_g, None)),
