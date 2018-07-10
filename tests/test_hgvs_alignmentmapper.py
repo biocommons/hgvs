@@ -11,7 +11,7 @@ import hgvs.dataproviders.uta
 
 import hgvs.location
 import hgvs.parser
-from hgvs.exceptions import HGVSError
+from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError, HGVSInvalidIntervalError
 from hgvs.alignmentmapper import AlignmentMapper
 from hgvs.enums import Datum
 from support import CACHE
@@ -24,14 +24,24 @@ class Test_AlignmentMapper(unittest.TestCase):
     @classmethod
     def setUp(cls):
         cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+        cls.parser = hgvs.parser.Parser()
 
     def test_alignmentmapper_failures(self):
-        with self.assertRaises(HGVSError):
+        with self.assertRaises(HGVSDataNotAvailableError):
             AlignmentMapper(self.hdp, tx_ac="bogus", alt_ac="NM_033089.6", alt_aln_method="splign")
-        with self.assertRaises(HGVSError):
+        with self.assertRaises(HGVSDataNotAvailableError):
+            AlignmentMapper(self.hdp, tx_ac="bogus", alt_ac="NM_033089.6", alt_aln_method="transcript")
+        with self.assertRaises(HGVSDataNotAvailableError):
             AlignmentMapper(self.hdp, tx_ac="NM_033089.6", alt_ac="bogus", alt_aln_method="splign")
-        with self.assertRaises(HGVSError):
+        with self.assertRaises(HGVSDataNotAvailableError):
             AlignmentMapper(self.hdp, tx_ac="NM_000051.3", alt_ac="NC_000011.9", alt_aln_method="bogus")
+        with self.assertRaises(HGVSInvalidIntervalError):
+            AlignmentMapper(self.hdp, 'NM_000348.3', 'NC_000002.11', 'splign').n_to_g(self.parser.parse_n_interval("-1"))
+        with self.assertRaises(HGVSInvalidIntervalError):
+            AlignmentMapper(self.hdp, 'NM_000348.3', 'NC_000002.11', 'splign').n_to_c(self.parser.parse_n_interval("-1"))
+        with self.assertRaises(HGVSInvalidIntervalError):
+            AlignmentMapper(self.hdp, 'NM_000348.3', 'NC_000002.11', 'splign').c_to_n(self.parser.parse_c_interval("99999"))
+
 
     def test_alignmentmapper_AlignmentMapper_LCE3C_uncertain(self):
         """Use NM_178434.2 tests to test mapping with uncertain positions"""
