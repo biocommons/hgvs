@@ -15,6 +15,7 @@ import hgvs
 import hgvs.location
 import hgvs.normalizer
 import hgvs.posedit
+import hgvs.edit
 import hgvs.alignmentmapper
 import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
 import hgvs.utils.altseqbuilder as altseqbuilder
@@ -150,9 +151,7 @@ class VariantMapper(object):
         else:
             # variant at alignment gap
             pos_g = tm.n_to_g(pos_n)
-            edit_n = copy.deepcopy(var_g.posedit.edit)
-            edit_n.ref = ''
-            edit_n.alt = self._get_altered_sequence(tm.strand, pos_g, var_g)
+            edit_n = hgvs.edit.NARefAlt(ref='', alt=self._get_altered_sequence(tm.strand, pos_g, var_g))
         pos_n.uncertain = var_g.posedit.pos.uncertain
         var_n = hgvs.sequencevariant.SequenceVariant(ac=tx_ac, type="n", posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
         if self.replace_reference:
@@ -188,9 +187,7 @@ class VariantMapper(object):
         else:
             # variant at alignment gap
             pos_n = tm.g_to_n(pos_g)
-            edit_g = copy.deepcopy(var_n.posedit.edit)
-            edit_g.ref = ''
-            edit_g.alt = self._get_altered_sequence(tm.strand, pos_n, var_n)
+            edit_g = hgvs.edit.NARefAlt(ref='', alt=self._get_altered_sequence(tm.strand, pos_n, var_n))
         pos_g.uncertain = var_n.posedit.pos.uncertain
         var_g = hgvs.sequencevariant.SequenceVariant(ac=alt_ac, type="g", posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
         if self.replace_reference:
@@ -228,9 +225,7 @@ class VariantMapper(object):
         else:
             # variant at alignment gap
             pos_g = tm.c_to_g(pos_c)
-            edit_c = copy.deepcopy(var_g.posedit.edit)
-            edit_c.ref = ''
-            edit_c.alt = self._get_altered_sequence(tm.strand, pos_g, var_g)
+            edit_c = hgvs.edit.NARefAlt(ref='', alt=self._get_altered_sequence(tm.strand, pos_g, var_g))
         pos_c.uncertain = var_g.posedit.pos.uncertain
         var_c = hgvs.sequencevariant.SequenceVariant(ac=tx_ac, type="c", posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
         if self.replace_reference:
@@ -269,9 +264,7 @@ class VariantMapper(object):
             var_n.posedit.pos = tm.c_to_n(var_c.posedit.pos)
             var_n.type = 'n'
             pos_n = tm.g_to_n(pos_g)
-            edit_g = copy.deepcopy(var_c.posedit.edit)
-            edit_g.ref = ''
-            edit_g.alt = self._get_altered_sequence(tm.strand, pos_n, var_n)
+            edit_g = hgvs.edit.NARefAlt(ref='', alt=self._get_altered_sequence(tm.strand, pos_n, var_n))
         pos_g.uncertain = var_c.posedit.pos.uncertain
         var_g = hgvs.sequencevariant.SequenceVariant(ac=alt_ac, type="g", posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
         if self.replace_reference:
@@ -472,7 +465,7 @@ class VariantMapper(object):
             del seq[pos_start:pos_end]
             seq.insert(pos_start, edit.alt)
         elif edit.type == 'dup':
-            seq.insert(pos_end, seq[pos_start:pos_end])
+            seq.insert(pos_end, ''.join(seq[pos_start:pos_end]))
         elif edit.type == 'inv':
             seq[pos_start:pos_end] = list(reverse_complement(''.join(seq[pos_start:pos_end])))
         elif edit.type == 'identity':
