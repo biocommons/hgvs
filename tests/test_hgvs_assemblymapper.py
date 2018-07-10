@@ -73,6 +73,22 @@ class Test_VariantMapper(unittest.TestCase):
         self.assertEqual(str(var_g), hgvs_g)
     
     def test_projection_at_alignment_discrepancy(self):
+        hgvs_g = "NC_000019.10:g.50378563_50378564insTG"
+        hgvs_n = "NM_007121.5:n.796_798delinsTG"
+
+        var_g = self.hp.parse_hgvs_variant(hgvs_g)
+        var_n = self.am.g_to_n(var_g, 'NM_007121.5')
+
+        self.assertEqual(str(var_n), hgvs_n)
+
+        hgvs_g = "NC_000007.14:g.149779575delC"
+        hgvs_n = "NM_198455.2:n.1115_1116insAG"
+
+        var_g = self.hp.parse_hgvs_variant(hgvs_g)
+        var_n = self.am.g_to_n(var_g, 'NM_198455.2')
+
+        self.assertEqual(str(var_n), hgvs_n)
+
         # issue-353
         hgvs_g = "NC_000012.11:g.122064775C>T"
         hgvs_c = "NM_032790.3:c.127_128insTGCCAC"
