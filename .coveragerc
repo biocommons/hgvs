@@ -5,7 +5,10 @@ omit =
      hgvs/dataproviders/ncbi.py
      hgvs/dataproviders/uta.py
      hgvs/decorators/*
+     hgvs/intervalmapper.py
      hgvs/shell.py
+     hgvs/transcriptmapper.py
      hgvs/utils/PersistentDict.py
      hgvs/utils/context.py
      hgvs/utils/orderedenum.py
+     
