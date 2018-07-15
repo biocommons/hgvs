@@ -346,7 +346,6 @@ class AltSeqToHgvsp(object):
         var_p = hgvs.sequencevariant.SequenceVariant(acc, 'p', posedit)
         return var_p
 
-
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

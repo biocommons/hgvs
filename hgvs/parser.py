@@ -131,7 +131,6 @@ class Parser(object):
             self.__setattr__(att_name, rule_fxn)
         self._logger.debug("Exposed {n} rules ({rules})".format(n=len(exposed_rules), rules=", ".join(exposed_rules)))
 
-
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

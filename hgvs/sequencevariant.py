@@ -70,7 +70,6 @@ class SequenceVariant(object):
             return (res, msg)
         return (pe_res, pe_msg)
 
-
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

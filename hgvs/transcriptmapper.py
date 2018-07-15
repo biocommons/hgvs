@@ -281,7 +281,6 @@ def _hgvs_coord_to_ci(s, e):
 
     return (None if s is None else _hgvs_to_ci(s), None if e is None else _hgvs_to_ci(e) + 1)
 
-
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

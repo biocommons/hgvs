@@ -262,6 +262,7 @@ class TestHgvsCToP(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

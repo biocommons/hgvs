@@ -35,7 +35,6 @@ def build_tx_cigar(exons, strand):
 
     return tx_cigar_str
 
-
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

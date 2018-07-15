@@ -637,6 +637,7 @@ def _parse_url(db_url):
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

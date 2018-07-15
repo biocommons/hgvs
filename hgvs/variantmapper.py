@@ -478,7 +478,6 @@ class VariantMapper(object):
             seq = reverse_complement(seq)
         return seq
 
-
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

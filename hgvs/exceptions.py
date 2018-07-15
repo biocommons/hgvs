@@ -48,7 +48,6 @@ class HGVSVerifyFailedError(HGVSError):
     """Exception raised when the cached hdp result is not consistent with latest remote result"""
     pass
 
-
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #
