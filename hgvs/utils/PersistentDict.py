@@ -33,6 +33,8 @@ class PersistentDict(dict):
 
     def __exit__(self, *exc_info):
         self.close()
+
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

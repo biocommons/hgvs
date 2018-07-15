@@ -36,12 +36,14 @@ class Test_AlignmentMapper(unittest.TestCase):
         with self.assertRaises(HGVSDataNotAvailableError):
             AlignmentMapper(self.hdp, tx_ac="NM_000051.3", alt_ac="NC_000011.9", alt_aln_method="bogus")
         with self.assertRaises(HGVSInvalidIntervalError):
-            AlignmentMapper(self.hdp, 'NM_000348.3', 'NC_000002.11', 'splign').n_to_g(self.parser.parse_n_interval("-1"))
+            AlignmentMapper(self.hdp, 'NM_000348.3', 'NC_000002.11', 'splign').n_to_g(
+                self.parser.parse_n_interval("-1"))
         with self.assertRaises(HGVSInvalidIntervalError):
-            AlignmentMapper(self.hdp, 'NM_000348.3', 'NC_000002.11', 'splign').n_to_c(self.parser.parse_n_interval("-1"))
+            AlignmentMapper(self.hdp, 'NM_000348.3', 'NC_000002.11', 'splign').n_to_c(
+                self.parser.parse_n_interval("-1"))
         with self.assertRaises(HGVSInvalidIntervalError):
-            AlignmentMapper(self.hdp, 'NM_000348.3', 'NC_000002.11', 'splign').c_to_n(self.parser.parse_c_interval("99999"))
-
+            AlignmentMapper(self.hdp, 'NM_000348.3', 'NC_000002.11', 'splign').c_to_n(
+                self.parser.parse_c_interval("99999"))
 
     def test_alignmentmapper_AlignmentMapper_LCE3C_uncertain(self):
         """Use NM_178434.2 tests to test mapping with uncertain positions"""
@@ -50,9 +52,9 @@ class Test_AlignmentMapper(unittest.TestCase):
         tm = AlignmentMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
         parser = hgvs.parser.Parser()
         test_cases = [
-    # ? is not yet supported
-    # {"g": parser.parse_g_interval("(?_152573139)"), "n": parser.parse_n_interval("(?_2)"), "c": parser.parse_c_interval("(?_-69)")},
-    # {"g": parser.parse_g_interval("(152573138_?)"), "n": parser.parse_n_interval("(1_?)"), "c": parser.parse_c_interval("(-70_?)")},
+        # ? is not yet supported
+        # {"g": parser.parse_g_interval("(?_152573139)"), "n": parser.parse_n_interval("(?_2)"), "c": parser.parse_c_interval("(?_-69)")},
+        # {"g": parser.parse_g_interval("(152573138_?)"), "n": parser.parse_n_interval("(1_?)"), "c": parser.parse_c_interval("(-70_?)")},
         ]
         self.run_cases(tm, test_cases)
 
@@ -63,7 +65,7 @@ class Test_AlignmentMapper(unittest.TestCase):
         tm = AlignmentMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
         parser = hgvs.parser.Parser()
         test_cases = [
-    # 5'
+        # 5'
             {
                 "g": parser.parse_g_interval("152573138"),
                 "n": parser.parse_n_interval("1"),
@@ -74,7 +76,7 @@ class Test_AlignmentMapper(unittest.TestCase):
                 "n": parser.parse_n_interval("3"),
                 "c": parser.parse_c_interval("-68")
             },
-    # cds
+        # cds
             {
                 "g": parser.parse_g_interval("152573207"),
                 "n": parser.parse_n_interval("70"),
@@ -85,7 +87,7 @@ class Test_AlignmentMapper(unittest.TestCase):
                 "n": parser.parse_n_interval("71"),
                 "c": parser.parse_c_interval("1")
             },
-    # 3'
+        # 3'
             {
                 "g": parser.parse_g_interval("152573492"),
                 "n": parser.parse_n_interval("355"),
@@ -116,7 +118,7 @@ class Test_AlignmentMapper(unittest.TestCase):
         tm = AlignmentMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
         parser = hgvs.parser.Parser()
         test_cases = [
-    # 3'
+        # 3'
             {
                 "g": parser.parse_g_interval("228645560"),
                 "n": parser.parse_n_interval("1"),
@@ -127,7 +129,7 @@ class Test_AlignmentMapper(unittest.TestCase):
                 "n": parser.parse_n_interval("3"),
                 "c": parser.parse_c_interval("-40")
             },
-    # cds
+        # cds
             {
                 "g": parser.parse_g_interval("228645519"),
                 "n": parser.parse_n_interval("42"),
@@ -138,7 +140,7 @@ class Test_AlignmentMapper(unittest.TestCase):
                 "n": parser.parse_n_interval("43"),
                 "c": parser.parse_c_interval("1")
             },
-    # 5'
+        # 5'
             {
                 "g": parser.parse_g_interval("228645126"),
                 "n": parser.parse_n_interval("435"),
@@ -169,7 +171,7 @@ class Test_AlignmentMapper(unittest.TestCase):
         tm = AlignmentMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
         parser = hgvs.parser.Parser()
         test_cases = [
-    # 5'
+        # 5'
             {
                 "g": parser.parse_g_interval("152658599"),
                 "n": parser.parse_n_interval("1"),
@@ -180,7 +182,7 @@ class Test_AlignmentMapper(unittest.TestCase):
                 "n": parser.parse_n_interval("3"),
                 "c": parser.parse_c_interval("-52")
             },
-    # cds
+        # cds
             {
                 "g": parser.parse_g_interval("152659319"),
                 "n": parser.parse_n_interval("54"),
@@ -191,7 +193,7 @@ class Test_AlignmentMapper(unittest.TestCase):
                 "n": parser.parse_n_interval("55"),
                 "c": parser.parse_c_interval("1")
             },
-    # around end of exon 1
+        # around end of exon 1
             {
                 "g": parser.parse_g_interval("152658632"),
                 "n": parser.parse_n_interval("34"),
@@ -202,13 +204,13 @@ class Test_AlignmentMapper(unittest.TestCase):
                 "n": parser.parse_n_interval("34+1"),
                 "c": parser.parse_c_interval("-21+1")
             },
-    # span
+        # span
             {
                 "g": parser.parse_g_interval("152658633_152659299"),
                 "n": parser.parse_n_interval("34+1_35-1"),
                 "c": parser.parse_c_interval("-21+1_-20-1")
             },
-    # around beginning of exon 2
+        # around beginning of exon 2
             {
                 "g": parser.parse_g_interval("152659300"),
                 "n": parser.parse_n_interval("35"),
@@ -219,7 +221,7 @@ class Test_AlignmentMapper(unittest.TestCase):
                 "n": parser.parse_n_interval("35-1"),
                 "c": parser.parse_c_interval("-20-1")
             },
-    # around end of exon 2
+        # around end of exon 2
             {
                 "g": parser.parse_g_interval("152659652"),
                 "n": parser.parse_n_interval("387"),
@@ -230,13 +232,13 @@ class Test_AlignmentMapper(unittest.TestCase):
                 "n": parser.parse_n_interval("388"),
                 "c": parser.parse_c_interval("*1")
             },
-    # span
+        # span
             {
                 "g": parser.parse_g_interval("152659651_152659654"),
                 "n": parser.parse_n_interval("386_389"),
                 "c": parser.parse_c_interval("332_*2")
             },
-    # 3'
+        # 3'
             {
                 "g": parser.parse_g_interval("152659877"),
                 "n": parser.parse_n_interval("612"),
@@ -252,13 +254,13 @@ class Test_AlignmentMapper(unittest.TestCase):
         tm = AlignmentMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
         parser = hgvs.parser.Parser()
         test_cases = [
-    # 3'
+        # 3'
             {
                 "g": parser.parse_g_interval("49926698"),
                 "n": parser.parse_n_interval("1"),
                 "c": parser.parse_c_interval("-102")
             },
-    # cds
+        # cds
             {
                 "g": parser.parse_g_interval("49926597"),
                 "n": parser.parse_n_interval("102"),
@@ -269,7 +271,7 @@ class Test_AlignmentMapper(unittest.TestCase):
                 "n": parser.parse_n_interval("103"),
                 "c": parser.parse_c_interval("1")
             },
-    # around end of exon 1
+        # around end of exon 1
             {
                 "g": parser.parse_g_interval("49926469"),
                 "n": parser.parse_n_interval("230"),
@@ -280,13 +282,13 @@ class Test_AlignmentMapper(unittest.TestCase):
                 "n": parser.parse_n_interval("230+1"),
                 "c": parser.parse_c_interval("128+1")
             },
-    # span
+        # span
             {
                 "g": parser.parse_g_interval("49925901_49926467"),
                 "n": parser.parse_n_interval("230+2_231-2"),
                 "c": parser.parse_c_interval("128+2_129-2")
             },
-    # around beginning of exon 2
+        # around beginning of exon 2
             {
                 "g": parser.parse_g_interval("49925900"),
                 "n": parser.parse_n_interval("231-1"),
@@ -297,7 +299,7 @@ class Test_AlignmentMapper(unittest.TestCase):
                 "n": parser.parse_n_interval("231"),
                 "c": parser.parse_c_interval("129")
             },
-    # around end of exon 2
+        # around end of exon 2
             {
                 "g": parser.parse_g_interval("49925725"),
                 "n": parser.parse_n_interval("405"),
@@ -506,7 +508,6 @@ if __name__ == "__main__":
 #     ac = "NM_145171.3"
 #     tm = AlignmentMapper(self.hdp,ac,self.ref)
 #     pass
-
 
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)

@@ -27,7 +27,6 @@ from hgvs.decorators.lru_cache import lru_cache
 from hgvs.enums import PrevalidationLevel
 from hgvs.utils.reftranscriptdata import RefTranscriptData
 
-
 _logger = logging.getLogger(__name__)
 
 
@@ -407,8 +406,7 @@ class VariantMapper(object):
         Get a new AlignmentMapper for the given transcript accession (ac),
         possibly caching the result.
         """
-        return hgvs.alignmentmapper.AlignmentMapper(
-            self.hdp, tx_ac=tx_ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
+        return hgvs.alignmentmapper.AlignmentMapper(self.hdp, tx_ac=tx_ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
 
     @staticmethod
     def _convert_edit_check_strand(strand, edit_in):
@@ -428,7 +426,8 @@ class VariantMapper(object):
                     ref = reverse_complement(edit_in.ref)
                 edit_out = hgvs.edit.NARefAlt(
                     ref=ref,
-                    alt=reverse_complement(edit_in.alt), )
+                    alt=reverse_complement(edit_in.alt),
+                )
         elif isinstance(edit_in, hgvs.edit.Dup):
             if strand == 1:
                 edit_out = copy.deepcopy(edit_in)
@@ -447,14 +446,14 @@ class VariantMapper(object):
         else:
             raise NotImplementedError("Only NARefAlt/Dup/Inv types are currently implemented")
         return edit_out
-    
+
     def _get_altered_sequence(self, strand, interval, var):
         seq = list(self.hdp.get_seq(var.ac, interval.start.base - 1, interval.end.base))
         # positions are 0-based and half-open
         pos_start = var.posedit.pos.start.base - interval.start.base
         pos_end = var.posedit.pos.end.base - interval.start.base + 1
         edit = var.posedit.edit
-        
+
         if edit.type == 'sub':
             seq[pos_start] = edit.alt
         elif edit.type == 'del':
@@ -471,12 +470,14 @@ class VariantMapper(object):
         elif edit.type == 'identity':
             pass
         else:
-            raise HGVSUnsupportedOperationError("Getting altered sequence for {type} is unsupported".format(type=edit.type))
+            raise HGVSUnsupportedOperationError(
+                "Getting altered sequence for {type} is unsupported".format(type=edit.type))
 
         seq = ''.join(seq)
         if strand == -1:
             seq = reverse_complement(seq)
         return seq
+
 
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)

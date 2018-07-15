@@ -11,8 +11,8 @@ import hgvs.parser
 import hgvs.assemblymapper
 from support import CACHE
 
-
 tests_fn = "tests/data/proj-near-disc.tsv"
+
 
 def read_tests(fn):
     """read tests from tsv file, return iterator of dicts"""
@@ -27,18 +27,13 @@ def read_tests(fn):
         yield {"disc_type": dt, "loc_type": lt, "variant": var, "expected": exp}
 
 
-
 hp = hgvs.parser.Parser()
-hdp = hgvs.dataproviders.uta.connect(
-    mode=os.environ.get("HGVS_CACHE_MODE", "run"),
-    cache=CACHE)
+hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
 # TODO: Use variantmapper instead of assemblymapper
 am38 = hgvs.assemblymapper.AssemblyMapper(hdp, assembly_name='GRCh38', normalize=False)
 
-
 tests = list(read_tests(tests_fn))
-params = [(t["variant"], t["expected"], t["loc_type"] + " " +
-           t["disc_type"] ) for t in tests]
+params = [(t["variant"], t["expected"], t["loc_type"] + " " + t["disc_type"]) for t in tests]
 
 
 @pytest.mark.pnd

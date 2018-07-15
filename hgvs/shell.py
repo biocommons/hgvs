@@ -12,7 +12,6 @@ hgvs_g = "NC_000007.13:g.36561662C>T"
 hgvs_c = "NM_001637.3:c.1582G>A"
 hgvs_p = "NP_001628.1:p.(Gly528Arg)"
 
-
 header_string = """############################################################################
 hgvs-shell -- interactive hgvs
 hgvs version: {v}
@@ -73,6 +72,8 @@ def shell():
             sv=hdp.schema_version(),
             dv=hdp.data_version(),
         ))
+
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

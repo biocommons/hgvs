@@ -171,6 +171,8 @@ class Interface(six.with_metaclass(abc.ABCMeta, object)):
     @abc.abstractmethod
     def get_tx_mapping_options(self, tx_ac):
         pass
+
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

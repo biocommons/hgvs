@@ -50,7 +50,6 @@ class AltTranscriptData(object):
         :rtype attrs
         """
 
-
         if len(seq) > 0:
             if isinstance(seq, six.string_types):
                 seq = list(seq)
@@ -75,7 +74,6 @@ class AltTranscriptData(object):
         self.frameshift_start = None
         self.is_substitution = is_substitution
         self.is_ambiguous = is_ambiguous
-
 
 
 class AltSeqBuilder(object):
@@ -291,8 +289,8 @@ class AltSeqBuilder(object):
         end += 1
 
         if DBG:
-            print(
-                "len seq:{} cds_start:{} cds_stop:{} start:{} end:{}".format(len(seq), cds_start, cds_stop, start, end))
+            print("len seq:{} cds_start:{} cds_stop:{} start:{} end:{}".format(
+                len(seq), cds_start, cds_stop, start, end))
         return seq, cds_start, cds_stop, start, end
 
     def _create_alt_equals_ref_noncds(self):
@@ -328,6 +326,8 @@ class AltSeqBuilder(object):
         if variant_data.is_frameshift:
             variant_data.frameshift_start = variant_data.variant_start_aa
         return variant_data
+
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

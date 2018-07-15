@@ -87,7 +87,12 @@ class Parser(object):
 
     def __init__(self, grammar_fn=__default_grammar_fn, expose_all_rules=False):
         self._grammar_fn = grammar_fn
-        self._grammar = parsley.makeGrammar(open(grammar_fn, "r").read(), {"hgvs": hgvs, "bioutils": bioutils, "copy": copy})
+        self._grammar = parsley.makeGrammar(
+            open(grammar_fn, "r").read(), {
+                "hgvs": hgvs,
+                "bioutils": bioutils,
+                "copy": copy
+            })
         self._logger = logging.getLogger(__name__)
         self._expose_rule_functions(expose_all_rules)
 
@@ -109,8 +114,8 @@ class Parser(object):
                 try:
                     return self._grammar(s).__getattr__(rule_name)()
                 except ometa.runtime.ParseError as exc:
-                    raise HGVSParseError(
-                        "{s}: char {exc.position}: {reason}".format(s=s, exc=exc, reason=exc.formatReason()))
+                    raise HGVSParseError("{s}: char {exc.position}: {reason}".format(
+                        s=s, exc=exc, reason=exc.formatReason()))
 
             rule_fxn.__doc__ = "parse string s using `%s' rule" % rule_name
             return rule_fxn
@@ -125,6 +130,8 @@ class Parser(object):
             rule_fxn = make_parse_rule_function(rule_name)
             self.__setattr__(att_name, rule_fxn)
         self._logger.debug("Exposed {n} rules ({rules})".format(n=len(exposed_rules), rules=", ".join(exposed_rules)))
+
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

@@ -126,6 +126,8 @@ class ExtrinsicValidator():
         if var.posedit.pos.end.datum == Datum.CDS_START and var.posedit.pos.end.base > cds_length:
             return (ValidationLevel.ERROR, CDS_BOUND_ERROR_MSG.format(cds_length=cds_length))
         return (ValidationLevel.VALID, None)
+
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

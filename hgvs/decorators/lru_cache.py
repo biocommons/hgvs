@@ -154,8 +154,9 @@ def lru_cache(maxsize=100, typed=False, mode=None, cache=None):
                                 user_function.__name__ + ' with args ' + str(args) + ' and keywords ' + str(kwds))
                     return result
                 if mode == RUN:
-                    raise HGVSDataNotAvailableError('Data not available in local cache when calling ' + user_function.
-                                                    __name__ + ' with args ' + str(args) + ' and keywords ' + str(kwds))
+                    raise HGVSDataNotAvailableError('Data not available in local cache when calling ' +
+                                                    user_function.__name__ + ' with args ' + str(args) +
+                                                    ' and keywords ' + str(kwds))
                 result = user_function(*args, **kwds)
                 _cache[key] = result
                 if mode == LEARN:

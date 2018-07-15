@@ -113,7 +113,8 @@ class TestUTACache(Test_hgvs_dataproviders_uta_UTA_default):
         genomic_variant = hgvs.sequencevariant.SequenceVariant(
             ac="NC_000011.9",
             type="g",
-            posedit=posedit, )
+            posedit=posedit,
+        )
         variantmapper = hgvs.variantmapper.VariantMapper(self.hdp)
         return variantmapper.g_to_c(genomic_variant, "NM_001164277.1")
 

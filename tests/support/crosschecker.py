@@ -48,8 +48,8 @@ class CrossChecker(object):
         binned_variants.update({g: list(gi) for g, gi in itertools.groupby(variants, lambda v: v.type)})
         binned_variants["t"] = binned_variants["c"] + binned_variants["n"]
 
-        assert len(binned_variants["g"]) == len([v.ac
-                                                 for v in binned_variants["g"]]), "variants have multiple alignments"
+        assert len(binned_variants["g"]) == len(
+            [v.ac for v in binned_variants["g"]]), "variants have multiple alignments"
 
         # g -> t: for each g., map to each transcript accession.
         for g_var in binned_variants["g"]:
@@ -87,6 +87,8 @@ class CrossChecker(object):
                         c_var=c_var, p_vars=" ".join(map(str, binned_variants["p"])), r=r)
 
         return None
+
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

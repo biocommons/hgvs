@@ -202,6 +202,8 @@ def cigar_to_intervalpairs(cigar):
         ref_pos += ce.ref_len
         tgt_pos += ce.tgt_len
     return ips
+
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

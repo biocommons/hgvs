@@ -26,8 +26,10 @@ class HGVSPosition(object):
         return "{self.ac}:{self.type}.{self.pos}".format(self=self)
 
     def __repr__(self):
-        return "{0}({1})".format(self.__class__.__name__, ", ".join((a.name + "=" + str(getattr(self, a.name)))
-                                                                    for a in self.__attrs_attrs__))
+        return "{0}({1})".format(self.__class__.__name__, ", ".join(
+            (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
+
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

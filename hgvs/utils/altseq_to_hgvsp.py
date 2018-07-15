@@ -345,6 +345,8 @@ class AltSeqToHgvsp(object):
             posedit = PosEdit(pos=interval, edit=edit, uncertain=hgvs.global_config.mapping.inferred_p_is_uncertain)
         var_p = hgvs.sequencevariant.SequenceVariant(acc, 'p', posedit)
         return var_p
+
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

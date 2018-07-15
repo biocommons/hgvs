@@ -42,8 +42,8 @@ class SimplePosition(object):
         return str(self)
 
     def __repr__(self):
-        return "{0}({1})".format(self.__class__.__name__, ", ".join((a.name + "=" + str(getattr(self, a.name)))
-                                                                    for a in self.__attrs_attrs__))
+        return "{0}({1})".format(self.__class__.__name__, ", ".join(
+            (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
 
     @property
     def is_uncertain(self):
@@ -136,8 +136,8 @@ class BaseOffsetPosition(object):
         return str(self)
 
     def __repr__(self):
-        return "{0}({1})".format(self.__class__.__name__, ", ".join((a.name + "=" + str(getattr(self, a.name)))
-                                                                    for a in self.__attrs_attrs__))
+        return "{0}({1})".format(self.__class__.__name__, ", ".join(
+            (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
 
     def _set_uncertain(self):
         "mark this location as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"
@@ -230,8 +230,8 @@ class AAPosition(object):
     __str__ = format
 
     def __repr__(self):
-        return "{0}({1})".format(self.__class__.__name__, ", ".join((a.name + "=" + str(getattr(self, a.name)))
-                                                                    for a in self.__attrs_attrs__))
+        return "{0}({1})".format(self.__class__.__name__, ", ".join(
+            (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
 
     @property
     def pos(self):
@@ -320,8 +320,8 @@ class Interval(object):
     __str__ = format
 
     def __repr__(self):
-        return "{0}({1})".format(self.__class__.__name__, ", ".join((a.name + "=" + str(getattr(self, a.name)))
-                                                                    for a in self.__attrs_attrs__))
+        return "{0}({1})".format(self.__class__.__name__, ", ".join(
+            (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
 
     def _set_uncertain(self):
         "mark this interval as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"
@@ -362,6 +362,8 @@ class BaseOffsetInterval(Interval):
             (Datum.CDS_END, Datum.CDS_END),
         ]:
             raise HGVSInvalidIntervalError("BaseOffsetInterval start datum and end datum are incompatible")
+
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

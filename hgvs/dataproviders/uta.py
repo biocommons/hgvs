@@ -498,7 +498,8 @@ class UTA_postgresql(UTABase):
             database=self.url.database,
             user=self.url.username,
             password=self.url.password,
-            application_name=self.application_name + "/" + hgvs.__version__, )
+            application_name=self.application_name + "/" + hgvs.__version__,
+        )
         if self.pooling:
             _logger.info("Using UTA ThreadedConnectionPool")
             self._pool = psycopg2.pool.ThreadedConnectionPool(hgvs.global_config.uta.pool_min,
@@ -517,8 +518,8 @@ class UTA_postgresql(UTABase):
         r = self._fetchone("select exists(SELECT 1 FROM pg_namespace WHERE nspname = %s)", [self.url.schema])
         if r[0]:
             return
-        raise HGVSDataNotAvailableError(
-            "specified schema ({}) does not exist (url={})".format(self.url.schema, self.url))
+        raise HGVSDataNotAvailableError("specified schema ({}) does not exist (url={})".format(
+            self.url.schema, self.url))
 
     @contextlib.contextmanager
     def _get_cursor(self, n_retries=1):
