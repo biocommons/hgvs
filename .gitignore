@@ -33,6 +33,7 @@ dist
 doc/build
 examples/*_files
 examples/.ipynb_checkpoints
+hg-git-remap.pl
 hgvs.dot
 hgvs.sfood
 hgvs.svg
