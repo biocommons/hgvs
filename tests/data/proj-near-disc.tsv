@@ -1,0 +1,64 @@
+# test variant project near an alignment discrepancy
+# relies on GRCh38 RefSeq transcript mappings
+
+# substitution discrepancy
+#
+#            57391435  57391442
+#                 |      |
+# NC_000020.11    GCACGTCG
+# NM_183425.2     GCAGCTCG
+#                 |  ^^  |
+#                38      45
+
+sub	within	NM_183425.2:n.41G>C	NC_000020.11:g.57391438=
+sub	within	NM_183425.2:n.41G>T	NC_000020.11:g.57391438C>T
+sub	within	NM_183425.2:n.41=	NC_000020.11:g.57391438C>G
+sub	within	NM_183425.2:n.41del	NC_000020.11:g.57391438del
+sub	within	NM_183425.2:n.41_42insT	NC_000020.11:g.57391438_57391439insT
+sub	exact	NM_183425.2:n.41_42delinsCG	NC_000020.11:g.57391438_57391439=
+sub	exact	NM_183425.2:n.41_42delinsTAA	NC_000020.11:g.57391438_57391439delinsTAA
+sub	exact	NM_183425.2:n.41_42del	NC_000020.11:g.57391438_57391439del
+sub	partial	NM_183425.2:n.40_41delinsTC	NC_000020.11:g.57391437_57391438delinsTC
+sub	partial	NM_183425.2:n.40_41delinsTT	NC_000020.11:g.57391437_57391438delinsTT
+sub	partial	NM_183425.2:n.40_41del	NC_000020.11:g.57391437_57391438del
+sub	partial	NM_183425.2:n.40_41insT	NC_000020.11:g.57391437_57391438insT
+sub	partial	NM_183425.2:n.42_43insG	NC_000020.11:g.57391439_57391440insG
+sub	covers	NM_183425.2:n.40_43del	NC_000020.11:g.57391437_57391440del
+sub	covers	NM_183425.2:n.40_43delinsCG	NC_000020.11:g.57391437_57391440delinsCG
+
+# genomic deletion (with respect to transcript)
+#             50378561  50378566
+#                 |       |
+# NC_000019.10    GGA---AAC
+# NM_007121.5     GGAAACAAC
+#                 |       |
+#                793     801
+
+gdel	within	NM_007121.5:n.797A>T	NC_000019.10:g.50378563_50378564delinsAATCA
+gdel	within	NM_007121.5:n.797del	NC_000019.10:g.50378563_50378564delinsAACA
+gdel	within	NM_007121.5:n.796_797insT	NC_000019.10:g.50378563_50378564delinsAATACA
+gdel	within	NM_007121.5:n.797_798inv	NC_000019.10:g.50378563_50378564delinsAAGTA
+gdel	exact	NM_007121.5:n.796_798=	NC_000019.10:g.50378563_50378564delinsAAACA
+gdel	exact	NM_007121.5:n.796_798del	NC_000019.10:g.50378563_50378564=
+gdel	exact	NM_007121.5:n.796_798dup	NC_000019.10:g.50378563_50378564delinsAAACAACA
+gdel	exact	NM_007121.5:n.796_798delinsTCGG	NC_000019.10:g.50378563_50378564delinsATCGGA
+gdel	partial	NM_007121.5:n.795_796del	NC_000019.10:g.50378563_50378564delinsACA
+gdel	partial	NM_007121.5:n.795_796delinsTT	NC_000019.10:g.50378563_50378564delinsTTACA
+gdel	partial	NM_007121.5:n.795_796insT	NC_000019.10:g.50378563_50378564delinsATAACA
+gdel	covers	NM_007121.5:n.794_800del	NC_000019.10:g.50378562_50378565del
+gdel	covers	NM_007121.5:n.794_800delinsTC	NC_000019.10:g.50378562_50378565delinsTC
+
+# genomic insertion (with respect to transcript)
+#            149779572  149779580
+#                 |       |
+# NC_000007.14    TGACAGCCC
+# NM_198455.2     TGA---CCC
+#                 |       |
+#               1113     1118
+
+gins	within	NM_198455.2:n.1115_1116insT	NC_000007.14:g.149779575_149779577delinsT
+gins	exact	NM_198455.2:n.1115_1116insCAG	NC_000007.14:g.149779575_149779577=
+gins	exact	NM_198455.2:n.1115_1116=	NC_000007.14:g.149779574_149779578delinsAC
+gins	partial	NM_198455.2:n.1115_1116insCA	NC_000007.14:g.149779575_149779577delinsCA
+gins	cover	NM_198455.2:n.1114_1117del	NC_000007.14:g.149779573_149779579del
+gins	cover	NM_198455.2:n.1114_1117delinsCAG	NC_000007.14:g.149779573_149779579delinsCAG

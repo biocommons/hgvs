@@ -13,18 +13,12 @@ Mapping
 .. automodule:: hgvs.variantmapper
 
 
-:mod:`hgvs.intervalmapper`
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: hgvs.intervalmapper
-
-
 :mod:`hgvs.projector`
 ^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: hgvs.projector
 
-:mod:`hgvs.transcriptmapper`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+:mod:`hgvs.alignmentmapper`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: hgvs.transcriptmapper
+.. automodule:: hgvs.alignmentmapper

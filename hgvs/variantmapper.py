@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Provides VariantMapper and AssemblyMapper to project variants
-between sequences using TranscriptMapper.
+between sequences using AlignmentMapper.
 
 """
 
@@ -15,7 +15,8 @@ import hgvs
 import hgvs.location
 import hgvs.normalizer
 import hgvs.posedit
-import hgvs.transcriptmapper
+import hgvs.edit
+import hgvs.alignmentmapper
 import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
 import hgvs.utils.altseqbuilder as altseqbuilder
 import hgvs.sequencevariant
@@ -99,7 +100,7 @@ class VariantMapper(object):
         if self._validator:
             self._validator.validate(var_g)
         var_g.fill_ref(self.hdp)
-        tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
+        tm = self._fetch_AlignmentMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
         if tm.is_coding_transcript:
             var_out = VariantMapper.g_to_c(self, var_g=var_g, tx_ac=tx_ac, alt_aln_method=alt_aln_method)
         else:
@@ -112,7 +113,7 @@ class VariantMapper(object):
         if self._validator:
             self._validator.validate(var_t)
         var_t.fill_ref(self.hdp)
-        tm = self._fetch_TranscriptMapper(tx_ac=var_t.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
+        tm = self._fetch_AlignmentMapper(tx_ac=var_t.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         if tm.is_coding_transcript:
             var_out = VariantMapper.c_to_g(self, var_c=var_t, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         else:
@@ -139,9 +140,19 @@ class VariantMapper(object):
         if self._validator:
             self._validator.validate(var_g)
         var_g.fill_ref(self.hdp)
-        tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
+        tm = self._fetch_AlignmentMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
         pos_n = tm.g_to_n(var_g.posedit.pos)
-        edit_n = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
+        if not pos_n.uncertain:
+            edit_n = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
+            if edit_n.type == 'ins' and pos_n.start.offset == 0 and pos_n.end.offset == 0 and pos_n.end - pos_n.start > 1:
+                pos_n.start.base += 1
+                pos_n.end.base -= 1
+                edit_n.ref = ''
+        else:
+            # variant at alignment gap
+            pos_g = tm.n_to_g(pos_n)
+            edit_n = hgvs.edit.NARefAlt(ref='', alt=self._get_altered_sequence(tm.strand, pos_g, var_g))
+        pos_n.uncertain = var_g.posedit.pos.uncertain
         var_n = hgvs.sequencevariant.SequenceVariant(ac=tx_ac, type="n", posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
         if self.replace_reference:
             self._replace_reference(var_n)
@@ -165,9 +176,19 @@ class VariantMapper(object):
         if self._validator:
             self._validator.validate(var_n)
         var_n.fill_ref(self.hdp)
-        tm = self._fetch_TranscriptMapper(tx_ac=var_n.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
+        tm = self._fetch_AlignmentMapper(tx_ac=var_n.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         pos_g = tm.n_to_g(var_n.posedit.pos)
-        edit_g = self._convert_edit_check_strand(tm.strand, var_n.posedit.edit)
+        if not pos_g.uncertain:
+            edit_g = self._convert_edit_check_strand(tm.strand, var_n.posedit.edit)
+            if edit_g.type == 'ins' and pos_g.end - pos_g.start > 1:
+                pos_g.start.base += 1
+                pos_g.end.base -= 1
+                edit_g.ref = ''
+        else:
+            # variant at alignment gap
+            pos_n = tm.g_to_n(pos_g)
+            edit_g = hgvs.edit.NARefAlt(ref='', alt=self._get_altered_sequence(tm.strand, pos_n, var_n))
+        pos_g.uncertain = var_n.posedit.pos.uncertain
         var_g = hgvs.sequencevariant.SequenceVariant(ac=alt_ac, type="g", posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
         if self.replace_reference:
             self._replace_reference(var_g)
@@ -193,9 +214,19 @@ class VariantMapper(object):
         if self._validator:
             self._validator.validate(var_g)
         var_g.fill_ref(self.hdp)
-        tm = self._fetch_TranscriptMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
+        tm = self._fetch_AlignmentMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
         pos_c = tm.g_to_c(var_g.posedit.pos)
-        edit_c = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
+        if not pos_c.uncertain:
+            edit_c = self._convert_edit_check_strand(tm.strand, var_g.posedit.edit)
+            if edit_c.type == 'ins' and pos_c.start.offset == 0 and pos_c.end.offset == 0 and pos_c.end - pos_c.start > 1:
+                pos_c.start.base += 1
+                pos_c.end.base -= 1
+                edit_c.ref = ''
+        else:
+            # variant at alignment gap
+            pos_g = tm.c_to_g(pos_c)
+            edit_c = hgvs.edit.NARefAlt(ref='', alt=self._get_altered_sequence(tm.strand, pos_g, var_g))
+        pos_c.uncertain = var_g.posedit.pos.uncertain
         var_c = hgvs.sequencevariant.SequenceVariant(ac=tx_ac, type="c", posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
         if self.replace_reference:
             self._replace_reference(var_c)
@@ -219,11 +250,22 @@ class VariantMapper(object):
         if self._validator:
             self._validator.validate(var_c)
         var_c.fill_ref(self.hdp)
-        tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
-
+        tm = self._fetch_AlignmentMapper(tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         pos_g = tm.c_to_g(var_c.posedit.pos)
-        edit_g = self._convert_edit_check_strand(tm.strand, var_c.posedit.edit)
-
+        if not pos_g.uncertain:
+            edit_g = self._convert_edit_check_strand(tm.strand, var_c.posedit.edit)
+            if edit_g.type == 'ins' and pos_g.end - pos_g.start > 1:
+                pos_g.start.base += 1
+                pos_g.end.base -= 1
+                edit_g.ref = ''
+        else:
+            # variant at alignment gap
+            var_n = copy.deepcopy(var_c)
+            var_n.posedit.pos = tm.c_to_n(var_c.posedit.pos)
+            var_n.type = 'n'
+            pos_n = tm.g_to_n(pos_g)
+            edit_g = hgvs.edit.NARefAlt(ref='', alt=self._get_altered_sequence(tm.strand, pos_n, var_n))
+        pos_g.uncertain = var_c.posedit.pos.uncertain
         var_g = hgvs.sequencevariant.SequenceVariant(ac=alt_ac, type="g", posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
         if self.replace_reference:
             self._replace_reference(var_g)
@@ -247,7 +289,7 @@ class VariantMapper(object):
         if self._validator:
             self._validator.validate(var_c)
         var_c.fill_ref(self.hdp)
-        tm = self._fetch_TranscriptMapper(tx_ac=var_c.ac, alt_ac=var_c.ac, alt_aln_method="transcript")
+        tm = self._fetch_AlignmentMapper(tx_ac=var_c.ac, alt_ac=var_c.ac, alt_aln_method="transcript")
         pos_n = tm.c_to_n(var_c.posedit.pos)
         if (isinstance(var_c.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_c.posedit.edit, hgvs.edit.Dup)
                 or isinstance(var_c.posedit.edit, hgvs.edit.Inv)):
@@ -275,7 +317,7 @@ class VariantMapper(object):
         if self._validator:
             self._validator.validate(var_n)
         var_n.fill_ref(self.hdp)
-        tm = self._fetch_TranscriptMapper(tx_ac=var_n.ac, alt_ac=var_n.ac, alt_aln_method="transcript")
+        tm = self._fetch_AlignmentMapper(tx_ac=var_n.ac, alt_ac=var_n.ac, alt_aln_method="transcript")
         pos_c = tm.n_to_c(var_n.posedit.pos)
         if (isinstance(var_n.posedit.edit, hgvs.edit.NARefAlt) or isinstance(var_n.posedit.edit, hgvs.edit.Dup)
                 or isinstance(var_n.posedit.edit, hgvs.edit.Inv)):
@@ -346,7 +388,7 @@ class VariantMapper(object):
 
         # For c. variants, we need coords on underlying sequences
         if var.type == "c":
-            tm = self._fetch_TranscriptMapper(tx_ac=var.ac, alt_ac=var.ac, alt_aln_method="transcript")
+            tm = self._fetch_AlignmentMapper(tx_ac=var.ac, alt_ac=var.ac, alt_aln_method="transcript")
             pos = tm.c_to_n(var.posedit.pos)
         else:
             pos = var.posedit.pos
@@ -360,12 +402,12 @@ class VariantMapper(object):
         return var
 
     @lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)
-    def _fetch_TranscriptMapper(self, tx_ac, alt_ac, alt_aln_method):
+    def _fetch_AlignmentMapper(self, tx_ac, alt_ac, alt_aln_method):
         """
-        Get a new TranscriptMapper for the given transcript accession (ac),
+        Get a new AlignmentMapper for the given transcript accession (ac),
         possibly caching the result.
         """
-        return hgvs.transcriptmapper.TranscriptMapper(
+        return hgvs.alignmentmapper.AlignmentMapper(
             self.hdp, tx_ac=tx_ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
 
     @staticmethod
@@ -405,6 +447,37 @@ class VariantMapper(object):
         else:
             raise NotImplementedError("Only NARefAlt/Dup/Inv types are currently implemented")
         return edit_out
+    
+    def _get_altered_sequence(self, strand, interval, var):
+        seq = list(self.hdp.get_seq(var.ac, interval.start.base - 1, interval.end.base))
+        # positions are 0-based and half-open
+        pos_start = var.posedit.pos.start.base - interval.start.base
+        pos_end = var.posedit.pos.end.base - interval.start.base + 1
+        edit = var.posedit.edit
+        
+        if edit.type == 'sub':
+            seq[pos_start] = edit.alt
+        elif edit.type == 'del':
+            del seq[pos_start:pos_end]
+        elif edit.type == 'ins':
+            seq.insert(pos_start + 1, edit.alt)
+        elif edit.type == 'delins':
+            del seq[pos_start:pos_end]
+            seq.insert(pos_start, edit.alt)
+        elif edit.type == 'dup':
+            seq.insert(pos_end, ''.join(seq[pos_start:pos_end]))
+        elif edit.type == 'inv':
+            seq[pos_start:pos_end] = list(reverse_complement(''.join(seq[pos_start:pos_end])))
+        elif edit.type == 'identity':
+            pass
+        else:
+            raise HGVSUnsupportedOperationError("Getting altered sequence for {type} is unsupported".format(type=edit.type))
+
+        seq = ''.join(seq)
+        if strand == -1:
+            seq = reverse_complement(seq)
+        return seq
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

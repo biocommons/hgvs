@@ -9,7 +9,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import copy
 
 import hgvs
-import hgvs.transcriptmapper
+import hgvs.alignmentmapper
 
 
 class Projector(object):
@@ -38,8 +38,8 @@ class Projector(object):
                  dst_alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
         self.hdp = hdp
         self.alt_ac = alt_ac
-        self.src_tm = hgvs.transcriptmapper.TranscriptMapper(hdp, src_ac, alt_ac, src_alt_aln_method)
-        self.dst_tm = hgvs.transcriptmapper.TranscriptMapper(hdp, dst_ac, alt_ac, dst_alt_aln_method)
+        self.src_tm = hgvs.alignmentmapper.AlignmentMapper(hdp, src_ac, alt_ac, src_alt_aln_method)
+        self.dst_tm = hgvs.alignmentmapper.AlignmentMapper(hdp, dst_ac, alt_ac, dst_alt_aln_method)
 
     def project_interval_forward(self, c_interval):
         """
