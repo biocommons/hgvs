@@ -8,6 +8,7 @@ Used in hgvsc to hgvsp conversion.
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import logging
 import math
 
 from Bio.Seq import Seq
@@ -18,6 +19,7 @@ import six
 
 DBG = False
 
+_logger = logging.getLogger(__name__)
 
 class AltTranscriptData(object):
     def __init__(self,
@@ -137,7 +139,10 @@ class AltSeqBuilder(object):
             # TODO: handle case where variant introduces a Met (new start)
             edit_type = NOT_CDS
         elif variant_location == self.WHOLE_GENE:
-            if self._var_c.posedit.edit.ref is not None and self._var_c.posedit.edit.alt is None:
+            if isinstance(self._var_c.posedit.edit, Dup):
+                _logger.warn("Whole-gene duplication; consequence assumed to not affect protein product")
+                edit_type = NOT_CDS
+            elif self._var_c.posedit.edit.ref is not None and self._var_c.posedit.edit.alt is None:
                 edit_type = WHOLE_GENE_DELETED
             else:
                 edit_type = NOT_CDS
