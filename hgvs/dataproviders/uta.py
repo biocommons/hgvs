@@ -481,10 +481,8 @@ class UTA_postgresql(UTABase):
 
     def close(self):
         if self.pooling:
-            _logger.warning("Closing pool; future mapping and validation will fail.")
             self._pool.closeall()
         else:
-            _logger.warning("Closing connection; future mapping and validation will fail.")
             if self._conn is not None:
                 self._conn.close()
 
