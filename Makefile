@@ -130,7 +130,7 @@ cleaner: clean
 	rm -fr .cache *.egg-info build dist doc/_build htmlcov
 	find . \( -name \*.pyc -o -name \*.orig -o -name \*.rej \) -print0 | xargs -0r rm
 	find . -name __pycache__ -print0 | xargs -0r rm -fr
-	/bin/rm -f examples/.ipynb_checkpoints
+	/bin/rm -fr examples/.ipynb_checkpoints
 	/bin/rm -f hgvs.{dot,svg,png,sfood}
 	-make -C doc $@
 	-make -C examples $@

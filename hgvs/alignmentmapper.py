@@ -1,22 +1,8 @@
 # -*- coding: utf-8 -*-
-"""
-Mapping positions between pairs of sequence alignments
+"""Mapping positions between pairs of sequence alignments
 
 The AlignmentMapper class is at the heart of mapping between aligned sequences.
 
-        0         15   20         35         50
-        |==========|====|==========|==========|
-        |          | __/        __/|          |
-        |          |/          /   |          |
-        |==========|==========|====|==========|
-        0         15         30   35         50
-            15M   5D   15M      5I      15M  
-
-  segment 1: [ 0,15] ~ [ 0,15]
-  segment 2: [15,20] ~ [15,15]
-  segment 3: [20,35] ~ [15,30]
-  segment 4: [35,35] ~ [30,35]
-  segment 5: [35,50] ~ [35,50]
 """
 
 from __future__ import absolute_import, division, print_function, unicode_literals

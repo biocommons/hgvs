@@ -62,7 +62,7 @@ Module Overview
 | :mod:`hgvs.projector`                   | | :class:`hgvs.projector.Projector`                 |                                         |
 |                                         |                                                     |                                         |
 +-----------------------------------------+-----------------------------------------------------+-----------------------------------------+
-| :mod:`hgvs.alignmentmapper`             | | :class:`hgvs.alignmentmapper.AlignmentMapper`   |                                         |
+| :mod:`hgvs.alignmentmapper`             | | :class:`hgvs.alignmentmapper.AlignmentMapper`     |                                         |
 |                                         |                                                     |                                         |
 +-----------------------------------------+-----------------------------------------------------+-----------------------------------------+
 | :mod:`hgvs.variantmapper`               | | :class:`hgvs.variantmapper.VariantMapper`         |                                         |
