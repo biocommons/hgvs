@@ -52,6 +52,12 @@ class Parser(object):
     to the `hgvs_variant` and `c_interval rules` in the grammar,
     respectively.
 
+    As a convenience, the Parser provides the `parse` method as a
+    shorthand for `parse_hgvs_variant`:
+    >>> v = hp.parse("NM_01234.5:c.22+1A>T")
+    >>> v
+    SequenceVariant(ac=NM_01234.5, type=c, posedit=22+1A>T)
+
     Because the methods are generated on-the-fly and depend on the
     grammar that is loaded at runtime, a full list of methods is not
     available in the documentation.  However, the list of
@@ -95,6 +101,17 @@ class Parser(object):
             })
         self._logger = logging.getLogger(__name__)
         self._expose_rule_functions(expose_all_rules)
+
+
+    def parse(self, v):
+        """parse HGVS variant `v`, returning a SequenceVariant
+
+        :param str v: an HGVS-formatted variant as a string
+        :rtype: SequenceVariant
+
+        """
+        return self.parse_hgvs_variant(v)
+
 
     def _expose_rule_functions(self, expose_all_rules=False):
         """add parse functions for public grammar rules

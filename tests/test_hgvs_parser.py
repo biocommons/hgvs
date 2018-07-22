@@ -18,6 +18,10 @@ class Test_Position(unittest.TestCase):
     def setUpClass(cls):
         cls.parser = hgvs.parser.Parser()
 
+    def test_parser_parse_shorthand(self):
+        v = "NM_01234.5:c.22+1A>T"
+        assert self.parser.parse_hgvs_variant(v) == self.parser.parse(v)
+
     def test_parser_gauntlet(self):
         fn = os.path.join(os.path.dirname(__file__), "data", "gauntlet")
         for var in open(fn, "r"):
