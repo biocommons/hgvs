@@ -12,8 +12,9 @@ import logging
 import math
 
 from Bio.Seq import Seq
+from bioutils.sequences import reverse_complement
 
-from ..edit import (Dup, NARefAlt, Repeat)
+from ..edit import (NARefAlt, Dup, Inv, Repeat)
 from ..enums import Datum
 import six
 
@@ -119,6 +120,7 @@ class AltSeqBuilder(object):
         type_map = {
             NARefAlt: self._incorporate_delins,
             Dup: self._incorporate_dup,
+            Inv: self._incorporate_inv,
             Repeat: self._incorporate_repeat,
             NOT_CDS: self._create_alt_equals_ref_noncds,
             WHOLE_GENE_DELETED: self._create_no_protein
@@ -139,11 +141,14 @@ class AltSeqBuilder(object):
             # TODO: handle case where variant introduces a Met (new start)
             edit_type = NOT_CDS
         elif variant_location == self.WHOLE_GENE:
-            if isinstance(self._var_c.posedit.edit, Dup):
+            if self._var_c.posedit.edit.type == "del":
+                edit_type = WHOLE_GENE_DELETED
+            elif self._var_c.posedit.edit.type == "dup":
                 _logger.warn("Whole-gene duplication; consequence assumed to not affect protein product")
                 edit_type = NOT_CDS
-            elif self._var_c.posedit.edit.ref is not None and self._var_c.posedit.edit.alt is None:
-                edit_type = WHOLE_GENE_DELETED
+            elif self._var_c.posedit.edit.type == "inv":
+                _logger.warn("Whole-gene inversion; consequence assumed to not affect protein product")
+                edit_type = NOT_CDS
             else:
                 edit_type = NOT_CDS
         else:    # should never get here
@@ -245,6 +250,25 @@ class AltSeqBuilder(object):
 
         is_frameshift = len(dup_seq) % 3 != 0
         variant_start_aa = int(math.ceil((self._var_c.posedit.pos.end.base + 1) / 3.0))
+
+        alt_data = AltTranscriptData(
+            seq,
+            cds_start,
+            cds_stop,
+            is_frameshift,
+            variant_start_aa,
+            self._transcript_data.protein_accession,
+            is_ambiguous=self._ref_has_multiple_stops)
+        return alt_data
+
+    def _incorporate_inv(self):
+        """Incorporate inv into sequence"""
+        seq, cds_start, cds_stop, start, end = self._setup_incorporate()
+
+        seq[start:end] = list(reverse_complement(''.join(seq[start:end])))
+
+        is_frameshift = False
+        variant_start_aa = max(int(math.ceil((self._var_c.posedit.pos.start.base) / 3.0)), 1)
 
         alt_data = AltTranscriptData(
             seq,
