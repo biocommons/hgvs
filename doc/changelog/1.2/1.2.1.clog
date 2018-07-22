@@ -1,0 +1,5 @@
+clog format: 1; -*-outline-*-
+* 1.2.1 (2018-07-21)
+Changes since 1.2.0 (2018-07-15).
+** Bug Fixes
+*** Fixes #499: recognize whole-gene dup (c.-i_*j) and assume does not affect protein sequence [dc48d5d]
