@@ -76,17 +76,16 @@ bdist bdist_egg bdist_wheel build sdist install: %:
 #=> test: execute tests
 .PHONY: test
 test:
-	python setup.py pytest --addopts="--cov=hgvs -m 'not extra' ${TEST_DIRS}"
+	python setup.py pytest --addopts="--cov-config=setup.cfg -m 'not extra' --cov=${PKG} ${TEST_DIRS}"
 
 #=> test-docs: execute tests
 .PHONY: test-docs
 test-docs:
-	python setup.py pytest --addopts="--cov=hgvs -m 'not extra' ${DOC_TESTS}"
-
+	python setup.py pytest --addopts="--cov-config=setup.cfg -m 'not extra' --cov=${PKG} ${DOC_TESTS}"
 
 #=> test-* -- run tests with specified tag
 test-%:
-	python setup.py pytest --addopts="--cov=hgvs -m ${*} ${TEST_DIRS}"
+	python setup.py pytest --addopts="--cov-config=setup.cfg -m 'quick' --cov=${PKG} ${TEST_DIRS}"
 
 #=> tox -- run all tox tests
 tox:
