@@ -509,6 +509,7 @@ if __name__ == "__main__":
 #     tm = AlignmentMapper(self.hdp,ac,self.ref)
 #     pass
 
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

@@ -73,6 +73,7 @@ def shell():
             dv=hdp.data_version(),
         ))
 
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

@@ -356,6 +356,7 @@ class AltSeqBuilder(object):
             variant_data.frameshift_start = variant_data.variant_start_aa
         return variant_data
 
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

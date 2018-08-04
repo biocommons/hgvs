@@ -43,6 +43,7 @@ def test_projection_near_discrepancies(variant, expected, description):
     var_g = am38.n_to_g(var_n)
     assert expected == str(var_g), description
 
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

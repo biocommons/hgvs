@@ -21,6 +21,7 @@ class OrderedEnum(Enum):
         assert self.__class__ is other.__class__, "OrderedEnum can only compare to OrderedEnum"
         return self.value < other.value
 
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

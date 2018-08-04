@@ -192,6 +192,7 @@ class AssemblyMapper(VariantMapper):
                 # fall through to return unnormalized variant
         return var
 
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

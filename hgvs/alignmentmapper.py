@@ -262,6 +262,7 @@ class AlignmentMapper(object):
                             " must be both defined or both undefined".format(self=self))
         return self.cds_start_i is not None
 
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

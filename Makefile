@@ -177,6 +177,7 @@ hgvs.svg: hgvs.dot
 	dot -Tsvg <$< >"$@.tmp"
 	/bin/mv "$@.tmp" "$@"
 
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

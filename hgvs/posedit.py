@@ -105,6 +105,7 @@ class PosEdit(object):
                 return (ValidationLevel.WARNING, str(err))
         return (ValidationLevel.VALID, None)
 
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

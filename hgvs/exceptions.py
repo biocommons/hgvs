@@ -23,7 +23,7 @@ class HGVSInvalidIntervalError(HGVSError):
 
 
 class HGVSInvalidVariantError(HGVSError):
-    """Exception raised when variant is inconsistend or invalid"""
+    """Exception raised when variant is inconsistent or invalid"""
     pass
 
 
@@ -47,6 +47,7 @@ class HGVSUsageError(HGVSError):
 class HGVSVerifyFailedError(HGVSError):
     """Exception raised when the cached hdp result is not consistent with latest remote result"""
     pass
+
 
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)

@@ -74,6 +74,7 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
       ],
 )
 
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

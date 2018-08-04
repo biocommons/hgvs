@@ -11,6 +11,7 @@ existing_block_re = re.compile("^\s*#* <LICENSE>.*</LICENSE>\n", flags=re.MULTIL
 
 license = """\
 
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

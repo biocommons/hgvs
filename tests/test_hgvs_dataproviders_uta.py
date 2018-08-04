@@ -130,6 +130,7 @@ class TestUTACache(Test_hgvs_dataproviders_uta_UTA_default):
 if __name__ == "__main__":
     unittest.main()
 
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

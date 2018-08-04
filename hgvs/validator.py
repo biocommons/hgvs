@@ -127,6 +127,7 @@ class ExtrinsicValidator():
             return (ValidationLevel.ERROR, CDS_BOUND_ERROR_MSG.format(cds_length=cds_length))
         return (ValidationLevel.VALID, None)
 
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

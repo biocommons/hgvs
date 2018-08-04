@@ -63,18 +63,19 @@ logger = logging.getLogger(__name__)
 _is_released_version = False
 try:
     __version__ = pkg_resources.get_distribution("hgvs").version
+    # TODO: match other valid release tags, like .post\d+
     if re.match("^\d+\.\d+\.\d+$", __version__) is not None:
         _is_released_version = True
 except pkg_resources.DistributionNotFound as e:
     warnings.warn("can't get __version__ because %s package isn't installed" % __package__, Warning)
     __version__ = None
 
-# Make sure we're showing DeprecationWarnings for the hgvs package only
-# N.B. The module name is provided as a regexp to the module *path* (not the module name)
-# So, we're looking for hgvs downstream of lib as an approximation
+# Enable DeprecationWarnings for the hgvs package
+# N.B. The module name is provided as a regexp to the module *path*
 warnings.filterwarnings('default', '', DeprecationWarning, '.*\Wlib\W.*\Whgvs\W.*')
 
 logger.info("hgvs " + __version__ + "; released: " + str(_is_released_version))
+
 
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
