@@ -1,0 +1,5 @@
+clog format: 1; -*-outline-*-
+* 1.2.2 (2018-07-23)
+Changes since 1.2.1 (2018-07-21).
+** Bug Fixes
+*** Closes #501: Add c_to_p support for inversion (#502)
