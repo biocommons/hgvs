@@ -32,7 +32,7 @@ _logger = logging.getLogger(__name__)
 def _stage_from_version(version):
     """return "prd", "stg", or "dev" for the given version string.  A value is always returned"""
     if version:
-        m = re.match("^(?P<xyz>\d+\.\d+\.\d+)(?P<extra>.*)", version)
+        m = re.match(r"^(?P<xyz>\d+\.\d+\.\d+)(?P<extra>.*)", version)
         if m:
             return "stg" if m.group("extra") else "prd"
     return "dev"

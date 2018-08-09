@@ -12,7 +12,7 @@ def build_tx_cigar(exons, strand):
     The input exons are expected to be in transcript order, and the
     resulting CIGAR is also in transcript order. 
     """
-    cigarelem_re = re.compile('\d+[=DIMNX]')
+    cigarelem_re = re.compile(r'\d+[=DIMNX]')
 
     def _reverse_cigar(c):
         return ''.join(reversed(cigarelem_re.findall(c)))

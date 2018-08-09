@@ -31,7 +31,7 @@ _logger = logging.getLogger(__name__)
 
 
 class VariantMapper(object):
-    """Maps SequenceVariant objects between g., n., r., c., and p. representations.
+    r"""Maps SequenceVariant objects between g., n., r., c., and p. representations.
 
     g⟷{c,n,r} projections are similar in that c, n, and r variants
     may use intronic coordinates. There are two essential differences
