@@ -91,21 +91,12 @@ Related tools
   package.
 
 
-Getting Help
-@@@@@@@@@@@@
+Support
+@@@@@@@
 
-There are several ways to get help with the `hgvs` package.
-
-The `hgvs-discuss mailing list
-<https://groups.google.com/forum/#!forum/hgvs-discuss>`_ is the preferred
-way to reach the `hgvs` package authors.  Please file bugs and feature
-requests on the `hgvs issue tracker
-<https://github.com/biocommons/hgvs/issues>`_.
-
-If you have questions about the `Variation Nomenclature
-Recommendations <http://varnomen.hgvs.org/>`_, consider posting your
-questions to the `HGVS Facebook page
-<https://www.facebook.com/HGVSmutnomen>`_.
+See the section :doc:`getting_help` for information about connecting
+with the community, asking questions, and :ref:`filing bug reports
+correctly<bug-reports>`.
 
 
 Links
@@ -120,10 +111,10 @@ Links
 References
 @@@@@@@@@@
 
-A Python package for parsing, validating, mapping and formatting sequence variants using HGVS nomenclature.
-  | Hart RK, Rico R, Hare E, Garcia J, Westbrook J, Fusaro VA
-  | Bioinformatics. 31(2):268-70 (2014).
-  | https://www.ncbi.nlm.nih.gov/pubmed/25273102
+A Python package for parsing, validating, mapping and formatting
+  sequence variants using HGVS nomenclature.  | Hart RK, Rico R, Hare
+  E, Garcia J, Westbrook J, Fusaro VA | Bioinformatics. 31(2):268-70
+  (2014).  | https://www.ncbi.nlm.nih.gov/pubmed/25273102
 
 Describing structural changes by extending HGVS sequence variation nomenclature.
   | Taschner, P. E. M., & den Dunnen, J. T.
