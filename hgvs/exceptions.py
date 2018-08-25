@@ -23,7 +23,7 @@ class HGVSInvalidIntervalError(HGVSError):
 
 
 class HGVSInvalidVariantError(HGVSError):
-    """Exception raised when variant is inconsistend or invalid"""
+    """Exception raised when variant is inconsistent or invalid"""
     pass
 
 
@@ -50,7 +50,7 @@ class HGVSVerifyFailedError(HGVSError):
 
 
 # <LICENSE>
-# Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
+# Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

@@ -27,8 +27,7 @@ data_fn = os.path.join(os.path.dirname(__file__), "data", "clinvar.gz")
 
 class Test_Clinvar(unittest.TestCase, CrossChecker):
     def setUp(self):
-        self.hdp = hgvs.dataproviders.uta.connect(
-            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+        self.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp)
         self.hp = hgvs.parser.Parser()
 
@@ -69,8 +68,9 @@ class Test_Clinvar(unittest.TestCase, CrossChecker):
 if __name__ == "__main__":
     unittest.main()
 
+
 # <LICENSE>
-# Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
+# Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

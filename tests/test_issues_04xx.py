@@ -18,7 +18,6 @@ import hgvs.dataproviders.uta
 import hgvs.normalizer
 import hgvs.parser
 import hgvs.sequencevariant
-import hgvs.transcriptmapper
 import hgvs.validator
 import hgvs.variantmapper
 from support import CACHE
@@ -27,8 +26,7 @@ from support import CACHE
 @pytest.mark.issues
 class Test_Issues(unittest.TestCase):
     def setUp(self):
-        self.hdp = hgvs.dataproviders.uta.connect(
-            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+        self.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp, replace_reference=False)
         self.vm_rr = hgvs.variantmapper.VariantMapper(self.hdp, replace_reference=True)
         self.hp = hgvs.parser.Parser()
@@ -57,3 +55,10 @@ class Test_Issues(unittest.TestCase):
         bogus_ac = "NM_000000.99"
         with self.assertRaises(HGVSDataNotAvailableError):
             self.hdp.seqfetcher.fetch_seq(bogus_ac)
+
+    def test_499_whole_gene_dup(self):
+        # Verify that 1_*1dup works
+        self.am37.c_to_p(self.hp.parse_hgvs_variant("NM_001637.3:c.1_*1dup"))
+
+        # Now try -1_*1dup (essentially, this is issue #499)
+        self.am37.c_to_p(self.hp.parse_hgvs_variant("NM_001637.3:c.-1_*1dup"))

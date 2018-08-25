@@ -52,6 +52,12 @@ class Parser(object):
     to the `hgvs_variant` and `c_interval rules` in the grammar,
     respectively.
 
+    As a convenience, the Parser provides the `parse` method as a
+    shorthand for `parse_hgvs_variant`:
+    >>> v = hp.parse("NM_01234.5:c.22+1A>T")
+    >>> v
+    SequenceVariant(ac=NM_01234.5, type=c, posedit=22+1A>T)
+
     Because the methods are generated on-the-fly and depend on the
     grammar that is loaded at runtime, a full list of methods is not
     available in the documentation.  However, the list of
@@ -87,9 +93,25 @@ class Parser(object):
 
     def __init__(self, grammar_fn=__default_grammar_fn, expose_all_rules=False):
         self._grammar_fn = grammar_fn
-        self._grammar = parsley.makeGrammar(open(grammar_fn, "r").read(), {"hgvs": hgvs, "bioutils": bioutils, "copy": copy})
+        self._grammar = parsley.makeGrammar(
+            open(grammar_fn, "r").read(), {
+                "hgvs": hgvs,
+                "bioutils": bioutils,
+                "copy": copy
+            })
         self._logger = logging.getLogger(__name__)
         self._expose_rule_functions(expose_all_rules)
+
+
+    def parse(self, v):
+        """parse HGVS variant `v`, returning a SequenceVariant
+
+        :param str v: an HGVS-formatted variant as a string
+        :rtype: SequenceVariant
+
+        """
+        return self.parse_hgvs_variant(v)
+
 
     def _expose_rule_functions(self, expose_all_rules=False):
         """add parse functions for public grammar rules
@@ -109,8 +131,8 @@ class Parser(object):
                 try:
                     return self._grammar(s).__getattr__(rule_name)()
                 except ometa.runtime.ParseError as exc:
-                    raise HGVSParseError(
-                        "{s}: char {exc.position}: {reason}".format(s=s, exc=exc, reason=exc.formatReason()))
+                    raise HGVSParseError("{s}: char {exc.position}: {reason}".format(
+                        s=s, exc=exc, reason=exc.formatReason()))
 
             rule_fxn.__doc__ = "parse string s using `%s' rule" % rule_name
             return rule_fxn
@@ -128,7 +150,7 @@ class Parser(object):
 
 
 # <LICENSE>
-# Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
+# Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

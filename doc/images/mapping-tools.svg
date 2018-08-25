@@ -393,7 +393,7 @@
                      y="8488"
                      id="tspan211"><tspan
                        id="tspan213"
-                       style="fill:#000000;stroke:none">IntervalMapper</tspan></tspan></tspan></text>
+                       style="fill:#000000;stroke:none">AlignmentMapper</tspan></tspan></tspan></text>
 </g></g><g
              class="com.sun.star.drawing.CustomShape"
              id="g215"><g
@@ -493,11 +493,11 @@
                    id="tspan265"
                    style="font-size:352px;font-weight:400;font-family:'Liberation Sans, sans-serif'"><tspan
                      class="TextPosition"
-                     x="7010"
+                     x="7080"
                      y="8547"
                      id="tspan267"><tspan
                        id="tspan269"
-                       style="fill:#000000;stroke:none">TranscriptMapper</tspan></tspan></tspan><tspan
+                       style="fill:#000000;stroke:none">AssemblyMapper</tspan></tspan></tspan><tspan
                    class="TextParagraph"
                    font-size="352px"
                    font-weight="400"
@@ -508,18 +508,7 @@
                      y="8945"
                      id="tspan273"><tspan
                        id="tspan275"
-                       style="fill:#000000;stroke:none">VariantMapper</tspan></tspan></tspan><tspan
-                   class="TextParagraph"
-                   font-size="352px"
-                   font-weight="400"
-                   id="tspan277"
-                   style="font-size:352px;font-weight:400;font-family:'Liberation Sans, sans-serif'"><tspan
-                     class="TextPosition"
-                     x="6697"
-                     y="9343"
-                     id="tspan279"><tspan
-                       id="tspan281"
-                       style="fill:#000000;stroke:none">EasyVariantMapper</tspan></tspan></tspan></text>
+                       style="fill:#000000;stroke:none">VariantMapper</tspan></tspan></tspan></text>
 </g></g><g
              class="com.sun.star.drawing.ConnectorShape"
              id="g283"><g

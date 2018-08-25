@@ -44,10 +44,14 @@ start_i and minimal end_i.
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import logging
 import re
 
 from hgvs.exceptions import HGVSInvalidIntervalError
 from six.moves import range
+
+_logger = logging.getLogger(__name__)
+_logger.warn("This module is deprecated and will be removed in a future release")
 
 
 # N.B. This Interval is internal to intervalmapper.py. It is *NOT* the
@@ -201,7 +205,7 @@ def cigar_to_intervalpairs(cigar):
 
 
 # <LICENSE>
-# Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
+# Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

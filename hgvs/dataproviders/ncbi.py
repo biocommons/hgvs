@@ -102,47 +102,46 @@ class NCBIBase(object):
 
     _queries = {
         "gene_id_for_hgnc":
-            """
+        """
             select distinct(gene_id)
             from assocacs
             where hgnc=?
             """,
         "gene_id_for_tx":
-            """
+        """
             select gene_id
             from assocacs
             where tx_ac=?
             """,
         "tx_for_gene_id":
-            """
+        """
             select tx_ac 
             from assocacs
             where gene_id=?
             """,
         "hgnc_for_gene_id":
-            """
+        """
             select distinct(hgnc) 
             from assocacs
             where gene_id=?
             """,
         "gene_info_for_gene_id":
-            """
+        """
             select gene_id, tax_id, hgnc, maploc, aliases, type, summary, descr, xrefs   
             from geneinfo
             where gene_id=?
             """,
         "gene_info_for_hgnc":
-            """
+        """
             select gene_id, tax_id, hgnc, maploc, aliases, type, summary, descr, xrefs   
             from geneinfo
             where hgnc=?
             """,
         "all_transcripts":
-            """
+        """
                 select distinct(tx_ac) 
                 from assocacs                 
             """
-
     }
 
     def __init__(self, url, mode=None, cache=None):
@@ -211,13 +210,13 @@ class NCBIBase(object):
         rows = self._fetchall(self._queries['all_transcripts'], [])
         return [r['tx_ac'] for r in rows]
 
-    def store_assocacs(self, hgnc, tx_ac, gene_id, pro_ac, origin ):
-            sql = """
+    def store_assocacs(self, hgnc, tx_ac, gene_id, pro_ac, origin):
+        sql = """
                 insert into assocacs (hgnc, tx_ac, gene_id, pro_ac, origin)
                 values (%s,%s,%s,%s,%s)
                 
             """
-            self._update(sql, [hgnc, tx_ac, gene_id, pro_ac, origin])
+        self._update(sql, [hgnc, tx_ac, gene_id, pro_ac, origin])
 
 
 class NCBI_postgresql(NCBIBase):
@@ -251,7 +250,8 @@ class NCBI_postgresql(NCBIBase):
             database=self.url.database,
             user=self.url.username,
             password=self.url.password,
-            application_name=self.application_name + "/" + hgvs.__version__, )
+            application_name=self.application_name + "/" + hgvs.__version__,
+        )
         if self.pooling:
             _logger.info("Using UTA ThreadedConnectionPool")
             self._pool = psycopg2.pool.ThreadedConnectionPool(hgvs.global_config.uta.pool_min,
@@ -270,8 +270,8 @@ class NCBI_postgresql(NCBIBase):
         r = self._fetchone("select exists(SELECT 1 FROM pg_namespace WHERE nspname = %s)", [self.url.schema])
         if r[0]:
             return
-        raise HGVSDataNotAvailableError(
-            "specified schema ({}) does not exist (url={})".format(self.url.schema, self.url))
+        raise HGVSDataNotAvailableError("specified schema ({}) does not exist (url={})".format(
+            self.url.schema, self.url))
 
     @contextlib.contextmanager
     def _get_cursor(self, n_retries=1):
@@ -350,7 +350,6 @@ class ParseResult(urlparse.ParseResult):
 
     def __str__(self):
         return self.geturl()
-
 
 
 def _parse_url(db_url):

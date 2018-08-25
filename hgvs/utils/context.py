@@ -41,8 +41,8 @@ def full_house(am, var, tx_ac=None):
             if len(rtx) == 0:
                 raise RuntimeError("no relevant transcripts for {var.ac}".format(var=var))
             if len(rtx) > 1:
-                raise RuntimeError(
-                    "{n} relevant transcripts for {var.ac}; you need to pick one".format(n=len(rtx), var=var))
+                raise RuntimeError("{n} relevant transcripts for {var.ac}; you need to pick one".format(
+                    n=len(rtx), var=var))
             tx_ac = rtx[0]
         var_n = am.g_to_n(var_g, tx_ac)
         var_c = am.n_to_c(var_n)
@@ -76,7 +76,7 @@ def variant_context_w_alignment(am, var, margin=20, tx_ac=None):
     from uta_align.align.algorithms import align, cigar_alignment
 
     fh = full_house(am, var, tx_ac=tx_ac)
-    tm = am._fetch_TranscriptMapper(fh['n'].ac, fh['g'].ac, am.alt_aln_method)
+    tm = am._fetch_AlignmentMapper(fh['n'].ac, fh['g'].ac, am.alt_aln_method)
     strand = tm.strand
     span_g = _ival_to_span(fh['g'].posedit.pos)
     span_g = (span_g[0] - margin, span_g[1] + margin)

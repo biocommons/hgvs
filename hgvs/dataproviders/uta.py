@@ -32,7 +32,7 @@ _logger = logging.getLogger(__name__)
 def _stage_from_version(version):
     """return "prd", "stg", or "dev" for the given version string.  A value is always returned"""
     if version:
-        m = re.match("^(?P<xyz>\d+\.\d+\.\d+)(?P<extra>.*)", version)
+        m = re.match(r"^(?P<xyz>\d+\.\d+\.\d+)(?P<extra>.*)", version)
         if m:
             return "stg" if m.group("extra") else "prd"
     return "dev"
@@ -481,10 +481,8 @@ class UTA_postgresql(UTABase):
 
     def close(self):
         if self.pooling:
-            _logger.warning("Closing pool; future mapping and validation will fail.")
             self._pool.closeall()
         else:
-            _logger.warning("Closing connection; future mapping and validation will fail.")
             if self._conn is not None:
                 self._conn.close()
 
@@ -498,7 +496,8 @@ class UTA_postgresql(UTABase):
             database=self.url.database,
             user=self.url.username,
             password=self.url.password,
-            application_name=self.application_name + "/" + hgvs.__version__, )
+            application_name=self.application_name + "/" + hgvs.__version__,
+        )
         if self.pooling:
             _logger.info("Using UTA ThreadedConnectionPool")
             self._pool = psycopg2.pool.ThreadedConnectionPool(hgvs.global_config.uta.pool_min,
@@ -517,8 +516,8 @@ class UTA_postgresql(UTABase):
         r = self._fetchone("select exists(SELECT 1 FROM pg_namespace WHERE nspname = %s)", [self.url.schema])
         if r[0]:
             return
-        raise HGVSDataNotAvailableError(
-            "specified schema ({}) does not exist (url={})".format(self.url.schema, self.url))
+        raise HGVSDataNotAvailableError("specified schema ({}) does not exist (url={})".format(
+            self.url.schema, self.url))
 
     @contextlib.contextmanager
     def _get_cursor(self, n_retries=1):
@@ -637,8 +636,9 @@ if __name__ == "__main__":
     import doctest
     doctest.testmod()
 
+
 # <LICENSE>
-# Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
+# Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

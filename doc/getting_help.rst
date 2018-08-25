@@ -14,6 +14,13 @@ If you need help, please read the following sources first.  Then, if
 you've still got a question, post to one of them.
 
 
+If you have questions about the `Variation Nomenclature
+Recommendations <http://varnomen.hgvs.org/>`_, consider posting your
+questions to the `HGVS Facebook page
+<https://www.facebook.com/HGVSmutnomen>`_.
+
+
+
 hgvs-discuss Mailing List/Group
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
@@ -21,9 +28,8 @@ For general questions, the best source of information is the
 hgvs-discuss Google Group
 (https://groups.google.com/forum/#!forum/hgvs-discuss).  It is
 publicly visible, but posting requires joining in order to control
-spam.
-
-Please do NOT send email directly to authors. 
+spam.  The mailing list is the preferred way to reach the `hgvs`
+package authors.  (Please do NOT send email directly to authors.)
 
 
 Gitter Channel
@@ -34,12 +40,13 @@ There's not much use yet, but there's a chance that you could get
 real-time replies there.
 
 
+.. _bug-reports:
+
 Bug Reports
 @@@@@@@@@@@
 
-If you think you've got a bug, please report it using github (requires
-a github account). Here are a few tips to make it more likely that you
-get a useful reply:
+If you think you've got a bug, please report it!  Here are a few tips
+to make it more likely that you get a useful reply:
 
 * Use the command-line tool `hgvs-shell` that comes with `hgvs` to
   prepare your bug report.  Using `hgvs-shell` makes it easier for you
@@ -61,6 +68,10 @@ get a useful reply:
   information for you, as shown below. Please use it.
 
 * Include an explanation of the result you expected and why.
+
+* Report the bug using github, which requires an account.  If you
+  don't have an account (and don't want to create one), sending the
+  same information to the mailing list is acceptable.
 
 ::
 

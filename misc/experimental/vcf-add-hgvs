@@ -16,20 +16,18 @@ import logging
 import os
 import sys
 
-import bioutils.assembly as ba
+from bioutils.assemblies import get_assemblies
 
 import hgvs.edit
 import hgvs.location
 import hgvs.posedit
-import hgvs.variant
+import hgvs.sequencevariant
 import hgvs.parser
 import hgvs.dataproviders.uta
 import hgvs.variantmapper
 
-# This code is experimental. Pyvcf is not an explicit dependency.
-# You must manually install it. Try `pip install pyvcf`.
-import vcf
-from vcf.parser import _Info as VcfInfo, field_counts as vcf_field_counts
+
+_logger = logging.getLogger(__name__)
 
 
 def parse_args(argv):
@@ -74,7 +72,7 @@ def alts_as_genomic_hgvs(contig_ac_map, r, keep_left_anchor=False):
                 alt = alt[lp:]
                 start += lp
 
-        var_g = hgvs.variant.SequenceVariant(ac=ac,
+        var_g = hgvs.sequencevariant.SequenceVariant(ac=ac,
                                              type='g',
                                              posedit=hgvs.posedit.PosEdit(
                                                  hgvs.location.Interval(start=hgvs.location.SimplePosition(start),
@@ -93,6 +91,13 @@ def alts_as_genomic_hgvs(contig_ac_map, r, keep_left_anchor=False):
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
 
+    try:
+        import vcf
+        from vcf.parser import _Info as VcfInfo, field_counts as vcf_field_counts
+    except ModuleNotFoundError as e:
+        _logger.critical("Because this code is experimental, pyvcf is not an explicit dependency. Try `pip install pyvcf`.")
+
+
     opts = parse_args(sys.argv[1:])
 
     if opts.with_c_dot:
@@ -102,7 +107,7 @@ if __name__ == '__main__':
                                                                        assembly_name=opts.assembly,
                                                                        alt_aln_method='splign')
 
-    assemblies = ba.get_assemblies()
+    assemblies = get_assemblies()
     assert opts.assembly in assemblies, "{} not in known assemblies (known: {}".format(
         opts.assembly, ','.join(sorted(assemblies.keys())))
     contig_ac_map = {
@@ -112,7 +117,7 @@ if __name__ == '__main__':
 
     vr = vcf.Reader(sys.stdin) if opts.in_filename == '-' else vcf.Reader(filename=opts.in_filename)
 
-    vr.infos['HGVS'] = VcfInfo('HGVS', vcf_field_counts['A'], 'String', 'VCF record alleles in HGVS syntax')
+    vr.infos['HGVS'] = VcfInfo('HGVS', vcf_field_counts['A'], 'String', 'VCF record alleles in HGVS syntax', version=None, source=None)
 
     vw = vcf.Writer(sys.stdout, vr) if opts.out_filename == '-' else vcf.Writer(filename=opts.out_filename, template=vr)
 

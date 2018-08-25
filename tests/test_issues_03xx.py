@@ -18,7 +18,7 @@ import hgvs.dataproviders.uta
 import hgvs.normalizer
 import hgvs.parser
 import hgvs.sequencevariant
-import hgvs.transcriptmapper
+import hgvs.alignmentmapper
 import hgvs.validator
 import hgvs.variantmapper
 from support import CACHE
@@ -27,8 +27,7 @@ from support import CACHE
 @pytest.mark.issues
 class Test_Issues(unittest.TestCase):
     def setUp(self):
-        self.hdp = hgvs.dataproviders.uta.connect(
-            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+        self.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp, replace_reference=False)
         self.vm_rr = hgvs.variantmapper.VariantMapper(self.hdp, replace_reference=True)
         self.hp = hgvs.parser.Parser()
@@ -156,7 +155,7 @@ class Test_Issues(unittest.TestCase):
     def test_346_reject_partial_alignments(self):
         # hgvs-346: verify that alignment data covers full-length transcript
         with self.assertRaises(HGVSDataNotAvailableError):
-            hgvs.transcriptmapper.TranscriptMapper(
+            hgvs.alignmentmapper.AlignmentMapper(
                 self.hdp, tx_ac="NM_001290223.1", alt_ac="NC_000010.10", alt_aln_method="splign")
 
     def test_349_incorrect_normalization_insGG_to_dup2(self):

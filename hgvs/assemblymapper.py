@@ -166,8 +166,8 @@ class AssemblyMapper(VariantMapper):
         assert len(alt_acs) == 1, "Should have exactly one alignment at this point"
         return alt_acs[0]
 
-    def _fetch_TranscriptMapper(self, tx_ac, alt_ac=None, alt_aln_method=None):
-        """convenience version of VariantMapper._fetch_TranscriptMapper that
+    def _fetch_AlignmentMapper(self, tx_ac, alt_ac=None, alt_aln_method=None):
+        """convenience version of VariantMapper._fetch_AlignmentMapper that
         derives alt_ac from transcript, assembly, and alt_aln_method
         used to instantiate the AssemblyMapper instance
 
@@ -177,7 +177,7 @@ class AssemblyMapper(VariantMapper):
             alt_ac = self._alt_ac_for_tx_ac(tx_ac)
         if alt_aln_method is None:
             alt_aln_method = self.alt_aln_method
-        return super(AssemblyMapper, self)._fetch_TranscriptMapper(tx_ac, alt_ac, alt_aln_method)
+        return super(AssemblyMapper, self)._fetch_AlignmentMapper(tx_ac, alt_ac, alt_aln_method)
 
     def _maybe_normalize(self, var):
         """normalize variant if requested, and ignore HGVSUnsupportedOperationError
@@ -194,7 +194,7 @@ class AssemblyMapper(VariantMapper):
 
 
 # <LICENSE>
-# Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
+# Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

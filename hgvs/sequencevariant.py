@@ -43,8 +43,8 @@ class SequenceVariant(object):
     __str__ = format
 
     def __repr__(self):
-        return "{0}({1})".format(self.__class__.__name__, ", ".join((a.name + "=" + str(getattr(self, a.name)))
-                                                                    for a in self.__attrs_attrs__))
+        return "{0}({1})".format(self.__class__.__name__, ", ".join(
+            (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
 
     def fill_ref(self, hdp):
         hm = hgvs.variantmapper.VariantMapper(hdp)
@@ -72,7 +72,7 @@ class SequenceVariant(object):
 
 
 # <LICENSE>
-# Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
+# Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

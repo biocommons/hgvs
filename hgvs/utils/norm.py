@@ -145,7 +145,7 @@ def normalize_alleles(ref, start, stop, alleles, bound, ref_step, left, shuffle=
 
 
 # <LICENSE>
-# Copyright 2015 Kevin Jacobs (https://github.com/bioinformed/vgraph)
+# Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

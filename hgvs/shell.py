@@ -12,7 +12,6 @@ hgvs_g = "NC_000007.13:g.36561662C>T"
 hgvs_c = "NM_001637.3:c.1582G>A"
 hgvs_p = "NP_001628.1:p.(Gly528Arg)"
 
-
 header_string = """############################################################################
 hgvs-shell -- interactive hgvs
 hgvs version: {v}
@@ -75,18 +74,18 @@ def shell():
         ))
 
 
-## <LICENSE>
-## Copyright 2014 HGVS Contributors (https://github.com/biocommons/hgvs)
-##
-## Licensed under the Apache License, Version 2.0 (the "License");
-## you may not use this file except in compliance with the License.
-## You may obtain a copy of the License at
-##
-##     http://www.apache.org/licenses/LICENSE-2.0
-##
-## Unless required by applicable law or agreed to in writing, software
-## distributed under the License is distributed on an "AS IS" BASIS,
-## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-## See the License for the specific language governing permissions and
-## limitations under the License.
-## </LICENSE>
+# <LICENSE>
+# Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# </LICENSE>

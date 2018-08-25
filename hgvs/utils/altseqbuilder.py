@@ -8,16 +8,19 @@ Used in hgvsc to hgvsp conversion.
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import logging
 import math
 
 from Bio.Seq import Seq
+from bioutils.sequences import reverse_complement
 
-from ..edit import (Dup, NARefAlt, Repeat)
+from ..edit import (NARefAlt, Dup, Inv, Repeat)
 from ..enums import Datum
 import six
 
 DBG = False
 
+_logger = logging.getLogger(__name__)
 
 class AltTranscriptData(object):
     def __init__(self,
@@ -50,7 +53,6 @@ class AltTranscriptData(object):
         :rtype attrs
         """
 
-
         if len(seq) > 0:
             if isinstance(seq, six.string_types):
                 seq = list(seq)
@@ -75,7 +77,6 @@ class AltTranscriptData(object):
         self.frameshift_start = None
         self.is_substitution = is_substitution
         self.is_ambiguous = is_ambiguous
-
 
 
 class AltSeqBuilder(object):
@@ -119,6 +120,7 @@ class AltSeqBuilder(object):
         type_map = {
             NARefAlt: self._incorporate_delins,
             Dup: self._incorporate_dup,
+            Inv: self._incorporate_inv,
             Repeat: self._incorporate_repeat,
             NOT_CDS: self._create_alt_equals_ref_noncds,
             WHOLE_GENE_DELETED: self._create_no_protein
@@ -139,8 +141,14 @@ class AltSeqBuilder(object):
             # TODO: handle case where variant introduces a Met (new start)
             edit_type = NOT_CDS
         elif variant_location == self.WHOLE_GENE:
-            if self._var_c.posedit.edit.ref is not None and self._var_c.posedit.edit.alt is None:
+            if self._var_c.posedit.edit.type == "del":
                 edit_type = WHOLE_GENE_DELETED
+            elif self._var_c.posedit.edit.type == "dup":
+                _logger.warn("Whole-gene duplication; consequence assumed to not affect protein product")
+                edit_type = NOT_CDS
+            elif self._var_c.posedit.edit.type == "inv":
+                _logger.warn("Whole-gene inversion; consequence assumed to not affect protein product")
+                edit_type = NOT_CDS
             else:
                 edit_type = NOT_CDS
         else:    # should never get here
@@ -253,6 +261,25 @@ class AltSeqBuilder(object):
             is_ambiguous=self._ref_has_multiple_stops)
         return alt_data
 
+    def _incorporate_inv(self):
+        """Incorporate inv into sequence"""
+        seq, cds_start, cds_stop, start, end = self._setup_incorporate()
+
+        seq[start:end] = list(reverse_complement(''.join(seq[start:end])))
+
+        is_frameshift = False
+        variant_start_aa = max(int(math.ceil((self._var_c.posedit.pos.start.base) / 3.0)), 1)
+
+        alt_data = AltTranscriptData(
+            seq,
+            cds_start,
+            cds_stop,
+            is_frameshift,
+            variant_start_aa,
+            self._transcript_data.protein_accession,
+            is_ambiguous=self._ref_has_multiple_stops)
+        return alt_data
+
     def _incorporate_repeat(self):
         """Incorporate repeat int sequence"""
         raise NotImplementedError("hgvs c to p conversion does not support {} type: repeats".format(self._var_c))
@@ -291,8 +318,8 @@ class AltSeqBuilder(object):
         end += 1
 
         if DBG:
-            print(
-                "len seq:{} cds_start:{} cds_stop:{} start:{} end:{}".format(len(seq), cds_start, cds_stop, start, end))
+            print("len seq:{} cds_start:{} cds_stop:{} start:{} end:{}".format(
+                len(seq), cds_start, cds_stop, start, end))
         return seq, cds_start, cds_stop, start, end
 
     def _create_alt_equals_ref_noncds(self):
@@ -331,7 +358,7 @@ class AltSeqBuilder(object):
 
 
 # <LICENSE>
-# Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
+# Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

@@ -21,6 +21,7 @@ class Test_VariantMapper(unittest.TestCase):
     def setUpClass(cls):
         cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
         cls.am = hgvs.assemblymapper.AssemblyMapper(cls.hdp)
+        cls.am37 = hgvs.assemblymapper.AssemblyMapper(cls.hdp, assembly_name="GRCh37")
         cls.hp = hgvs.parser.Parser()
 
     def test_VariantMapper_quick(self):
@@ -68,6 +69,90 @@ class Test_VariantMapper(unittest.TestCase):
 
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
         var_g = self.am.c_to_g(var_c)
+
+        self.assertEqual(str(var_g), hgvs_g)
+
+        hgvs_c = "NM_000116.4:c.-8_-3inv6"
+        hgvs_g = "NC_000023.11:g.154411836_154411841inv"
+
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_g = self.am.c_to_g(var_c)
+
+        self.assertEqual(str(var_g), hgvs_g)
+
+        hgvs_c = "NM_000348.3:c.89_91inv3"
+        hgvs_g = "NC_000002.12:g.31580810_31580812inv"
+
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_g = self.am.c_to_g(var_c)
+
+        self.assertEqual(str(var_g), hgvs_g)
+
+        hgvs_c = "NM_001637.3:c.1582_1583inv"
+        hgvs_p = "NP_001628.1:p.(Gly528Pro)"
+
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.am.c_to_p(var_c)
+
+        self.assertEqual(str(var_p), hgvs_p)
+
+        hgvs_c = "NM_025137.3:c.-20_*20inv"
+        hgvs_p = "NP_079413.3:p.?"
+
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.am.c_to_p(var_c)
+
+        self.assertEqual(str(var_p), hgvs_p)
+
+    def test_projection_at_alignment_discrepancy(self):
+        hgvs_g = "NC_000019.10:g.50378563_50378564insTG"
+        hgvs_n = "NM_007121.5:n.796_798delinsTG"
+
+        var_g = self.hp.parse_hgvs_variant(hgvs_g)
+        var_n = self.am.g_to_n(var_g, 'NM_007121.5')
+
+        self.assertEqual(str(var_n), hgvs_n)
+
+        hgvs_g = "NC_000007.14:g.149779575delC"
+        hgvs_n = "NM_198455.2:n.1115_1116insAG"
+
+        var_g = self.hp.parse_hgvs_variant(hgvs_g)
+        var_n = self.am.g_to_n(var_g, 'NM_198455.2')
+
+        self.assertEqual(str(var_n), hgvs_n)
+
+        # issue-353
+        hgvs_g = "NC_000012.11:g.122064775C>T"
+        hgvs_c = "NM_032790.3:c.127_128insTGCCAC"
+
+        var_g = self.hp.parse_hgvs_variant(hgvs_g)
+        var_c = self.am.g_to_c(var_g, 'NM_032790.3')
+
+        self.assertEqual(str(var_c), hgvs_c)
+
+        # issue-461
+        hgvs_g = "NC_000002.11:g.73675227_73675228insCTC"
+        hgvs_c = "NM_015120.4:c.1574_1576="
+
+        var_g = self.hp.parse_hgvs_variant(hgvs_g)
+        var_c = self.am37.g_to_c(var_g, 'NM_015120.4')
+
+        self.assertEqual(str(var_c), hgvs_c)
+
+        # issue-259
+        hgvs_c = "NM_000116.4:c.-120_-119insT"
+        hgvs_g = "NC_000023.10:g.153640061="
+
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_g = self.am37.c_to_g(var_c)
+
+        self.assertEqual(str(var_g), hgvs_g)
+
+        hgvs_c = "NM_000348.3:c.88del"
+        hgvs_g = "NC_000002.11:g.31805882_31805883="
+
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_g = self.am37.c_to_g(var_c)
 
         self.assertEqual(str(var_g), hgvs_g)
 
@@ -335,8 +420,9 @@ class Test_AssemblyMapper(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 
+
 # <LICENSE>
-# Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
+# Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

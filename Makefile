@@ -76,17 +76,16 @@ bdist bdist_egg bdist_wheel build sdist install: %:
 #=> test: execute tests
 .PHONY: test
 test:
-	python setup.py pytest --addopts="--cov=hgvs -m 'not extra' ${TEST_DIRS}"
+	python setup.py pytest --addopts="--cov-config=setup.cfg -m 'not extra' --cov=${PKG} ${TEST_DIRS}"
 
 #=> test-docs: execute tests
 .PHONY: test-docs
 test-docs:
-	python setup.py pytest --addopts="--cov=hgvs -m 'not extra' ${DOC_TESTS}"
-
+	python setup.py pytest --addopts="--cov-config=setup.cfg -m 'not extra' --cov=${PKG} ${DOC_TESTS}"
 
 #=> test-* -- run tests with specified tag
 test-%:
-	python setup.py pytest --addopts="--cov=hgvs -m ${*} ${TEST_DIRS}"
+	python setup.py pytest --addopts="--cov-config=setup.cfg -m 'quick' --cov=${PKG} ${TEST_DIRS}"
 
 #=> tox -- run all tox tests
 tox:
@@ -130,7 +129,7 @@ cleaner: clean
 	rm -fr .cache *.egg-info build dist doc/_build htmlcov
 	find . \( -name \*.pyc -o -name \*.orig -o -name \*.rej \) -print0 | xargs -0r rm
 	find . -name __pycache__ -print0 | xargs -0r rm -fr
-	/bin/rm -f examples/.ipynb_checkpoints
+	/bin/rm -fr examples/.ipynb_checkpoints
 	/bin/rm -f hgvs.{dot,svg,png,sfood}
 	-make -C doc $@
 	-make -C examples $@
@@ -179,18 +178,18 @@ hgvs.svg: hgvs.dot
 	/bin/mv "$@.tmp" "$@"
 
 
-## <LICENSE>
-## Copyright 2016 Source Code Committers
-## 
-## Licensed under the Apache License, Version 2.0 (the "License");
-## you may not use this file except in compliance with the License.
-## You may obtain a copy of the License at
-## 
-##     http://www.apache.org/licenses/LICENSE-2.0
-## 
-## Unless required by applicable law or agreed to in writing, software
-## distributed under the License is distributed on an "AS IS" BASIS,
-## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-## See the License for the specific language governing permissions and
-## limitations under the License.
-## </LICENSE>
+# <LICENSE>
+# Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# </LICENSE>

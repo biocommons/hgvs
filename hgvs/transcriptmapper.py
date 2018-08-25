@@ -6,6 +6,8 @@ genomic (g), non-coding (n), cds (c), and protein (p) coordinates.
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import logging
+
 from bioutils.coordinates import strand_int_to_pm
 
 import hgvs.intervalmapper
@@ -15,6 +17,9 @@ from hgvs.exceptions import HGVSError, HGVSUsageError, HGVSDataNotAvailableError
 from hgvs.utils import build_tx_cigar
 from hgvs.enums import Datum
 from six.moves import range
+
+_logger = logging.getLogger(__name__)
+_logger.warn("This module is deprecated and will be removed in a future release")
 
 
 class TranscriptMapper(object):
@@ -278,7 +283,7 @@ def _hgvs_coord_to_ci(s, e):
 
 
 # <LICENSE>
-# Copyright 2013-2015 HGVS Contributors (https://github.com/biocommons/hgvs)
+# Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

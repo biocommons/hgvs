@@ -1,23 +1,37 @@
 dist: trusty
 sudo: required
+
 language: python
 python:
-- '2.7'
-- '3.5'
+  - '2.7'
+  - '3.5'
+  - '3.6'
 cache: pip
+
 before_install: 
 install: pip install pytest pytest-cov tox-travis coveralls
 script: make tox
 after_success:
   - coveralls
-deploy:
-  provider: pypi
-  user: biocommons
-  skip_upload_docs: true
-  skip_cleanup: true
-  distributions: "sdist bdist_egg bdist_wheel"
-  on:
-    tags: true
-    branch: master
-  password:
-    secure: woRwK1+bv3y0jTdfojrOKi9YeciaEDeNNM8u63eb79VzP6SBoYU2VyVHeKrcaT2kGVYMiH+j6ZQ4LFNkYjmBeXuRmP30Wg4vX6QhIZH8v4KOOIDuSIvY5ZMUgT2p1reHN4I02g9bJ1u12mrjOvXbLjtN1KcZw2wQZOXWioRIez/biwlbIHWEg8iPvUgiPXUJefPFm8vkbRJUt84D+Ml+jdf1usMbZ2oKjrNlyPBcC9bLjpUjp5piTz4F6Olbozhy1Euou6OsfOYwzZMdCn/gBj6ttFb1wc0tDjpbIHjeRyVD377DI26bB25VerP/vr5cwwiJjqBvyFxjtdNd/eVH+0NmGY7l83ju8own7obNpAmJzipeDMRuA5wpdk1EJD2ROjCoNlLE/TS9DceJDgAcA76oL4rJENzaoGb96YntjnvNPDiL+697n62xjp/po7t0Y47ZMsGk2V4jCGaueNU9fo2UYagCnfbpC8J3xP7Rd7W0qq//jRb/iMfO8+v59CFTfl0l6shUJq9VAINh3/uiPHPe3zQljnkNRhi9kJWCm2dxFKYHi1tQ6aqY3MCtBex80cHbefBbBff9MLOftHQKOUrloYTkFkeIWBSE/zNHKWCJYvYgM/9uqaZSEmkKGO/GfEzj++8sOe1zvSOPqzYS/ZtKBdaPHrHxzPNCvvSCOz4=
+
+stages:
+  - test
+  - deploy
+
+jobs:
+  include:
+    - stage: deploy
+      python: 3.6
+      install: skip
+      script: skip
+      deploy:
+        provider: pypi
+        user: biocommons
+        skip_upload_docs: true
+        skip_cleanup: true
+        distributions: "sdist bdist_egg bdist_wheel"
+        on:
+          tags: true
+          branch: master
+        password:
+          secure: woRwK1+bv3y0jTdfojrOKi9YeciaEDeNNM8u63eb79VzP6SBoYU2VyVHeKrcaT2kGVYMiH+j6ZQ4LFNkYjmBeXuRmP30Wg4vX6QhIZH8v4KOOIDuSIvY5ZMUgT2p1reHN4I02g9bJ1u12mrjOvXbLjtN1KcZw2wQZOXWioRIez/biwlbIHWEg8iPvUgiPXUJefPFm8vkbRJUt84D+Ml+jdf1usMbZ2oKjrNlyPBcC9bLjpUjp5piTz4F6Olbozhy1Euou6OsfOYwzZMdCn/gBj6ttFb1wc0tDjpbIHjeRyVD377DI26bB25VerP/vr5cwwiJjqBvyFxjtdNd/eVH+0NmGY7l83ju8own7obNpAmJzipeDMRuA5wpdk1EJD2ROjCoNlLE/TS9DceJDgAcA76oL4rJENzaoGb96YntjnvNPDiL+697n62xjp/po7t0Y47ZMsGk2V4jCGaueNU9fo2UYagCnfbpC8J3xP7Rd7W0qq//jRb/iMfO8+v59CFTfl0l6shUJq9VAINh3/uiPHPe3zQljnkNRhi9kJWCm2dxFKYHi1tQ6aqY3MCtBex80cHbefBbBff9MLOftHQKOUrloYTkFkeIWBSE/zNHKWCJYvYgM/9uqaZSEmkKGO/GfEzj++8sOe1zvSOPqzYS/ZtKBdaPHrHxzPNCvvSCOz4=
