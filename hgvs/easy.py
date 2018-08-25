@@ -36,13 +36,14 @@ Turning on debugging reveals what is happening behind the scenes::
 
 
 NOTE: A consequence of making imports easy is a loss of
-configurability by the caller.  In particular, the database connection
-is made with no arguments (i.e., `connect()`), so it honors the
-UTA_DB_URL and HGVS_SEQREPO_DIR environment variables.
+configurability by the caller.  The database connection is made with
+no arguments (i.e., `connect()`), so it honors the UTA_DB_URL and
+HGVS_SEQREPO_DIR environment variables but is otherwise not
+configurable by the caller.
 
 """
 
-from hgvs import __version__    # flake8: noqa
+from hgvs import __version__, global_config    # flake8: noqa
 from hgvs.assemblymapper import AssemblyMapper
 from hgvs.dataproviders.uta import connect
 from hgvs.normalizer import Normalizer
