@@ -56,7 +56,7 @@ class LazyWrapper:
                 for sf in inspect.stack()[2:]:
                     if sf.filename.startswith("<"):
                         break
-                    tb += [f"{sf.filename}:{sf.lineno}"]
+                    tb += ["{sf.filename}:{sf.lineno}".format(sf=sf)]
                 _logger.debug("\n  ".join(["Call path:"] + tb))
             self._lazywrapper_value = self._lazywrapper_load_function()
         return self._lazywrapper_value
