@@ -56,7 +56,7 @@ import pkg_resources
 import re
 import warnings
 
-from .config import global_config    # flake8: noqa; importing symbol
+from .config import global_config    # noqa (importing symbol)
 
 logger = logging.getLogger(__name__)
 

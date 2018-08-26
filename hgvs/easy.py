@@ -43,7 +43,7 @@ configurable by the caller.
 
 """
 
-from hgvs import __version__, global_config    # flake8: noqa
+from hgvs import __version__, global_config  # noqa: F401
 from hgvs.assemblymapper import AssemblyMapper
 from hgvs.dataproviders.uta import connect
 from hgvs.normalizer import Normalizer
@@ -53,15 +53,14 @@ from hgvs.validator import Validator
 from hgvs.variantmapper import VariantMapper
 
 
-hp   = parser                  = LazyWrapper(Parser)
-hdp  = hgvs_data_provider      = LazyWrapper(connect)
-vm   = hgvs_variant_mapper     = VariantMapper(hgvs_data_provider)
-am37 = hgvs_assembly_mapper_37 = LazyWrapper(lambda: AssemblyMapper(hgvs_data_provider, assembly_name='GRCh37'))
-am38 = hgvs_assembly_mapper_38 = LazyWrapper(lambda: AssemblyMapper(hgvs_data_provider, assembly_name='GRCh38'))
-hn   = hgvs_normalizer         = Normalizer(hgvs_data_provider)
-hv   = hgvs_validator          = Validator(hgvs_data_provider)
-
-projector = am38
+# provide standard abbreviated, short, and long names
+hp   = parser         = hgvs_parser             = LazyWrapper(Parser)
+hdp                   = hgvs_data_provider      = LazyWrapper(connect)
+vm   = variant_mapper = hgvs_variant_mapper     = VariantMapper(hgvs_data_provider)
+am37                  = hgvs_assembly_mapper_37 = LazyWrapper(lambda: AssemblyMapper(hgvs_data_provider, assembly_name='GRCh37'))
+am38 = projector      = hgvs_assembly_mapper_38 = LazyWrapper(lambda: AssemblyMapper(hgvs_data_provider, assembly_name='GRCh38'))
+hn   = normalizer     = hgvs_normalizer         = Normalizer(hgvs_data_provider)
+hv   = validator      = hgvs_validator          = Validator(hgvs_data_provider)
 
 
 # <LICENSE>
