@@ -106,6 +106,16 @@ class AssemblyMapper(VariantMapper):
         return self._maybe_normalize(var_out)
 
     def t_to_p(self, var_t):
+        """Return a protein variant, or "non-coding" for non-coding variant types
+
+        CAUTION: Unlike other x_to_y methods that always return
+        SequenceVariant instances, this method returns a string when
+        the variant type is ``n``.  This is intended as a convenience,
+        particularly when looping over ``relevant_transcripts``,
+        projecting with ``g_to_t``, then desiring a protein
+        representation for coding transcripts.
+
+        """
         if var_t.type == "n":
             return "non-coding"
         if var_t.type == "c":

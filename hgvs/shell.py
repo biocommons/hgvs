@@ -8,9 +8,6 @@ import logging
 
 import IPython
 
-hgvs_g = "NC_000007.13:g.36561662C>T"
-hgvs_c = "NM_001637.3:c.1582G>A"
-hgvs_p = "NP_001628.1:p.(Gly528Arg)"
 
 header_string = """############################################################################
 hgvs-shell -- interactive hgvs
@@ -21,16 +18,22 @@ data_version: {dv}
 sequences source: {hdp.seqfetcher.source}
 
 The following variables are defined:
-* hp -- hgvs parser
-* hdp -- hgvs data provider
-* vm -- VariantMapper
-* am37 -- AssemblyMapper, GRCh37
-* am38 -- AssemblyMapper, GRCh38
-* hv -- hgvs Validator
-* hn -- hgvs Normalizer
+* global_config
+* hp, parser, hgvs_parser -- Parser instance
+* hdp, hgvs_data_provider -- UTA data provider instance
+* vm, variant_mapper, hgvs_variant_mapper -- VariantMapper instance
+* am37, hgvs_assembly_mapper_37 -- GRCh37 Assembly Mapper instance
+* am38, projector, hgvs_assembly_mapper_38 -- GRCh38 Assembly Mapper instances
+* hn, normalizer, hgvs_normalizer -- Normalizer instance
+* hv, validator, hgvs_validator) -- Validator instance
 
-hgvs_g, hgvs_c, hgvs_p -- sample variants as hgvs strings
-var_g, var_c, var_p -- sample variants, as parsed SequenceVariants
+The following functions are available:
+  * parse, normalize, validate
+  * g_to_c, g_to_n, g_to_t,
+  * c_to_g, c_to_n, c_to_p,
+  * n_to_c, n_to_g,
+  * t_to_g,
+  * get_relevant_transcripts
 
 When submitting bug reports, include the version header shown above
 and use these variables/variable names whenever possible.
@@ -39,35 +42,35 @@ and use these variables/variable names whenever possible.
 
 
 def shell():
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.WARNING)
 
-    import hgvs
-    logging.info("Starting hgvs-shell " + hgvs.__version__)
+    from hgvs.easy import (     # noqa: F401
+        __version__, 
+        global_config, 
 
-    import hgvs.assemblymapper
-    import hgvs.dataproviders.uta
-    import hgvs.normalizer
-    import hgvs.parser
-    import hgvs.variantmapper
-    import hgvs.validator
-    from hgvs.utils.context import variant_context_w_alignment
+        # instances
+        hp, parser, hgvs_parser, 
+        hdp, hgvs_data_provider, 
+        vm, variant_mapper, hgvs_variant_mapper, 
+        am37, hgvs_assembly_mapper_37, 
+        am38, projector, hgvs_assembly_mapper_38, 
+        hn, normalizer, hgvs_normalizer, 
+        hv, validator, hgvs_validator,
 
-    hp = hgvsparser = hgvs.parser.Parser()
+        # functionalized methods
+        parse, normalize, validate, 
+        g_to_c, g_to_n, g_to_t,
+        c_to_g, c_to_n, c_to_p,
+        n_to_c, n_to_g,
+        t_to_g, t_to_p,
+        get_relevant_transcripts
+    )
 
-    hdp = hgvs.dataproviders.uta.connect()
-    vm = variantmapper = hgvs.variantmapper.VariantMapper(hdp)
-    am37 = easyvariantmapper = hgvs.assemblymapper.AssemblyMapper(hdp, assembly_name='GRCh37')
-    am38 = easyvariantmapper = hgvs.assemblymapper.AssemblyMapper(hdp, assembly_name='GRCh38')
-    hv = hgvs.validator.Validator(hdp)
-    hn = hgvs.normalizer.Normalizer(hdp)
-
-    var_g = hgvsparser.parse_hgvs_variant(hgvs_g)
-    var_c = hgvsparser.parse_hgvs_variant(hgvs_c)
-    var_p = hgvsparser.parse_hgvs_variant(hgvs_p)
+    from hgvs.utils.context import variant_context_w_alignment  # noqa
 
     IPython.embed(
         header=header_string.format(
-            v=hgvs.__version__,
+            v=__version__,
             hdp=hdp,
             sv=hdp.schema_version(),
             dv=hdp.data_version(),
