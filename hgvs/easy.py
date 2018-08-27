@@ -2,9 +2,6 @@
 
 `hgvs.easy` simplifies using the hgvs package by providing a single
 import path and objects that are instantiated with common defaults.
-Furthermore, objects are "lazy loaded" on first use: for example, the
-grammar is parsed upon the first use of the parser, and a database
-connection is made on the first use of any class that requires it.
 
 With default logging levels, using hgvs.easy is straightforward and
 requires no code changes::
@@ -13,26 +10,18 @@ requires no code changes::
     >> var_g = parser.parse("NC_000017.11:g.43091687delC")
     >> projector.relevant_transcripts(var_g)
     ['NM_007294.3', 'NM_007297.3', 'NR_027676.1', 'NM_007298.3', 'NM_007299.3', 'NM_007300.3']
+    >> projector.g_to_t(var_g, "NM_007294.3")
+    SequenceVariant(ac=NM_007294.3, type=c, posedit=3844del)
 
+`hgvs.easy` also introduces new functional forms for common methods.
+For example::
 
-Turning on debugging reveals what is happening behind the scenes::
-
-    >> import logging
-    >> logging.basicConfig(level="DEBUG")
-    
-    >> from hgvs.easy import parser, projector
-    
-    # Using the parser loads the grammar on demand
-    >> var_g = parser.parse("NC_000017.11:g.43091687delC")
-    DEBUG:hgvs.utils.lazywrapper:Lazy loading `parser = LazyWrapper(lambda: Parser())`...
-    
-    # Nested laziness: AssemblyMapper is wrapped, and its initialization
-    # requires a hgvs dataprovider, which is also wrapped.  Using the
-    # projector therefore connects to the db on demand, then creates the projector.
-    >> projector.relevant_transcripts(var_g)
-    DEBUG:hgvs.utils.lazywrapper:Lazy loading `projector = LazyWrapper(lambda: AssemblyMapper(hdp,...
-    DEBUG:hgvs.utils.lazywrapper:Lazy loading `hdp = LazyWrapper(lambda: connect())` ...
+    >> from hgvs.easy import parse, get_relevant_transcripts, g_to_t
+    >> var_g = parse("NC_000017.11:g.43091687delC")
+    >> get_relevant_transcripts(var_g)
     ['NM_007294.3', 'NM_007297.3', 'NR_027676.1', 'NM_007298.3', 'NM_007299.3', 'NM_007300.3']
+    >> g_to_t(var_g, "NM_007294.3")
+    SequenceVariant(ac=NM_007294.3, type=c, posedit=3844del)
 
 
 NOTE: A consequence of making imports easy is a loss of
@@ -48,34 +37,33 @@ from hgvs.assemblymapper import AssemblyMapper
 from hgvs.dataproviders.uta import connect
 from hgvs.normalizer import Normalizer
 from hgvs.parser import Parser
-from hgvs.utils.lazywrapper import LazyWrapper
 from hgvs.validator import Validator
 from hgvs.variantmapper import VariantMapper
 
 
 # provide standard abbreviated, short, and long names for instances
-hp   = parser         = hgvs_parser             = LazyWrapper(Parser)
-hdp                   = hgvs_data_provider      = LazyWrapper(connect)
+hp   = parser         = hgvs_parser             = Parser()
+hdp                   = hgvs_data_provider      = connect()
 vm   = variant_mapper = hgvs_variant_mapper     = VariantMapper(hgvs_data_provider)
-am37                  = hgvs_assembly_mapper_37 = LazyWrapper(lambda: AssemblyMapper(hgvs_data_provider, assembly_name='GRCh37'))
-am38 = projector      = hgvs_assembly_mapper_38 = LazyWrapper(lambda: AssemblyMapper(hgvs_data_provider, assembly_name='GRCh38'))
+am37                  = hgvs_assembly_mapper_37 = AssemblyMapper(hgvs_data_provider, assembly_name='GRCh37')
+am38 = projector      = hgvs_assembly_mapper_38 = AssemblyMapper(hgvs_data_provider, assembly_name='GRCh38')
 hn   = normalizer     = hgvs_normalizer         = Normalizer(hgvs_data_provider)
 hv   = validator      = hgvs_validator          = Validator(hgvs_data_provider)
 
 # functionalized forms of common methods
-parse = parser.parse
+parse     = parser.parse
 normalize = normalizer.normalize
-validate = validator.validate
-c_to_g = am38.c_to_g
-c_to_n = am38.c_to_n
-c_to_p = am38.c_to_p
-g_to_c = am38.g_to_c
-g_to_n = am38.g_to_n
-g_to_t = am38.g_to_t
-n_to_c = am38.n_to_c
-n_to_g = am38.n_to_g
-t_to_g = am38.t_to_g
-t_to_p = am38.t_to_p
+validate  = validator.validate
+c_to_g    = projector.c_to_g
+c_to_n    = projector.c_to_n
+c_to_p    = projector.c_to_p
+g_to_c    = projector.g_to_c
+g_to_n    = projector.g_to_n
+g_to_t    = projector.g_to_t
+n_to_c    = projector.n_to_c
+n_to_g    = projector.n_to_g
+t_to_g    = projector.t_to_g
+t_to_p    = projector.t_to_p
 get_relevant_transcripts = am38.relevant_transcripts
 
 
