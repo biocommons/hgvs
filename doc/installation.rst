@@ -19,9 +19,8 @@ other platforms (and patches to enable this) are appreciated.
 Install Prerequisites
 @@@@@@@@@@@@@@@@@@@@@
 
-`hgvs` currently requires PostgreSQL client libraries.  (We are
-planning to switch to a REST interface and eliminate this dependency
-in the 0.5.0 release.)  On Ubuntu, try::
+`hgvs` currently requires PostgreSQL client libraries.  On Ubuntu,
+try::
 
   apt-get install libpq-dev
 
@@ -119,8 +118,8 @@ variable::
 .. _uta_docker_install:
 .. _uta_docker:
 
-Local Installation of UTA
-@@@@@@@@@@@@@@@@@@@@@@@@@
+Local Installation of UTA (optional)
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
 The easiest way to install UTA locally is to use the docker image:
