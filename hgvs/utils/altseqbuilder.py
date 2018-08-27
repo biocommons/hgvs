@@ -22,6 +22,7 @@ DBG = False
 
 _logger = logging.getLogger(__name__)
 
+
 class AltTranscriptData(object):
     def __init__(self,
                  seq,

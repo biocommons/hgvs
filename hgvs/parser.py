@@ -102,7 +102,6 @@ class Parser(object):
         self._logger = logging.getLogger(__name__)
         self._expose_rule_functions(expose_all_rules)
 
-
     def parse(self, v):
         """parse HGVS variant `v`, returning a SequenceVariant
 
@@ -111,7 +110,6 @@ class Parser(object):
 
         """
         return self.parse_hgvs_variant(v)
-
 
     def _expose_rule_functions(self, expose_all_rules=False):
         """add parse functions for public grammar rules

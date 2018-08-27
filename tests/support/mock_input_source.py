@@ -91,7 +91,6 @@ def main():
 if __name__ == "__main__":
     main()
 
-
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #

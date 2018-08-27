@@ -403,7 +403,6 @@ class Test_AssemblyMapper(unittest.TestCase):
             self.assertEqual(hgvs["p"], str(self.am.c_to_p(pvs["c"])))
             self.assertEqual(hgvs["p"], str(self.am.t_to_p(pvs["c"])))
 
-
     def test_SNV(self):
         """AssemblyMapper: smoketest with SNVs"""
         hgvs_set = [
@@ -425,7 +424,6 @@ class Test_AssemblyMapper(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
 
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)

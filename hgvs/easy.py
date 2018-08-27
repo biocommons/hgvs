@@ -32,7 +32,7 @@ configurable by the caller.
 
 """
 
-from hgvs import __version__, global_config  # noqa: F401
+from hgvs import __version__, global_config    # noqa: F401
 from hgvs.assemblymapper import AssemblyMapper
 from hgvs.dataproviders.uta import connect
 from hgvs.normalizer import Normalizer
@@ -40,32 +40,30 @@ from hgvs.parser import Parser
 from hgvs.validator import Validator
 from hgvs.variantmapper import VariantMapper
 
-
 # provide standard abbreviated, short, and long names for instances
-hp   = parser         = hgvs_parser             = Parser()
-hdp                   = hgvs_data_provider      = connect()
-vm   = variant_mapper = hgvs_variant_mapper     = VariantMapper(hgvs_data_provider)
-am37                  = hgvs_assembly_mapper_37 = AssemblyMapper(hgvs_data_provider, assembly_name='GRCh37')
-am38 = projector      = hgvs_assembly_mapper_38 = AssemblyMapper(hgvs_data_provider, assembly_name='GRCh38')
-hn   = normalizer     = hgvs_normalizer         = Normalizer(hgvs_data_provider)
-hv   = validator      = hgvs_validator          = Validator(hgvs_data_provider)
+hp = parser = hgvs_parser = Parser()
+hdp = hgvs_data_provider = connect()
+vm = variant_mapper = hgvs_variant_mapper = VariantMapper(hgvs_data_provider)
+am37 = hgvs_assembly_mapper_37 = AssemblyMapper(hgvs_data_provider, assembly_name='GRCh37')
+am38 = projector = hgvs_assembly_mapper_38 = AssemblyMapper(hgvs_data_provider, assembly_name='GRCh38')
+hn = normalizer = hgvs_normalizer = Normalizer(hgvs_data_provider)
+hv = validator = hgvs_validator = Validator(hgvs_data_provider)
 
 # functionalized forms of common methods
-parse     = parser.parse
+parse = parser.parse
 normalize = normalizer.normalize
-validate  = validator.validate
-c_to_g    = projector.c_to_g
-c_to_n    = projector.c_to_n
-c_to_p    = projector.c_to_p
-g_to_c    = projector.g_to_c
-g_to_n    = projector.g_to_n
-g_to_t    = projector.g_to_t
-n_to_c    = projector.n_to_c
-n_to_g    = projector.n_to_g
-t_to_g    = projector.t_to_g
-t_to_p    = projector.t_to_p
+validate = validator.validate
+c_to_g = projector.c_to_g
+c_to_n = projector.c_to_n
+c_to_p = projector.c_to_p
+g_to_c = projector.g_to_c
+g_to_n = projector.g_to_n
+g_to_t = projector.g_to_t
+n_to_c = projector.n_to_c
+n_to_g = projector.n_to_g
+t_to_g = projector.t_to_g
+t_to_p = projector.t_to_p
 get_relevant_transcripts = am38.relevant_transcripts
-
 
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)

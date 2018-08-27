@@ -383,7 +383,6 @@ if __name__ == "__main__":
     res = norm.normalize(var)
     print(str(var) + "    =>    " + str(res))
 
-
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #
