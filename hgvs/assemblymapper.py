@@ -105,6 +105,13 @@ class AssemblyMapper(VariantMapper):
         var_out = super(AssemblyMapper, self).t_to_g(var_t, alt_ac, alt_aln_method=self.alt_aln_method)
         return self._maybe_normalize(var_out)
 
+    def t_to_p(self, var_t):
+        if var_t.type == "n":
+            return "non-coding"
+        if var_t.type == "c":
+            return self.c_to_p(var_t)
+        raise HGVSInvalidVariantError("Expected a coding (c.) or non-coding (n.) variant; got " + str(var_c))
+
     def c_to_n(self, var_c):
         var_out = super(AssemblyMapper, self).c_to_n(var_c)
         return self._maybe_normalize(var_out)
