@@ -53,7 +53,7 @@ from hgvs.validator import Validator
 from hgvs.variantmapper import VariantMapper
 
 
-# provide standard abbreviated, short, and long names
+# provide standard abbreviated, short, and long names for instances
 hp   = parser         = hgvs_parser             = LazyWrapper(Parser)
 hdp                   = hgvs_data_provider      = LazyWrapper(connect)
 vm   = variant_mapper = hgvs_variant_mapper     = VariantMapper(hgvs_data_provider)
@@ -61,6 +61,22 @@ am37                  = hgvs_assembly_mapper_37 = LazyWrapper(lambda: AssemblyMa
 am38 = projector      = hgvs_assembly_mapper_38 = LazyWrapper(lambda: AssemblyMapper(hgvs_data_provider, assembly_name='GRCh38'))
 hn   = normalizer     = hgvs_normalizer         = Normalizer(hgvs_data_provider)
 hv   = validator      = hgvs_validator          = Validator(hgvs_data_provider)
+
+# functionalized forms of common methods
+parse = parser.parse
+normalize = normalizer.normalize
+validate = validator.validate
+c_to_g = am38.c_to_g
+c_to_n = am38.c_to_n
+c_to_p = am38.c_to_p
+g_to_c = am38.g_to_c
+g_to_n = am38.g_to_n
+g_to_t = am38.g_to_t
+n_to_c = am38.n_to_c
+n_to_g = am38.n_to_g
+t_to_g = am38.t_to_g
+t_to_p = am38.t_to_p
+get_relevant_transcripts = am38.relevant_transcripts
 
 
 # <LICENSE>
