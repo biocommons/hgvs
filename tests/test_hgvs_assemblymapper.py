@@ -401,6 +401,8 @@ class Test_AssemblyMapper(unittest.TestCase):
             self.assertEqual(hgvs["c"], str(self.am.n_to_c(pvs["n"])))
         if "c" in pvs and "p" in pvs:
             self.assertEqual(hgvs["p"], str(self.am.c_to_p(pvs["c"])))
+            self.assertEqual(hgvs["p"], str(self.am.t_to_p(pvs["c"])))
+
 
     def test_SNV(self):
         """AssemblyMapper: smoketest with SNVs"""
@@ -415,6 +417,10 @@ class Test_AssemblyMapper(unittest.TestCase):
             "NC_000010.10:g.89711873A>C", "NM_000314.4:c.493-2A>C", "NM_000314.4:n.1524-2A>C", "NP_000305.3:p.?"
         ]
         self._test_mapping(hgvs_set)
+
+    def test_t_to_p(self):
+        assert "non-coding" == str(self.am.t_to_p(self.hp.parse("NR_027676.1:n.3980del")))
+        assert "NP_000050.2:p.(Lys2597=)" == str(self.am.t_to_p(self.hp.parse("NM_000059.3:c.7791A>G")))
 
 
 if __name__ == "__main__":

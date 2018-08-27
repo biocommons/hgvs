@@ -342,7 +342,7 @@ class VariantMapper(object):
         """
 
         if not (var_c.type == "c"):
-            raise HGVSInvalidVariantError("Expected a cDNA (c.); got " + str(var_c))
+            raise HGVSInvalidVariantError("Expected a cDNA (c.) variant; got " + str(var_c))
         if self._validator:
             self._validator.validate(var_c)
         reference_data = RefTranscriptData(self.hdp, var_c.ac, pro_ac)
