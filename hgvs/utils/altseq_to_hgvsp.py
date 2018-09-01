@@ -100,11 +100,9 @@ class AltSeqToHgvsp(object):
                 else:    # non-frameshifting delins or dup
                     # get size diff from diff in ref/alt lengths
                     start = self._alt_data.variant_start_aa - 1
-                    aa_start = self._alt_data.variant_start_aa
                     delta = len(self._alt_seq) - len(self._ref_seq)
                     while self._ref_seq[start] == self._alt_seq[start]:
                         start += 1
-                        aa_start += 1
                     offset = start + abs(delta)
 
                     if delta > 0:    # net insertion
@@ -130,7 +128,7 @@ class AltSeqToHgvsp(object):
                         insertion.extend(list(alt_sub[:max_diff]))
                         deletion.extend(list(ref_sub[:max_diff]))
 
-                    variants.append({"start": aa_start, "ins": insertion, "del": deletion})
+                    variants.append({"start": start + 1, "ins": insertion, "del": deletion})
 
             if DBG:
                 print(variants)

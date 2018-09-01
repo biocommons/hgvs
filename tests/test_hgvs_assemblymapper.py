@@ -155,6 +155,34 @@ class Test_VariantMapper(unittest.TestCase):
         var_g = self.am37.c_to_g(var_c)
 
         self.assertEqual(str(var_g), hgvs_g)
+    
+    def test_c_to_p_with_stop_gain(self):
+        # issue-474
+        hgvs_c = "NM_080877.2:c.1733_1735delinsTTT"
+        hgvs_p = "NP_543153.1:p.(Pro578_Lys579delinsLeuTer)"
+
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.am.c_to_p(var_c)
+
+        self.assertEqual(str(var_p), hgvs_p)
+
+        # issue-492
+        hgvs_c = "NM_001034853.1:c.2847_2848delAGinsCT"
+        hgvs_p = "NP_001030025.1:p.(Glu949_Glu950delinsAspTer)"
+
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.am.c_to_p(var_c)
+
+        self.assertEqual(str(var_p), hgvs_p)
+
+        hgvs_c = "NM_001034853.1:c.2847_2848inv"
+        hgvs_p = "NP_001030025.1:p.(Glu949_Glu950delinsAspTer)"
+
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.am.c_to_p(var_c)
+
+        self.assertEqual(str(var_p), hgvs_p)
+
 
 
 class Test_RefReplacement(unittest.TestCase):
