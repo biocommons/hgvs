@@ -1,0 +1,60 @@
+
+1.3.0 (NOT YET RELEASED)
+#########################
+
+Changes since 1.2.5.post1 (2019-02-01).
+
+Bug Fixes
+$$$$$$$$$$
+
+* Fixes `#474 <https://github.com/biocommons/hgvs/issues/474/>`_, fixes `#492 <https://github.com/biocommons/hgvs/issues/492/>`_: correct for stop gain located at termination codon (`#518 <https://github.com/biocommons/hgvs/issues/518/>`_)
+* Fixes `#501 <https://github.com/biocommons/hgvs/issues/501/>`_: Add c_to_p support for inversion (`#502 <https://github.com/biocommons/hgvs/issues/502/>`_)
+
+New Features
+$$$$$$$$$$$$$
+
+* Closes `#243 <https://github.com/biocommons/hgvs/issues/243/>`_: implement hgvs-to-vcf translation [`1702762c0aa5 <https://github.com/biocommons/hgvs/commit/1702762c0aa5>`_]
+* Closes `#499 <https://github.com/biocommons/hgvs/issues/499/>`_: recognize whole-gene dup (c.-i_*j) and assume does not affect protein sequence [`dc48d5d <https://github.com/biocommons/hgvs/commit/dc48d5d>`_]
+* Closes `#511 <https://github.com/biocommons/hgvs/issues/511/>`_: Update misc/experimental/vcf-add-hgvs to support newer bioutils and pyvcf [`88e01d4 <https://github.com/biocommons/hgvs/commit/88e01d4>`_]
+* Closes `#257 <https://github.com/biocommons/hgvs/issues/257/>`_: Support parsing gene names and optional addition during projection [`b3d5774af21b <https://github.com/biocommons/hgvs/commit/b3d5774af21b>`_]
+* Closes `#557 <https://github.com/biocommons/hgvs/issues/557/>`_: Add option to format translation initiation codon variants as `p.Met1?`
+p.Met1? is the new default [81c0074a7516]
+* Added `parse` shorthand for `parse_hgvs_variant` [`69c2aeb <https://github.com/biocommons/hgvs/commit/69c2aeb>`_]
+* Added t_to_p in AssemblyMapper [`8f9b69b <https://github.com/biocommons/hgvs/commit/8f9b69b>`_]
+* hgvs.easy: Provide single-file import with usable defaults and functional forms for common commands (`#516 <https://github.com/biocommons/hgvs/issues/516/>`_)
+* Updated hgvs-guess-plausible-transcripts [`4e2a9d0 <https://github.com/biocommons/hgvs/commit/4e2a9d0>`_]
+
+Internal, Developer, and Experimental Changes
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+* Closes `#544 <https://github.com/biocommons/hgvs/issues/544/>`_: Update installation docs [`ae3064c <https://github.com/biocommons/hgvs/commit/ae3064c>`_]
+* Closes `#500 <https://github.com/biocommons/hgvs/issues/500/>`_: unpinned setuptools_scm [`bae7e4a <https://github.com/biocommons/hgvs/commit/bae7e4a>`_]
+* Closes `#494 <https://github.com/biocommons/hgvs/issues/494/>`_: Removed useless warning (Closing connection; future mapping and validation will fail) [`dfa0c52 <https://github.com/biocommons/hgvs/commit/dfa0c52>`_]
+
+* Added Python syntax highlighting (`#550 <https://github.com/biocommons/hgvs/issues/550/>`_) [`e28f85a80e97 <https://github.com/biocommons/hgvs/commit/e28f85a80e97>`_]
+* Added doctests for hgvs/utils/norm.py (`#548 <https://github.com/biocommons/hgvs/issues/548/>`_)
+* Expose seqrepo reference in SeqFetcher instance [`3ab49e9 <https://github.com/biocommons/hgvs/commit/3ab49e9>`_]
+* Fix typo in docs (`#554 <https://github.com/biocommons/hgvs/issues/554/>`_) [`c48ff9a809d8 <https://github.com/biocommons/hgvs/commit/c48ff9a809d8>`_]
+* When re-raising exception from sequencing fetching, including fetcher implementation and underlying exception message [`42859e4 <https://github.com/biocommons/hgvs/commit/42859e4>`_]
+* When re-raising exception from sequencing fetching, including fetcher implementation and underlying exception message [`7420e9b010b9 <https://github.com/biocommons/hgvs/commit/7420e9b010b9>`_]
+* __init__ should not return any value (DeepSource) [`f15e53de4d28 <https://github.com/biocommons/hgvs/commit/f15e53de4d28>`_]
+* add 3.7 support to Makefile [`3a89a82 <https://github.com/biocommons/hgvs/commit/3a89a82>`_]
+* added link to hgvs notebooks on mybinder.org [`e36a6ecce64d <https://github.com/biocommons/hgvs/commit/e36a6ecce64d>`_]
+* added notebook of hdp output examples [`ba98011b3c4c <https://github.com/biocommons/hgvs/commit/ba98011b3c4c>`_]
+* don't warn about pickle.load() [`ec5d488bb91a <https://github.com/biocommons/hgvs/commit/ec5d488bb91a>`_]
+* emit CRITICAL log message on Python < 3.6 [`a964b4638b7d <https://github.com/biocommons/hgvs/commit/a964b4638b7d>`_]
+* expose seqrepo reference in SeqFetcher instance [`21f5292fe0c5 <https://github.com/biocommons/hgvs/commit/21f5292fe0c5>`_]
+* fix regexp that didn't use a raw (r"") string (DeepSource) [`08dbce643888 <https://github.com/biocommons/hgvs/commit/08dbce643888>`_]
+* fix: expected results in quick_start.rst doctest were unsorted [`e2c0aa6ea81b <https://github.com/biocommons/hgvs/commit/e2c0aa6ea81b>`_]
+* fixed incompatibilities with newer version of pytest [`98c974dc30c2 <https://github.com/biocommons/hgvs/commit/98c974dc30c2>`_]
+* fixed redundant exception imports (DeepSource) [`ba211520bea0 <https://github.com/biocommons/hgvs/commit/ba211520bea0>`_]
+* minor code cleanup based on pylint testing [`93d82125c7e6 <https://github.com/biocommons/hgvs/commit/93d82125c7e6>`_]
+* ooops... used f string in 2.7 version :-( [`56d41cf25743 <https://github.com/biocommons/hgvs/commit/56d41cf25743>`_]
+* pin biocommons dependencies to versions that support 2.7 and 3.5+ [`25bc21f <https://github.com/biocommons/hgvs/commit/25bc21f>`_]
+* reformatted with yapf [`35ad5ac441c7 <https://github.com/biocommons/hgvs/commit/35ad5ac441c7>`_]
+* reformatted with yapf [`477fefad0642 <https://github.com/biocommons/hgvs/commit/477fefad0642>`_]
+* remove del sequence from variants being tested (and remove re module DeprecationWarnings); and fix latent bugs in tests [`ae553acea531 <https://github.com/biocommons/hgvs/commit/ae553acea531>`_]
+* remove relative path in pkg_resources.resource_filename() to eliminate warning about future failure [`b5e1eec13e3a <https://github.com/biocommons/hgvs/commit/b5e1eec13e3a>`_]
+* set project line length limit to 100 [`55de734ab3d2 <https://github.com/biocommons/hgvs/commit/55de734ab3d2>`_]
+* updated default uta to uta_20180821 [`e8206d1 <https://github.com/biocommons/hgvs/commit/e8206d1>`_]
+* updated pytest mark configuration [`d922495 <https://github.com/biocommons/hgvs/commit/d922495>`_]
