@@ -61,7 +61,9 @@ class AltTranscriptData(object):
                 seq_cds.extend(['N'] * ((3 - len(seq_cds) % 3) % 3))
             seq_cds = ''.join(seq_cds)
             seq_aa = str(Seq(seq_cds).translate())
-            stop_pos = seq_aa.find("*")
+            stop_pos = seq_aa[:(cds_stop - cds_start + 1) // 3].rfind("*")
+            if stop_pos == -1:
+                stop_pos = seq_aa.find("*")
             if stop_pos != -1:
                 seq_aa = seq_aa[:stop_pos + 1]
         else:
