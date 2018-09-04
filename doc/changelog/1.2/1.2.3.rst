@@ -1,0 +1,11 @@
+
+1.2.3 (2018-09-05)
+###################
+
+Changes since 1.2.2 (2018-08-09).
+
+Bug Fixes
+$$$$$$$$$$
+
+* Fixes `#474 <https://github.com/biocommons/hgvs/issues/474/>`_, fixes `#492 <https://github.com/biocommons/hgvs/issues/492/>`_: correct for stop gain located at termination codon
+

@@ -54,6 +54,7 @@ misc/railroad/hgvs_railroad
 misc/railroad/hgvs_railroad.rst
 misc/tests
 misc/tx-ref-discrepancies
+prof
 sdist
 tests/data/*.out
 tmp
