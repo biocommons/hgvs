@@ -111,10 +111,15 @@ Links
 References
 @@@@@@@@@@
 
-A Python package for parsing, validating, mapping and formatting
-  sequence variants using HGVS nomenclature.  | Hart RK, Rico R, Hare
-  E, Garcia J, Westbrook J, Fusaro VA | Bioinformatics. 31(2):268-70
-  (2014).  | https://www.ncbi.nlm.nih.gov/pubmed/25273102
+hgvs: A Python package for manipulating sequence variants using HGVS nomenclature: 2018 Update.
+  | Wang M, Callenberg KM, Dalgleish R, Fedtsov A, Fox N, Freeman PJ, Jacobs KB, Kaleta P, McMurry AJ, Prlić A, Rajaraman V, Hart RK
+  | Human Mutation. 2018
+  | https://www.ncbi.nlm.nih.gov/pubmed/30129167
+
+A Python package for parsing, validating, mapping and formatting sequence variants using HGVS nomenclature.
+  | Hart RK, Rico R, Hare E, Garcia J, Westbrook J, Fusaro VA
+  | Bioinformatics. 31(2):268-70 (2014).
+  | https://www.ncbi.nlm.nih.gov/pubmed/25273102
 
 Describing structural changes by extending HGVS sequence variation nomenclature.
   | Taschner, P. E. M., & den Dunnen, J. T.
