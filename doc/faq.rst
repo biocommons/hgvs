@@ -7,12 +7,27 @@ Alignments for my transcript are not available. What can I do?
 
 The short answer is: not much.
 
-The problem is that NCBI provides alignment data only for current
-transcripts against current assemblies.  Historical data are not
-available.  The Universal Transcript Archive (UTA) is essentially an
-archive of a series of snapshots beginning in 2014, sometimes with
-gaps. Any transcript that was obsoleted before UTA started, or existed
-only *between* UTA snapshots, will not exist in UTA.
+In order to project a variant between genomic and transcript
+coordinates, `hgvs` needs a sequence alignment.  Sequence alignments
+are obtained from the Universal Transcript Archive (UTA), a compendium
+of transcripts and their genome alignments from multiple sources.
+Data are loaded from snapshots; the loading process is currently
+semi-automated and run irregularly.
+
+UTA loads only high-quality alignments exactly as provided by the data
+sources.  If an alignment is not provided by a data source, or if it
+fails filters recommended by NCBI, it won't be in UTA (with a small
+number of exceptions). Importantly, NCBI provides alignment data only
+for current transcripts against current assemblies; historical data
+are not available.
+
+So, there are two common reasons that an alignment may not exist in
+UTA:
+
+* The transcript was obsoleted before UTA started in 2014, or existed
+  only *between* UTA snapshots.
+
+* The transcript does not have any high-quality alignments.
 
 If an alignment for a particular transcript-reference sequence pair
 and for a particular alignment method are not available, an exception
@@ -21,6 +36,28 @@ like the following will be raised::
   HGVSDataNotAvailableError: No alignments for NM_000018.2 in GRCh37 using splign
 
 Currently, there is no way for users to provide their own alignments.
+
+For example, UTA contains ten alignments for NM_000314 family of
+transcripts for PTEN:
+
++-------------+----------------+----------------+
+| transcript  | genome         | method         |
++-------------+----------------+----------------+
+| NM_000314.4 | AC_000142.1    | splign         |
+| NM_000314.4 | NC_000010.10   | blat           |
+| NM_000314.4 | NC_000010.10   | splign         |
+| NM_000314.4 | NC_018921.2    | splign         |
+| NM_000314.4 | NG_007466.2    | splign         |
+| NM_000314.5 | NC_000010.10   | splign         |
+| NM_000314.6 | NC_000010.10   | blat           |
+| NM_000314.6 | NC_000010.10   | splign         |
+| NM_000314.6 | NC_000010.11   | splign         |
+| NM_000314.6 | NW_013171807.1 | splign         |
++-------------+----------------+----------------+
+
+A variant can be projected between any of the transcript, genome, and
+method combinations, and no other combination.
+
 
 
 Why do I get different results on the UCSC browser?
