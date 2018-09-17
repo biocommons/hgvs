@@ -13,21 +13,21 @@ Because the type influences the syntax and object representation in
 the hgvs package, it is important to understand these distinctions.  A
 summary of the types follows:
 
-+------------+---------------+---------------+----------------------+------------------------------------------+
-| Type       | Sequence      | Coordinates   | Datum                | Example                                  |
-+------------+---------------+---------------+----------------------+------------------------------------------+
-| g.         | DNA           | Continuous    | Sequence start       | NC_000007.13:g.21582936G>A               |
-+------------+---------------+---------------+----------------------+------------------------------------------+
-| m.         | DNA           | Continuous    | Sequence start       | NC_012920.1:m.8993T>C                    |
-+------------+---------------+---------------+----------------------+------------------------------------------+
-| c.         | DNA           | Base-Offset   | Translation start    | NM_001277115.1:c.351+115T>C              |
-+------------+---------------+---------------+----------------------+------------------------------------------+
-| n.         | DNA           | Base-Offset   | Sequence start       | NM_000518.4:n.76_92del                   |
-+------------+---------------+---------------+----------------------+------------------------------------------+
-| r.         | RNA           | Base-Offset   | Sequence start       | NR_111984.1:r.44g>a                      |
-+------------+---------------+---------------+----------------------+------------------------------------------+
-| p.         | AA            | Continuous    | Sequence start       | NP_001264044.1:p.(Ala25Thr)              |
-+------------+---------------+---------------+----------------------+------------------------------------------+
++-------+----------+-------------+-------------------+------------------------------+
+| Type  | Sequence | Coordinates | Datum             | Example                      |
++-------+----------+-------------+-------------------+------------------------------+
+| g.    | DNA      | Continuous  | Sequence start    | NC_000007.13:g.21582936G>A   |
++-------+----------+-------------+-------------------+------------------------------+
+| m.    | DNA      | Continuous  | Sequence start    | NC_012920.1:m.8993T>C        |
++-------+----------+-------------+-------------------+------------------------------+
+| c.    | DNA      | Base-Offset | Translation start | NM_001277115.1:c.351+115T>C  |
++-------+----------+-------------+-------------------+------------------------------+
+| n.    | DNA      | Base-Offset | Sequence start    | NM_000518.4:n.76_92del       |
++-------+----------+-------------+-------------------+------------------------------+
+| r.    | RNA      | Base-Offset | Sequence start    | NR_111984.1:r.44g>a          |
++-------+----------+-------------+-------------------+------------------------------+
+| p.    | AA       | Continuous  | Sequence start    | NP_001264044.1:p.(Ala25Thr)  |
++-------+----------+-------------+-------------------+------------------------------+
 
 
 Datum refers to the definition for position 1 in the
@@ -42,7 +42,8 @@ Base-Offset coordinates use a base position, which is an index in the
 specified sequence, and an optional offset from that base position.
 Non-zero offsets refer to non-coding sequence, such as 5' UTR, 3' UTR,
 or intronic position.  Examples are 22 (with a zero offset), 22+6, and
-\*6.
+\*6. There is no zero position; that is, the positions around the
+translation start are …, -3, -2, -1, 1, 2, 3, … .
 
 
 

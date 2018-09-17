@@ -27,6 +27,7 @@ Contents
 
    contributing
    getting_help
+   faq
 
    changelog/index
 
