@@ -1,0 +1,8 @@
+clog format: 1; -*-outline-*-
+* 1.2.4 (2018-09-28)
+Changes since 1.2.3 (2018-09-04).
+** Bug Fixes
+*** Closes #525: fix c_to_p bug with insertion of in-phase Ter (credit: @ianfab) [d40a71a6548b]
+*** backported test for #525 to 1.2 branch [cb769e9591d5]
+** Other Changes
+*** added missing changelog files for 1.2.3 [5d2cf1c]
