@@ -117,7 +117,7 @@ Validating and Normalizing Variants
 
 `hgvs` provides functionality to validate and normalize variants::
 
-  >>> In [2]: normalize(var_g)
+  >>> normalize(var_g)
   SequenceVariant(ac=NC_000017.11, type=g, posedit=43091688del)
 
   >>> validate(var_g)

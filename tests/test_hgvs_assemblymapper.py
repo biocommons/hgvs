@@ -28,7 +28,7 @@ class Test_VariantMapper(unittest.TestCase):
         # From garcia.tsv:
         hgvs_g = "NC_000007.13:g.36561662C>T"
         hgvs_c = "NM_001637.3:c.1582G>A"
-        hgvs_p = "NP_001628.1:p.(Gly528Arg)"    # from Mutalyzer
+        hgvs_p = "NP_001628.1:p.(Gly528Arg)"
 
         var_g = self.hp.parse_hgvs_variant(hgvs_g)
         var_c = self.am.g_to_c(var_g, "NM_001637.3")

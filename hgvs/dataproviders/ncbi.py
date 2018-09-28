@@ -1,4 +1,10 @@
-""" Provides access to the NCBI table that allows to access transcripts by NCBI gene ids"""
+"""Provides access to the NCBI table that allows to access transcripts by NCBI gene ids
+
+This file is specific to Invitae and is nearly a copy of uta.py.  It
+is not tested (see pytest.ini for exclusion).
+
+"""
+
 import os
 import re
 import six

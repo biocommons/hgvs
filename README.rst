@@ -167,12 +167,8 @@ NCBI and Ensembl.
 
    # formatting can be customized, e.g., use 1 letter amino acids to
    # format a specific variant
+   # (configuration may also be set globally)
    >>> var_p.format(conf={"p_3_letter": False})
-   'NP_001628.1:p.G528R'
-
-   # configuration may also be set globally
-   >>> hgvs.global_config.formatting.p_3_letter = False
-   >>> str(var_p)
    'NP_001628.1:p.G528R'
 
 

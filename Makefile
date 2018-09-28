@@ -74,25 +74,25 @@ bdist bdist_egg bdist_wheel build sdist install: %:
 
 
 #=> test: execute tests
-.PHONY: test
+#=> test-code: test code (including embedded doctests)
+#=> test-docs: test example code in docs
+#=> test-/tag/ -- run tests marked with /tag/
+# TODO: rationalize tags
+# find tests -name \*.py | xargs perl -ln0e 'while (m/@pytest.mark.(\w+)/g) {print $1 if not $seen{$1}++}'  | sort
+# => extra fx issues mapping models normalization parametrize pnd quick regression validation
+.PHONY: test test-code test-docs
 test:
-	python setup.py pytest --addopts="--cov-config=setup.cfg -m 'not extra' --cov=${PKG} ${TEST_DIRS}"
-
-#=> test-docs: execute tests
-.PHONY: test-docs
+	python setup.py pytest
+test-code:
+	python setup.py pytest --addopts="${TEST_DIRS}"
 test-docs:
-	python setup.py pytest --addopts="--cov-config=setup.cfg -m 'not extra' --cov=${PKG} ${DOC_TESTS}"
-
-#=> test-* -- run tests with specified tag
+	python setup.py pytest --addopts="${DOC_TESTS}"
 test-%:
-	python setup.py pytest --addopts="--cov-config=setup.cfg -m 'quick' --cov=${PKG} ${TEST_DIRS}"
+	python setup.py pytest --addopts="-m '$*' ${TEST_DIRS}"
 
 #=> tox -- run all tox tests
 tox:
 	tox
-
-tox-%:
-	tox -- -m $* $(TEST_DIRS)
 
 
 ############################################################################
