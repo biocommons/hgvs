@@ -108,7 +108,7 @@ component). "stringifying" a variant regenerates an HGVS variant::
 
 And, in Python 3, stringification works in f-strings, like so::
 
-  >>> f"{var_g}"
+  > >> f"{var_g}"
   'NC_000017.11:g.43091687del'
 
 
