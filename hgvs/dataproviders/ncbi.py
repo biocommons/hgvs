@@ -25,7 +25,7 @@ _logger = logging.getLogger(__name__)
 def _stage_from_version(version):
     """return "prd", "stg", or "dev" for the given version string.  A value is always returned"""
     if version:
-        m = re.match("^(?P<xyz>\d+\.\d+\.\d+)(?P<extra>.*)", version)
+        m = re.match(r"^(?P<xyz>\d+\.\d+\.\d+)(?P<extra>.*)", version)
         if m:
             return "stg" if m.group("extra") else "prd"
     return "dev"
@@ -321,11 +321,11 @@ class NCBI_postgresql(NCBIBase):
 
             except psycopg2.OperationalError:
 
-                _logger.warn("Lost connection to {url}; attempting reconnect".format(url=self.url))
+                _logger.warning("Lost connection to {url}; attempting reconnect".format(url=self.url))
                 if self.pooling:
                     self._pool.closeall()
                 self._connect()
-                _logger.warn("Reconnected to {url}".format(url=self.url))
+                _logger.warning("Reconnected to {url}".format(url=self.url))
 
             n_tries_rem -= 1
 

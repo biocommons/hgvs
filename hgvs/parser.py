@@ -135,8 +135,8 @@ class Parser(object):
             rule_fxn.__doc__ = "parse string s using `%s' rule" % rule_name
             return rule_fxn
 
-        exposed_rule_re = re.compile("hgvs_(variant|position)|(c|g|m|n|p|r)"
-                                     "_(edit|hgvs_position|interval|pos|posedit|variant)")
+        exposed_rule_re = re.compile(r"hgvs_(variant|position)|(c|g|m|n|p|r)"
+                                     r"_(edit|hgvs_position|interval|pos|posedit|variant)")
         exposed_rules = [m.replace("rule_", "") for m in dir(self._grammar._grammarClass) if m.startswith("rule_")]
         if not expose_all_rules:
             exposed_rules = [rule_name for rule_name in exposed_rules if exposed_rule_re.match(rule_name)]

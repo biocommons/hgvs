@@ -137,7 +137,7 @@ class Test_VariantMapper(unittest.TestCase):
         """
 
         def _rm_del_seq(vs):
-            return re.sub(vs, "del\w+ins", "delins")
+            return re.sub(vs, r"del\w+ins", "delins")
 
         var_g = self.hp.parse_hgvs_variant(rec["HGVSg"])
         var_x = self.hp.parse_hgvs_variant(rec["HGVSc"])
@@ -148,7 +148,7 @@ class Test_VariantMapper(unittest.TestCase):
             var_x_test = self.hm.g_to_c(var_g, var_x.ac)
         elif var_x.type == "n":
             var_x_test = self.hm.g_to_n(var_g, var_x.ac)
-        self.assertEquals(
+        self.assertEqual(
             _rm_del_seq(str(var_x)),
             _rm_del_seq(str(var_x_test)),
             msg="%s != %s (%s; HGVSg=%s)" % (str(var_x_test), str(var_x), rec["id"], rec["HGVSg"]))
@@ -158,7 +158,7 @@ class Test_VariantMapper(unittest.TestCase):
             var_g_test = self.hm.c_to_g(var_x, var_g.ac)
         elif var_x.type == "n":
             var_g_test = self.hm.n_to_g(var_x, var_g.ac)
-        self.assertEquals(
+        self.assertEqual(
             _rm_del_seq(str(var_g)),
             _rm_del_seq(str(var_g_test)),
             msg="%s != %s (%s; HGVSc=%s)" % (str(var_g_test), str(var_g), rec["id"], rec["HGVSc"]))
@@ -174,11 +174,11 @@ class Test_VariantMapper(unittest.TestCase):
 
             hgvs_p_test = str(var_p_test)
 
-            if re.search("Ter$", hgvs_p_exp):
+            if re.search(r"Ter$", hgvs_p_exp):
                 # if expected value doesn't have a count, strip it from the test
-                hgvs_p_test = re.sub("Ter\d+$", "Ter", hgvs_p_test)
+                hgvs_p_test = re.sub(r"Ter\d+$", "Ter", hgvs_p_test)
 
-            self.assertEquals(hgvs_p_exp, hgvs_p_test, msg="%s != %s (%s)" % (hgvs_p_exp, hgvs_p_test, rec["id"]))
+            self.assertEqual(hgvs_p_exp, hgvs_p_test, msg="%s != %s (%s)" % (hgvs_p_exp, hgvs_p_test, rec["id"]))
 
 
 if __name__ == "__main__":

@@ -51,7 +51,7 @@ from hgvs.exceptions import HGVSInvalidIntervalError
 from six.moves import range
 
 _logger = logging.getLogger(__name__)
-_logger.warn("This module is deprecated and will be removed in a future release")
+_logger.warning("This module is deprecated and will be removed in a future release")
 
 
 # N.B. This Interval is internal to intervalmapper.py. It is *NOT* the
@@ -191,7 +191,7 @@ def cigar_to_intervalpairs(cigar):
     number of CIGAR operations
     """
 
-    cigar_elem_re = re.compile("(?P<len>\d+)(?P<op>[=DIMNX])")
+    cigar_elem_re = re.compile(r"(?P<len>\d+)(?P<op>[=DIMNX])")
     ces = [
         CIGARElement(op=md["op"], len=int(md["len"])) for md in [m.groupdict() for m in cigar_elem_re.finditer(cigar)]
     ]

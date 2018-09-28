@@ -101,7 +101,7 @@ def _name_xform(o):
     """transform names to lowercase, without symbols (except underscore)
     Any chars other than alphanumeric are converted to an underscore
     """
-    return re.sub("\W", "_", o.lower())
+    return re.sub(r"\W", "_", o.lower())
 
 
 def _val_xform(v):

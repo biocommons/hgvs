@@ -205,7 +205,7 @@ class AssemblyMapper(VariantMapper):
             try:
                 return self._norm.normalize(var)
             except HGVSUnsupportedOperationError as e:
-                _logger.warn(str(e) + "; returning unnormalized variant")
+                _logger.warning(str(e) + "; returning unnormalized variant")
                 # fall through to return unnormalized variant
         return var
 

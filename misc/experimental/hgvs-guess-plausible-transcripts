@@ -36,7 +36,7 @@ def generate_plausible_variants(hdp, hv, v):
     alignments = hdp.get_tx_for_gene(v.ac)
 
     if len(alignments) == 0:
-        _logger.warn("No transcripts found for gene {v.ac} in {v}".format(v=v))
+        _logger.warning("No transcripts found for gene {v.ac} in {v}".format(v=v))
 
     alignments = [a for a in alignments if a["alt_aln_method"] == alt_aln_method]
 

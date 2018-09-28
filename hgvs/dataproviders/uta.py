@@ -561,11 +561,11 @@ class UTA_postgresql(UTABase):
 
             except psycopg2.OperationalError:
 
-                _logger.warn("Lost connection to {url}; attempting reconnect".format(url=self.url))
+                _logger.warning("Lost connection to {url}; attempting reconnect".format(url=self.url))
                 if self.pooling:
                     self._pool.closeall()
                 self._connect()
-                _logger.warn("Reconnected to {url}".format(url=self.url))
+                _logger.warning("Reconnected to {url}".format(url=self.url))
 
             n_tries_rem -= 1
 

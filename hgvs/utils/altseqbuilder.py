@@ -147,10 +147,10 @@ class AltSeqBuilder(object):
             if self._var_c.posedit.edit.type == "del":
                 edit_type = WHOLE_GENE_DELETED
             elif self._var_c.posedit.edit.type == "dup":
-                _logger.warn("Whole-gene duplication; consequence assumed to not affect protein product")
+                _logger.warning("Whole-gene duplication; consequence assumed to not affect protein product")
                 edit_type = NOT_CDS
             elif self._var_c.posedit.edit.type == "inv":
-                _logger.warn("Whole-gene inversion; consequence assumed to not affect protein product")
+                _logger.warning("Whole-gene inversion; consequence assumed to not affect protein product")
                 edit_type = NOT_CDS
             else:
                 edit_type = NOT_CDS

@@ -143,7 +143,7 @@ def _ival_to_span(ival):
 
 
 def _reformat_aln_str(aln_str):
-    return re.sub('[ACGT]', ' ', aln_str.replace('.', '|'))
+    return re.sub(r'[ACGT]', ' ', aln_str.replace('.', '|'))
 
 
 # pre=[ac c s] d content d post=[end] comment

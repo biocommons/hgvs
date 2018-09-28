@@ -19,7 +19,7 @@ from hgvs.enums import Datum
 from six.moves import range
 
 _logger = logging.getLogger(__name__)
-_logger.warn("This module is deprecated and will be removed in a future release")
+_logger.warning("This module is deprecated and will be removed in a future release")
 
 
 class TranscriptMapper(object):
