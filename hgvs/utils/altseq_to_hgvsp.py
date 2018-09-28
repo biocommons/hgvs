@@ -114,6 +114,8 @@ class AltSeqToHgvsp(object):
 
                     # from start, get del/ins out to last difference
                     diff_indices = [i for i in range(len(ref_sub)) if ref_sub[i] != alt_sub[i]]
+                    if not diff_indices and not deletion and insertion[0] == '*':
+                        diff_indices.append(0)
                     if diff_indices:
                         max_diff = diff_indices[-1] + 1
                         insertion.extend(list(alt_sub[:max_diff]))
