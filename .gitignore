@@ -20,6 +20,7 @@
 .idea
 .installed.cfg
 .ipynb_checkpoints
+.python-version
 .pytest_cache
 .tags
 .tags.mk
