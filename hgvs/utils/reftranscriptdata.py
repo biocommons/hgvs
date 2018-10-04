@@ -1,4 +1,4 @@
-from Bio.Seq import Seq
+from bioutils.sequences import translate_cds
 
 from hgvs.exceptions import HGVSDataNotAvailableError
 
@@ -23,8 +23,7 @@ class RefTranscriptData(object):
                 "Transcript {} is not supported because its sequence length of {} is not divisible by 3.".format(
                     tx_ac, len(tx_seq_to_translate)))
 
-        tx_seq_cds = Seq(tx_seq_to_translate)
-        protein_seq = str(tx_seq_cds.translate())
+        protein_seq = translate_cds(tx_seq_to_translate)
 
         if pro_ac is None:
             # get_acs... will always return at least the MD5_ accession
