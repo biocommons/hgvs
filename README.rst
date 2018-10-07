@@ -1,6 +1,11 @@
 *hgvs* - manipulate biological sequence variants according to Human Genome Variation Society recommendations
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+**Important:** biocommons packages (including hgvs) will begin phasing
+out support for Python 2.7 on Jan 1, 2019.  `More
+<https://groups.google.com/forum/#!topic/hgvs-discuss/iLUzjzoD-28>`__
+
+
 The *hgvs* package provides a Python library to parse, format,
 validate, normalize, and map sequence variants according to `Variation
 Nomenclature`_ (aka Human Genome Variation Society) recommendations.
