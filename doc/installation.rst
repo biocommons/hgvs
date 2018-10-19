@@ -15,7 +15,7 @@ Supported Platforms
 
 Reports of successful operation onother platforms (and patches to enable this) are appreciated.
 
-**Coming soon:** Python 3+s
+**Coming soon:** Python 3+
 
 Package Versioning
 @@@@@@@@@@@@@@@@@@
@@ -144,15 +144,12 @@ Test your installation
 While in your `hgvs` virtualenv, launch `hgvs-shell`::
   
 (hgvs) $ hgvs-shell
-Python 2.7.15 | packaged by conda-forge | (default, Oct 12 2018, 14:10:50) 
-Type "copyright", "credits" or "license" for more information...
-  In [1]: v = hp.parse_hgvs_variant("NM_033089.6:c.571C>G")
-  In [2]: v
-  Out[2]: SequenceVariant(ac=NM_033089.6, type=c, posedit=571C>G)
-  In [3]: am37.c_to_g(v)
-  Out[3]: SequenceVariant(ac=NC_000020.10, type=g, posedit=278801C>G)
-  In [4]: am38.c_to_g(v)
-  Out[4]: SequenceVariant(ac=NC_000020.11, type=g, posedit=298157C>G)
-
+(hgvs) In [1] v = hp.parse_hgvs_variant("NM_033089.6:c.571C>G")
+(hgvs) In [2] v
+(hgvs) Out[2] SequenceVariant(ac=NM_033089.6, type=c, posedit=571C>G)
+(hgvs) In [3] am37.c_to_g(v)
+(hgvs) Out[3] SequenceVariant(ac=NC_000020.10, type=g, posedit=278801C>G)
+(hgvs) In [4] am38.c_to_g(v)
+(hgvs) Out[4] SequenceVariant(ac=NC_000020.11, type=g, posedit=298157C>G)
 
 
