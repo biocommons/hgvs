@@ -9,30 +9,52 @@ Reference Sequence Types
 @@@@@@@@@@@@@@@@@@@@@@@@
 
 The HGVS Recommendations provide for six types of reference sequences.
-Because the type influences the syntax and object representation in
+Type influences the syntax and object representation in
 the hgvs package, it is important to understand these distinctions.  A
 summary of the types follows:
 
-+-------+----------+-------------+-------------------+------------------------------+
-| Type  | Sequence | Coordinates | Datum             | Example                      |
-+-------+----------+-------------+-------------------+------------------------------+
-| g.    | DNA      | Continuous  | Sequence start    | NC_000007.13:g.21582936G>A   |
-+-------+----------+-------------+-------------------+------------------------------+
-| m.    | DNA      | Continuous  | Sequence start    | NC_012920.1:m.8993T>C        |
-+-------+----------+-------------+-------------------+------------------------------+
-| c.    | DNA      | Base-Offset | Translation start | NM_001277115.1:c.351+115T>C  |
-+-------+----------+-------------+-------------------+------------------------------+
-| n.    | DNA      | Base-Offset | Sequence start    | NM_000518.4:n.76_92del       |
-+-------+----------+-------------+-------------------+------------------------------+
-| r.    | RNA      | Base-Offset | Sequence start    | NR_111984.1:r.44g>a          |
-+-------+----------+-------------+-------------------+------------------------------+
-| p.    | AA       | Continuous  | Sequence start    | NP_001264044.1:p.(Ala25Thr)  |
-+-------+----------+-------------+-------------------+------------------------------+
++-------+-------------+-------------------+------------------------------+
+| Type  | Coordinates | Datum             | Example                      |
++-------+-------------+-------------------+------------------------------+
+| g.    | Continuous  | Sequence start    | NC_000007.13:g.21582936G>A   |
++-------+-------------+-------------------+------------------------------+
+| m.    | Continuous  | Sequence start    | NC_012920.1:m.8993T>C        |
++-------+-------------+-------------------+------------------------------+
+| c.    | Base-Offset | Translation start | NM_001277115.1:c.351+115T>C  |
++-------+-------------+-------------------+------------------------------+
+| n.    | Base-Offset | Sequence start    | NM_000518.4:n.76_92del       |
++-------+-------------+-------------------+------------------------------+
+| r.    | Base-Offset | Sequence start    | NR_111984.1:r.44g>a          |
++-------+-------------+-------------------+------------------------------+
+| p.    | Continuous  | Sequence start    | NP_001264044.1:p.(Ala25Thr)  |
++-------+-------------+-------------------+------------------------------+
 
+**Definitions:**
 
-Datum refers to the definition for position 1 in the
-sequence. "Sequence start" means the first position of the
-sequence. "Translation start" means the position of the ATG that
+Type: describes the variant's reference sequence type
+
+	- DNA = DeoxyriboNucleic Acid
+
+	- RNA = RiboNucleic Acid
+
+	- AA = Amino Acid
+
+	- g. = genomic DNA
+
+	- m. = mitchondrial DNA
+
+	- c. = coding DNA, yields RNA protein
+
+	- n. = non-coding DNA, yields RNA that is not code protein
+
+	- r. = RNA, coding or non-coding
+
+	- p. = protein, made of AA
+
+Datum: defines the position 1 in the sequence. 
+	- **Sequence start** refers to the first position of the
+sequence. 
+	- **Translation start** means the position of the ATG that
 typically starts translation (only for coding transcripts).
 
 Continuous coordinates are the familiar ordinal counting (1, 2, 3,

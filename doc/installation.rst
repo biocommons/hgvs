@@ -11,11 +11,13 @@ Supported Platforms
 
 **Operating Systems: Ubuntu, MacOS**
 
-**Python ver. 2.7 required**
+**Python ver. 2.7 or 3.5+**
 
-Reports of successful operation onother platforms (and patches to enable this) are appreciated.
+Reports of successful operation on other platforms (and patches to enable this) are appreciated.
 
-**Coming soon:** Python 3+
+`hgvs` has been reported to work on Windows OS.  However, there are currently specific requirements.  Please pay special attention to installation documentation if you are installing `hgvs` on Windows.
+
+**Coming March 31, 2019:** `hgvs` will be releasing a version that will be switching to **Python 3.6+ only** and readily available on Ubuntu, MacOS, and Windows.   
 
 Package Versioning
 @@@@@@@@@@@@@@@@@@
@@ -76,7 +78,7 @@ While in your virtualenv, update `setuptools`::
 
   $ pip install setuptools --upgrade
 
-Install `hgvs` (will install dependencies automatically)::
+Install `hgvs` (installs dependencies automatically)::
 
   $ pip install hgvs
 `Dev Notes: Using conda need to also install Sphinx and sphinx_rtd_theme.`  
@@ -95,8 +97,8 @@ Fetch the source code::
 
 .. _seqrepo_install:
 
-Installing SeqRepo (recommended)
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Installing SeqRepo (recommended, **required for Windows**)
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 `seqrepo <https://github.com/biocommons/biocommons.seqrepo>`__
 provides an easy and efficient mechanism to maintain a local
@@ -108,16 +110,16 @@ Install seqrepo::
 
 Default for `seqrepo` is /usr/local/share/serepo/.  
 
-Execute the following accordingly::
+Execute (if necessary, modify the file path)::
 
   $ mkdir /usr/local/share/seqrepo
   $ seqrepo -r /usr/local/share/seqrepo pull
 
-This step will take 10-30 minutes, or more for slow connections.
+This step will take 10-30 minutes, or more for slow connections.  The sequence repository will downloaded as a file named YYYY-MM-DD.  
 
-Create a variable for `hgvs`::
+Set the following variable::
 
-  $ export HGVS_SEQREPO_DIR=/usr/local/share/seqrepo/20160906
+  $ export HGVS_SEQREPO_DIR=/usr/local/share/seqrepo/2018-10-03
 
 
 .. _uta_docker_install:
@@ -129,7 +131,9 @@ Local Installation of UTA (optional)
 
 If you do not install `UTA`, `hgvs` will use a remote `UTA` database 
 
-This section is for docker users (preferred `UTA` access)::
+However, if you use `docker` this step is recommended.
+
+Execute::
 
   $ docker run -d --name uta_20170117 -p 15032:5432 biocommons/uta:uta_20170117
 
@@ -141,15 +145,23 @@ Set the following variable::
 Test your installation
 @@@@@@@@@@@@@@@@@@@@@@
 
-While in your `hgvs` virtualenv, launch `hgvs-shell`::
+While in your `hgvs` virtualenv, execute::
   
 (hgvs) $ hgvs-shell
-(hgvs) In [1] v = hp.parse_hgvs_variant("NM_033089.6:c.571C>G")
-(hgvs) In [2] v
-(hgvs) Out[2] SequenceVariant(ac=NM_033089.6, type=c, posedit=571C>G)
-(hgvs) In [3] am37.c_to_g(v)
-(hgvs) Out[3] SequenceVariant(ac=NC_000020.10, type=g, posedit=278801C>G)
-(hgvs) In [4] am38.c_to_g(v)
-(hgvs) Out[4] SequenceVariant(ac=NC_000020.11, type=g, posedit=298157C>G)
 
+Confirm `hgvs` commands are accessible. Execute:
+:: 
+	In [1]: v = hp.parse_hgvs_variant("NM_033089.6:c.571C>G")
+
+	In [2]: v
+
+	Out[2]: SequenceVariant(ac=NM_033089.6, type=c, posedit=571C>G)
+
+	In [3]: am37.c_to_g(v)
+
+	Out[3]: SequenceVariant(ac=NC_000020.10, type=g, posedit=278801C>G)
+
+	In [4]: am38.c_to_g(v)
+
+	Out[4]: SequenceVariant(ac=NC_000020.11, type=g, posedit=298157C>G)
 
