@@ -2,10 +2,11 @@
 Manuscript Example
 ==================
 
-.. code:: python
+.. code:: 
 
     import hgvs
     hgvs.__version__
+
 
 
 
@@ -18,12 +19,13 @@ Manuscript Example
 Parse an HGVS string into a Python structure
 --------------------------------------------
 
-.. code:: python
+.. code:: 
 
     import hgvs.parser 
     hp = hgvs.parser.Parser()
     var_c1 = hp.parse_hgvs_variant('NM_182763.2:c.688+403C>T')
     var_c1, var_c1.posedit.pos.start
+
 
 
 
@@ -37,22 +39,22 @@ Parse an HGVS string into a Python structure
 Open the UTA public data source for mapping and validation
 ----------------------------------------------------------
 
-.. code:: python
+.. code:: 
 
     import hgvs.dataproviders.uta
     hdp = hgvs.dataproviders.uta.connect()
 
+Project transcript variant NM_182763.2:c.688+403C>T to GRCh37 primary assembly using splign alignments
+------------------------------------------------------------------------------------------------------
 
-Project transcript variant NM\_182763.2:c.688+403C>T to GRCh37 primary assembly using splign alignments
--------------------------------------------------------------------------------------------------------
-
-.. code:: python
+.. code:: 
 
     import hgvs.variantmapper
-    vm = hgvs.assemblymapper.AssemblyMapper(
+    vm = hgvs.variantmapper.AssemblyMapper(
         hdp, assembly_name='GRCh37', alt_aln_method='splign')
     var_g = vm.c_to_g(var_c1)
     var_g
+
 
 
 
@@ -65,9 +67,10 @@ Project transcript variant NM\_182763.2:c.688+403C>T to GRCh37 primary assembly 
 Project genomic variant to a new transcript
 -------------------------------------------
 
-.. code:: python
+.. code:: 
 
     vm.relevant_transcripts(var_g)
+
 
 
 
@@ -77,10 +80,11 @@ Project genomic variant to a new transcript
 
 
 
-.. code:: python
+.. code:: 
 
     var_c2 = vm.g_to_c(var_g,'NM_001197320.1')
     var_c2
+
 
 
 
@@ -93,11 +97,12 @@ Project genomic variant to a new transcript
 Infer protein changes for these transcript variants
 ---------------------------------------------------
 
-.. code:: python
+.. code:: 
 
     var_p1 = vm.c_to_p(var_c1)
     var_p2 = vm.c_to_p(var_c2)
     var_p1, var_p2
+
 
 
 
@@ -108,10 +113,10 @@ Infer protein changes for these transcript variants
 
 
 
-Format the results by "stringification"
+Format the results by “stringification”
 ---------------------------------------
 
-.. code:: python
+.. code:: 
 
     print("""mapped {var_c1} ({var_p1})
         to {var_c2} ({var_p2})
@@ -119,6 +124,7 @@ Format the results by "stringification"
             var_c1=var_c1, var_p1=var_p1,
             var_c2=var_c2, var_p2=var_p2,
             var_g=var_g))
+
 
 .. parsed-literal::
 
@@ -130,7 +136,7 @@ Format the results by "stringification"
 Validate a variant
 ------------------
 
-.. code:: python
+.. code:: 
 
     import hgvs.validator
     import hgvs.exceptions
@@ -140,6 +146,7 @@ Validate a variant
         vr.validate( hp.parse_hgvs_variant('NM_001197320.1:c.281A>T') )
     except hgvs.exceptions.HGVSError as e:
         print(e)
+
 
 .. parsed-literal::
 
