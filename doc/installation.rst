@@ -97,7 +97,7 @@ Fetch the source code::
 
 .. _seqrepo_install:
 
-Installing SeqRepo (recommended, **required for Windows**)
+Installing SeqRepo (recommended)
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 `seqrepo <https://github.com/biocommons/biocommons.seqrepo>`__
