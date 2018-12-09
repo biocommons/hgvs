@@ -26,7 +26,7 @@ class UTA_Base(object):
         cckpcccqss ccqsscfkpc ccqssccvpv ccqcki
         """
 
-        s = re.sub("\s+", "", s.upper())
+        s = re.sub(r"\s+", "", s.upper())
         self.assertEqual(sorted(self.hdp.get_acs_for_protein_seq(s)), sorted(exp))
 
         exp = ["NP_071928.2", "MD5_ffb0d4adbd5e0b5d71678228b3696984"]
@@ -37,7 +37,7 @@ class UTA_Base(object):
         yviitsslph icsfvmyltg trqmmsskhg vridv
         """
 
-        s = re.sub("\s+", "", s.upper())
+        s = re.sub(r"\s+", "", s.upper())
         self.assertEqual(sorted(self.hdp.get_acs_for_protein_seq(s)), sorted(exp))
 
     def test_get_gene_info(self):
