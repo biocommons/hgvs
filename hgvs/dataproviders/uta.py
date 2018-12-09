@@ -79,17 +79,14 @@ def connect(db_url=None, pooling=hgvs.global_config.uta.pooling, application_nam
     >>> hdp.schema_version()
     '1.1'
 
-    The format of the db_url is driver://user:pass@host/database (the same
+    The format of the db_url is driver://user:pass@host/database/schema (the same
     as that used by SQLAlchemy).  Examples:
 
     A remote public postgresql database:
-        postgresql://anonymous:anonymous@uta.biocommons.org/uta'
+        postgresql://anonymous:anonymous@uta.biocommons.org/uta/uta_20170707'
 
     A local postgresql database:
-        postgresql://localhost/uta
-
-    A local SQLite database:
-      sqlite:////tmp/uta-0.0.6.db
+        postgresql://localhost/uta_dev/uta_20170707
 
     For postgresql db_urls, pooling=True causes connect to use a
     psycopg2.pool.ThreadedConnectionPool.
