@@ -155,14 +155,14 @@ to a protein sequnce using the ``t_to_p`` function.
   >>> for ac in get_relevant_transcripts(var_g):
   ...     var_t = g_to_t(var_g, ac)
   ...     var_p = t_to_p(var_t)
-  ...     print(f"→ {var_t} ({var_p})")
+  ...     print("-> " + str(var_t) + " (" + str(var_p) + ") ")
   ...
-  → NM_007294.3:c.3844del (NP_009225.1:p.(Glu1282AsnfsTer25))
-  → NM_007297.3:c.3703del (NP_009228.2:p.(Glu1235AsnfsTer25))
-  → NR_027676.1:n.3980del (non-coding)
-  → NM_007298.3:c.788-655del (NP_009229.2:p.?)
-  → NM_007299.3:c.788-655del (NP_009230.2:p.?)
-  → NM_007300.3:c.3844del (NP_009231.2:p.(Glu1282AsnfsTer25))
+  -> NM_007294.3:c.3844del (NP_009225.1:p.(Glu1282AsnfsTer25))
+  -> NM_007297.3:c.3703del (NP_009228.2:p.(Glu1235AsnfsTer25))
+  -> NR_027676.1:n.3980del (non-coding)
+  -> NM_007298.3:c.788-655del (NP_009229.2:p.?)
+  -> NM_007299.3:c.788-655del (NP_009230.2:p.?)
+  -> NM_007300.3:c.3844del (NP_009231.2:p.(Glu1282AsnfsTer25))
 
 In ``hgvs``, the ``t`` type can be either ``c`` or ``n``.  Only
 variants on coding sequences (``c.``) can be projected to a protein
