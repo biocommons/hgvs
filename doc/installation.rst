@@ -11,13 +11,13 @@ Supported Platforms
 
 **Operating Systems: Ubuntu, MacOS**
 
-**Python ver. 2.7 or 3.5+**
+**Python ver. 2.7 and 3.5+**
 
 Reports of successful operation on other platforms (and patches to enable this) are appreciated.
 
 `hgvs` has been reported to work on Windows OS.  However, there are currently specific requirements.  Please pay special attention to installation documentation if you are installing `hgvs` on Windows.
 
-**Coming March 31, 2019:** `hgvs` will be releasing a version that will be switching to **Python 3.6+ only** and readily available on Ubuntu, MacOS, and Windows.   
+**Coming March 31, 2019:** `hgvs` will only be supporting **Python version 3.6+** and readily available on Ubuntu, MacOS, and Windows.   
 
 Package Versioning
 @@@@@@@@@@@@@@@@@@
