@@ -24,7 +24,7 @@ HGVS recommendations. Please refer to `issues
 | **Latest Release** | |github_tag|   |pypi_rel|                                          |
 +--------------------+--------------------------------------------------------------------+
 | **Development**    | | |status_rel|  |coveralls|                                        |
-|                    | | |issues|  |github_open_pr|                                |
+|                    | | |issues|  |github_open_pr|                                       |
 |                    | | |github_stars|  |github_forks|   |github_contrib|                |
 +--------------------+--------------------------------------------------------------------+
 
