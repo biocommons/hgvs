@@ -5,10 +5,17 @@
 out support for Python 2.7 on Jan 1, 2019.  `More
 <https://groups.google.com/forum/#!topic/hgvs-discuss/iLUzjzoD-28>`__
 
-
 The *hgvs* package provides a Python library to parse, format,
 validate, normalize, and map sequence variants according to `Variation
 Nomenclature`_ (aka Human Genome Variation Society) recommendations.
+
+Specifically, the hgvs package focuses on the subset of the HGVS
+recommendations that precisely describe sequence-level variation
+relevant to the application of high-throughput sequencing to clinical
+diagnostics.  The package does not attempt to cover the full scope of
+HGVS recommendations. Please refer to `issues
+<https://github.com/biocommons/hgvs/issues>`_ for limitations.
+
 
 +--------------------+--------------------------------------------------------------------+
 | **Information**    | | |rtd|   |changelog|  |github_license|                            |
@@ -17,7 +24,7 @@ Nomenclature`_ (aka Human Genome Variation Society) recommendations.
 | **Latest Release** | |github_tag|   |pypi_rel|                                          |
 +--------------------+--------------------------------------------------------------------+
 | **Development**    | | |status_rel|  |coveralls|                                        |
-|                    | | |github_issues|  |github_open_pr|                                |
+|                    | | |issues|  |github_open_pr|                                |
 |                    | | |github_stars|  |github_forks|   |github_contrib|                |
 +--------------------+--------------------------------------------------------------------+
 
@@ -283,8 +290,8 @@ Other packages that manipulate HGVS variants:
 .. |coveralls| image:: https://img.shields.io/coveralls/github/biocommons/hgvs.svg
    :target: https://coveralls.io/github/biocommons/hgvs
 
-.. |github_issues| image:: https://img.shields.io/github/issues-raw/biocommons/hgvs.svg
-   :alt: GitHub issues
+.. |issues| image:: https://img.shields.io/github/issues-raw/biocommons/hgvs.svg
+   :alt: issues
    :target: https://github.com/biocommons/hgvs/issues
 
 .. |github_open_pr| image:: https://img.shields.io/github/issues-pr/biocommons/hgvs.svg
