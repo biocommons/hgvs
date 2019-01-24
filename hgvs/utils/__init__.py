@@ -11,6 +11,9 @@ def build_tx_cigar(exons, strand):
     transcript sequence to a reference sequence, including introns.
     The input exons are expected to be in transcript order, and the
     resulting CIGAR is also in transcript order. 
+
+    >>> build_tx_cigar([], 1) is None
+    True
     """
     cigarelem_re = re.compile(r"\d+[=DIMNX]")
 
