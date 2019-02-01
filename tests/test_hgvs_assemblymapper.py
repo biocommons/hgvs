@@ -460,6 +460,16 @@ class Test_AssemblyMapper(unittest.TestCase):
         ]
         self._test_mapping(hgvs_set)
 
+    def test_relevant_transcripts(self):
+        v = self.hp.parse_hgvs_variant("NC_000007.13:g.36561662C>T")
+        assert sorted(["NM_001177506.1", "NM_001177507.1", "NM_001637.3"]) == sorted(self.am.relevant_transcripts(v))
+        
+        # Example from Issue #546
+        v = self.hp.parse_hgvs_variant("NC_000009.11:g.34646583_34646586del")
+        assert sorted([]) == sorted(self.am.relevant_transcripts(v))
+        
+
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -152,7 +152,7 @@ class UTABase(Interface):
             join exon E on ES.exon_set_id=E.exon_set_id 
             where alt_ac=? and alt_aln_method=?
             group by tx_ac,alt_ac,alt_strand,alt_aln_method
-            having max(end_i)>? and min(start_i)<?
+            having min(start_i) < ? and ? <= max(end_i)
             """,
         "tx_identity_info":
         """
