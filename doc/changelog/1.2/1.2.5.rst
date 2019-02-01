@@ -7,16 +7,26 @@ Changes since 1.2.4 (2018-09-28).
 Special Attention
 $$$$$$$$$$$$$$$$$$
 
-Python 2.7 versions of hgvs are now deprecated and will become
-unsupported on April 1, 2019.  See
-[Migrating-to-Python-3.6](https://github.com/biocommons/org/wiki/Migrating-to-Python-3.6).
+
+Deprecations
+$$$$$$$$$$$$$
+
 
 Bug Fixes
 $$$$$$$$$$
 
-* Fixes `#546 <https://github.com/biocommons/hgvs/issues/546/>`_: relevant transcripts should be wholly within transcript bounds [`86412924353b <https://github.com/biocommons/hgvs/commit/86412924353b>`_]
+
+New Features
+$$$$$$$$$$$$$
+
+
+Other Changes
+$$$$$$$$$$$$$$
+
 
 Internal and Developer Changes
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
+* Added changelog for 1.2.5 [`17a7d42 <https://github.com/biocommons/hgvs/commit/17a7d42>`_]
+* Fixes `#546 <https://github.com/biocommons/hgvs/issues/546/>`_: relevant transcripts should be wholly within transcript bounds [`9ebe355 <https://github.com/biocommons/hgvs/commit/9ebe355>`_]
 * fix testing bug that caused py3.5 env to be undefined on travis [`5146b07 <https://github.com/biocommons/hgvs/commit/5146b07>`_]
