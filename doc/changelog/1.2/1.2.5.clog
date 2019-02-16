@@ -1,0 +1,11 @@
+clog format: 1; -*-outline-*-
+* 1.2.5 (2019-02-01)
+Changes since 1.2.4 (2018-09-28).
+** Special Attention
+Python 2.7 versions of hgvs are now deprecated and will become
+unsupported on April 1, 2019.  See
+`Migrating-to-Python-3.6 <https://github.com/biocommons/org/wiki/Migrating-to-Python-3.6>`__.
+** Bug Fixes
+*** Fixes #546: relevant transcripts should be wholly within transcript bounds [86412924353b]
+** Internal and Developer Changes
+*** fix testing bug that caused py3.5 env to be undefined on travis [5146b07]
