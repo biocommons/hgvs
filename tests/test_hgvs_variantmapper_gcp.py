@@ -137,7 +137,7 @@ class Test_VariantMapper(unittest.TestCase):
         """
 
         def _rm_del_seq(vs):
-            return re.sub(vs, r"del\w+ins", "delins")
+            return re.sub(r"del\w+ins", "delins", vs)
 
         var_g = self.hp.parse_hgvs_variant(rec["HGVSg"])
         var_x = self.hp.parse_hgvs_variant(rec["HGVSc"])
@@ -151,7 +151,7 @@ class Test_VariantMapper(unittest.TestCase):
         self.assertEqual(
             _rm_del_seq(str(var_x)),
             _rm_del_seq(str(var_x_test)),
-            msg="%s != %s (%s; HGVSg=%s)" % (str(var_x_test), str(var_x), rec["id"], rec["HGVSg"]))
+            msg="%s != %s (g>t; %s; HGVSg=%s)" % (str(var_x_test), str(var_x), rec["id"], rec["HGVSg"]))
 
         # c,n -> g
         if var_x.type == "c":
@@ -161,7 +161,7 @@ class Test_VariantMapper(unittest.TestCase):
         self.assertEqual(
             _rm_del_seq(str(var_g)),
             _rm_del_seq(str(var_g_test)),
-            msg="%s != %s (%s; HGVSc=%s)" % (str(var_g_test), str(var_g), rec["id"], rec["HGVSc"]))
+            msg="%s != %s (t>g; %s; HGVSc=%s)" % (str(var_g_test), str(var_g), rec["id"], rec["HGVSc"]))
 
         if var_p is not None:
             # c -> p
