@@ -92,7 +92,7 @@ Parsing and Formating
 `hgvs` parses HGVS variants (as strings) into an object model, and can format
 object models back into HGVS strings.
 
-::
+.. code-block:: python
 
   >>> import hgvs.parser
 
@@ -123,7 +123,7 @@ and protein sequences.  Non-coding and intronic variants are
 supported.  Alignment data come from the `Universal Transcript Archive
 (UTA) <https://github.com/biocommons/uta/>`__.
 
-::
+.. code-block:: python
 
   >>> import hgvs.dataproviders.uta
   >>> import hgvs.assemblymapper
@@ -158,7 +158,7 @@ Coding variants may be translated to their protein consequences.  HGVS
 uses the same pairing of transcript and protein accessions as seen in
 NCBI and Ensembl.
 
-::
+.. code-block:: python
 
    # translate var_c to its protein consequence
    # The object structure of protein variants is nearly identical to
@@ -193,7 +193,7 @@ biological ambiguity (e.g., inserting a G in a poly-G run) or due to
 misunderstanding HGVS recommendations.  Normalization rewrites certain
 veriants into a single representation.
 
-::
+.. code-block:: python
 
   # rewrite ins as dup (depends on sequence context)
   >>> import hgvs.normalizer
