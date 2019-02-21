@@ -140,13 +140,9 @@ high-level interface to variant projection. :mod:`hgvs.easy`
 initializes AssemblyMapper instances for GRCh37 and GRCh37 as ``am37``
 and ``am38`` respectively. For example::
 
-  >>> am38.relevant_transcripts(var_g)
-  ['NM_007294.3', 'NM_007297.3', 'NR_027676.1', 'NM_007298.3', 'NM_007299.3', 'NM_007300.3']
-
-Or the functional form::
-
-  >>> get_relevant_transcripts(var_g)
-  ['NM_007294.3', 'NM_007297.3', 'NR_027676.1', 'NM_007298.3', 'NM_007299.3', 'NM_007300.3']
+  >>> transcripts = am38.relevant_transcripts(var_g)
+  >>> sorted(transcripts)
+  ['NM_007294.3', 'NM_007297.3', 'NM_007298.3', 'NM_007299.3', 'NM_007300.3', 'NR_027676.1']
 
 We can now project the genomic variant, ``var_g``, to each of these
 transcripts using the ``g_to_t`` function, and the transcript variant
@@ -159,10 +155,10 @@ to a protein sequnce using the ``t_to_p`` function.
   ...
   -> NM_007294.3:c.3844del (NP_009225.1:p.(Glu1282AsnfsTer25))
   -> NM_007297.3:c.3703del (NP_009228.2:p.(Glu1235AsnfsTer25))
-  -> NR_027676.1:n.3980del (non-coding)
   -> NM_007298.3:c.788-655del (NP_009229.2:p.?)
   -> NM_007299.3:c.788-655del (NP_009230.2:p.?)
   -> NM_007300.3:c.3844del (NP_009231.2:p.(Glu1282AsnfsTer25))
+  -> NR_027676.1:n.3980del (non-coding)
 
 In ``hgvs``, the ``t`` type can be either ``c`` or ``n``.  Only
 variants on coding sequences (``c.``) can be projected to a protein
