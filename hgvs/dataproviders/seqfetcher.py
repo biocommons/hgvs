@@ -13,7 +13,7 @@ import bioutils.seqfetcher
 
 from ..exceptions import HGVSDataNotAvailableError
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class SeqFetcher(object):
@@ -41,18 +41,19 @@ class SeqFetcher(object):
                 return sr.fetch(ac, start_i, end_i)
 
             self.fetcher = _fetch_seq_seqrepo
-            self.source = "local (SeqRepo)"
-            logger.info("Using SeqRepo({}) sequence fetching".format(seqrepo_dir))
+            self.source = "SeqRepo ({})".format(seqrepo_dir)
         else:
             self.fetcher = bioutils.seqfetcher.fetch_seq
-            self.source = "remote (bioutils.seqfetcher)"
-            logger.info("Using remote sequence fetching")
+            self.source = "bioutils.seqfetcher"
+        _logger.info("Fetching sequences with " + self.source)
 
     def fetch_seq(self, ac, start_i=None, end_i=None):
         try:
             return self.fetcher(ac, start_i, end_i)
-        except (RuntimeError, KeyError) as ex:
-            raise HGVSDataNotAvailableError("No sequence available for {ac} ({ex})".format(ac=ac, ex=ex))
+        except Exception as ex:
+            raise HGVSDataNotAvailableError("Failed to fetch {ac} from {self.source} ({ex})".format(
+                ac=ac, ex=ex, self=self))
+
 
 
 # <LICENSE>
