@@ -69,8 +69,8 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
           "wheel",
       ],
       tests_require=[
-          "pytest",
-          "pytest-cov",
+          "pytest>=4.3.0",
+          "pytest-cov>=2.6.1",
       ],
 )
 
