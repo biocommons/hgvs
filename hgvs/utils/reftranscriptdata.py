@@ -28,6 +28,7 @@ class RefTranscriptData(object):
 
         if pro_ac is None:
             # get_acs... will always return at least the MD5_ accession
+            # TODO: drop get_acs_for_protein_seq; use known mapping or digest (wo/pro ac inference)
             pro_ac = (hdp.get_pro_ac_for_tx_ac(tx_ac) or hdp.get_acs_for_protein_seq(protein_seq)[0])
 
         self.transcript_sequence = tx_seq

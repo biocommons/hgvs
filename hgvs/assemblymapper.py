@@ -7,7 +7,7 @@ import logging
 import hgvs
 import hgvs.normalizer
 
-from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError, HGVSUnsupportedOperationError
+from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError, HGVSInvalidVariantError, HGVSUnsupportedOperationError
 from hgvs.variantmapper import VariantMapper
 
 _logger = logging.getLogger(__name__)
@@ -120,7 +120,7 @@ class AssemblyMapper(VariantMapper):
             return "non-coding"
         if var_t.type == "c":
             return self.c_to_p(var_t)
-        raise HGVSInvalidVariantError("Expected a coding (c.) or non-coding (n.) variant; got " + str(var_c))
+        raise HGVSInvalidVariantError("Expected a coding (c.) or non-coding (n.) variant; got " + str(var_t))
 
     def c_to_n(self, var_c):
         var_out = super(AssemblyMapper, self).c_to_n(var_c)
@@ -152,10 +152,11 @@ class AssemblyMapper(VariantMapper):
             if e["alt_aln_method"] == self.alt_aln_method and e["alt_ac"] in self._assembly_accessions
         ]
 
-        if len(alt_acs) == 0:
+        if not alt_acs:
             raise HGVSDataNotAvailableError("No alignments for {tx_ac} in {an} using {am}".format(
                 tx_ac=tx_ac, an=self.assembly_name, am=self.alt_aln_method))
 
+        # TODO: conditional is unnecessary; remove
         if len(alt_acs) > 1:
             names = set(self._assembly_map[ac] for ac in alt_acs)
             if names != set("XY"):

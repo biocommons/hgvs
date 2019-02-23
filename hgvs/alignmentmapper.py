@@ -17,6 +17,8 @@ from hgvs.exceptions import HGVSError, HGVSUsageError, HGVSDataNotAvailableError
 from hgvs.utils import build_tx_cigar
 from hgvs.enums import Datum
 
+cigar_re = re.compile(r"(?P<len>\d+)(?P<op>[=DIMNX])")
+
 
 class AlignmentMapper(object):
     """Provides coordinate (not variant) mapping operations between
@@ -88,7 +90,6 @@ class AlignmentMapper(object):
         """For a given CIGAR string, return the start positions of
         each aligned segment in ref and tgt, and a list of CIGAR operators.
         """
-        cigar_re = re.compile(r"(?P<len>\d+)(?P<op>[=DIMNX])")
         ces = [m.groupdict() for m in cigar_re.finditer(cigar)]
         ref_pos = [None] * len(ces)
         tgt_pos = [None] * len(ces)
@@ -167,8 +168,8 @@ class AlignmentMapper(object):
             start_offset, end_offset = -end_offset, -start_offset
 
         # returns the genomic range start (grs) and end (gre)
-        grs, grs_offset, grs_cigar = self._map(from_pos=self.tgt_pos, to_pos=self.ref_pos, pos=frs, base="start")
-        gre, gre_offset, gre_cigar = self._map(from_pos=self.tgt_pos, to_pos=self.ref_pos, pos=fre, base="end")
+        grs, _, grs_cigar = self._map(from_pos=self.tgt_pos, to_pos=self.ref_pos, pos=frs, base="start")
+        gre, _, gre_cigar = self._map(from_pos=self.tgt_pos, to_pos=self.ref_pos, pos=fre, base="end")
         grs, gre = grs + self.gc_offset + 1, gre + self.gc_offset + 1
         gs, ge = grs + start_offset, gre + end_offset
 
@@ -225,25 +226,25 @@ class AlignmentMapper(object):
 
         # start
         if c_interval.start.datum == Datum.CDS_START and c_interval.start.base < 0:
-            rs = c_interval.start.base + self.cds_start_i + 1
+            r_start = c_interval.start.base + self.cds_start_i + 1
         elif c_interval.start.datum == Datum.CDS_START and c_interval.start.base > 0:
-            rs = c_interval.start.base + self.cds_start_i
+            r_start = c_interval.start.base + self.cds_start_i
         elif c_interval.start.datum == Datum.CDS_END:
-            rs = c_interval.start.base + self.cds_end_i
+            r_start = c_interval.start.base + self.cds_end_i
         # end
         if c_interval.end.datum == Datum.CDS_START and c_interval.end.base < 0:
-            re = c_interval.end.base + self.cds_start_i + 1
+            r_end = c_interval.end.base + self.cds_start_i + 1
         elif c_interval.end.datum == Datum.CDS_START and c_interval.end.base > 0:
-            re = c_interval.end.base + self.cds_start_i
+            r_end = c_interval.end.base + self.cds_start_i
         elif c_interval.end.datum == Datum.CDS_END:
-            re = c_interval.end.base + self.cds_end_i
+            r_end = c_interval.end.base + self.cds_end_i
 
-        if rs <= 0 or re > self.tgt_len:
+        if r_start <= 0 or r_end > self.tgt_len:
             raise HGVSInvalidIntervalError("The given coordinate is outside the bounds of the reference sequence.")
 
         n_interval = hgvs.location.BaseOffsetInterval(
-            start=hgvs.location.BaseOffsetPosition(base=rs, offset=c_interval.start.offset, datum=Datum.SEQ_START),
-            end=hgvs.location.BaseOffsetPosition(base=re, offset=c_interval.end.offset, datum=Datum.SEQ_START),
+            start=hgvs.location.BaseOffsetPosition(base=r_start, offset=c_interval.start.offset, datum=Datum.SEQ_START),
+            end=hgvs.location.BaseOffsetPosition(base=r_end, offset=c_interval.end.offset, datum=Datum.SEQ_START),
             uncertain=c_interval.uncertain)
         return n_interval
 

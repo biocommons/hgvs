@@ -225,11 +225,11 @@ Citing hgvs (the package)
 
 | **hgvs: A Python package for manipulating sequence variants using HGVS nomenclature: 2018 Update.**
 | Wang M, Callenberg KM, Dalgleish R, Fedtsov A, Fox N, Freeman PJ, Jacobs KB, Kaleta P, McMurry AJ, Prlić A, Rajaraman V, Hart RK
-| Human Mutation. 2018 `Pubmed <https://www.ncbi.nlm.nih.gov/pubmed/30129167>`_ | `Open Access PDF <https://doi.org/10.1002/humu.23615>`_
+| Human Mutation. 2018 `Pubmed <https://www.ncbi.nlm.nih.gov/pubmed/30129167>`__ | `Open Access PDF <https://doi.org/10.1002/humu.23615>`__
 
 | **A Python Package for Parsing, Validating, Mapping, and Formatting Sequence Variants Using HGVS Nomenclature.**
 | Hart RK, Rico R, Hare E, Garcia J, Westbrook J, Fusaro VA.
-| *Bioinformatics*. 2014 Sep 30. `PubMed <http://www.ncbi.nlm.nih.gov/pubmed/25273102>`_ | `Open Access PDF <http://bioinformatics.oxfordjournals.org/content/31/2/268.full.pdf>`_
+| *Bioinformatics*. 2014 Sep 30. `PubMed <http://www.ncbi.nlm.nih.gov/pubmed/25273102>`__ | `Open Access PDF <http://bioinformatics.oxfordjournals.org/content/31/2/268.full.pdf>`__
 
 
 Contributing
