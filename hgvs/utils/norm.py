@@ -107,7 +107,7 @@ def normalize_alleles_right(ref, start, stop, alleles, bound, ref_step, shuffle=
     """
     Normalize loci by removing extraneous reference padding
 
-    >>> normalize_alleles_right('A', 1, 2, 'A', 1, 2)
+    >>> normalize_alleles_right ('A', 1, 2, 'A', 1, 2)
     shuffled_alleles(start=1, stop=2, alleles='A')
 
     """
