@@ -18,7 +18,7 @@ HGVS recommendations. Please refer to `issues
 
 
 +--------------------+--------------------------------------------------------------------+
-| **Information**    | | |rtd|   |changelog|  |github_license|                            |
+| **Information**    | | |rtd|   |changelog|  |github_license|  |binder|                  |
 |                    | | |gitter|   |group|     |getting_help|                            |
 +--------------------+--------------------------------------------------------------------+
 | **Latest Release** | |github_tag|   |pypi_rel|                                          |
@@ -310,7 +310,8 @@ Other packages that manipulate HGVS variants:
    :alt: GitHub license
    :target: https://github.com/biocommons/hgvs/graphs/contributors/
 
-
 .. |install_status| image:: https://travis-ci.org/reece/hgvs-integration-test.png?branch=master
    :target: https://travis-ci.org/reece/hgvs-integration-test
 
+.. |binder| image:: https://mybinder.org/badge_logo.svg
+   :target: https://mybinder.org/v2/gh/biocommons/hgvs/master?filepath=examples
