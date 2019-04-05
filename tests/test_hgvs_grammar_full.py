@@ -51,7 +51,7 @@ class TestGrammarFull(unittest.TestCase):
         """ensure that all rules in grammar have tests"""
 
         grammar_rule_re = re.compile(r"^(\w+)")
-        grammar_fn = pkg_resources.resource_filename(__name__, "../hgvs/_data/hgvs.pymeta")
+        grammar_fn = pkg_resources.resource_filename("hgvs", "_data/hgvs.pymeta")
         with open(grammar_fn, "r") as f:
             grammar_rules = set(r.group(1) for r in filter(None, map(grammar_rule_re.match, f)))
 
