@@ -35,16 +35,17 @@ class SeqFetcher(object):
         seqrepo_dir = os.environ.get("HGVS_SEQREPO_DIR")
         if seqrepo_dir:
             from biocommons.seqrepo import SeqRepo
-            sr = SeqRepo(seqrepo_dir)
+            self.sr = SeqRepo(seqrepo_dir)
 
             def _fetch_seq_seqrepo(ac, start_i=None, end_i=None):
-                return sr.fetch(ac, start_i, end_i)
+                return self.sr.fetch(ac, start_i, end_i)
 
             self.fetcher = _fetch_seq_seqrepo
             self.source = "SeqRepo ({})".format(seqrepo_dir)
         else:
+            self.sr = None
             self.fetcher = bioutils.seqfetcher.fetch_seq
-            self.source = "bioutils.seqfetcher"
+            self.source = "bioutils.seqfetcher (network fetching)"
         _logger.info("Fetching sequences with " + self.source)
 
     def fetch_seq(self, ac, start_i=None, end_i=None):
