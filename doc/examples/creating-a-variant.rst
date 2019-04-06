@@ -21,7 +21,7 @@ Importantly, each of the objects we’re building has a rule in the
 parser, which means that you have the tools to serialize and deserialize
 (parse) each of the components that we’re about to construct.
 
-1. Make an Interval to defined a position of the edit
+1. Make an Interval to define a position of the edit
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
