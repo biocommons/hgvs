@@ -11,7 +11,7 @@ import unittest
 
 import pytest
 
-from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError, HGVSParseError, HGVSInvalidVariantError, HGVSInvalidVariantError
+from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError, HGVSParseError, HGVSInvalidVariantError
 from hgvs.enums import Datum
 import hgvs.assemblymapper
 import hgvs.dataproviders.uta

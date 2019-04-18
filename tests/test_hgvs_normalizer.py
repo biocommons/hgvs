@@ -7,7 +7,7 @@ import unittest
 
 import pytest
 
-from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError, HGVSInvalidVariantError, HGVSInvalidVariantError
+from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
 import hgvs.dataproviders.uta
 import hgvs.variantmapper
 import hgvs.parser
