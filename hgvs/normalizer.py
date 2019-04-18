@@ -202,12 +202,12 @@ class Normalizer(object):
                 right = float("inf")
 
                 # TODO: #242: implement methods to find tx regions
-                for i in range(0, len(exon_starts)):
+                for i, _ in enumerate(exon_starts):
                     if (var.posedit.pos.start.base - 1 >= exon_starts[i]
                             and var.posedit.pos.start.base - 1 < exon_ends[i]):
                         break
 
-                for j in range(0, len(exon_starts)):
+                for j, _ in enumerate(exon_starts):
                     if (var.posedit.pos.end.base - 1 >= exon_starts[j] and var.posedit.pos.end.base - 1 < exon_ends[j]):
                         break
 

@@ -125,7 +125,7 @@ class Interface(six.with_metaclass(abc.ABCMeta, object)):
         pass
 
     @abc.abstractmethod
-    def get_acs_for_protein_seq(seq):
+    def get_acs_for_protein_seq(self, seq):
         pass
 
     @abc.abstractmethod
