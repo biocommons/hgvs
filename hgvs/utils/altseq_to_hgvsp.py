@@ -35,6 +35,7 @@ class AltSeqToHgvsp(object):
         self._frameshift_start = self._alt_data.frameshift_start
         self._is_substitution = self._alt_data.is_substitution
         self._is_ambiguous = self._alt_data.is_ambiguous
+        self._is_init_met = False
 
         if DBG:
             print("len ref seq:{} len alt seq:{}".format(len(self._ref_seq), len(self._alt_seq)))
@@ -187,6 +188,7 @@ class AltSeqToHgvsp(object):
             ref = ''
             alt = ''
             self._is_ambiguous = True    # side-effect
+            self._is_init_met = True
 
         if insertion and insertion.find("*") == 0:    # stop codon at variant position
             aa_start = aa_end = AAPosition(base=start, aa=deletion[0])
@@ -288,7 +290,9 @@ class AltSeqToHgvsp(object):
             acc=acc,
             is_ambiguous=self._is_ambiguous,
             is_sub=is_sub,
-            is_ext=is_ext)
+            is_ext=is_ext,
+            _is_init_met=self._is_init_met
+        )
 
         return var_p
 
@@ -324,9 +328,13 @@ class AltSeqToHgvsp(object):
                         is_ambiguous=False,
                         is_sub=False,
                         is_ext=False,
-                        is_no_protein=False):
+                        is_no_protein=False,
+                        is_init_met=False):
         """Creates a SequenceVariant object"""
-        if is_ambiguous:
+
+        if is_init_met:
+            posedit = AARefAlt(ref=ref, alt=alt)
+        elif is_ambiguous:
             posedit = None
         else:
             interval = Interval(start=start, end=end)
