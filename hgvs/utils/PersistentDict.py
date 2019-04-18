@@ -13,7 +13,7 @@ class PersistentDict(dict):
         self.flag = flag    # r=readonly, c=create,write,read
         try:
             with open(self.filename, 'rb') as f:
-                self.update(pickle.load(f))  # noqa: B301,BAN-B301
+                self.update(pickle.load(f))    # noqa: B301,BAN-B301
         except IOError:
             if self.flag == 'r':
                 raise IOError('Cannot open file ' + self.filename)

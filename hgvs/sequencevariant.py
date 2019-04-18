@@ -43,15 +43,18 @@ class SequenceVariant(object):
     __str__ = format
 
     def __repr__(self):
-        return "{0}({1})".format(self.__class__.__name__, ", ".join(
-            (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
+        return "{0}({1})".format(
+            self.__class__.__name__, ", ".join(
+                (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
 
     def fill_ref(self, hdp):
         hm = hgvs.variantmapper.VariantMapper(hdp)
         type = None
-        if isinstance(self.posedit, hgvs.posedit.PosEdit) and isinstance(self.posedit.edit, hgvs.edit.Edit):
+        if isinstance(self.posedit, hgvs.posedit.PosEdit) and isinstance(
+                self.posedit.edit, hgvs.edit.Edit):
             type = self.posedit.edit.type
-        if type in ["del", "delins", "identity", "dup", "repeat"] and self.posedit.edit.ref_s is None:
+        if type in ["del", "delins", "identity", "dup", "repeat"
+                    ] and self.posedit.edit.ref_s is None:
             hm._replace_reference(self)
         if type == "identity" and isinstance(self.posedit.edit, hgvs.edit.NARefAlt):
             self.posedit.edit.alt = self.posedit.edit.ref

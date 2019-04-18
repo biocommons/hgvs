@@ -137,14 +137,20 @@ class Parser(object):
 
         exposed_rule_re = re.compile(r"hgvs_(variant|position)|(c|g|m|n|p|r)"
                                      r"_(edit|hgvs_position|interval|pos|posedit|variant)")
-        exposed_rules = [m.replace("rule_", "") for m in dir(self._grammar._grammarClass) if m.startswith("rule_")]
+        exposed_rules = [
+            m.replace("rule_", "") for m in dir(self._grammar._grammarClass)
+            if m.startswith("rule_")
+        ]
         if not expose_all_rules:
-            exposed_rules = [rule_name for rule_name in exposed_rules if exposed_rule_re.match(rule_name)]
+            exposed_rules = [
+                rule_name for rule_name in exposed_rules if exposed_rule_re.match(rule_name)
+            ]
         for rule_name in exposed_rules:
             att_name = "parse_" + rule_name
             rule_fxn = make_parse_rule_function(rule_name)
             self.__setattr__(att_name, rule_fxn)
-        self._logger.debug("Exposed {n} rules ({rules})".format(n=len(exposed_rules), rules=", ".join(exposed_rules)))
+        self._logger.debug("Exposed {n} rules ({rules})".format(
+            n=len(exposed_rules), rules=", ".join(exposed_rules)))
 
 
 # <LICENSE>

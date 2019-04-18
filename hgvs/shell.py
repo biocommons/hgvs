@@ -47,13 +47,13 @@ def shell():
         __version__, global_config,
 
     # instances
-        hp, parser, hgvs_parser, hdp, hgvs_data_provider, vm, variant_mapper, hgvs_variant_mapper, am37,
-        hgvs_assembly_mapper_37, am38, projector, hgvs_assembly_mapper_38, hn, normalizer, hgvs_normalizer, hv,
-        validator, hgvs_validator,
+        hp, parser, hgvs_parser, hdp, hgvs_data_provider, vm, variant_mapper, hgvs_variant_mapper,
+        am37, hgvs_assembly_mapper_37, am38, projector, hgvs_assembly_mapper_38, hn, normalizer,
+        hgvs_normalizer, hv, validator, hgvs_validator,
 
     # functionalized methods
-        parse, normalize, validate, g_to_c, g_to_n, g_to_t, c_to_g, c_to_n, c_to_p, n_to_c, n_to_g, t_to_g, t_to_p,
-        get_relevant_transcripts)
+        parse, normalize, validate, g_to_c, g_to_n, g_to_t, c_to_g, c_to_n, c_to_p, n_to_c, n_to_g,
+        t_to_g, t_to_p, get_relevant_transcripts)
 
     from hgvs.utils.context import variant_context_w_alignment    # noqa
 

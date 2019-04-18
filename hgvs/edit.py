@@ -41,7 +41,8 @@ class Edit(object):
         return p_3_letter, p_term_asterisk
 
     def _del_ins_lengths(self, ilen):
-        raise HGVSUnsupportedOperationError("internal function _del_ins_lengths not implemented for this variant type")
+        raise HGVSUnsupportedOperationError(
+            "internal function _del_ins_lengths not implemented for this variant type")
 
 
 @attr.s(slots=True)
@@ -68,7 +69,8 @@ class NARefAlt(Edit):
         >>> NARefAlt(7).ref_s
 
         """
-        return self.ref if (isinstance(self.ref, six.string_types) and self.ref and self.ref[0] in "ACGTUN") else None
+        return self.ref if (isinstance(self.ref, six.string_types) and self.ref
+                            and self.ref[0] in "ACGTUN") else None
 
     @property
     def ref_n(self):
@@ -106,7 +108,8 @@ class NARefAlt(Edit):
         if self.ref is not None and self.alt is not None:
             if self.ref == self.alt:
                 s = "{ref}=".format(ref=ref)
-            elif len(self.alt) == 1 and len(self.ref) == 1 and not self.ref.isdigit():    # don't turn del5insT into 5>T
+            elif len(self.alt) == 1 and len(
+                    self.ref) == 1 and not self.ref.isdigit():    # don't turn del5insT into 5>T
                 s = "{self.ref}>{self.alt}".format(self=self)
             else:
                 s = "del{ref}ins{alt}".format(ref=ref, alt=self.alt)
@@ -405,7 +408,8 @@ class Dup(Edit):
         """
         returns a string representing the ref sequence, if it is not None and smells like a sequence
         """
-        return self.ref if (isinstance(self.ref, six.string_types) and self.ref and self.ref[0] in "ACGTUN") else None
+        return self.ref if (isinstance(self.ref, six.string_types) and self.ref
+                            and self.ref[0] in "ACGTUN") else None
 
     def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
@@ -528,7 +532,8 @@ class Inv(Edit):
 
     @property
     def ref_s(self):
-        return self.ref if (isinstance(self.ref, six.string_types) and self.ref and self.ref[0] in "ACGTUN") else None
+        return self.ref if (isinstance(self.ref, six.string_types) and self.ref
+                            and self.ref[0] in "ACGTUN") else None
 
     @property
     def ref_n(self):
