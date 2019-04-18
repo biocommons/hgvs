@@ -23,7 +23,7 @@ _CacheInfo = namedtuple("CacheInfo", ["hits", "misses", "maxsize", "currsize"])
 
 
 class _HashedSeq(list):
-    __slots__ = 'hashvalue'
+    __slots__ = ['hashvalue']
 
     def __init__(self, tup, hash=hash):
         self[:] = tup
@@ -95,7 +95,7 @@ def lru_cache(maxsize=100, typed=False, mode=None, cache=None):
 
     :param mode: cache run mode
         None:   the default lru cache behaver
-        LEARN:  queries are executed against persistent cache from file "filename"; 
+        LEARN:  queries are executed against persistent cache from file "filename";
                 in the event of a miss, the novel query and results would be written to cache, then returned.
         RUN:    queries are executed against caches; misses result in DataNotLocallyAvailableError
         VERIFY: always execute the function; if persistent cache value and returned value are different, raise VerifyFailedError

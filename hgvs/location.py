@@ -5,7 +5,7 @@ This module provides for Representing the location of variants in HGVS nomenclat
 
   * integers and integer intervals (e.g., NC_012345.6:g.3403243_3403248A>C)
   * CDS positions and intervals (e.g., NM_01234.5:c.56+12_56+14delAC)
-  * CDS stop coordinates (e.g., NM_01234.5:c.*13A>C)  
+  * CDS stop coordinates (e.g., NM_01234.5:c.*13A>C)
 
 Classes:
 
@@ -48,7 +48,7 @@ class SimplePosition(object):
     @property
     def is_uncertain(self):
         """return True if the position is marked uncertain or undefined"""
-        return self.uncertain or self.base in None
+        return self.uncertain or self.base is None
 
     def _set_uncertain(self):
         "mark this location as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"
