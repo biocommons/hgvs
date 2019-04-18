@@ -339,8 +339,13 @@ class AltSeqBuilder(object):
 
     def _create_no_protein(self):
         """Create a no-protein result"""
-        alt_data = AltTranscriptData(
-            [], None, None, False, None, self._transcript_data.protein_accession, is_ambiguous=False)
+        alt_data = AltTranscriptData([],
+                                     None,
+                                     None,
+                                     False,
+                                     None,
+                                     self._transcript_data.protein_accession,
+                                     is_ambiguous=False)
         return alt_data
 
     def _get_frameshift_start(self, variant_data):

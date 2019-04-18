@@ -126,8 +126,8 @@ class BaseOffsetPosition(object):
 
     def __str__(self):
         self.validate()
-        base_str = ("?" if self.base is None else "*" + str(self.base)
-                    if self.datum == Datum.CDS_END else str(self.base))
+        base_str = ("?"
+                    if self.base is None else "*" + str(self.base) if self.datum == Datum.CDS_END else str(self.base))
         offset_str = ("+?" if self.offset is None else "" if self.offset == 0 else "%+d" % self.offset)
         pos = base_str + offset_str
         return "(" + pos + ")" if self.uncertain else pos

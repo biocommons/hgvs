@@ -29,10 +29,8 @@ class Test_Position(unittest.TestCase):
             if var.startswith("#") or var == "":
                 continue
             v = self.parser.parse_hgvs_variant(var)
-            self.assertEqual(
-                var,
-                v.format(conf={'max_ref_length': None}),
-                "parse-format roundtrip failed:" + pprint.pformat(v.posedit))
+            self.assertEqual(var, v.format(conf={'max_ref_length': None}),
+                             "parse-format roundtrip failed:" + pprint.pformat(v.posedit))
 
     @pytest.mark.quick
     def test_parser_reject(self):

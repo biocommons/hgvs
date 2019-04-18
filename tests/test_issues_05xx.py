@@ -38,7 +38,6 @@ class Test_Issues(unittest.TestCase):
             self.hdp, replace_reference=True, assembly_name='GRCh38', alt_aln_method='splign')
         self.vn = hgvs.normalizer.Normalizer(self.hdp, shuffle_direction=3, cross_boundaries=True)
 
-
     def test_525(self):
         """https://github.com/biocommons/hgvs/issues/525"""
 

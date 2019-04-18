@@ -155,7 +155,7 @@ class Test_VariantMapper(unittest.TestCase):
         var_g = self.am37.c_to_g(var_c)
 
         self.assertEqual(str(var_g), hgvs_g)
-    
+
     def test_c_to_p_with_stop_gain(self):
         # issue-474
         hgvs_c = "NM_080877.2:c.1733_1735delinsTTT"
@@ -198,7 +198,6 @@ class Test_VariantMapper(unittest.TestCase):
         var_p = self.am.c_to_p(var_c)
 
         self.assertEqual(str(var_p), hgvs_p)
-
 
 
 class Test_RefReplacement(unittest.TestCase):
