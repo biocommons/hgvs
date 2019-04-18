@@ -72,7 +72,7 @@ except pkg_resources.DistributionNotFound as e:
 
 # Enable DeprecationWarnings for the hgvs package
 # N.B. The module name is provided as a regexp to the module *path*
-warnings.filterwarnings('default', '', DeprecationWarning, '.*\Wlib\W.*\Whgvs\W.*')
+warnings.filterwarnings("default", "", DeprecationWarning, r".*\Wlib\W.*\Whgvs\W.*")
 
 logger.info("hgvs " + __version__ + "; released: " + str(_is_released_version))
 
