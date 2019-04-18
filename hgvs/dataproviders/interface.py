@@ -105,7 +105,7 @@ class Interface(six.with_metaclass(abc.ABCMeta, object)):
         av = _split_version_string(self.schema_version())
 
         if av[0] == rv[0] and av[1] >= rv[1]:
-            return True
+            return
 
         raise RuntimeError(
             "Incompatible versions: {k} requires schema version {rv}, but {self.url} provides version {av}".format(
