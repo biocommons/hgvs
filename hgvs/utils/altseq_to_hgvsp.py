@@ -187,8 +187,8 @@ class AltSeqToHgvsp(object):
             aa_start = aa_end = AAPosition(base=start, aa=deletion)
             ref = ''
             alt = ''
-            self._is_ambiguous = True    # side-effect
             self._is_init_met = True
+            self._is_ambiguous = True    # side-effect
 
         if insertion and insertion.find("*") == 0:    # stop codon at variant position
             aa_start = aa_end = AAPosition(base=start, aa=deletion[0])
@@ -291,7 +291,7 @@ class AltSeqToHgvsp(object):
             is_ambiguous=self._is_ambiguous,
             is_sub=is_sub,
             is_ext=is_ext,
-            _is_init_met=self._is_init_met
+            is_init_met=self._is_init_met
         )
 
         return var_p
@@ -333,7 +333,7 @@ class AltSeqToHgvsp(object):
         """Creates a SequenceVariant object"""
 
         if is_init_met:
-            posedit = AARefAlt(ref=ref, alt=alt)
+            posedit = AARefAlt(ref=ref, alt=alt, init_met=True)
         elif is_ambiguous:
             posedit = None
         else:

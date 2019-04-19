@@ -34,11 +34,15 @@ class Edit(object):
     def _format_config_aa(self, conf=None):
         p_3_letter = hgvs.global_config.formatting.p_3_letter
         p_term_asterisk = hgvs.global_config.formatting.p_term_asterisk
+        p_init_met = hgvs.global_config.formatting.p_init_met
+
         if conf and "p_3_letter" in conf and conf["p_3_letter"] is not None:
             p_3_letter = conf["p_3_letter"]
         if conf and "p_term_asterisk" in conf and conf["p_term_asterisk"] is not None:
             p_term_asterisk = conf["p_term_asterisk"]
-        return p_3_letter, p_term_asterisk
+        if conf and "p_init_met" in conf and conf["p_init_met"] is not None:
+            p_init_met = conf["p_init_met"]
+        return p_3_letter, p_term_asterisk, p_init_met
 
     def _del_ins_lengths(self, ilen):
         raise HGVSUnsupportedOperationError(
@@ -180,10 +184,14 @@ class AARefAlt(Edit):
             # raise HGVSError("RefAlt: ref and alt sequences are both undefined")
             return "="
 
-        p_3_letter, p_term_asterisk = self._format_config_aa(conf)
+        p_3_letter, p_term_asterisk, p_init_met = self._format_config_aa(conf)
 
+        if self.init_met and p_init_met:
+            s = "Met1?"
+        elif self.init_met and not p_init_met:
+            s = "?"
         # subst and delins
-        if self.ref is not None and self.alt is not None:
+        elif self.ref is not None and self.alt is not None:
             if self.ref == self.alt:
                 if p_3_letter:
                     s = "{ref}=".format(ref=aa1_to_aa3(self.ref))
@@ -268,7 +276,7 @@ class AARefAlt(Edit):
 @attr.s(slots=True)
 class AASub(AARefAlt):
     def format(self, conf=None):
-        p_3_letter, p_term_asterisk = self._format_config_aa(conf)
+        p_3_letter, p_term_asterisk, p_init_met = self._format_config_aa(conf)
 
         if p_3_letter:
             s = aa1_to_aa3(self.alt) if self.alt != "?" else self.alt
@@ -301,7 +309,7 @@ class AAFs(Edit):
         self.alt = aa_to_aa1(self.alt)
 
     def format(self, conf=None):
-        p_3_letter, p_term_asterisk = self._format_config_aa(conf)
+        p_3_letter, p_term_asterisk, p_init_met = self._format_config_aa(conf)
 
         st_length = self.length or ""
         if p_3_letter:
@@ -346,7 +354,7 @@ class AAExt(Edit):
         self.aaterm = aa_to_aa1(self.aaterm)
 
     def format(self, conf=None):
-        p_3_letter, p_term_asterisk = self._format_config_aa(conf)
+        p_3_letter, p_term_asterisk, p_init_met = self._format_config_aa(conf)
 
         st_alt = self.alt or ""
         st_aaterm = self.aaterm or ""

@@ -5,7 +5,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import copy
-import logging
 
 from bioutils.sequences import reverse_complement
 
@@ -14,7 +13,6 @@ import hgvs.validator
 import hgvs.variantmapper
 from hgvs.utils.norm import normalize_alleles
 from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
-from six.moves import range
 
 
 class Normalizer(object):
@@ -57,7 +55,11 @@ class Normalizer(object):
         if self.validator:
             self.validator.validate(var)
 
-        if var.posedit is None or var.posedit.uncertain or var.posedit.pos is None:
+        init_met = False
+        if var.posedit is not None and isinstance(var.posedit, hgvs.edit.AARefAlt):
+            init_met = var.posedit.init_met
+
+        if var.posedit is None or var.posedit.uncertain or init_met or var.posedit.pos is None:
             return var
 
         type = var.type
