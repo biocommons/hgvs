@@ -126,5 +126,5 @@ if __name__ == "__main__":
             "NC_000006.12:g.49949413_49949414insA",
             "NC_000006.12:g.49949414_49949415insA",
             "NC_000006.12:g.49949414_49949415insAA"
-        ):
-        print(f'assert {str(_h2v(h))} == _h2v("{h}")')
+            ):
+        print('assert _h2v("{h}") == {res}'.format(res=str(_h2v(h)), h=h))
