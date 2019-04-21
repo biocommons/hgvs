@@ -11,6 +11,13 @@ from hgvs.exceptions import HGVSParseError
 import hgvs.parser
 
 
+def test_parser_variants_with_gene_names(parser):
+    assert parser.parse("NM_01234.5(BOGUS):c.22+1A>T")
+    
+    with pytest.raises(hgvs.exceptions.HGVSParseError):
+        parser.parse("NM_01234.5(1BOGUS):c.22+1A>T")
+
+
 class Test_Position(unittest.TestCase):
     longMessage = True
 

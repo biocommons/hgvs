@@ -72,7 +72,9 @@ class VariantMapper(object):
     def __init__(self,
                  hdp,
                  replace_reference=hgvs.global_config.mapping.replace_reference,
-                 prevalidation_level=hgvs.global_config.mapping.prevalidation_level):
+                 prevalidation_level=hgvs.global_config.mapping.prevalidation_level,
+                 add_gene_symbol=hgvs.global_config.mapping.add_gene_symbol
+                 ):
         """
         :param bool replace_reference: replace reference (entails additional network access)
         :param str prevalidation_level: None or Intrinsic or Extrinsic validation before mapping
@@ -80,6 +82,7 @@ class VariantMapper(object):
         """
         self.hdp = hdp
         self.replace_reference = replace_reference
+        self.add_gene_symbol = add_gene_symbol
         if prevalidation_level is None:
             self.prevalidation_level = PrevalidationLevel.NONE
         else:
@@ -164,6 +167,8 @@ class VariantMapper(object):
             ac=tx_ac, type="n", posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
         if self.replace_reference:
             self._replace_reference(var_n)
+        if self.add_gene_symbol:
+            self._update_gene_symbol(var_n, var_g.gene)
         return var_n
 
     def n_to_g(self, var_n, alt_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
@@ -203,6 +208,7 @@ class VariantMapper(object):
             ac=alt_ac, type="g", posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
         if self.replace_reference:
             self._replace_reference(var_g)
+        # No gene symbol for g. variants (actually, *should* for NG, but no way to distinguish)
         return var_g
 
     # ############################################################################
@@ -244,6 +250,8 @@ class VariantMapper(object):
             ac=tx_ac, type="c", posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
         if self.replace_reference:
             self._replace_reference(var_c)
+        if self.add_gene_symbol:
+            self._update_gene_symbol(var_c, var_g.gene)
         return var_c
 
     def c_to_g(self, var_c, alt_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
@@ -286,6 +294,7 @@ class VariantMapper(object):
             ac=alt_ac, type="g", posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
         if self.replace_reference:
             self._replace_reference(var_g)
+        # intentional: no gene symbol
         return var_g
 
     # ############################################################################
@@ -320,6 +329,8 @@ class VariantMapper(object):
             ac=var_c.ac, type="n", posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
         if self.replace_reference:
             self._replace_reference(var_n)
+        if self.add_gene_symbol:
+            self._update_gene_symbol(var_n, var_c.gene)
         return var_n
 
     def n_to_c(self, var_n):
@@ -352,6 +363,8 @@ class VariantMapper(object):
             ac=var_n.ac, type="c", posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
         if self.replace_reference:
             self._replace_reference(var_c)
+        if self.add_gene_symbol:
+            self._update_gene_symbol(var_c, var_n.gene)
         return var_c
 
     # ############################################################################
@@ -386,6 +399,9 @@ class VariantMapper(object):
             var_ps.append(var_p)
 
         var_p = var_ps[0]
+
+        if self.add_gene_symbol:
+            self._update_gene_symbol(var_p, var_c.gene)
 
         return var_p
 
@@ -506,6 +522,12 @@ class VariantMapper(object):
         if strand == -1:
             seq = reverse_complement(seq)
         return seq
+
+    def _update_gene_symbol(self, var, symbol):
+        if not symbol:
+            symbol = self.hdp.get_tx_identity_info(var.ac).get("hgnc", None)
+        var.gene = symbol            
+        return var
 
 
 # <LICENSE>

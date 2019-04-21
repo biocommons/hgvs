@@ -15,7 +15,7 @@ Example use:
 >>> hp = hgvs.parser.Parser()
 >>> var_g = hp.parse_hgvs_variant(hgvs_g)
 >>> var_g
-SequenceVariant(ac=NC_000007.13, type=g, posedit=36561662C>T)
+SequenceVariant(ac=NC_000007.13, type=g, posedit=36561662C>T, gene=None)
 
 # SequenceVariants are composed of structured objects, e.g.,
 >>> var_g.posedit.pos.start
@@ -39,7 +39,7 @@ SimplePosition(base=36561662, uncertain=False)
 # map genomic variant to one of these transcripts
 >>> var_c = am.g_to_c(var_g, "NM_001637.3")
 >>> var_c
-SequenceVariant(ac=NM_001637.3, type=c, posedit=1582G>A)
+SequenceVariant(ac=NM_001637.3, type=c, posedit=1582G>A, gene=None)
 >>> str(var_c)
 'NM_001637.3:c.1582G>A'
 

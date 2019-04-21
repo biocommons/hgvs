@@ -14,6 +14,21 @@ import hgvs.variantmapper
 from support import CACHE
 
 
+def test_add_gene_symbol(am38, parser):
+    ags = am38.add_gene_symbol
+    var_g = parser.parse("NC_000007.13:g.21940852_21940908del")
+
+    am38.add_gene_symbol = True
+    var_t = am38.g_to_t(var_g, "NM_003777.3")
+    assert "NM_003777.3(DNAH11):c.13552_*36del" == str(var_t)
+
+    am38.add_gene_symbol = False
+    var_t = am38.g_to_t(var_g, "NM_003777.3")
+    assert "NM_003777.3:c.13552_*36del" == str(var_t)
+
+    am38.add_gene_symbol = ags
+
+
 @pytest.mark.quick
 class Test_VariantMapper_Exceptions(unittest.TestCase):
     @classmethod

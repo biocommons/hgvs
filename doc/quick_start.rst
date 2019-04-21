@@ -87,7 +87,7 @@ sequence ``type`` (c,g,m,n,r,p), and 0 or more specific sequence
 changes (``posedit`` -- a POSition and EDIt).::
 
    >>> var_g
-   SequenceVariant(ac=NC_000017.11, type=g, posedit=43091687del)
+   SequenceVariant(ac=NC_000017.11, type=g, posedit=43091687del, gene=None)
 
 The ``posedit`` is itself an object of the :class:`hgvs.posedit.PosEdit` class::
 
@@ -118,7 +118,7 @@ Validating and Normalizing Variants
 `hgvs` provides functionality to validate and normalize variants::
 
   >>> normalize(var_g)
-  SequenceVariant(ac=NC_000017.11, type=g, posedit=43091688del)
+  SequenceVariant(ac=NC_000017.11, type=g, posedit=43091688del, gene=None)
 
   >>> validate(var_g)
   True

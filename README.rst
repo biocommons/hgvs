@@ -104,7 +104,7 @@ object models back into HGVS strings.
   >>> hp = hgvs.parser.Parser()
   >>> var_g = hp.parse_hgvs_variant(hgvs_g)
   >>> var_g
-  SequenceVariant(ac=NC_000007.13, type=g, posedit=36561662C>T)
+  SequenceVariant(ac=NC_000007.13, type=g, posedit=36561662C>T, gene=None)
 
   # SequenceVariants are composed of structured objects, e.g.,
   >>> var_g.posedit.pos.start
@@ -142,7 +142,7 @@ supported.  Alignment data come from the `Universal Transcript Archive
   # map genomic variant to one of these transcripts
   >>> var_c = am.g_to_c(var_g, 'NM_001637.3')
   >>> var_c
-  SequenceVariant(ac=NM_001637.3, type=c, posedit=1582G>A)
+  SequenceVariant(ac=NM_001637.3, type=c, posedit=1582G>A, gene=None)
   >>> str(var_c)
   'NM_001637.3:c.1582G>A'
 
@@ -167,7 +167,7 @@ NCBI and Ensembl.
    # must have parentheses to indicate uncertainty.
    >>> var_p = am.c_to_p(var_c)
    >>> var_p
-   SequenceVariant(ac=NP_001628.1, type=p, posedit=(Gly528Arg))
+   SequenceVariant(ac=NP_001628.1, type=p, posedit=(Gly528Arg), gene=None)
    >>> str(var_p)
    'NP_001628.1:p.(Gly528Arg)'
 
@@ -199,21 +199,21 @@ veriants into a single representation.
   >>> import hgvs.normalizer
   >>> hn = hgvs.normalizer.Normalizer(hdp)
   >>> hn.normalize(hp.parse_hgvs_variant('NM_001166478.1:c.35_36insT'))
-  SequenceVariant(ac=NM_001166478.1, type=c, posedit=35dup)
+  SequenceVariant(ac=NM_001166478.1, type=c, posedit=35dup, gene=None)
 
   # during mapping, variants are normalized (by default)
   >>> c1 = hp.parse_hgvs_variant('NM_001166478.1:c.31del')
   >>> c1
-  SequenceVariant(ac=NM_001166478.1, type=c, posedit=31del)
+  SequenceVariant(ac=NM_001166478.1, type=c, posedit=31del, gene=None)
   >>> c1n = hn.normalize(c1)
   >>> c1n
-  SequenceVariant(ac=NM_001166478.1, type=c, posedit=35del)
+  SequenceVariant(ac=NM_001166478.1, type=c, posedit=35del, gene=None)
   >>> g = am.c_to_g(c1)
   >>> g
-  SequenceVariant(ac=NC_000006.11, type=g, posedit=49917127del)
+  SequenceVariant(ac=NC_000006.11, type=g, posedit=49917127del, gene=None)
   >>> c2 = am.g_to_c(g, c1.ac)
   >>> c2
-  SequenceVariant(ac=NM_001166478.1, type=c, posedit=35del)
+  SequenceVariant(ac=NM_001166478.1, type=c, posedit=35del, gene=None)
 
 
 There are `more examples in the documentation
