@@ -55,10 +55,18 @@ import logging
 import pkg_resources
 import re
 import warnings
+import sys
 
 from .config import global_config    # noqa (importing symbol)
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
+
+
+if sys.version_info < (3, 6):
+    _logger.critical("""hgvs on Python 2.7 is no longer supported. The next major version
+    of hgvs will require Python 3.6+. See
+    https://github.com/biocommons/org/wiki/Migrating-to-Python-3.6.""")
+
 
 _is_released_version = False
 try:
@@ -70,11 +78,14 @@ except pkg_resources.DistributionNotFound as e:
     warnings.warn("can't get __version__ because %s package isn't installed" % __package__, Warning)
     __version__ = None
 
+
 # Enable DeprecationWarnings for the hgvs package
 # N.B. The module name is provided as a regexp to the module *path*
 warnings.filterwarnings("default", "", DeprecationWarning, r".*\Wlib\W.*\Whgvs\W.*")
 
-logger.info("hgvs " + __version__ + "; released: " + str(_is_released_version))
+
+_logger.info("hgvs " + __version__ + "; released: " + str(_is_released_version))
+
 
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
