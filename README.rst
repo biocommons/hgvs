@@ -23,8 +23,8 @@ HGVS recommendations. Please refer to `issues
 +--------------------+--------------------------------------------------------------------+
 | **Latest Release** | |github_tag|   |pypi_rel|                                          |
 +--------------------+--------------------------------------------------------------------+
-| **Development**    | | |status_rel|  |coveralls|                                        |
-|                    | | |issues|  |github_open_pr|                                       |
+| **Development**    | | |status_rel|  |coveralls|   |hit| (pip install)                  |
+| (master branch)    | | |issues|  |github_open_pr|                                       |
 |                    | | |github_stars|  |github_forks|   |github_contrib|                |
 +--------------------+--------------------------------------------------------------------+
 
@@ -315,3 +315,6 @@ Other packages that manipulate HGVS variants:
 
 .. |binder| image:: https://mybinder.org/badge_logo.svg
    :target: https://mybinder.org/v2/gh/biocommons/hgvs/master?filepath=examples
+
+.. |hit| image:: https://travis-ci.org/biocommons/hgvs-installation-test.svg?branch=master
+    :target: https://travis-ci.org/biocommons/hgvs-installation-test	    
