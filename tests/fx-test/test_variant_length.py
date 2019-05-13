@@ -14,7 +14,6 @@ import hgvs.variantmapper
 from support import CACHE
 
 
-@pytest.mark.fx
 class Test_VariantLengths(unittest.TestCase):
     """test length_change method for all variant types and cases"""
 

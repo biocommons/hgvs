@@ -36,7 +36,6 @@ tests = list(read_tests(tests_fn))
 params = [(t["variant"], t["expected"], t["loc_type"] + " " + t["disc_type"]) for t in tests]
 
 
-@pytest.mark.pnd
 @pytest.mark.parametrize("variant,expected,description", params)
 def test_projection_near_discrepancies(variant, expected, description):
     var_n = hp.parse_hgvs_variant(variant)
