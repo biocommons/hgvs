@@ -10,7 +10,7 @@ SELF:=$(firstword $(MAKEFILE_LIST))
 
 PKG=hgvs
 PKGD=$(subst .,/,${PKG})
-PYV:=3.6
+PYV:=3.7
 VEDIR=venv/${PYV}
 
 TEST_DIRS:=tests
