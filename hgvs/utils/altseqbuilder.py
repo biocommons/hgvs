@@ -58,7 +58,7 @@ class AltTranscriptData(object):
                 seq = list(seq)
             seq_cds = seq[cds_start - 1:]
             seq_cds = ''.join(seq_cds)
-            seq_aa = translate_cds(seq_cds, full_codons=False)
+            seq_aa = translate_cds(seq_cds, full_codons=False, ter_symbol="X")
             stop_pos = seq_aa[:(cds_stop - cds_start + 1) // 3].rfind("*")
             if stop_pos == -1:
                 stop_pos = seq_aa.find("*")
