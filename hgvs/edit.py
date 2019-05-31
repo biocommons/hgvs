@@ -34,14 +34,19 @@ class Edit(object):
     def _format_config_aa(self, conf=None):
         p_3_letter = hgvs.global_config.formatting.p_3_letter
         p_term_asterisk = hgvs.global_config.formatting.p_term_asterisk
+        p_init_met = hgvs.global_config.formatting.p_init_met
+
         if conf and "p_3_letter" in conf and conf["p_3_letter"] is not None:
             p_3_letter = conf["p_3_letter"]
         if conf and "p_term_asterisk" in conf and conf["p_term_asterisk"] is not None:
             p_term_asterisk = conf["p_term_asterisk"]
-        return p_3_letter, p_term_asterisk
+        if conf and "p_init_met" in conf and conf["p_init_met"] is not None:
+            p_init_met = conf["p_init_met"]
+        return p_3_letter, p_term_asterisk, p_init_met
 
     def _del_ins_lengths(self, ilen):
-        raise HGVSUnsupportedOperationError("internal function _del_ins_lengths not implemented for this variant type")
+        raise HGVSUnsupportedOperationError(
+            "internal function _del_ins_lengths not implemented for this variant type")
 
 
 @attr.s(slots=True)
@@ -68,7 +73,8 @@ class NARefAlt(Edit):
         >>> NARefAlt(7).ref_s
 
         """
-        return self.ref if (isinstance(self.ref, six.string_types) and self.ref and self.ref[0] in "ACGTUN") else None
+        return self.ref if (isinstance(self.ref, six.string_types) and self.ref
+                            and self.ref[0] in "ACGTUN") else None
 
     @property
     def ref_n(self):
@@ -106,7 +112,8 @@ class NARefAlt(Edit):
         if self.ref is not None and self.alt is not None:
             if self.ref == self.alt:
                 s = "{ref}=".format(ref=ref)
-            elif len(self.alt) == 1 and len(self.ref) == 1 and not self.ref.isdigit():    # don't turn del5insT into 5>T
+            elif len(self.alt) == 1 and len(
+                    self.ref) == 1 and not self.ref.isdigit():    # don't turn del5insT into 5>T
                 s = "{self.ref}>{self.alt}".format(self=self)
             else:
                 s = "del{ref}ins{alt}".format(ref=ref, alt=self.alt)
@@ -166,6 +173,7 @@ class AARefAlt(Edit):
     ref = attr.ib(default=None)
     alt = attr.ib(default=None)
     uncertain = attr.ib(default=False)
+    init_met = attr.ib(default=False)
 
     def __attrs_post_init__(self):
         self.ref = aa_to_aa1(self.ref)
@@ -176,10 +184,14 @@ class AARefAlt(Edit):
             # raise HGVSError("RefAlt: ref and alt sequences are both undefined")
             return "="
 
-        p_3_letter, p_term_asterisk = self._format_config_aa(conf)
+        p_3_letter, p_term_asterisk, p_init_met = self._format_config_aa(conf)
 
+        if self.init_met and p_init_met:
+            s = "Met1?"
+        elif self.init_met and not p_init_met:
+            s = "?"
         # subst and delins
-        if self.ref is not None and self.alt is not None:
+        elif self.ref is not None and self.alt is not None:
             if self.ref == self.alt:
                 if p_3_letter:
                     s = "{ref}=".format(ref=aa1_to_aa3(self.ref))
@@ -264,7 +276,7 @@ class AARefAlt(Edit):
 @attr.s(slots=True)
 class AASub(AARefAlt):
     def format(self, conf=None):
-        p_3_letter, p_term_asterisk = self._format_config_aa(conf)
+        p_3_letter, p_term_asterisk, p_init_met = self._format_config_aa(conf)
 
         if p_3_letter:
             s = aa1_to_aa3(self.alt) if self.alt != "?" else self.alt
@@ -297,7 +309,7 @@ class AAFs(Edit):
         self.alt = aa_to_aa1(self.alt)
 
     def format(self, conf=None):
-        p_3_letter, p_term_asterisk = self._format_config_aa(conf)
+        p_3_letter, p_term_asterisk, p_init_met = self._format_config_aa(conf)
 
         st_length = self.length or ""
         if p_3_letter:
@@ -342,7 +354,7 @@ class AAExt(Edit):
         self.aaterm = aa_to_aa1(self.aaterm)
 
     def format(self, conf=None):
-        p_3_letter, p_term_asterisk = self._format_config_aa(conf)
+        p_3_letter, p_term_asterisk, p_init_met = self._format_config_aa(conf)
 
         st_alt = self.alt or ""
         st_aaterm = self.aaterm or ""
@@ -405,7 +417,8 @@ class Dup(Edit):
         """
         returns a string representing the ref sequence, if it is not None and smells like a sequence
         """
-        return self.ref if (isinstance(self.ref, six.string_types) and self.ref and self.ref[0] in "ACGTUN") else None
+        return self.ref if (isinstance(self.ref, six.string_types) and self.ref
+                            and self.ref[0] in "ACGTUN") else None
 
     def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
@@ -528,7 +541,8 @@ class Inv(Edit):
 
     @property
     def ref_s(self):
-        return self.ref if (isinstance(self.ref, six.string_types) and self.ref and self.ref[0] in "ACGTUN") else None
+        return self.ref if (isinstance(self.ref, six.string_types) and self.ref
+                            and self.ref[0] in "ACGTUN") else None
 
     @property
     def ref_n(self):

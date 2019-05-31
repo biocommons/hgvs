@@ -39,7 +39,7 @@ next.clog:: hg-git-remap.pl
 	clogger . | perl -p0  hg-git-remap.pl >$@
 
 .PRECIOUS: %.clog
-%.clog:: hg-git-remap.pl
+%.clog:: # hg-git-remap.pl
 	clogger $* | perl -p0  hg-git-remap.pl >$@
 
 

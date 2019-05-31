@@ -299,3 +299,8 @@ n_variant	NM_000352.3:n.2557_2694copy2	True	one
 dna_copy	copy1|copy2|copy3	True	list
 dna_copy	copy|copy?	False	list
 dna_edit	copy1|copy2|copy3	True	list
+
+opt_gene_expr	(BOGUS)	True	one	BOGUS
+gene_symbol	BOGUS	True	one	BOGUS
+gene_symbol	1BOGUS	False	one
+paren_gene	(BOGUS)	True	one	BOGUS

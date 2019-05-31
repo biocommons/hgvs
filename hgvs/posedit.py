@@ -38,8 +38,9 @@ class PosEdit(object):
     __str__ = format
 
     def __repr__(self):
-        return "{0}({1})".format(self.__class__.__name__, ", ".join(
-            (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
+        return "{0}({1})".format(
+            self.__class__.__name__, ", ".join(
+                (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
 
     def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar

@@ -51,7 +51,7 @@ class TestGrammarFull(unittest.TestCase):
         """ensure that all rules in grammar have tests"""
 
         grammar_rule_re = re.compile(r"^(\w+)")
-        grammar_fn = pkg_resources.resource_filename(__name__, "../hgvs/_data/hgvs.pymeta")
+        grammar_fn = pkg_resources.resource_filename("hgvs", "_data/hgvs.pymeta")
         with open(grammar_fn, "r") as f:
             grammar_rules = set(r.group(1) for r in filter(None, map(grammar_rule_re.match, f)))
 
@@ -75,7 +75,8 @@ class TestGrammarFull(unittest.TestCase):
 
                 # setup input
                 inputs = self._split_inputs(row["Test"], row["InType"])
-                expected_results = self._split_inputs(row["Expected"], row["InType"]) if row["Expected"] else inputs
+                expected_results = self._split_inputs(row["Expected"],
+                                                      row["InType"]) if row["Expected"] else inputs
                 expected_map = dict(zip(inputs, expected_results))
                 # step through each item and check
                 is_valid = True if row["Valid"].lower() == "true" else False
@@ -83,7 +84,8 @@ class TestGrammarFull(unittest.TestCase):
                 for key in expected_map:
                     expected_result = six.text_type(expected_map[key]).replace("u'", "'")
                     function_to_test = getattr(self.p._grammar(key), row["Func"])
-                    row_str = u"{}\t{}\t{}\t{}\t{}".format(row["Func"], key, row["Valid"], "one", expected_result)
+                    row_str = u"{}\t{}\t{}\t{}\t{}".format(row["Func"], key, row["Valid"], "one",
+                                                           expected_result)
                     try:
                         actual_result = six.text_type(function_to_test()).replace("u'", "'")
                         if not is_valid or (expected_result != actual_result):

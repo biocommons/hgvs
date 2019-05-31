@@ -7,19 +7,19 @@ HGVS Railroad Diagram
 
 Variants
 ~~~~~~~~
-.. image:: hgvs_railroad/c_variant.svg
+.. image:: hgvs_railroad/hgvs_variant.svg
   :align: center
 .. image:: hgvs_railroad/g_variant.svg
   :align: center
-.. image:: hgvs_railroad/hgvs_variant.svg
-  :align: center
 .. image:: hgvs_railroad/m_variant.svg
+  :align: center
+.. image:: hgvs_railroad/c_variant.svg
   :align: center
 .. image:: hgvs_railroad/n_variant.svg
   :align: center
-.. image:: hgvs_railroad/p_variant.svg
-  :align: center
 .. image:: hgvs_railroad/r_variant.svg
+  :align: center
+.. image:: hgvs_railroad/p_variant.svg
   :align: center
 
 
@@ -83,43 +83,43 @@ Localized Edits
 
 Positions
 ~~~~~~~~~
+.. image:: hgvs_railroad/hgvs_position.svg
+  :align: center
 .. image:: hgvs_railroad/c_hgvs_position.svg
   :align: center
 .. image:: hgvs_railroad/c_pos.svg
   :align: center
 .. image:: hgvs_railroad/def_c_pos.svg
   :align: center
-.. image:: hgvs_railroad/def_g_pos.svg
-  :align: center
-.. image:: hgvs_railroad/def_m_pos.svg
-  :align: center
-.. image:: hgvs_railroad/def_n_pos.svg
-  :align: center
-.. image:: hgvs_railroad/def_p_pos.svg
-  :align: center
-.. image:: hgvs_railroad/def_r_pos.svg
-  :align: center
 .. image:: hgvs_railroad/g_hgvs_position.svg
   :align: center
 .. image:: hgvs_railroad/g_pos.svg
   :align: center
-.. image:: hgvs_railroad/hgvs_position.svg
+.. image:: hgvs_railroad/def_g_pos.svg
   :align: center
 .. image:: hgvs_railroad/m_hgvs_position.svg
   :align: center
 .. image:: hgvs_railroad/m_pos.svg
   :align: center
+.. image:: hgvs_railroad/def_m_pos.svg
+  :align: center
 .. image:: hgvs_railroad/n_hgvs_position.svg
   :align: center
 .. image:: hgvs_railroad/n_pos.svg
+  :align: center
+.. image:: hgvs_railroad/def_n_pos.svg
   :align: center
 .. image:: hgvs_railroad/p_hgvs_position.svg
   :align: center
 .. image:: hgvs_railroad/p_pos.svg
   :align: center
+.. image:: hgvs_railroad/def_p_pos.svg
+  :align: center
 .. image:: hgvs_railroad/r_hgvs_position.svg
   :align: center
 .. image:: hgvs_railroad/r_pos.svg
+  :align: center
+.. image:: hgvs_railroad/def_r_pos.svg
   :align: center
 
 

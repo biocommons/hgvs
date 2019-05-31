@@ -12,7 +12,7 @@ Supported Platforms
 to work on Mac.  Other platforms and dependency versions are expected
 to work but have not been tested. Reports of successful operation on
 other platforms (and patches to enable this) are appreciated.
-**Python 2 is required.** (Python 3 support is in progress.)
+**Python >=3.5 is now required.**
 
 
 
@@ -32,31 +32,23 @@ On a Mac with homebrew::
 Use a virtual environment
 @@@@@@@@@@@@@@@@@@@@@@@@@
 
-Users are encouraged to use virtualenv.  If you don't have
-virtualenv and virtualenvwrapper installed already::
+Users are encouraged to use a virtual environment.  The most basic
+method for this is::
 
-  $ sudo apt-get install virtualenvwrapper
+  $ python3 -m venv venv
+  $ source venv/bin/activate
 
-Then (using virtualenvwrapper)::
-
-  $ mkvirtualenv hgvs-test
-
-`mkvirtualenv` will automatically activate your virtualenv and usually
-change the prompt to indicate this.
-
-(Alternatively, type `virtualenv hgvs-test`, then `source
-hgvs-test/bin/activate`.)
+Your shell prompt will change upon activation. 
+  
+See `this tutorial
+<https://realpython.com/python-virtual-environments-a-primer/>`__ for
+more information about virtual environments.
 
 
+Installing hgvs from PyPI (preferred)
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-Installing from PyPI
-@@@@@@@@@@@@@@@@@@@@
-
-Ensure you have a current `setuptools` package::
-
-  $ pip install setuptools --upgrade
-
-You're now ready to install hgvs via pip::
+Install hgvs via pip::
 
   $ pip install hgvs
 
@@ -64,22 +56,20 @@ You're now ready to install hgvs via pip::
 
 
 
-Installing from source
-@@@@@@@@@@@@@@@@@@@@@@
+Installing hgvs from source (for developers)
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-.. note::
-   Users (non-developers) should prefer the PyPI installation.  There
-   is no advantage to installing from source.
+For the project at https://github.com/biocommons/hgvs. 
 
 Fetch the source code::
 
-  $ git clone https://github.com/biocommons/hgvs
+  $ git clone https://github.com/<your github username>/hgvs
 
 Then::
 
+  $ source venv/bin/activate # replace with path to your virtual env
   $ cd hgvs
-  $ make install
-
+  $ make develop
 
 
 .. _seqrepo_install:

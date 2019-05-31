@@ -1,0 +1,45 @@
+clog format: 1; -*-outline-*-
+* 1.3.0 (2019-05-12)
+*** pin biocommons dependencies to versions that support 2.7 and 3.5+ [25bc21f]
+
+Changes since 1.2.5.post1 (2019-02-01).
+** Bug Fixes
+*** Fixes #474, fixes #492: correct for stop gain located at termination codon (#518)
+*** Fixes #501: Add c_to_p support for inversion (#502)
+** New Features
+*** Closes #243: implement hgvs-to-vcf translation
+*** Closes #499: recognize whole-gene dup (c.-i_*j) and assume does not affect protein sequence [dc48d5d]
+*** Closes #511: Update misc/experimental/vcf-add-hgvs to support newer bioutils and pyvcf [88e01d4]
+*** Closes #257: Support parsing gene names and optional addition during projection
+*** Closes #557: Add option to format translation initiation codon variants as `p.Met1?`
+p.Met1? is the new default [2cd86b9]
+*** Added `parse` shorthand for `parse_hgvs_variant` [69c2aeb]
+*** Added t_to_p in AssemblyMapper [8f9b69b]
+*** hgvs.easy: Provide single-file import with usable defaults and functional forms for common commands (#516)
+*** Updated hgvs-guess-plausible-transcripts [4e2a9d0]
+*** Updated default uta to uta_20180821 [e8206d1]
+
+** Internal, Developer, and Experimental Changes
+*** Closes #544: Update installation docs [ae3064c]
+*** Closes #500: unpinned setuptools_scm [bae7e4a]
+*** Closes #494: Removed useless warning (Closing connection; future mapping and validation will fail) [dfa0c52]
+*** Added Python syntax highlighting (#550)
+*** Added doctests for hgvs/utils/norm.py (#548)
+*** Expose seqrepo reference in SeqFetcher instance [3ab49e9]
+*** Fix typo in docs (#554) [5b25b4f]
+*** When re-raising exception from sequencing fetching, including fetcher implementation and underlying exception message [42859e4]
+*** add 3.7 support to Makefile [3a89a82]
+*** added link to hgvs notebooks on mybinder.org [3077d3c]
+*** added notebook of hdp output examples [4fb9617]
+*** don't warn about pickle.load() [f052d03]
+*** emit CRITICAL log message on Python < 3.6 [b7f320a]
+*** expose seqrepo reference in SeqFetcher instance [3ab49e9]
+*** fix regexp that didn't use a raw (r"") string (DeepSource) [f6126f6]
+*** fix: expected results in quick_start.rst doctest were unsorted [63d5e74]
+*** fixed incompatibilities with newer version of pytest [ee9426f]
+*** fixed redundant exception imports (DeepSource) [dc6277d]
+*** minor code cleanup based on pylint testing [927864d]
+*** ooops... used f string in 2.7 version :-( [5c3492a]
+*** remove del sequence from variants being tested (and remove re module DeprecationWarnings); and fix latent bugs in tests [2cb053d]
+*** remove relative path in pkg_resources.resource_filename() to eliminate warning about future failure [19a16d5]
+*** updated pytest mark configuration [d922495]

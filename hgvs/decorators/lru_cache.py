@@ -23,7 +23,7 @@ _CacheInfo = namedtuple("CacheInfo", ["hits", "misses", "maxsize", "currsize"])
 
 
 class _HashedSeq(list):
-    __slots__ = 'hashvalue'
+    __slots__ = ['hashvalue']
 
     def __init__(self, tup, hash=hash):
         self[:] = tup
@@ -95,7 +95,7 @@ def lru_cache(maxsize=100, typed=False, mode=None, cache=None):
 
     :param mode: cache run mode
         None:   the default lru cache behaver
-        LEARN:  queries are executed against persistent cache from file "filename"; 
+        LEARN:  queries are executed against persistent cache from file "filename";
                 in the event of a miss, the novel query and results would be written to cache, then returned.
         RUN:    queries are executed against caches; misses result in DataNotLocallyAvailableError
         VERIFY: always execute the function; if persistent cache value and returned value are different, raise VerifyFailedError
@@ -150,13 +150,14 @@ def lru_cache(maxsize=100, typed=False, mode=None, cache=None):
                         latestres = user_function(*args, **kwds)
                         if latestres != result:
                             raise HGVSVerifyFailedError(
-                                'The cached result is not consistent with latest result when calling ' +
-                                user_function.__name__ + ' with args ' + str(args) + ' and keywords ' + str(kwds))
+                                'The cached result is not consistent with latest result when calling '
+                                + user_function.__name__ + ' with args ' + str(args) +
+                                ' and keywords ' + str(kwds))
                     return result
                 if mode == RUN:
-                    raise HGVSDataNotAvailableError('Data not available in local cache when calling ' +
-                                                    user_function.__name__ + ' with args ' + str(args) +
-                                                    ' and keywords ' + str(kwds))
+                    raise HGVSDataNotAvailableError(
+                        'Data not available in local cache when calling ' + user_function.__name__ +
+                        ' with args ' + str(args) + ' and keywords ' + str(kwds))
                 result = user_function(*args, **kwds)
                 _cache[key] = result
                 if mode == LEARN:

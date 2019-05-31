@@ -16,12 +16,12 @@
 
 hgvs_variant = g_variant | m_variant | c_variant | n_variant  | r_variant | p_variant
 
-c_variant = accn:ac ':' 'c':type '.' c_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(ac,type,posedit)
-g_variant = accn:ac ':' 'g':type '.' g_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(ac,type,posedit)
-m_variant = accn:ac ':' 'm':type '.' m_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(ac,type,posedit)
-n_variant = accn:ac ':' 'n':type '.' n_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(ac,type,posedit)
-p_variant = accn:ac ':' 'p':type '.' p_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(ac,type,posedit)
-r_variant = accn:ac ':' 'r':type '.' r_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(ac,type,posedit)
+c_variant = accn:ac opt_gene_expr:gene ':' 'c':type '.' c_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(ac=ac, gene=gene, type=type, posedit=posedit)
+g_variant = accn:ac opt_gene_expr:gene ':' 'g':type '.' g_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(ac=ac, gene=gene, type=type, posedit=posedit)
+m_variant = accn:ac opt_gene_expr:gene ':' 'm':type '.' m_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(ac=ac, gene=gene, type=type, posedit=posedit)
+n_variant = accn:ac opt_gene_expr:gene ':' 'n':type '.' n_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(ac=ac, gene=gene, type=type, posedit=posedit)
+p_variant = accn:ac opt_gene_expr:gene ':' 'p':type '.' p_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(ac=ac, gene=gene, type=type, posedit=posedit)
+r_variant = accn:ac opt_gene_expr:gene ':' 'r':type '.' r_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(ac=ac, gene=gene, type=type, posedit=posedit)
 
 
 ############################################################################
@@ -30,12 +30,12 @@ r_variant = accn:ac ':' 'r':type '.' r_posedit:posedit -> hgvs.sequencevariant.S
 
 hgvs_position     = g_hgvs_position | m_hgvs_position | c_hgvs_position | n_hgvs_position | r_hgvs_position | p_hgvs_position
 
-c_hgvs_position = accn:ac ':' 'c':type '.' c_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac, type, pos)
-g_hgvs_position = accn:ac ':' 'g':type '.' g_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac, type, pos)
-m_hgvs_position = accn:ac ':' 'm':type '.' m_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac, type, pos)
-n_hgvs_position = accn:ac ':' 'n':type '.' n_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac, type, pos)
-p_hgvs_position = accn:ac ':' 'p':type '.' p_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac, type, pos)
-r_hgvs_position = accn:ac ':' 'r':type '.' r_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac, type, pos)
+c_hgvs_position = accn:ac opt_gene_expr:gene ':' 'c':type '.' c_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac=ac, gene=gene, type=type, pos=pos)
+g_hgvs_position = accn:ac opt_gene_expr:gene ':' 'g':type '.' g_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac=ac, gene=gene, type=type, pos=pos)
+m_hgvs_position = accn:ac opt_gene_expr:gene ':' 'm':type '.' m_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac=ac, gene=gene, type=type, pos=pos)
+n_hgvs_position = accn:ac opt_gene_expr:gene ':' 'n':type '.' n_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac=ac, gene=gene, type=type, pos=pos)
+p_hgvs_position = accn:ac opt_gene_expr:gene ':' 'p':type '.' p_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac=ac, gene=gene, type=type, pos=pos)
+r_hgvs_position = accn:ac opt_gene_expr:gene ':' 'r':type '.' r_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac=ac, gene=gene, type=type, pos=pos)
 
 
 ############################################################################
@@ -205,3 +205,7 @@ snum = <pm? num>:x -> int(x)
 
 # Accessions, possibly versioned. Should accept, e.g., NM_01234.5, LRG_01234_1p1
 accn = <letter letterOrDigit+ ('_' letterOrDigit+)? ('.' digit+)?>
+opt_gene_expr = (paren_gene | ->None):gene -> gene
+paren_gene = '(' gene_symbol:symbol ')' -> symbol
+gene_symbol = <letter letterOrDigit+>
+

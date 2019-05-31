@@ -1,18 +1,30 @@
 *hgvs* - manipulate biological sequence variants according to Human Genome Variation Society recommendations
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+**Important:** biocommons packages (including hgvs) will begin phasing
+out support for Python 2.7 on Jan 1, 2019.  `More
+<https://groups.google.com/forum/#!topic/hgvs-discuss/iLUzjzoD-28>`__
+
 The *hgvs* package provides a Python library to parse, format,
 validate, normalize, and map sequence variants according to `Variation
 Nomenclature`_ (aka Human Genome Variation Society) recommendations.
 
+Specifically, the hgvs package focuses on the subset of the HGVS
+recommendations that precisely describe sequence-level variation
+relevant to the application of high-throughput sequencing to clinical
+diagnostics.  The package does not attempt to cover the full scope of
+HGVS recommendations. Please refer to `issues
+<https://github.com/biocommons/hgvs/issues>`_ for limitations.
+
+
 +--------------------+--------------------------------------------------------------------+
-| **Information**    | | |rtd|   |changelog|  |github_license|                            |
+| **Information**    | | |rtd|   |changelog|  |github_license|  |binder|                  |
 |                    | | |gitter|   |group|     |getting_help|                            |
 +--------------------+--------------------------------------------------------------------+
 | **Latest Release** | |github_tag|   |pypi_rel|                                          |
 +--------------------+--------------------------------------------------------------------+
-| **Development**    | | |status_rel|  |coveralls|                                        |
-|                    | | |github_issues|  |github_open_pr|                                |
+| **Development**    | | |status_rel|  |coveralls|   |hit| (pip install)                  |
+| (master branch)    | | |issues|  |github_open_pr|                                       |
 |                    | | |github_stars|  |github_forks|   |github_contrib|                |
 +--------------------+--------------------------------------------------------------------+
 
@@ -80,7 +92,7 @@ Parsing and Formating
 `hgvs` parses HGVS variants (as strings) into an object model, and can format
 object models back into HGVS strings.
 
-::
+.. code-block:: python
 
   >>> import hgvs.parser
 
@@ -92,7 +104,7 @@ object models back into HGVS strings.
   >>> hp = hgvs.parser.Parser()
   >>> var_g = hp.parse_hgvs_variant(hgvs_g)
   >>> var_g
-  SequenceVariant(ac=NC_000007.13, type=g, posedit=36561662C>T)
+  SequenceVariant(ac=NC_000007.13, type=g, posedit=36561662C>T, gene=None)
 
   # SequenceVariants are composed of structured objects, e.g.,
   >>> var_g.posedit.pos.start
@@ -111,7 +123,7 @@ and protein sequences.  Non-coding and intronic variants are
 supported.  Alignment data come from the `Universal Transcript Archive
 (UTA) <https://github.com/biocommons/uta/>`__.
 
-::
+.. code-block:: python
 
   >>> import hgvs.dataproviders.uta
   >>> import hgvs.assemblymapper
@@ -130,7 +142,7 @@ supported.  Alignment data come from the `Universal Transcript Archive
   # map genomic variant to one of these transcripts
   >>> var_c = am.g_to_c(var_g, 'NM_001637.3')
   >>> var_c
-  SequenceVariant(ac=NM_001637.3, type=c, posedit=1582G>A)
+  SequenceVariant(ac=NM_001637.3, type=c, posedit=1582G>A, gene=None)
   >>> str(var_c)
   'NM_001637.3:c.1582G>A'
 
@@ -146,7 +158,7 @@ Coding variants may be translated to their protein consequences.  HGVS
 uses the same pairing of transcript and protein accessions as seen in
 NCBI and Ensembl.
 
-::
+.. code-block:: python
 
    # translate var_c to its protein consequence
    # The object structure of protein variants is nearly identical to
@@ -155,7 +167,7 @@ NCBI and Ensembl.
    # must have parentheses to indicate uncertainty.
    >>> var_p = am.c_to_p(var_c)
    >>> var_p
-   SequenceVariant(ac=NP_001628.1, type=p, posedit=(Gly528Arg))
+   SequenceVariant(ac=NP_001628.1, type=p, posedit=(Gly528Arg), gene=None)
    >>> str(var_p)
    'NP_001628.1:p.(Gly528Arg)'
 
@@ -181,27 +193,27 @@ biological ambiguity (e.g., inserting a G in a poly-G run) or due to
 misunderstanding HGVS recommendations.  Normalization rewrites certain
 veriants into a single representation.
 
-::
+.. code-block:: python
 
   # rewrite ins as dup (depends on sequence context)
   >>> import hgvs.normalizer
   >>> hn = hgvs.normalizer.Normalizer(hdp)
   >>> hn.normalize(hp.parse_hgvs_variant('NM_001166478.1:c.35_36insT'))
-  SequenceVariant(ac=NM_001166478.1, type=c, posedit=35dup)
+  SequenceVariant(ac=NM_001166478.1, type=c, posedit=35dup, gene=None)
 
   # during mapping, variants are normalized (by default)
   >>> c1 = hp.parse_hgvs_variant('NM_001166478.1:c.31del')
   >>> c1
-  SequenceVariant(ac=NM_001166478.1, type=c, posedit=31del)
+  SequenceVariant(ac=NM_001166478.1, type=c, posedit=31del, gene=None)
   >>> c1n = hn.normalize(c1)
   >>> c1n
-  SequenceVariant(ac=NM_001166478.1, type=c, posedit=35del)
+  SequenceVariant(ac=NM_001166478.1, type=c, posedit=35del, gene=None)
   >>> g = am.c_to_g(c1)
   >>> g
-  SequenceVariant(ac=NC_000006.11, type=g, posedit=49917127del)
+  SequenceVariant(ac=NC_000006.11, type=g, posedit=49917127del, gene=None)
   >>> c2 = am.g_to_c(g, c1.ac)
   >>> c2
-  SequenceVariant(ac=NM_001166478.1, type=c, posedit=35del)
+  SequenceVariant(ac=NM_001166478.1, type=c, posedit=35del, gene=None)
 
 
 There are `more examples in the documentation
@@ -213,11 +225,11 @@ Citing hgvs (the package)
 
 | **hgvs: A Python package for manipulating sequence variants using HGVS nomenclature: 2018 Update.**
 | Wang M, Callenberg KM, Dalgleish R, Fedtsov A, Fox N, Freeman PJ, Jacobs KB, Kaleta P, McMurry AJ, Prlić A, Rajaraman V, Hart RK
-| Human Mutation. 2018 `Pubmed <https://www.ncbi.nlm.nih.gov/pubmed/30129167>`_ | `Open Access PDF <https://doi.org/10.1002/humu.23615>`_
+| Human Mutation. 2018 `Pubmed <https://www.ncbi.nlm.nih.gov/pubmed/30129167>`__ | `Open Access PDF <https://doi.org/10.1002/humu.23615>`__
 
 | **A Python Package for Parsing, Validating, Mapping, and Formatting Sequence Variants Using HGVS Nomenclature.**
 | Hart RK, Rico R, Hare E, Garcia J, Westbrook J, Fusaro VA.
-| *Bioinformatics*. 2014 Sep 30. `PubMed <http://www.ncbi.nlm.nih.gov/pubmed/25273102>`_ | `Open Access PDF <http://bioinformatics.oxfordjournals.org/content/31/2/268.full.pdf>`_
+| *Bioinformatics*. 2014 Sep 30. `PubMed <http://www.ncbi.nlm.nih.gov/pubmed/25273102>`__ | `Open Access PDF <http://bioinformatics.oxfordjournals.org/content/31/2/268.full.pdf>`__
 
 
 Contributing
@@ -278,8 +290,8 @@ Other packages that manipulate HGVS variants:
 .. |coveralls| image:: https://img.shields.io/coveralls/github/biocommons/hgvs.svg
    :target: https://coveralls.io/github/biocommons/hgvs
 
-.. |github_issues| image:: https://img.shields.io/github/issues-raw/biocommons/hgvs.svg
-   :alt: GitHub issues
+.. |issues| image:: https://img.shields.io/github/issues-raw/biocommons/hgvs.svg
+   :alt: issues
    :target: https://github.com/biocommons/hgvs/issues
 
 .. |github_open_pr| image:: https://img.shields.io/github/issues-pr/biocommons/hgvs.svg
@@ -298,7 +310,11 @@ Other packages that manipulate HGVS variants:
    :alt: GitHub license
    :target: https://github.com/biocommons/hgvs/graphs/contributors/
 
-
 .. |install_status| image:: https://travis-ci.org/reece/hgvs-integration-test.png?branch=master
    :target: https://travis-ci.org/reece/hgvs-integration-test
 
+.. |binder| image:: https://mybinder.org/badge_logo.svg
+   :target: https://mybinder.org/v2/gh/biocommons/hgvs/master?filepath=examples
+
+.. |hit| image:: https://travis-ci.org/biocommons/hgvs-installation-test.svg?branch=master
+    :target: https://travis-ci.org/biocommons/hgvs-installation-test	    

@@ -11,7 +11,7 @@ import unittest
 
 import pytest
 
-from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError, HGVSParseError, HGVSInvalidVariantError, HGVSInvalidVariantError
+from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError, HGVSParseError, HGVSInvalidVariantError
 from hgvs.enums import Datum
 import hgvs.assemblymapper
 import hgvs.dataproviders.uta
@@ -26,7 +26,8 @@ from support import CACHE
 @pytest.mark.issues
 class Test_Issues(unittest.TestCase):
     def setUp(self):
-        self.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+        self.hdp = hgvs.dataproviders.uta.connect(
+            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp, replace_reference=False)
         self.vm_rr = hgvs.variantmapper.VariantMapper(self.hdp, replace_reference=True)
         self.hp = hgvs.parser.Parser()
@@ -37,7 +38,6 @@ class Test_Issues(unittest.TestCase):
         self.am38 = hgvs.assemblymapper.AssemblyMapper(
             self.hdp, replace_reference=True, assembly_name='GRCh38', alt_aln_method='splign')
         self.vn = hgvs.normalizer.Normalizer(self.hdp, shuffle_direction=3, cross_boundaries=True)
-
 
     def test_525(self):
         """https://github.com/biocommons/hgvs/issues/525"""
