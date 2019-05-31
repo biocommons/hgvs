@@ -23,6 +23,7 @@ class SequenceVariant(object):
     ac = attr.ib()
     type = attr.ib()
     posedit = attr.ib()
+    gene = attr.ib(default=None)
 
     def format(self, conf=None):
         """Formatting the stringification of sequence variants
@@ -31,27 +32,40 @@ class SequenceVariant(object):
 
         See :class:`hgvs.config`.
         """
+
+        if self.ac:
+            ref = self.ac
+            if self.gene:
+                ref += "(" + self.gene + ")"
+            ref += ":"
+        else:
+             ref = ""   
+
         if self.posedit is not None:
             posedit = self.posedit.format(conf)
         else:
             posedit = "?"
-        if self.ac is not None:
-            return "{ac}:{type}.{posedit}".format(ac=self.ac, type=self.type, posedit=posedit)
-        else:
-            return "{type}.{posedit}".format(type=self.type, posedit=posedit)
+        typo = "{type}.{posedit}".format(type=self.type, posedit=posedit)
+
+        return ref + typo
 
     __str__ = format
 
     def __repr__(self):
-        return "{0}({1})".format(self.__class__.__name__, ", ".join(
-            (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
+        return "{0}({1})".format(
+            self.__class__.__name__, ", ".join(
+                (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
 
     def fill_ref(self, hdp):
+        # TODO: Refactor. SVs should not operate on themselves when
+        # external resources are required
         hm = hgvs.variantmapper.VariantMapper(hdp)
         type = None
-        if isinstance(self.posedit, hgvs.posedit.PosEdit) and isinstance(self.posedit.edit, hgvs.edit.Edit):
+        if isinstance(self.posedit, hgvs.posedit.PosEdit) and isinstance(
+                self.posedit.edit, hgvs.edit.Edit):
             type = self.posedit.edit.type
-        if type in ["del", "delins", "identity", "dup", "repeat"] and self.posedit.edit.ref_s is None:
+        if type in ["del", "delins", "identity", "dup", "repeat"
+                    ] and self.posedit.edit.ref_s is None:
             hm._replace_reference(self)
         if type == "identity" and isinstance(self.posedit.edit, hgvs.edit.NARefAlt):
             self.posedit.edit.alt = self.posedit.edit.ref

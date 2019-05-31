@@ -1,22 +1,30 @@
+# Makefile to convert example notebooks into rst files to be included
+# in docs.
+#
+# To update documentation:
+# 1. Add/edit notebooks in this directory (hgvs/examples/)
+# 2. Type `make install` to convert and copy to the documentation
+#    examples directory (hgvs/doc/examples)
+# 3. In the top level directory (hgvs/), type `make docs`. Verify that
+#    the examples are rendered as intended.
+
 .PHONY: FORCE
 .SUFFIXES:
 .DELETE_ON_ERROR:
 
 SHELL:=/bin/bash
 
-DOC_EXAMPLES_DIR:=../doc/source/examples
+DOC_EXAMPLES_DIR:=../doc/examples
 
 nbs=$(subst .ipynb,,$(wildcard *.ipynb))
 rst_nbs:=$(addsuffix .rst,${nbs})
 
-default all: ${rst_nbs}
+default: install
 
-%.rst: %.ipynb
-	ipython nbconvert --to rst $<
+install: $(addprefix ${DOC_EXAMPLES_DIR}/,${rst_nbs})
 
-doc-install: ${rst_nbs}
-	rm -fr ${DOC_EXAMPLES_DIR}; mkdir ${DOC_EXAMPLES_DIR}; cp $^ ${DOC_EXAMPLES_DIR}/
-
+${DOC_EXAMPLES_DIR}/%.rst: %.ipynb
+	ipython nbconvert --to rst --output=$@ $<
 
 .PHONY: clean cleaner cleanest
 clean:

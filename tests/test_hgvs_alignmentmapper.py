@@ -23,18 +23,21 @@ class Test_AlignmentMapper(unittest.TestCase):
 
     @classmethod
     def setUp(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+        cls.hdp = hgvs.dataproviders.uta.connect(
+            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
         cls.parser = hgvs.parser.Parser()
 
     def test_alignmentmapper_failures(self):
         with self.assertRaises(HGVSDataNotAvailableError):
             AlignmentMapper(self.hdp, tx_ac="bogus", alt_ac="NM_033089.6", alt_aln_method="splign")
         with self.assertRaises(HGVSDataNotAvailableError):
-            AlignmentMapper(self.hdp, tx_ac="bogus", alt_ac="NM_033089.6", alt_aln_method="transcript")
+            AlignmentMapper(
+                self.hdp, tx_ac="bogus", alt_ac="NM_033089.6", alt_aln_method="transcript")
         with self.assertRaises(HGVSDataNotAvailableError):
             AlignmentMapper(self.hdp, tx_ac="NM_033089.6", alt_ac="bogus", alt_aln_method="splign")
         with self.assertRaises(HGVSDataNotAvailableError):
-            AlignmentMapper(self.hdp, tx_ac="NM_000051.3", alt_ac="NC_000011.9", alt_aln_method="bogus")
+            AlignmentMapper(
+                self.hdp, tx_ac="NM_000051.3", alt_ac="NC_000011.9", alt_aln_method="bogus")
         with self.assertRaises(HGVSInvalidIntervalError):
             AlignmentMapper(self.hdp, 'NM_000348.3', 'NC_000002.11', 'splign').n_to_g(
                 self.parser.parse_n_interval("-1"))

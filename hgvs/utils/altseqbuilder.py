@@ -144,10 +144,12 @@ class AltSeqBuilder(object):
             if self._var_c.posedit.edit.type == "del":
                 edit_type = WHOLE_GENE_DELETED
             elif self._var_c.posedit.edit.type == "dup":
-                _logger.warning("Whole-gene duplication; consequence assumed to not affect protein product")
+                _logger.warning(
+                    "Whole-gene duplication; consequence assumed to not affect protein product")
                 edit_type = NOT_CDS
             elif self._var_c.posedit.edit.type == "inv":
-                _logger.warning("Whole-gene inversion; consequence assumed to not affect protein product")
+                _logger.warning(
+                    "Whole-gene inversion; consequence assumed to not affect protein product")
                 edit_type = NOT_CDS
             else:
                 edit_type = NOT_CDS
@@ -157,7 +159,8 @@ class AltSeqBuilder(object):
         try:
             this_alt_data = type_map[edit_type]()
         except KeyError:
-            raise NotImplementedError("c to p translation unsupported for {} type {}".format(self._var_c, edit_type))
+            raise NotImplementedError("c to p translation unsupported for {} type {}".format(
+                self._var_c, edit_type))
 
         # get the start of the "terminal" frameshift (i.e. one never "cancelled out")
         this_alt_data = self._get_frameshift_start(this_alt_data)
@@ -209,7 +212,8 @@ class AltSeqBuilder(object):
         ref = self._var_c.posedit.edit.ref
         alt = self._var_c.posedit.edit.alt
         ref_length = end - start if ref is not None else 0    # can't just get from ref since ref isn't always known
-        alt_length = len(self._var_c.posedit.edit.alt) if self._var_c.posedit.edit.alt is not None else 0
+        alt_length = len(
+            self._var_c.posedit.edit.alt) if self._var_c.posedit.edit.alt is not None else 0
         net_base_change = alt_length - ref_length
         cds_stop += net_base_change
 
@@ -282,7 +286,8 @@ class AltSeqBuilder(object):
 
     def _incorporate_repeat(self):
         """Incorporate repeat int sequence"""
-        raise NotImplementedError("hgvs c to p conversion does not support {} type: repeats".format(self._var_c))
+        raise NotImplementedError("hgvs c to p conversion does not support {} type: repeats".format(
+            self._var_c))
 
     def _setup_incorporate(self):
         """Helper to setup incorporate functions
@@ -336,8 +341,13 @@ class AltSeqBuilder(object):
 
     def _create_no_protein(self):
         """Create a no-protein result"""
-        alt_data = AltTranscriptData(
-            [], None, None, False, None, self._transcript_data.protein_accession, is_ambiguous=False)
+        alt_data = AltTranscriptData([],
+                                     None,
+                                     None,
+                                     False,
+                                     None,
+                                     self._transcript_data.protein_accession,
+                                     is_ambiguous=False)
         return alt_data
 
     def _get_frameshift_start(self, variant_data):

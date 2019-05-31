@@ -19,7 +19,8 @@ from support import CACHE
 class Test_VariantMapper(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+        cls.hdp = hgvs.dataproviders.uta.connect(
+            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
         cls.am = hgvs.assemblymapper.AssemblyMapper(cls.hdp)
         cls.am37 = hgvs.assemblymapper.AssemblyMapper(cls.hdp, assembly_name="GRCh37")
         cls.hp = hgvs.parser.Parser()
@@ -155,7 +156,7 @@ class Test_VariantMapper(unittest.TestCase):
         var_g = self.am37.c_to_g(var_c)
 
         self.assertEqual(str(var_g), hgvs_g)
-    
+
     def test_c_to_p_with_stop_gain(self):
         # issue-474
         hgvs_c = "NM_080877.2:c.1733_1735delinsTTT"
@@ -198,7 +199,6 @@ class Test_VariantMapper(unittest.TestCase):
         var_p = self.am.c_to_p(var_c)
 
         self.assertEqual(str(var_p), hgvs_p)
-
 
 
 class Test_RefReplacement(unittest.TestCase):
@@ -398,7 +398,8 @@ class Test_RefReplacement(unittest.TestCase):
             rec["pv"] = {x: cls.hp.parse_hgvs_variant(rec[x]) for x in "cgn"}
             return rec
 
-        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+        cls.hdp = hgvs.dataproviders.uta.connect(
+            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
         cls.am = hgvs.assemblymapper.AssemblyMapper(
             cls.hdp, replace_reference=True, assembly_name="GRCh37", alt_aln_method="splign")
         cls.hp = hgvs.parser.Parser()
@@ -421,9 +422,11 @@ class Test_RefReplacement(unittest.TestCase):
 class Test_AssemblyMapper(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+        hdp = hgvs.dataproviders.uta.connect(
+            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
         cls.hp = hgvs.parser.Parser()
-        cls.am = hgvs.assemblymapper.AssemblyMapper(hdp, assembly_name="GRCh37", alt_aln_method="splign")
+        cls.am = hgvs.assemblymapper.AssemblyMapper(
+            hdp, assembly_name="GRCh37", alt_aln_method="splign")
 
     def _test_mapping(self, hgvs_set):
         """given list of variant strings, test all valid combinations of
@@ -450,20 +453,23 @@ class Test_AssemblyMapper(unittest.TestCase):
     def test_SNV(self):
         """AssemblyMapper: smoketest with SNVs"""
         hgvs_set = [
-            "NC_000007.13:g.36561662C>T", "NM_001637.3:c.1582G>A", "NM_001637.3:n.1983G>A", "NP_001628.1:p.(Gly528Arg)"
+            "NC_000007.13:g.36561662C>T", "NM_001637.3:c.1582G>A", "NM_001637.3:n.1983G>A",
+            "NP_001628.1:p.(Gly528Arg)"
         ]
         self._test_mapping(hgvs_set)
 
     def test_intronic(self):
         """AssemblyMapper: smoketest with intronic SNVs"""
         hgvs_set = [
-            "NC_000010.10:g.89711873A>C", "NM_000314.4:c.493-2A>C", "NM_000314.4:n.1524-2A>C", "NP_000305.3:p.?"
+            "NC_000010.10:g.89711873A>C", "NM_000314.4:c.493-2A>C", "NM_000314.4:n.1524-2A>C",
+            "NP_000305.3:p.?"
         ]
         self._test_mapping(hgvs_set)
 
     def test_t_to_p(self):
         assert "non-coding" == str(self.am.t_to_p(self.hp.parse("NR_027676.1:n.3980del")))
-        assert "NP_000050.2:p.(Lys2597=)" == str(self.am.t_to_p(self.hp.parse("NM_000059.3:c.7791A>G")))
+        assert "NP_000050.2:p.(Lys2597=)" == str(
+            self.am.t_to_p(self.hp.parse("NM_000059.3:c.7791A>G")))
 
 
 if __name__ == "__main__":

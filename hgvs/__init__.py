@@ -15,7 +15,7 @@ Example use:
 >>> hp = hgvs.parser.Parser()
 >>> var_g = hp.parse_hgvs_variant(hgvs_g)
 >>> var_g
-SequenceVariant(ac=NC_000007.13, type=g, posedit=36561662C>T)
+SequenceVariant(ac=NC_000007.13, type=g, posedit=36561662C>T, gene=None)
 
 # SequenceVariants are composed of structured objects, e.g.,
 >>> var_g.posedit.pos.start
@@ -39,7 +39,7 @@ SimplePosition(base=36561662, uncertain=False)
 # map genomic variant to one of these transcripts
 >>> var_c = am.g_to_c(var_g, "NM_001637.3")
 >>> var_c
-SequenceVariant(ac=NM_001637.3, type=c, posedit=1582G>A)
+SequenceVariant(ac=NM_001637.3, type=c, posedit=1582G>A, gene=None)
 >>> str(var_c)
 'NM_001637.3:c.1582G>A'
 
@@ -55,10 +55,18 @@ import logging
 import pkg_resources
 import re
 import warnings
+import sys
 
 from .config import global_config    # noqa (importing symbol)
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
+
+
+if sys.version_info < (3, 6):
+    _logger.critical("""hgvs on Python 2.7 is no longer supported. The next major version
+    of hgvs will require Python 3.6+. See
+    https://github.com/biocommons/org/wiki/Migrating-to-Python-3.6.""")
+
 
 _is_released_version = False
 try:
@@ -70,11 +78,14 @@ except pkg_resources.DistributionNotFound as e:
     warnings.warn("can't get __version__ because %s package isn't installed" % __package__, Warning)
     __version__ = None
 
+
 # Enable DeprecationWarnings for the hgvs package
 # N.B. The module name is provided as a regexp to the module *path*
-warnings.filterwarnings('default', '', DeprecationWarning, '.*\Wlib\W.*\Whgvs\W.*')
+warnings.filterwarnings("default", "", DeprecationWarning, r".*\Wlib\W.*\Whgvs\W.*")
 
-logger.info("hgvs " + __version__ + "; released: " + str(_is_released_version))
+
+_logger.info("hgvs " + __version__ + "; released: " + str(_is_released_version))
+
 
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)

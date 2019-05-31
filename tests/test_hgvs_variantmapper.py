@@ -14,11 +14,27 @@ import hgvs.variantmapper
 from support import CACHE
 
 
+def test_add_gene_symbol(am38, parser):
+    ags = am38.add_gene_symbol
+    var_g = parser.parse("NC_000007.13:g.21940852_21940908del")
+
+    am38.add_gene_symbol = True
+    var_t = am38.g_to_t(var_g, "NM_003777.3")
+    assert "NM_003777.3(DNAH11):c.13552_*36del" == str(var_t)
+
+    am38.add_gene_symbol = False
+    var_t = am38.g_to_t(var_g, "NM_003777.3")
+    assert "NM_003777.3:c.13552_*36del" == str(var_t)
+
+    am38.add_gene_symbol = ags
+
+
 @pytest.mark.quick
 class Test_VariantMapper_Exceptions(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+        cls.hdp = hgvs.dataproviders.uta.connect(
+            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
         cls.vm = hgvs.variantmapper.VariantMapper(cls.hdp)
         cls.hp = hgvs.parser.Parser()
 
@@ -99,8 +115,7 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
     def test_map_of_c_out_of_reference_bound(self):
         hgvs_c = "NM_000249.3:c.-73960_*46597del"
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
-        with self.assertRaisesRegexp(HGVSError,
-                                     'The given coordinate is outside the bounds of the reference sequence.'):
+        with pytest.raises(HGVSError, match='coordinate is outside the bounds'):
             self.vm.c_to_p(var_c)
 
 

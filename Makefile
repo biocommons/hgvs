@@ -10,7 +10,7 @@ SELF:=$(firstword $(MAKEFILE_LIST))
 
 PKG=hgvs
 PKGD=$(subst .,/,${PKG})
-PYV:=3.6
+PYV:=3.7
 VEDIR=venv/${PYV}
 
 TEST_DIRS:=tests
@@ -36,7 +36,7 @@ venv/2.7: venv/%:
 	pip install --upgrade pip setuptools
 
 #=> venv: make a Python 3 virtual environment
-venv/3.5 venv/3.6: venv/%:
+venv/3.5 venv/3.6 venv/3.7: venv/%:
 	python$* -mvenv $@; \
 	source $@/bin/activate; \
 	python -m ensurepip --upgrade; \

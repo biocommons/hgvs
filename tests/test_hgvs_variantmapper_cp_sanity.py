@@ -184,22 +184,22 @@ class TestHgvsCToP(unittest.TestCase):
     # http://varnomen.hgvs.org/recommendations/protein/variant/substitution/
     def test_substitution_removes_start_codon(self):
         hgvsc = "NM_999999.1:c.1A>G"
-        hgvsp_expected = "MOCK:p.?"
+        hgvsp_expected = "MOCK:p.Met1?"
         self._run_conversion(hgvsc, hgvsp_expected)
 
     def test_deletion_from_five_prime_utr_frameshift(self):
         hgvsc = "NM_999999.1:c.-3_1del"
-        hgvsp_expected = "MOCK:p.?"
+        hgvsp_expected = "MOCK:p.Met1?"
         self._run_conversion(hgvsc, hgvsp_expected)
 
     def test_deletion_from_five_prime_utr_no_frameshift(self):
         hgvsc = "NM_999999.1:c.-3_3del"
-        hgvsp_expected = "MOCK:p.?"
+        hgvsp_expected = "MOCK:p.Met1?"
         self._run_conversion(hgvsc, hgvsp_expected)
 
     def test_delins_from_five_prime_utr_no_frameshift(self):
         hgvsc = "NM_999999.1:c.-3_3delinsAAA"
-        hgvsp_expected = "MOCK:p.?"
+        hgvsp_expected = "MOCK:p.Met1?"
         self._run_conversion(hgvsc, hgvsp_expected)
 
     def test_delete_entire_gene(self):

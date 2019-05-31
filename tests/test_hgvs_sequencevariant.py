@@ -13,6 +13,13 @@ import hgvs.parser
 from support import CACHE
 
 
+def test_gene_formatting(parser):
+    v = parser.parse("NM_01234.5(BOGUS):c.65A>C")
+    assert str(v) == "NM_01234.5(BOGUS):c.65A>C"
+    v.gene = None
+    assert str(v) == "NM_01234.5:c.65A>C"
+    
+
 @pytest.mark.quick
 @pytest.mark.models
 class Test_SequenceVariant(unittest.TestCase):
@@ -22,7 +29,8 @@ class Test_SequenceVariant(unittest.TestCase):
 
     def test_fill_ref(self):
         hp = hgvs.parser.Parser()
-        hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+        hdp = hgvs.dataproviders.uta.connect(
+            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
 
         # fill reference for sequence variants
         var = hp.parse_hgvs_variant("NM_001166478.1:c.31_32del").fill_ref(hdp)
@@ -32,7 +40,8 @@ class Test_SequenceVariant(unittest.TestCase):
         self.assertEqual(var.format({'max_ref_length': None}), "NM_001166478.1:c.31_32delTT")
 
         var = hp.parse_hgvs_variant("NM_001166478.1:c.2_7delinsTTTAGA").fill_ref(hdp)
-        self.assertEqual(var.format({'max_ref_length': None}), "NM_001166478.1:c.2_7delTGAAGAinsTTTAGA")
+        self.assertEqual(
+            var.format({'max_ref_length': None}), "NM_001166478.1:c.2_7delTGAAGAinsTTTAGA")
 
         var = hp.parse_hgvs_variant("NM_001166478.1:c.35_36dup").fill_ref(hdp)
         self.assertEqual(var.format({'max_ref_length': None}), "NM_001166478.1:c.35_36dupTC")

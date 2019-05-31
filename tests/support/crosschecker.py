@@ -45,7 +45,9 @@ class CrossChecker(object):
 
         variants = sorted(variants, key=lambda v: v.type)
         binned_variants = {k: [] for k in "cgmnrp"}
-        binned_variants.update({g: list(gi) for g, gi in itertools.groupby(variants, lambda v: v.type)})
+        binned_variants.update(
+            {g: list(gi)
+             for g, gi in itertools.groupby(variants, lambda v: v.type)})
         binned_variants["t"] = binned_variants["c"] + binned_variants["n"]
 
         assert len(binned_variants["g"]) == len(
@@ -59,7 +61,8 @@ class CrossChecker(object):
                 except HGVSDataNotAvailableError:
                     continue
                 if t_var != r:
-                    return "g_to_t({g_var},{t_var.ac}): got {r}; expected {t_var}".format(g_var=g_var, t_var=t_var, r=r)
+                    return "g_to_t({g_var},{t_var.ac}): got {r}; expected {t_var}".format(
+                        g_var=g_var, t_var=t_var, r=r)
 
         # t -> g: for each t., map to each genomic accession
         for t_var in binned_variants["t"]:
@@ -69,7 +72,8 @@ class CrossChecker(object):
                 except HGVSDataNotAvailableError:
                     continue
                 if g_var != r:
-                    return "t_to_g({t_var},{g_var.ac}): got {r}; expected {g_var}".format(g_var=g_var, t_var=t_var, r=r)
+                    return "t_to_g({t_var},{g_var.ac}): got {r}; expected {g_var}".format(
+                        g_var=g_var, t_var=t_var, r=r)
 
         # c -> p: for each c., map to a protein variant and check whether it's in result set
 

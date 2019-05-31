@@ -87,7 +87,7 @@ sequence ``type`` (c,g,m,n,r,p), and 0 or more specific sequence
 changes (``posedit`` -- a POSition and EDIt).::
 
    >>> var_g
-   SequenceVariant(ac=NC_000017.11, type=g, posedit=43091687del)
+   SequenceVariant(ac=NC_000017.11, type=g, posedit=43091687del, gene=None)
 
 The ``posedit`` is itself an object of the :class:`hgvs.posedit.PosEdit` class::
 
@@ -118,7 +118,7 @@ Validating and Normalizing Variants
 `hgvs` provides functionality to validate and normalize variants::
 
   >>> normalize(var_g)
-  SequenceVariant(ac=NC_000017.11, type=g, posedit=43091688del)
+  SequenceVariant(ac=NC_000017.11, type=g, posedit=43091688del, gene=None)
 
   >>> validate(var_g)
   True
@@ -140,13 +140,9 @@ high-level interface to variant projection. :mod:`hgvs.easy`
 initializes AssemblyMapper instances for GRCh37 and GRCh37 as ``am37``
 and ``am38`` respectively. For example::
 
-  >>> am38.relevant_transcripts(var_g)
-  ['NM_007294.3', 'NM_007297.3', 'NR_027676.1', 'NM_007298.3', 'NM_007299.3', 'NM_007300.3']
-
-Or the functional form::
-
-  >>> get_relevant_transcripts(var_g)
-  ['NM_007294.3', 'NM_007297.3', 'NR_027676.1', 'NM_007298.3', 'NM_007299.3', 'NM_007300.3']
+  >>> transcripts = am38.relevant_transcripts(var_g)
+  >>> sorted(transcripts)
+  ['NM_007294.3', 'NM_007297.3', 'NM_007298.3', 'NM_007299.3', 'NM_007300.3', 'NR_027676.1']
 
 We can now project the genomic variant, ``var_g``, to each of these
 transcripts using the ``g_to_t`` function, and the transcript variant
@@ -155,14 +151,14 @@ to a protein sequnce using the ``t_to_p`` function.
   >>> for ac in get_relevant_transcripts(var_g):
   ...     var_t = g_to_t(var_g, ac)
   ...     var_p = t_to_p(var_t)
-  ...     print(f"→ {var_t} ({var_p})")
+  ...     print("-> " + str(var_t) + " (" + str(var_p) + ") ")
   ...
-  → NM_007294.3:c.3844del (NP_009225.1:p.(Glu1282AsnfsTer25))
-  → NM_007297.3:c.3703del (NP_009228.2:p.(Glu1235AsnfsTer25))
-  → NR_027676.1:n.3980del (non-coding)
-  → NM_007298.3:c.788-655del (NP_009229.2:p.?)
-  → NM_007299.3:c.788-655del (NP_009230.2:p.?)
-  → NM_007300.3:c.3844del (NP_009231.2:p.(Glu1282AsnfsTer25))
+  -> NM_007294.3:c.3844del (NP_009225.1:p.(Glu1282AsnfsTer25))
+  -> NM_007297.3:c.3703del (NP_009228.2:p.(Glu1235AsnfsTer25))
+  -> NM_007298.3:c.788-655del (NP_009229.2:p.?)
+  -> NM_007299.3:c.788-655del (NP_009230.2:p.?)
+  -> NM_007300.3:c.3844del (NP_009231.2:p.(Glu1282AsnfsTer25))
+  -> NR_027676.1:n.3980del (non-coding)
 
 In ``hgvs``, the ``t`` type can be either ``c`` or ``n``.  Only
 variants on coding sequences (``c.``) can be projected to a protein
