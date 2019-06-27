@@ -4,9 +4,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import os
 import unittest
 
-from Bio.Seq import Seq
-import attr
-
 import hgvs.parser
 import hgvs.utils.altseqbuilder as altseqbuilder
 from hgvs.utils.reftranscriptdata import RefTranscriptData
