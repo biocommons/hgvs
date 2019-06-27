@@ -54,8 +54,7 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
       install_requires=[
           "attrs>=17.4.0",  # https://github.com/biocommons/hgvs/issues/473
           "biocommons.seqrepo<1.0",
-          "biopython==1.69",    # 1.70 fails on rtd due to numpy absence
-          "bioutils>=0.2.2,<1.0",
+          "bioutils>=0.4.0,<1.0",
           "configparser>=3.3.0",
           "enum34",
           "ipython<6",          # for hgvs-shell; >=6 for Py3 only

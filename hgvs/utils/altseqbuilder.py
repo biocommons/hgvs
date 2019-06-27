@@ -11,8 +11,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import logging
 import math
 
-from Bio.Seq import Seq
-from bioutils.sequences import reverse_complement
+from bioutils.sequences import reverse_complement, translate_cds
 
 from ..edit import (NARefAlt, Dup, Inv, Repeat)
 from ..enums import Datum
@@ -58,10 +57,8 @@ class AltTranscriptData(object):
             if isinstance(seq, six.string_types):
                 seq = list(seq)
             seq_cds = seq[cds_start - 1:]
-            if len(seq_cds) % 3 != 0:    # padding so biopython won't complain during the conversion
-                seq_cds.extend(['N'] * ((3 - len(seq_cds) % 3) % 3))
             seq_cds = ''.join(seq_cds)
-            seq_aa = str(Seq(seq_cds).translate())
+            seq_aa = translate_cds(seq_cds, full_codons=False, ter_symbol="X")
             stop_pos = seq_aa[:(cds_stop - cds_start + 1) // 3].rfind("*")
             if stop_pos == -1:
                 stop_pos = seq_aa.find("*")
