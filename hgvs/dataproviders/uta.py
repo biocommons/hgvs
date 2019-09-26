@@ -147,6 +147,8 @@ class UTABase(Interface):
             from transcript T
             join exon_set ES on T.ac=ES.tx_ac where alt_aln_method != 'transcript' and hgnc=?
             """,
+        # ensure this has the same semantics as the PostgreSQL-specific
+        # tx_for_region query in UTA_postgresql
         "tx_for_region":
         """
             select tx_ac,alt_ac,alt_strand,alt_aln_method,min(start_i) as start_i,max(end_i) as end_i
@@ -478,6 +480,23 @@ class UTABase(Interface):
 
 
 class UTA_postgresql(UTABase):
+
+    _queries = UTABase._queries.copy()
+    _queries.update({
+        # ensure this has the same semantics as the generic
+        # tx_for_region query in UTABase
+        "tx_for_region":
+        """
+            select tx_ac, alt_ac, alt_strand, alt_aln_method,
+                   starts_i[case when alt_strand=1 then 1 else array_length(starts_i, 1) end] as start_i,
+                   ends_i[case when alt_strand=1 then array_length(ends_i, 1) else 1 end] end_i
+            from exon_set_exons_fp_mv
+            where alt_ac=? and alt_aln_method=?
+            and starts_i[case when alt_strand=1 then 1 else array_length(starts_i, 1) end] < ?
+            and ? <= ends_i[case when alt_strand=1 then array_length(ends_i, 1) else 1 end]
+            """,
+    })
+
     def __init__(self,
                  url,
                  pooling=hgvs.global_config.uta.pooling,
