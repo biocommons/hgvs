@@ -57,7 +57,7 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
           "bioutils>=0.4.0,<1.0",
           "configparser>=3.3.0",
           "enum34",
-          "ipython<6",          # for hgvs-shell; >=6 for Py3 only
+          "ipython",
           "parsley",
           "psycopg2-binary",
           "six",
