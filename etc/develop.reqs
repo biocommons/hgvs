@@ -1,8 +1,8 @@
 flake8
 ipython
 jupyter
-pytest
-pytest-cov
+pytest>=5.6
+pytest-cov>=2.8
 restview
 setuptools
 sphinx
