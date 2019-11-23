@@ -10,6 +10,11 @@ def parser():
 
 
 @pytest.fixture(scope="session")
+def am37():
+    return hgvs.easy.am37
+
+
+@pytest.fixture(scope="session")
 def am38():
     return hgvs.easy.am38
 
