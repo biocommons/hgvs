@@ -1,7 +1,7 @@
 flake8
 ipython
 jupyter
-pytest>=5.6
+pytest>=5.3
 pytest-cov>=2.8
 restview
 setuptools
