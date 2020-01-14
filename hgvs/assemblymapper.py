@@ -17,6 +17,13 @@ class AssemblyMapper(VariantMapper):
     """Provides simplified variant mapping for a single assembly and
     transcript-reference alignment method.
 
+    AssemblyMapper inherits VariantMapper, which provides all
+    projection functionality, and adds:
+      * Automatic selection of genomic sequence accession
+      * Transcript selection from genomic coordinates
+      * Normalization after projection
+      * Special handling for PAR regions
+
     AssemblyMapper is instantiated with an assembly name and
     alt_aln_method. These enable the following conveniences over
     VariantMapper:
