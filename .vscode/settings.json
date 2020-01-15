@@ -3,10 +3,10 @@
     "editor.formatOnSave": true,
     "python.venvPath": "${workspaceFolder}/venv/",
     "python.pythonPath": "venv/3.7/bin/python",
-    "python.unitTest.unittestEnabled": false,
-    "python.unitTest.nosetestsEnabled": false,
-    "python.unitTest.pyTestEnabled": true,
-    "python.unitTest.pyTestArgs": [
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "python.testing.pytestArgs": [
         "--exitfirst",
         "--verbose"
     ]
