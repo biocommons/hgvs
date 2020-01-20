@@ -20,15 +20,6 @@ class CIGARMapper:
 
 
 
-    # i'base   0 1 2 3 4    5    6 7 8 9 0 1 2 3 4  
-    # base      0 1 2 3 4       5 6 7 8 9 0 1 2 3    
-    # ref       A B C D E       I J K L M N O P Q    len=14
-    #          |= = = = =|I I I|= = = =|D D|= = =|   
-    #          |    5=   | 3I  |   4=  | 2D| 3=  |   5= 3I 4= 2D 3=
-    # tgt       A B C D E F G H I J K L     O P Q    len=15
-    # base      0 1 2 3 4 5 6 7 8 9 0 1     2 3 4  
-    # i'base   0 1 2 3 4 5 6 7 8 9 0 1   2   3 4 5 
-
     """
     
     def __init__(self, cigar):
@@ -45,14 +36,14 @@ class CIGARMapper:
         advance_tgt = "=MXIN"
 
         cigar_elems = list(m.groupdict() for m in cigar_re.finditer(self.cigar)) 
-        self.ref_lengths = [int(ce["len"]) if ce["op"] in advance_ref else 0 for ce in cigar_elems] 
-        self.tgt_lengths = [int(ce["len"]) if ce["op"] in advance_tgt else 0 for ce in cigar_elems] 
-        self.ref_pos = [0] + list(itertools.accumulate(self.ref_lengths))
-        self.tgt_pos = [0] + list(itertools.accumulate(self.tgt_lengths))
-        self.ref_length = self.ref_pos[-1]
-        self.tgt_length = self.tgt_pos[-1]
+        self.ref_lens = [int(ce["len"]) if ce["op"] in advance_ref else 0 for ce in cigar_elems] 
+        self.tgt_lens = [int(ce["len"]) if ce["op"] in advance_tgt else 0 for ce in cigar_elems] 
+        self.ref_pos = [0] + list(itertools.accumulate(self.ref_lens))
+        self.tgt_pos = [0] + list(itertools.accumulate(self.tgt_lens))
+        self.ref_len = self.ref_pos[-1]
+        self.tgt_len = self.tgt_pos[-1]
         self.cigar_ops = [ce["op"] for ce in cigar_elems]
-
+        self.cigar_op = self.cigar_ops  # compat with AssemblyMapper; remove later
 
 
     def _map(self, from_pos, to_pos, pos, base):
@@ -92,18 +83,20 @@ class CIGARMapper:
 
 
 
-cigar_re = re.compile(r"(?P<len>\d+)(?P<op>[=DIMNX])")
 
-class AlignmentMapper:
+class _AlignmentMapper:
+    """this was ripped out of the AlignmentMapper for comparison purposes"""
     def __init__(self, cigar):
-            self.cigar = cigar
-            self.ref_pos, self.tgt_pos, self.cigar_op = self._parse_cigar(self.cigar)
-            self.tgt_len = self.tgt_pos[-1]
+        self.cigar = cigar
+        self.tgt_pos, self.ref_pos, self.cigar_op = self._parse_cigar(self.cigar)
+        self.ref_len = self.ref_pos[-1]
+        self.tgt_len = self.tgt_pos[-1]
 
     def _parse_cigar(self, cigar):
         """For a given CIGAR string, return the start positions of
         each aligned segment in ref and tgt, and a list of CIGAR operators.
         """
+        cigar_re = re.compile(r"(?P<len>\d+)(?P<op>[=DIMNX])")
         ces = [m.groupdict() for m in cigar_re.finditer(cigar)]
         ref_pos = [None] * len(ces)
         tgt_pos = [None] * len(ces)
@@ -114,6 +107,7 @@ class AlignmentMapper:
             tgt_pos[i] = tgt_cur
             cigar_op[i] = ce["op"]
             step = int(ce["len"])
+            # These two cases are swapped!
             if ce["op"] in "=MINX":
                 ref_cur += step
             if ce["op"] in "=MDX":
@@ -154,12 +148,50 @@ class AlignmentMapper:
         return mapped_pos, mapped_pos_offset, self.cigar_op[pos_i]
 
 
-
-
+    def ref_to_target_interval(self, start, end):
+        """projects a (start,end) interbase interval on the reference sequence
+        onto the target sequence, with offset a start_offset 
+        """
+        pass
     
+
+
+
 
 if __name__ == "__main__":
 
-    am = AlignmentMapper("5= 3I 4= 2D 3=")
-    cm = CIGARMapper("5= 3I 4= 2D 3=")
-    
+    # ref (tx)     A B C          F G H   J K L    M N    O P Q R S T U V 
+    # tgt          A B C   D E    F G H I J K L    M N    O P Q     T U V 
+
+
+    # i'base      0 1 2   3   4 5  6  7 8     9     0 1 2 3 4 5
+    # base         0 1 2     3 4 5   6 7 8         9 0 1 2 3 4
+    # ref (tx)     A B C     F G H   J K L         Q R S T U V 
+    #              | | | - - | | | - | | |         | - - | | |
+    #              = = = N N = = = I = = = N N N N = D D = X = 
+    #                3=   2N    3=1I3=       4N      1=2D1X1=
+    # tgt          A B C D E F G H I J K L M N O P Q - - T Z V 
+    # base         0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6     7 8 9
+    # i'base      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6   7   8 9 0
+    # ref len is 15 bases, target is 20
+    # 
+
+    cigar =  "3= 2N 3=1I3= 4N 1=2D1X1="
+
+    am = _AlignmentMapper(cigar)
+    print(str(am.ref_len) + " // " + str(am.ref_pos))
+    print(str(am.tgt_len) + " // " + str(am.tgt_pos))
+
+    cm = CIGARMapper(cigar)
+    print(str(cm.ref_len) + " // " + str(cm.ref_pos))
+    print(str(cm.tgt_len) + " // " + str(cm.tgt_pos))
+
+
+    for i in range(am.ref_len + 1):
+        ams = am._map(am.tgt_pos, am.ref_pos, i, "start")
+        ame = am._map(am.tgt_pos, am.ref_pos, i, "end")
+        cms = cm._map(cm.tgt_pos, cm.ref_pos, i, "start")
+        cme = cm._map(cm.tgt_pos, cm.ref_pos, i, "end")
+        sck = "✔" if ams == cms else " "
+        eck = "✔" if ame == cme else " "
+        print(f"{i}: ({ams},{ame})   ({cms},{cme})  ({sck},{eck})") 
