@@ -1,6 +1,7 @@
 import itertools
 import re
 
+from hgvs.exceptions import HGVSInvalidIntervalError
 
 
 class CIGARMapper:
@@ -36,51 +37,59 @@ class CIGARMapper:
         advance_tgt = "=MXIN"
 
         cigar_elems = list(m.groupdict() for m in cigar_re.finditer(self.cigar)) 
-        self.ref_lens = [int(ce["len"]) if ce["op"] in advance_ref else 0 for ce in cigar_elems] 
-        self.tgt_lens = [int(ce["len"]) if ce["op"] in advance_tgt else 0 for ce in cigar_elems] 
-        self.ref_pos = [0] + list(itertools.accumulate(self.ref_lens))
-        self.tgt_pos = [0] + list(itertools.accumulate(self.tgt_lens))
-        self.ref_len = self.ref_pos[-1]
-        self.tgt_len = self.tgt_pos[-1]
         self.cigar_ops = [ce["op"] for ce in cigar_elems]
-        self.cigar_op = self.cigar_ops  # compat with AssemblyMapper; remove later
+
+        ref_lens = [int(ce["len"]) if ce["op"] in advance_ref else 0 for ce in cigar_elems] 
+        tgt_lens = [int(ce["len"]) if ce["op"] in advance_tgt else 0 for ce in cigar_elems] 
+        self.ref_pos = [0] + list(itertools.accumulate(ref_lens))
+        self.tgt_pos = [0] + list(itertools.accumulate(tgt_lens))
+
+        self.ref_len = self.ref_pos[-1] + 1
+        self.tgt_len = self.tgt_pos[-1] + 1
 
 
     def _map(self, from_pos, to_pos, pos, base):
-        """Map position between aligned sequences
+        """Map position between aligned segments
 
-        Positions in this function are 0-based.
+        Positions in this function are 0-based, base-counting. 
         """
         pos_i = -1
-        while pos_i < len(self.cigar_op) and pos >= from_pos[pos_i + 1]:
+        while pos_i < len(self.cigar_ops) and pos >= to_pos[pos_i + 1]:
             pos_i += 1
 
-        if pos_i == -1 or pos_i == len(self.cigar_op):
+        if pos_i == -1 or pos_i == len(self.cigar_ops):
             raise HGVSInvalidIntervalError("Position is beyond the bounds of transcript record")
 
-        if self.cigar_op[pos_i] in "=MX":
-            mapped_pos = to_pos[pos_i] + (pos - from_pos[pos_i])
-            mapped_pos_offset = 0
-        elif self.cigar_op[pos_i] in "DI":
+        mapped_pos_offset = 0
+        if self.cigar_ops[pos_i] in "=MX":
+            mapped_pos = from_pos[pos_i] + (pos - to_pos[pos_i])
+        elif self.cigar_ops[pos_i] in "DI":
             if base == "start":
-                mapped_pos = to_pos[pos_i] - 1
+                mapped_pos = from_pos[pos_i] - 1
             elif base == "end":
-                mapped_pos = to_pos[pos_i]
-            mapped_pos_offset = 0
-        elif self.cigar_op[pos_i] == "N":
-            if pos - from_pos[pos_i] + 1 <= from_pos[pos_i + 1] - pos:
-                mapped_pos = to_pos[pos_i] - 1
-                mapped_pos_offset = pos - from_pos[pos_i] + 1
+                mapped_pos = from_pos[pos_i]
+        elif self.cigar_ops[pos_i] == "N":
+            if pos - to_pos[pos_i] + 1 <= to_pos[pos_i + 1] - pos:
+                mapped_pos = from_pos[pos_i] - 1
+                mapped_pos_offset = pos - to_pos[pos_i] + 1
             else:
-                mapped_pos = to_pos[pos_i]
-                mapped_pos_offset = -(from_pos[pos_i + 1] - pos)
+                mapped_pos = from_pos[pos_i]
+                mapped_pos_offset = -(to_pos[pos_i + 1] - pos)
 
-        return mapped_pos, mapped_pos_offset, self.cigar_op[pos_i]
+        return mapped_pos, mapped_pos_offset, self.cigar_ops[pos_i]
 
-    
+    def _map_dir(self, dir, pos, base):
+        if dir == "rt":
+            return self._map(self.ref_pos, self.tgt_pos, pos, base)
+        if dir == "tr":
+            return self._map(self.tgt_pos, self.ref_pos, pos, base)
+        assert False, "Invalid `dir` argument"
 
+    def map_ref_to_tgt(self, pos, base):
+        return self._map_dir("rt", pos, base)
 
-
+    def map_tgt_to_ref(self, pos, base):
+        return self._map_dir("tr", pos, base)
 
 
 
@@ -187,11 +196,15 @@ if __name__ == "__main__":
     print(str(cm.tgt_len) + " // " + str(cm.tgt_pos))
 
 
-    for i in range(am.ref_len + 1):
-        ams = am._map(am.tgt_pos, am.ref_pos, i, "start")
-        ame = am._map(am.tgt_pos, am.ref_pos, i, "end")
-        cms = cm._map(cm.tgt_pos, cm.ref_pos, i, "start")
-        cme = cm._map(cm.tgt_pos, cm.ref_pos, i, "end")
+    for refpos in range(cm.ref_len + 2):
+        ams = am._map(am.tgt_pos, am.ref_pos, refpos, "start")
+        ame = am._map(am.tgt_pos, am.ref_pos, refpos, "end")
+        #cms = cm._map(cm.tgt_pos, cm.ref_pos, refpos, "start")
+        #cme = cm._map(cm.tgt_pos, cm.ref_pos, refpos, "end")
+        cms = cm.map_ref_to_tgt(refpos, "start")
+        cme = cm.map_ref_to_tgt(refpos, "end")
+        seck = "✔" if ams == ame else " "
         sck = "✔" if ams == cms else " "
         eck = "✔" if ame == cme else " "
-        print(f"{i}: ({ams},{ame})   ({cms},{cme})  ({sck},{eck})") 
+        print(f"{refpos}:  ({cms},{cme})  ({ams},{ame})  ({seck},{sck},{eck})") 
+        #print(f"{refpos}:  ({cms[0]} {cms[1]}  ({cme[0]} {cme[1]})   ({sck},{eck})") 
