@@ -62,6 +62,7 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
           "six",
       ] + version_specific_requirements,
       setup_requires=[
+          "cython",
           "pytest-runner",
           "setuptools_scm",
           "wheel",
