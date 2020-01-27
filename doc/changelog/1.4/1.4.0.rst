@@ -1,0 +1,12 @@
+
+1.4.0 (2020-01-26)
+###################
+
+Changes since 1.3.0 (2019-05-15).
+
+Special Attention
+$$$$$$$$$$$$$$$$$$
+
+* Closes `#552 <https://github.com/biocommons/hgvs/issues/552/>`_: Drop support for Python 2.7 [`bc939c0 <https://github.com/biocommons/hgvs/commit/bc939c0>`_] (Reece Hart)
+* Remove Biopython dependency (`#527 <https://github.com/biocommons/hgvs/issues/527/>`_) [`3a74978 <https://github.com/biocommons/hgvs/commit/3a74978>`_] (Alan Rubin)
+* Removed enum34 dependency [`e93a48c <https://github.com/biocommons/hgvs/commit/e93a48c>`_] (Reece Hart)
