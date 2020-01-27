@@ -25,7 +25,7 @@ stages:
 jobs:
   include:
     - stage: deploy
-      python: 3.6
+      python: 3.7
       install: skip
       script: skip
       deploy:
