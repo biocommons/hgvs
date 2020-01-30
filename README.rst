@@ -318,4 +318,5 @@ Other packages that manipulate HGVS variants:
    :target: https://mybinder.org/v2/gh/biocommons/hgvs/master?filepath=examples
 
 .. |hit| image:: https://travis-ci.org/biocommons/hgvs-installation-test.svg?branch=master
+    :alt: nightly test of ability to pip install, import, and parse a variant
     :target: https://travis-ci.org/biocommons/hgvs-installation-test	    
