@@ -11,6 +11,7 @@ import inspect
 import logging
 import os
 import re
+import weakref
 
 import psycopg2
 import psycopg2.extras
@@ -489,6 +490,11 @@ class UTA_postgresql(UTABase):
         self.application_name = application_name
         self.pooling = pooling
         self._conn = None
+        # If we're using connection pooling, track the set of DB
+        # connections we've seen; on first use we set the schema
+        # search path. Use weak references to avoid keeping connection
+        # objects alive unnecessarily.
+        self._conns_seen = weakref.WeakSet()
         super(UTA_postgresql, self).__init__(url, mode, cache)
 
     def __del__(self):
@@ -520,6 +526,8 @@ class UTA_postgresql(UTABase):
         else:
             self._conn = psycopg2.connect(**conn_args)
             self._conn.autocommit = True
+            with self._get_cursor() as cur:
+                self._set_search_path(cur)
 
         self._ensure_schema_exists()
 
@@ -564,7 +572,12 @@ class UTA_postgresql(UTABase):
                 conn.autocommit = True
 
                 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-                cur.execute("set search_path = {self.url.schema};".format(self=self))
+                if self.pooling:
+                    # this might be a new connection, in which case we
+                    # need to set the search path
+                    if conn not in self._conns_seen:
+                        self._set_search_path(cur)
+                        self._conns_seen.add(conn)
 
                 yield cur
 
@@ -592,6 +605,8 @@ class UTA_postgresql(UTABase):
             raise HGVSError("Permanently lost connection to {url} ({n} retries)".format(
                 url=self.url, n=n_retries))
 
+    def _set_search_path(self, cur):
+        cur.execute("set search_path = {self.url.schema},public;".format(self=self))
 
 class ParseResult(urlparse.ParseResult):
     """Subclass of url.ParseResult that adds database and schema methods,

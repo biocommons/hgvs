@@ -1,7 +1,7 @@
 *hgvs* - manipulate biological sequence variants according to Human Genome Variation Society recommendations
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-**Important:** biocommons packages are supported only on Python 3.6+.
+**Important:** biocommons packages require Python 3.6+.
 `More
 <https://groups.google.com/forum/#!topic/hgvs-discuss/iLUzjzoD-28>`__
 
@@ -22,9 +22,9 @@ HGVS recommendations. Please refer to `issues
 | **Information**    | | |rtd|   |changelog|  |github_license|  |binder|                  |
 |                    | | |gitter|   |group|     |getting_help|                            |
 +--------------------+--------------------------------------------------------------------+
-| **Latest Release** | |github_tag|   |pypi_rel|                                          |
+| **Latest Release** | |github_tag|   |pypi_rel|   |hit| (pip install)                    |
 +--------------------+--------------------------------------------------------------------+
-| **Development**    | | |status_rel|  |coveralls|   |hit| (pip install)                  |
+| **Development**    | | |status_rel|  |coveralls|                                        |
 | (master branch)    | | |issues|  |github_open_pr|                                       |
 |                    | | |github_stars|  |github_forks|   |github_contrib|                |
 +--------------------+--------------------------------------------------------------------+
@@ -331,4 +331,5 @@ Other packages that manipulate HGVS variants:
    :target: https://mybinder.org/v2/gh/biocommons/hgvs/master?filepath=examples
 
 .. |hit| image:: https://travis-ci.org/biocommons/hgvs-installation-test.svg?branch=master
+    :alt: nightly test of ability to pip install, import, and parse a variant
     :target: https://travis-ci.org/biocommons/hgvs-installation-test	    
