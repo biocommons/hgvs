@@ -12,7 +12,6 @@ import hgvs.dataproviders.uta
 import hgvs.location
 import hgvs.parser
 from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError, HGVSInvalidIntervalError
-import hgvs.alignmentmapper_old
 from hgvs.alignmentmapper import AlignmentMapper
 from hgvs.enums import Datum
 from support import CACHE
@@ -323,18 +322,8 @@ class Test_AlignmentMapper(unittest.TestCase):
 
 
     def run_cases(self, tx_ac, alt_ac, test_cases):
-        amo = hgvs.alignmentmapper_old.AlignmentMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
         am = AlignmentMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
         for test_case in test_cases:
-            if test_case["c"].start.base < 0:
-                continue
-            assert test_case["c"] == amo.g_to_c(test_case["g"]), f"{tx_ac}~{alt_ac} {test_case['c']} amo.g_to_c failed"
-            assert test_case["c"] == amo.n_to_c(test_case["n"]), f"{tx_ac}~{alt_ac} {test_case['c']} amo.n_to_c failed"
-            assert test_case["g"] == amo.c_to_g(test_case["c"]), f"{tx_ac}~{alt_ac} {test_case['g']} amo.c_to_g failed"
-            assert test_case["g"] == amo.n_to_g(test_case["n"]), f"{tx_ac}~{alt_ac} {test_case['g']} amo.n_to_g failed"
-            assert test_case["n"] == amo.c_to_n(test_case["c"]), f"{tx_ac}~{alt_ac} {test_case['n']} amo.c_to_n failed"
-            assert test_case["n"] == amo.g_to_n(test_case["g"]), f"{tx_ac}~{alt_ac} {test_case['n']} amo.g_to_n failed"
-
             assert test_case["c"] == am.g_to_c(test_case["g"]), f"{tx_ac}~{alt_ac} {test_case['c']} am.g_to_c failed"
             assert test_case["c"] == am.n_to_c(test_case["n"]), f"{tx_ac}~{alt_ac} {test_case['c']} am.n_to_c failed"
             assert test_case["g"] == am.c_to_g(test_case["c"]), f"{tx_ac}~{alt_ac} {test_case['g']} am.c_to_g failed"
