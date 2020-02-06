@@ -2,8 +2,8 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import itertools
 import re
-from six.moves import range
 
 
 def build_tx_cigar(exons, strand):
@@ -37,6 +37,34 @@ def build_tx_cigar(exons, strand):
     tx_cigar_str = "".join(tx_cigar)
 
     return tx_cigar_str
+
+
+
+def parse_cigar(cigar):
+    """For a given CIGAR string, return the start positions of each
+    aligned segment in ref and tgt, and a list of CIGAR operators.
+
+    """
+    cigar_re = re.compile(r"(?P<len>\d+)(?P<op>[=DIMNX])")
+    ces = [m.groupdict() for m in cigar_re.finditer(cigar)]
+    ref_pos = [None] * len(ces)
+    tgt_pos = [None] * len(ces)
+    cigar_op = [None] * len(ces)
+    ref_cur = tgt_cur = 0
+    for i, ce in enumerate(ces):
+        ref_pos[i] = ref_cur
+        tgt_pos[i] = tgt_cur
+        cigar_op[i] = ce["op"]
+        step = int(ce["len"])
+        if ce["op"] in "=MINX":
+            ref_cur += step
+        if ce["op"] in "=MDX":
+            tgt_cur += step
+    ref_pos.append(ref_cur)
+    tgt_pos.append(tgt_cur)
+    return ref_pos, tgt_pos, cigar_op
+
+
 
 
 # <LICENSE>

@@ -7,7 +7,6 @@ The AlignmentMapper class is at the heart of mapping between aligned sequences.
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import re
 from six.moves import range
 from bioutils.coordinates import strand_int_to_pm
 
@@ -18,11 +17,9 @@ from hgvs.utils import build_tx_cigar
 from hgvs.utils.cigarmapper import CIGARMapper
 from hgvs.enums import Datum
 
-cigar_re = re.compile(r"(?P<len>\d+)(?P<op>[=DIMNX])")
-
 
 class AlignmentMapper(object):
-    """Maps hgvs location objets between genomic (g), non-coding (n) and
+    """Maps hgvs location objects between genomic (g), non-coding (n) and
     cds (c) coordinates according to a CIGAR string.
 
     :param hdp: HGVS Data Provider Interface-compliant instance (see :class:`hgvs.dataproviders.interface.Interface`)
@@ -32,13 +29,15 @@ class AlignmentMapper(object):
 
     """
     __slots__ = ("tx_ac", "alt_ac", "alt_aln_method", "strand", "gc_offset", "cds_start_i",
-                 "cds_end_i", "tgt_len", "cigar", "ref_pos", "tgt_pos", "cigar_op", "cigarmapper")
+                 "cds_end_i", "tgt_len", "cigarmapper", "ref_pos", "tgt_pos", "cigar_op")
 
     def __init__(self, hdp, tx_ac, alt_ac, alt_aln_method):
         self.tx_ac = tx_ac
         self.alt_ac = alt_ac
         self.alt_aln_method = alt_aln_method
+
         if self.alt_aln_method != "transcript":
+
             tx_info = hdp.get_tx_info(self.tx_ac, self.alt_ac, self.alt_aln_method)
             if tx_info is None:
                 raise HGVSDataNotAvailableError(
@@ -67,10 +66,13 @@ class AlignmentMapper(object):
             self.gc_offset = tx_exons[0]["alt_start_i"]
             self.cds_start_i = tx_info["cds_start_i"]
             self.cds_end_i = tx_info["cds_end_i"]
-            self.cigar = build_tx_cigar(tx_exons, self.strand)
-            self.cigarmapper = CIGARMapper(self.cigar)
+
+            cigar = build_tx_cigar(tx_exons, self.strand)
+            self.cigarmapper = CIGARMapper(cigar)
             self.tgt_len = self.cigarmapper.tgt_len
+
         else:
+
             # this covers the identity cases n <-> c
             tx_identity_info = hdp.get_tx_identity_info(self.tx_ac)
             if tx_identity_info is None:
@@ -87,19 +89,19 @@ class AlignmentMapper(object):
             (self.cds_start_i is None) ^
             (self.cds_end_i is None)), "CDS start and end must both be defined or neither defined"
 
+
     def __str__(self):
         return "{self.__class__.__name__}: {self.tx_ac} ~ {self.alt_ac} ~ {self.alt_aln_method}; " \
                "{strand_pm} strand; offset={self.gc_offset}".format(
                     self=self, strand_pm=strand_int_to_pm(self.strand))
-
 
     def g_to_n(self, g_interval):
         """convert a genomic (g.) interval to a transcript cDNA (n.) interval"""
 
         grs, gre = g_interval.start.base - 1 - self.gc_offset, g_interval.end.base - 1 - self.gc_offset
         # frs, fre = (f)orward (r)na (s)tart & (e)nd; forward w.r.t. genome
-        frs, frs_offset, frs_cigar = self.cigarmapper.map_tgt_to_ref(pos=grs, base="start")
-        fre, fre_offset, fre_cigar = self.cigarmapper.map_tgt_to_ref(pos=gre, base="end")
+        frs, frs_offset, frs_cigar = self.cigarmapper.map_ref_to_tgt(pos=grs, base="start")
+        fre, fre_offset, fre_cigar = self.cigarmapper.map_ref_to_tgt(pos=gre, base="end")
 
         if self.strand == -1:
             frs, fre = self.tgt_len - fre - 1, self.tgt_len - frs - 1
@@ -124,8 +126,8 @@ class AlignmentMapper(object):
             start_offset, end_offset = -end_offset, -start_offset
 
         # returns the genomic range start (grs) and end (gre)
-        grs, _, grs_cigar = self.cigarmapper.map_ref_to_tgt(pos=frs, base="start")
-        gre, _, gre_cigar = self.cigarmapper.map_ref_to_tgt(pos=fre, base="end")
+        grs, _, grs_cigar = self.cigarmapper.map_tgt_to_ref(pos=frs, base="start")
+        gre, _, gre_cigar = self.cigarmapper.map_tgt_to_ref(pos=fre, base="end")
         grs, gre = grs + self.gc_offset + 1, gre + self.gc_offset + 1
         gs, ge = grs + start_offset, gre + end_offset
 
