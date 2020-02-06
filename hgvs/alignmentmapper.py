@@ -32,6 +32,13 @@ class CIGARMapper:
     def tgt_len(self):
         return self.tgt_pos[-1]
 
+    def map_ref_to_tgt(self, pos, base):
+        return self._map(from_pos=self.ref_pos, to_pos=self.tgt_pos, pos=pos, base=base)
+
+    def map_tgt_to_ref(self, pos, base):
+        return self._map(from_pos=self.tgt_pos, to_pos=self.ref_pos, pos=pos, base=base)
+
+
     def _map(self, from_pos, to_pos, pos, base):
         """Map position between aligned sequences
 
@@ -144,10 +151,8 @@ class AlignmentMapper(object):
 
         grs, gre = g_interval.start.base - 1 - self.gc_offset, g_interval.end.base - 1 - self.gc_offset
         # frs, fre = (f)orward (r)na (s)tart & (e)nd; forward w.r.t. genome
-        frs, frs_offset, frs_cigar = self.cigarmapper._map(
-            from_pos=self.cigarmapper.ref_pos, to_pos=self.cigarmapper.tgt_pos, pos=grs, base="start")
-        fre, fre_offset, fre_cigar = self.cigarmapper._map(
-            from_pos=self.cigarmapper.ref_pos, to_pos=self.cigarmapper.tgt_pos, pos=gre, base="end")
+        frs, frs_offset, frs_cigar = self.cigarmapper.map_ref_to_tgt(pos=grs, base="start")
+        fre, fre_offset, fre_cigar = self.cigarmapper.map_ref_to_tgt(pos=gre, base="end")
 
         if self.strand == -1:
             frs, fre = self.tgt_len - fre - 1, self.tgt_len - frs - 1
@@ -172,10 +177,8 @@ class AlignmentMapper(object):
             start_offset, end_offset = -end_offset, -start_offset
 
         # returns the genomic range start (grs) and end (gre)
-        grs, _, grs_cigar = self.cigarmapper._map(
-            from_pos=self.cigarmapper.tgt_pos, to_pos=self.cigarmapper.ref_pos, pos=frs, base="start")
-        gre, _, gre_cigar = self.cigarmapper._map(
-            from_pos=self.cigarmapper.tgt_pos, to_pos=self.cigarmapper.ref_pos, pos=fre, base="end")
+        grs, _, grs_cigar = self.cigarmapper.map_tgt_to_ref(pos=frs, base="start")
+        gre, _, gre_cigar = self.cigarmapper.map_tgt_to_ref(pos=fre, base="end")
         grs, gre = grs + self.gc_offset + 1, gre + self.gc_offset + 1
         gs, ge = grs + start_offset, gre + end_offset
 
