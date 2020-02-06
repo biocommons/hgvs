@@ -2,10 +2,8 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import itertools
 import re
-from six.moves import range
-
-cigar_re = re.compile(r"(?P<len>\d+)(?P<op>[=DIMNX])")
 
 
 def build_tx_cigar(exons, strand):
@@ -47,6 +45,7 @@ def parse_cigar(cigar):
     aligned segment in ref and tgt, and a list of CIGAR operators.
 
     """
+    cigar_re = re.compile(r"(?P<len>\d+)(?P<op>[=DIMNX])")
     ces = [m.groupdict() for m in cigar_re.finditer(cigar)]
     ref_pos = [None] * len(ces)
     tgt_pos = [None] * len(ces)
@@ -64,9 +63,6 @@ def parse_cigar(cigar):
     ref_pos.append(ref_cur)
     tgt_pos.append(tgt_cur)
     return ref_pos, tgt_pos, cigar_op
-
-
-
 
 
 

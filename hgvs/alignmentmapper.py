@@ -13,71 +13,14 @@ from bioutils.coordinates import strand_int_to_pm
 import hgvs.location
 
 from hgvs.exceptions import HGVSError, HGVSUsageError, HGVSDataNotAvailableError, HGVSInvalidIntervalError
-from hgvs.utils import build_tx_cigar, parse_cigar
+from hgvs.utils import build_tx_cigar
+from hgvs.utils.cigarmapper import CIGARMapper
 from hgvs.enums import Datum
 
 
-
-
-class CIGARMapper:
-    def __init__(self, cigar):
-        self.cigar = cigar
-        self.ref_pos, self.tgt_pos, self.cigar_op = parse_cigar(self.cigar)
-
-    @property
-    def ref_len(self):
-        return self.ref_pos[-1]
-
-    @property
-    def tgt_len(self):
-        return self.tgt_pos[-1]
-
-    def map_ref_to_tgt(self, pos, base):
-        return self._map(from_pos=self.ref_pos, to_pos=self.tgt_pos, pos=pos, base=base)
-
-    def map_tgt_to_ref(self, pos, base):
-        return self._map(from_pos=self.tgt_pos, to_pos=self.ref_pos, pos=pos, base=base)
-
-
-    def _map(self, from_pos, to_pos, pos, base):
-        """Map position between aligned sequences
-
-        Positions in this function are 0-based.
-        """
-        pos_i = -1
-        while pos_i < len(self.cigar_op) and pos >= from_pos[pos_i + 1]:
-            pos_i += 1
-
-        if pos_i == -1 or pos_i == len(self.cigar_op):
-            raise HGVSInvalidIntervalError("Position is beyond the bounds of transcript record")
-
-        if self.cigar_op[pos_i] in "=MX":
-            mapped_pos = to_pos[pos_i] + (pos - from_pos[pos_i])
-            mapped_pos_offset = 0
-        elif self.cigar_op[pos_i] in "DI":
-            if base == "start":
-                mapped_pos = to_pos[pos_i] - 1
-            elif base == "end":
-                mapped_pos = to_pos[pos_i]
-            mapped_pos_offset = 0
-        elif self.cigar_op[pos_i] == "N":
-            if pos - from_pos[pos_i] + 1 <= from_pos[pos_i + 1] - pos:
-                mapped_pos = to_pos[pos_i] - 1
-                mapped_pos_offset = pos - from_pos[pos_i] + 1
-            else:
-                mapped_pos = to_pos[pos_i]
-                mapped_pos_offset = -(from_pos[pos_i + 1] - pos)
-
-        return mapped_pos, mapped_pos_offset, self.cigar_op[pos_i]
-
-
-    
-
-
-
 class AlignmentMapper(object):
-    """Provides coordinate (not variant) mapping operations between
-    genomic (g), non-coding (n) and cds (c) coordinates according to a CIGAR.
+    """Maps hgvs location objects between genomic (g), non-coding (n) and
+    cds (c) coordinates according to a CIGAR string.
 
     :param hdp: HGVS Data Provider Interface-compliant instance (see :class:`hgvs.dataproviders.interface.Interface`)
     :param str tx_ac: string representing transcript accession (e.g., NM_000551.2)
@@ -92,7 +35,9 @@ class AlignmentMapper(object):
         self.tx_ac = tx_ac
         self.alt_ac = alt_ac
         self.alt_aln_method = alt_aln_method
+
         if self.alt_aln_method != "transcript":
+
             tx_info = hdp.get_tx_info(self.tx_ac, self.alt_ac, self.alt_aln_method)
             if tx_info is None:
                 raise HGVSDataNotAvailableError(
@@ -125,21 +70,25 @@ class AlignmentMapper(object):
             cigar = build_tx_cigar(tx_exons, self.strand)
             self.cigarmapper = CIGARMapper(cigar)
             self.tgt_len = self.cigarmapper.tgt_len
+
         else:
+
             # this covers the identity cases n <-> c
             tx_identity_info = hdp.get_tx_identity_info(self.tx_ac)
             if tx_identity_info is None:
                 raise HGVSDataNotAvailableError(
                     "AlignmentMapper(tx_ac={self.tx_ac}, "
                     "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
-                    "No transcript identity info".format(self=self))
+                    "No transcript info".format(self=self))
             self.cds_start_i = tx_identity_info["cds_start_i"]
             self.cds_end_i = tx_identity_info["cds_end_i"]
             self.tgt_len = sum(tx_identity_info["lengths"])
+            self.cigarmapper = None
 
         assert not (
             (self.cds_start_i is None) ^
             (self.cds_end_i is None)), "CDS start and end must both be defined or neither defined"
+
 
     def __str__(self):
         return "{self.__class__.__name__}: {self.tx_ac} ~ {self.alt_ac} ~ {self.alt_aln_method}; " \
