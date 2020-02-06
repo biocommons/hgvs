@@ -7,17 +7,65 @@ The AlignmentMapper class is at the heart of mapping between aligned sequences.
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import re
 from six.moves import range
 from bioutils.coordinates import strand_int_to_pm
 
 import hgvs.location
 
 from hgvs.exceptions import HGVSError, HGVSUsageError, HGVSDataNotAvailableError, HGVSInvalidIntervalError
-from hgvs.utils import build_tx_cigar
+from hgvs.utils import build_tx_cigar, parse_cigar
 from hgvs.enums import Datum
 
-cigar_re = re.compile(r"(?P<len>\d+)(?P<op>[=DIMNX])")
+
+
+
+class CIGARMapper:
+    def __init__(self, cigar):
+        self.cigar = cigar
+        self.ref_pos, self.tgt_pos, self.cigar_op = parse_cigar(self.cigar)
+
+    @property
+    def ref_len(self):
+        return self.ref_pos[-1]
+
+    @property
+    def tgt_len(self):
+        return self.tgt_pos[-1]
+
+    def _map(self, from_pos, to_pos, pos, base):
+        """Map position between aligned sequences
+
+        Positions in this function are 0-based.
+        """
+        pos_i = -1
+        while pos_i < len(self.cigar_op) and pos >= from_pos[pos_i + 1]:
+            pos_i += 1
+
+        if pos_i == -1 or pos_i == len(self.cigar_op):
+            raise HGVSInvalidIntervalError("Position is beyond the bounds of transcript record")
+
+        if self.cigar_op[pos_i] in "=MX":
+            mapped_pos = to_pos[pos_i] + (pos - from_pos[pos_i])
+            mapped_pos_offset = 0
+        elif self.cigar_op[pos_i] in "DI":
+            if base == "start":
+                mapped_pos = to_pos[pos_i] - 1
+            elif base == "end":
+                mapped_pos = to_pos[pos_i]
+            mapped_pos_offset = 0
+        elif self.cigar_op[pos_i] == "N":
+            if pos - from_pos[pos_i] + 1 <= from_pos[pos_i + 1] - pos:
+                mapped_pos = to_pos[pos_i] - 1
+                mapped_pos_offset = pos - from_pos[pos_i] + 1
+            else:
+                mapped_pos = to_pos[pos_i]
+                mapped_pos_offset = -(from_pos[pos_i + 1] - pos)
+
+        return mapped_pos, mapped_pos_offset, self.cigar_op[pos_i]
+
+
+    
+
 
 
 class AlignmentMapper(object):
@@ -31,7 +79,7 @@ class AlignmentMapper(object):
 
     """
     __slots__ = ("tx_ac", "alt_ac", "alt_aln_method", "strand", "gc_offset", "cds_start_i",
-                 "cds_end_i", "tgt_len", "cigar", "ref_pos", "tgt_pos", "cigar_op")
+                 "cds_end_i", "tgt_len", "cigarmapper", "ref_pos", "tgt_pos", "cigar_op")
 
     def __init__(self, hdp, tx_ac, alt_ac, alt_aln_method):
         self.tx_ac = tx_ac
@@ -66,9 +114,10 @@ class AlignmentMapper(object):
             self.gc_offset = tx_exons[0]["alt_start_i"]
             self.cds_start_i = tx_info["cds_start_i"]
             self.cds_end_i = tx_info["cds_end_i"]
-            self.cigar = build_tx_cigar(tx_exons, self.strand)
-            self.ref_pos, self.tgt_pos, self.cigar_op = self._parse_cigar(self.cigar)
-            self.tgt_len = self.tgt_pos[-1]
+
+            cigar = build_tx_cigar(tx_exons, self.strand)
+            self.cigarmapper = CIGARMapper(cigar)
+            self.tgt_len = self.cigarmapper.tgt_len
         else:
             # this covers the identity cases n <-> c
             tx_identity_info = hdp.get_tx_identity_info(self.tx_ac)
@@ -90,68 +139,15 @@ class AlignmentMapper(object):
                "{strand_pm} strand; offset={self.gc_offset}".format(
                     self=self, strand_pm=strand_int_to_pm(self.strand))
 
-    def _parse_cigar(self, cigar):
-        """For a given CIGAR string, return the start positions of
-        each aligned segment in ref and tgt, and a list of CIGAR operators.
-        """
-        ces = [m.groupdict() for m in cigar_re.finditer(cigar)]
-        ref_pos = [None] * len(ces)
-        tgt_pos = [None] * len(ces)
-        cigar_op = [None] * len(ces)
-        ref_cur = tgt_cur = 0
-        for i, ce in enumerate(ces):
-            ref_pos[i] = ref_cur
-            tgt_pos[i] = tgt_cur
-            cigar_op[i] = ce["op"]
-            step = int(ce["len"])
-            if ce["op"] in "=MINX":
-                ref_cur += step
-            if ce["op"] in "=MDX":
-                tgt_cur += step
-        ref_pos.append(ref_cur)
-        tgt_pos.append(tgt_cur)
-        return ref_pos, tgt_pos, cigar_op
-
-    def _map(self, from_pos, to_pos, pos, base):
-        """Map position between aligned sequences
-
-        Positions in this function are 0-based.
-        """
-        pos_i = -1
-        while pos_i < len(self.cigar_op) and pos >= from_pos[pos_i + 1]:
-            pos_i += 1
-
-        if pos_i == -1 or pos_i == len(self.cigar_op):
-            raise HGVSInvalidIntervalError("Position is beyond the bounds of transcript record")
-
-        if self.cigar_op[pos_i] in "=MX":
-            mapped_pos = to_pos[pos_i] + (pos - from_pos[pos_i])
-            mapped_pos_offset = 0
-        elif self.cigar_op[pos_i] in "DI":
-            if base == "start":
-                mapped_pos = to_pos[pos_i] - 1
-            elif base == "end":
-                mapped_pos = to_pos[pos_i]
-            mapped_pos_offset = 0
-        elif self.cigar_op[pos_i] == "N":
-            if pos - from_pos[pos_i] + 1 <= from_pos[pos_i + 1] - pos:
-                mapped_pos = to_pos[pos_i] - 1
-                mapped_pos_offset = pos - from_pos[pos_i] + 1
-            else:
-                mapped_pos = to_pos[pos_i]
-                mapped_pos_offset = -(from_pos[pos_i + 1] - pos)
-
-        return mapped_pos, mapped_pos_offset, self.cigar_op[pos_i]
-
     def g_to_n(self, g_interval):
         """convert a genomic (g.) interval to a transcript cDNA (n.) interval"""
 
         grs, gre = g_interval.start.base - 1 - self.gc_offset, g_interval.end.base - 1 - self.gc_offset
         # frs, fre = (f)orward (r)na (s)tart & (e)nd; forward w.r.t. genome
-        frs, frs_offset, frs_cigar = self._map(
-            from_pos=self.ref_pos, to_pos=self.tgt_pos, pos=grs, base="start")
-        fre, fre_offset, fre_cigar = self._map(
-            from_pos=self.ref_pos, to_pos=self.tgt_pos, pos=gre, base="end")
+        frs, frs_offset, frs_cigar = self.cigarmapper._map(
+            from_pos=self.cigarmapper.ref_pos, to_pos=self.cigarmapper.tgt_pos, pos=grs, base="start")
+        fre, fre_offset, fre_cigar = self.cigarmapper._map(
+            from_pos=self.cigarmapper.ref_pos, to_pos=self.cigarmapper.tgt_pos, pos=gre, base="end")
 
         if self.strand == -1:
             frs, fre = self.tgt_len - fre - 1, self.tgt_len - frs - 1
@@ -176,10 +172,10 @@ class AlignmentMapper(object):
             start_offset, end_offset = -end_offset, -start_offset
 
         # returns the genomic range start (grs) and end (gre)
-        grs, _, grs_cigar = self._map(
-            from_pos=self.tgt_pos, to_pos=self.ref_pos, pos=frs, base="start")
-        gre, _, gre_cigar = self._map(
-            from_pos=self.tgt_pos, to_pos=self.ref_pos, pos=fre, base="end")
+        grs, _, grs_cigar = self.cigarmapper._map(
+            from_pos=self.cigarmapper.tgt_pos, to_pos=self.cigarmapper.ref_pos, pos=frs, base="start")
+        gre, _, gre_cigar = self.cigarmapper._map(
+            from_pos=self.cigarmapper.tgt_pos, to_pos=self.cigarmapper.ref_pos, pos=fre, base="end")
         grs, gre = grs + self.gc_offset + 1, gre + self.gc_offset + 1
         gs, ge = grs + start_offset, gre + end_offset
 
