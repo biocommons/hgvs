@@ -22,8 +22,8 @@ cigar_re = re.compile(r"(?P<len>\d+)(?P<op>[=DIMNX])")
 
 
 class AlignmentMapper(object):
-    """Provides coordinate (not variant) mapping operations between
-    genomic (g), non-coding (n) and cds (c) coordinates according to a CIGAR.
+    """Maps hgvs location objets between genomic (g), non-coding (n) and
+    cds (c) coordinates according to a CIGAR string.
 
     :param hdp: HGVS Data Provider Interface-compliant instance (see :class:`hgvs.dataproviders.interface.Interface`)
     :param str tx_ac: string representing transcript accession (e.g., NM_000551.2)

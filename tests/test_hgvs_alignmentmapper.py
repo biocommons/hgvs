@@ -12,6 +12,7 @@ import hgvs.dataproviders.uta
 import hgvs.location
 import hgvs.parser
 from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError, HGVSInvalidIntervalError
+import hgvs.alignmentmapper_old
 from hgvs.alignmentmapper import AlignmentMapper
 from hgvs.enums import Datum
 from support import CACHE
@@ -48,469 +49,306 @@ class Test_AlignmentMapper(unittest.TestCase):
             AlignmentMapper(self.hdp, 'NM_000348.3', 'NC_000002.11', 'splign').c_to_n(
                 self.parser.parse_c_interval("99999"))
 
-    def test_alignmentmapper_AlignmentMapper_LCE3C_uncertain(self):
+    def x_test_alignmentmapper_AlignmentMapper_LCE3C_uncertain(self):
+        # ? is not yet supported
         """Use NM_178434.2 tests to test mapping with uncertain positions"""
         tx_ac = "NM_178434.2"
         alt_ac = "NC_000001.10"
-        tm = AlignmentMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
-        parser = hgvs.parser.Parser()
         test_cases = [
-        # ? is not yet supported
-        # {"g": parser.parse_g_interval("(?_152573139)"), "n": parser.parse_n_interval("(?_2)"), "c": parser.parse_c_interval("(?_-69)")},
-        # {"g": parser.parse_g_interval("(152573138_?)"), "n": parser.parse_n_interval("(1_?)"), "c": parser.parse_c_interval("(-70_?)")},
+            {
+                "g": parser.parse_g_interval("(?_152573139)"),
+                "n": parser.parse_n_interval("(?_2)"),
+                "c": parser.parse_c_interval("(?_-69)")
+            },
+            {
+                "g": parser.parse_g_interval("(152573138_?)"),
+                "n": parser.parse_n_interval("(1_?)"),
+                "c": parser.parse_c_interval("(-70_?)")
+            },
         ]
-        self.run_cases(tm, test_cases)
+        self.run_cases(tx_ac, alt_ac, test_cases)
 
     def test_alignmentmapper_AlignmentMapper_LCE3C(self):
         """NM_178434.2: LCE3C single exon, strand = +1, all coordinate input/output are in HGVS"""
         tx_ac = "NM_178434.2"
         alt_ac = "NC_000001.10"
-        tm = AlignmentMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
-        parser = hgvs.parser.Parser()
         test_cases = [
         # 5'
             {
-                "g": parser.parse_g_interval("152573138"),
-                "n": parser.parse_n_interval("1"),
-                "c": parser.parse_c_interval("-70")
+                "g": self.parser.parse_g_interval("152573138"),
+                "n": self.parser.parse_n_interval("1"),
+                "c": self.parser.parse_c_interval("-70")
             },
             {
-                "g": parser.parse_g_interval("152573140"),
-                "n": parser.parse_n_interval("3"),
-                "c": parser.parse_c_interval("-68")
+                "g": self.parser.parse_g_interval("152573140"),
+                "n": self.parser.parse_n_interval("3"),
+                "c": self.parser.parse_c_interval("-68")
             },
         # cds
             {
-                "g": parser.parse_g_interval("152573207"),
-                "n": parser.parse_n_interval("70"),
-                "c": parser.parse_c_interval("-1")
+                "g": self.parser.parse_g_interval("152573207"),
+                "n": self.parser.parse_n_interval("70"),
+                "c": self.parser.parse_c_interval("-1")
             },
             {
-                "g": parser.parse_g_interval("152573208"),
-                "n": parser.parse_n_interval("71"),
-                "c": parser.parse_c_interval("1")
+                "g": self.parser.parse_g_interval("152573208"),
+                "n": self.parser.parse_n_interval("71"),
+                "c": self.parser.parse_c_interval("1")
             },
         # 3'
             {
-                "g": parser.parse_g_interval("152573492"),
-                "n": parser.parse_n_interval("355"),
-                "c": parser.parse_c_interval("285")
+                "g": self.parser.parse_g_interval("152573492"),
+                "n": self.parser.parse_n_interval("355"),
+                "c": self.parser.parse_c_interval("285")
             },
             {
-                "g": parser.parse_g_interval("152573493"),
-                "n": parser.parse_n_interval("356"),
-                "c": parser.parse_c_interval("*1")
+                "g": self.parser.parse_g_interval("152573493"),
+                "n": self.parser.parse_n_interval("356"),
+                "c": self.parser.parse_c_interval("*1")
             },
             {
-                "g": parser.parse_g_interval("152573560"),
-                "n": parser.parse_n_interval("423"),
-                "c": parser.parse_c_interval("*68")
+                "g": self.parser.parse_g_interval("152573560"),
+                "n": self.parser.parse_n_interval("423"),
+                "c": self.parser.parse_c_interval("*68")
             },
             {
-                "g": parser.parse_g_interval("152573562"),
-                "n": parser.parse_n_interval("425"),
-                "c": parser.parse_c_interval("*70")
+                "g": self.parser.parse_g_interval("152573562"),
+                "n": self.parser.parse_n_interval("425"),
+                "c": self.parser.parse_c_interval("*70")
             },
         ]
-        self.run_cases(tm, test_cases)
+        self.run_cases(tx_ac, alt_ac, test_cases)
 
     def test_alignmentmapper_AlignmentMapper_HIST3H2A(self):
         """NM_033445.2: LCE3C single exon, strand = -1, all coordinate input/output are in HGVS"""
         tx_ac = "NM_033445.2"
         alt_ac = "NC_000001.10"
-        tm = AlignmentMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
-        parser = hgvs.parser.Parser()
         test_cases = [
         # 3'
             {
-                "g": parser.parse_g_interval("228645560"),
-                "n": parser.parse_n_interval("1"),
-                "c": parser.parse_c_interval("-42")
+                "g": self.parser.parse_g_interval("228645560"),
+                "n": self.parser.parse_n_interval("1"),
+                "c": self.parser.parse_c_interval("-42")
             },
             {
-                "g": parser.parse_g_interval("228645558"),
-                "n": parser.parse_n_interval("3"),
-                "c": parser.parse_c_interval("-40")
+                "g": self.parser.parse_g_interval("228645558"),
+                "n": self.parser.parse_n_interval("3"),
+                "c": self.parser.parse_c_interval("-40")
             },
         # cds
             {
-                "g": parser.parse_g_interval("228645519"),
-                "n": parser.parse_n_interval("42"),
-                "c": parser.parse_c_interval("-1")
+                "g": self.parser.parse_g_interval("228645519"),
+                "n": self.parser.parse_n_interval("42"),
+                "c": self.parser.parse_c_interval("-1")
             },
             {
-                "g": parser.parse_g_interval("228645518"),
-                "n": parser.parse_n_interval("43"),
-                "c": parser.parse_c_interval("1")
+                "g": self.parser.parse_g_interval("228645518"),
+                "n": self.parser.parse_n_interval("43"),
+                "c": self.parser.parse_c_interval("1")
             },
         # 5'
             {
-                "g": parser.parse_g_interval("228645126"),
-                "n": parser.parse_n_interval("435"),
-                "c": parser.parse_c_interval("393")
+                "g": self.parser.parse_g_interval("228645126"),
+                "n": self.parser.parse_n_interval("435"),
+                "c": self.parser.parse_c_interval("393")
             },
             {
-                "g": parser.parse_g_interval("228645125"),
-                "n": parser.parse_n_interval("436"),
-                "c": parser.parse_c_interval("*1")
+                "g": self.parser.parse_g_interval("228645125"),
+                "n": self.parser.parse_n_interval("436"),
+                "c": self.parser.parse_c_interval("*1")
             },
             {
-                "g": parser.parse_g_interval("228645124"),
-                "n": parser.parse_n_interval("437"),
-                "c": parser.parse_c_interval("*2")
+                "g": self.parser.parse_g_interval("228645124"),
+                "n": self.parser.parse_n_interval("437"),
+                "c": self.parser.parse_c_interval("*2")
             },
             {
-                "g": parser.parse_g_interval("228645065"),
-                "n": parser.parse_n_interval("496"),
-                "c": parser.parse_c_interval("*61")
+                "g": self.parser.parse_g_interval("228645065"),
+                "n": self.parser.parse_n_interval("496"),
+                "c": self.parser.parse_c_interval("*61")
             },
         ]
-        self.run_cases(tm, test_cases)
+        self.run_cases(tx_ac, alt_ac, test_cases)
 
     def test_alignmentmapper_AlignmentMapper_LCE2B(self):
         """NM_014357.4: LCE2B, two exons, strand = +1, all coordinate input/output are in HGVS"""
         tx_ac = "NM_014357.4"
         alt_ac = "NC_000001.10"
-        tm = AlignmentMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
-        parser = hgvs.parser.Parser()
         test_cases = [
         # 5'
             {
-                "g": parser.parse_g_interval("152658599"),
-                "n": parser.parse_n_interval("1"),
-                "c": parser.parse_c_interval("-54")
+                "g": self.parser.parse_g_interval("152658599"),
+                "n": self.parser.parse_n_interval("1"),
+                "c": self.parser.parse_c_interval("-54")
             },
             {
-                "g": parser.parse_g_interval("152658601"),
-                "n": parser.parse_n_interval("3"),
-                "c": parser.parse_c_interval("-52")
+                "g": self.parser.parse_g_interval("152658601"),
+                "n": self.parser.parse_n_interval("3"),
+                "c": self.parser.parse_c_interval("-52")
             },
         # cds
             {
-                "g": parser.parse_g_interval("152659319"),
-                "n": parser.parse_n_interval("54"),
-                "c": parser.parse_c_interval("-1")
+                "g": self.parser.parse_g_interval("152659319"),
+                "n": self.parser.parse_n_interval("54"),
+                "c": self.parser.parse_c_interval("-1")
             },
             {
-                "g": parser.parse_g_interval("152659320"),
-                "n": parser.parse_n_interval("55"),
-                "c": parser.parse_c_interval("1")
+                "g": self.parser.parse_g_interval("152659320"),
+                "n": self.parser.parse_n_interval("55"),
+                "c": self.parser.parse_c_interval("1")
             },
         # around end of exon 1
             {
-                "g": parser.parse_g_interval("152658632"),
-                "n": parser.parse_n_interval("34"),
-                "c": parser.parse_c_interval("-21")
+                "g": self.parser.parse_g_interval("152658632"),
+                "n": self.parser.parse_n_interval("34"),
+                "c": self.parser.parse_c_interval("-21")
             },
             {
-                "g": parser.parse_g_interval("152658633"),
-                "n": parser.parse_n_interval("34+1"),
-                "c": parser.parse_c_interval("-21+1")
+                "g": self.parser.parse_g_interval("152658633"),
+                "n": self.parser.parse_n_interval("34+1"),
+                "c": self.parser.parse_c_interval("-21+1")
             },
         # span
             {
-                "g": parser.parse_g_interval("152658633_152659299"),
-                "n": parser.parse_n_interval("34+1_35-1"),
-                "c": parser.parse_c_interval("-21+1_-20-1")
+                "g": self.parser.parse_g_interval("152658633_152659299"),
+                "n": self.parser.parse_n_interval("34+1_35-1"),
+                "c": self.parser.parse_c_interval("-21+1_-20-1")
             },
         # around beginning of exon 2
             {
-                "g": parser.parse_g_interval("152659300"),
-                "n": parser.parse_n_interval("35"),
-                "c": parser.parse_c_interval("-20")
+                "g": self.parser.parse_g_interval("152659300"),
+                "n": self.parser.parse_n_interval("35"),
+                "c": self.parser.parse_c_interval("-20")
             },
             {
-                "g": parser.parse_g_interval("152659299"),
-                "n": parser.parse_n_interval("35-1"),
-                "c": parser.parse_c_interval("-20-1")
+                "g": self.parser.parse_g_interval("152659299"),
+                "n": self.parser.parse_n_interval("35-1"),
+                "c": self.parser.parse_c_interval("-20-1")
             },
         # around end of exon 2
             {
-                "g": parser.parse_g_interval("152659652"),
-                "n": parser.parse_n_interval("387"),
-                "c": parser.parse_c_interval("333")
+                "g": self.parser.parse_g_interval("152659652"),
+                "n": self.parser.parse_n_interval("387"),
+                "c": self.parser.parse_c_interval("333")
             },
             {
-                "g": parser.parse_g_interval("152659653"),
-                "n": parser.parse_n_interval("388"),
-                "c": parser.parse_c_interval("*1")
+                "g": self.parser.parse_g_interval("152659653"),
+                "n": self.parser.parse_n_interval("388"),
+                "c": self.parser.parse_c_interval("*1")
             },
         # span
             {
-                "g": parser.parse_g_interval("152659651_152659654"),
-                "n": parser.parse_n_interval("386_389"),
-                "c": parser.parse_c_interval("332_*2")
+                "g": self.parser.parse_g_interval("152659651_152659654"),
+                "n": self.parser.parse_n_interval("386_389"),
+                "c": self.parser.parse_c_interval("332_*2")
             },
         # 3'
             {
-                "g": parser.parse_g_interval("152659877"),
-                "n": parser.parse_n_interval("612"),
-                "c": parser.parse_c_interval("*225")
+                "g": self.parser.parse_g_interval("152659877"),
+                "n": self.parser.parse_n_interval("612"),
+                "c": self.parser.parse_c_interval("*225")
             },
         ]
-        self.run_cases(tm, test_cases)
+        self.run_cases(tx_ac, alt_ac, test_cases)
 
     def test_alignmentmapper_AlignmentMapper_PTH2(self):
         """NM_178449.3: PTH2, two exons, strand = -1, all coordinate input/output are in HGVS"""
         tx_ac = "NM_178449.3"
         alt_ac = "NC_000019.9"
-        tm = AlignmentMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
-        parser = hgvs.parser.Parser()
         test_cases = [
         # 3'
             {
-                "g": parser.parse_g_interval("49926698"),
-                "n": parser.parse_n_interval("1"),
-                "c": parser.parse_c_interval("-102")
+                "g": self.parser.parse_g_interval("49926698"),
+                "n": self.parser.parse_n_interval("1"),
+                "c": self.parser.parse_c_interval("-102")
             },
         # cds
             {
-                "g": parser.parse_g_interval("49926597"),
-                "n": parser.parse_n_interval("102"),
-                "c": parser.parse_c_interval("-1")
+                "g": self.parser.parse_g_interval("49926597"),
+                "n": self.parser.parse_n_interval("102"),
+                "c": self.parser.parse_c_interval("-1")
             },
             {
-                "g": parser.parse_g_interval("49926596"),
-                "n": parser.parse_n_interval("103"),
-                "c": parser.parse_c_interval("1")
+                "g": self.parser.parse_g_interval("49926596"),
+                "n": self.parser.parse_n_interval("103"),
+                "c": self.parser.parse_c_interval("1")
             },
         # around end of exon 1
             {
-                "g": parser.parse_g_interval("49926469"),
-                "n": parser.parse_n_interval("230"),
-                "c": parser.parse_c_interval("128")
+                "g": self.parser.parse_g_interval("49926469"),
+                "n": self.parser.parse_n_interval("230"),
+                "c": self.parser.parse_c_interval("128")
             },
             {
-                "g": parser.parse_g_interval("49926468"),
-                "n": parser.parse_n_interval("230+1"),
-                "c": parser.parse_c_interval("128+1")
+                "g": self.parser.parse_g_interval("49926468"),
+                "n": self.parser.parse_n_interval("230+1"),
+                "c": self.parser.parse_c_interval("128+1")
             },
         # span
             {
-                "g": parser.parse_g_interval("49925901_49926467"),
-                "n": parser.parse_n_interval("230+2_231-2"),
-                "c": parser.parse_c_interval("128+2_129-2")
+                "g": self.parser.parse_g_interval("49925901_49926467"),
+                "n": self.parser.parse_n_interval("230+2_231-2"),
+                "c": self.parser.parse_c_interval("128+2_129-2")
             },
         # around beginning of exon 2
             {
-                "g": parser.parse_g_interval("49925900"),
-                "n": parser.parse_n_interval("231-1"),
-                "c": parser.parse_c_interval("129-1")
+                "g": self.parser.parse_g_interval("49925900"),
+                "n": self.parser.parse_n_interval("231-1"),
+                "c": self.parser.parse_c_interval("129-1")
             },
             {
-                "g": parser.parse_g_interval("49925899"),
-                "n": parser.parse_n_interval("231"),
-                "c": parser.parse_c_interval("129")
+                "g": self.parser.parse_g_interval("49925899"),
+                "n": self.parser.parse_n_interval("231"),
+                "c": self.parser.parse_c_interval("129")
             },
         # around end of exon 2
             {
-                "g": parser.parse_g_interval("49925725"),
-                "n": parser.parse_n_interval("405"),
-                "c": parser.parse_c_interval("303")
+                "g": self.parser.parse_g_interval("49925725"),
+                "n": self.parser.parse_n_interval("405"),
+                "c": self.parser.parse_c_interval("303")
             },
             {
-                "g": parser.parse_g_interval("49925724"),
-                "n": parser.parse_n_interval("406"),
-                "c": parser.parse_c_interval("*1")
+                "g": self.parser.parse_g_interval("49925724"),
+                "n": self.parser.parse_n_interval("406"),
+                "c": self.parser.parse_c_interval("*1")
             },
             {
-                "g": parser.parse_g_interval("49925671"),
-                "n": parser.parse_n_interval("459"),
-                "c": parser.parse_c_interval("*54")
+                "g": self.parser.parse_g_interval("49925671"),
+                "n": self.parser.parse_n_interval("459"),
+                "c": self.parser.parse_c_interval("*54")
             },
         ]
-        self.run_cases(tm, test_cases)
+        self.run_cases(tx_ac, alt_ac, test_cases)
 
-    def run_cases(self, tm, test_cases):
+
+
+    def run_cases(self, tx_ac, alt_ac, test_cases):
+        amo = hgvs.alignmentmapper_old.AlignmentMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
+        am = AlignmentMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
         for test_case in test_cases:
-            self.assertEqual(tm.g_to_n(test_case["g"]), test_case["n"])
-            self.assertEqual(tm.n_to_g(test_case["n"]), test_case["g"])
-            self.assertEqual(tm.n_to_c(test_case["n"]), test_case["c"])
-            self.assertEqual(tm.c_to_n(test_case["c"]), test_case["n"])
-            self.assertEqual(tm.g_to_c(test_case["g"]), test_case["c"])
-            self.assertEqual(tm.c_to_g(test_case["c"]), test_case["g"])
+            if test_case["c"].start.base < 0:
+                continue
+            assert test_case["c"] == amo.g_to_c(test_case["g"]), f"{tx_ac}~{alt_ac} {test_case['c']} amo.g_to_c failed"
+            assert test_case["c"] == amo.n_to_c(test_case["n"]), f"{tx_ac}~{alt_ac} {test_case['c']} amo.n_to_c failed"
+            assert test_case["g"] == amo.c_to_g(test_case["c"]), f"{tx_ac}~{alt_ac} {test_case['g']} amo.c_to_g failed"
+            assert test_case["g"] == amo.n_to_g(test_case["n"]), f"{tx_ac}~{alt_ac} {test_case['g']} amo.n_to_g failed"
+            assert test_case["n"] == amo.c_to_n(test_case["c"]), f"{tx_ac}~{alt_ac} {test_case['n']} amo.c_to_n failed"
+            assert test_case["n"] == amo.g_to_n(test_case["g"]), f"{tx_ac}~{alt_ac} {test_case['n']} amo.g_to_n failed"
+
+            assert test_case["c"] == am.g_to_c(test_case["g"]), f"{tx_ac}~{alt_ac} {test_case['c']} am.g_to_c failed"
+            assert test_case["c"] == am.n_to_c(test_case["n"]), f"{tx_ac}~{alt_ac} {test_case['c']} am.n_to_c failed"
+            assert test_case["g"] == am.c_to_g(test_case["c"]), f"{tx_ac}~{alt_ac} {test_case['g']} am.c_to_g failed"
+            assert test_case["g"] == am.n_to_g(test_case["n"]), f"{tx_ac}~{alt_ac} {test_case['g']} am.n_to_g failed"
+            assert test_case["n"] == am.c_to_n(test_case["c"]), f"{tx_ac}~{alt_ac} {test_case['n']} am.c_to_n failed"
+            assert test_case["n"] == am.g_to_n(test_case["g"]), f"{tx_ac}~{alt_ac} {test_case['n']} am.g_to_n failed"
+
+
+
 
 
 if __name__ == "__main__":
     unittest.main()
 
-    # TODO: Reintegrate older tests, especially those with indels
-    # harder tests ###
-    #def test_alignmentmapper_AlignmentMapper_1_ZCCHC3(self):
-    #    """
-    #    reece=> select * from uta.tx_info where ac="NM_033089.6";
-    #       gene  | strand |     ac      | cds_start_i | cds_end_i |                 descr                 | summary
-    #    --------+--------+-------------+-------------+-----------+---------------------------------------+---------
-    #      ZCCHC3 |      1 | NM_033089.6 |          24 |      1236 | zinc finger, CCHC domain containing 3 |
-    #
-    #    reece=> select * from uta.tx_exons where ac="NM_033089.6";
-    #          ac      | ord | name | t_start_i | t_end_i |    ref     | g_start_i | g_end_i |    cigar    |
-    #    -------------+-----+------+-----------+---------+------------+-----------+---------+-------------+------------------------
-    #      NM_033089.6 |   1 | 1    |         0 |    2759 | GRCh37.p10 |    278203 |  280965 | 484M3D2275M | GGAGGATGCTGGGAAGGAGGTAA
-    #    """
-    #    # http://tinyurl.com/mattx8u
-    #    #
-    #    # Around the deletion
-    #    # http://tinyurl.com/jwt3txg
-    #    # 687       690
-    #    # C | C G G | C
-    #    #   \___ ___/
-    #    #     C | C
-    #    #      484
-    #
-    #    ### Add one to g., r., and c. because we are returning hgvs coordinates ###
-    #    ac = "NM_033089.6"
-    #    tm = AlignmentMapper(self.hdp, ac, self.ref)
-    #    cds = 24 + 1 # hgvs
-    #    # gs, ge = genomic start/end; rs,re = rna start/end; cs, ce = cdna start/end; so, eo = start offset/end offset
-    #    test_cases = [
-    #        {"gs": 278204, "ge": 278204, "rs": 1, "re": 1, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 1-cds, "ce": 1-cds},
-    #        {"gs": 278214, "ge": 278214, "rs": 11, "re": 11, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 11-cds, "ce": 11-cds},
-    #        {"gs": 278204, "ge": 278214, "rs": 1, "re": 11, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 1-cds, "ce": 11-cds},
-    #
-    #        # around cds (cds can"t be zero)
-    #        {"gs": 278227, "ge": 278227, "rs": 24, "re": 24, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 24-cds, "ce": 24-cds},
-    #
-    #        # beyond cds add 1 due to hgvs
-    #        {"gs": 278228, "ge": 278228, "rs": 25, "re": 25, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 25-cds+1, "ce": 25-cds+1},
-    #        {"gs": 278229, "ge": 278229, "rs": 26, "re": 26, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 26-cds+1, "ce": 26-cds+1},
-    #        {"gs": 280966, "ge": 280966, "rs": 2760, "re": 2760, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 2760-cds+1, "ce": 2760-cds+1},
-    #        {"gs": 278687, "ge": 278687, "rs": 484, "re": 484, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 484-cds+1, "ce": 484-cds+1},
-    #        {"gs": 278687, "ge": 278688, "rs": 484, "re": 485, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 484-cds+1, "ce": 485-cds+1},
-    #        {"gs": 278688, "ge":278691, "rs": 485, "re": 485, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 485-cds+1, "ce": 485-cds+1},
-    #
-    #        # around cds_start (24) and cds_end (1236), mindful of *coding* del (3D)
-    #        {"gs": 278204+24, "ge": 278204+1236, "rs": 25, "re": 1237-3, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 25-cds+1, "ce": 1237-cds-3+1},
-    #        {"gs": 280956, "ge": 280966, "rs": 2750, "re": 2760, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 2750-cds+1, "ce': 2760-cds+1},
-    #    ]
-    #    self.run_cases(tm, test_cases)
-    #
-    #def test_alignmentmapper_AlignmentMapper_2_MCL1(self):
-    #    """
-    #    reece=> select * from uta.tx_info where ac="NM_182763.2";
-    #      gene | strand |     ac      | cds_start_i | cds_end_i |                      descr                      |
-    #    ------+--------+-------------+-------------+-----------+-------------------------------------------------+----------------
-    #      MCL1 |     -1 | NM_182763.2 |         208 |      1024 | myeloid cell leukemia sequence 1 (BCL2-related) | This gene encod
-    #
-    #    reece=> select * from uta.tx_exons where ac="NM_182763.2";
-    #          ac      | ord | name | t_start_i | t_end_i |    ref     | g_start_i |  g_end_i  |    cigar     |
-    #    -------------+-----+------+-----------+---------+------------+-----------+-----------+--------------+---------------------
-    #      NM_182763.2 |   1 | 1b   |         0 |     896 | GRCh37.p10 | 150551318 | 150552214 | 896M         |
-    #      NM_182763.2 |   2 | 3    |       896 |    3841 | GRCh37.p10 | 150547026 | 150549967 | 1077M4I1864M | GATGGGTTTGTGGAGTTCTT
-    #    """
-    #
-    #    ### Add one to g., r., and c. because we are returning hgvs coordinates ###
-    #
-    #    ac = "NM_182763.2"
-    #    tm = AlignmentMapper(self.hdp, ac, self.ref)
-    #    cds = 208 + 1 # hgvs
-    #    test_cases = [
-    #        {"gs": 150552215, "ge": 150552215, "rs": 1, "re": 1, "so": 0, "eo": 0, "d": Datum.SEQ_START , "cs": 1-cds, "ce": 1-cds},
-    #        {"gs": 150552214, "ge": 150552214, "rs": 2, "re": 2, "so": 0, "eo": 0, "d": Datum.SEQ_START , "cs": 2-cds, "ce": 2-cds},
-    #
-    #        # beyond cds add 1 due to hgvs
-    #        {"gs": 150552007, "ge": 150552007, "rs": 209, "re": 209, "so": 0, "eo": 0, "d": Datum.SEQ_START , "cs": 209-cds+1, "ce": 209-cds+1},
-    #        {"gs": 150547027, "ge": 150547027, "rs": 3842, "re": 3842, "so": 0, "eo": 0, "d": Datum.SEQ_START , "cs": 3842-cds+1, "ce": 3842-cds+1},
-    #
-    #        #{"gs": 150549968, "ge": 150549968, "rs": 897, "re": 897, "so": 0, "eo": 0, "d": Datum.SEQ_START , "cs": 897-cds+1, "ce": 897-cds+1},
-    #        {"gs": 150551318, "ge": 150551318, "rs": 897, "re": 897, "so": 1, "eo": 1, "d": Datum.SEQ_START , "cs": 897-cds+1, "ce": 897-cds+1},
-    #        {"gs": 150551318, "ge": 150551319, "rs": 897, "re": 897, "so": 1, "eo": 0, "d": Datum.SEQ_START , "cs": 897-cds+1, "ce": 897-cds+1},
-    #        {"gs": 150551317, "ge": 150551318, "rs": 897, "re": 897, "so": 2, "eo": 1, "d": Datum.SEQ_START , "cs": 897-cds+1, "ce": 897-cds+1},
-    #        {"gs": 150549968, "ge": 150549969, "rs": 897, "re": 897, "so": 0, "eo": -1, "d": Datum.SEQ_START , "cs": 897-cds+1, "ce": 897-cds+1},
-    #        {"gs": 150549969, "ge": 150549970, "rs": 897, "re": 897, "so": -1, "eo": -2, "d": Datum.SEQ_START , "cs": 897-cds+1, "ce": 897-cds+1},
-    #
-    #        # exon 2, 4nt insertion ~ r.2760
-    #        # See http://tinyurl.com/mwegybw
-    #        # The coords of this indel via NW alignment differ from those at NCBI, but are the same canonicalized
-    #        # variant.  Nothing to do about that short of running Splign ourselves.  Test a few examples.
-    #        {"gs": 150548892, "ge": 150548892, "rs": 1973, "re": 1973, "so": 0, "eo":0, "d": Datum.SEQ_START , "cs": 1973-cds+1, "ce": 1973-cds+1},
-    #        #? {"gs": 150548891, "ge": 150548892, "rs": 1972, "re": 1973, "so": 0, "eo":0, "d": Datum.SEQ_START , "cs": 1972-cds+1, "ce": 1973-cds+1},
-    #        {"gs": 150548890, "ge": 150548892, "rs": 1973, "re": 1979, "so": 0, "eo":0, "d": Datum.SEQ_START , "cs": 1973-cds+1, "ce": 1979-cds+1},
-    #    ]
-    #    self.run_cases(tm, test_cases)
-    #
-    #    ## exon 2, 4nt insertion ~ r.2760
-    #    ## See http://tinyurl.com/mwegybw
-    #    ## The coords of this indel via NW alignment differ from those at
-    #    ## NCBI, but are the same canonicalized variant.  Nothing to do
-    #    ## about that short of running Splign ourselves.
-    #    #self.assertEqual(tm.n_to_g(1972, 1972), (150548891, 150548891))
-    #    #self.assertEqual(tm.n_to_g(1972, 1973), (150548890, 150548891))
-    #    #self.assertEqual(tm.n_to_g(1972, 1974), (150548890, 150548891))
-    #    #self.assertEqual(tm.n_to_g(1972, 1975), (150548890, 150548891))
-    #    #self.assertEqual(tm.n_to_g(1972, 1976), (150548890, 150548891))
-    #    #self.assertEqual(tm.n_to_g(1972, 1977), (150548890, 150548891))
-    #    #self.assertEqual(tm.n_to_g(1972, 1978), (150548889, 150548891))
-    #    #
-    #    #self.assertEqual(tm.g_to_n(150548891, 150548891), (1972, 1972, 0, 0))
-    #    #self.assertEqual(tm.g_to_n(150548890, 150548891), (1972, 1973, 0, 0))
-    #    #self.assertEqual(tm.g_to_n(150548889, 150548891), (1972, 1978, 0, 0))
-    #    #
-    #    ## around cds_start (208) and cds_end (1024), mindful of *non-coding* ins (4I)
-    #    ## i.e., we *don't* need to account for the 4nt insertion here
-    #    #self.assertEqual(tm.n_to_c(208, 1024), (0, 1024 - 208, 0, 0))
-    #    #self.assertEqual(tm.c_to_n(0, 1024 - 208), (208, 1024, 0, 0))
-    #    #self.assertEqual(tm.g_to_c(150552214 - 208, 150552214 - 208), (0, 0, 0, 0))
-    #    #self.assertEqual(tm.c_to_g(0, 0), (150552214 - 208, 150552214 - 208))
-    #    ## cds_end is in 2nd exon
-    #    #self.assertEqual(tm.g_to_c(150549967 - (1024 - 896), 150549967 - (1024 - 896)), (1024 - 208, 1024 - 208, 0, 0))
-    #    #self.assertEqual(tm.c_to_g(1024 - 208, 1024 - 208), (150549967 - (1024 - 896), 150549967 - (1024 - 896)))
-    #
-    #
-    #def test_alignmentmapper_AlignmentMapper_3_IFI27L1(self):
-    #    """
-    #    #reece=> select * from uta.tx_info where ac="NM_145249.2";
-    #    #  gene   | chr | strand |     ac      | cds_start_i | cds_end_i |                     descr                     | summary
-    #    #---------+-----+--------+-------------+-------------+-----------+-----------------------------------------------+---------
-    #    # IFI27L1 | 14  |      1 | NM_145249.2 |         254 |       569 | interferon, alpha-inducible protein 27-like 1 |
-    #    #(1 row)
-    #    # reece=>select * from uta.tx_exons where ac = "NM_145249.2";
-    #    #
-    #    #      ac      | ord | name | t_start_i | t_end_i |    ref     | g_start_i | g_end_i  | g_cigar | g_seq_a | t_seq_a
-    #    # -------------+-----+------+-----------+---------+------------+-----------+----------+---------+---------+---------
-    #    #  NM_145249.2 |   1 | 1    |         0 |     157 | GRCh37.p10 |  94547638 | 94547795 | 157M    |         |
-    #    #  NM_145249.2 |   2 | 2a   |       157 |     282 | GRCh37.p10 |  94563186 | 94563311 | 125M    |         |
-    #    #  NM_145249.2 |   3 | 3    |       282 |     315 | GRCh37.p10 |  94567084 | 94567117 | 33M     |         |
-    #    #  NM_145249.2 |   4 | 4    |       315 |     477 | GRCh37.p10 |  94568159 | 94568321 | 162M    |         |
-    #    #  NM_145249.2 |   5 | 5    |       477 |     715 | GRCh37.p10 |  94568822 | 94569060 | 238M    |         |
-    #    """
-    #
-    #    ### Add one to g., r., and c. because we are returning hgvs coordinates ###
-    #
-    #    ac = "NM_145249.2"
-    #    tm = AlignmentMapper(self.hdp, ac, self.ref)
-    #    cds = 254 + 1 # hgvs
-    #    test_cases = [
-    #        #{"gs": 94547639, "ge": 94547639, "rs": 1, "re": 1, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 1-cds, "ce": 1-cds},
-    #        #{"gs": 94547796, "ge": 94547796, "rs": 158, "re": 158, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 158-cds, "ce": 158-cds},
-    #        #{"gs": 94563185, "ge": 94563185, "rs": 159, "re": 159, "so": -2, "eo": -2, "d": Datum.SEQ_START, "cs": 159-cds, "ce": 159-cds},
-    #
-    #        # beyond cds add 1 due to hgvs
-    #        #{"gs": 94567118, "ge": 94567120, "rs": 316, "re": 316, "so": 0, "eo": 2, "d": Datum.SEQ_START, "cs": 316-cds+1, "ce": 316-cds+1},
-    #        {"gs": 94567115, "ge": 94567118, "rs": 313, "re": 316, "so": 0, "eo": 0, "d": Datum.SEQ_START, "cs": 313-cds+1, "ce": 316-cds+1},
-    #
-    #        # intron in the middle between exon 1 and 2
-    #        #{"gs": 94555500, "ge": 94555501, "rs": 157, "re": 158, "so": 7686, "eo": -7685, "d": Datum.SEQ_START, "cs": 157-cds+1, "ce": 158-cds+1},
-    #        #{"gs": 94555481, "ge": 94555501, "rs": 157, "re": 158, "so": 7686, "eo": -7685, "d": Datum.SEQ_START, "cs": 157-cds+1, "ce": 158-cds+1},
-    #    ]
-    #    self.run_cases(tm, test_cases)
-
-# ANOTHER POSSIBLE TEST CASE ###
-# reece=> select * from uta.tx_info where ac = "NM_145171.3";
-#  gene  | strand |     ac      | cds_start_i | cds_end_i |            descr            | summary
-# -------+--------+-------------+-------------+-----------+-----------------------------+-----------------------------------
-#  GPHB5 |     -1 | NM_145171.3 |          57 |       450 | glycoprotein hormone beta 5 | GPHB5 is a cystine knot-forming...
-#
-# reece=> select * from uta.tx_exons where ac = "NM_145171.3" order by g_start_i;
-#      ac      | ord | name | t_start_i | t_end_i |    ref     | g_start_i | g_end_i  |   cigar   | g_seq_a
-# -------------+-----+------+-----------+---------+------------+-----------+----------+-----------+-------------------------
-#  NM_145171.3 |   3 | 3    |       261 |     543 | GRCh37.p10 |  63779548 | 63779830 | 282M      |
-#  NM_145171.3 |   2 | 2    |        56 |     261 | GRCh37.p10 |  63784360 | 63784564 | 156M1I48M | CATGAAGCTGGCATTCCTCTT...
-#  NM_145171.3 |   1 | 1    |         0 |      56 | GRCh37.p10 |  63785537 | 63785593 | 56M       |
-# def test_alignmentmapper_AlignmentMapper_GPHB5(self):
-#     ac = "NM_145171.3"
-#     tm = AlignmentMapper(self.hdp,ac,self.ref)
-#     pass
 
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
