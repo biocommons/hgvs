@@ -100,8 +100,8 @@ class AlignmentMapper(object):
 
         grs, gre = g_interval.start.base - 1 - self.gc_offset, g_interval.end.base - 1 - self.gc_offset
         # frs, fre = (f)orward (r)na (s)tart & (e)nd; forward w.r.t. genome
-        frs, frs_offset, frs_cigar = self.cigarmapper.map_ref_to_tgt(pos=grs, base="start")
-        fre, fre_offset, fre_cigar = self.cigarmapper.map_ref_to_tgt(pos=gre, base="end")
+        frs, frs_offset, frs_cigar = self.cigarmapper.map_ref_to_tgt(pos=grs, end="start")
+        fre, fre_offset, fre_cigar = self.cigarmapper.map_ref_to_tgt(pos=gre, end="end")
 
         if self.strand == -1:
             frs, fre = self.tgt_len - fre - 1, self.tgt_len - frs - 1
@@ -126,8 +126,8 @@ class AlignmentMapper(object):
             start_offset, end_offset = -end_offset, -start_offset
 
         # returns the genomic range start (grs) and end (gre)
-        grs, _, grs_cigar = self.cigarmapper.map_tgt_to_ref(pos=frs, base="start")
-        gre, _, gre_cigar = self.cigarmapper.map_tgt_to_ref(pos=fre, base="end")
+        grs, _, grs_cigar = self.cigarmapper.map_tgt_to_ref(pos=frs, end="start")
+        gre, _, gre_cigar = self.cigarmapper.map_tgt_to_ref(pos=fre, end="end")
         grs, gre = grs + self.gc_offset + 1, gre + self.gc_offset + 1
         gs, ge = grs + start_offset, gre + end_offset
 
