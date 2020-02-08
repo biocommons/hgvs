@@ -1,6 +1,7 @@
-from hgvs.exceptions import HGVSInvalidIntervalError
+import re
 
-from hgvs.utils import parse_cigar
+
+from hgvs.exceptions import HGVSInvalidIntervalError
 
 
 class CIGARMapper:
@@ -63,7 +64,7 @@ class CIGARMapper:
             mapped_pos_offset = 0
         elif self.cigar_op[pos_i] in "DI":
             mapped_pos = to_pos[pos_i]
-            if base == "start":
+            if end == "start":
                 mapped_pos -= 1
             mapped_pos_offset = 0
         elif self.cigar_op[pos_i] == "N":
@@ -75,3 +76,42 @@ class CIGARMapper:
                 mapped_pos_offset = -(from_pos[pos_i + 1] - pos)
 
         return mapped_pos, mapped_pos_offset, self.cigar_op[pos_i]
+
+
+def parse_cigar(cigar):
+    """For a given CIGAR string, return the start positions of each
+    aligned segment in ref and tgt, and a list of CIGAR operators.
+    
+    """
+    cigar_re = re.compile(r"(?P<len>\d+)?(?P<op>[=DIMNX])")
+    ces = [m.groupdict() for m in cigar_re.finditer(cigar)]
+    cigar_len = len(ces)
+    
+
+    ref_pos = [None] * cigar_len
+    tgt_pos = [None] * cigar_len
+    cigar_op = [None] * cigar_len
+    ref_cur = tgt_cur = 0
+    for i, ce in enumerate(ces):
+        ref_pos[i] = ref_cur
+        tgt_pos[i] = tgt_cur
+        cigar_op[i] = ce["op"]
+        step = int(ce["len"] or 1)
+        if ce["op"] in "=MXIN":
+            ref_cur += step
+        if ce["op"] in "=MXD":
+            tgt_cur += step
+    ref_pos.append(ref_cur)
+    tgt_pos.append(tgt_cur)
+    return ref_pos, tgt_pos, cigar_op
+
+
+
+
+
+if __name__ == "__main__":
+    #cigar = "2=2N=X=2N=I=2N=D="
+    cigar = "3=2N=X=3N=I=D="
+    cm = CIGARMapper(cigar)
+    
+    
