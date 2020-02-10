@@ -1,3 +1,21 @@
+"""provides CIGAR-based mapping for hgvs
+
+Heads up: UTA is transcript-centric: CIGAR strings are relative to the
+transcript. "ref" is the transcript, and "tgt" (target) is a genomic
+segment.  Specifically:
+
+  * D is a deletion in the genome relative to the transcript
+  * I is an insertion in the genome relative to the transcript
+  * N is an intronic insertion relative to the transcript
+
+This interpretation is unconventional.
+
+hgvs currently swaps the ref/tgt nomenclature: "ref" is the genome and
+"tgt" is the transcript.
+
+"""
+
+
 import re
 
 
@@ -8,7 +26,9 @@ class CIGARMapper:
     """provides coordinate mapping between two sequences whose alignment
     is given by a CIGAR string
     
-    CIGAR is about alignments between bases.  It is base-centric.
+    CIGAR is about alignments between positions in two sequences.  It
+    is base-centric.
+
     Unfortunately, base-centric coordinate systems require additional
     complexity to refer to zero-width positions.
 
@@ -81,9 +101,13 @@ class CIGARMapper:
 def parse_cigar(cigar):
     """For a given CIGAR string, return the start positions of each
     aligned segment in ref and tgt, and a list of CIGAR operators.
-    
+
     """
     cigar_re = re.compile(r"(?P<len>\d+)?(?P<op>[=DIMNX])")
+    advance_ref_ops = "=MXIN"
+    advance_tgt_ops = "=MXD"
+
+
     ces = [m.groupdict() for m in cigar_re.finditer(cigar)]
     cigar_len = len(ces)
     
@@ -97,9 +121,10 @@ def parse_cigar(cigar):
         tgt_pos[i] = tgt_cur
         cigar_op[i] = ce["op"]
         step = int(ce["len"] or 1)
-        if ce["op"] in "=MXIN":
+        # Note: these cases are 
+        if ce["op"] in advance_ref_ops:
             ref_cur += step
-        if ce["op"] in "=MXD":
+        if ce["op"] in advance_tgt_ops:
             tgt_cur += step
     ref_pos.append(ref_cur)
     tgt_pos.append(tgt_cur)
