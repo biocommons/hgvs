@@ -60,33 +60,39 @@ class CIGARMapper:
         return self.tgt_pos[-1]
 
 
-    def map_ref_to_tgt(self, pos, end):
-        return self._map(from_pos=self.ref_pos, to_pos=self.tgt_pos, pos=pos, end=end)
+    def map_ref_to_tgt(self, pos, end, strict_bounds=True):
+        return self._map(from_pos=self.ref_pos, to_pos=self.tgt_pos, pos=pos, end=end, strict_bounds=strict_bounds)
 
 
-    def map_tgt_to_ref(self, pos, end):
-        return self._map(from_pos=self.tgt_pos, to_pos=self.ref_pos, pos=pos, end=end)
+    def map_tgt_to_ref(self, pos, end, strict_bounds=True):
+        return self._map(from_pos=self.tgt_pos, to_pos=self.ref_pos, pos=pos, end=end, strict_bounds=strict_bounds)
 
 
-    def _map(self, from_pos, to_pos, pos, end):
+    def _map(self, from_pos, to_pos, pos, end, strict_bounds):
         """Map position between aligned segments
 
         Positions in this function are 0-based, base-counting. 
         """
-        pos_i = -1
-        while pos_i < len(self.cigar_op) and pos >= from_pos[pos_i + 1]:
-            pos_i += 1
 
-        if pos_i == -1 or pos_i == len(self.cigar_op):
+        if strict_bounds and (pos < 0 or pos > from_pos[-1]):
             raise HGVSInvalidIntervalError("Position is beyond the bounds of transcript record")
+
+        # find aligned segment to use as basis for mapping
+        # okay for pos to be before first element or after last
+        for pos_i in range(len(self.cigar_op)):
+            if pos < from_pos[pos_i+1]:
+                break
+
         if self.cigar_op[pos_i] in "=MX":
             mapped_pos = to_pos[pos_i] + (pos - from_pos[pos_i])
             mapped_pos_offset = 0
+
         elif self.cigar_op[pos_i] in "DI":
             mapped_pos = to_pos[pos_i]
             if end == "start":
                 mapped_pos -= 1
             mapped_pos_offset = 0
+
         elif self.cigar_op[pos_i] == "N":
             if pos - from_pos[pos_i] + 1 <= from_pos[pos_i + 1] - pos:
                 mapped_pos = to_pos[pos_i] - 1

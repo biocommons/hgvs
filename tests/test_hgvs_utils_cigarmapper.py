@@ -1,14 +1,18 @@
+import pytest
+
+
+from hgvs.exceptions import HGVSInvalidIntervalError
 from hgvs.utils.cigarmapper import CIGARMapper
 
 
-def test_simple_cigar():
+cigar = "3=2N=X=3N=I=D="
+cm = CIGARMapper(cigar)
+
+
+def test_cigarmapper():
     """simple cigar test
     
     """
-
-    cigar = "3=2N=X=3N=I=D="
-
-    cm = CIGARMapper(cigar)
 
     assert cm.ref_len == 15
     assert cm.tgt_len == 10
@@ -70,3 +74,21 @@ def test_simple_cigar():
     assert cm.map_tgt_to_ref(8,'end') == (14, 0, 'D')
     assert cm.map_tgt_to_ref(9,'start') == (14, 0, '=')
     assert cm.map_tgt_to_ref(9,'end') == (14, 0, '=')
+
+
+    
+def test_cigarmapper_strict_bounds():
+    # exception raised for out of bounds on left?
+    with pytest.raises(HGVSInvalidIntervalError):
+        cm.map_ref_to_tgt(-1, "start", strict_bounds=True)
+
+    # ... and right?
+    with pytest.raises(HGVSInvalidIntervalError):
+        cm.map_ref_to_tgt(cm.ref_len + 1, "start", strict_bounds=True)
+
+    # test whether 1 base outside bounds results in correct position
+    assert ( 0, 0, '=') == cm.map_ref_to_tgt( 0, "start", strict_bounds=True)
+    assert (-1, 0, '=') == cm.map_ref_to_tgt(-1, "start", strict_bounds=False)
+    assert (cm.tgt_len    , 0, '=') == cm.map_ref_to_tgt(cm.ref_len,     "start", strict_bounds=True)
+    assert (cm.tgt_len - 1, 0, '=') == cm.map_ref_to_tgt(cm.ref_len - 1, "start", strict_bounds=False)
+    
