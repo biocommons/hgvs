@@ -43,7 +43,7 @@ class CIGARMapper:
 
     def __init__(self, cigar):
         self.cigar = cigar
-        self.ref_pos, self.tgt_pos, self.cigar_op = parse_cigar(self.cigar)
+        self.ref_pos, self.tgt_pos, self.cigar_op = _parse_cigar(self.cigar)
 
 
     def __repr__(self):
@@ -98,11 +98,12 @@ class CIGARMapper:
         return mapped_pos, mapped_pos_offset, self.cigar_op[pos_i]
 
 
-def parse_cigar(cigar):
+def _parse_cigar(cigar):
     """For a given CIGAR string, return the start positions of each
     aligned segment in ref and tgt, and a list of CIGAR operators.
 
     """
+
     cigar_re = re.compile(r"(?P<len>\d+)?(?P<op>[=DIMNX])")
     advance_ref_ops = "=MXIN"
     advance_tgt_ops = "=MXD"
