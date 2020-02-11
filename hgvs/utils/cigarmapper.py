@@ -1,17 +1,16 @@
 """provides CIGAR-based mapping for hgvs
 
-Heads up: UTA is transcript-centric: CIGAR strings are relative to the
-transcript. "ref" is the transcript, and "tgt" (target) is a genomic
-segment.  Specifically:
+Heads up: UTA CIGAR strings are relative to the transcript; that is,
+the transcript is the reference and the genome is the target sequence.
+hgvs swaps this nomenclature so that the genome is ref and the
+transcript is the target.  This file is the clutchplate where that
+happens.
+
+UTA CIGAR strings are relative to the transcript.  Specifically:
 
   * D is a deletion in the genome relative to the transcript
   * I is an insertion in the genome relative to the transcript
   * N is an intronic insertion relative to the transcript
-
-This interpretation is unconventional.
-
-hgvs currently swaps the ref/tgt nomenclature: "ref" is the genome and
-"tgt" is the transcript.
 
 """
 

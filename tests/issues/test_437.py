@@ -1,15 +1,59 @@
 """https://github.com/biocommons/hgvs/issues/437"""
 
+import pytest
 
-def test_437(parser, am):
+
+import hgvs
+from hgvs.exceptions import HGVSInvalidVariantError
+
+
+def test_437_RMRP(parser, am37):
     """https://github.com/biocommons/hgvs/issues/437"""
 
-    hgvs = "NR_003051.3:n.-19_-18insACT"
-    hgvs = "NM_033486.1:c.119A>G"
-    am38._validator = None
-    var = parser.parse(hgvs)
-    var_g = am.t_to_g(var)
-    print(var_g)
+    #hgvs.global_config.mapping.strict_bounds = True
+
+    # Generate n. and g. variants at terminal positions of tx
+    s1_n = parser.parse("NR_003051.3:n.1G>T")
+    s1_g = am37.n_to_g(s1_n)
+    assert str(s1_g) == "NC_000009.11:g.35658015C>A"
+
+    e1_n = parser.parse("NR_003051.3:n.267G>T")
+    e1_g = am37.n_to_g(e1_n)
+    assert str(e1_g) == "NC_000009.11:g.35657749C>A"
+
+
+    # Ensure that an error is raised when outside bounds
+    # Construct two variants that are 1 base outside the tx bounds
+    # N.B. G is not the correct reference for either variant
+    s2_n = parser.parse("NR_003051.3:n.-1G>C")
+    with pytest.raises(HGVSInvalidVariantError):
+        s2_g = am37.n_to_g(s2_n)
+
+    e2_n = parser.parse("NR_003051.3:n.268G>C")
+    with pytest.raises(HGVSInvalidVariantError):
+        e2_g = am37.n_to_g(e2_n)
+
+    # Disable bounds checking and retry
+    hgvs.global_config.mapping.strict_bounds = False
+
+    s2_g = am37.n_to_g(s2_n)
+    assert str(s2_g) == "NC_000009.11:g.35658016A>G"
+
+    e2_g = am37.n_to_g(e2_n)
+    assert str(e2_g) == "NC_000009.11:g.35657748A>G"
+
+    # ensure that the resulting genomic variants are +/- 1 from the
+    # in-bounds variants (necessarily true given the strict str()
+    # checks above)
+    assert s2_g.posedit.pos.start.base - s1_g.posedit.pos.start.base == 1
+    assert e2_g.posedit.pos.start.base - e1_g.posedit.pos.start.base == -1
+
+    v3_n = parser.parse("NR_003051.3:n.-19_-18insACT")
+    v3_g = am37.n_to_g(v3_n)
+    assert str(v3_g) == "NC_000009.11:g.35658038_35658040dup"
+
+
+    hgvs.global_config.mapping.strict_bounds = True
 
 
 if __name__ == "__main__":

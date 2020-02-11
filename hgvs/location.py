@@ -121,7 +121,10 @@ class BaseOffsetPosition(object):
     def validate(self):
         if self.base is not None and self.base == 0:
             return (ValidationLevel.ERROR, "BaseOffsetPosition base may not be 0")
-        if self.base is not None and self.datum != Datum.CDS_START and self.base < 1:
+        if (hgvs.global_config.mapping.strict_bounds
+            and self.base is not None
+            and self.datum != Datum.CDS_START
+            and self.base < 1):
             return (ValidationLevel.ERROR,
                     "BaseOffsetPosition base must be >=1 for datum = SEQ_START or CDS_END")
         return (ValidationLevel.VALID, None)

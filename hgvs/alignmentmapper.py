@@ -100,7 +100,7 @@ class AlignmentMapper(object):
         """convert a genomic (g.) interval to a transcript cDNA (n.) interval"""
 
         if strict_bounds is None:
-            strict_bounds = global_config.mapping.strict_transcript_bounds
+            strict_bounds = global_config.mapping.strict_bounds
 
         grs, gre = g_interval.start.base - 1 - self.gc_offset, g_interval.end.base - 1 - self.gc_offset
         # frs, fre = (f)orward (r)na (s)tart & (e)nd; forward w.r.t. genome
@@ -110,7 +110,7 @@ class AlignmentMapper(object):
         if self.strand == -1:
             frs, fre = self.tgt_len - fre - 1, self.tgt_len - frs - 1
             frs_offset, fre_offset = -fre_offset, -frs_offset
-
+            
         # The returned interval would be uncertain when locating at alignment gaps
         return hgvs.location.BaseOffsetInterval(
             start=hgvs.location.BaseOffsetPosition(
@@ -119,14 +119,23 @@ class AlignmentMapper(object):
                 base=fre + 1, offset=fre_offset, datum=Datum.SEQ_START),
             uncertain=frs_cigar in 'DI' or fre_cigar in 'DI')
 
+
     def n_to_g(self, n_interval, strict_bounds=None):
         """convert a transcript (n.) interval to a genomic (g.) interval"""
 
         if strict_bounds is None:
-            strict_bounds = global_config.mapping.strict_transcript_bounds
+            strict_bounds = global_config.mapping.strict_bounds
 
         frs, fre = n_interval.start.base - 1, n_interval.end.base - 1
         start_offset, end_offset = n_interval.start.offset, n_interval.end.offset
+        
+        # frs and fre may be <0 (i.e., before the sequence) when
+        # strict_bounds is False
+        # HGVS doesn't have a 0. Counting is -3, -2, -1, 1, 2, 3  :-/
+        if frs <= -1:
+            frs += 1
+        if fre <= -1:
+            fre += 1
 
         if self.strand == -1:
             fre, frs = self.tgt_len - frs - 1, self.tgt_len - fre - 1
@@ -144,11 +153,12 @@ class AlignmentMapper(object):
             end=hgvs.location.SimplePosition(ge, uncertain=n_interval.end.uncertain),
             uncertain=grs_cigar in 'DI' or gre_cigar in 'DI')
 
+
     def n_to_c(self, n_interval, strict_bounds=None):
         """convert a transcript cDNA (n.) interval to a transcript CDS (c.) interval"""
 
         if strict_bounds is None:
-            strict_bounds = global_config.mapping.strict_transcript_bounds
+            strict_bounds = global_config.mapping.strict_bounds
 
         if self.cds_start_i is None:    # cds_start_i defined iff cds_end_i defined; see assertion above
             raise HGVSUsageError(
@@ -193,7 +203,7 @@ class AlignmentMapper(object):
         """convert a transcript CDS (c.) interval to a transcript cDNA (n.) interval"""
 
         if strict_bounds is None:
-            strict_bounds = global_config.mapping.strict_transcript_bounds
+            strict_bounds = global_config.mapping.strict_bounds
 
         if self.cds_start_i is None:    # cds_start_i defined iff cds_end_i defined; see assertion above
             raise HGVSUsageError(
