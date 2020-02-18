@@ -228,28 +228,28 @@ class AlignmentMapper(object):
 
         # start
         if c_interval.start.datum == Datum.CDS_START and c_interval.start.base < 0:
-            r_start = c_interval.start.base + self.cds_start_i + 1
+            n_start = c_interval.start.base + self.cds_start_i + 1
         elif c_interval.start.datum == Datum.CDS_START and c_interval.start.base > 0:
-            r_start = c_interval.start.base + self.cds_start_i
+            n_start = c_interval.start.base + self.cds_start_i
         elif c_interval.start.datum == Datum.CDS_END:
-            r_start = c_interval.start.base + self.cds_end_i
+            n_start = c_interval.start.base + self.cds_end_i
         # end
         if c_interval.end.datum == Datum.CDS_START and c_interval.end.base < 0:
-            r_end = c_interval.end.base + self.cds_start_i + 1
+            n_end = c_interval.end.base + self.cds_start_i + 1
         elif c_interval.end.datum == Datum.CDS_START and c_interval.end.base > 0:
-            r_end = c_interval.end.base + self.cds_start_i
+            n_end = c_interval.end.base + self.cds_start_i
         elif c_interval.end.datum == Datum.CDS_END:
-            r_end = c_interval.end.base + self.cds_end_i
+            n_end = c_interval.end.base + self.cds_end_i
 
-        if strict_bounds and (r_start <= 0 or r_end > self.tgt_len):
+        if strict_bounds and (n_start <= 0 or n_end > self.tgt_len):
             raise HGVSInvalidIntervalError(
                 "The given coordinate is outside the bounds of the reference sequence.")
         
         n_interval = hgvs.location.BaseOffsetInterval(
             start=hgvs.location.BaseOffsetPosition(
-                base=r_start, offset=c_interval.start.offset, datum=Datum.SEQ_START),
+                base=n_start, offset=c_interval.start.offset, datum=Datum.SEQ_START),
             end=hgvs.location.BaseOffsetPosition(
-                base=r_end, offset=c_interval.end.offset, datum=Datum.SEQ_START),
+                base=n_end, offset=c_interval.end.offset, datum=Datum.SEQ_START),
             uncertain=c_interval.uncertain)
         return n_interval
 
