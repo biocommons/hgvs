@@ -27,7 +27,7 @@ import hgvs
 from hgvs.exceptions import HGVSInvalidVariantError
 
 
-def test_437_RMRP_terminii(parser, am37):
+def test_437_terminii(parser, am37):
     hgvs.global_config.mapping.strict_bounds = True
 
     # Generate n. and g. variants at terminal positions of tx, and
@@ -61,7 +61,7 @@ def test_437_RMRP_terminii(parser, am37):
     hgvs.global_config.mapping.strict_bounds = True
 
 
-def test_437_RMRP_enforce_strict_bounds(parser, am37):
+def test_437_enforce_strict_bounds(parser, am37):
     """Ensure that an exception is raised when outside bounds"""
 
     # Construct two variants that are 1 base outside the tx bounds
@@ -79,7 +79,7 @@ def test_437_RMRP_enforce_strict_bounds(parser, am37):
 
 
 # TODO: not yet handling lack of zeroes in HGVS counting
-def x_test_437_RMRP_oob_dup(parser, am37):
+def x_test_437_oob_dup(parser, am37):
     """Intentionally preserve dup, derived from genomic sequence, when
     projecting to out-of-bounds transcript coordinates"""
     hgvs.global_config.mapping.strict_bounds = False
