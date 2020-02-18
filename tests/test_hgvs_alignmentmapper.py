@@ -41,9 +41,6 @@ class Test_AlignmentMapper(unittest.TestCase):
             AlignmentMapper(
                 self.hdp, tx_ac="NM_000051.3", alt_ac="NC_000011.9", alt_aln_method="bogus")
         with self.assertRaises(HGVSInvalidIntervalError):
-            AlignmentMapper(self.hdp, 'NM_000348.3', 'NC_000002.11', 'splign').n_to_g(
-                self.parser.parse_n_interval("-1"))
-        with self.assertRaises(HGVSInvalidIntervalError):
             AlignmentMapper(self.hdp, 'NM_000348.3', 'NC_000002.11', 'splign').n_to_c(
                 self.parser.parse_n_interval("-1"))
         with self.assertRaises(HGVSInvalidIntervalError):
