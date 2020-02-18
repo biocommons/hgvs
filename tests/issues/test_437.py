@@ -7,10 +7,8 @@ import hgvs
 from hgvs.exceptions import HGVSInvalidVariantError
 
 
-def test_437_RMRP(parser, am37):
-    """https://github.com/biocommons/hgvs/issues/437"""
-
-    #hgvs.global_config.mapping.strict_bounds = True
+def test_437_RMRP_terminii(parser, am37):
+    hgvs.global_config.mapping.strict_bounds = True
 
     # Generate n. and g. variants at terminal positions of tx
     s1_n = parser.parse("NR_003051.3:n.1G>T")
@@ -48,10 +46,17 @@ def test_437_RMRP(parser, am37):
     assert s2_g.posedit.pos.start.base - s1_g.posedit.pos.start.base == 1
     assert e2_g.posedit.pos.start.base - e1_g.posedit.pos.start.base == -1
 
-    v3_n = parser.parse("NR_003051.3:n.-19_-18insACT")
-    v3_g = am37.n_to_g(v3_n)
-    assert str(v3_g) == "NC_000009.11:g.35658038_35658040dup"
+    hgvs.global_config.mapping.strict_bounds = True
 
+
+
+def test_437_RMRP_oob_dup(parser, am37):
+    """Out-of-bounds genomic dup"""
+    hgvs.global_config.mapping.strict_bounds = False
+
+    var_n = parser.parse("NR_003051.3:n.-19_-18insACT")
+    var_g = am37.n_to_g(var_n)
+    assert str(var_g) == "NC_000009.11:g.35658038_35658040dup"
 
     hgvs.global_config.mapping.strict_bounds = True
 

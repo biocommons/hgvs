@@ -5,6 +5,29 @@ The AlignmentMapper class is at the heart of mapping between aligned sequences.
 
 """
 
+# Implementation note: HGVS doesn't have a 0. Counting is -3, -2, -1,
+# 1, 2, 3 :-/ Coordinate calculations must take this discontinuity in
+# c. positions into account.  The implementation of imaginary
+# transcript positions creates a second discontinuity. (By analogy
+# with c., n.0 is declared to not exist.)  The strategy used in this
+# code is to use internal c0 and n0 coordinates, which include 0, for
+# coordinate calculations and to translate these to c. and
+# n. positions as needed.
+#
+#                imag.                                                 imag.
+#              upstream     5' UTR           CDS          3' UTR      downstr
+#                                     |>
+#            - - - - - - ———————————— ||||||||||||||||| ——————————— - - - - - -
+#                           a     b     C     D     E     f     g     h     i
+#    c.        -4    -3    -2    -1  !  1     2     3  ! *1    *2    *3    *4
+#    c0        -3    -2    -1     0     1     2     3     4     5     6     7
+#    n0        -1     0     1     2     3     4     5     6     7     8     9
+#    n.        -2    -1  !  1     2     3     4     5     6     7     8     9
+#    g.   ... 123   124   125   126   127   128   129   130   131   132   133 ...
+#
+
+
+
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from six.moves import range
@@ -129,14 +152,6 @@ class AlignmentMapper(object):
         frs, fre = n_interval.start.base - 1, n_interval.end.base - 1
         start_offset, end_offset = n_interval.start.offset, n_interval.end.offset
         
-        # frs and fre may be <0 (i.e., before the sequence) when
-        # strict_bounds is False
-        # HGVS doesn't have a 0. Counting is -3, -2, -1, 1, 2, 3  :-/
-        if frs <= -1:
-            frs += 1
-        if fre <= -1:
-            fre += 1
-
         if self.strand == -1:
             fre, frs = self.tgt_len - frs - 1, self.tgt_len - fre - 1
             start_offset, end_offset = -end_offset, -start_offset
@@ -168,6 +183,7 @@ class AlignmentMapper(object):
         if strict_bounds and (n_interval.start.base <= 0 or n_interval.end.base > self.tgt_len):
             raise HGVSInvalidIntervalError(
                 "The given coordinate is outside the bounds of the reference sequence.")
+
 
         # start
         if n_interval.start.base <= self.cds_start_i:
@@ -228,7 +244,7 @@ class AlignmentMapper(object):
         if strict_bounds and (r_start <= 0 or r_end > self.tgt_len):
             raise HGVSInvalidIntervalError(
                 "The given coordinate is outside the bounds of the reference sequence.")
-
+        
         n_interval = hgvs.location.BaseOffsetInterval(
             start=hgvs.location.BaseOffsetPosition(
                 base=r_start, offset=c_interval.start.offset, datum=Datum.SEQ_START),

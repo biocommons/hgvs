@@ -123,7 +123,6 @@ class ExtrinsicValidator():
         else:
             var_ref_seq = getattr(var.posedit.edit, "ref", None) or None
             var_n = self.vm.c_to_n(var) if var.type == "c" else var
-            (res, _) = self._n_within_transcript_bounds(var_n)
             ref_checks.append((var_n.ac, var_n.posedit.pos.start.base, var_n.posedit.pos.end.base,
                                    var_ref_seq))
 
@@ -167,7 +166,7 @@ class ExtrinsicValidator():
         if tx_info is None:
             return (ValidationLevel.WARNING,
                     "No transcript data for accession: {ac}".format(ac=var.ac))
-        if var.posedit.pos.start.datum == Datum.SEQ_START and var.posedit.pos.end.base < 0:
+        if var.posedit.pos.start.datum == Datum.SEQ_START and var.posedit.pos.end.base <= 0:
             return (ValidationLevel.ERROR, TX_BOUND_ERROR_MSG.format())
         if var.posedit.pos.end.datum == Datum.SEQ_START and var.posedit.pos.start.base >= tx_len:
             return (ValidationLevel.ERROR, TX_BOUND_ERROR_MSG.format())

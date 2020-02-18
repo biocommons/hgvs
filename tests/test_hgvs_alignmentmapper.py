@@ -16,6 +16,7 @@ from hgvs.alignmentmapper import AlignmentMapper
 from hgvs.enums import Datum
 from support import CACHE
 
+import hgvs
 
 @pytest.mark.quick
 class Test_AlignmentMapper(unittest.TestCase):
@@ -28,6 +29,7 @@ class Test_AlignmentMapper(unittest.TestCase):
         cls.parser = hgvs.parser.Parser()
 
     def test_alignmentmapper_failures(self):
+        hgvs.global_config.mapping.strict_bounds = True
         with self.assertRaises(HGVSDataNotAvailableError):
             AlignmentMapper(self.hdp, tx_ac="bogus", alt_ac="NM_033089.6", alt_aln_method="splign")
         with self.assertRaises(HGVSDataNotAvailableError):
