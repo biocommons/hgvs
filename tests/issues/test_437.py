@@ -2,6 +2,19 @@
 
 https://github.com/biocommons/hgvs/issues/437
 
+RMPR (- strand, chr 9)
+                        |==============================|
+  NR_003051.3        -1 |    1      2   //  267    268 |  269
+                      T |    G          //    G      T |    T
+                        |               //             |     
+ NC_000009.11  35658016 | 8015   8014   // 7749   7748 | 7748
+                      A |    C          //    C      A |    A
+                        |               //             |     
+ NC_000009.12  35658019 | 8018   8017   // 7752   7751 | 7750
+                      A |    C          //    C      A |    A
+                        |==============================|
+
+
 Tests to consider:
 * Ensure that bounds remain checked for other sequence types
 
@@ -20,17 +33,17 @@ def test_437_RMRP_terminii(parser, am37):
     # Generate n. and g. variants at terminal positions of tx, and
     # variants that are 1 base out of bounds
     s1_n = parser.parse("NR_003051.3:n.1G>T")
-    e1_n = parser.parse("NR_003051.3:n.267G>T")
+    e1_n = parser.parse("NR_003051.3:n.268T>C")
 
     s2_n = parser.parse("NR_003051.3:n.-1G>C")
-    e2_n = parser.parse("NR_003051.3:n.268G>C")
+    e2_n = parser.parse("NR_003051.3:n.269N>C")
 
 
     # Sanity check projections to genome for in-bound variations
     s1_g = am37.n_to_g(s1_n)
     assert str(s1_g) == "NC_000009.11:g.35658015C>A"
     e1_g = am37.n_to_g(e1_n)
-    assert str(e1_g) == "NC_000009.11:g.35657749C>A"
+    assert str(e1_g) == "NC_000009.11:g.35657748A>G"
 
 
     # Disable bounds checking and retry
@@ -42,7 +55,7 @@ def test_437_RMRP_terminii(parser, am37):
     #assert s2_g.posedit.pos.start.base - s1_g.posedit.pos.start.base == 1
 
     e2_g = am37.n_to_g(e2_n)
-    assert str(e2_g) == "NC_000009.11:g.35657748A>G"
+    assert str(e2_g) == "NC_000009.11:g.35657747A>G"
     assert e2_g.posedit.pos.start.base - e1_g.posedit.pos.start.base == -1
 
     hgvs.global_config.mapping.strict_bounds = True
@@ -56,6 +69,8 @@ def test_437_RMRP_enforce_strict_bounds(parser, am37):
     s2_n = parser.parse("NR_003051.3:n.-1G>C")
     e2_n = parser.parse("NR_003051.3:n.268G>C")
 
+    # TODO: These exceptions are raised, but with the wrong message
+    # use `match=` arg
     with pytest.raises(HGVSInvalidVariantError):
         s2_g = am37.n_to_g(s2_n)
 
