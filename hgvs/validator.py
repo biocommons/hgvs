@@ -168,7 +168,7 @@ class ExtrinsicValidator():
                     "No transcript data for accession: {ac}".format(ac=var.ac))
         if var.posedit.pos.start.datum == Datum.SEQ_START and var.posedit.pos.end.base <= 0:
             return (ValidationLevel.ERROR, TX_BOUND_ERROR_MSG.format())
-        if var.posedit.pos.end.datum == Datum.SEQ_START and var.posedit.pos.start.base >= tx_len:
+        if var.posedit.pos.end.datum == Datum.SEQ_START and var.posedit.pos.start.base > tx_len:
             return (ValidationLevel.ERROR, TX_BOUND_ERROR_MSG.format())
         return (ValidationLevel.VALID, None)
 
