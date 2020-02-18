@@ -2,15 +2,16 @@
 
 Heads up: UTA CIGAR strings are relative to the transcript; that is,
 the transcript is the reference and the genome is the target sequence.
-hgvs swaps this nomenclature so that the genome is ref and the
-transcript is the target.  This file is the clutchplate where that
-happens.
+hgvs, and this module specifically, swaps this nomenclature so that
+the genome is ref and the transcript is the target.
 
 UTA CIGAR strings are relative to the transcript.  Specifically:
 
   * D is a deletion in the genome relative to the transcript
   * I is an insertion in the genome relative to the transcript
   * N is an intronic insertion relative to the transcript
+
+The conceptual swap occurs in the _map function.
 
 """
 

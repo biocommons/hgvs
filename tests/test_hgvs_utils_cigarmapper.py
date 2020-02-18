@@ -6,6 +6,11 @@ from hgvs.utils.cigarmapper import CIGARMapper
 
 
 cigar = "3=2N=X=3N=I=D="
+#  0   1   2           3   4   5               6       7   8   9  tgt
+#  =   =   =   N   N   =   X   =   N   N   N   =   I   =   D   =
+#  0   1   2   3   4   5   6   7   8   9  10  11  12  13      14  ref
+
+
 cm = CIGARMapper(cigar)
 
 

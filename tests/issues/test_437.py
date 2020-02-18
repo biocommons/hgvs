@@ -19,7 +19,6 @@ def test_437_RMRP_terminii(parser, am37):
 
     # Generate n. and g. variants at terminal positions of tx, and
     # variants that are 1 base out of bounds
-
     s1_n = parser.parse("NR_003051.3:n.1G>T")
     e1_n = parser.parse("NR_003051.3:n.267G>T")
 
@@ -27,9 +26,9 @@ def test_437_RMRP_terminii(parser, am37):
     e2_n = parser.parse("NR_003051.3:n.268G>C")
 
 
+    # Sanity check projections to genome for in-bound variations
     s1_g = am37.n_to_g(s1_n)
     assert str(s1_g) == "NC_000009.11:g.35658015C>A"
-
     e1_g = am37.n_to_g(e1_n)
     assert str(e1_g) == "NC_000009.11:g.35657749C>A"
 
@@ -49,7 +48,7 @@ def test_437_RMRP_terminii(parser, am37):
     hgvs.global_config.mapping.strict_bounds = True
 
 
-def test_437_enforce_strict_bounds(parser, am37):
+def test_437_RMRP_enforce_strict_bounds(parser, am37):
     """Ensure that an exception is raised when outside bounds"""
 
     # Construct two variants that are 1 base outside the tx bounds
