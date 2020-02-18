@@ -50,9 +50,9 @@ def test_437_terminii(parser, am37):
     hgvs.global_config.mapping.strict_bounds = False
 
     # TODO: not yet handling lack of zeroes in HGVS counting
-    #s2_g = am37.n_to_g(s2_n)
-    #assert str(s2_g) == "NC_000009.11:g.35658016A>G"
-    #assert s2_g.posedit.pos.start.base - s1_g.posedit.pos.start.base == 1
+    s2_g = am37.n_to_g(s2_n)
+    assert str(s2_g) == "NC_000009.11:g.35658016A>G"
+    assert s2_g.posedit.pos.start.base - s1_g.posedit.pos.start.base == 1
 
     e2_g = am37.n_to_g(e2_n)
     assert str(e2_g) == "NC_000009.11:g.35657747A>G"

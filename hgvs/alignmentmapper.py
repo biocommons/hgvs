@@ -5,14 +5,14 @@ The AlignmentMapper class is at the heart of mapping between aligned sequences.
 
 """
 
-# Implementation note: HGVS doesn't have a 0. Counting is -3, -2, -1,
-# 1, 2, 3 :-/ Coordinate calculations must take this discontinuity in
-# c. positions into account.  The implementation of imaginary
-# transcript positions creates a second discontinuity. (By analogy
-# with c., n.0 is declared to not exist.)  The strategy used in this
-# code is to use internal c0 and n0 coordinates, which include 0, for
-# coordinate calculations and to translate these to c. and
-# n. positions as needed.
+# Implementation note re: "no-zero correction": HGVS doesn't have a
+# 0. Counting is -3, -2, -1, 1, 2, 3 :-/ Coordinate calculations must
+# take this discontinuity in c. positions into account.  The
+# implementation of imaginary transcript positions creates a second
+# discontinuity. (By analogy with c., n.0 is declared to not exist.)
+# The strategy used in this code is to use internal c0 and n0
+# coordinates, which include 0, for coordinate calculations and to
+# translate these to c. and n. positions as needed.
 #
 #                imag.                                                 imag.
 #              upstream     5' UTR           CDS          3' UTR      downstr
@@ -20,8 +20,8 @@ The AlignmentMapper class is at the heart of mapping between aligned sequences.
 #            - - - - - - ———————————— ||||||||||||||||| ——————————— - - - - - -
 #                           a     b     C     D     E     f     g     h     i
 #    c.        -4    -3    -2    -1  !  1     2     3  ! *1    *2    *3    *4
-#    c0        -3    -2    -1     0     1     2     3     4     5     6     7
-#    n0        -1     0     1     2     3     4     5     6     7     8     9
+#    c0        -4    -3    -2    -1     0     1     2     3     4     5     6
+#    n0        -2    -1     0     1     2     3     4     5     6     7     8
 #    n.        -2    -1  !  1     2     3     4     5     6     7     8     9
 #    g.   ... 123   124   125   126   127   128   129   130   131   132   133 ...
 #
@@ -40,6 +40,21 @@ from hgvs.exceptions import HGVSError, HGVSUsageError, HGVSDataNotAvailableError
 from hgvs.utils import build_tx_cigar
 from hgvs.utils.cigarmapper import CIGARMapper
 from hgvs.enums import Datum
+
+
+
+def _zbc_to_hgvs(i):
+    """Convert zero-based coordinate to hgvs (1 based, missing zero)"""
+    if i >= 0:
+        i += 1
+    return i
+
+
+def _hgvs_to_zbc(i):
+    """Convert hgvs (1 based, missing zero) """
+    if i >= 1:
+        i -= 1
+    return i
 
 
 class AlignmentMapper(object):
@@ -131,15 +146,15 @@ class AlignmentMapper(object):
         fre, fre_offset, fre_cigar = self.cigarmapper.map_ref_to_tgt(pos=gre, end="end", strict_bounds=strict_bounds)
 
         if self.strand == -1:
-            frs, fre = self.tgt_len - fre - 1, self.tgt_len - frs - 1
+            frs, fre = self.tgt_len - 1 - fre, self.tgt_len - 1 - frs
             frs_offset, fre_offset = -fre_offset, -frs_offset
-            
+
         # The returned interval would be uncertain when locating at alignment gaps
         return hgvs.location.BaseOffsetInterval(
             start=hgvs.location.BaseOffsetPosition(
-                base=frs + 1, offset=frs_offset, datum=Datum.SEQ_START),
+                base=_zbc_to_hgvs(frs), offset=frs_offset, datum=Datum.SEQ_START),
             end=hgvs.location.BaseOffsetPosition(
-                base=fre + 1, offset=fre_offset, datum=Datum.SEQ_START),
+                base=_zbc_to_hgvs(fre), offset=fre_offset, datum=Datum.SEQ_START),
             uncertain=frs_cigar in 'DI' or fre_cigar in 'DI')
 
 
@@ -149,11 +164,13 @@ class AlignmentMapper(object):
         if strict_bounds is None:
             strict_bounds = global_config.mapping.strict_bounds
 
-        frs, fre = n_interval.start.base - 1, n_interval.end.base - 1
-        start_offset, end_offset = n_interval.start.offset, n_interval.end.offset
-        
+        frs = _hgvs_to_zbc(n_interval.start.base)
+        start_offset = n_interval.start.offset
+        fre = _hgvs_to_zbc(n_interval.end.base)
+        end_offset = n_interval.end.offset
+
         if self.strand == -1:
-            fre, frs = self.tgt_len - frs - 1, self.tgt_len - fre - 1
+            fre, frs = self.tgt_len - 1 - frs, self.tgt_len - 1 - fre
             start_offset, end_offset = -end_offset, -start_offset
 
         # returns the genomic range start (grs) and end (gre)
@@ -184,7 +201,6 @@ class AlignmentMapper(object):
             raise HGVSInvalidIntervalError(
                 "The given coordinate is outside the bounds of the reference sequence.")
 
-
         # start
         if n_interval.start.base <= self.cds_start_i:
             cs = n_interval.start.base - (self.cds_start_i + 1)
@@ -195,6 +211,7 @@ class AlignmentMapper(object):
         else:
             cs = n_interval.start.base - self.cds_end_i
             cs_datum = Datum.CDS_END
+
         # end
         if n_interval.end.base <= self.cds_start_i:
             ce = n_interval.end.base - (self.cds_start_i + 1)
