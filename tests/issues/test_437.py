@@ -47,10 +47,15 @@ class Test437_RMRP(unittest.TestCase):
         hgvs.global_config.mapping.strict_bounds = True
 
         # Sanity check projections to genome for in-bound variations
+        # n -> g -> n roundtrip
         s1_g = self.am37.n_to_g(self.s1_n)
         assert str(s1_g) == "NC_000009.11:g.35658015C>A"
+        assert self.s1_n == self.am37.g_to_n(s1_g, self.s1_n.ac)
+
         e1_g = self.am37.n_to_g(self.e1_n)
         assert str(e1_g) == "NC_000009.11:g.35657748A>G"
+        assert self.e1_n == self.am37.g_to_n(e1_g, self.e1_n.ac)
+
 
         # Disable bounds checking and retry
         hgvs.global_config.mapping.strict_bounds = False
@@ -58,10 +63,12 @@ class Test437_RMRP(unittest.TestCase):
         s2_g = self.am37.n_to_g(self.s2_n)
         assert str(s2_g) == "NC_000009.11:g.35658016A>G"
         assert s2_g.posedit.pos.start.base - s1_g.posedit.pos.start.base == 1
+        #BUG: assert self.s2_n == self.am37.g_to_n(s2_g, self.s2_n.ac)
 
         e2_g = self.am37.n_to_g(self.e2_n)
         assert str(e2_g) == "NC_000009.11:g.35657747A>G"
         assert e2_g.posedit.pos.start.base - e1_g.posedit.pos.start.base == -1
+        #BUG: assert self.e2_n == self.am37.g_to_n(e2_g, self.e2_n.ac)
 
         hgvs.global_config.mapping.strict_bounds = True
 
@@ -93,9 +100,14 @@ def test_437_oob_dup(parser, am37):
     """
     hgvs.global_config.mapping.strict_bounds = False
 
+    # n_to_g
     var_n = parser.parse("NR_003051.3:n.-19_-18insACT")
     var_g = am37.n_to_g(var_n)
     assert str(var_g) == "NC_000009.11:g.35658038_35658040dup"
+
+    # g_to_n
+    var_n2 = am37.g_to_n(var_g, "NR_003051.3")
+    #BUG: assert str(var_n2) == "NR_003051.3:n.-19_-18insACT"
 
     hgvs.global_config.mapping.strict_bounds = True
 
