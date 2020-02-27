@@ -285,6 +285,11 @@ class AlignmentMapper(object):
                             " must be both defined or both undefined".format(self=self))
         return self.cds_start_i is not None
 
+    def g_interval_is_inbounds(self, ival):
+        grs = ival.start.base - 1 - self.gc_offset
+        gre = ival.end.base   - 1 - self.gc_offset
+        return grs>=0 and gre<=self.cigarmapper.ref_len
+
 
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)

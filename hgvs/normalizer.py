@@ -5,6 +5,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import copy
+import logging
 
 from bioutils.sequences import reverse_complement
 
@@ -13,6 +14,9 @@ import hgvs.validator
 import hgvs.variantmapper
 from hgvs.utils.norm import normalize_alleles
 from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
+
+
+_logger = logging.getLogger(__name__)
 
 
 class Normalizer(object):
@@ -24,7 +28,8 @@ class Normalizer(object):
                  cross_boundaries=hgvs.global_config.normalizer.cross_boundaries,
                  shuffle_direction=hgvs.global_config.normalizer.shuffle_direction,
                  alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
-                 validate=hgvs.global_config.normalizer.validate):
+                 validate=hgvs.global_config.normalizer.validate,
+                 variantmapper=None):
         """Initialize and configure the normalizer
 
         :param hdp: HGVS Data Provider Interface-compliant instance
@@ -44,7 +49,7 @@ class Normalizer(object):
         self.validator = None
         if validate:
             self.validator = hgvs.validator.IntrinsicValidator(strict=False)
-        self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
+        self.hm = variantmapper or hgvs.variantmapper.VariantMapper(self.hdp)
 
     def normalize(self, var):
         """Perform sequence variants normalization for single variant
@@ -54,7 +59,7 @@ class Normalizer(object):
 
         if self.validator:
             self.validator.validate(var)
-
+            
         init_met = False
         if var.posedit is not None and isinstance(var.posedit, hgvs.edit.AARefAlt):
             init_met = var.posedit.init_met
@@ -87,6 +92,10 @@ class Normalizer(object):
             if var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0:
                 raise HGVSUnsupportedOperationError(
                     "Normalization of intronic variants is not supported")
+
+        if var.posedit.pos.start.base < 0 or var.posedit.pos.end.base < 0:
+            _logger.info("Out-of-bounds variant returned as-is")
+            return var
 
         # g, m, n, r sequences all use sequence start as the datum
         # That"s an essential assumption herein
