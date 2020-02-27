@@ -5,6 +5,7 @@ experimenting, debugging, and generating bug reports."""
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import logging
+import os
 
 import IPython
 
@@ -41,7 +42,7 @@ and use these variables/variable names whenever possible.
 
 
 def shell():
-    logging.basicConfig(level=logging.WARNING)
+    logging.basicConfig(level=os.environ.get("HGVS_LOGGING_LEVEL", logging.WARNING))
 
     from hgvs.easy import (    # noqa: F401
         __version__, global_config,
