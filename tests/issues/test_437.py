@@ -3,16 +3,17 @@
 https://github.com/biocommons/hgvs/issues/437
 
 RMPR (- strand, chr 9)
-                        |==============================|
-  NR_003051.3        -1 |    1      2   //  267    268 |  269
-                      T |    G          //    G      T |    T
-                        |               //             |     
- NC_000009.11  35658016 | 8015   8014   // 7749   7748 | 7748
-                      A |    C          //    C      A |    A
-                        |               //             |     
- NC_000009.12  35658019 | 8018   8017   // 7752   7751 | 7750
-                      A |    C          //    C      A |    A
-                        |==============================|
+                                Sequence Bounds
+                        |===============/ /=============|
+  NR_003051.3        -1 |    1      2   / /  267    268 |  269
+                      T >>>> G >>>> G >>>>>>>> G >>>> T >>>> T
+                        |               / /             |     
+ NC_000009.11  35658016 | 8015   8014   / / 7749   7748 | 7748
+                      A <<<< C <<<< C <<<<<<<< C <<<< A <<<< A
+                        |               / /             |     
+ NC_000009.12  35658019 | 8018   8017   / / 7752   7751 | 7750
+                      A <<<< C <<<< C <<<<<<<< C <<<< A <<<< A
+                        |===============/ /=============|
 
 
 Tests to consider:
@@ -54,7 +55,6 @@ class Test437_RMRP(unittest.TestCase):
         # Disable bounds checking and retry
         hgvs.global_config.mapping.strict_bounds = False
 
-        # TODO: not yet handling lack of zeroes in HGVS counting
         s2_g = self.am37.n_to_g(self.s2_n)
         assert str(s2_g) == "NC_000009.11:g.35658016A>G"
         assert s2_g.posedit.pos.start.base - s1_g.posedit.pos.start.base == 1
@@ -78,10 +78,19 @@ class Test437_RMRP(unittest.TestCase):
             e2_g = self.am37.n_to_g(self.e2_n)
 
 
-# TODO: not yet handling lack of zeroes in HGVS counting
-def x_test_437_oob_dup(parser, am37):
+def test_437_oob_dup(parser, am37):
     """Intentionally preserve dup, derived from genomic sequence, when
-    projecting to out-of-bounds transcript coordinates"""
+    projecting to out-of-bounds transcript coordinates
+
+                                         35658018    35658030  35658040
+                                         |           |     vv  |
+    NC_000009.12 (+)              CACGAACCACGTCCTCAGCTTCACAGAGTAGTATT
+                 (-)              GTGCTTGGTGCAGGAGTCGAAGTGTCTCATCATAA
+    NR_003051.3       TGTCCGGAAGTCGTGCTTGG                 ^^
+                                         |\        |         |
+                                        <1 -1    -10       -20
+
+    """
     hgvs.global_config.mapping.strict_bounds = False
 
     var_n = parser.parse("NR_003051.3:n.-19_-18insACT")
