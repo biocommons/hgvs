@@ -15,11 +15,25 @@ The defaults are::
   in_par_assume = X
   inferred_p_is_uncertain = True
   normalize = True
+  prevalidation_level = EXTRINSIC
   replace_reference = True
   
+  # strict_bounds: require transcript variants to be within transcript sequence bounds
+  strict_bounds = True
+  
+  # add gene symbol: add gene symbol on converted variants
+  add_gene_symbol = False
+  
+  
   [formatting]
+  max_ref_length = 0
   p_3_letter = True
   p_term_asterisk = False
+  p_init_met = True
+  
+  [validator]
+  strict = True
+  
   
   [normalizer]
   cross_boundaries = False
@@ -27,6 +41,24 @@ The defaults are::
   validate = True
   window_size = 20
   
+  
   [lru_cache]
   maxsize = 100
-
+  
+  
+  [uta]
+  pooling = False
+  pool_min = 1
+  pool_max = 10
+  
+  prd_uta_version = uta_20180821
+  stg_uta_version = uta_20180821
+  dev_uta_version = uta_20180821
+  public_host = uta.biocommons.org
+  local_host = localhost
+  public_prd = postgresql://anonymous:anonymous@${public_host}/uta/${prd_uta_version}
+  public_stg = postgresql://anonymous:anonymous@${public_host}/uta/${stg_uta_version}
+  public_dev = postgresql://anonymous:anonymous@${public_host}/uta_dev/${dev_uta_version}
+  local_prd  = postgresql://anonymous:anonymous@${local_host}/uta/${prd_uta_version}
+  local_stg  = postgresql://anonymous:anonymous@${local_host}/uta/${stg_uta_version}
+  local_dev  = postgresql://anonymous:anonymous@${local_host}/uta_dev/${dev_uta_version}
