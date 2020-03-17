@@ -250,7 +250,7 @@ based on commit messages between specified release tags.  That
     *** fixes #276: raise error when user attempts to map to/from c. with non-coding transcript [3f7b659f4f02]
 
 ``.clog`` files should be edited for readability during the release
-process and committed to the repo (in ``hgvs/doc/changelog/``).
+process and committed to the repo (in ``hgvs/docs/changelog/``).
 
 A Makefile in the same directory generates an ``.rst`` file from the
 ``.clog``. This file must also be committed to the repo.  This file
@@ -270,7 +270,7 @@ how the release was prepared::
   hg up 0.4.x
   hg tag 0.4.3cl
 
-  cd doc/changelog
+  cd docs/changelog
   make 0.4.3cl.clog
   mv 0.4.3cl.clog 0.4.3.clog
   #edit 0.4.3.clog for readability
@@ -279,9 +279,9 @@ how the release was prepared::
 
 ``cd ../..`` (hgvs top-level), then ``hg status`` should now look like::
 
-  M doc/changelog/0.4.rst
-  A doc/changelog/0.4.3.clog
-  A doc/changelog/0.4.3.rst
+  M docs/changelog/0.4.rst
+  A docs/changelog/0.4.3.clog
+  A docs/changelog/0.4.3.rst
 
 Check your work. Type ``make docs``, then view ``build/sphinx/html/changelog/0.4.3.html``.
 

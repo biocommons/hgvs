@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from sys import version_info
 
 short_description = "HGVS Parser, Formatter, Mapper, Validator"
-with open("doc/description.txt") as f:
+with open("docs/description.txt") as f:
     long_description = f.read()
 
 if version_info < (3, ):
