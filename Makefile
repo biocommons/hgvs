@@ -14,7 +14,7 @@ PYV:=3.7
 VEDIR=venv/${PYV}
 
 TEST_DIRS:=tests
-DOC_TESTS:=doc hgvs ./README.rst
+DOC_TESTS:=docs hgvs ./README.rst
 
 
 ############################################################################
@@ -111,7 +111,7 @@ reformat:
 .PHONY: docs
 docs: develop
 	# RTD makes json. Build here to ensure that it works.
-	make -C doc html json
+	make -C docs html json
 
 ############################################################################
 #= CLEANUP
@@ -120,37 +120,30 @@ docs: develop
 .PHONY: clean
 clean:
 	find . \( -name \*~ -o -name \*.bak \) -print0 | xargs -0r rm
-	-make -C doc $@
+	-make -C docs $@
 	-make -C examples $@
 
 #=> cleaner: remove files and directories that are easily rebuilt
 .PHONY: cleaner
 cleaner: clean
-	rm -fr .cache *.egg-info build dist doc/_build htmlcov
+	rm -fr .cache *.egg-info build dist docs/_build htmlcov
 	find . \( -name \*.pyc -o -name \*.orig -o -name \*.rej \) -print0 | xargs -0r rm
 	find . -name __pycache__ -print0 | xargs -0r rm -fr
 	/bin/rm -fr examples/.ipynb_checkpoints
 	/bin/rm -f hgvs.{dot,svg,png,sfood}
-	-make -C doc $@
+	-make -C docs $@
 	-make -C examples $@
 
 #=> cleanest: remove files and directories that require more time/network fetches to rebuild
 .PHONY: cleanest
 cleanest: cleaner
 	rm -fr .eggs .tox venv
-	-make -C doc $@
+	-make -C docs $@
 	-make -C examples $@
 
 
 ############################################################################
 #= HGVS specific
-
-changelog:
-	make -C doc/changelog 0.4.rst
-
-#=> changelog
-doc/source/changelog.rst: CHANGELOG
-	./sbin/clog-txt-to-rst <$< >$@
 
 #=> code-check -- check code with flake8
 code-check:
@@ -158,8 +151,8 @@ code-check:
 
 #=> docs-aux -- make generated docs for sphinx
 docs-aux:
-	make -C misc/railroad doc-install
-	make -C examples doc-install
+	make -C misc/railroad docs-install
+	make -C examples docs-install
 
 #=> hgvs.svg -- import graph; requires snakefood
 hgvs.sfood:

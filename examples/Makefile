@@ -14,7 +14,7 @@
 
 SHELL:=/bin/bash
 
-DOC_EXAMPLES_DIR:=../doc/examples
+DOC_EXAMPLES_DIR:=../docs/examples
 
 nbs=$(subst .ipynb,,$(wildcard *.ipynb))
 rst_nbs:=$(addsuffix .rst,${nbs})

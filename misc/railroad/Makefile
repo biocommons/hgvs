@@ -27,9 +27,9 @@ hgvs_railroad.rst: %.rst: hgvs.ebnf_grammar/all.html
 	/bin/cp -l ${<D}/*.svg $*/
 	./make-hgvs-railroad-doc --hgvs-version "$$(hg id -bit)" hgvs_railroad/*svg >$@
 
-doc-install:
-	rm -fr ../../doc/source/hgvs_railroad*
-	make hgvs_railroad.rst && /bin/mv -b hgvs_railroad* ../../doc/source/
+docs-install:
+	rm -fr ../../docs/source/hgvs_railroad*
+	make hgvs_railroad.rst && /bin/mv -b hgvs_railroad* ../../docs/source/
 
 
 .PHONY: clean cleaner cleanest
