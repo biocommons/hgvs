@@ -87,6 +87,19 @@ Archive (UTA) <https://github.com/biocommons/uta/>`__ and `SeqRepo
 <https://github.com/biocommons/biocommons.seqrepo/>`__ locally.
 
 
+Configuration
+#############
+
+`hgvs` will use publicly available data sources unless directed
+otherwise through environment variables, like so::
+  
+  # N.B. These are examples. The correct values will depend on your installation
+  $ export UTA_DB_URL=postgresql://anonymous:anonymous@localhost:5432/uta/uta_20180821
+  $ export HGVS_SEQREPO_DIR=/usr/local/share/seqrepo/latest
+
+See the installation instructions for details.
+
+
 Parsing and Formating
 #####################
 

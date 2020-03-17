@@ -2,8 +2,8 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import itertools
 import re
-from six.moves import range
 
 
 def build_tx_cigar(exons, strand):
@@ -37,6 +37,9 @@ def build_tx_cigar(exons, strand):
     tx_cigar_str = "".join(tx_cigar)
 
     return tx_cigar_str
+
+
+
 
 
 # <LICENSE>

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-"""Provides VariantMapper and AssemblyMapper to project variants
-between sequences using AlignmentMapper.
+"""Projects variants between sequences using AlignmentMapper.
+
+
 
 """
 
@@ -93,6 +94,8 @@ class VariantMapper(object):
             self._validator = hgvs.validator.IntrinsicValidator(strict=False)
         else:
             self._validator = hgvs.validator.Validator(self.hdp, strict=False)
+        self.left_normalizer = hgvs.normalizer.Normalizer(hdp, shuffle_direction=5, variantmapper=self)
+
 
     # ############################################################################
     # g⟷t
@@ -147,9 +150,16 @@ class VariantMapper(object):
             raise HGVSInvalidVariantError("Expected a g. variant; got " + str(var_g))
         if self._validator:
             self._validator.validate(var_g)
-        var_g.fill_ref(self.hdp)
         mapper = self._fetch_AlignmentMapper(
             tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method)
+
+        if (mapper.strand == -1
+            and not hgvs.global_config.mapping.strict_bounds
+            and not mapper.g_interval_is_inbounds(var_g.posedit.pos)):
+            _logger.info("Renormalizing out-of-bounds minus strand variant on genomic sequence")
+            var_g = self.left_normalizer.normalize(var_g)
+
+        var_g.fill_ref(self.hdp)
         pos_n = mapper.g_to_n(var_g.posedit.pos)
         if not pos_n.uncertain:
             edit_n = self._convert_edit_check_strand(mapper.strand, var_g.posedit.edit)
