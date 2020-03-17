@@ -1,19 +1,38 @@
 Contributors are listed in the Mercurial change logs.  From the
 command line:
 
-  $ hg log --template "{author}\n" | sort -u
-  Alexandre Fedtsov <shmumer@gmail.com>
-  Andrew McMurry <andrew.mcmurry@invitae.com>
-  Dimitris Iliopoulos <dimitris.iliopoulos@invitae.com>
-  Meng Wang <wangm0855@gmail.com>
-  Lawrence Lee <lawrence.lee@invitae.com>
-  Piotr Kaleta <piotrek.kaleta@gmail.com>
-  Reece Hart <reecehart@gmail.com>
-  Rudolph Rico <rudy.rico@invitae.com>
-  Rudy Rico <rudy.rico@invitae.com>
-  Vincent Fusaro <vincent.fusaro@invitae.com>
+$ git shortlog -sne
+  1049	Reece Hart <reecehart@gmail.com>
+   151	Meng <wangm0855@gmail.com>
+   116	Rudy Rico <rudy.rico@invitae.com>
+    39	Vincent Fusaro <vincent.fusaro@invitae.com>
+    20	Meng Wang <wangm0855@gmail.com>
+    19	Lucas Wiman <lucas.wiman@gmail.com>
+     9	Piotr Kaleta <piotrek.kaleta@gmail.com>
+     5	Alexandre Fedtsov <shmumer@users.noreply.github.com>
+     3	Dimitris Iliopoulos <diliopoulos@pacificbiosciences.com>
+     3	Kevin Jacobs <jacobs@bioinformed.com>
+     2	Alan Rubin <alan.rubin@wehi.edu.au>
+     2	Emanuel Langit <emanuel.langit@fastmail.fm>
+     2	Jai Pradeesh <jaipradeesh@gmail.com>
+     2	Jake Peacock <james.hoke.peacock@gmail.com>
+     1	Andreas Prlic <36012160+andreas-invitae@users.noreply.github.com>
+     1	Andreas Prlic <andreas.prlic@gmail.com>
+     1	Andy McMurry (AndyMC) <andymc@apache.org>
+     1	Clayton Wheeler <cwheeler@genomenon.com>
+     1	Daniel Saxton <dsaxton@protonmail.com>
+     1	John Kern <kern3020@gmail.com>
+     1	Keith Callenberg <keithcallenberg@users.noreply.github.com>
+     1	Kevin McCurdy <khmccurdy@aol.com>
+     1	Lawrence Lee <lawrence.lee@invitae.com>
+     1	Liang Chen <chenliangomc@users.noreply.github.com>
+     1	Naomi Fox <naomi.fox@gmail.com>
+     1	Rudolph Rico <rudy.rico@invitae.com>
+     1	Sandeep Narayanaswami <scoffes@gmail.com>
+     1	Timothy Laurent <timothy.laurent@invitae.com>
 
-Additional contributors are:
+
+Additional non-coding contributors are:
 
   Emily Hare
   Geoff Nilsen
