@@ -60,7 +60,7 @@ Important Notes
   <https://github.com/biocommons/hgvs/issues>`_.  All known issues are
   listed there.  Please report any issues you find.
 * **Use a pip package specification to stay within minor releases.**
-  For example, ``hgvs>=1.1,<1.2``. `hgvs` uses `Semantic Versioning
+  For example, ``hgvs>=1.5,<1.6``. `hgvs` uses `Semantic Versioning
   <http://semver.org/>`__.
 
 
