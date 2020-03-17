@@ -5,12 +5,6 @@ short_description = "HGVS Parser, Formatter, Mapper, Validator"
 with open("docs/description.txt") as f:
     long_description = f.read()
 
-if version_info < (3, ):
-    version_specific_requirements = ['unicodecsv']
-else:
-    version_specific_requirements = []
-
-
 setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
       long_description=long_description,
       use_scm_version=True,
@@ -35,7 +29,6 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
           "License :: OSI Approved :: Apache Software License",
           "Operating System :: OS Independent",
           "Programming Language :: Python :: 3",
-          "Programming Language :: Python :: 2",
           "Programming Language :: Python",
           "Topic :: Database :: Front-Ends",
           "Topic :: Scientific/Engineering :: Bio-Informatics",
@@ -60,9 +53,8 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
           "parsley",
           "psycopg2-binary",
           "six",
-      ] + version_specific_requirements,
+      ],
       setup_requires=[
-          "cython",
           "pytest-runner",
           "setuptools_scm",
           "wheel",
