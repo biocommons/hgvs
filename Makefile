@@ -141,11 +141,6 @@ cleanest: cleaner
 	-make -C doc $@
 	-make -C examples $@
 
-#=> pristine distclean: above, and delete anything unknown to mercurial
-.PHONY: pristine distclean
-pristine distclean: cleanest
-	if [ -d .hg ]; then hg st -inu0 | xargs -0r /bin/rm -fv; fi
-
 
 ############################################################################
 #= HGVS specific
