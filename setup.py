@@ -55,6 +55,7 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
           "six",
       ],
       setup_requires=[
+          "cython",             # required for RTD build :-)
           "pytest-runner",
           "setuptools_scm",
           "wheel",
