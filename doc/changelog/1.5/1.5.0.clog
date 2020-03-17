@@ -1,5 +1,5 @@
 clog format: 1; -*-outline-*-
-* HEAD (2020-03-16)
+* 1.5.0 (2020-03-16)
 Changes since 1.4.0 (2020-01-26).
 ** Special Attention
 *** Closes #552: Python 2.7 is no longer supported [cf3b95b] (Reece Hart)
