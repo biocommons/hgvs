@@ -175,7 +175,9 @@ class VariantMapper(object):
         pos_n.uncertain = var_g.posedit.pos.uncertain
         var_n = hgvs.sequencevariant.SequenceVariant(
             ac=tx_ac, type="n", posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
-        if self.replace_reference:
+        if (self.replace_reference
+            and var_n.posedit.pos.start.base >= 0
+            and var_n.posedit.pos.end.base < mapper.tgt_len):
             self._replace_reference(var_n)
         if self.add_gene_symbol:
             self._update_gene_symbol(var_n, var_g.gene)

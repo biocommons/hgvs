@@ -118,24 +118,6 @@ class Test437_RMRP(unittest.TestCase):
             e2_g = self.am37.n_to_g(self.e2_n)
 
             
-
-def test_invitae_examples(parser, am37):
-    tests = [
-        # ("NC_000009.11:g.35657741A>G", "NR_003051.3:n.*7T>C"), # Grammar doesn't support n.*
-        ("NC_000009.11:g.35658020C>T", "NR_003051.3:n.-5G>A"),
-        ]
-    
-    hgvs.global_config.mapping.strict_bounds = False
-
-    for hgvs_g, hgvs_t in tests:
-        var_g = parser.parse(hgvs_g)
-        var_t = parser.parse(hgvs_t)
-        assert hgvs_t == str(am37.g_to_t(var_g, var_t.ac))
-
-    hgvs.global_config.mapping.strict_bounds = True
-
-
-
 def test_oob_dup(parser, am37):
     """Intentionally preserve dup, derived from genomic sequence, when
     projecting to out-of-bounds transcript coordinates
@@ -153,6 +135,28 @@ def test_oob_dup(parser, am37):
     assert str(var_n2) == "NR_003051.3:n.-21_-19dup"
 
     hgvs.global_config.mapping.strict_bounds = True
+
+
+
+def test_invitae_examples(parser, am37):
+    tests = [
+        ("NC_000009.11:g.35658020C>T", "NR_003051.3:n.-5G>A"),
+
+        # ("NC_000009.11:g.35657741A>G", "NR_003051.3:n.*7T>C"),
+        # See #592: hgvs doesn't support n.* coordinates, so
+        # rewrite of previous variant with SEQ_START coordinate
+        ("NC_000009.11:g.35657741A>G", "NR_003051.3:n.275T>C"),
+        ]
+    
+    hgvs.global_config.mapping.strict_bounds = False
+
+    for hgvs_g, hgvs_t in tests:
+        var_g = parser.parse(hgvs_g)
+        var_t = parser.parse(hgvs_t)
+        assert hgvs_t == str(am37.g_to_t(var_g, var_t.ac))
+
+    hgvs.global_config.mapping.strict_bounds = True
+
 
 
 
