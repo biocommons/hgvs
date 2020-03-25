@@ -23,7 +23,7 @@ import hgvs.utils.altseqbuilder as altseqbuilder
 import hgvs.sequencevariant
 import hgvs.validator
 
-from hgvs.exceptions import HGVSUnsupportedOperationError, HGVSInvalidVariantError
+from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
 from hgvs.decorators.lru_cache import lru_cache
 from hgvs.enums import PrevalidationLevel
 from hgvs.utils.reftranscriptdata import RefTranscriptData
@@ -423,11 +423,8 @@ class VariantMapper(object):
         if var.type not in "cgmnr":
             raise HGVSUnsupportedOperationError("Can only update references for type c, g, m, n, r")
 
-        if var.posedit.edit.type == "ins":
-            # insertions have no reference sequence (zero-width), so return as-is
-            return var
-        if var.posedit.edit.type == "con":
-            # conversions have no reference sequence (zero-width), so return as-is
+        if var.posedit.edit.type in ("ins", "con"):
+            # these types have no reference sequence (zero-width), so return as-is
             return var
 
         pos = var.posedit.pos
@@ -443,7 +440,21 @@ class VariantMapper(object):
             pos = mapper.c_to_n(var.posedit.pos)
         else:
             pos = var.posedit.pos
-        seq = self.hdp.get_seq(var.ac, pos.start.base - 1, pos.end.base)
+
+        seq_start = pos.start.base - 1
+        seq_end = pos.end.base
+        
+        # When strict_bounds is False and an error occurs, return
+        # variant as-is
+
+        try:
+            seq = self.hdp.get_seq(var.ac, seq_start, seq_end)
+        except HGVSDataNotAvailableError as e:
+            if (seq_start < 0 or len(seq) != seq_end - seq_start):
+                assert not hgvs.global_config.mapping.strict_bounds, f"{var}: Got out of bounds variant with strict_bounds enabled"
+                assert var.type in "cnr", f"Should not see out of bounds variant on type {var.type}"
+                _logger.info(f"{var}: variant outside sequence bounds; reference sequence can't be validated")
+                return var
 
         edit = var.posedit.edit
         if edit.ref != seq:

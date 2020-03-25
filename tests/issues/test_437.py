@@ -117,6 +117,23 @@ class Test437_RMRP(unittest.TestCase):
         with pytest.raises(HGVSInvalidVariantError):
             e2_g = self.am37.n_to_g(self.e2_n)
 
+            
+
+def test_invitae_examples(parser, am37):
+    tests = [
+        # ("NC_000009.11:g.35657741A>G", "NR_003051.3:n.*7T>C"), # Grammar doesn't support n.*
+        ("NC_000009.11:g.35658020C>T", "NR_003051.3:n.-5G>A"),
+        ]
+    
+    hgvs.global_config.mapping.strict_bounds = False
+
+    for hgvs_g, hgvs_t in tests:
+        var_g = parser.parse(hgvs_g)
+        var_t = parser.parse(hgvs_t)
+        assert hgvs_t == str(am37.g_to_t(var_g, var_t.ac))
+
+    hgvs.global_config.mapping.strict_bounds = True
+
 
 
 def test_oob_dup(parser, am37):
