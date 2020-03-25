@@ -123,7 +123,7 @@ class VariantMapper(object):
         var_t.fill_ref(self.hdp)
         mapper = self._fetch_AlignmentMapper(
             tx_ac=var_t.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
-        if mapper.is_coding_transcript:
+        if var_t.type == "c":
             var_out = VariantMapper.c_to_g(
                 self, var_c=var_t, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         else:

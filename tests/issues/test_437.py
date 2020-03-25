@@ -138,25 +138,35 @@ def test_oob_dup(parser, am37):
 
 
 
+
 def test_invitae_examples(parser, am37):
-    tests = [
+    """bidirectional g↔t tests of out-of-bounds variants provided by Invitae"""
+    invitae_examples = [
         ("NC_000009.11:g.35658020C>T", "NR_003051.3:n.-5G>A"),
 
         # ("NC_000009.11:g.35657741A>G", "NR_003051.3:n.*7T>C"),
         # See #592: hgvs doesn't support n.* coordinates, so
         # rewrite of previous variant with SEQ_START coordinate
         ("NC_000009.11:g.35657741A>G", "NR_003051.3:n.275T>C"),
+
+        # Same position, just testing c-n conversion
+        ("NC_000001.10:g.18807339T>C", "NM_152375.2:n.-85T>C"),
+        # Broken, probably in c-to-n translation:
+        #("NC_000001.10:g.18807339T>C", "NM_152375.2:c.-137T>C"),
         ]
-    
+
     hgvs.global_config.mapping.strict_bounds = False
 
-    for hgvs_g, hgvs_t in tests:
+    for hgvs_g, hgvs_t in invitae_examples:
         var_g = parser.parse(hgvs_g)
         var_t = parser.parse(hgvs_t)
-        assert hgvs_t == str(am37.g_to_t(var_g, var_t.ac))
+        assert hgvs_g == str(am37.t_to_g(var_t))
+        if var_t.type == "c":
+            assert hgvs_t == str(am37.g_to_c(var_g, var_t.ac))
+        else:
+            assert hgvs_t == str(am37.g_to_n(var_g, var_t.ac))
 
     hgvs.global_config.mapping.strict_bounds = True
-
 
 
 
