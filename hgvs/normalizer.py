@@ -15,14 +15,12 @@ import hgvs.variantmapper
 from hgvs.utils.norm import normalize_alleles
 from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
 
-
 _logger = logging.getLogger(__name__)
 
 
 class Normalizer(object):
     """Perform variant normalization
     """
-
     def __init__(self,
                  hdp,
                  cross_boundaries=hgvs.global_config.normalizer.cross_boundaries,
@@ -57,9 +55,13 @@ class Normalizer(object):
         assert isinstance(var, hgvs.sequencevariant.SequenceVariant
                           ), "variant must be a parsed HGVS sequence variant object"
 
+        # keep a shallow reference to the original variant, to be returned
+        # as-is under certain circumstances
+        orig_var = var
+
         if self.validator:
             self.validator.validate(var)
-            
+
         init_met = False
         if var.posedit is not None and isinstance(var.posedit, hgvs.edit.AARefAlt):
             init_met = var.posedit.init_met
@@ -94,12 +96,10 @@ class Normalizer(object):
                     "Normalization of intronic variants is not supported")
 
         if var.posedit.pos.start.base < 0 or var.posedit.pos.end.base < 0:
-            _logger.info("Out-of-bounds variant returned as-is")
-            return var
+            _logger.warning("Out-of-bounds variant returned as-is")
+            return orig_var
 
-        # g, m, n, r sequences all use sequence start as the datum
-        # That"s an essential assumption herein
-        # (this is why we may have converted from c to n above)
+        # restrict var types to those that use sequence start (i.e., not c.)
         assert var.type in "gmnr", "Internal Error: variant must be of type g, m, n, r"
 
         bound_s, bound_e = self._get_boundary(var)
