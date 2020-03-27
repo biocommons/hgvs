@@ -449,14 +449,15 @@ class VariantMapper(object):
         # When strict_bounds is False and an error occurs, return
         # variant as-is
 
-        try:
-            seq = self.hdp.get_seq(var.ac, seq_start, seq_end)
-        except HGVSDataNotAvailableError as e:
-            if (seq_start < 0 or len(seq) != seq_end - seq_start):
-                assert not hgvs.global_config.mapping.strict_bounds, f"{var}: Got out of bounds variant with strict_bounds enabled"
-                assert var.type in "cnr", f"Should not see out of bounds variant on type {var.type}"
-                _logger.info(f"{var}: variant outside sequence bounds; reference sequence can't be validated")
-                return var
+        if seq_start < 0:
+            # this is an out-of-bounds variant
+            return var
+
+        seq = self.hdp.get_seq(var.ac, seq_start, seq_end)
+
+        if len(seq) != seq_end - seq_start:
+            # tried to read beyond seq end; this is an out-of-bounds variant
+            return var
 
         edit = var.posedit.edit
         if edit.ref != seq:
