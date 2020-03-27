@@ -28,8 +28,6 @@ import hgvs.variantmapper
 from hgvs.exceptions import HGVSInvalidVariantError
 
 
-
-
 @pytest.mark.usefixtures("kitchen_sink_setup")
 class Test437_RMRP(unittest.TestCase):
 
@@ -44,19 +42,17 @@ class Test437_RMRP(unittest.TestCase):
         # "NR_003051.3:n.269N>C", "NC_000009.11:g.35657747A>G"
         # "NR_003051.3:n.-19_-18insACT", "NC_000009.11:g.35658038_35658040dup"   # ~= 40_41insCAT; NB rotated 1
 
-
         self.s1_n = self.parser.parse("NR_003051.3:n.1G>T")
         self.e1_n = self.parser.parse("NR_003051.3:n.268T>C")
-        
+
         self.s2_n = self.parser.parse("NR_003051.3:n.-1G>C")
         self.e2_n = self.parser.parse("NR_003051.3:n.269N>C")
-        
+
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp)
         self.alm37 = hgvs.alignmentmapper.AlignmentMapper(
             self.hdp, "NR_003051.3", "NC_000009.11", "splign")
         self.alm38 = hgvs.alignmentmapper.AlignmentMapper(
             self.hdp, "NR_003051.3", "NC_000009.12", "splign")
-
 
 
     def test_tx_start(self):
@@ -69,12 +65,10 @@ class Test437_RMRP(unittest.TestCase):
         var_ng = self.am37.n_to_g(var_n)
         assert var_ng.posedit.pos == var_g.posedit.pos
         assert str(var_ng) == hgvs_g
-    
+
         var_gn = self.am37.g_to_n(var_g, var_n.ac)
         assert var_gn.posedit.pos == var_n.posedit.pos
         assert str(var_gn) == hgvs_n
-
-
 
     def test_terminii(self):
         hgvs.global_config.mapping.strict_bounds = True
@@ -88,7 +82,6 @@ class Test437_RMRP(unittest.TestCase):
         e1_g = self.am37.n_to_g(self.e1_n)
         assert str(e1_g) == "NC_000009.11:g.35657748A>G"
         assert self.e1_n == self.am37.g_to_n(e1_g, self.e1_n.ac)
-
 
         # Disable bounds checking and retry
         hgvs.global_config.mapping.strict_bounds = False
@@ -105,7 +98,6 @@ class Test437_RMRP(unittest.TestCase):
 
         hgvs.global_config.mapping.strict_bounds = True
 
-
     def test_enforce_strict_bounds(self):
         """Ensure that an exception is raised when outside bounds"""
 
@@ -117,7 +109,7 @@ class Test437_RMRP(unittest.TestCase):
         with pytest.raises(HGVSInvalidVariantError):
             e2_g = self.am37.n_to_g(self.e2_n)
 
-            
+
 def test_oob_dup(parser, am37):
     """Intentionally preserve dup, derived from genomic sequence, when
     projecting to out-of-bounds transcript coordinates
@@ -137,8 +129,6 @@ def test_oob_dup(parser, am37):
     hgvs.global_config.mapping.strict_bounds = True
 
 
-
-
 def test_invitae_examples(parser, am37):
     """bidirectional g↔t tests of out-of-bounds variants provided by Invitae"""
     invitae_examples = [
@@ -149,11 +139,10 @@ def test_invitae_examples(parser, am37):
         # rewrite of previous variant with SEQ_START coordinate
         ("NC_000009.11:g.35657741A>G", "NR_003051.3:n.275T>C"),
 
-        # Same position, just testing c-n conversion
+        # Same g. position, ensuring correct c-n equivalence
         ("NC_000001.10:g.18807339T>C", "NM_152375.2:n.-85T>C"),
-        # Broken, probably in c-to-n translation:
-        #("NC_000001.10:g.18807339T>C", "NM_152375.2:c.-137T>C"),
-        ]
+        ("NC_000001.10:g.18807339T>C", "NM_152375.2:c.-137T>C"),
+    ]
 
     hgvs.global_config.mapping.strict_bounds = False
 
@@ -169,7 +158,6 @@ def test_invitae_examples(parser, am37):
     hgvs.global_config.mapping.strict_bounds = True
 
 
-
 if __name__ == "__main__":
     from hgvs.easy import *
-    test_437(parser=parser, am=am37)
+    test_invitae_examples(parser=parser, am37=am37)
