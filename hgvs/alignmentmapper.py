@@ -201,34 +201,21 @@ class AlignmentMapper(object):
             raise HGVSInvalidIntervalError(
                 "The given coordinate is outside the bounds of the reference sequence.")
 
-        # start
-        if n_interval.start.base <= self.cds_start_i:
-            cs = n_interval.start.base - (self.cds_start_i + 1)
-            cs_datum = Datum.CDS_START
-        elif n_interval.start.base > self.cds_start_i and n_interval.start.base <= self.cds_end_i:
-            cs = n_interval.start.base - self.cds_start_i
-            cs_datum = Datum.CDS_START
-        else:
-            cs = n_interval.start.base - self.cds_end_i
-            cs_datum = Datum.CDS_END
+        def pos_n_to_c(pos):
+            if pos.base <= self.cds_start_i:
+                c = pos.base - self.cds_start_i - (1 if pos.base > 0 else 0)
+                c_datum = Datum.CDS_START
+            elif pos.base > self.cds_start_i and pos.base <= self.cds_end_i:
+                c = pos.base - self.cds_start_i
+                c_datum = Datum.CDS_START
+            else:
+                c = pos.base - self.cds_end_i
+                c_datum = Datum.CDS_END
+            return hgvs.location.BaseOffsetPosition(base=c, offset=pos.offset, datum=c_datum)
 
-        # end
-        if n_interval.end.base <= self.cds_start_i:
-            ce = n_interval.end.base - (self.cds_start_i + 1)
-            ce_datum = Datum.CDS_START
-        elif n_interval.end.base > self.cds_start_i and n_interval.end.base <= self.cds_end_i:
-            ce = n_interval.end.base - self.cds_start_i
-            ce_datum = Datum.CDS_START
-        else:
-            ce = n_interval.end.base - self.cds_end_i
-            ce_datum = Datum.CDS_END
-
-        c_interval = hgvs.location.BaseOffsetInterval(
-            start=hgvs.location.BaseOffsetPosition(
-                base=cs, offset=n_interval.start.offset, datum=cs_datum),
-            end=hgvs.location.BaseOffsetPosition(
-                base=ce, offset=n_interval.end.offset, datum=ce_datum),
-            uncertain=n_interval.uncertain)
+        c_interval = hgvs.location.BaseOffsetInterval(start=pos_n_to_c(n_interval.start),
+                                                      end=pos_n_to_c(n_interval.end),
+                                                      uncertain=n_interval.uncertain)
         return c_interval
 
 
@@ -238,36 +225,33 @@ class AlignmentMapper(object):
         if strict_bounds is None:
             strict_bounds = global_config.mapping.strict_bounds
 
-        if self.cds_start_i is None:    # cds_start_i defined iff cds_end_i defined; see assertion above
+        if self.cds_start_i is None:
             raise HGVSUsageError(
-                "CDS is undefined for {self.tx_ac}; cannot map from c. coordinate (non-coding transcript?)"
+                "CDS is undefined for {self.tx_ac}; this accession appears to be for a non-coding transcript"
                 .format(self=self))
 
-        # start
-        if c_interval.start.datum == Datum.CDS_START and c_interval.start.base < 0:
-            n_start = c_interval.start.base + self.cds_start_i + 1
-        elif c_interval.start.datum == Datum.CDS_START and c_interval.start.base > 0:
-            n_start = c_interval.start.base + self.cds_start_i
-        elif c_interval.start.datum == Datum.CDS_END:
-            n_start = c_interval.start.base + self.cds_end_i
-        # end
-        if c_interval.end.datum == Datum.CDS_START and c_interval.end.base < 0:
-            n_end = c_interval.end.base + self.cds_start_i + 1
-        elif c_interval.end.datum == Datum.CDS_START and c_interval.end.base > 0:
-            n_end = c_interval.end.base + self.cds_start_i
-        elif c_interval.end.datum == Datum.CDS_END:
-            n_end = c_interval.end.base + self.cds_end_i
+        def pos_c_to_n(pos):
+            if pos.datum == Datum.CDS_START:
+                n = pos.base + self.cds_start_i
+                if pos.base < 0:   # correct for lack of c.0 coordinate
+                    n += 1
+            elif pos.datum == Datum.CDS_END:
+                n = pos.base + self.cds_end_i
+            if n <= 0:             # correct for lack of n.0 coordinate
+                n -= 1
+            if (n <= 0 or n > self.tgt_len):
+                if strict_bounds:
+                    raise HGVSInvalidIntervalError(f"c.{pos} coordinate is out of bounds")
+            return hgvs.location.BaseOffsetPosition(base=n,
+                                                    offset=pos.offset,
+                                                    datum=Datum.SEQ_START)
 
-        if strict_bounds and (n_start <= 0 or n_end > self.tgt_len):
-            raise HGVSInvalidIntervalError(
-                "The given coordinate is outside the bounds of the reference sequence.")
-        
-        n_interval = hgvs.location.BaseOffsetInterval(
-            start=hgvs.location.BaseOffsetPosition(
-                base=n_start, offset=c_interval.start.offset, datum=Datum.SEQ_START),
-            end=hgvs.location.BaseOffsetPosition(
-                base=n_end, offset=c_interval.end.offset, datum=Datum.SEQ_START),
-            uncertain=c_interval.uncertain)
+        n_start = pos_c_to_n(c_interval.start)
+        n_end = pos_c_to_n(c_interval.end)
+
+        n_interval = hgvs.location.BaseOffsetInterval(start=pos_c_to_n(c_interval.start),
+                                                      end=pos_c_to_n(c_interval.end),
+                                                      uncertain=c_interval.uncertain)
         return n_interval
 
     def g_to_c(self, g_interval, strict_bounds=None):
@@ -287,8 +271,8 @@ class AlignmentMapper(object):
 
     def g_interval_is_inbounds(self, ival):
         grs = ival.start.base - 1 - self.gc_offset
-        gre = ival.end.base   - 1 - self.gc_offset
-        return grs>=0 and gre<=self.cigarmapper.ref_len
+        gre = ival.end.base - 1 - self.gc_offset
+        return grs >= 0 and gre <= self.cigarmapper.ref_len
 
 
 # <LICENSE>

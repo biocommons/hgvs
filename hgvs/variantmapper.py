@@ -23,7 +23,7 @@ import hgvs.utils.altseqbuilder as altseqbuilder
 import hgvs.sequencevariant
 import hgvs.validator
 
-from hgvs.exceptions import HGVSUnsupportedOperationError, HGVSInvalidVariantError
+from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
 from hgvs.decorators.lru_cache import lru_cache
 from hgvs.enums import PrevalidationLevel
 from hgvs.utils.reftranscriptdata import RefTranscriptData
@@ -123,7 +123,7 @@ class VariantMapper(object):
         var_t.fill_ref(self.hdp)
         mapper = self._fetch_AlignmentMapper(
             tx_ac=var_t.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
-        if mapper.is_coding_transcript:
+        if var_t.type == "c":
             var_out = VariantMapper.c_to_g(
                 self, var_c=var_t, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         else:
@@ -175,7 +175,9 @@ class VariantMapper(object):
         pos_n.uncertain = var_g.posedit.pos.uncertain
         var_n = hgvs.sequencevariant.SequenceVariant(
             ac=tx_ac, type="n", posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
-        if self.replace_reference:
+        if (self.replace_reference
+            and var_n.posedit.pos.start.base >= 0
+            and var_n.posedit.pos.end.base < mapper.tgt_len):
             self._replace_reference(var_n)
         if self.add_gene_symbol:
             self._update_gene_symbol(var_n, var_g.gene)
@@ -423,11 +425,8 @@ class VariantMapper(object):
         if var.type not in "cgmnr":
             raise HGVSUnsupportedOperationError("Can only update references for type c, g, m, n, r")
 
-        if var.posedit.edit.type == "ins":
-            # insertions have no reference sequence (zero-width), so return as-is
-            return var
-        if var.posedit.edit.type == "con":
-            # conversions have no reference sequence (zero-width), so return as-is
+        if var.posedit.edit.type in ("ins", "con"):
+            # these types have no reference sequence (zero-width), so return as-is
             return var
 
         pos = var.posedit.pos
@@ -443,7 +442,22 @@ class VariantMapper(object):
             pos = mapper.c_to_n(var.posedit.pos)
         else:
             pos = var.posedit.pos
-        seq = self.hdp.get_seq(var.ac, pos.start.base - 1, pos.end.base)
+
+        seq_start = pos.start.base - 1
+        seq_end = pos.end.base
+        
+        # When strict_bounds is False and an error occurs, return
+        # variant as-is
+
+        if seq_start < 0:
+            # this is an out-of-bounds variant
+            return var
+
+        seq = self.hdp.get_seq(var.ac, seq_start, seq_end)
+
+        if len(seq) != seq_end - seq_start:
+            # tried to read beyond seq end; this is an out-of-bounds variant
+            return var
 
         edit = var.posedit.edit
         if edit.ref != seq:

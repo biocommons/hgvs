@@ -115,7 +115,7 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
     def test_map_of_c_out_of_reference_bound(self):
         hgvs_c = "NM_000249.3:c.-73960_*46597del"
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
-        with pytest.raises(HGVSError, match='coordinate is outside the bounds'):
+        with pytest.raises(HGVSError, match='coordinate is out of bounds'):
             self.vm.c_to_p(var_c)
 
 
