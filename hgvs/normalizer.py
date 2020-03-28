@@ -47,7 +47,7 @@ class Normalizer(object):
         self.validator = None
         if validate:
             self.validator = hgvs.validator.IntrinsicValidator(strict=False)
-        self.hm = variantmapper or hgvs.variantmapper.VariantMapper(self.hdp)
+        self.vm = variantmapper or hgvs.variantmapper.VariantMapper(self.hdp)
 
     def normalize(self, var):
         """Perform sequence variants normalization for single variant
@@ -88,15 +88,20 @@ class Normalizer(object):
         # and perform normalization at the n. level, then convert the
         # normalized n. variant back to c. variant.
         if type == "c":
-            var = self.hm.c_to_n(var)
+            var = self.vm.c_to_n(var)
 
         if var.type in "nr":
             if var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0:
                 raise HGVSUnsupportedOperationError(
                     "Normalization of intronic variants is not supported")
 
-        if var.posedit.pos.start.base < 0 or var.posedit.pos.end.base < 0:
-            _logger.warning("Out-of-bounds variant returned as-is")
+        def is_valid_pos(ac, pos):
+            # tests whether the sequence position actually exists
+            return self.hdp.get_seq(ac, pos-1, pos)  # 0-based!
+        if var.posedit.pos.start.base < 0 or not is_valid_pos(var.ac, var.posedit.pos.end.base):
+            if hgvs.global_config.mapping.strict_bounds:
+                raise HGVSInvalidVariantError(f"{var}: coordinates are out-of-bounds")
+            _logger.warning(f"{var}: coordinates are out-of-bounds; returning as-is")
             return orig_var
 
         # restrict var types to those that use sequence start (i.e., not c.)
@@ -181,7 +186,7 @@ class Normalizer(object):
         var_norm.posedit.pos.end.base = ref_end
 
         if type == "c":
-            var_norm = self.hm.n_to_c(var_norm)
+            var_norm = self.vm.n_to_c(var_norm)
 
         return var_norm
 

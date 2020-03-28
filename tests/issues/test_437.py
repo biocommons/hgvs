@@ -134,14 +134,18 @@ def test_invitae_examples(parser, am37):
     invitae_examples = [
         ("NC_000009.11:g.35658020C>T", "NR_003051.3:n.-5G>A"),
 
+        # See #592: hgvs doesn't support n.* coordinates, so rewrite
+        # n.*7 as n.275.
         # ("NC_000009.11:g.35657741A>G", "NR_003051.3:n.*7T>C"),
-        # See #592: hgvs doesn't support n.* coordinates, so
-        # rewrite of previous variant with SEQ_START coordinate
         ("NC_000009.11:g.35657741A>G", "NR_003051.3:n.275T>C"),
 
         # Same g. position, ensuring correct c-n equivalence
         ("NC_000001.10:g.18807339T>C", "NM_152375.2:n.-85T>C"),
         ("NC_000001.10:g.18807339T>C", "NM_152375.2:c.-137T>C"),
+
+        # Same transcript, 5' and 3' out-of-bounds
+        ("NC_000007.13:g.94953895G>A", "NM_000446.5:c.-108C>T"),
+        ("NC_000007.13:g.94927495G>A", "NM_000446.5:c.*761C>T"),
     ]
 
     hgvs.global_config.mapping.strict_bounds = False
