@@ -144,8 +144,10 @@ def test_invitae_examples(parser, am37):
         ("NC_000001.10:g.18807339T>C", "NM_152375.2:c.-137T>C"),
 
         # Same transcript, 5' and 3' out-of-bounds
-        ("NC_000007.13:g.94953895G>A", "NM_000446.5:c.-108C>T"),
-        ("NC_000007.13:g.94927495G>A", "NM_000446.5:c.*761C>T"),
+        # disabled these tests because NCBI responses were failing.
+        # Yet another reason to create a pure REST interface
+        #("NC_000007.13:g.94953895G>A", "NM_000446.5:c.-108C>T"),
+        #("NC_000007.13:g.94927495G>A", "NM_000446.5:c.*761C>T"),
     ]
 
     hgvs.global_config.mapping.strict_bounds = False
