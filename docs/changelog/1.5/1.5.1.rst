@@ -1,0 +1,20 @@
+
+1.5.1 (2020-03-28)
+###################
+
+Changes since 1.5.0 (2020-03-17).
+
+Bug Fixes
+$$$$$$$$$$
+
+* `#437 <https://github.com/biocommons/hgvs/issues/437/>`_: Fix bug for incorrect c↔n for variation between seq start and cds start [`cb68369 <https://github.com/biocommons/hgvs/commit/cb68369>`_] (Reece Hart)
+* `#437 <https://github.com/biocommons/hgvs/issues/437/>`_: Fix minor bug that prevented an exception from being raised when strict_bounds=True [`fb7c990 <https://github.com/biocommons/hgvs/commit/fb7c990>`_] (Reece Hart)
+* `#591 <https://github.com/biocommons/hgvs/issues/591/>`_: Use mapper boundary rather than seq length to determine when to infer ref from genomic sequence [`0846086 <https://github.com/biocommons/hgvs/commit/0846086>`_] (Reece Hart)
+* `#591 <https://github.com/biocommons/hgvs/issues/591/>`_: don't replace reference on out-of-bounds variation [`25a96d6 <https://github.com/biocommons/hgvs/commit/25a96d6>`_] (Reece Hart)
+* `#594 <https://github.com/biocommons/hgvs/issues/594/>`_: normalizer should return original c. variant when it can't normalize an oob variant [`a365b84 <https://github.com/biocommons/hgvs/commit/a365b84>`_] (Reece Hart)
+* VariantMapper._replace_reference(): return variant unmodified if out-of-bounds [`0591d25 <https://github.com/biocommons/hgvs/commit/0591d25>`_] (Reece Hart)
+
+Internal and Developer Changes
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+* Use Invitae's selected examples of out-of-bounds variants for bidirectional g↔t tests [`ebb9c44 <https://github.com/biocommons/hgvs/commit/ebb9c44>`_] (Reece Hart)
