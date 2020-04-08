@@ -59,6 +59,7 @@ class SequenceVariant(object):
     def fill_ref(self, hdp):
         # TODO: Refactor. SVs should not operate on themselves when
         # external resources are required
+        # replace_reference should be moved outside function
         vm = hgvs.variantmapper.VariantMapper(hdp)
         type = None
         if isinstance(self.posedit, hgvs.posedit.PosEdit) and isinstance(

@@ -24,7 +24,7 @@ import hgvs.posedit
 import hgvs.sequencevariant
 import hgvs.parser
 import hgvs.dataproviders.uta
-import hgvs.variantmapper
+import hgvs.assemblymapper
 
 
 _logger = logging.getLogger(__name__)
@@ -36,10 +36,10 @@ def parse_args(argv):
     ap.add_argument('--assembly', '-A', default='GRCh37')
     ap.add_argument('--in-filename', '-i', default='-')
     ap.add_argument('--out-filename', '-o', default='-')
-    ap.add_argument('--with-c-dot',
-                    '-c',
+    ap.add_argument('--add-transcript-variants',
+                    '-t',
                     default=False,
-                    help="add transcript variant projections to c",
+                    help="add transcript variant projections",
                     action='store_true')
     args = ap.parse_args(argv)
     return args
@@ -89,7 +89,7 @@ def alts_as_genomic_hgvs(contig_ac_map, r, keep_left_anchor=False):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.WARNING)
 
     try:
         import vcf
@@ -100,12 +100,12 @@ if __name__ == '__main__':
 
     opts = parse_args(sys.argv[1:])
 
-    if opts.with_c_dot:
+    if opts.add_transcript_variants:
         hp = hgvs.parser.Parser()
         hdp = hgvs.dataproviders.uta.connect()
-        evm = easyvariantmapper = hgvs.variantmapper.AssemblyMapper(hdp,
-                                                                       assembly_name=opts.assembly,
-                                                                       alt_aln_method='splign')
+        am = hgvs.assemblymapper.AssemblyMapper(hdp,
+                                                assembly_name=opts.assembly,
+                                                alt_aln_method='splign')
 
     assemblies = get_assemblies()
     assert opts.assembly in assemblies, "{} not in known assemblies (known: {}".format(
@@ -124,12 +124,12 @@ if __name__ == '__main__':
     for r in vr:
         genomic_hgvs = alts_as_genomic_hgvs(contig_ac_map, r)
         hgvs_variants = genomic_hgvs
-        if opts.with_c_dot:
-            coding_hgvs = []
+        if opts.add_transcript_variants:
+            transcript_hgvs = []
             for hv in hgvs_variants:
                 g_var = hp.parse_hgvs_variant(hv)
-                c_vars = [evm.g_to_c(g_var, ac) for ac in evm.relevant_transcripts(g_var)]
-                coding_hgvs += [str(c_var) for c_var in c_vars]
-            hgvs_variants += coding_hgvs
+                t_vars = [am.g_to_t(g_var, ac) for ac in am.relevant_transcripts(g_var)]
+                transcript_hgvs += [str(t_var) for t_var in t_vars]
+            hgvs_variants += transcript_hgvs
         r.add_info('HGVS', '|'.join(hgvs_variants))
         vw.write_record(r)
