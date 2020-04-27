@@ -148,12 +148,12 @@ class UTABase(Interface):
             from transcript T
             join exon_set ES on T.ac=ES.tx_ac where alt_aln_method != 'transcript' and hgnc=?
             """,
-        "tx_for_region":
+        "alignments_for_region":
         """
             select tx_ac,alt_ac,alt_strand,alt_aln_method,min(start_i) as start_i,max(end_i) as end_i
             from exon_set ES
             join exon E on ES.exon_set_id=E.exon_set_id 
-            where alt_ac=? and alt_aln_method=?
+            where alt_ac=?
             group by tx_ac,alt_ac,alt_strand,alt_aln_method
             having min(start_i) < ? and ? <= max(end_i)
             """,
@@ -337,8 +337,27 @@ class UTABase(Interface):
         :param int start_i: 5' bound of region
         :param int end_i: 3' bound of region
         """
-        return self._fetchall(self._queries['tx_for_region'],
-                              [alt_ac, alt_aln_method, start_i, end_i])
+
+        return self.get_alignments_for_region(alt_ac=alt_ac, start_i=start_i, end_i=end_i,
+                                              alt_aln_method=alt_aln_method)
+
+    def get_alignments_for_region(self, alt_ac, start_i, end_i, alt_aln_method=None):
+        """
+        return transcripts that overlap given region
+
+        :param str alt_ac: reference sequence (e.g., NC_000007.13)
+        :param int start_i: 5' bound of region
+        :param int end_i: 3' bound of region
+        :param str alt_aln_method: OPTIONAL alignment method (e.g., splign)
+        """
+
+        alignments = self._fetchall(self._queries['alignments_for_region'],
+                                    [alt_ac, start_i, end_i])
+        if alt_aln_method is not None:
+            alignments = [a for a in alignments
+                          if a["alt_aln_method"] == alt_aln_method]
+        return alignments
+
 
     def get_tx_identity_info(self, tx_ac):
         """returns features associated with a single transcript.
