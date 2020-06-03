@@ -112,7 +112,7 @@ Local Installation of UTA (optional)
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
-The easiest way to install UTA locally is to use the docker image:
+The easiest way to install UTA locally is to use the docker image::
 
   $ docker run -d --name uta_20170117 -p 15032:5432 biocommons/uta:uta_20170117
 
