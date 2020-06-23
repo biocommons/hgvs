@@ -148,7 +148,7 @@ We can now project the genomic variant, ``var_g``, to each of these
 transcripts using the ``g_to_t`` function, and the transcript variant
 to a protein sequnce using the ``t_to_p`` function.
 
-  >>> for ac in get_relevant_transcripts(var_g):
+  >>> for ac in sorted(get_relevant_transcripts(var_g)):
   ...     var_t = g_to_t(var_g, ac)
   ...     var_p = t_to_p(var_t)
   ...     print("-> " + str(var_t) + " (" + str(var_p) + ") ")
