@@ -1,7 +1,12 @@
+import os
+
 import pytest
 
 import hgvs.easy
 from hgvs.extras.babelfish import Babelfish
+
+from support import CACHE
+hgvs.easy.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
 
 
 @pytest.fixture(scope="session", autouse=True)
