@@ -10,7 +10,7 @@ SELF:=$(firstword $(MAKEFILE_LIST))
 
 PKG=hgvs
 PKGD=$(subst .,/,${PKG})
-PYV:=3.7
+PYV:=3.8
 VEDIR=venv/${PYV}
 
 TEST_DIRS:=tests
@@ -29,14 +29,9 @@ help:
 ############################################################################
 #= SETUP, INSTALLATION, PACKAGING
 
-#=> venv: make a Python 2.7 virtual environment
-venv/2.7: venv/%:
-	virtualenv -p $$(type -p python$*) $@; \
-	source $@/bin/activate; \
-	pip install --upgrade pip setuptools
-
 #=> venv: make a Python 3 virtual environment
-venv/3.5 venv/3.6 venv/3.7: venv/%:
+venv: venv/3.8
+venv/3.6 venv/3.7 venv/3.8: venv/%:
 	python$* -mvenv $@; \
 	source $@/bin/activate; \
 	python -m ensurepip --upgrade; \
