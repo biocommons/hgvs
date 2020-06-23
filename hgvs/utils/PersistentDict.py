@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
 
 import pickle
 
+protocol = 4
 
 class PersistentDict(dict):
     ''' Persistent dictionary 
@@ -23,7 +23,7 @@ class PersistentDict(dict):
         if self.flag == 'r':
             return
         with open(self.filename, 'wb') as f:
-            pickle.dump(dict(self), f, -1)
+            pickle.dump(dict(self), f, protocol)
 
     def close(self):
         self.sync()
