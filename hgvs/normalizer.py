@@ -97,7 +97,16 @@ class Normalizer(object):
 
         def is_valid_pos(ac, pos):
             # tests whether the sequence position actually exists
-            return self.hdp.get_seq(ac, pos-1, pos)  # 0-based!
+            # This is *way* janky.
+            # TODO: push functionality to hdp which can implement differently
+            # based on capabilities of sequence backend
+            try:
+                s = self.hdp.get_seq(ac, pos-1, pos)  # 0-based!
+                return s != ""
+            except HGVSDataNotAvailableError as e:
+                # Bad Request indicates that we got to NCBI, but the request
+                # was invalid. 
+                return "Bad Request" not in str(e)
         if var.posedit.pos.start.base < 0 or not is_valid_pos(var.ac, var.posedit.pos.end.base):
             if hgvs.global_config.mapping.strict_bounds:
                 raise HGVSInvalidVariantError(f"{var}: coordinates are out-of-bounds")

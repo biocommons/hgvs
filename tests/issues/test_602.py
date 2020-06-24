@@ -18,3 +18,9 @@ def test_602(parser, am37):
 
     hgvs.global_config.mapping.strict_bounds = False
     var_c = am37.g_to_c(var_g, "NM_006772.2")  # No error
+
+
+if __name__ == "__main__":
+    from hgvs.easy import parser, am37
+    test_602(parser, am37)
+     
