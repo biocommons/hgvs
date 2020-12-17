@@ -21,7 +21,8 @@ import hgvs.utils.altseqbuilder as altseqbuilder
 import hgvs.sequencevariant
 import hgvs.validator
 
-from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError
+from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError, \
+    HGVSInvalidIntervalError
 from hgvs.decorators.lru_cache import lru_cache
 from hgvs.enums import PrevalidationLevel
 from hgvs.utils.reftranscriptdata import RefTranscriptData
@@ -166,10 +167,13 @@ class VariantMapper(object):
                 pos_n.end.base -= 1
                 edit_n.ref = ''
         else:
-            # variant at alignment gap
-            pos_g = mapper.n_to_g(pos_n)
-            edit_n = hgvs.edit.NARefAlt(
-                ref='', alt=self._get_altered_sequence(mapper.strand, pos_g, var_g))
+            try:
+                # variant at alignment gap
+                pos_g = mapper.n_to_g(pos_n)
+                edit_n = hgvs.edit.NARefAlt(
+                    ref='', alt=self._get_altered_sequence(mapper.strand, pos_g, var_g))
+            except IndexError:
+                raise HGVSInvalidIntervalError("Variant is at alignment gap.")
         pos_n.uncertain = var_g.posedit.pos.uncertain
         var_n = hgvs.sequencevariant.SequenceVariant(
             ac=tx_ac, type="n", posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
@@ -209,10 +213,13 @@ class VariantMapper(object):
                 pos_g.end.base -= 1
                 edit_g.ref = ''
         else:
-            # variant at alignment gap
-            pos_n = mapper.g_to_n(pos_g)
-            edit_g = hgvs.edit.NARefAlt(
-                ref='', alt=self._get_altered_sequence(mapper.strand, pos_n, var_n))
+            try:
+                # variant at alignment gap
+                pos_n = mapper.g_to_n(pos_g)
+                edit_g = hgvs.edit.NARefAlt(
+                    ref='', alt=self._get_altered_sequence(mapper.strand, pos_n, var_n))
+            except IndexError:
+                raise HGVSInvalidIntervalError("Variant is at alignment gap.")
         pos_g.uncertain = var_n.posedit.pos.uncertain
         var_g = hgvs.sequencevariant.SequenceVariant(
             ac=alt_ac, type="g", posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
@@ -251,10 +258,13 @@ class VariantMapper(object):
                 pos_c.end.base -= 1
                 edit_c.ref = ''
         else:
-            # variant at alignment gap
-            pos_g = mapper.c_to_g(pos_c)
-            edit_c = hgvs.edit.NARefAlt(
-                ref='', alt=self._get_altered_sequence(mapper.strand, pos_g, var_g))
+            try:
+                # variant at alignment gap
+                pos_g = mapper.c_to_g(pos_c)
+                edit_c = hgvs.edit.NARefAlt(
+                    ref='', alt=self._get_altered_sequence(mapper.strand, pos_g, var_g))
+            except IndexError:
+                raise HGVSInvalidIntervalError("Variant is at alignment gap.")
         pos_c.uncertain = var_g.posedit.pos.uncertain
         var_c = hgvs.sequencevariant.SequenceVariant(
             ac=tx_ac, type="c", posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
@@ -292,13 +302,16 @@ class VariantMapper(object):
                 pos_g.end.base -= 1
                 edit_g.ref = ''
         else:
-            # variant at alignment gap
-            var_n = copy.deepcopy(var_c)
-            var_n.posedit.pos = mapper.c_to_n(var_c.posedit.pos)
-            var_n.type = 'n'
-            pos_n = mapper.g_to_n(pos_g)
-            edit_g = hgvs.edit.NARefAlt(
-                ref='', alt=self._get_altered_sequence(mapper.strand, pos_n, var_n))
+            try:
+                # variant at alignment gap
+                var_n = copy.deepcopy(var_c)
+                var_n.posedit.pos = mapper.c_to_n(var_c.posedit.pos)
+                var_n.type = 'n'
+                pos_n = mapper.g_to_n(pos_g)
+                edit_g = hgvs.edit.NARefAlt(
+                    ref='', alt=self._get_altered_sequence(mapper.strand, pos_n, var_n))
+            except IndexError:
+                raise HGVSInvalidIntervalError("Variant is at alignment gap.")
         pos_g.uncertain = var_c.posedit.pos.uncertain
         var_g = hgvs.sequencevariant.SequenceVariant(
             ac=alt_ac, type="g", posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
