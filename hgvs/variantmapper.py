@@ -538,6 +538,26 @@ class VariantMapper(object):
             raise NotImplementedError("Only NARefAlt/Dup/Inv types are currently implemented")
         return edit_out
 
+    def update_sequence(self, seq, pos_start, pos_end, edit):
+        if edit.type == 'sub':
+            seq[pos_start] = edit.alt
+        elif edit.type == 'del':
+            del seq[pos_start:pos_end]
+        elif edit.type == 'ins':
+            seq.insert(pos_start + 1, edit.alt)
+        elif edit.type == 'delins':
+            del seq[pos_start:pos_end]
+            seq.insert(pos_start, edit.alt)
+        elif edit.type == 'dup':
+            seq.insert(pos_end, ''.join(seq[pos_start:pos_end]))
+        elif edit.type == 'inv':
+            seq[pos_start:pos_end] = list(reverse_complement(''.join(seq[pos_start:pos_end])))
+        elif edit.type == 'identity':
+            pass
+        else:
+            raise HGVSUnsupportedOperationError(
+                "Getting altered sequence for {type} is unsupported".format(type=edit.type))
+
     def _get_altered_sequence(self, strand, interval, var):
         seq = list(self.hdp.get_seq(var.ac, interval.start.base - 1, interval.end.base))
         # positions are 0-based and half-open
@@ -546,24 +566,7 @@ class VariantMapper(object):
         edit = var.posedit.edit
 
         try:
-            if edit.type == 'sub':
-                seq[pos_start] = edit.alt
-            elif edit.type == 'del':
-                del seq[pos_start:pos_end]
-            elif edit.type == 'ins':
-                seq.insert(pos_start + 1, edit.alt)
-            elif edit.type == 'delins':
-                del seq[pos_start:pos_end]
-                seq.insert(pos_start, edit.alt)
-            elif edit.type == 'dup':
-                seq.insert(pos_end, ''.join(seq[pos_start:pos_end]))
-            elif edit.type == 'inv':
-                seq[pos_start:pos_end] = list(reverse_complement(''.join(seq[pos_start:pos_end])))
-            elif edit.type == 'identity':
-                pass
-            else:
-                raise HGVSUnsupportedOperationError(
-                    "Getting altered sequence for {type} is unsupported".format(type=edit.type))
+            self.update_sequence(seq, pos_start, pos_end, edit)
         except IndexError:
             raise HGVSInvalidIntervalError("Specified index does not exist within sequence.")
 
