@@ -5,12 +5,10 @@ import hgvs
 
 
 class TestIssue606(unittest.TestCase):
-
     def test_606(self):
         """https://github.com/biocommons/hgvs/issues/606"""
 
         from hgvs.easy import am37, parser
-
         """
             Occasionally, an IndexError is thrown by the _get_altered_sequence method. This seems to occur
             when there is either inconsistent data for a transcript in UTA or an invalid variant input.
