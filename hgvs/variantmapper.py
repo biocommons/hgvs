@@ -21,7 +21,7 @@ import hgvs.utils.altseqbuilder as altseqbuilder
 import hgvs.sequencevariant
 import hgvs.validator
 
-from hgvs.exceptions import HGVSDataNotAvailableError, HGVSUnsupportedOperationError, HGVSInvalidVariantError, \
+from hgvs.exceptions import HGVSUnsupportedOperationError, HGVSInvalidVariantError, \
     HGVSInvalidIntervalError
 from hgvs.decorators.lru_cache import lru_cache
 from hgvs.enums import PrevalidationLevel
@@ -162,7 +162,8 @@ class VariantMapper(object):
                                              alt_ac=var_g.ac,
                                              alt_aln_method=alt_aln_method)
 
-        if (mapper.strand == -1 and not hgvs.global_config.mapping.strict_bounds
+        if (mapper.strand == -1
+                and not hgvs.global_config.mapping.strict_bounds
                 and not mapper.g_interval_is_inbounds(var_g.posedit.pos)):
             _logger.info("Renormalizing out-of-bounds minus strand variant on genomic sequence")
             var_g = self.left_normalizer.normalize(var_g)
@@ -184,7 +185,8 @@ class VariantMapper(object):
         var_n = hgvs.sequencevariant.SequenceVariant(ac=tx_ac,
                                                      type="n",
                                                      posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
-        if (self.replace_reference and var_n.posedit.pos.start.base >= 0
+        if (self.replace_reference
+                and var_n.posedit.pos.start.base >= 0
                 and var_n.posedit.pos.end.base < mapper.tgt_len):
             self._replace_reference(var_n)
         if self.add_gene_symbol:
