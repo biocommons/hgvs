@@ -167,13 +167,10 @@ class VariantMapper(object):
                 pos_n.end.base -= 1
                 edit_n.ref = ''
         else:
-            try:
-                # variant at alignment gap
-                pos_g = mapper.n_to_g(pos_n)
-                edit_n = hgvs.edit.NARefAlt(
-                    ref='', alt=self._get_altered_sequence(mapper.strand, pos_g, var_g))
-            except IndexError:
-                raise HGVSInvalidIntervalError("Variant is at alignment gap.")
+            # variant at alignment gap
+            pos_g = mapper.n_to_g(pos_n)
+            edit_n = hgvs.edit.NARefAlt(
+                ref='', alt=self._get_altered_sequence(mapper.strand, pos_g, var_g))
         pos_n.uncertain = var_g.posedit.pos.uncertain
         var_n = hgvs.sequencevariant.SequenceVariant(
             ac=tx_ac, type="n", posedit=hgvs.posedit.PosEdit(pos_n, edit_n))
@@ -213,13 +210,10 @@ class VariantMapper(object):
                 pos_g.end.base -= 1
                 edit_g.ref = ''
         else:
-            try:
-                # variant at alignment gap
-                pos_n = mapper.g_to_n(pos_g)
-                edit_g = hgvs.edit.NARefAlt(
-                    ref='', alt=self._get_altered_sequence(mapper.strand, pos_n, var_n))
-            except IndexError:
-                raise HGVSInvalidIntervalError("Variant is at alignment gap.")
+            # variant at alignment gap
+            pos_n = mapper.g_to_n(pos_g)
+            edit_g = hgvs.edit.NARefAlt(
+                ref='', alt=self._get_altered_sequence(mapper.strand, pos_n, var_n))
         pos_g.uncertain = var_n.posedit.pos.uncertain
         var_g = hgvs.sequencevariant.SequenceVariant(
             ac=alt_ac, type="g", posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
@@ -258,13 +252,10 @@ class VariantMapper(object):
                 pos_c.end.base -= 1
                 edit_c.ref = ''
         else:
-            try:
-                # variant at alignment gap
-                pos_g = mapper.c_to_g(pos_c)
-                edit_c = hgvs.edit.NARefAlt(
-                    ref='', alt=self._get_altered_sequence(mapper.strand, pos_g, var_g))
-            except IndexError:
-                raise HGVSInvalidIntervalError("Variant is at alignment gap.")
+            # variant at alignment gap
+            pos_g = mapper.c_to_g(pos_c)
+            edit_c = hgvs.edit.NARefAlt(
+                ref='', alt=self._get_altered_sequence(mapper.strand, pos_g, var_g))
         pos_c.uncertain = var_g.posedit.pos.uncertain
         var_c = hgvs.sequencevariant.SequenceVariant(
             ac=tx_ac, type="c", posedit=hgvs.posedit.PosEdit(pos_c, edit_c))
@@ -302,16 +293,13 @@ class VariantMapper(object):
                 pos_g.end.base -= 1
                 edit_g.ref = ''
         else:
-            try:
-                # variant at alignment gap
-                var_n = copy.deepcopy(var_c)
-                var_n.posedit.pos = mapper.c_to_n(var_c.posedit.pos)
-                var_n.type = 'n'
-                pos_n = mapper.g_to_n(pos_g)
-                edit_g = hgvs.edit.NARefAlt(
-                    ref='', alt=self._get_altered_sequence(mapper.strand, pos_n, var_n))
-            except IndexError:
-                raise HGVSInvalidIntervalError("Variant is at alignment gap.")
+            # variant at alignment gap
+            var_n = copy.deepcopy(var_c)
+            var_n.posedit.pos = mapper.c_to_n(var_c.posedit.pos)
+            var_n.type = 'n'
+            pos_n = mapper.g_to_n(pos_g)
+            edit_g = hgvs.edit.NARefAlt(
+                ref='', alt=self._get_altered_sequence(mapper.strand, pos_n, var_n))
         pos_g.uncertain = var_c.posedit.pos.uncertain
         var_g = hgvs.sequencevariant.SequenceVariant(
             ac=alt_ac, type="g", posedit=hgvs.posedit.PosEdit(pos_g, edit_g))
@@ -533,24 +521,27 @@ class VariantMapper(object):
         pos_end = var.posedit.pos.end.base - interval.start.base + 1
         edit = var.posedit.edit
 
-        if edit.type == 'sub':
-            seq[pos_start] = edit.alt
-        elif edit.type == 'del':
-            del seq[pos_start:pos_end]
-        elif edit.type == 'ins':
-            seq.insert(pos_start + 1, edit.alt)
-        elif edit.type == 'delins':
-            del seq[pos_start:pos_end]
-            seq.insert(pos_start, edit.alt)
-        elif edit.type == 'dup':
-            seq.insert(pos_end, ''.join(seq[pos_start:pos_end]))
-        elif edit.type == 'inv':
-            seq[pos_start:pos_end] = list(reverse_complement(''.join(seq[pos_start:pos_end])))
-        elif edit.type == 'identity':
-            pass
-        else:
-            raise HGVSUnsupportedOperationError(
-                "Getting altered sequence for {type} is unsupported".format(type=edit.type))
+        try:
+            if edit.type == 'sub':
+                seq[pos_start] = edit.alt
+            elif edit.type == 'del':
+                del seq[pos_start:pos_end]
+            elif edit.type == 'ins':
+                seq.insert(pos_start + 1, edit.alt)
+            elif edit.type == 'delins':
+                del seq[pos_start:pos_end]
+                seq.insert(pos_start, edit.alt)
+            elif edit.type == 'dup':
+                seq.insert(pos_end, ''.join(seq[pos_start:pos_end]))
+            elif edit.type == 'inv':
+                seq[pos_start:pos_end] = list(reverse_complement(''.join(seq[pos_start:pos_end])))
+            elif edit.type == 'identity':
+                pass
+            else:
+                raise HGVSUnsupportedOperationError(
+                    "Getting altered sequence for {type} is unsupported".format(type=edit.type))
+        except IndexError:
+            raise HGVSInvalidIntervalError("Specified index does not exist within sequence.")
 
         seq = ''.join(seq)
         if strand == -1:
