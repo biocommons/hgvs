@@ -50,7 +50,7 @@ Project transcript variant NM_182763.2:c.688+403C>T to GRCh37 primary assembly u
 .. code:: 
 
     import hgvs.variantmapper
-    vm = hgvs.variantmapper.AssemblyMapper(
+    vm = hgvs.assemblymapper.AssemblyMapper(
         hdp, assembly_name='GRCh37', alt_aln_method='splign')
     var_g = vm.c_to_g(var_c1)
     var_g

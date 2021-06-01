@@ -210,8 +210,8 @@ assembly.
 
     import hgvs.variantmapper
     #vm = variantmapper = hgvs.variantmapper.VariantMapper(hdp)
-    am37 = easyvariantmapper = hgvs.variantmapper.AssemblyMapper(hdp, assembly_name='GRCh37')
-    am38 = easyvariantmapper = hgvs.variantmapper.AssemblyMapper(hdp, assembly_name='GRCh38')
+    am37 = easyvariantmapper = hgvs.assemblymapper.AssemblyMapper(hdp, assembly_name='GRCh37')
+    am38 = easyvariantmapper = hgvs.assemblymapper.AssemblyMapper(hdp, assembly_name='GRCh38')
 
 c_to_g
 ~~~~~~
