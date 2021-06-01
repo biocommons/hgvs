@@ -30,7 +30,7 @@ help:
 #= SETUP, INSTALLATION, PACKAGING
 
 #=> venv: make a Python 3 virtual environment
-venv: venv/3.8
+venv: ${VEDIR}
 venv/3.6 venv/3.7 venv/3.8: venv/%:
 	python$* -mvenv $@; \
 	source $@/bin/activate; \
