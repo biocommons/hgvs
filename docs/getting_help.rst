@@ -7,12 +7,11 @@ so easy to use that a manual is unnecessary.
 Just kidding.
 
 While hgvs is well-tested and has been used by many groups for several
-years, bugs, unexpected behaviors, and usages questions occur.
-Fortunately, there's now a small community of people who can help.
+years, bugs, unexpected behaviors, and other questions occur.
+Fortunately, there's a small community of people who can help.
 
 If you need help, please read the following sources first.  Then, if
 you've still got a question, post to one of them.
-
 
 If you have questions about the `Variation Nomenclature
 Recommendations <http://varnomen.hgvs.org/>`_, consider posting your
@@ -32,12 +31,10 @@ spam.  The mailing list is the preferred way to reach the `hgvs`
 package authors.  (Please do NOT send email directly to authors.)
 
 
-Gitter Channel
-@@@@@@@@@@@@@@
+Slack Workspace
+@@@@@@@@@@@@@@@
 
-We have a new gitter community at https://gitter.im/biocommons/hgvs.
-There's not much use yet, but there's a chance that you could get
-real-time replies there.
+See the [biocommons community page](https://github.com/biocommons/biocommons) for information about how to join.
 
 
 .. _bug-reports:
