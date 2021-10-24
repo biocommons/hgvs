@@ -19,14 +19,14 @@ HGVS recommendations. Please refer to `issues
 
 
 +--------------------+--------------------------------------------------------------------+
-| **Information**    | | |rtd|   |changelog|  |github_license|  |binder|                  |
-|                    | | |gitter|   |group|     |getting_help|                            |
+| **Information**    | | |rtd|   |changelog|  |getting_help|                              |
+|                    | | |github_license|  |binder|                                       |
 +--------------------+--------------------------------------------------------------------+
-| **Latest Release** | |github_tag|   |pypi_rel|   |hit| (pip install)                    |
+| **Latest Release** | |github_tag|   |pypi_rel|   |hit|                                  |
 +--------------------+--------------------------------------------------------------------+
 | **Development**    | | |status_rel|  |coveralls|                                        |
-| (master branch)    | | |issues|  |github_open_pr|                                       |
-|                    | | |github_stars|  |github_forks|   |github_contrib|                |
+| (main branch)    | | |issues|  |github_open_pr|   |github_contrib|                    |
+|                    | | |github_stars|  |github_forks|                                   |
 +--------------------+--------------------------------------------------------------------+
 
 
@@ -279,13 +279,13 @@ Other packages that manipulate HGVS variants:
 
 .. |github_license| image:: https://img.shields.io/github/license/biocommons/hgvs.svg
    :alt: GitHub license
-   :target: https://github.com/biocommons/hgvs/blob/master/LICENSE)
+   :target: https://github.com/biocommons/hgvs/blob/main/LICENSE)
 
 .. |group| image:: https://img.shields.io/badge/group-hgvs%20discuss-green.svg
    :alt: Mailing list
    :target: https://groups.google.com/forum/#!forum/hgvs-discuss
 
-.. |gitter| image:: https://img.shields.io/badge/chat-gitter-green.svg
+.. |chat| image:: https://img.shields.io/badge/chat-gitter-green.svg
    :alt: Join the chat at https://gitter.im/biocommons/hgvs
    :target: https://gitter.im/biocommons/hgvs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
@@ -298,8 +298,8 @@ Other packages that manipulate HGVS variants:
    :target: https://pypi.org/project/hgvs/
 
 
-.. |status_rel| image:: https://img.shields.io/travis/biocommons/hgvs/master.svg
-   :target: https://travis-ci.org/biocommons/hgvs?branch=master
+.. |status_rel| image:: https://img.shields.io/travis/biocommons/hgvs/main.svg
+   :target: https://travis-ci.org/biocommons/hgvs?branch=main
 
 .. |coveralls| image:: https://img.shields.io/coveralls/github/biocommons/hgvs.svg
    :target: https://coveralls.io/github/biocommons/hgvs
@@ -324,12 +324,12 @@ Other packages that manipulate HGVS variants:
    :alt: GitHub license
    :target: https://github.com/biocommons/hgvs/graphs/contributors/
 
-.. |install_status| image:: https://travis-ci.org/reece/hgvs-integration-test.png?branch=master
+.. |install_status| image:: https://travis-ci.org/reece/hgvs-integration-test.png?branch=main
    :target: https://travis-ci.org/reece/hgvs-integration-test
 
 .. |binder| image:: https://mybinder.org/badge_logo.svg
-   :target: https://mybinder.org/v2/gh/biocommons/hgvs/master?filepath=examples
+   :target: https://mybinder.org/v2/gh/biocommons/hgvs/main?filepath=examples
 
-.. |hit| image:: https://travis-ci.org/biocommons/hgvs-installation-test.svg?branch=master
+.. |hit| image:: https://travis-ci.org/biocommons/hgvs-installation-test.svg?branch=main
     :alt: nightly test of ability to pip install, import, and parse a variant
     :target: https://travis-ci.org/biocommons/hgvs-installation-test	    
