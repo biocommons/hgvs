@@ -29,9 +29,12 @@ class SeqFetcher(object):
     """
 
     def __init__(self):
-        # If HGVS_SEQREPO_DIR is defined, we use seqrepo for *all* sequences
+        # If HGVS_SEQREPO_DIR is defined, we use seqrepo for *all* sequences.
+        # If HGVS_SEQREPO_URL is defined, use instance of seqrepo-rest-service for *all* sequences.
+        #   (see https://github.com/biocommons/seqrepo-rest-service for more info)
         # Otherwise, we fall back to remote sequence fetching
         seqrepo_dir = os.environ.get("HGVS_SEQREPO_DIR")
+        seqrepo_url = os.environ.get("HGVS_SEQREPO_URL")
         if seqrepo_dir:
             from biocommons.seqrepo import SeqRepo
             self.sr = SeqRepo(seqrepo_dir)
@@ -41,6 +44,11 @@ class SeqFetcher(object):
 
             self.fetcher = _fetch_seq_seqrepo
             self.source = "SeqRepo ({})".format(seqrepo_dir)
+        elif seqrepo_url:
+            from biocommons.seqrepo.dataproxy import SeqRepoRESTDataProxy
+            self.sr = SeqRepoRESTDataProxy(seqrepo_url)
+            self.fetcher = lambda ac, start_i=None, end_i=None: self.sr.get_sequence(ac, start_i, end_i)
+            self.source = f"SeqRepo REST ({seqrepo_url})"
         else:
             self.sr = None
             self.fetcher = bioutils.seqfetcher.fetch_seq

@@ -168,7 +168,7 @@ class NCBIBase(object):
                 self=self,
                 dv=self.data_version(),
                 sv=self.schema_version(),
-                sf=os.environ.get("HGVS_SEQREPO_DIR", "seqfetcher"))
+                sf=self.sequence_source())
 
     def _fetchone(self, sql, *args):
         with self._get_cursor() as cur:
@@ -193,6 +193,17 @@ class NCBIBase(object):
 
     def schema_version(self):
         return self._fetchone("select * from meta where key = 'schema_version'")['value']
+
+    @staticmethod
+    def sequence_source():
+        seqrepo_dir = os.environ.get("HGVS_SEQREPO_DIR")
+        seqrepo_url = os.environ.get("HGVS_SEQREPO_URL")
+        if seqrepo_dir:
+            return seqrepo_dir
+        elif seqrepo_url:
+            return seqrepo_url
+        else:
+            return "seqfetcher"
 
     def get_ncbi_gene_id_for_hgnc(self, hgnc):
         rows = self._fetchall(self._queries['gene_id_for_hgnc'], [hgnc])
