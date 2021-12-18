@@ -1,17 +1,22 @@
 import os
 import re
 
-import hgvs
 
-# N.B. In sphinx parlance, version is supposed to be the undecorated
-# version (e.g., 1.2 or 1.2.3).  release corresponds to __version__
-# (e.g., 1.2.3.post3).
-release = str(hgvs.__version__)
+# release is git tag (e.g., 1.2.3.post3), version is e.g., 1.2.3
+try:
+    # get release from hgvs if available
+    import hgvs
+    release = str(hgvs.__version__)
+except ModuleNotFoundError:
+    # else get release from first tag (raise exception if not available)
+    import subprocess
+    release = subprocess.check_output(["git", "describe", "--tags"]).decode().strip().split()[0]
 version = re.sub(r"\.post\d+$", "", release)
+
 
 project = u'HGVS'
 authors = project + ' Contributors'
-copyright = u'2017, ' + authors
+copyright = u'2021, ' + authors
 
 extlinks = {'issue': ('https://github.com/biocommons/hgvs/issues/%s', 'issue '), }
 
