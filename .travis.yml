@@ -11,7 +11,7 @@ python:
 cache: pip
 
 install:
-  - pip install -U pip setuptools virtualenvwrapper
+  - pip install -U pip setuptools setuptools_scm virtualenvwrapper
   - pip install -U coveralls pytest pytest-cov tox tox-travis
 
 script: make tox
