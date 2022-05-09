@@ -13,7 +13,6 @@ import os
 import re
 import weakref
 
-import boto3
 import psycopg2
 import psycopg2.extras
 import psycopg2.pool
@@ -544,6 +543,8 @@ class UTA_postgresql(UTABase):
             self.application_name = os.path.basename(st[-1][1])
 
         if "AWS_UTA_DB" in os.environ:
+            import boto3
+
             region = os.environ["UTA_REGION"]
             client = boto3.client("rds", region_name=region)
             token = client.generate_db_auth_token(
