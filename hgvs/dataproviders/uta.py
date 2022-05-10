@@ -542,35 +542,14 @@ class UTA_postgresql(UTABase):
             st = inspect.stack()
             self.application_name = os.path.basename(st[-1][1])
 
-        if "AWS_UTA_DB" in os.environ:
-            import boto3
-
-            region = os.environ["UTA_REGION"]
-            client = boto3.client("rds", region_name=region)
-            token = client.generate_db_auth_token(
-                DBHostname=os.environ["UTA_HOST"],
-                Port=os.environ["UTA_PORT"],
-                DBUsername=os.environ["UTA_USER"],
-                Region=region
-            )
-
-            conn_args = dict(
-                host= os.environ["UTA_HOST"],
-                port=int(os.environ["UTA_PORT"]),
-                database=os.environ["UTA_DATABASE"],
-                user=os.environ["UTA_USER"],
-                password=token,
-                application_name=self.application_name + "/" + hgvs.__version__,
-            )
-        else:
-            conn_args = dict(
-                host=self.url.hostname,
-                port=self.url.port,
-                database=self.url.database,
-                user=self.url.username,
-                password=self.url.password,
-                application_name=self.application_name + "/" + hgvs.__version__,
-            )
+        conn_args = dict(
+            host=self.url.hostname,
+            port=self.url.port,
+            database=self.url.database,
+            user=self.url.username,
+            password=self.url.password if self.url.password else os.environ.get("PG_PASSWORD"),
+            application_name=self.application_name + "/" + hgvs.__version__,
+        )
 
         if self.pooling:
             _logger.info("Using UTA ThreadedConnectionPool")

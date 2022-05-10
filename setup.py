@@ -54,9 +54,6 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
           "psycopg2",
           "six"
       ],
-      extras_require={
-          "extras": ["boto3"],
-      },
       setup_requires=[
           "cython",             # required for RTD build :-)
           "pytest-runner",
