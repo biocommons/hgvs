@@ -541,7 +541,6 @@ class UTA_postgresql(UTABase):
         if self.application_name is None:
             st = inspect.stack()
             self.application_name = os.path.basename(st[-1][1])
-
         conn_args = dict(
             host=self.url.hostname,
             port=self.url.port,
@@ -550,7 +549,6 @@ class UTA_postgresql(UTABase):
             password=self.url.password if self.url.password else os.environ.get("PG_PASSWORD"),
             application_name=self.application_name + "/" + hgvs.__version__,
         )
-
         if self.pooling:
             _logger.info("Using UTA ThreadedConnectionPool")
             self._pool = psycopg2.pool.ThreadedConnectionPool(

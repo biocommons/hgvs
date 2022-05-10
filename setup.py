@@ -52,7 +52,7 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
           "ipython",
           "parsley",
           "psycopg2",
-          "six"
+          "six",
       ],
       setup_requires=[
           "cython",             # required for RTD build :-)
