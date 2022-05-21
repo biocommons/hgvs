@@ -99,7 +99,9 @@ otherwise through environment variables, like so::
 
 Alternatively, if you are unable to pass the postgresql password in the
 UTA_DB_URL environment variable (i.e., generating an auth token), you can set
-UTA_DB_URL to ``postgresql://<user>:@<host>/<db>/<schema>`` and set PG_PASSWORD.
+UTA_DB_URL to ``postgresql://<user>@<host>/<db>/<schema>`` and set PGPASSWORD. For example::
+
+  $ export UTA_DB_URL=postgresql://anonymous@localhost:5432/uta/uta_20180821 PGPASSWORD=anonymous
 
 See the installation instructions for details.
 

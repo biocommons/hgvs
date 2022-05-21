@@ -546,7 +546,7 @@ class UTA_postgresql(UTABase):
             port=self.url.port,
             database=self.url.database,
             user=self.url.username,
-            password=self.url.password if self.url.password else os.environ.get("PG_PASSWORD"),
+            password=self.url.password,
             application_name=self.application_name + "/" + hgvs.__version__,
         )
         if self.pooling:
