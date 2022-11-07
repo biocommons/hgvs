@@ -623,8 +623,9 @@ class UTA_postgresql(UTABase):
                 _logger.warning(
                     "Lost connection to {url}; attempting reconnect".format(url=self.url))
                 if self.pooling:
-                    self._pool.closeall()
-                self._connect()
+                    self._pool.putconn(conn)
+                else:
+                    self._connect()
                 _logger.warning("Reconnected to {url}".format(url=self.url))
 
             n_tries_rem -= 1
