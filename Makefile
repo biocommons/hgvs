@@ -71,17 +71,20 @@ bdist bdist_egg bdist_wheel build sdist install: %:
 #=> test: execute tests
 #=> test-code: test code (including embedded doctests)
 #=> test-docs: test example code in docs
+#=> stest: test a specific test or set of tests, also useful using ipdb
 #=> test-/tag/ -- run tests marked with /tag/
 # TODO: rationalize tags
 # find tests -name \*.py | xargs perl -ln0e 'while (m/@pytest.mark.(\w+)/g) {print $1 if not $seen{$1}++}'  | sort
 # => extra fx issues mapping models normalization parametrize pnd quick regression validation
-.PHONY: test test-code test-docs
+.PHONY: test test-code test-docs stest
 test:
 	python setup.py pytest
 test-code:
 	python setup.py pytest --addopts="${TEST_DIRS}"
 test-docs:
 	python setup.py pytest --addopts="${DOC_TESTS}"
+stest:
+	python setup.py pytest --addopts="-vvv -s -k ${t}"
 test-%:
 	python setup.py pytest --addopts="-m '$*' ${TEST_DIRS}"
 

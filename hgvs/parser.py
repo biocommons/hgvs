@@ -29,7 +29,7 @@ import hgvs.sequencevariant
 
 
 class Parser(object):
-    """Provides comprehensive parsing of HGVS varaint strings (*i.e.*,
+    """Provides comprehensive parsing of HGVS variant strings (*i.e.*,
     variants represented according to the Human Genome Variation
     Society recommendations) into Python representations.  The class
     wraps a Parsing Expression Grammar, exposing rules of that grammar

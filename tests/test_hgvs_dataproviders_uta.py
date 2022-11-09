@@ -6,10 +6,13 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import os
 import re
 import unittest
+from unittest.mock import patch
 
-from hgvs.exceptions import HGVSDataNotAvailableError
+import psycopg2
+import pytest
 import hgvs.dataproviders.uta
 import hgvs.edit
+from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError
 import hgvs.location
 import hgvs.posedit
 import hgvs.variantmapper
@@ -104,6 +107,18 @@ class Test_hgvs_dataproviders_uta_UTA_default_with_pooling(unittest.TestCase, UT
             pooling=True, mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
 
 
+class Test_hgvs_dataproviders_uta_with_pooling_without_cache(
+    unittest.TestCase, UTA_Base
+):
+    """
+    Currently used to test pool errors, since we need to reach out to
+    the database and not use the cache
+    """
+    @classmethod
+    def setUpClass(cls):
+        cls.hdp = hgvs.dataproviders.uta.connect(pooling=True)
+
+
 class TestUTACache(Test_hgvs_dataproviders_uta_UTA_default):
     def _create_cdna_variant(self):
         start = hgvs.location.SimplePosition(118898437)
@@ -126,6 +141,24 @@ class TestUTACache(Test_hgvs_dataproviders_uta_UTA_default):
         var1 = self._create_cdna_variant()
         var2 = self._create_cdna_variant()
         self.assertEqual(str(var1), str(var2))
+
+
+class TestUTAPool(Test_hgvs_dataproviders_uta_with_pooling_without_cache):
+    def test_use_putconn_on_lost_conn(self):
+        """
+        Check that it won't closeall instead of putconn for pooling
+        when it loses the connection
+        """
+        def raise_operational_error(*args, **kwargs):
+            raise psycopg2.OperationalError()
+
+        with patch.object(self.hdp, "_pool") as mock_pool:
+            mock_getconn = mock_pool.getconn.return_value
+            mock_putconn = mock_pool.putconn
+            mock_getconn.cursor.side_effect = raise_operational_error
+            with pytest.raises(HGVSError):
+                self.hdp.get_gene_info("PAH")
+            mock_putconn.assert_called_with(mock_getconn)
 
 
 if __name__ == "__main__":
