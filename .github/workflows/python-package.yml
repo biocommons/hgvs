@@ -23,8 +23,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install pytest pytest-cov
           pip install -e .[test]
 
       - name: Lint with flake8
@@ -62,17 +60,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install pytest pytest-cov
           pip install -e .[test]
 
       - name: Test with pytest
         run: |
-          pytest
+          make test
 
   deploy:
     needs:
-      - codechecks
+      # - codechecks # skip for now
       - test
     runs-on: ubuntu-latest
 
@@ -88,7 +84,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
+          pip install --upgrade pip
           pip install build pytest pytest-cov twine
       - name: Build package
         run: python -m build

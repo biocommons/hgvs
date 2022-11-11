@@ -10,7 +10,7 @@ SELF:=$(firstword $(MAKEFILE_LIST))
 
 PKG=hgvs
 PKGD=$(subst .,/,${PKG})
-PYV:=3.9
+PYV:=3
 VEDIR=venv/${PYV}
 
 TEST_DIRS:=tests
@@ -37,16 +37,10 @@ venv/%:
 	python -m ensurepip --upgrade; \
 	pip install --upgrade pip setuptools
 
-#=> setup: setup/upgrade packages *in current environment*
-.PHONY: setup
-setup: etc/develop.reqs etc/install.reqs
-	if [ -s $(word 1,$^) ]; then pip install --upgrade -r $(word 1,$^); fi
-	if [ -s $(word 2,$^) ]; then pip install --upgrade -r $(word 2,$^); fi
-
 #=> devready: create venv, install prerequisites, install pkg in develop mode
 .PHONY: devready
 devready:
-	make ${VEDIR} && source ${VEDIR}/bin/activate && make setup develop
+	make ${VEDIR} && source ${VEDIR}/bin/activate && make develop
 	@echo '#################################################################################'
 	@echo '###  Do not forget to `source ${VEDIR}/bin/activate` to use this environment  ###'
 	@echo '#################################################################################'
@@ -56,7 +50,7 @@ devready:
 #=> bdist bdist_egg bdist_wheel build sdist: distribution options
 .PHONY: bdist bdist_egg bdist_wheel build build_sphinx sdist install develop
 develop:
-	pip install -e .
+	pip install -e .[dev]
 bdist bdist_egg bdist_wheel build sdist install: %:
 	python setup.py $@
 
