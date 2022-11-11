@@ -2,16 +2,14 @@
 
 .DELETE_ON_ERROR:
 .PHONY: FORCE
-.PRECIOUS :
+.PRECIOUS:
 .SUFFIXES:
 
 SHELL:=/bin/bash -e -o pipefail
 SELF:=$(firstword $(MAKEFILE_LIST))
 
-PKG=hgvs
-PKGD=$(subst .,/,${PKG})
-PYV:=3
-VEDIR=venv/${PYV}
+PY_VERSION:=$(shell python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
+VE_DIR=venv/${PY_VERSION}
 
 TEST_DIRS:=tests
 DOC_TESTS:=docs hgvs ./README.rst
@@ -29,38 +27,41 @@ help:
 ############################################################################
 #= SETUP, INSTALLATION, PACKAGING
 
-#=> venv: make a Python 3 virtual environment
-venv: ${VEDIR}
-venv/%:
-	python$* -mvenv $@; \
-	source $@/bin/activate; \
-	python -m ensurepip --upgrade; \
-	pip install --upgrade pip setuptools
-
 #=> devready: create venv, install prerequisites, install pkg in develop mode
 .PHONY: devready
 devready:
-	make ${VEDIR} && source ${VEDIR}/bin/activate && make develop
+	make ${VE_DIR} && source ${VE_DIR}/bin/activate && make develop
 	@echo '#################################################################################'
-	@echo '###  Do not forget to `source ${VEDIR}/bin/activate` to use this environment  ###'
+	@echo '###  Do not forget to `source ${VE_DIR}/bin/activate` to use this environment  ###'
 	@echo '#################################################################################'
+
+#=> venv: make a Python 3 virtual environment
+venv: ${VEDIR}
+${VE_DIR}: venv/%:
+	python$* -mvenv $@; \
+	source $@/bin/activate; \
+	python -m ensurepip --upgrade; \
+	pip install --upgrade pip setuptools wheel
 
 #=> develop: install package in develop mode
-#=> install: install package
-#=> bdist bdist_egg bdist_wheel build sdist: distribution options
-.PHONY: bdist bdist_egg bdist_wheel build build_sphinx sdist install develop
+.PHONY: develop install
 develop:
+	@if [ -z "$${VIRTUAL_ENV}" ]; then echo "Not in a virtual environment; see README.md" 1>&2; exit 1; fi
 	pip install -e .[dev]
-bdist bdist_egg bdist_wheel build sdist install: %:
-	python setup.py $@
 
+#=> install: install package
+install:
+	pip install .
 
+#=> build: make sdist and wheel
+.PHONY: build
+build: %:
+	python -m build
 
 
 ############################################################################
 #= TESTING
 # see test configuration in setup.cfg
-
 
 #=> test: execute tests
 #=> test-code: test code (including embedded doctests)
@@ -90,14 +91,13 @@ tox:
 ############################################################################
 #= UTILITY TARGETS
 
-# N.B. Although code is stored in github, I use hg and hg-git on the command line
 #=> reformat: reformat code with yapf and commit
 .PHONY: reformat
 reformat:
-	@if hg sum | grep -qL '^commit:.*modified'; then echo "Repository not clean" 1>&2; exit 1; fi
-	@if hg sum | grep -qL ' applied'; then echo "Repository has applied patches" 1>&2; exit 1; fi
-	yapf -i -r "${PKGD}" tests
-	hg commit -m "reformatted with yapf"
+	@if ! git diff --cached --exit-code >/dev/null; then echo "Repository not clean" 1>&2; exit 1; fi
+	black src tests
+	isort src tests
+	git commit -a -m "reformatted with black and isort"
 
 #=> docs -- make sphinx docs
 .PHONY: docs
@@ -111,27 +111,31 @@ docs: develop
 #=> clean: remove temporary and backup files
 .PHONY: clean
 clean:
-	find . \( -name \*~ -o -name \*.bak \) -print0 | xargs -0r rm
+	rm -frv **/*~ **/*.bak
 	-make -C docs $@
 	-make -C examples $@
 
 #=> cleaner: remove files and directories that are easily rebuilt
 .PHONY: cleaner
 cleaner: clean
-	rm -fr .cache *.egg-info build dist docs/_build htmlcov
-	find . \( -name \*.pyc -o -name \*.orig -o -name \*.rej \) -print0 | xargs -0r rm
-	find . -name __pycache__ -print0 | xargs -0r rm -fr
-	/bin/rm -fr examples/.ipynb_checkpoints
-	/bin/rm -f hgvs.{dot,svg,png,sfood}
+	rm -frv .cache build dist docs/_build
+	rm -frv **/__pycache__
+	rm -frv **/*.egg-info
+	rm -frv **/*.pyc
+	rm -frv **/*.orig
+	rm -frv **/*.rej
+
+#=> cleanest: remove files and directories that are more expensive to rebuild
+.PHONY: cleanest
+cleanest: cleaner
+	rm -frv .eggs .tox venv
 	-make -C docs $@
 	-make -C examples $@
 
-#=> cleanest: remove files and directories that require more time/network fetches to rebuild
-.PHONY: cleanest
-cleanest: cleaner
-	rm -fr .eggs .tox venv
-	-make -C docs $@
-	-make -C examples $@
+#=> distclean: remove untracked files and other detritus
+.PHONY: distclean
+distclean: cleanest
+	git clean -df
 
 
 ############################################################################
