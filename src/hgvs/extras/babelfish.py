@@ -19,15 +19,10 @@ def _as_interbase(posedit):
 class Babelfish:
     def __init__(self, hdp, assembly_name):
         self.hdp = hdp
-        self.hn = hgvs.normalizer.Normalizer(hdp,
-                                             cross_boundaries=False,
-                                             shuffle_direction=5,
-                                             validate=False)
+        self.hn = hgvs.normalizer.Normalizer(hdp, cross_boundaries=False, shuffle_direction=5, validate=False)
         self.ac_to_chr_name_map = {
-            sr["refseq_ac"]: sr["name"]
-            for sr in bioutils.assemblies.get_assembly("GRCh38")["sequences"]}
-
-
+            sr["refseq_ac"]: sr["name"] for sr in bioutils.assemblies.get_assembly("GRCh38")["sequences"]
+        }
 
     def hgvs_to_vcf(self, var_g):
         """**EXPERIMENTAL**
@@ -76,7 +71,6 @@ class Babelfish:
         return (chr, start_i + 1, ref, alt, typ)
 
 
-
 if __name__ == "__main__":
     """
       49949___  400       410       420
@@ -90,41 +84,35 @@ if __name__ == "__main__":
     from hgvs.extras.babelfish import Babelfish
 
     babelfish38 = Babelfish(hgvs.easy.hdp, assembly_name="GRCh38")
-    hnl = hgvs.normalizer.Normalizer(hgvs.easy.hdp,
-                                     cross_boundaries=False, shuffle_direction=5, validate=False)
+    hnl = hgvs.normalizer.Normalizer(hgvs.easy.hdp, cross_boundaries=False, shuffle_direction=5, validate=False)
 
-    def _h2v (h):
+    def _h2v(h):
         return babelfish38.hgvs_to_vcf(hgvs.easy.parser.parse(h))
-    
+
     def _vp(h):
         v = hgvs.easy.parser.parse(h)
         vl = hnl.normalize(v)
-        return (v,vl)
+        return (v, vl)
 
     for h in (
-            # Non-variation
-            "NC_000006.12:g.49949407=",
-            
-            # SNV
-            "NC_000006.12:g.49949407A>T",
-
-            # delins
-            "NC_000006.12:g.49949413_49949414delinsCC",
-
-            # del
-            "NC_000006.12:g.49949415del",
-            "NC_000006.12:g.49949413del",
-            "NC_000006.12:g.49949414del",
-            "NC_000006.12:g.49949413_49949414del",
-
-            # ins
-            "NC_000006.12:g.49949413_49949414insC",
-            "NC_000006.12:g.49949414_49949415insC",
-            "NC_000006.12:g.49949414_49949415insCC",
-
-            # ins (dup)
-            "NC_000006.12:g.49949413_49949414insA",
-            "NC_000006.12:g.49949414_49949415insA",
-            "NC_000006.12:g.49949414_49949415insAA"
-            ):
+        # Non-variation
+        "NC_000006.12:g.49949407=",
+        # SNV
+        "NC_000006.12:g.49949407A>T",
+        # delins
+        "NC_000006.12:g.49949413_49949414delinsCC",
+        # del
+        "NC_000006.12:g.49949415del",
+        "NC_000006.12:g.49949413del",
+        "NC_000006.12:g.49949414del",
+        "NC_000006.12:g.49949413_49949414del",
+        # ins
+        "NC_000006.12:g.49949413_49949414insC",
+        "NC_000006.12:g.49949414_49949415insC",
+        "NC_000006.12:g.49949414_49949415insCC",
+        # ins (dup)
+        "NC_000006.12:g.49949413_49949414insA",
+        "NC_000006.12:g.49949414_49949415insA",
+        "NC_000006.12:g.49949414_49949415insAA",
+    ):
         print('assert _h2v("{h}") == {res}'.format(res=str(_h2v(h)), h=h))

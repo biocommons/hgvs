@@ -4,28 +4,27 @@ components, such as intronic-offset coordiates
 
 """
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
-import logging
 import copy
+import logging
 import re
-
-from pkg_resources import resource_filename
 
 import bioutils.sequences
 import ometa.runtime
 import parsley
+from pkg_resources import resource_filename
 
-from hgvs.exceptions import HGVSParseError
-
+import hgvs.edit
 # The following imports are referenced by fully-qualified name in the
 # hgvs grammar.
 import hgvs.enums
-import hgvs.edit
 import hgvs.hgvsposition
 import hgvs.location
 import hgvs.posedit
 import hgvs.sequencevariant
+from hgvs.exceptions import HGVSParseError
 
 
 class Parser(object):
@@ -94,12 +93,7 @@ class Parser(object):
     def __init__(self, grammar_fn=__default_grammar_fn, expose_all_rules=False):
         self._grammar_fn = grammar_fn
         with open(grammar_fn, "r") as grammar_file:
-            self._grammar = parsley.makeGrammar(
-                grammar_file.read(), {
-                    "hgvs": hgvs,
-                    "bioutils": bioutils,
-                    "copy": copy
-                })
+            self._grammar = parsley.makeGrammar(grammar_file.read(), {"hgvs": hgvs, "bioutils": bioutils, "copy": copy})
         self._logger = logging.getLogger(__name__)
         self._expose_rule_functions(expose_all_rules)
 
@@ -130,28 +124,24 @@ class Parser(object):
                 try:
                     return self._grammar(s).__getattr__(rule_name)()
                 except ometa.runtime.ParseError as exc:
-                    raise HGVSParseError("{s}: char {exc.position}: {reason}".format(
-                        s=s, exc=exc, reason=exc.formatReason()))
+                    raise HGVSParseError(
+                        "{s}: char {exc.position}: {reason}".format(s=s, exc=exc, reason=exc.formatReason())
+                    )
 
             rule_fxn.__doc__ = "parse string s using `%s' rule" % rule_name
             return rule_fxn
 
-        exposed_rule_re = re.compile(r"hgvs_(variant|position)|(c|g|m|n|p|r)"
-                                     r"_(edit|hgvs_position|interval|pos|posedit|variant)")
-        exposed_rules = [
-            m.replace("rule_", "") for m in dir(self._grammar._grammarClass)
-            if m.startswith("rule_")
-        ]
+        exposed_rule_re = re.compile(
+            r"hgvs_(variant|position)|(c|g|m|n|p|r)" r"_(edit|hgvs_position|interval|pos|posedit|variant)"
+        )
+        exposed_rules = [m.replace("rule_", "") for m in dir(self._grammar._grammarClass) if m.startswith("rule_")]
         if not expose_all_rules:
-            exposed_rules = [
-                rule_name for rule_name in exposed_rules if exposed_rule_re.match(rule_name)
-            ]
+            exposed_rules = [rule_name for rule_name in exposed_rules if exposed_rule_re.match(rule_name)]
         for rule_name in exposed_rules:
             att_name = "parse_" + rule_name
             rule_fxn = make_parse_rule_function(rule_name)
             self.__setattr__(att_name, rule_fxn)
-        self._logger.debug("Exposed {n} rules ({rules})".format(
-            n=len(exposed_rules), rules=", ".join(exposed_rules)))
+        self._logger.debug("Exposed {n} rules ({rules})".format(n=len(exposed_rules), rules=", ".join(exposed_rules)))
 
 
 # <LICENSE>

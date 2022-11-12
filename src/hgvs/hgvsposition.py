@@ -3,7 +3,8 @@
 
 """
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 import attr
 
@@ -19,6 +20,7 @@ class HGVSPosition(object):
     :param str gene: gene symbol (may be None)
 
     """
+
     ac = attr.ib()
     type = attr.ib()
     pos = attr.ib()
@@ -30,8 +32,9 @@ class HGVSPosition(object):
 
     def __repr__(self):
         return "{0}({1})".format(
-            self.__class__.__name__, ", ".join(
-                (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
+            self.__class__.__name__,
+            ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
+        )
 
 
 # <LICENSE>

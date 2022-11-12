@@ -1,11 +1,11 @@
 import os
 
 import pytest
+from support import CACHE
 
 import hgvs.easy
 from hgvs.extras.babelfish import Babelfish
 
-from support import CACHE
 hgvs.easy.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
 
 
@@ -34,7 +34,6 @@ def babelfish38(hdp):
     return Babelfish(hdp, assembly_name="GRCh38")
 
 
-
 def pytest_report_header(config):
     env_vars = ["UTA_DB_URL", "HGVS_SEQREPO_URL", "HGVS_CACHE_MODE"]
     rv = [f"{ev}: {os.environ.get(ev)}" for ev in sorted(env_vars)]
@@ -46,7 +45,7 @@ def pytest_report_header(config):
 @pytest.fixture(scope="class")
 def kitchen_sink_setup(request, hdp, parser, am37, am38):
     """
-    Adds common fixtures to an instance passed via request.cls. 
+    Adds common fixtures to an instance passed via request.cls.
 
     For example:
 
@@ -58,7 +57,7 @@ def kitchen_sink_setup(request, hdp, parser, am37, am38):
     The class must be subclass of unittest.TestCase
 
     See https://docs.pytest.org/en/5.3.5/unittest.html#mixing-pytest-fixtures-into-unittest-testcase-subclasses-using-marks
-    
+
     """
 
     request.cls.hdp = hdp

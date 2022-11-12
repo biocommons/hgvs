@@ -11,7 +11,8 @@ Added persistence capability
 
 """
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 from collections import namedtuple
 from functools import update_wrapper
@@ -23,7 +24,7 @@ _CacheInfo = namedtuple("CacheInfo", ["hits", "misses", "maxsize", "currsize"])
 
 
 class _HashedSeq(list):
-    __slots__ = ['hashvalue']
+    __slots__ = ["hashvalue"]
 
     def __init__(self, tup, hash=hash):
         self[:] = tup
@@ -33,29 +34,31 @@ class _HashedSeq(list):
         return self.hashvalue
 
     def __getstate__(self):
-        return True    # needs to be truthy for __setstate__ to be called
+        return True  # needs to be truthy for __setstate__ to be called
 
     def __setstate__(self, _):
         self.hashvalue = hash(tuple(self))
 
     def __repr__(self):
-        return '_HashedSeq({tuple!r})'.format(self=self, tuple=tuple(self))
+        return "_HashedSeq({tuple!r})".format(self=self, tuple=tuple(self))
 
 
-def _make_key(func,
-              args,
-              kwds,
-              typed,
-              kwd_mark=(object(), ),
-              fasttypes={int, str, frozenset, type(None)},
-              sorted=sorted,
-              tuple=tuple,
-              type=type,
-              len=len):
-    'Make a cache key from optionally typed positional and keyword arguments'
+def _make_key(
+    func,
+    args,
+    kwds,
+    typed,
+    kwd_mark=(object(),),
+    fasttypes={int, str, frozenset, type(None)},
+    sorted=sorted,
+    tuple=tuple,
+    type=type,
+    len=len,
+):
+    "Make a cache key from optionally typed positional and keyword arguments"
     key = args
     key += kwd_mark
-    key += ('__func__', func)
+    key += ("__func__", func)
     if kwds:
         sorted_items = sorted(kwds.items())
         for item in sorted_items:
@@ -109,7 +112,7 @@ def lru_cache(maxsize=100, typed=False, mode=None, cache=None):
     # to allow the implementation to change (including a possible C version).
 
     def decorating_function(user_function):
-        lock = RLock()    # because linkedlist updates aren't threadsafe
+        lock = RLock()  # because linkedlist updates aren't threadsafe
 
         _cache = cache
         _maxsize = maxsize
@@ -119,16 +122,16 @@ def lru_cache(maxsize=100, typed=False, mode=None, cache=None):
         elif mode is not None:
             _maxsize = None
 
-        stats = [0, 0]    # make statistics updateable non-locally
-        HITS, MISSES = 0, 1    # names for the stats fields
+        stats = [0, 0]  # make statistics updateable non-locally
+        HITS, MISSES = 0, 1  # names for the stats fields
         make_key = _make_key
-        cache_get = _cache.get    # bound method to lookup key or return None
-        _len = len    # localize the global len() function
+        cache_get = _cache.get  # bound method to lookup key or return None
+        _len = len  # localize the global len() function
 
-        root = []    # root of the circular doubly linked list
-        root[:] = [root, root, None, None]    # initialize by pointing to self
-        nonlocal_root = [root]    # make updateable non-locally
-        PREV, NEXT, KEY, RESULT = 0, 1, 2, 3    # names for the link fields
+        root = []  # root of the circular doubly linked list
+        root[:] = [root, root, None, None]  # initialize by pointing to self
+        nonlocal_root = [root]  # make updateable non-locally
+        PREV, NEXT, KEY, RESULT = 0, 1, 2, 3  # names for the link fields
 
         if _maxsize == 0:
 
@@ -143,21 +146,30 @@ def lru_cache(maxsize=100, typed=False, mode=None, cache=None):
             def wrapper(*args, **kwds):
                 # simple caching without ordering or size limit
                 key = make_key(user_function.__name__, args, kwds, typed, ())
-                result = cache_get(key, root)    # root used here as a unique not-found sentinel
+                result = cache_get(key, root)  # root used here as a unique not-found sentinel
                 if result is not root:
                     stats[HITS] += 1
                     if mode == VERIFY:
                         latestres = user_function(*args, **kwds)
                         if latestres != result:
                             raise HGVSVerifyFailedError(
-                                'The cached result is not consistent with latest result when calling '
-                                + user_function.__name__ + ' with args ' + str(args) +
-                                ' and keywords ' + str(kwds))
+                                "The cached result is not consistent with latest result when calling "
+                                + user_function.__name__
+                                + " with args "
+                                + str(args)
+                                + " and keywords "
+                                + str(kwds)
+                            )
                     return result
                 if mode == RUN:
                     raise HGVSDataNotAvailableError(
-                        'Data not available in local cache when calling ' + user_function.__name__ +
-                        ' with args ' + str(args) + ' and keywords ' + str(kwds))
+                        "Data not available in local cache when calling "
+                        + user_function.__name__
+                        + " with args "
+                        + str(args)
+                        + " and keywords "
+                        + str(kwds)
+                    )
                 result = user_function(*args, **kwds)
                 _cache[key] = result
                 if mode == LEARN:
@@ -174,7 +186,7 @@ def lru_cache(maxsize=100, typed=False, mode=None, cache=None):
                     link = cache_get(key)
                     if link is not None:
                         # record recent use of the key by moving it to the front of the list
-                        root, = nonlocal_root
+                        (root,) = nonlocal_root
                         link_prev, link_next, key, result = link
                         link_prev[NEXT] = link_next
                         link_next[PREV] = link_prev
@@ -186,7 +198,7 @@ def lru_cache(maxsize=100, typed=False, mode=None, cache=None):
                         return result
                 result = user_function(*args, **kwds)
                 with lock:
-                    root, = nonlocal_root
+                    (root,) = nonlocal_root
                     if key in _cache:
                         # getting here means that this same key was added to the
                         # cache while the lock was released.  since the link

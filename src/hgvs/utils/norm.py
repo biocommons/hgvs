@@ -5,9 +5,11 @@ https://github.com/bioinformed/vgraph
 
 """
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 from collections import namedtuple
+
 from six.moves import range
 
 
@@ -62,7 +64,7 @@ def normalize_alleles_left(ref, start, stop, alleles, bound, ref_step, shuffle=T
 
     """
 
-    normalized_alleles = namedtuple('shuffled_alleles', 'start stop alleles')
+    normalized_alleles = namedtuple("shuffled_alleles", "start stop alleles")
 
     if len(alleles) < 2:
         return normalized_alleles(start, stop, alleles)
@@ -79,10 +81,10 @@ def normalize_alleles_left(ref, start, stop, alleles, bound, ref_step, shuffle=T
 
     # STEP 3: While a null allele exists, left shuffle by prepending alleles
     #         with reference and trimming common suffixes
-    while shuffle and '' in alleles and start > bound:
+    while shuffle and "" in alleles and start > bound:
         step = min(ref_step, start - bound)
 
-        r = ref[start - step:start].upper()
+        r = ref[start - step : start].upper()
         new_alleles = [r + a for a in alleles]
 
         trimmed, new_alleles = trim_common_suffixes(new_alleles)
@@ -112,7 +114,7 @@ def normalize_alleles_right(ref, start, stop, alleles, bound, ref_step, shuffle=
 
     """
 
-    normalized_alleles = namedtuple('shuffled_alleles', 'start stop alleles')
+    normalized_alleles = namedtuple("shuffled_alleles", "start stop alleles")
 
     chrom_stop = len(ref)
 
@@ -131,10 +133,10 @@ def normalize_alleles_right(ref, start, stop, alleles, bound, ref_step, shuffle=
 
     # STEP 3: While a null allele exists, right shuffle by appending alleles
     #         with reference and trimming common prefixes
-    while shuffle and '' in alleles and stop < bound:
+    while shuffle and "" in alleles and stop < bound:
         step = min(ref_step, bound - stop)
 
-        r = ref[stop:stop + step].upper()
+        r = ref[stop : stop + step].upper()
         new_alleles = [a + r for a in alleles]
 
         trimmed, new_alleles = trim_common_prefixes(new_alleles)

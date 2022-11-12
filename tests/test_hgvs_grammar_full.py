@@ -1,5 +1,14 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+
+import os
+import pprint
+import re
+import unittest
+from sys import version_info
+
+import pkg_resources
 
 #
 # Tests of the grammar
@@ -23,21 +32,16 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 # - if expected is left blank, then it is assumed that stringifying the parsed input returns the same answer.
 #
 
-import os
-import pkg_resources
-import pprint
-import re
-import unittest
-from sys import version_info
 
-if version_info < (3, ):
+if version_info < (3,):
     import unicodecsv as csv
 else:
     import csv
 
-import hgvs.parser
-from six.moves import map
 import six
+from six.moves import map
+
+import hgvs.parser
 
 
 class TestGrammarFull(unittest.TestCase):
@@ -75,8 +79,7 @@ class TestGrammarFull(unittest.TestCase):
 
                 # setup input
                 inputs = self._split_inputs(row["Test"], row["InType"])
-                expected_results = self._split_inputs(row["Expected"],
-                                                      row["InType"]) if row["Expected"] else inputs
+                expected_results = self._split_inputs(row["Expected"], row["InType"]) if row["Expected"] else inputs
                 expected_map = dict(zip(inputs, expected_results))
                 # step through each item and check
                 is_valid = True if row["Valid"].lower() == "true" else False
@@ -84,8 +87,7 @@ class TestGrammarFull(unittest.TestCase):
                 for key in expected_map:
                     expected_result = six.text_type(expected_map[key]).replace("u'", "'")
                     function_to_test = getattr(self.p._grammar(key), row["Func"])
-                    row_str = u"{}\t{}\t{}\t{}\t{}".format(row["Func"], key, row["Valid"], "one",
-                                                           expected_result)
+                    row_str = "{}\t{}\t{}\t{}\t{}".format(row["Func"], key, row["Valid"], "one", expected_result)
                     try:
                         actual_result = six.text_type(function_to_test()).replace("u'", "'")
                         if not is_valid or (expected_result != actual_result):

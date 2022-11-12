@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 import unittest
 
@@ -17,7 +18,9 @@ class Test_HGVSPosition(unittest.TestCase):
             type="c",
             pos=hgvs.location.Interval(
                 hgvs.location.BaseOffsetPosition(base=12, offset=+34),
-                hgvs.location.BaseOffsetPosition(base=56, offset=-78)))
+                hgvs.location.BaseOffsetPosition(base=56, offset=-78),
+            ),
+        )
 
         self.assertEqual(str(var), "NM_01234.5:c.12+34_56-78")
 

@@ -3,7 +3,8 @@
 
 """
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 
 class HGVSError(Exception):
@@ -24,6 +25,7 @@ class HGVSInvalidIntervalError(HGVSError):
 
 class HGVSInvalidVariantError(HGVSError):
     """Exception raised when variant is inconsistent or invalid"""
+
     pass
 
 
@@ -41,11 +43,13 @@ class HGVSUnsupportedOperationError(HGVSError):
 
 class HGVSUsageError(HGVSError):
     """Exception raised when client/caller has made an invalid request"""
+
     pass
 
 
 class HGVSVerifyFailedError(HGVSError):
     """Exception raised when the cached hdp result is not consistent with latest remote result"""
+
     pass
 
 

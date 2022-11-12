@@ -4,25 +4,25 @@ import pickle
 
 protocol = 4
 
-class PersistentDict(dict):
-    ''' Persistent dictionary 
-    '''
 
-    def __init__(self, filename, flag='c', *args, **kwds):
+class PersistentDict(dict):
+    """Persistent dictionary"""
+
+    def __init__(self, filename, flag="c", *args, **kwds):
         self.filename = filename
-        self.flag = flag    # r=readonly, c=create,write,read
+        self.flag = flag  # r=readonly, c=create,write,read
         try:
-            with open(self.filename, 'rb') as f:
-                self.update(pickle.load(f))    # noqa: B301,BAN-B301
+            with open(self.filename, "rb") as f:
+                self.update(pickle.load(f))  # noqa: B301,BAN-B301
         except IOError:
-            if self.flag == 'r':
-                raise IOError('Cannot open file ' + self.filename)
+            if self.flag == "r":
+                raise IOError("Cannot open file " + self.filename)
         dict.__init__(self, *args, **kwds)
 
     def sync(self):
-        if self.flag == 'r':
+        if self.flag == "r":
             return
-        with open(self.filename, 'wb') as f:
+        with open(self.filename, "wb") as f:
             pickle.dump(dict(self), f, protocol)
 
     def close(self):

@@ -27,13 +27,15 @@ for str, int, and boolean.
 
 """
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
+import logging
+import re
 from configparser import ConfigParser, ExtendedInterpolation
 from copy import copy
-import logging
+
 from pkg_resources import resource_stream
-import re
 
 logger = logging.getLogger(__name__)
 
@@ -53,14 +55,12 @@ class Config(object):
         self._cp = cp
 
     def read_stream(self, flo):
-        """read configuration from ini-formatted file-like object
-
-        """
-        self._cp.read_string(flo.read().decode('ascii'))
+        """read configuration from ini-formatted file-like object"""
+        self._cp.read_string(flo.read().decode("ascii"))
 
     def __copy__(self):
         new_config = Config.__new__(Config)
-        new_config._cp = object.__getattribute__(self, '_cp')
+        new_config._cp = object.__getattribute__(self, "_cp")
         return new_config
 
     def __dir__(self):

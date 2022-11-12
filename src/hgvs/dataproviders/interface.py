@@ -3,17 +3,19 @@
 
 """
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 import abc
 import os
 
+import six
+from six.moves import map
+
 import hgvs
 
-from ..decorators.lru_cache import lru_cache, LEARN, RUN, VERIFY
+from ..decorators.lru_cache import LEARN, RUN, VERIFY, lru_cache
 from ..utils.PersistentDict import PersistentDict
-from six.moves import map
-import six
 
 
 class Interface(six.with_metaclass(abc.ABCMeta, object)):

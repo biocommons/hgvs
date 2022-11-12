@@ -30,7 +30,6 @@ from hgvs.exceptions import HGVSInvalidVariantError
 
 @pytest.mark.usefixtures("kitchen_sink_setup")
 class Test437_RMRP(unittest.TestCase):
-
     def setUp(self):
         # Generate n. and g. variants at terminal positions of tx, and
         # variants that are 1 base out of bounds
@@ -49,11 +48,8 @@ class Test437_RMRP(unittest.TestCase):
         self.e2_n = self.parser.parse("NR_003051.3:n.269N>C")
 
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp)
-        self.alm37 = hgvs.alignmentmapper.AlignmentMapper(
-            self.hdp, "NR_003051.3", "NC_000009.11", "splign")
-        self.alm38 = hgvs.alignmentmapper.AlignmentMapper(
-            self.hdp, "NR_003051.3", "NC_000009.12", "splign")
-
+        self.alm37 = hgvs.alignmentmapper.AlignmentMapper(self.hdp, "NR_003051.3", "NC_000009.11", "splign")
+        self.alm38 = hgvs.alignmentmapper.AlignmentMapper(self.hdp, "NR_003051.3", "NC_000009.12", "splign")
 
     def test_tx_start(self):
         hgvs_n = "NR_003051.3:n.1G>T"
@@ -89,12 +85,12 @@ class Test437_RMRP(unittest.TestCase):
         s2_g = self.am37.n_to_g(self.s2_n)
         assert str(s2_g) == "NC_000009.11:g.35658016A>G"
         assert s2_g.posedit.pos.start.base - s1_g.posedit.pos.start.base == 1
-        #BUG: assert self.s2_n == self.am37.g_to_n(s2_g, self.s2_n.ac)
+        # BUG: assert self.s2_n == self.am37.g_to_n(s2_g, self.s2_n.ac)
 
         e2_g = self.am37.n_to_g(self.e2_n)
         assert str(e2_g) == "NC_000009.11:g.35657747A>G"
         assert e2_g.posedit.pos.start.base - e1_g.posedit.pos.start.base == -1
-        #BUG: assert self.e2_n == self.am37.g_to_n(e2_g, self.e2_n.ac)
+        # BUG: assert self.e2_n == self.am37.g_to_n(e2_g, self.e2_n.ac)
 
         hgvs.global_config.mapping.strict_bounds = True
 
@@ -133,21 +129,18 @@ def test_invitae_examples(parser, am37):
     """bidirectional g↔t tests of out-of-bounds variants provided by Invitae"""
     invitae_examples = [
         ("NC_000009.11:g.35658020C>T", "NR_003051.3:n.-5G>A"),
-
         # See #592: hgvs doesn't support n.* coordinates, so rewrite
         # n.*7 as n.275.
         # ("NC_000009.11:g.35657741A>G", "NR_003051.3:n.*7T>C"),
         ("NC_000009.11:g.35657741A>G", "NR_003051.3:n.275T>C"),
-
         # Same g. position, ensuring correct c-n equivalence
         ("NC_000001.10:g.18807339T>C", "NM_152375.2:n.-85T>C"),
         ("NC_000001.10:g.18807339T>C", "NM_152375.2:c.-137T>C"),
-
         # Same transcript, 5' and 3' out-of-bounds
         # disabled these tests because NCBI responses were failing.
         # Yet another reason to create a pure REST interface
-        #("NC_000007.13:g.94953895G>A", "NM_000446.5:c.-108C>T"),
-        #("NC_000007.13:g.94927495G>A", "NM_000446.5:c.*761C>T"),
+        # ("NC_000007.13:g.94953895G>A", "NM_000446.5:c.-108C>T"),
+        # ("NC_000007.13:g.94927495G>A", "NM_000446.5:c.*761C>T"),
     ]
 
     hgvs.global_config.mapping.strict_bounds = False
@@ -166,4 +159,5 @@ def test_invitae_examples(parser, am37):
 
 if __name__ == "__main__":
     from hgvs.easy import *
+
     test_invitae_examples(parser=parser, am37=am37)

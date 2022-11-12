@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """Tests uta postgresql client"""
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 import os
 import re
@@ -10,14 +11,15 @@ from unittest.mock import patch
 
 import psycopg2
 import pytest
+from support import CACHE
+
 import hgvs.dataproviders.uta
 import hgvs.edit
-from hgvs.exceptions import HGVSError, HGVSDataNotAvailableError
 import hgvs.location
 import hgvs.posedit
-import hgvs.variantmapper
 import hgvs.sequencevariant
-from support import CACHE
+import hgvs.variantmapper
+from hgvs.exceptions import HGVSDataNotAvailableError, HGVSError
 
 
 class UTA_Base(object):
@@ -96,24 +98,23 @@ class UTA_Base(object):
 class Test_hgvs_dataproviders_uta_UTA_default(unittest.TestCase, UTA_Base):
     @classmethod
     def setUpClass(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect(
-            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
 
 
 class Test_hgvs_dataproviders_uta_UTA_default_with_pooling(unittest.TestCase, UTA_Base):
     @classmethod
     def setUpClass(cls):
         cls.hdp = hgvs.dataproviders.uta.connect(
-            pooling=True, mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+            pooling=True, mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
+        )
 
 
-class Test_hgvs_dataproviders_uta_with_pooling_without_cache(
-    unittest.TestCase, UTA_Base
-):
+class Test_hgvs_dataproviders_uta_with_pooling_without_cache(unittest.TestCase, UTA_Base):
     """
     Currently used to test pool errors, since we need to reach out to
     the database and not use the cache
     """
+
     @classmethod
     def setUpClass(cls):
         cls.hdp = hgvs.dataproviders.uta.connect(pooling=True)
@@ -149,6 +150,7 @@ class TestUTAPool(Test_hgvs_dataproviders_uta_with_pooling_without_cache):
         Check that it won't closeall instead of putconn for pooling
         when it loses the connection
         """
+
         def raise_operational_error(*args, **kwargs):
             raise psycopg2.OperationalError()
 

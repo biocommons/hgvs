@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 import os
-
 import unittest
 
 import pytest
+from support import CACHE
 
-from hgvs.exceptions import HGVSError, HGVSInvalidVariantError
 import hgvs.dataproviders.uta
 import hgvs.parser
 import hgvs.variantmapper
-from support import CACHE
+from hgvs.exceptions import HGVSError, HGVSInvalidVariantError
 
 
 def test_add_gene_symbol(am38, parser):
@@ -33,8 +33,7 @@ def test_add_gene_symbol(am38, parser):
 class Test_VariantMapper_Exceptions(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect(
-            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
         cls.vm = hgvs.variantmapper.VariantMapper(cls.hdp)
         cls.hp = hgvs.parser.Parser()
 
@@ -52,8 +51,8 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
             "rg": (self.vm.n_to_g, (var_c, "NM_001637.3")),
             "cg": (self.vm.c_to_g, (var_g, "NM_001637.3")),
             "tg": (self.vm.t_to_g, (var_g, "NM_001637.3")),
-            "cr": (self.vm.c_to_n, (var_g, )),
-            "rc": (self.vm.n_to_c, (var_g, )),
+            "cr": (self.vm.c_to_n, (var_g,)),
+            "rc": (self.vm.n_to_c, (var_g,)),
             "cp": (self.vm.c_to_p, (var_g, None)),
         }
 
@@ -76,17 +75,17 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
 
     def test_undefined_cds(self):
         """Raise exception when requesting mapping to/from c. with non-coding transcript"""
-        hgvs_n = "NR_111984.1:n.44G>A"    # legit
-        hgvs_c = "NR_111984.1:c.44G>A"    # bogus: c. with non-coding tx accession
+        hgvs_n = "NR_111984.1:n.44G>A"  # legit
+        hgvs_c = "NR_111984.1:c.44G>A"  # bogus: c. with non-coding tx accession
         var_n = self.hp.parse_hgvs_variant(hgvs_n)
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
         tx_ac = var_n.ac
 
         with self.assertRaises(hgvs.exceptions.HGVSUsageError):
-            var_c = self.vm.n_to_c(var_n)    # n_to_c: transcript is non-coding
+            var_c = self.vm.n_to_c(var_n)  # n_to_c: transcript is non-coding
 
         with self.assertRaises(hgvs.exceptions.HGVSUsageError):
-            var_c = self.vm.c_to_n(var_c)    # c_to_n: var_c is bogus
+            var_c = self.vm.c_to_n(var_c)  # c_to_n: var_c is bogus
 
     def test_map_var_of_unsupported_validation(self):
         hgvs_c = "NM_003777.3:c.13552_*36del57"
@@ -115,7 +114,7 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
     def test_map_of_c_out_of_reference_bound(self):
         hgvs_c = "NM_000249.3:c.-73960_*46597del"
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
-        with pytest.raises(HGVSError, match='coordinate is out of bounds'):
+        with pytest.raises(HGVSError, match="coordinate is out of bounds"):
             self.vm.c_to_p(var_c)
 
 

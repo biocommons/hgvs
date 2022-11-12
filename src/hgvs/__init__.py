@@ -49,23 +49,27 @@ BaseOffsetPosition(base=1582, offset=0, datum=Datum.CDS_START, uncertain=False)
 
 """
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 import logging
-import pkg_resources
 import re
-import warnings
 import sys
+import warnings
 
-from .config import global_config    # noqa (importing symbol)
+import pkg_resources
+
+from .config import global_config  # noqa (importing symbol)
 
 _logger = logging.getLogger(__name__)
 
 
 if sys.version_info < (3, 6):
-    _logger.critical("""hgvs on Python 2.7 is no longer supported. The next major version
+    _logger.critical(
+        """hgvs on Python 2.7 is no longer supported. The next major version
     of hgvs will require Python 3.6+. See
-    https://github.com/biocommons/org/wiki/Migrating-to-Python-3.6.""")
+    https://github.com/biocommons/org/wiki/Migrating-to-Python-3.6."""
+    )
 
 
 _is_released_version = False

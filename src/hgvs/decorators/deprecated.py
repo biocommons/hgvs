@@ -4,7 +4,8 @@ marks a function as deprecated.
 
 """
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 import collections
 import warnings
@@ -36,7 +37,7 @@ class deprecated(object):
     def __call__(self, func):
         msg = "Call to deprecated function {}".format(func.__name__)
         if self.use_instead:
-            msg += '; use ' + self.use_instead + ' instead'
+            msg += "; use " + self.use_instead + " instead"
 
         def wrapper(*args, **kwargs):
             fingerprint = (func.__name__, func.__code__.co_filename, func.__code__.co_firstlineno)
@@ -45,11 +46,12 @@ class deprecated(object):
                     msg,
                     category=DeprecationWarning,
                     filename=func.__code__.co_filename,
-                    lineno=func.__code__.co_firstlineno + 1)
+                    lineno=func.__code__.co_firstlineno + 1,
+                )
             self.seen.update([fingerprint])
             return func(*args, **kwargs)
 
         wrapper.__doc__ = "Deprecated"
         if self.use_instead:
-            wrapper.__doc__ += '; use ' + self.use_instead + ' instead'
+            wrapper.__doc__ += "; use " + self.use_instead + " instead"
         return wrapper

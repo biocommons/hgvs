@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+
+import csv
+from sys import version_info
 
 # Mock test input source
 
-from sys import version_info
-
-import csv
 
 
-class MockInputSource():
+
+class MockInputSource:
     def __init__(self, in_file):
         self._mock_data = self._read_input(in_file)
 
@@ -23,10 +25,10 @@ class MockInputSource():
         data = self._mock_data.get(ac)
         if data:
             result = {
-                'ord': 1,
-                't_start_i': 0,
-                't_end_i': data['cds_end_i'] - data['cds_start_i'],
-                't_seq_a': data['transcript_sequence']
+                "ord": 1,
+                "t_start_i": 0,
+                "t_end_i": data["cds_end_i"] - data["cds_start_i"],
+                "t_seq_a": data["transcript_sequence"],
             }
 
         return [result]
@@ -34,8 +36,8 @@ class MockInputSource():
     def fetch_transcript_info(self, ac):
         result = None
         data = self._mock_data.get(ac)
-        if data:    # interbase coordinates
-            result = {'cds_start_i': data['cds_start_i'], 'cds_end_i': data['cds_end_i']}
+        if data:  # interbase coordinates
+            result = {"cds_start_i": data["cds_start_i"], "cds_end_i": data["cds_end_i"]}
         return result
 
     def get_tx_identity_info(self, ac):
@@ -51,7 +53,7 @@ class MockInputSource():
         result = None
         data = self._mock_data.get(ac)
         if data:
-            result = data['transcript_sequence']
+            result = data["transcript_sequence"]
         return result
 
     def get_seq(self, ac, start_i=None, end_i=None):
@@ -69,13 +71,13 @@ class MockInputSource():
         :return dictionary of accession_number to sequence tags
         """
         result = {}
-        with open(in_file, 'r') as f:
-            reader = csv.DictReader(f, delimiter=str('\t'))
+        with open(in_file, "r") as f:
+            reader = csv.DictReader(f, delimiter=str("\t"))
             for row in reader:
-                result[row['accession']] = {
-                    'transcript_sequence': row['transcript_sequence'],
-                    'cds_start_i': int(row['cds_start_i']),
-                    'cds_end_i': int(row['cds_end_i'])
+                result[row["accession"]] = {
+                    "transcript_sequence": row["transcript_sequence"],
+                    "cds_start_i": int(row["cds_start_i"]),
+                    "cds_end_i": int(row["cds_end_i"]),
                 }
 
         return result

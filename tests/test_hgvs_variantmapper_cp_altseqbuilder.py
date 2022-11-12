@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 import os
 import unittest
 
+import support.mock_input_source as mock_input_data_source
+
 import hgvs.parser
 import hgvs.utils.altseqbuilder as altseqbuilder
 from hgvs.utils.reftranscriptdata import RefTranscriptData
-
-import support.mock_input_source as mock_input_data_source
 
 
 class TestAltSeqBuilder(unittest.TestCase):

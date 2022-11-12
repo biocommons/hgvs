@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 import itertools
 import re
@@ -10,7 +11,7 @@ def build_tx_cigar(exons, strand):
     """builds a single CIGAR string representing an alignment of the
     transcript sequence to a reference sequence, including introns.
     The input exons are expected to be in transcript order, and the
-    resulting CIGAR is also in transcript order. 
+    resulting CIGAR is also in transcript order.
 
     >>> build_tx_cigar([], 1) is None
     True
@@ -18,7 +19,7 @@ def build_tx_cigar(exons, strand):
     cigarelem_re = re.compile(r"\d+[=DIMNX]")
 
     def _reverse_cigar(c):
-        return ''.join(reversed(cigarelem_re.findall(c)))
+        return "".join(reversed(cigarelem_re.findall(c)))
 
     if len(exons) == 0:
         return None
@@ -29,17 +30,14 @@ def build_tx_cigar(exons, strand):
     else:
         cigars = [e["cigar"] for e in exons]
 
-    tx_cigar = [cigars[0]]    # exon 1
-    for i in range(1, len(cigars)):    # and intron + exon pairs thereafter
+    tx_cigar = [cigars[0]]  # exon 1
+    for i in range(1, len(cigars)):  # and intron + exon pairs thereafter
         intron = str(exons[i]["alt_start_i"] - exons[i - 1]["alt_end_i"]) + "N"
         tx_cigar += [intron, cigars[i]]
 
     tx_cigar_str = "".join(tx_cigar)
 
     return tx_cigar_str
-
-
-
 
 
 # <LICENSE>

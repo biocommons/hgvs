@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 import os
 import pprint
@@ -7,13 +8,13 @@ import unittest
 
 import pytest
 
-from hgvs.exceptions import HGVSParseError
 import hgvs.parser
+from hgvs.exceptions import HGVSParseError
 
 
 def test_parser_variants_with_gene_names(parser):
     assert parser.parse("NM_01234.5(BOGUS):c.22+1A>T")
-    
+
     with pytest.raises(hgvs.exceptions.HGVSParseError):
         parser.parse("NM_01234.5(1BOGUS):c.22+1A>T")
 
@@ -36,8 +37,11 @@ class Test_Position(unittest.TestCase):
             if var.startswith("#") or var == "":
                 continue
             v = self.parser.parse_hgvs_variant(var)
-            self.assertEqual(var, v.format(conf={'max_ref_length': None}),
-                             "parse-format roundtrip failed:" + pprint.pformat(v.posedit))
+            self.assertEqual(
+                var,
+                v.format(conf={"max_ref_length": None}),
+                "parse-format roundtrip failed:" + pprint.pformat(v.posedit),
+            )
 
     @pytest.mark.quick
     def test_parser_reject(self):
@@ -55,12 +59,12 @@ class Test_Position(unittest.TestCase):
         # See note in grammar about parsing p.=, p.?, and p.0
         self.assertEqual(str(self.parser.parse_p_posedit("0")), "0")
         self.assertEqual(str(self.parser.parse_p_posedit("0?")), "0?")
-        #self.assertEqual( str(self.parser.parse_p_posedit("(0)")), "0?" )
+        # self.assertEqual( str(self.parser.parse_p_posedit("(0)")), "0?" )
 
         self.assertIsNone(self.parser.parse_p_posedit("?"))
 
         self.assertEqual(str(self.parser.parse_p_posedit("=")), "=")
-        #self.assertEqual( str(self.parser.parse_p_posedit("=?")), "(=)" )
+        # self.assertEqual( str(self.parser.parse_p_posedit("=?")), "(=)" )
         self.assertEqual(str(self.parser.parse_p_posedit("(=)")), "(=)")
 
 

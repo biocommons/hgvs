@@ -9,15 +9,15 @@ location).
 
 """
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 import attr
-
-from bioutils.sequences import aa_to_aa1, aa1_to_aa3
+import six
+from bioutils.sequences import aa1_to_aa3, aa_to_aa1
 
 import hgvs
 from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError
-import six
 
 
 @attr.s(slots=True)
@@ -45,8 +45,7 @@ class Edit(object):
         return p_3_letter, p_term_asterisk, p_init_met
 
     def _del_ins_lengths(self, ilen):
-        raise HGVSUnsupportedOperationError(
-            "internal function _del_ins_lengths not implemented for this variant type")
+        raise HGVSUnsupportedOperationError("internal function _del_ins_lengths not implemented for this variant type")
 
 
 @attr.s(slots=True)
@@ -58,6 +57,7 @@ class NARefAlt(Edit):
     :ivar alt: alternate sequence
     :ivar uncertain: boolean indicating whether the variant is uncertain/undetermined
     """
+
     ref = attr.ib(default=None)
     alt = attr.ib(default=None)
     uncertain = attr.ib(default=False)
@@ -73,8 +73,7 @@ class NARefAlt(Edit):
         >>> NARefAlt(7).ref_s
 
         """
-        return self.ref if (isinstance(self.ref, six.string_types) and self.ref
-                            and self.ref[0] in "ACGTUN") else None
+        return self.ref if (isinstance(self.ref, six.string_types) and self.ref and self.ref[0] in "ACGTUN") else None
 
     @property
     def ref_n(self):
@@ -104,7 +103,7 @@ class NARefAlt(Edit):
         if max_ref_length is not None:
             ref = self.ref_s
             if ref is None or len(ref) > max_ref_length:
-                ref = ''
+                ref = ""
         else:
             ref = self.ref
 
@@ -112,8 +111,7 @@ class NARefAlt(Edit):
         if self.ref is not None and self.alt is not None:
             if self.ref == self.alt:
                 s = "{ref}=".format(ref=ref)
-            elif len(self.alt) == 1 and len(
-                    self.ref) == 1 and not self.ref.isdigit():    # don't turn del5insT into 5>T
+            elif len(self.alt) == 1 and len(self.ref) == 1 and not self.ref.isdigit():  # don't turn del5insT into 5>T
                 s = "{self.ref}>{self.alt}".format(self=self)
             else:
                 s = "del{ref}ins{alt}".format(ref=ref, alt=self.alt)
@@ -122,7 +120,7 @@ class NARefAlt(Edit):
             s = "del{ref}".format(ref=ref)
 
         # ins case
-        else:    # self.alt is not None
+        else:  # self.alt is not None
             s = "ins{self.alt}".format(self=self)
 
         return "(" + s + ")" if self.uncertain else s
@@ -405,7 +403,7 @@ class Dup(Edit):
         if max_ref_length is not None:
             ref = self.ref_s
             if ref is None or len(ref) > max_ref_length:
-                ref = ''
+                ref = ""
         else:
             ref = self.ref
         return "dup" + (ref or "")
@@ -417,8 +415,7 @@ class Dup(Edit):
         """
         returns a string representing the ref sequence, if it is not None and smells like a sequence
         """
-        return self.ref if (isinstance(self.ref, six.string_types) and self.ref
-                            and self.ref[0] in "ACGTUN") else None
+        return self.ref if (isinstance(self.ref, six.string_types) and self.ref and self.ref[0] in "ACGTUN") else None
 
     def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
@@ -458,7 +455,7 @@ class Repeat(Edit):
         max_ref_length = self._format_config_na(conf)
         ref = self.ref
         if max_ref_length is not None and (ref is None or len(ref) > max_ref_length):
-            ref = ''
+            ref = ""
         if self.min == self.max:
             return "{ref}[{min}]".format(ref=ref, min=self.min)
         return "{ref}({min}_{max})".format(ref=ref, min=self.min, max=self.max)
@@ -491,6 +488,7 @@ class NACopy(Edit):
     removed without notice.
 
     """
+
     copy = attr.ib(default=None)
     uncertain = attr.ib(default=False)
 
@@ -523,8 +521,8 @@ class NACopy(Edit):
 
 @attr.s(slots=True)
 class Inv(Edit):
-    """Inversion
-    """
+    """Inversion"""
+
     ref = attr.ib(default=None)
     uncertain = attr.ib(default=False)
 
@@ -541,8 +539,7 @@ class Inv(Edit):
 
     @property
     def ref_s(self):
-        return self.ref if (isinstance(self.ref, six.string_types) and self.ref
-                            and self.ref[0] in "ACGTUN") else None
+        return self.ref if (isinstance(self.ref, six.string_types) and self.ref and self.ref[0] in "ACGTUN") else None
 
     @property
     def ref_n(self):
@@ -572,8 +569,8 @@ class Inv(Edit):
 
 @attr.s(slots=True)
 class Conv(Edit):
-    """Conversion
-    """
+    """Conversion"""
+
     from_ac = attr.ib(default=None)
     from_type = attr.ib(default=None)
     from_pos = attr.ib(default=None)
@@ -605,6 +602,7 @@ class Conv(Edit):
 
 if __name__ == "__main__":
     import doctest
+
     doctest.testmod()
 
 # <LICENSE>

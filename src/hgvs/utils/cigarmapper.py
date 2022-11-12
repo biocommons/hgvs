@@ -18,14 +18,13 @@ The conceptual swap occurs in the _map function.
 
 import re
 
-
 from hgvs.exceptions import HGVSInvalidIntervalError
 
 
 class CIGARMapper:
     """provides coordinate mapping between two sequences whose alignment
     is given by a CIGAR string
-    
+
     CIGAR is about alignments between positions in two sequences.  It
     is base-centric.
 
@@ -45,33 +44,27 @@ class CIGARMapper:
         self.cigar = cigar
         self.ref_pos, self.tgt_pos, self.cigar_op = _parse_cigar(self.cigar)
 
-
     def __repr__(self):
         return f"CIGARMapper(cigar='{self.cigar}')"
-
 
     @property
     def ref_len(self):
         return self.ref_pos[-1]
 
-
     @property
     def tgt_len(self):
         return self.tgt_pos[-1]
 
-
     def map_ref_to_tgt(self, pos, end, strict_bounds=True):
         return self._map(from_pos=self.ref_pos, to_pos=self.tgt_pos, pos=pos, end=end, strict_bounds=strict_bounds)
-
 
     def map_tgt_to_ref(self, pos, end, strict_bounds=True):
         return self._map(from_pos=self.tgt_pos, to_pos=self.ref_pos, pos=pos, end=end, strict_bounds=strict_bounds)
 
-
     def _map(self, from_pos, to_pos, pos, end, strict_bounds):
         """Map position between aligned segments
 
-        Positions in this function are 0-based, base-counting. 
+        Positions in this function are 0-based, base-counting.
         """
 
         if strict_bounds and (pos < 0 or pos > from_pos[-1]):
@@ -80,7 +73,7 @@ class CIGARMapper:
         # find aligned segment to use as basis for mapping
         # okay for pos to be before first element or after last
         for pos_i in range(len(self.cigar_op)):
-            if pos < from_pos[pos_i+1]:
+            if pos < from_pos[pos_i + 1]:
                 break
 
         if self.cigar_op[pos_i] in "=MX":
@@ -114,10 +107,8 @@ def _parse_cigar(cigar):
     advance_ref_ops = "=MXIN"
     advance_tgt_ops = "=MXD"
 
-
     ces = [m.groupdict() for m in cigar_re.finditer(cigar)]
     cigar_len = len(ces)
-    
 
     ref_pos = [None] * cigar_len
     tgt_pos = [None] * cigar_len
@@ -128,7 +119,7 @@ def _parse_cigar(cigar):
         tgt_pos[i] = tgt_cur
         cigar_op[i] = ce["op"]
         step = int(ce["len"] or 1)
-        # Note: these cases are 
+        # Note: these cases are
         if ce["op"] in advance_ref_ops:
             ref_cur += step
         if ce["op"] in advance_tgt_ops:
@@ -138,12 +129,7 @@ def _parse_cigar(cigar):
     return ref_pos, tgt_pos, cigar_op
 
 
-
-
-
 if __name__ == "__main__":
-    #cigar = "2=2N=X=2N=I=2N=D="
+    # cigar = "2=2N=X=2N=I=2N=D="
     cigar = "3=2N=X=3N=I=D="
     cm = CIGARMapper(cigar)
-    
-    

@@ -15,16 +15,18 @@ Classes:
   * :class:`Interval` -- an interval of Positions
 """
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-import attr
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 from functools import total_ordering
+
+import attr
 from bioutils.sequences import aa1_to_aa3
 
 import hgvs
-from hgvs.exceptions import HGVSUnsupportedOperationError, HGVSInvalidIntervalError
 from hgvs.enums import Datum, ValidationLevel
+from hgvs.exceptions import (HGVSInvalidIntervalError,
+                             HGVSUnsupportedOperationError)
 
 
 @attr.s(slots=True, repr=False, cmp=False)
@@ -43,8 +45,9 @@ class SimplePosition(object):
 
     def __repr__(self):
         return "{0}({1})".format(
-            self.__class__.__name__, ", ".join(
-                (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
+            self.__class__.__name__,
+            ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
+        )
 
     @property
     def is_uncertain(self):
@@ -113,6 +116,7 @@ class BaseOffsetPosition(object):
     | c.*55    | CDS_END    |    0  |     55  | 3' UTR variant, 55 nt after STOP         |
     +----------+------------+-------+---------+------------------------------------------+
     """
+
     base = attr.ib(default=None)
     offset = attr.ib(default=0)
     datum = attr.ib(default=Datum.SEQ_START)
@@ -121,20 +125,19 @@ class BaseOffsetPosition(object):
     def validate(self):
         if self.base is not None and self.base == 0:
             return (ValidationLevel.ERROR, "BaseOffsetPosition base may not be 0")
-        if (hgvs.global_config.mapping.strict_bounds
+        if (
+            hgvs.global_config.mapping.strict_bounds
             and self.base is not None
             and self.datum != Datum.CDS_START
-            and self.base < 1):
-            return (ValidationLevel.ERROR,
-                    "BaseOffsetPosition base must be >=1 for datum = SEQ_START or CDS_END")
+            and self.base < 1
+        ):
+            return (ValidationLevel.ERROR, "BaseOffsetPosition base must be >=1 for datum = SEQ_START or CDS_END")
         return (ValidationLevel.VALID, None)
 
     def __str__(self):
         self.validate()
-        base_str = ("?" if self.base is None else
-                    "*" + str(self.base) if self.datum == Datum.CDS_END else str(self.base))
-        offset_str = ("+?"
-                      if self.offset is None else "" if self.offset == 0 else "%+d" % self.offset)
+        base_str = "?" if self.base is None else "*" + str(self.base) if self.datum == Datum.CDS_END else str(self.base)
+        offset_str = "+?" if self.offset is None else "" if self.offset == 0 else "%+d" % self.offset
         pos = base_str + offset_str
         return "(" + pos + ")" if self.uncertain else pos
 
@@ -143,8 +146,9 @@ class BaseOffsetPosition(object):
 
     def __repr__(self):
         return "{0}({1})".format(
-            self.__class__.__name__, ", ".join(
-                (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
+            self.__class__.__name__,
+            ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
+        )
 
     def _set_uncertain(self):
         "mark this location as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"
@@ -159,18 +163,16 @@ class BaseOffsetPosition(object):
     @property
     def is_intronic(self):
         """returns True if the variant is intronic (if the offset is None or non-zero)"""
-        return (self.offset is None or self.offset != 0)
+        return self.offset is None or self.offset != 0
 
     def __sub__(lhs, rhs):
         assert type(lhs) == type(rhs), "Cannot substract coordinates of different representations"
         if lhs.datum != rhs.datum:
-            raise HGVSUnsupportedOperationError(
-                "Interval length measured from different datums is ill-defined")
+            raise HGVSUnsupportedOperationError("Interval length measured from different datums is ill-defined")
         if lhs.base == rhs.base:
             return lhs.offset - rhs.offset
         if lhs.offset != 0 or rhs.offset != 0:
-            raise HGVSUnsupportedOperationError(
-                "Interval length with intronic offsets is ill-defined")
+            raise HGVSUnsupportedOperationError("Interval length with intronic offsets is ill-defined")
         straddles_zero = 1 if (lhs.base > 0 and rhs.base < 0) else 0
         return lhs.base - rhs.base - straddles_zero
 
@@ -188,8 +190,9 @@ class BaseOffsetPosition(object):
             if lhs.base == rhs.base:
                 return lhs.offset < rhs.offset
             else:
-                if ((rhs.base - lhs.base == 1 and lhs.offset > 0 and rhs.offset < 0)
-                        or (lhs.base - rhs.base == 1 and rhs.offset > 0 and lhs.offset < 0)):
+                if (rhs.base - lhs.base == 1 and lhs.offset > 0 and rhs.offset < 0) or (
+                    lhs.base - rhs.base == 1 and rhs.offset > 0 and lhs.offset < 0
+                ):
                     raise HGVSUnsupportedOperationError(
                         "Cannot compare coordinates in the same intron with one based on end of exon and the other based on start of next exon"
                     )
@@ -198,7 +201,8 @@ class BaseOffsetPosition(object):
         else:
             if lhs.datum == Datum.SEQ_START or rhs.datum == Datum.SEQ_START:
                 raise HGVSUnsupportedOperationError(
-                    "Cannot compare coordinates of datum SEQ_START with CDS_START or CDS_END")
+                    "Cannot compare coordinates of datum SEQ_START with CDS_START or CDS_END"
+                )
             else:
                 return lhs.datum < rhs.datum
 
@@ -240,8 +244,9 @@ class AAPosition(object):
 
     def __repr__(self):
         return "{0}({1})".format(
-            self.__class__.__name__, ", ".join(
-                (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
+            self.__class__.__name__,
+            ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
+        )
 
     @property
     def pos(self):
@@ -331,8 +336,9 @@ class Interval(object):
 
     def __repr__(self):
         return "{0}({1})".format(
-            self.__class__.__name__, ", ".join(
-                (a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__))
+            self.__class__.__name__,
+            ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
+        )
 
     def _set_uncertain(self):
         "mark this interval as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"
@@ -372,8 +378,7 @@ class BaseOffsetInterval(Interval):
             (Datum.CDS_START, Datum.CDS_END),
             (Datum.CDS_END, Datum.CDS_END),
         ]:
-            raise HGVSInvalidIntervalError(
-                "BaseOffsetInterval start datum and end datum are incompatible")
+            raise HGVSInvalidIntervalError("BaseOffsetInterval start datum and end datum are incompatible")
 
 
 # <LICENSE>

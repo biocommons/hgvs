@@ -3,7 +3,8 @@
 
 """
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 import logging
 import os
@@ -37,6 +38,7 @@ class SeqFetcher(object):
         seqrepo_url = os.environ.get("HGVS_SEQREPO_URL")
         if seqrepo_dir:
             from biocommons.seqrepo import SeqRepo
+
             self.sr = SeqRepo(seqrepo_dir)
 
             def _fetch_seq_seqrepo(ac, start_i=None, end_i=None):
@@ -46,6 +48,7 @@ class SeqFetcher(object):
             self.source = "SeqRepo ({})".format(seqrepo_dir)
         elif seqrepo_url:
             from biocommons.seqrepo.dataproxy import SeqRepoRESTDataProxy
+
             self.sr = SeqRepoRESTDataProxy(seqrepo_url)
             self.fetcher = lambda ac, start_i=None, end_i=None: self.sr.get_sequence(ac, start_i, end_i)
             self.source = f"SeqRepo REST ({seqrepo_url})"
@@ -59,8 +62,9 @@ class SeqFetcher(object):
         try:
             return self.fetcher(ac, start_i, end_i)
         except Exception as ex:
-            raise HGVSDataNotAvailableError("Failed to fetch {ac} from {self.source} ({ex})".format(
-                ac=ac, ex=ex, self=self))
+            raise HGVSDataNotAvailableError(
+                "Failed to fetch {ac} from {self.source} ({ex})".format(ac=ac, ex=ex, self=self)
+            )
 
 
 # <LICENSE>

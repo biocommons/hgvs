@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 #
 # Tests for conversion of hgvs tags
@@ -7,10 +8,10 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import os
 import unittest
 
-import hgvs.variantmapper as variantmapper
-import hgvs.parser
-
 import support.mock_input_source as mock_input_data_source
+
+import hgvs.parser
+import hgvs.variantmapper as variantmapper
 
 
 class TestHgvsCToP(unittest.TestCase):
