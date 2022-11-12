@@ -14,12 +14,6 @@ VE_DIR=venv/${PY_VERSION}
 TEST_DIRS:=tests
 DOC_TESTS:=docs hgvs ./README.rst
 
-# Caching of test data is based on URLs.  Therefore, it is critical that tests
-# use well-defined and consistent URLs in all environments.
-# The appropriate environment should be set up using misc/docker-compose.yml
-export UTA_DB_URL=postgresql://anonymous@localhost:5432/uta/uta_20180821
-export HGVS_SEQREPO_URL=http://localhost:5000/seqrepo
-
 
 ############################################################################
 #= BASIC USAGE
@@ -92,7 +86,11 @@ test-%:
 #=> test-learn: build test data cache
 #=> test-relearn: destroy and rebuild test data cache
 test-learn:
-	HGVS_CACHE_MODE=learn pytest -s
+	# The appropriate environment should be set up using misc/docker-compose.yml
+	UTA_DB_URL=postgresql://anonymous@localhost:5432/uta/uta_20180821 \
+	HGVS_SEQREPO_URL=http://localhost:5000/seqrepo \
+	HGVS_CACHE_MODE=learn \
+	pytest -s
 test-relearn:
 	rm -f tests/data/cache-py3.hdp
 	make test-learn

@@ -103,7 +103,7 @@ def connect(db_url=None,
         db_url = _get_uta_db_url()
 
     if "PYTEST_CURRENT_TEST" in os.environ and "localhost" not in db_url:
-        raise RuntimeError(f"You are executing tests using remote data ({db_url})")
+        _logger.warning(f"You are executing tests using remote data ({db_url})")
 
     url = _parse_url(db_url)
     if url.scheme == 'sqlite':
