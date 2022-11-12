@@ -29,7 +29,8 @@ def test_seqfetcher_initialized_with_seqrepo_url(monkeypatch):
     assert sf.source == "SeqRepo REST (http://localhost:5000/seqrepo)"
 
 
-def test_seqfetcher_initialized_with_public_seqrepo_sources():
+def test_seqfetcher_initialized_with_public_seqrepo_sources(monkeypatch):
+    monkeypatch.setenv("HGVS_SEQREPO_URL", "")
     sf = SeqFetcher()
     assert sf.sr is None
     assert sf.fetcher == seqfetcher.fetch_seq

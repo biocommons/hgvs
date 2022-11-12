@@ -6,6 +6,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import abc
+import os
 
 import hgvs
 
@@ -49,59 +50,48 @@ class Interface(six.with_metaclass(abc.ABCMeta, object)):
         :type cache: str
         """
         self.mode = None
-        if mode == 'learn':
+        if mode == "learn":
             self.mode = LEARN
-        elif mode == 'run':
+        elif mode == "run":
             self.mode = RUN
-        elif mode == 'verify':
+        elif mode == "verify":
             self.mode = VERIFY
 
         self.cache = None
         if self.mode is not None:
             if self.mode == LEARN:
-                self.cache = PersistentDict(cache, flag='c')
+                self.cache = PersistentDict(cache, flag="c")
             else:
-                self.cache = PersistentDict(cache, flag='r')
+                self.cache = PersistentDict(cache, flag="r")
 
-        self.data_version = lru_cache(
-            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode,
-            cache=self.cache)(self.data_version)
-        self.schema_version = lru_cache(
-            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode,
-            cache=self.cache)(self.schema_version)
-        self.get_acs_for_protein_seq = lru_cache(
-            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode,
-            cache=self.cache)(self.get_acs_for_protein_seq)
-        self.get_gene_info = lru_cache(
-            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode,
-            cache=self.cache)(self.get_gene_info)
-        self.get_pro_ac_for_tx_ac = lru_cache(
-            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode,
-            cache=self.cache)(self.get_pro_ac_for_tx_ac)
-        self.get_seq = lru_cache(
-            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode,
-            cache=self.cache)(self.get_seq)
-        self.get_similar_transcripts = lru_cache(
-            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode,
-            cache=self.cache)(self.get_similar_transcripts)
-        self.get_tx_exons = lru_cache(
-            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode,
-            cache=self.cache)(self.get_tx_exons)
-        self.get_tx_for_gene = lru_cache(
-            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode,
-            cache=self.cache)(self.get_tx_for_gene)
-        self.get_tx_for_region = lru_cache(
-            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode,
-            cache=self.cache)(self.get_tx_for_region)
-        self.get_tx_identity_info = lru_cache(
-            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode,
-            cache=self.cache)(self.get_tx_identity_info)
-        self.get_tx_info = lru_cache(
-            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode,
-            cache=self.cache)(self.get_tx_info)
-        self.get_tx_mapping_options = lru_cache(
-            maxsize=hgvs.global_config.lru_cache.maxsize, mode=self.mode,
-            cache=self.cache)(self.get_tx_mapping_options)
+        maxsize = hgvs.global_config.lru_cache.maxsize
+        if "PYTEST_CURRENT_TEST" in os.environ:
+            maxsize = None
+            print(f"{__file__}: Using unlimited cache size")
+
+        self.data_version = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(self.data_version)
+        self.schema_version = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(self.schema_version)
+        self.get_acs_for_protein_seq = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
+            self.get_acs_for_protein_seq
+        )
+        self.get_gene_info = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(self.get_gene_info)
+        self.get_pro_ac_for_tx_ac = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
+            self.get_pro_ac_for_tx_ac
+        )
+        self.get_seq = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(self.get_seq)
+        self.get_similar_transcripts = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
+            self.get_similar_transcripts
+        )
+        self.get_tx_exons = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(self.get_tx_exons)
+        self.get_tx_for_gene = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(self.get_tx_for_gene)
+        self.get_tx_for_region = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(self.get_tx_for_region)
+        self.get_tx_identity_info = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
+            self.get_tx_identity_info
+        )
+        self.get_tx_info = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(self.get_tx_info)
+        self.get_tx_mapping_options = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
+            self.get_tx_mapping_options
+        )
 
         def _split_version_string(v):
             versions = list(map(int, v.split(".")))
@@ -119,12 +109,10 @@ class Interface(six.with_metaclass(abc.ABCMeta, object)):
             return
 
         raise RuntimeError(
-            "Incompatible versions: {k} requires schema version {rv}, but {self.url} provides version {av}"
-            .format(
-                k=type(self).__name__,
-                self=self,
-                rv=self.required_version,
-                av=self.schema_version()))
+            "Incompatible versions: {k} requires schema version {rv}, but {self.url} provides version {av}".format(
+                k=type(self).__name__, self=self, rv=self.required_version, av=self.schema_version()
+            )
+        )
 
     # required_version: what version of the remote schema is required
     # by the subclass? This value is compared to the result of

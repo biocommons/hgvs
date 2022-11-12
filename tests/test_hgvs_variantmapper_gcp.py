@@ -34,7 +34,8 @@ def gxp_file_reader(fn):
 
 @pytest.mark.mapping
 class Test_VariantMapper(unittest.TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpClass(self):
         self.hdp = hgvs.dataproviders.uta.connect(
             mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
         self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
