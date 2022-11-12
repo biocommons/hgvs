@@ -1,9 +1,9 @@
 # Creates a stack of data services for hgvs and vr-python
 #
 # ```
-# $ docker volume create --name=uta_vol
-# $ docker volume create --name=seqrepo_vol
-# $ docker-compose up
+# docker volume create --name=uta_vol
+# docker volume create --name=seqrepo_vol
+# docker-compose up
 # ```
 
 
@@ -23,6 +23,7 @@ services:
     volumes:
       - seqrepo_vol:/usr/local/share/seqrepo
     network_mode: host
+    command: seqrepo-rest-service /usr/local/share/seqrepo/2021-01-29
     
   uta:
     # Test:

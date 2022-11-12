@@ -73,15 +73,22 @@ build: %:
 # => extra fx issues mapping models normalization parametrize pnd quick regression validation
 .PHONY: test test-code test-docs stest
 test:
-	python setup.py pytest
+	pytest
 test-code:
-	python setup.py pytest --addopts="${TEST_DIRS}"
+	pytest --addopts="${TEST_DIRS}"
 test-docs:
-	python setup.py pytest --addopts="${DOC_TESTS}"
+	pytest --addopts="${DOC_TESTS}"
 stest:
-	python setup.py pytest --addopts="-vvv -s -k ${t}"
+	pytest --addopts="-vvv -s -k ${t}"
 test-%:
-	python setup.py pytest --addopts="-m '$*' ${TEST_DIRS}"
+	pytest --addopts="-m '$*' ${TEST_DIRS}"
+
+#=> test-learn: build test data cache using data from misc/docker-compose.yml
+test-learn:
+	UTA_DB_URL=postgresql://anonymous@localhost:5432/uta/uta_20180821 \
+	HGVS_SEQREPO_URL=http://localhost:5000/seqrepo \
+	HGVS_CACHE_MODE=learn \
+	pytest -s
 
 #=> tox -- run all tox tests
 tox:

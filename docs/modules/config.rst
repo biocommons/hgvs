@@ -51,9 +51,9 @@ The defaults are::
   pool_min = 1
   pool_max = 10
   
-  prd_uta_version = uta_20180821
-  stg_uta_version = uta_20180821
-  dev_uta_version = uta_20180821
+  prd_uta_version = uta_20210129
+  stg_uta_version = uta_20210129
+  dev_uta_version = uta_20210129
   public_host = uta.biocommons.org
   local_host = localhost
   public_prd = postgresql://anonymous:anonymous@${public_host}/uta/${prd_uta_version}
