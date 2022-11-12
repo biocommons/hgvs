@@ -21,7 +21,7 @@ class Test_HGVSValidator(unittest.TestCase):
     """Validator wrapper class tests (most testing is handled by the component classes)"""
 
     @classmethod
-    def setUp(cls):
+    def setUpClass(cls):
         cls.hp = hgvs.parser.Parser()
         cls.vr = hgvs.validator.Validator(hdp)
 

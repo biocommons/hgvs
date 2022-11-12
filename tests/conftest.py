@@ -35,6 +35,12 @@ def babelfish38(hdp):
 
 
 
+def pytest_report_header(config):
+    env_vars = ["UTA_DB_URL", "HGVS_SEQREPO_URL", "HGVS_CACHE_MODE"]
+    rv = [f"{ev}: {os.environ.get(ev)}" for ev in sorted(env_vars)]
+    return "\n".join(rv)
+
+
 @pytest.fixture(scope="class")
 def kitchen_sink_setup(request, hdp, parser, am37, am38):
     """

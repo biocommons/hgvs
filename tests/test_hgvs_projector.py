@@ -17,7 +17,7 @@ from support import CACHE
 
 class TestHgvsProjector(unittest.TestCase):
     @classmethod
-    def setUp(cls):
+    def setUpClass(cls):
         cls.hdp = hgvs.dataproviders.uta.connect(
             mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
         cls.alt_ac = "NC_000001.10"

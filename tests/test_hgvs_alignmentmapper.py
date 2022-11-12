@@ -23,7 +23,7 @@ class Test_AlignmentMapper(unittest.TestCase):
     ref = "GRCh37.p10"
 
     @classmethod
-    def setUp(cls):
+    def setUpClass(cls):
         cls.hdp = hgvs.dataproviders.uta.connect(
             mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
         cls.parser = hgvs.parser.Parser()
