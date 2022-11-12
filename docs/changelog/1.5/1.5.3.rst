@@ -18,3 +18,4 @@ Internal and Developer Changes
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 * Add unittests for pooling [`c384fa0 <https://github.com/biocommons/hgvs/commit/c384fa0>`_] (jdasilva-invitae)
+* Closes `#630 <https://github.com/biocommons/hgvs/issues/630/>`_: Migrate testing and packaging to github actions; update packaging tools; speed up testing by reducing number of connections and improving caching [`8f14276 <https://github.com/biocommons/hgvs/commit/8f14276>`_] (Reece Hart)
