@@ -75,13 +75,13 @@ build: %:
 test:
 	pytest
 test-code:
-	pytest --addopts="${TEST_DIRS}"
+	pytest ${TEST_DIRS}
 test-docs:
-	pytest --addopts="${DOC_TESTS}"
+	pytest ${DOC_TESTS}
 stest:
-	pytest --addopts="-vvv -s -k ${t}"
+	pytest -vvv -s -k ${t}
 test-%:
-	pytest --addopts="-m '$*' ${TEST_DIRS}"
+	pytest -m '$*' ${TEST_DIRS}
 
 #=> test-learn: build test data cache
 #=> test-relearn: destroy and rebuild test data cache
