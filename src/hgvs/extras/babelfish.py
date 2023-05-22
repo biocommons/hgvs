@@ -1,6 +1,6 @@
 """translate between HGVS and other formats"""
 
-import bioutils.assemblies
+from bioutils.assemblies import make_ac_name_map
 
 import hgvs.normalizer
 
@@ -20,9 +20,7 @@ class Babelfish:
     def __init__(self, hdp, assembly_name):
         self.hdp = hdp
         self.hn = hgvs.normalizer.Normalizer(hdp, cross_boundaries=False, shuffle_direction=5, validate=False)
-        self.ac_to_chr_name_map = {
-            sr["refseq_ac"]: sr["name"] for sr in bioutils.assemblies.get_assembly("GRCh38")["sequences"]
-        }
+        self.ac_to_chr_name_map = make_ac_name_map(assembly_name)
 
     def hgvs_to_vcf(self, var_g):
         """**EXPERIMENTAL**
@@ -58,7 +56,7 @@ class Babelfish:
 
         alt = vleft.posedit.edit.alt or ""
 
-        if end_i - start_i == 1 and vleft.posedit.length_change == 0:
+        if end_i - start_i == 1 and vleft.posedit.length_change() == 0:
             # SNVs aren't left anchored
             ref = vleft.posedit.edit.ref
 
@@ -81,7 +79,6 @@ if __name__ == "__main__":
 
     import hgvs.easy
     import hgvs.normalizer
-    from hgvs.extras.babelfish import Babelfish
 
     babelfish38 = Babelfish(hgvs.easy.hdp, assembly_name="GRCh38")
     hnl = hgvs.normalizer.Normalizer(hgvs.easy.hdp, cross_boundaries=False, shuffle_direction=5, validate=False)
