@@ -67,6 +67,14 @@ Important Notes
 Examples
 @@@@@@@@
 
+Prerequisites
+#############
+
+::
+   
+   sudo apt install gcc libpq-dev python3-dev
+
+
 Installation
 #############
 
@@ -75,10 +83,10 @@ easy.
 
 ::
 
-  $ mkvirtualenv hgvs-test
-  (hgvs-test)$ pip install --upgrade setuptools
-  (hgvs-test)$ pip install hgvs
-  (hgvs-test)$ python
+  $ python3 -m venv venv
+  (venv)$ pip install --upgrade setuptools
+  (venv)$ pip install hgvs
+  
 
 See `Installation instructions
 <http://hgvs.readthedocs.org/en/stable/installation.html>`__ for
