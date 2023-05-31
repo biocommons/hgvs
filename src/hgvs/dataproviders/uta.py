@@ -686,6 +686,43 @@ if __name__ == "__main__":
 
     doctest.testmod()
 
+######################################################################
+
+from fastapi import FastAPI, HTTPException
+
+app = FastAPI()
+conn = connect()
+
+def http_404():
+    raise HTTPException(
+            status_code=404,
+            detail="Failed to fetch..."
+        )
+
+@app.get("/seq/test")
+async def get_tester():
+    return {"detail": "test"}
+
+@app.get("/seq/{ac}", status_code=200)
+async def get_seq(ac : str, start_i=None, end_i=None):
+    try:
+        return conn.seqfetcher.fetch_seq(ac, start_i, end_i)
+    except HGVSDataNotAvailableError: http_404()
+    
+@app.get("/gene_info/{gene}", status_code=200)
+async def get_gene_info(gene : str):
+    gene_info = conn._fetchone(conn._queries["gene_info"], [gene])
+    return (http_404() if gene_info == None else gene_info)
+
+@app.get("/tx-for-gene/{gene}", status_code=200)
+async def get_tx_for_gene(gene : str):
+    tx = conn._fetchall(conn._queries["tx_for_gene"], [gene])
+    return (http_404() if tx == None else tx)
+
+
+
+######################################################################
+
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #
