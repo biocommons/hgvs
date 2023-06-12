@@ -96,6 +96,8 @@ def connect(db_url=None, pooling=hgvs.global_config.uta.pooling, application_nam
 
     _logger.debug("connecting to " + str(db_url) + "...")
 
+    _logger.warning("When no url is provided, uta will connect to a default data provider. However, this breaks in version 2, where a data provider must be specified explicitly from a partner package such as utaclients.")
+
     if db_url is None:
         db_url = _get_uta_db_url()
 
