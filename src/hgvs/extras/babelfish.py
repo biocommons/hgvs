@@ -25,8 +25,6 @@ def _as_interbase(posedit):
 
 
 class Babelfish:
-    """ The plan here is to get this into biocommons HGVS via pull request
-        Once this is done, we can delete this file and use the biocommons library """
     def __init__(self, hdp, assembly_name):
         self.assembly_name = assembly_name
         self.hdp = hdp
@@ -43,9 +41,6 @@ class Babelfish:
         converts a single hgvs allele to (chr, pos, ref, alt) using
         the given assembly_name. The chr name uses official chromosome
         name (i.e., without a "chr" prefix).
-
-        Returns None for non-variation (e.g., NC_000006.12:g.49949407=)
-
         """
 
         if var_g.type != "g":
@@ -55,7 +50,7 @@ class Babelfish:
 
         (start_i, end_i) = _as_interbase(vleft.posedit)
 
-        chr = self.ac_to_name_map[vleft.ac]
+        chrom = self.ac_to_name_map[vleft.ac]
 
         typ = vleft.posedit.edit.type
 
@@ -63,8 +58,6 @@ class Babelfish:
             start_i -= 1
             alt = self.hdp.seqfetcher.fetch_seq(vleft.ac, start_i, end_i)
             ref = alt[0]
-            end_i = start_i
-            return (chr, start_i + 1, ref, alt, typ)
         elif typ == 'inv':
             ref = vleft.posedit.edit.ref
             alt = reverse_complement(ref)
@@ -79,7 +72,7 @@ class Babelfish:
                 ref = vleft.posedit.edit.ref
                 if ref == alt:
                     alt = '.'
-        return chr, start_i + 1, ref, alt, typ
+        return chrom, start_i + 1, ref, alt, typ
 
     def vcf_to_c_hgvs(self, chrom, position, ref, alt, transcript_accession):
         var_g = self.vcf_to_g_hgvs(chrom, position, ref, alt)
