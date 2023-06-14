@@ -5,7 +5,6 @@ import hgvs
 import hgvs.normalizer
 from bioutils.assemblies import make_ac_name_map, make_name_ac_map
 from bioutils.sequences import reverse_complement
-from hgvs.assemblymapper import AssemblyMapper
 from hgvs.edit import NARefAlt
 from hgvs.location import Interval, SimplePosition
 from hgvs.normalizer import Normalizer
@@ -29,9 +28,6 @@ class Babelfish:
         self.assembly_name = assembly_name
         self.hdp = hdp
         self.hn = hgvs.normalizer.Normalizer(hdp, cross_boundaries=False, shuffle_direction=5, validate=False)
-        self.am = AssemblyMapper(self.hdp,
-                                 assembly_name=assembly_name,
-                                 alt_aln_method='splign', replace_reference=True)
         self.ac_to_name_map = make_ac_name_map(assembly_name)
         self.name_to_ac_map = make_name_ac_map(assembly_name)
 
@@ -73,10 +69,6 @@ class Babelfish:
                 if ref == alt:
                     alt = '.'
         return chrom, start_i + 1, ref, alt, typ
-
-    def vcf_to_c_hgvs(self, chrom, position, ref, alt, transcript_accession):
-        var_g = self.vcf_to_g_hgvs(chrom, position, ref, alt)
-        return self.am.g_to_c(var_g, transcript_accession)
 
     def vcf_to_g_hgvs(self, chrom, position, ref, alt):
         ac = self.name_to_ac_map[chrom]
