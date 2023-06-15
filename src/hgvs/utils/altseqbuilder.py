@@ -9,6 +9,8 @@ Used in hgvsc to hgvsp conversion.
 import logging
 import math
 
+from hgvs.exceptions import HGVSError
+
 import six
 from bioutils.sequences import reverse_complement, translate_cds
 
@@ -195,8 +197,17 @@ class AltSeqBuilder:
             and self._var_c.posedit.pos.end.datum == Datum.CDS_END
         ):
             result = self.WHOLE_GENE
+        elif self._var_c.posedit.edit.type == "ins" and self._var_c.posedit.pos.start.offset == -1 and self._var_c.posedit.pos.end.offset == 0:
+            # ins at intron-exon boundary
+            result = self.EXON
+        elif self._var_c.posedit.edit.type == "ins" and self._var_c.posedit.pos.start.offset == 0 and self._var_c.posedit.pos.end.offset == 1:
+            # ins at exon-intron boundary
+            result = self.EXON
+        elif self._var_c.posedit.edit.type == "dup" and self._var_c.posedit.pos.start.offset <= -1 and self._var_c.posedit.pos.end.offset >= -1:
+            # dup at intron-exon boundary
+            result = self.EXON
         elif self._var_c.posedit.pos.start.offset != 0 or self._var_c.posedit.pos.end.offset != 0:
-            # leave out anything intronic for now
+            # leave out anything else intronic for now
             result = self.INTRON
         else:  # anything else that contains an exon
             result = self.EXON
@@ -266,7 +277,10 @@ class AltSeqBuilder:
         """Incorporate dup into sequence"""
         seq, cds_start, cds_stop, start, end = self._setup_incorporate()
 
-        dup_seq = seq[start:end]
+        if not self._var_c.posedit.edit.ref:
+            raise HGVSError('Duplication variant is missing reference sequence')
+
+        dup_seq = self._var_c.posedit.edit.ref
         seq[end:end] = dup_seq
 
         is_frameshift = len(dup_seq) % 3 != 0
@@ -329,7 +343,7 @@ class AltSeqBuilder:
                     result = cds_start - 1
                 else:  # cds/intron
                     if pos.offset <= 0:
-                        result = (cds_start - 1) + pos.base - 1
+                        result = (cds_start - 1) + pos.base + pos.offset - 1
                     else:
                         result = (cds_start - 1) + pos.base
             elif pos.datum == Datum.CDS_END:  # 3' UTR

@@ -2,6 +2,8 @@
 
 import logging
 
+from bioutils.sequences import reverse_complement
+
 import hgvs
 import hgvs.normalizer
 from hgvs.exceptions import (
@@ -238,6 +240,26 @@ class AssemblyMapper(VariantMapper):
 
         assert len(alt_acs) == 1, "Should have exactly one alignment at this point"
         return alt_acs[0]
+
+    def _replace_reference(self, var):
+        if (getattr(var.posedit.pos.start, 'offset', 0) != 0 or getattr(var.posedit.pos.end, 'offset', 0) != 0):
+            if var.type != 'g':
+                alt_ac = self._alt_ac_for_tx_ac(var.ac)
+                if var.type == 'c':
+                    var_g = super(AssemblyMapper, self).c_to_g(var, alt_ac, alt_aln_method=self.alt_aln_method)
+                if var.type == 'n':
+                    var_g = super(AssemblyMapper, self).n_to_g(var, alt_ac, alt_aln_method=self.alt_aln_method)
+                if var.type == 't':
+                    var_g = super(AssemblyMapper, self).t_to_g(var, alt_ac, alt_aln_method=self.alt_aln_method)
+                super(AssemblyMapper, self)._replace_reference(var_g)
+                ref = var_g.posedit.edit.ref
+                if self._fetch_AlignmentMapper(tx_ac=var.ac).strand == -1:
+                    ref = reverse_complement(ref)
+                var.posedit.edit.ref = ref
+                _logger.debug("Replaced reference sequence in {var} with {ref}".format(var=var, ref=var_g.posedit.edit.ref))
+                return var
+
+        return super(AssemblyMapper, self)._replace_reference(var)
 
     def _fetch_AlignmentMapper(self, tx_ac, alt_ac=None, alt_aln_method=None):
         """convenience version of VariantMapper._fetch_AlignmentMapper that
