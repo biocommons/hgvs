@@ -65,7 +65,7 @@ Internal and Developer Changes
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 * `#263 <https://github.com/biocommons/hgvs/issues/263/>`_: Trying out a new tag-based changelog mechanism for 0.4.0 and 0.4 series.
-* All code will be mercilously reformmated with yapf occasionally using .style.yapf
+* All code will be mercilously reformmated with black
 * Build and upload wheel packages (in addition to existing eggs and tarballs)
 * Docs significantly overhauled and moved to readthedocs.org with automatic webhook-based building
 * Enable users to set application_name when connecting [`BROKEN: 835ac7771909 <https://github.com/biocommons/hgvs/commit/835ac7771909>`_]

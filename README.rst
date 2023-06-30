@@ -1,7 +1,7 @@
 *hgvs* - manipulate biological sequence variants according to Human Genome Variation Society recommendations
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-**Important:** biocommons packages require Python 3.6+.
+**Important:** biocommons packages require Python 3.8+.
 `More
 <https://groups.google.com/forum/#!topic/hgvs-discuss/iLUzjzoD-28>`__
 

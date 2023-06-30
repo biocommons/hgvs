@@ -35,15 +35,13 @@ Highlights
   close to it).
 
 * Abide by current `code style`_.  Use ``make reformat`` to reformat all
-  code with `yapf`_ prior to submitting a PR.
+  code with `black`_ prior to submitting a PR.
 
 * Email the `hgvs-discuss`_ mailing list if you have questions.
 
 * Test your code with ``make test`` before you submit a PR.
 
-* Currently, only Python 2.7 is supported. Support for Python 3.5 is
-  slated for the next release
-  (`#190 <https://github.com/biocommons/hgvs/issues/190/>`__).
+* Currently, only Python 3.8+ is supported.
 
 
 A Quick Contribution Example
@@ -202,7 +200,7 @@ changes::
   spaces_before_comment = 4
   split_before_named_assigns = True
 
-These code conventions are uniformly enforce by yapf_.  The entire code
+These code conventions are uniformly enforce by black_.  The entire code
 base is periodically automatically reformatted for consistency.
 
 
