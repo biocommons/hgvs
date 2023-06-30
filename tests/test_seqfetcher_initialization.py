@@ -21,12 +21,12 @@ def test_seqfetcher_initialized_with_seqrepo_dir(mock_path_exists, monkeypatch):
 
 
 def test_seqfetcher_initialized_with_seqrepo_url(monkeypatch):
-    monkeypatch.setenv("HGVS_SEQREPO_URL", "http://localhost:5000/seqrepo")
+    monkeypatch.setenv("HGVS_SEQREPO_URL", "https://localhost:5000/seqrepo")
     sf = SeqFetcher()
     assert isinstance(sf.sr, SeqRepoRESTDataProxy)
     # the URL should be versioned automatically for us
-    assert sf.sr.base_url == "http://localhost:5000/seqrepo/1/"
-    assert sf.source == "SeqRepo REST (http://localhost:5000/seqrepo)"
+    assert sf.sr.base_url == "https://localhost:5000/seqrepo/1/"
+    assert sf.source == "SeqRepo REST (https://localhost:5000/seqrepo)"
 
 
 def test_seqfetcher_initialized_with_public_seqrepo_sources(monkeypatch):

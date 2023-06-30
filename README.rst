@@ -61,7 +61,7 @@ Important Notes
   listed there.  Please report any issues you find.
 * **Use a pip package specification to stay within minor releases.**
   For example, ``hgvs>=1.5,<1.6``. `hgvs` uses `Semantic Versioning
-  <http://semver.org/>`__.
+  <https://semver.org/>`__.
 
 
 Examples
@@ -89,7 +89,7 @@ easy.
   
 
 See `Installation instructions
-<http://hgvs.readthedocs.org/en/stable/installation.html>`__ for
+<https://hgvs.readthedocs.org/en/stable/installation.html>`__ for
 details, including instructions for installing `Universal Transcript
 Archive (UTA) <https://github.com/biocommons/uta/>`__ and `SeqRepo
 <https://github.com/biocommons/biocommons.seqrepo/>`__ locally.
@@ -245,7 +245,7 @@ veriants into a single representation.
 
 
 There are `more examples in the documentation
-<http://hgvs.readthedocs.org/en/stable/examples.html>`_.
+<https://hgvs.readthedocs.org/en/stable/examples.html>`_.
 
 
 Citing hgvs (the package)
@@ -257,7 +257,7 @@ Citing hgvs (the package)
 
 | **A Python Package for Parsing, Validating, Mapping, and Formatting Sequence Variants Using HGVS Nomenclature.**
 | Hart RK, Rico R, Hare E, Garcia J, Westbrook J, Fusaro VA.
-| *Bioinformatics*. 2014 Sep 30. `PubMed <http://www.ncbi.nlm.nih.gov/pubmed/25273102>`__ | `Open Access PDF <http://bioinformatics.oxfordjournals.org/content/31/2/268.full.pdf>`__
+| *Bioinformatics*. 2014 Sep 30. `PubMed <https://www.ncbi.nlm.nih.gov/pubmed/25273102>`__ | `Open Access PDF <https://bioinformatics.oxfordjournals.org/content/31/2/268.full.pdf>`__
 
 
 Contributing
@@ -265,7 +265,7 @@ Contributing
 
 The hgvs package is intended to be a community project.  Please see
 `Contributing
-<http://hgvs.readthedocs.org/en/stable/contributing.html>`__ to get
+<https://hgvs.readthedocs.org/en/stable/contributing.html>`__ to get
 started in submitting source code, tests, or documentation.  Thanks
 for getting involved!
 
@@ -279,14 +279,14 @@ Other packages that manipulate HGVS variants:
 * `Mutalyzer <https://mutalyzer.nl/>`__
 
 
-.. _docs: http://hgvs.readthedocs.org/
-.. _Variation Nomenclature: http://varnomen.hgvs.org/
+.. _docs: https://hgvs.readthedocs.org/
+.. _Variation Nomenclature: https://varnomen.hgvs.org/
 
 .. |getting_help| image:: https://img.shields.io/badge/!-help%20me-red.svg
    :target: https://hgvs.readthedocs.io/en/stable/getting_help.html
 
 .. |rtd| image:: https://img.shields.io/badge/docs-readthedocs-green.svg
-   :target: http://hgvs.readthedocs.io/
+   :target: https://hgvs.readthedocs.io/
 
 .. |changelog| image:: https://img.shields.io/badge/docs-changelog-green.svg
    :target: https://hgvs.readthedocs.io/en/stable/changelog/

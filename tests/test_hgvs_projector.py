@@ -29,7 +29,7 @@ class TestHgvsProjector(unittest.TestCase):
 
     @pytest.mark.quick
     def test_rs201430561(self):
-        # rs201430561 http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=201430561
+        # rs201430561 https://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=201430561
         hgvs_c = ["NM_001197320.1:c.281C>T", "NM_021960.4:c.740C>T", "NM_182763.2:c.688+403C>T"]
         var_c = [self.hp.parse_hgvs_variant(h) for h in hgvs_c]
         self.tst_forward_and_backward(var_c[0], var_c[1])

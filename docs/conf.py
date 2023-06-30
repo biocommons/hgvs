@@ -44,7 +44,7 @@ html_favicon = 'static/favicon.ico'
 html_logo = 'static/hgvs-logo.png'
 html_static_path = ['static']
 html_title = '{project} {release}'.format(project=project, release=release)
-intersphinx_mapping = {'http://docs.python.org/': None, }
+intersphinx_mapping = {'https://docs.python.org/': None, }
 master_doc = 'index'
 pygments_style = 'sphinx'
 source_suffix = '.rst'
@@ -64,7 +64,7 @@ rst_epilog = open(rst_epilog_fn).read()
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,

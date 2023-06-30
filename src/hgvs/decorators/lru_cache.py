@@ -5,7 +5,7 @@ checking, __wrapped__, and cache_info). Includes Py3.3 optimizations
 for better memory utilization, fewer dependencies, and fewer dict
 lookups.
 
-http://code.activestate.com/recipes/578078-py26-and-py30-backport-of-python-33s-lru-cache/
+https://code.activestate.com/recipes/578078-py26-and-py30-backport-of-python-33s-lru-cache/
 
 Added persistence capability
 
@@ -93,7 +93,7 @@ def lru_cache(maxsize=100, typed=False, mode=None, cache=None):
     f.cache_info().  Clear the cache and statistics with f.cache_clear().
     Access the underlying function with f.__wrapped__.
 
-    See:  http://en.wikipedia.org/wiki/Cache_algorithms#Least_Recently_Used
+    See:  https://en.wikipedia.org/wiki/Cache_algorithms#Least_Recently_Used
 
 
     :param mode: cache run mode

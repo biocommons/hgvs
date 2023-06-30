@@ -182,7 +182,7 @@ class TestHgvsCToP(unittest.TestCase):
         self._run_conversion(hgvsc, hgvsp_expected)
 
     # See recommendations re p.? (p.Met1?) at:
-    # http://varnomen.hgvs.org/recommendations/protein/variant/substitution/
+    # https://varnomen.hgvs.org/recommendations/protein/variant/substitution/
     def test_substitution_removes_start_codon(self):
         hgvsc = "NM_999999.1:c.1A>G"
         hgvsp_expected = "MOCK:p.Met1?"
@@ -271,7 +271,7 @@ if __name__ == "__main__":
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,

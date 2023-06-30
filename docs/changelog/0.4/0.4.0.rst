@@ -14,7 +14,7 @@ $$$$$$$$$$$$$$$$$
 * `#244 <https://github.com/biocommons/hgvs/issues/244/>`_: Removed cache_transcripts argument from VariantMapper. This argument was deprecated in 0.3.0 and is now obsolete. Dataproviders are now expected to cache data.
 * `#246 <https://github.com/biocommons/hgvs/issues/246/>`_: Remove hgvsX_to_hgvsY methods. These methods were deprecated in 0.3.0 and are now obsolete.
 * `#247 <https://github.com/biocommons/hgvs/issues/247/>`_: Dup and Repeat "seq" instance variable renamed to "ref" for consistency.
-* EasyVariantMapper, Normalizer, and Validator now fetch sequence data at runtime, which may raise performance and privacy concerns. Users may wish to read `Privacy Issues <http://hgvs.readthedocs.org/en/default/privacy.html>`_ in the documentation.
+* EasyVariantMapper, Normalizer, and Validator now fetch sequence data at runtime, which may raise performance and privacy concerns. Users may wish to read `Privacy Issues <https://hgvs.readthedocs.org/en/default/privacy.html>`_ in the documentation.
 
 
 Deprecations
