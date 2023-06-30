@@ -37,6 +37,7 @@ dynamic = ["version"]
 [project.urls]
 "Homepage" = "https://github.com/biocommons/hgvs"
 "Bug Tracker" = "https://github.com/biocommons/hgvs/issues"
+"Release Notes" = "https://hgvs.readthedocs.io/en/latest/changelog/index.html"
 
 [project.scripts]
 "hgvs-shell" = "hgvs.shell:shell"
