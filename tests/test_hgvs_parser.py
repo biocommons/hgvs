@@ -19,7 +19,7 @@ def test_parser_variants_with_gene_names(parser):
         parser.parse("NM_01234.5(1BOGUS):c.22+1A>T")
 
 
-class Test_Position(unittest.TestCase):
+class Test_Parser(unittest.TestCase):
     longMessage = True
 
     @classmethod
@@ -66,6 +66,25 @@ class Test_Position(unittest.TestCase):
         self.assertEqual(str(self.parser.parse_p_posedit("=")), "=")
         # self.assertEqual( str(self.parser.parse_p_posedit("=?")), "(=)" )
         self.assertEqual(str(self.parser.parse_p_posedit("(=)")), "(=)")
+
+    @pytest.mark.quick
+    def test_generation_timetamp(self):
+        """ We generate Python code from the OMeta grammar
+            This test checks that the generated file is older than the source grammar """
+
+        script_path = os.path.realpath(__file__)
+        script_dir = os.path.dirname(script_path)
+        hgvs_base_dir = os.path.dirname(script_dir)
+        grammar_filename = "src/hgvs/_data/hgvs.pymeta"
+        generated_filename = "src/hgvs/generated/hgvs_grammar.py"
+
+        grammar_mtime = os.path.getmtime(os.path.join(hgvs_base_dir, grammar_filename))
+        generated_mtime = os.path.getmtime(os.path.join(hgvs_base_dir, generated_filename))
+        msg = "OMeta source '{grammar_filename}' is more recently modified than " \
+              "generated Python code '{generated_filename}'. You need to run " \
+              "'sbin/generate_parser.py' ".format(grammar_filename=grammar_filename,
+                                                  generated_filename=generated_filename)
+        self.assertGreater(generated_mtime, grammar_mtime, msg)
 
 
 if __name__ == "__main__":

@@ -25,6 +25,7 @@ import hgvs.location
 import hgvs.posedit
 import hgvs.sequencevariant
 from hgvs.exceptions import HGVSParseError
+from hgvs.generated.hgvs_grammar import createParserClass
 
 
 class Parser(object):
@@ -88,12 +89,14 @@ class Parser(object):
 
     """
 
-    __default_grammar_fn = resource_filename(__name__, "_data/hgvs.pymeta")
-
-    def __init__(self, grammar_fn=__default_grammar_fn, expose_all_rules=False):
-        self._grammar_fn = grammar_fn
-        with open(grammar_fn, "r") as grammar_file:
-            self._grammar = parsley.makeGrammar(grammar_file.read(), {"hgvs": hgvs, "bioutils": bioutils, "copy": copy})
+    def __init__(self, grammar_fn=None, expose_all_rules=False):
+        bindings = {"hgvs": hgvs, "bioutils": bioutils, "copy": copy}
+        if grammar_fn is None:
+            self._grammar = parsley.wrapGrammar(createParserClass(ometa.runtime.OMetaGrammarBase, bindings))
+        else:
+            # Still allow other grammars if you want
+            with open(grammar_fn, "r") as grammar_file:
+                self._grammar = parsley.makeGrammar(grammar_file.read(), bindings)
         self._logger = logging.getLogger(__name__)
         self._expose_rule_functions(expose_all_rules)
 
