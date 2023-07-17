@@ -70,7 +70,7 @@ class Test_Parser(unittest.TestCase):
     @pytest.mark.quick
     def test_generation_timetamp(self):
         """ We generate Python code from the OMeta grammar
-            This test checks that the generated file is older than the source grammar """
+            This test checks that the generated file is older (or same age) as the source grammar """
 
         script_path = os.path.realpath(__file__)
         script_dir = os.path.dirname(script_path)
@@ -84,7 +84,8 @@ class Test_Parser(unittest.TestCase):
               "generated Python code '{generated_filename}'. You need to run " \
               "'sbin/generate_parser.py' ".format(grammar_filename=grammar_filename,
                                                   generated_filename=generated_filename)
-        self.assertGreater(generated_mtime, grammar_mtime, msg)
+        # Need to allow for same modification date due to git repos
+        self.assertGreaterEqual(generated_mtime, grammar_mtime, msg)
 
 
 if __name__ == "__main__":
