@@ -2,8 +2,10 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
+import hashlib
 import os
 import pprint
+import re
 import unittest
 
 import pytest
@@ -78,14 +80,29 @@ class Test_Parser(unittest.TestCase):
         grammar_filename = "src/hgvs/_data/hgvs.pymeta"
         generated_filename = "src/hgvs/generated/hgvs_grammar.py"
 
-        grammar_mtime = os.path.getmtime(os.path.join(hgvs_base_dir, grammar_filename))
-        generated_mtime = os.path.getmtime(os.path.join(hgvs_base_dir, generated_filename))
-        msg = "OMeta source '{grammar_filename}' is more recently modified than " \
-              "generated Python code '{generated_filename}'. You need to run " \
+        # Hash the grammar file
+        with open(os.path.join(hgvs_base_dir, grammar_filename), 'rb') as grammar_f:
+            grammar_hash = hashlib.md5(grammar_f.read()).hexdigest()
+
+        # Read the stored grammar file hash from generated file
+        with open(os.path.join(hgvs_base_dir, generated_filename), 'r') as generated_f:
+            generated_hash = None
+            for line in generated_f:
+                if not line.startswith("#"):
+                    break
+                m = re.match(r".*Grammar hash: ([a-fA-F0-9]{32})", line)
+                if m:
+                    generated_hash = m.group(1)
+
+            msg = "Could not retrieve generated hash from {generated_hash}".format(generated_hash=generated_hash)
+            self.assertIsNotNone(generated_hash, msg)
+
+
+        msg = "OMeta source '{grammar_filename}' is different than the version used to generate " \
+              "Python code '{generated_filename}'. You need to run " \
               "'sbin/generate_parser.py' ".format(grammar_filename=grammar_filename,
                                                   generated_filename=generated_filename)
-        # Need to allow for same modification date due to git repos
-        self.assertGreaterEqual(generated_mtime, grammar_mtime, msg)
+        self.assertEqual(generated_hash, grammar_hash, msg)
 
 
 if __name__ == "__main__":
