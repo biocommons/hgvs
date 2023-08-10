@@ -70,9 +70,9 @@ class Test_Parser(unittest.TestCase):
         self.assertEqual(str(self.parser.parse_p_posedit("(=)")), "(=)")
 
     @pytest.mark.quick
-    def test_generation_timetamp(self):
+    def test_grammar_and_generated_code_in_sync(self):
         """ We generate Python code from the OMeta grammar
-            This test checks that the generated file is older (or same age) as the source grammar """
+            This test checks that the grammar file hasn't changed since we generated the Python code """
 
         script_path = os.path.realpath(__file__)
         script_dir = os.path.dirname(script_path)
