@@ -73,8 +73,8 @@ class Babelfish:
     def vcf_to_g_hgvs(self, chrom, position, ref, alt):
         ac = self.name_to_ac_map[chrom]
 
-        keep_left_anchor = False
-        if not keep_left_anchor:
+        # Strip common prefix
+        if len(alt) > 1 and len(ref) > 1:
             pfx = os.path.commonprefix([ref, alt])
             lp = len(pfx)
             if lp > 0:
