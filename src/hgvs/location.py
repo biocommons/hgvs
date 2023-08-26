@@ -15,8 +15,7 @@ Classes:
   * :class:`Interval` -- an interval of Positions
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from functools import total_ordering
 
@@ -25,8 +24,7 @@ from bioutils.sequences import aa1_to_aa3
 
 import hgvs
 from hgvs.enums import Datum, ValidationLevel
-from hgvs.exceptions import (HGVSInvalidIntervalError,
-                             HGVSUnsupportedOperationError)
+from hgvs.exceptions import HGVSInvalidIntervalError, HGVSUnsupportedOperationError
 
 
 @attr.s(slots=True, repr=False, cmp=False)

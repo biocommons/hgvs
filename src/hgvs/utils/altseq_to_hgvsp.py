@@ -5,8 +5,7 @@ Used in hgvsc to hgvsp conversion.
 
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from six.moves import range
 
@@ -59,7 +58,6 @@ class AltSeqToHgvsp(object):
         variants = []
 
         if not self._is_ambiguous and len(self._alt_seq) > 0:
-
             do_delins = True
             if self._ref_seq == self._alt_seq:
                 # Silent p. variant
@@ -248,7 +246,6 @@ class AltSeqToHgvsp(object):
                         alt = None
 
             elif len(deletion) == 0:  # insertion OR duplication OR extension
-
                 is_dup, dup_start = self._check_if_ins_is_dup(start, insertion)
 
                 if is_dup:  # duplication

@@ -2,8 +2,7 @@
 """hgvs.normalizer
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import copy
 import logging
@@ -13,9 +12,7 @@ from bioutils.sequences import reverse_complement
 import hgvs
 import hgvs.validator
 import hgvs.variantmapper
-from hgvs.exceptions import (HGVSDataNotAvailableError,
-                             HGVSInvalidVariantError,
-                             HGVSUnsupportedOperationError)
+from hgvs.exceptions import HGVSDataNotAvailableError, HGVSInvalidVariantError, HGVSUnsupportedOperationError
 from hgvs.utils.norm import normalize_alleles
 
 _logger = logging.getLogger(__name__)

@@ -6,8 +6,7 @@ Used in hgvsc to hgvsp conversion.
 
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import logging
 import math
@@ -83,7 +82,6 @@ class AltTranscriptData(object):
 
 
 class AltSeqBuilder(object):
-
     EXON = "exon"
     INTRON = "intron"
     F_UTR = "five utr"

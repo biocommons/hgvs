@@ -311,7 +311,6 @@ class NCBI_postgresql(NCBIBase):
         n_tries_rem = n_retries + 1
         while n_tries_rem > 0:
             try:
-
                 conn = self._pool.getconn() if self.pooling else self._conn
 
                 # autocommit=True obviates closing explicitly
@@ -330,7 +329,6 @@ class NCBI_postgresql(NCBIBase):
                 break
 
             except psycopg2.OperationalError:
-
                 _logger.warning("Lost connection to {url}; attempting reconnect".format(url=self.url))
                 if self.pooling:
                     self._pool.closeall()
@@ -340,7 +338,6 @@ class NCBI_postgresql(NCBIBase):
             n_tries_rem -= 1
 
         else:
-
             # N.B. Probably never reached
             raise HGVSError("Permanently lost connection to {url} ({n} retries)".format(url=self.url, n=n_retries))
 
