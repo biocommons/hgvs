@@ -13,9 +13,11 @@ from bioutils.sequences import reverse_complement
 import hgvs
 import hgvs.validator
 import hgvs.variantmapper
+from hgvs.dataproviders.ncbi import connect
 from hgvs.exceptions import (HGVSDataNotAvailableError,
                              HGVSInvalidVariantError,
                              HGVSUnsupportedOperationError)
+from hgvs.parser import Parser
 from hgvs.utils.norm import normalize_alleles
 
 _logger = logging.getLogger(__name__)

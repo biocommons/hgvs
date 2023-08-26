@@ -626,6 +626,11 @@ class UTA_postgresql(UTABase):
         cur.execute("set search_path = {self.url.schema},public;".format(self=self))
 
 
+class UTA_sqlite(UTABase):
+    def __init__(self, url, mode, cache):
+        raise NotImplementedError
+
+
 class ParseResult(urlparse.ParseResult):
     """Subclass of url.ParseResult that adds database and schema methods,
     and provides stringification.
