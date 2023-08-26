@@ -23,8 +23,7 @@ import hgvs.utils.altseqbuilder as altseqbuilder
 import hgvs.validator
 from hgvs.decorators.lru_cache import lru_cache
 from hgvs.enums import PrevalidationLevel
-from hgvs.exceptions import (HGVSDataNotAvailableError,
-                             HGVSInvalidVariantError,
+from hgvs.exceptions import (HGVSInvalidVariantError,
                              HGVSUnsupportedOperationError)
 from hgvs.utils.reftranscriptdata import RefTranscriptData
 
