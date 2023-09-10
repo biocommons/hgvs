@@ -167,7 +167,7 @@ def seq_line_fmt(var, span, content, dir=""):
 def pointer_line(var, span):
     s0 = span[0]
     o = var.posedit.pos.start.base - s0
-    l = var.posedit.pos.end.base - var.posedit.pos.start.base + 1
+    l = var.posedit.pos.end.base - var.posedit.pos.start.base + 1  # noqa: E741
     if var.posedit.edit.type == "ins":
         p = " " * o + "><"
     else:
