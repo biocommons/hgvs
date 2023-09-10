@@ -40,7 +40,7 @@ class _HashedSeq(list):
         self.hashvalue = hash(tuple(self))
 
     def __repr__(self):
-        return "_HashedSeq({tuple!r})".format(self=self, tuple=tuple(self))
+        return "_HashedSeq({tuple!r})".format(tuple=tuple(self))
 
 
 def _make_key(
