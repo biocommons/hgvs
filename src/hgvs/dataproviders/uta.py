@@ -103,9 +103,7 @@ def connect(db_url=None, pooling=hgvs.global_config.uta.pooling, application_nam
         _logger.warning(f"You are executing tests using remote data ({db_url})")
 
     url = _parse_url(db_url)
-    if url.scheme == "sqlite":
-        conn = UTA_sqlite(url, mode, cache)
-    elif url.scheme == "postgresql":
+    if url.scheme == "postgresql":
         conn = UTA_postgresql(url=url, pooling=pooling, application_name=application_name, mode=mode, cache=cache)
     else:
         # fell through connection scheme cases
@@ -624,11 +622,6 @@ class UTA_postgresql(UTABase):
 
     def _set_search_path(self, cur):
         cur.execute("set search_path = {self.url.schema},public;".format(self=self))
-
-
-class UTA_sqlite(UTABase):
-    def __init__(self, url, mode, cache):
-        raise NotImplementedError
 
 
 class ParseResult(urlparse.ParseResult):
