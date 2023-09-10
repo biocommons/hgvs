@@ -40,7 +40,7 @@ class _HashedSeq(list):
         self.hashvalue = hash(tuple(self))
 
     def __repr__(self):
-        return "_HashedSeq({tuple!r})".format(self=self, tuple=tuple(self))
+        return "_HashedSeq({tuple!r})".format(tuple=tuple(self))
 
 
 def _make_key(
@@ -104,7 +104,7 @@ def lru_cache(maxsize=100, typed=False, mode=None, cache=None):
         VERIFY: always execute the function; if persistent cache value and returned value are different, raise VerifyFailedError
     :param cache: PersistentDict object or None;
 
-    """
+    """  # noqa: E501
 
     # Users should only access the lru_cache through its public API:
     #       cache_info, cache_clear, and f.__wrapped__

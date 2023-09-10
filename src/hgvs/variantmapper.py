@@ -23,8 +23,7 @@ import hgvs.utils.altseqbuilder as altseqbuilder
 import hgvs.validator
 from hgvs.decorators.lru_cache import lru_cache
 from hgvs.enums import PrevalidationLevel
-from hgvs.exceptions import (HGVSDataNotAvailableError,
-                             HGVSInvalidVariantError,
+from hgvs.exceptions import (HGVSInvalidVariantError,
                              HGVSUnsupportedOperationError)
 from hgvs.utils.reftranscriptdata import RefTranscriptData
 
@@ -118,7 +117,6 @@ class VariantMapper(object):
         if self._validator:
             self._validator.validate(var_t)
         var_t.fill_ref(self.hdp)
-        mapper = self._fetch_AlignmentMapper(tx_ac=var_t.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         if var_t.type == "c":
             var_out = VariantMapper.c_to_g(self, var_c=var_t, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         else:
