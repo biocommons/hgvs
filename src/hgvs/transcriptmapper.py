@@ -96,7 +96,7 @@ class TranscriptMapper(object):
 
     def __str__(self):
         return (
-            "{self.__class__.__name__}: {self.tx_ac} ~ {self.alt_ac} ~ {self.alt_aln_method); "
+            "{self.__class__.__name__}: {self.tx_ac} ~ {self.alt_ac} ~ {self.alt_aln_method}; "
             "{strand_pm} strand; {n_exons} exons; offset={self.gc_offset}".format(
                 self=self, n_exons=len(self.tx_exons), strand_pm=strand_int_to_pm(self.strand)
             )

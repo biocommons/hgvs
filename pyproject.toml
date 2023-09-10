@@ -101,6 +101,9 @@ line-length = 120
 # https://github.com/PyCQA/flake8/issues/234#issuecomment-812800832
 # The config in setup.cfg
 
+[tool.isort]
+profile = "black"
+
 [tool.pylint.'MESSAGES CONTROL']
 disable = "R0913"
 
