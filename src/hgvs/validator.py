@@ -13,8 +13,7 @@ import hgvs.edit
 import hgvs.parser
 import hgvs.variantmapper
 from hgvs.enums import Datum, ValidationLevel
-from hgvs.exceptions import (HGVSInvalidVariantError,
-                             HGVSUnsupportedOperationError)
+from hgvs.exceptions import HGVSInvalidVariantError
 
 SEQ_ERROR_MSG = "Variant reference ({var_ref_seq}) does not agree with reference sequence ({ref_seq})"
 CDS_BOUND_ERROR_MSG = "Variant is outside CDS bounds (CDS length : {cds_length})"

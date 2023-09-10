@@ -194,7 +194,7 @@ class BaseOffsetPosition(object):
                     lhs.base - rhs.base == 1 and rhs.offset > 0 and lhs.offset < 0
                 ):
                     raise HGVSUnsupportedOperationError(
-                        "Cannot compare coordinates in the same intron with one based on end of exon and the other based on start of next exon"
+                        "Cannot compare coordinates in the same intron with one based on end of exon and the other based on start of next exon"  # noqa: E501
                     )
                 else:
                     return lhs.base < rhs.base
