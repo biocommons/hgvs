@@ -81,7 +81,6 @@ if __name__ == "__main__":
 
     import hgvs.easy
     import hgvs.normalizer
-    from hgvs.extras.babelfish import Babelfish
 
     babelfish38 = Babelfish(hgvs.easy.hdp, assembly_name="GRCh38")
     hnl = hgvs.normalizer.Normalizer(hgvs.easy.hdp, cross_boundaries=False, shuffle_direction=5, validate=False)

@@ -116,8 +116,6 @@ def normalize_alleles_right(ref, start, stop, alleles, bound, ref_step, shuffle=
 
     normalized_alleles = namedtuple("shuffled_alleles", "start stop alleles")
 
-    chrom_stop = len(ref)
-
     if len(alleles) < 2:
         return normalized_alleles(start, stop, alleles)
 

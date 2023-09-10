@@ -78,7 +78,7 @@ try:
     # TODO: match other valid release tags, like .post\d+
     if re.match(r"^\d+\.\d+\.\d+$", __version__) is not None:
         _is_released_version = True
-except pkg_resources.DistributionNotFound as e:
+except pkg_resources.DistributionNotFound:
     warnings.warn("can't get __version__ because %s package isn't installed" % __package__, Warning)
     __version__ = None
 
