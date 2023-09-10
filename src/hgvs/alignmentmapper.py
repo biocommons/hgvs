@@ -260,9 +260,6 @@ class AlignmentMapper(object):
                     raise HGVSInvalidIntervalError(f"c.{pos} coordinate is out of bounds")
             return hgvs.location.BaseOffsetPosition(base=n, offset=pos.offset, datum=Datum.SEQ_START)
 
-        n_start = pos_c_to_n(c_interval.start)
-        n_end = pos_c_to_n(c_interval.end)
-
         n_interval = hgvs.location.BaseOffsetInterval(
             start=pos_c_to_n(c_interval.start), end=pos_c_to_n(c_interval.end), uncertain=c_interval.uncertain
         )
