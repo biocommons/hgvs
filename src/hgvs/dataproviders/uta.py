@@ -504,6 +504,7 @@ class UTA_postgresql(UTABase):
         self.application_name = application_name
         self.pooling = pooling
         self._conn = None
+        self._pool = None
         # If we're using connection pooling, track the set of DB
         # connections we've seen; on first use we set the schema
         # search path. Use weak references to avoid keeping connection
@@ -516,7 +517,8 @@ class UTA_postgresql(UTABase):
 
     def close(self):
         if self.pooling:
-            self._pool.closeall()
+            if self._pool is not None:
+                self._pool.closeall()
         else:
             if self._conn is not None:
                 self._conn.close()
