@@ -9,7 +9,6 @@ from support import CACHE
 import hgvs.assemblymapper
 import hgvs.dataproviders.uta
 import hgvs.parser
-from hgvs.exceptions import HGVSError, HGVSInvalidVariantError
 
 tests_fn = "tests/data/proj-near-disc.tsv"
 

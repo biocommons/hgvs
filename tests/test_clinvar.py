@@ -2,12 +2,10 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import csv
-import fileinput
 import gzip
 import io
 import os
 import sys
-import types
 import unittest
 
 import pytest
@@ -19,7 +17,6 @@ import hgvs.dataproviders.uta
 import hgvs.parser
 import hgvs.sequencevariant
 import hgvs.variantmapper
-from hgvs.exceptions import HGVSError
 
 data_fn = os.path.join(os.path.dirname(__file__), "data", "clinvar.gz")
 

@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import logging
 import os
-import pprint
 import re
 import sys
 import unittest
@@ -20,7 +18,6 @@ import hgvs.dataproviders.uta
 import hgvs.parser
 import hgvs.sequencevariant
 import hgvs.variantmapper
-from hgvs.exceptions import HGVSError
 
 
 def gxp_file_reader(fn):

@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import logging
 import os
-import pprint
-import re
-import sys
 import unittest
 
 import pytest
@@ -18,13 +14,6 @@ import hgvs.parser
 import hgvs.sequencevariant
 import hgvs.validator
 import hgvs.variantmapper
-from hgvs.enums import Datum
-from hgvs.exceptions import (
-    HGVSDataNotAvailableError,
-    HGVSError,
-    HGVSInvalidVariantError,
-    HGVSParseError,
-)
 
 
 @pytest.mark.issues
