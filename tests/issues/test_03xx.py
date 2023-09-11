@@ -126,7 +126,7 @@ class Test_Issues(unittest.TestCase):
 
         self.am37.in_par_assume = None
         with self.assertRaises(HGVSError):
-            var_g = self.am37.c_to_g(var_c)
+            self.am37.c_to_g(var_c)
 
         self.am37.in_par_assume = "X"
         self.assertEqual(self.am37.c_to_g(var_c).ac, "NC_000023.10")
