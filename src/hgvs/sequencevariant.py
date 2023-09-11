@@ -9,7 +9,20 @@ import attr
 
 import hgvs.variantmapper
 from hgvs.enums import ValidationLevel
+from hgvs.exceptions import HGVSParseError
 from hgvs.utils.validation import validate_type_ac_pair
+
+
+def validate_gene_symbol(gene):
+    """See issue #670 - we need to allow dashes/underscores so had to relax gene symbol matching
+    This method is introduced to be able to tighten up rules we can't do with Ometa grammar"""
+    if gene:
+        if gene.endswith("_"):
+            raise HGVSParseError("Symbol must not end with '_'")
+        elif gene.endswith("-"):
+            raise HGVSParseError("Symbol must not end with '-'")
+
+    return gene
 
 
 @attr.s(slots=True, repr=False)
