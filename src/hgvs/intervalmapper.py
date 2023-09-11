@@ -42,8 +42,7 @@ Currently, this code matches an interval <start_i,end_i> using the maximal
 start_i and minimal end_i.
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import logging
 import re

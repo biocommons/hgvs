@@ -1,40 +1,44 @@
 NORM_HGVS_VCF = [
     # Columns are: (normed-HGVS, non-normalized HGVS, VCF coordinates, non-norm VCF)
-
     # no-op
-    ("NC_000006.12:g.49949407=", [],
-     ("6", 49949407, "A", ".", 'identity'), [("6", 49949407, "A", "A", 'identity')]),
-
+    ("NC_000006.12:g.49949407=", [], ("6", 49949407, "A", ".", "identity"), [("6", 49949407, "A", "A", "identity")]),
     # snv
-    ("NC_000006.12:g.49949407A>T",
-     [],
-     # was ("6", 49949406, "AA", "AT", "sub") however VT parsimony rules say it should be those below
-     ("6", 49949407, "A", "T", "sub"), []),
+    (
+        "NC_000006.12:g.49949407A>T",
+        [],
+        # was ("6", 49949406, "AA", "AT", "sub") however VT parsimony rules say it should be those below
+        ("6", 49949407, "A", "T", "sub"),
+        [],
+    ),
     # delins
-    ("NC_000006.12:g.49949413_49949414delinsCC",
-     [],
-     # This was ("6", 49949412, "AAA", "ACC", "delins") - however VT parsimony rules say it should be those below
-     ("6", 49949413, "AA", "CC", "delins"), []),
-
+    (
+        "NC_000006.12:g.49949413_49949414delinsCC",
+        [],
+        # This was ("6", 49949412, "AAA", "ACC", "delins") - however VT parsimony rules say it should be those below
+        ("6", 49949413, "AA", "CC", "delins"),
+        [],
+    ),
     # del, no shift
     ("NC_000006.12:g.49949415del", [], ("6", 49949414, "AT", "A", "del"), []),
-
     # del, w/ shift
-    ("NC_000006.12:g.49949414del", ["NC_000006.12:g.49949413del"],
-     ("6", 49949409, "GA", "G", "del"), []),
+    ("NC_000006.12:g.49949414del", ["NC_000006.12:g.49949413del"], ("6", 49949409, "GA", "G", "del"), []),
     ("NC_000006.12:g.49949413_49949414del", [], ("6", 49949409, "GAA", "G", "del"), []),
-
     # ins, no shift
     ("NC_000006.12:g.49949413_49949414insC", [], ("6", 49949413, "A", "AC", "ins"), []),
     ("NC_000006.12:g.49949414_49949415insCC", [], ("6", 49949414, "A", "ACC", "ins"), []),
-
     # ins/dup, w/shift
-    ("NC_000006.12:g.49949414dup",
-     ["NC_000006.12:g.49949413_49949414insA", "NC_000006.12:g.49949414_49949415insA"],
-     ("6", 49949409, "G", "GA", "dup"), []),
-    ("NC_000006.12:g.49949413_49949414dup",
-     ["NC_000006.12:g.49949414_49949415insAA"],
-     ("6", 49949409, "G", "GAA", "dup"), []),
+    (
+        "NC_000006.12:g.49949414dup",
+        ["NC_000006.12:g.49949413_49949414insA", "NC_000006.12:g.49949414_49949415insA"],
+        ("6", 49949409, "G", "GA", "dup"),
+        [],
+    ),
+    (
+        "NC_000006.12:g.49949413_49949414dup",
+        ["NC_000006.12:g.49949414_49949415insAA"],
+        ("6", 49949409, "G", "GAA", "dup"),
+        [],
+    ),
 ]
 
 

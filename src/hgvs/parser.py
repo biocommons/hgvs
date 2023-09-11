@@ -4,8 +4,7 @@ components, such as intronic-offset coordiates
 
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import copy
 import logging
@@ -17,6 +16,7 @@ import parsley
 from pkg_resources import resource_filename
 
 import hgvs.edit
+
 # The following imports are referenced by fully-qualified name in the
 # hgvs grammar.
 import hgvs.enums

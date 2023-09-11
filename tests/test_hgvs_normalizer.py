@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os
 import unittest
@@ -12,8 +11,11 @@ import hgvs.dataproviders.uta
 import hgvs.normalizer
 import hgvs.parser
 import hgvs.variantmapper
-from hgvs.exceptions import (HGVSError, HGVSInvalidVariantError,
-                             HGVSUnsupportedOperationError)
+from hgvs.exceptions import (
+    HGVSError,
+    HGVSInvalidVariantError,
+    HGVSUnsupportedOperationError,
+)
 
 hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
 

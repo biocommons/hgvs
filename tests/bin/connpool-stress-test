@@ -10,8 +10,7 @@ With 0.4.5a4.post0, it runs until terminated (several runs of at least two minut
 https://github.com/biocommons/hgvs/issues/321/
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import gzip
 import logging

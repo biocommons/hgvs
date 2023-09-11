@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os
 import re
@@ -50,7 +49,6 @@ class TestHgvsCToPReal(unittest.TestCase):
     #
 
     def _run_cp_test(self, infile, outfile):
-
         with open(outfile, "w") as out:
             out.write("id\tHGVSg\tHGVSc\tHGVSp\tConverterResult\tError\n")
             self._dup_regex = re.compile(r"dup[0-9]+$")

@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import logging
 
 import hgvs
 import hgvs.normalizer
-from hgvs.exceptions import (HGVSDataNotAvailableError, HGVSError,
-                             HGVSInvalidVariantError,
-                             HGVSUnsupportedOperationError)
+from hgvs.exceptions import (
+    HGVSDataNotAvailableError,
+    HGVSError,
+    HGVSInvalidVariantError,
+    HGVSUnsupportedOperationError,
+)
 from hgvs.variantmapper import VariantMapper
 
 _logger = logging.getLogger(__name__)
@@ -57,7 +59,7 @@ class AssemblyMapper(VariantMapper):
         replace_reference=hgvs.global_config.mapping.replace_reference,
         add_gene_symbol=hgvs.global_config.mapping.add_gene_symbol,
         *args,
-        **kwargs
+        **kwargs,
     ):
         """
         :param object hdp: instance of hgvs.dataprovider subclass
@@ -78,7 +80,7 @@ class AssemblyMapper(VariantMapper):
             prevalidation_level=prevalidation_level,
             add_gene_symbol=add_gene_symbol,
             *args,
-            **kwargs
+            **kwargs,
         )
         self.assembly_name = assembly_name
         self.alt_aln_method = alt_aln_method

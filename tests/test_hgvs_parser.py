@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import hashlib
 import os
@@ -71,8 +70,8 @@ class Test_Parser(unittest.TestCase):
 
     @pytest.mark.quick
     def test_grammar_and_generated_code_in_sync(self):
-        """ We generate Python code from the OMeta grammar
-            This test checks that the grammar file hasn't changed since we generated the Python code """
+        """We generate Python code from the OMeta grammar
+        This test checks that the grammar file hasn't changed since we generated the Python code"""
 
         script_path = os.path.realpath(__file__)
         script_dir = os.path.dirname(script_path)
@@ -81,11 +80,11 @@ class Test_Parser(unittest.TestCase):
         generated_filename = "src/hgvs/generated/hgvs_grammar.py"
 
         # Hash the grammar file
-        with open(os.path.join(hgvs_base_dir, grammar_filename), 'rb') as grammar_f:
+        with open(os.path.join(hgvs_base_dir, grammar_filename), "rb") as grammar_f:
             grammar_hash = hashlib.md5(grammar_f.read()).hexdigest()
 
         # Read the stored grammar file hash from generated file
-        with open(os.path.join(hgvs_base_dir, generated_filename), 'r') as generated_f:
+        with open(os.path.join(hgvs_base_dir, generated_filename), "r") as generated_f:
             generated_hash = None
             for line in generated_f:
                 if not line.startswith("#"):
@@ -97,11 +96,13 @@ class Test_Parser(unittest.TestCase):
             msg = "Could not retrieve generated hash from {generated_hash}".format(generated_hash=generated_hash)
             self.assertIsNotNone(generated_hash, msg)
 
-
-        msg = "OMeta source '{grammar_filename}' is different than the version used to generate " \
-              "Python code '{generated_filename}'. You need to run " \
-              "'sbin/generate_parser.py' ".format(grammar_filename=grammar_filename,
-                                                  generated_filename=generated_filename)
+        msg = (
+            "OMeta source '{grammar_filename}' is different than the version used to generate "
+            "Python code '{generated_filename}'. You need to run "
+            "'sbin/generate_parser.py' ".format(
+                grammar_filename=grammar_filename, generated_filename=generated_filename
+            )
+        )
         self.assertEqual(generated_hash, grammar_hash, msg)
 
 

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os
 import unittest
@@ -13,7 +12,6 @@ from hgvs.utils.reftranscriptdata import RefTranscriptData
 
 
 class TestAltSeqBuilder(unittest.TestCase):
-
     # root sequence = ""
     fn = os.path.join(os.path.dirname(__file__), "data", "sanity_cp.tsv")
     _datasource = mock_input_data_source.MockInputSource(fn)
@@ -119,7 +117,6 @@ class TestAltSeqBuilder(unittest.TestCase):
     #     pass
 
     def _run_comparison(self, hgvsc, expected_sequence):
-
         ac_p = "DUMMY"
         var = self._parser.parse_hgvs_variant(hgvsc)
         transcript_data = RefTranscriptData(hdp=self._datasource, tx_ac=var.ac, pro_ac=ac_p)

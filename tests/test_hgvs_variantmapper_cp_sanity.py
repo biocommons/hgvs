@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 #
 # Tests for conversion of hgvs tags
@@ -15,7 +14,6 @@ import hgvs.variantmapper as variantmapper
 
 
 class TestHgvsCToP(unittest.TestCase):
-
     fn = os.path.join(os.path.dirname(__file__), "data", "sanity_cp.tsv")
     _datasource = mock_input_data_source.MockInputSource(fn)
     _mapper = variantmapper.VariantMapper(_datasource, prevalidation_level="INTRINSIC")

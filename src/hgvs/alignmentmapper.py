@@ -27,8 +27,7 @@ The AlignmentMapper class is at the heart of mapping between aligned sequences.
 #
 
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from bioutils.coordinates import strand_int_to_pm
 from six.moves import range
@@ -36,8 +35,12 @@ from six.moves import range
 import hgvs.location
 from hgvs import global_config
 from hgvs.enums import Datum
-from hgvs.exceptions import (HGVSDataNotAvailableError, HGVSError,
-                             HGVSInvalidIntervalError, HGVSUsageError)
+from hgvs.exceptions import (
+    HGVSDataNotAvailableError,
+    HGVSError,
+    HGVSInvalidIntervalError,
+    HGVSUsageError,
+)
 from hgvs.utils import build_tx_cigar
 from hgvs.utils.cigarmapper import CIGARMapper
 
@@ -88,7 +91,6 @@ class AlignmentMapper(object):
         self.alt_aln_method = alt_aln_method
 
         if self.alt_aln_method != "transcript":
-
             tx_info = hdp.get_tx_info(self.tx_ac, self.alt_ac, self.alt_aln_method)
             if tx_info is None:
                 raise HGVSDataNotAvailableError(
@@ -126,7 +128,6 @@ class AlignmentMapper(object):
             self.tgt_len = self.cigarmapper.tgt_len
 
         else:
-
             # this covers the identity cases n <-> c
             tx_identity_info = hdp.get_tx_identity_info(self.tx_ac)
             if tx_identity_info is None:

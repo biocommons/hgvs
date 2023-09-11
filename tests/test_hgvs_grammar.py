@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import unittest
 
@@ -10,9 +9,6 @@ import hgvs.parser
 
 # we're not testing hgvs.parser, but rather merely using it to load the
 # grammar.  See test_hgvs_parser.py for the parser tests
-
-
-
 
 
 @pytest.mark.quick

@@ -1,10 +1,11 @@
 """translate between HGVS and other formats"""
 import os
 
-import hgvs
-import hgvs.normalizer
 from bioutils.assemblies import make_ac_name_map, make_name_ac_map
 from bioutils.sequences import reverse_complement
+
+import hgvs
+import hgvs.normalizer
 from hgvs.edit import NARefAlt
 from hgvs.location import Interval, SimplePosition
 from hgvs.normalizer import Normalizer
@@ -54,20 +55,20 @@ class Babelfish:
             start_i -= 1
             alt = self.hdp.seqfetcher.fetch_seq(vleft.ac, start_i, end_i)
             ref = alt[0]
-        elif typ == 'inv':
+        elif typ == "inv":
             ref = vleft.posedit.edit.ref
             alt = reverse_complement(ref)
         else:
             alt = vleft.posedit.edit.alt or ""
 
-            if typ in ('del', 'ins'):  # Left anchored
+            if typ in ("del", "ins"):  # Left anchored
                 start_i -= 1
                 ref = self.hdp.seqfetcher.fetch_seq(vleft.ac, start_i, end_i)
                 alt = ref[0] + alt
             else:
                 ref = vleft.posedit.edit.ref
                 if ref == alt:
-                    alt = '.'
+                    alt = "."
         return chrom, start_i + 1, ref, alt, typ
 
     def vcf_to_g_hgvs(self, chrom, position, ref, alt):
@@ -82,7 +83,7 @@ class Babelfish:
                 alt = alt[lp:]
                 position += lp
 
-        if ref == '':  # Insert
+        if ref == "":  # Insert
             # Insert uses coordinates around the insert point.
             start = position - 1
             end = position
@@ -90,17 +91,17 @@ class Babelfish:
             start = position
             end = position + len(ref) - 1
 
-        if alt == '.':
+        if alt == ".":
             alt = ref
 
-        var_g = SequenceVariant(ac=ac,
-                                type='g',
-                                posedit=PosEdit(Interval(start=SimplePosition(start),
-                                                         end=SimplePosition(end),
-                                                         uncertain=False),
-                                                NARefAlt(ref=ref or None,
-                                                         alt=alt or None,
-                                                         uncertain=False)))
+        var_g = SequenceVariant(
+            ac=ac,
+            type="g",
+            posedit=PosEdit(
+                Interval(start=SimplePosition(start), end=SimplePosition(end), uncertain=False),
+                NARefAlt(ref=ref or None, alt=alt or None, uncertain=False),
+            ),
+        )
         n = Normalizer(self.hdp)
         return n.normalize(var_g)
 

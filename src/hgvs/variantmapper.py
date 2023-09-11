@@ -3,8 +3,7 @@
 
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import copy
 import logging
@@ -23,8 +22,7 @@ import hgvs.utils.altseqbuilder as altseqbuilder
 import hgvs.validator
 from hgvs.decorators.lru_cache import lru_cache
 from hgvs.enums import PrevalidationLevel
-from hgvs.exceptions import (HGVSInvalidVariantError,
-                             HGVSUnsupportedOperationError)
+from hgvs.exceptions import HGVSInvalidVariantError, HGVSUnsupportedOperationError
 from hgvs.utils.reftranscriptdata import RefTranscriptData
 
 _logger = logging.getLogger(__name__)
