@@ -158,6 +158,6 @@ def test_invitae_examples(parser, am37):
 
 
 if __name__ == "__main__":
-    from hgvs.easy import *
+    from hgvs.easy import am37, parser
 
     test_invitae_examples(parser=parser, am37=am37)
