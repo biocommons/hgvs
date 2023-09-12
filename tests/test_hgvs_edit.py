@@ -16,7 +16,7 @@ from hgvs.exceptions import HGVSError
 class Test_Edit(unittest.TestCase):
     def test_NARefAlt_exceptions(self):
         with self.assertRaises(HGVSError):
-            edit = str(hgvs.edit.NARefAlt(None, None))
+            str(hgvs.edit.NARefAlt(None, None))
 
     def test_NARefAlt(self):
         self.assertEqual(hgvs.edit.NARefAlt("A", "A").format(conf={"max_ref_length": None}), "A=")
@@ -87,7 +87,7 @@ class Test_Edit(unittest.TestCase):
 
     def test_Repeat_exceptions(self):
         with self.assertRaises(HGVSError):
-            edit = str(hgvs.edit.Repeat("CAG", 34, 12))
+            str(hgvs.edit.Repeat("CAG", 34, 12))
 
     def test_Inv(self):
         self.assertEqual(str(hgvs.edit.Inv()), "inv")

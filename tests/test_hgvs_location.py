@@ -91,7 +91,6 @@ class Test_BaseOffsetPosition(unittest.TestCase):
     def test_baseoffset_subtraction(self):
         v30 = hgvs.location.BaseOffsetPosition(3, 0)
         v50 = hgvs.location.BaseOffsetPosition(5, 0)
-        v52 = hgvs.location.BaseOffsetPosition(5, 2)
         v54 = hgvs.location.BaseOffsetPosition(5, 4)
 
         self.assertEqual(v50 - v30, 2)
