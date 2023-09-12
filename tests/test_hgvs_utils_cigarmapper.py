@@ -90,4 +90,6 @@ def test_cigarmapper_strict_bounds():
     assert (0, 0, "=") == cm.map_ref_to_tgt(0, "start", strict_bounds=True)
     assert (-1, 0, "=") == cm.map_ref_to_tgt(-1, "start", strict_bounds=False)
     assert (cm.tgt_len, 0, "=") == cm.map_ref_to_tgt(cm.ref_len, "start", strict_bounds=True)
-    assert (cm.tgt_len - 1, 0, "=") == cm.map_ref_to_tgt(cm.ref_len - 1, "start", strict_bounds=False)
+    assert (cm.tgt_len - 1, 0, "=") == cm.map_ref_to_tgt(
+        cm.ref_len - 1, "start", strict_bounds=False
+    )

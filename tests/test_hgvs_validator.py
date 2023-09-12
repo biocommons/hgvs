@@ -32,9 +32,15 @@ class Test_HGVSValidator(unittest.TestCase):
 
     def test_not_strict_mode(self):
         """Test that validator is working when in not strict mode"""
-        self.assertTrue(self.vr.validate(self.hp.parse_hgvs_variant("NM_000030.2:c.679_680+2delAAGT"), strict=False))
+        self.assertTrue(
+            self.vr.validate(
+                self.hp.parse_hgvs_variant("NM_000030.2:c.679_680+2delAAGT"), strict=False
+            )
+        )
         with self.assertRaises(HGVSInvalidVariantError):
-            self.vr.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.76_78delACTACAT"), strict=False)
+            self.vr.validate(
+                self.hp.parse_hgvs_variant("AC_01234.5:c.76_78delACTACAT"), strict=False
+            )
         with self.assertRaises(HGVSInvalidVariantError):
             self.vr.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.76_78insT"), strict=False)
 
@@ -51,55 +57,105 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
 
     def test_start_lte_end(self):
         """Test if start position is less <= end position"""
-        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("NC_000007.13:g.36561662C>T")))
-        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("NC_000007.13:g.36561662_36561663insT")))
-        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("NM_01234.5:c.76_77insT")))
         self.assertTrue(
-            self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.123+54_123+55insT"), strict=False)
+            self.validate_int.validate(self.hp.parse_hgvs_variant("NC_000007.13:g.36561662C>T"))
         )
-        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.123+54A>T"), strict=False))
-        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("NC_012920.1:m.54G>C")))
-        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("NC_012920.1:m.57_58insC")))
+        self.assertTrue(
+            self.validate_int.validate(
+                self.hp.parse_hgvs_variant("NC_000007.13:g.36561662_36561663insT")
+            )
+        )
+        self.assertTrue(
+            self.validate_int.validate(self.hp.parse_hgvs_variant("NM_01234.5:c.76_77insT"))
+        )
+        self.assertTrue(
+            self.validate_int.validate(
+                self.hp.parse_hgvs_variant("AC_01234.5:c.123+54_123+55insT"), strict=False
+            )
+        )
+        self.assertTrue(
+            self.validate_int.validate(
+                self.hp.parse_hgvs_variant("AC_01234.5:c.123+54A>T"), strict=False
+            )
+        )
+        self.assertTrue(
+            self.validate_int.validate(self.hp.parse_hgvs_variant("NC_012920.1:m.54G>C"))
+        )
+        self.assertTrue(
+            self.validate_int.validate(self.hp.parse_hgvs_variant("NC_012920.1:m.57_58insC"))
+        )
 
         with self.assertRaises(HGVSInvalidVariantError):
-            self.validate_int.validate(self.hp.parse_hgvs_variant("NC_000007.13:g.36561664_36561663A>T"))
+            self.validate_int.validate(
+                self.hp.parse_hgvs_variant("NC_000007.13:g.36561664_36561663A>T")
+            )
 
         with self.assertRaises(HGVSInvalidVariantError):
             self.validate_int.validate(self.hp.parse_hgvs_variant("NM_000277.1:c.3_1delAG"))
 
         with self.assertRaises(HGVSInvalidVariantError):
-            self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.123+56_123+55A>T"), strict=False)
+            self.validate_int.validate(
+                self.hp.parse_hgvs_variant("AC_01234.5:c.123+56_123+55A>T"), strict=False
+            )
 
     def test_ins_length_is_one(self):
         """Test if insertion length = 1"""
-        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("NC_000007.13:g.36561662_36561663insT")))
-        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.76_77insT"), strict=False))
         self.assertTrue(
-            self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.123+54_123+55insT"), strict=False)
+            self.validate_int.validate(
+                self.hp.parse_hgvs_variant("NC_000007.13:g.36561662_36561663insT")
+            )
         )
         self.assertTrue(
-            self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.123-54_123-53insT"), strict=False)
+            self.validate_int.validate(
+                self.hp.parse_hgvs_variant("AC_01234.5:c.76_77insT"), strict=False
+            )
+        )
+        self.assertTrue(
+            self.validate_int.validate(
+                self.hp.parse_hgvs_variant("AC_01234.5:c.123+54_123+55insT"), strict=False
+            )
+        )
+        self.assertTrue(
+            self.validate_int.validate(
+                self.hp.parse_hgvs_variant("AC_01234.5:c.123-54_123-53insT"), strict=False
+            )
         )
 
         with self.assertRaises(HGVSInvalidVariantError):
-            self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.76_78insTT"), strict=False)
+            self.validate_int.validate(
+                self.hp.parse_hgvs_variant("AC_01234.5:c.76_78insTT"), strict=False
+            )
 
         with self.assertRaises(HGVSInvalidVariantError):
-            self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.123+54_123+56insT"), strict=False)
+            self.validate_int.validate(
+                self.hp.parse_hgvs_variant("AC_01234.5:c.123+54_123+56insT"), strict=False
+            )
 
     def test_del_length(self):
         """Test if del length agrees with position range"""
         self.assertTrue(
-            self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.76_78delACT"), strict=False)
+            self.validate_int.validate(
+                self.hp.parse_hgvs_variant("AC_01234.5:c.76_78delACT"), strict=False
+            )
         )
         self.assertTrue(
-            self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.123+54_123+55delTA"), strict=False)
+            self.validate_int.validate(
+                self.hp.parse_hgvs_variant("AC_01234.5:c.123+54_123+55delTA"), strict=False
+            )
         )
-        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.76_78del"), strict=False))
-        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("NM_003060.3:c.-91_22del113")))
+        self.assertTrue(
+            self.validate_int.validate(
+                self.hp.parse_hgvs_variant("AC_01234.5:c.76_78del"), strict=False
+            )
+        )
+        self.assertTrue(
+            self.validate_int.validate(self.hp.parse_hgvs_variant("NM_003060.3:c.-91_22del113"))
+        )
 
         with self.assertRaises(HGVSInvalidVariantError):
-            self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.76_78delACTACAT"), strict=False)
+            self.validate_int.validate(
+                self.hp.parse_hgvs_variant("AC_01234.5:c.76_78delACTACAT"), strict=False
+            )
         with self.assertRaises(HGVSInvalidVariantError):
             self.validate_int.validate(self.hp.parse_hgvs_variant("NM_000030.2:c.679_680+2delAAGT"))
         with self.assertRaises(HGVSInvalidVariantError):
@@ -117,7 +173,11 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
             self.validate_int.validate(self.hp.parse_hgvs_variant("NC_000007.13:c.679del"))
         with self.assertRaises(HGVSInvalidVariantError):
             self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.679del"))
-        self.assertTrue(self.validate_int.validate(self.hp.parse_hgvs_variant("AC_01234.5:c.679del"), strict=False))
+        self.assertTrue(
+            self.validate_int.validate(
+                self.hp.parse_hgvs_variant("AC_01234.5:c.679del"), strict=False
+            )
+        )
 
 
 @pytest.mark.validation
@@ -170,9 +230,15 @@ class Test_HGVSExtrinsicValidator(unittest.TestCase):
             self.validate_ext.validate(self.hp.parse_hgvs_variant("NM_145901.2:c.343T>C"))
         with self.assertRaises(HGVSInvalidVariantError):
             self.validate_ext.validate(self.hp.parse_hgvs_variant("NM_145901.2:c.325C>A"))
-        self.assertTrue(self.validate_ext.validate(self.hp.parse_hgvs_variant("NM_145901.2:c.324A>G")))
-        self.assertTrue(self.validate_ext.validate(self.hp.parse_hgvs_variant("NM_145901.2:c.*1C>T")))
-        self.assertTrue(self.validate_ext.validate(self.hp.parse_hgvs_variant("NM_145901.2:c.-22C>T")))
+        self.assertTrue(
+            self.validate_ext.validate(self.hp.parse_hgvs_variant("NM_145901.2:c.324A>G"))
+        )
+        self.assertTrue(
+            self.validate_ext.validate(self.hp.parse_hgvs_variant("NM_145901.2:c.*1C>T"))
+        )
+        self.assertTrue(
+            self.validate_ext.validate(self.hp.parse_hgvs_variant("NM_145901.2:c.-22C>T"))
+        )
 
 
 if __name__ == "__main__":

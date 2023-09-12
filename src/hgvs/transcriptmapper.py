@@ -104,7 +104,8 @@ class TranscriptMapper(object):
     def is_coding_transcript(self):
         if (self.tx_info["cds_start_i"] is not None) ^ (self.tx_info["cds_end_i"] is not None):
             raise HGVSError(
-                "{self.tx_ac}: CDS start_i and end_i" " must be both defined or both undefined".format(self=self)
+                "{self.tx_ac}: CDS start_i and end_i"
+                " must be both defined or both undefined".format(self=self)
             )
         return self.tx_info["cds_start_i"] is not None
 
@@ -131,14 +132,18 @@ class TranscriptMapper(object):
         def map_g_to_n_pos(pos):
             g_ci = _hgvs_coord_to_ci(pos, pos)
             # frs, fre = (f)orward (r)na (s)tart & (e)nd; forward w.r.t. genome
-            frs, fre = self.im.map_ref_to_tgt(g_ci[0] - self.gc_offset, g_ci[1] - self.gc_offset, max_extent=False)
+            frs, fre = self.im.map_ref_to_tgt(
+                g_ci[0] - self.gc_offset, g_ci[1] - self.gc_offset, max_extent=False
+            )
             if self.strand == -1:
                 frs, fre = self.tgt_len - fre, self.tgt_len - frs
             # get BaseOffsetPosition information for n.
             if self.strand == 1:
                 grs, gre = self.im.map_tgt_to_ref(frs, fre, max_extent=False)
             elif self.strand == -1:
-                grs, gre = self.im.map_tgt_to_ref((self.tgt_len - fre), (self.tgt_len - frs), max_extent=False)
+                grs, gre = self.im.map_tgt_to_ref(
+                    (self.tgt_len - fre), (self.tgt_len - frs), max_extent=False
+                )
             grs, gre = grs + self.gc_offset, gre + self.gc_offset
             # 0-width interval indicates an intron.  Need to calculate offsets but we"re are in ci coordinates
             # requires adding 1 strategically to get the HGVS position
@@ -161,13 +166,21 @@ class TranscriptMapper(object):
             return start_base, start_offset, end_base, end_offset
 
         start_bo = map_g_to_n_pos(g_interval.start.base)[0:2]
-        end_bo = start_bo if g_interval.start.base == g_interval.end.base else map_g_to_n_pos(g_interval.end.base)[2:4]
+        end_bo = (
+            start_bo
+            if g_interval.start.base == g_interval.end.base
+            else map_g_to_n_pos(g_interval.end.base)[2:4]
+        )
         if self.strand == -1:
             start_bo, end_bo = end_bo, start_bo
 
         return hgvs.location.BaseOffsetInterval(
-            start=hgvs.location.BaseOffsetPosition(base=start_bo[0], offset=start_bo[1], datum=Datum.SEQ_START),
-            end=hgvs.location.BaseOffsetPosition(base=end_bo[0], offset=end_bo[1], datum=Datum.SEQ_START),
+            start=hgvs.location.BaseOffsetPosition(
+                base=start_bo[0], offset=start_bo[1], datum=Datum.SEQ_START
+            ),
+            end=hgvs.location.BaseOffsetPosition(
+                base=end_bo[0], offset=end_bo[1], datum=Datum.SEQ_START
+            ),
             uncertain=g_interval.uncertain,
         )
 
@@ -182,22 +195,31 @@ class TranscriptMapper(object):
         elif self.strand == -1:
             frs, fre = _hgvs_coord_to_ci(n_interval.start.base, n_interval.end.base)
             fre, frs = self.tgt_len - frs, self.tgt_len - fre
-            start_offset, end_offset = self.strand * n_interval.end.offset, self.strand * n_interval.start.offset
+            start_offset, end_offset = (
+                self.strand * n_interval.end.offset,
+                self.strand * n_interval.start.offset,
+            )
 
         # returns the genomic range start (grs) and end (gre)
         grs, gre = self.im.map_tgt_to_ref(frs, fre, max_extent=False)
         grs, gre = grs + self.gc_offset, gre + self.gc_offset
         gs, ge = grs + start_offset, gre + end_offset
         return hgvs.location.Interval(
-            start=hgvs.location.SimplePosition(_ci_to_hgvs_coord(gs, ge)[0], uncertain=n_interval.start.uncertain),
-            end=hgvs.location.SimplePosition(_ci_to_hgvs_coord(gs, ge)[1], uncertain=n_interval.end.uncertain),
+            start=hgvs.location.SimplePosition(
+                _ci_to_hgvs_coord(gs, ge)[0], uncertain=n_interval.start.uncertain
+            ),
+            end=hgvs.location.SimplePosition(
+                _ci_to_hgvs_coord(gs, ge)[1], uncertain=n_interval.end.uncertain
+            ),
             uncertain=n_interval.uncertain,
         )
 
     def n_to_c(self, n_interval):
         """convert a transcript cDNA (n.) interval to a transcript CDS (c.) interval"""
 
-        if self.cds_start_i is None:  # cds_start_i defined iff cds_end_i defined; see assertion above
+        if (
+            self.cds_start_i is None
+        ):  # cds_start_i defined iff cds_end_i defined; see assertion above
             raise HGVSUsageError(
                 "CDS is undefined for {self.tx_ac}; cannot map to c. coordinate (non-coding transcript?)".format(
                     self=self
@@ -228,8 +250,12 @@ class TranscriptMapper(object):
             ce_datum = Datum.CDS_END
 
         c_interval = hgvs.location.BaseOffsetInterval(
-            start=hgvs.location.BaseOffsetPosition(base=cs, offset=n_interval.start.offset, datum=cs_datum),
-            end=hgvs.location.BaseOffsetPosition(base=ce, offset=n_interval.end.offset, datum=ce_datum),
+            start=hgvs.location.BaseOffsetPosition(
+                base=cs, offset=n_interval.start.offset, datum=cs_datum
+            ),
+            end=hgvs.location.BaseOffsetPosition(
+                base=ce, offset=n_interval.end.offset, datum=ce_datum
+            ),
             uncertain=n_interval.uncertain,
         )
         return c_interval
@@ -237,7 +263,9 @@ class TranscriptMapper(object):
     def c_to_n(self, c_interval):
         """convert a transcript CDS (c.) interval to a transcript cDNA (n.) interval"""
 
-        if self.cds_start_i is None:  # cds_start_i defined iff cds_end_i defined; see assertion above
+        if (
+            self.cds_start_i is None
+        ):  # cds_start_i defined iff cds_end_i defined; see assertion above
             raise HGVSUsageError(
                 "CDS is undefined for {self.tx_ac}; cannot map from c. coordinate (non-coding transcript?)".format(
                     self=self
@@ -263,8 +291,12 @@ class TranscriptMapper(object):
             raise HGVSError("The given coordinate is outside the bounds of the reference sequence.")
 
         n_interval = hgvs.location.BaseOffsetInterval(
-            start=hgvs.location.BaseOffsetPosition(base=rs, offset=c_interval.start.offset, datum=Datum.SEQ_START),
-            end=hgvs.location.BaseOffsetPosition(base=re, offset=c_interval.end.offset, datum=Datum.SEQ_START),
+            start=hgvs.location.BaseOffsetPosition(
+                base=rs, offset=c_interval.start.offset, datum=Datum.SEQ_START
+            ),
+            end=hgvs.location.BaseOffsetPosition(
+                base=re, offset=c_interval.end.offset, datum=Datum.SEQ_START
+            ),
             uncertain=c_interval.uncertain,
         )
         return n_interval

@@ -63,9 +63,14 @@ class SequenceVariant(object):
         # replace_reference should be moved outside function
         vm = hgvs.variantmapper.VariantMapper(hdp)
         type = None
-        if isinstance(self.posedit, hgvs.posedit.PosEdit) and isinstance(self.posedit.edit, hgvs.edit.Edit):
+        if isinstance(self.posedit, hgvs.posedit.PosEdit) and isinstance(
+            self.posedit.edit, hgvs.edit.Edit
+        ):
             type = self.posedit.edit.type
-        if type in ["del", "delins", "identity", "dup", "repeat"] and self.posedit.edit.ref_s is None:
+        if (
+            type in ["del", "delins", "identity", "dup", "repeat"]
+            and self.posedit.edit.ref_s is None
+        ):
             vm._replace_reference(self)
         if type == "identity" and isinstance(self.posedit.edit, hgvs.edit.NARefAlt):
             self.posedit.edit.alt = self.posedit.edit.ref

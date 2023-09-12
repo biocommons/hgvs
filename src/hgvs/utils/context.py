@@ -42,7 +42,9 @@ def full_house(am, var, tx_ac=None):
                 raise RuntimeError("no relevant transcripts for {var.ac}".format(var=var))
             if len(rtx) > 1:
                 raise RuntimeError(
-                    "{n} relevant transcripts for {var.ac}; you need to pick one".format(n=len(rtx), var=var)
+                    "{n} relevant transcripts for {var.ac}; you need to pick one".format(
+                        n=len(rtx), var=var
+                    )
                 )
             tx_ac = rtx[0]
         var_n = am.g_to_n(var_g, tx_ac)
@@ -105,13 +107,21 @@ def variant_context_w_alignment(am, var, margin=20, tx_ac=None):
         [
             1,
             0,
-            seq_line_fmt(var=fh["c"], span=span_c if strand == 1 else list(reversed(span_c)), content="", dir=s_dir),
+            seq_line_fmt(
+                var=fh["c"],
+                span=span_c if strand == 1 else list(reversed(span_c)),
+                content="",
+                dir=s_dir,
+            ),
         ],
         [
             2,
             0,
             seq_line_fmt(
-                var=fh["n"], span=span_n if strand == 1 else list(reversed(span_n)), content=aseq_n, dir=s_dir
+                var=fh["n"],
+                span=span_n if strand == 1 else list(reversed(span_n)),
+                content=aseq_n,
+                dir=s_dir,
             ),
         ],
         [
@@ -203,7 +213,10 @@ def format_sequence(seq, start=None, end=None, group_size=3):
     for ls in range(start, end, rpl):
         le = ls + rpl
 
-        groups = [ge_fmt.format(ge=str(gs + group_size)[-group_size + 1 :]) for gs in range(ls, le, group_size)]
+        groups = [
+            ge_fmt.format(ge=str(gs + group_size)[-group_size + 1 :])
+            for gs in range(ls, le, group_size)
+        ]
         blocks += [line_fmt.format(l="", body=sep.join(groups)) + "\n"]
 
         groups = [seq[gs : min(gs + group_size, end)] for gs in range(ls, le, group_size)]
