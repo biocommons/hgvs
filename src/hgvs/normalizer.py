@@ -18,7 +18,6 @@ from hgvs.exceptions import (
     HGVSInvalidVariantError,
     HGVSUnsupportedOperationError,
 )
-from hgvs.parser import Parser
 from hgvs.utils.norm import normalize_alleles
 
 _logger = logging.getLogger(__name__)
@@ -449,6 +448,8 @@ class Normalizer(object):
 
 
 if __name__ == "__main__":
+    from hgvs.parser import Parser
+
     hgvsparser = Parser()
     var = hgvsparser.parse_hgvs_variant("NM_001166478.1:c.61delG")
     hdp = connect()
