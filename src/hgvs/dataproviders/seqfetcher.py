@@ -49,7 +49,9 @@ class SeqFetcher(object):
             from biocommons.seqrepo.dataproxy import SeqRepoRESTDataProxy
 
             self.sr = SeqRepoRESTDataProxy(seqrepo_url)
-            self.fetcher = lambda ac, start_i=None, end_i=None: self.sr.get_sequence(ac, start_i, end_i)
+            self.fetcher = lambda ac, start_i=None, end_i=None: self.sr.get_sequence(
+                ac, start_i, end_i
+            )
             self.source = f"SeqRepo REST ({seqrepo_url})"
         else:
             self.sr = None

@@ -136,7 +136,9 @@ class Test_Parser(unittest.TestCase):
                 if m:
                     generated_hash = m.group(1)
 
-            msg = "Could not retrieve generated hash from {generated_hash}".format(generated_hash=generated_hash)
+            msg = "Could not retrieve generated hash from {generated_hash}".format(
+                generated_hash=generated_hash
+            )
             self.assertIsNotNone(generated_hash, msg)
 
         msg = (

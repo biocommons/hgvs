@@ -32,7 +32,9 @@ def gcp_file_reader(fn):
 class TestHgvsCToPReal(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "learn"), cache=CACHE)
+        cls.hdp = hgvs.dataproviders.uta.connect(
+            mode=os.environ.get("HGVS_CACHE_MODE", "learn"), cache=CACHE
+        )
         cls._hm = hgvs.variantmapper.VariantMapper(cls.hdp)
         cls._hp = hgvs.parser.Parser()
         cls._failed = []
@@ -58,27 +60,42 @@ class TestHgvsCToPReal(unittest.TestCase):
         self.assertTrue(len(self._failed) == 0, msg)
 
     def _run_comparison(self, rec, out):
-        (row_id, hgvsg, hgvsc, hgvsp_expected) = (rec["id"], rec["HGVSg"], rec["HGVSc"], rec["HGVSp"])
+        (row_id, hgvsg, hgvsc, hgvsp_expected) = (
+            rec["id"],
+            rec["HGVSg"],
+            rec["HGVSc"],
+            rec["HGVSp"],
+        )
 
         hgvsc = self._dup_regex.sub("dup", hgvsc)  # cleanup dupN
 
         if not row_id.startswith("#") and hgvsc and hgvsp_expected:
             try:
                 var_c = self._hp.parse_hgvs_variant(hgvsc)
-                var_p = self._hm.c_to_p(var_c, hgvsp_expected.split(":")[0])  # hack until p.?, p.= etc parse
+                var_p = self._hm.c_to_p(
+                    var_c, hgvsp_expected.split(":")[0]
+                )  # hack until p.?, p.= etc parse
                 hgvsp_actual = str(var_p)
 
                 if hgvsp_expected != hgvsp_actual:
                     if hgvsp_expected.replace("*", "Ter") == hgvsp_actual:
                         pass
                     else:
-                        self._append_fail(out, row_id, hgvsg, hgvsc, hgvsp_expected, hgvsp_actual, "MISMATCH")
+                        self._append_fail(
+                            out, row_id, hgvsg, hgvsc, hgvsp_expected, hgvsp_actual, "MISMATCH"
+                        )
             except Exception as e:
-                self._append_fail(out, row_id, hgvsg, hgvsc, hgvsp_expected, "NO_OUTPUT_EXCEPTION", e.message)
+                self._append_fail(
+                    out, row_id, hgvsg, hgvsc, hgvsp_expected, "NO_OUTPUT_EXCEPTION", e.message
+                )
 
     def _append_fail(self, out, row_id, hgvsg, hgvsc, hgvsp_expected, hgvsp_actual, msg):
         self._failed.append((row_id, hgvsg, hgvsc, hgvsp_expected, hgvsp_actual, msg))
-        out.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(row_id, hgvsg, hgvsc, hgvsp_expected, hgvsp_actual, msg))
+        out.write(
+            "{}\t{}\t{}\t{}\t{}\t{}\n".format(
+                row_id, hgvsg, hgvsc, hgvsp_expected, hgvsp_actual, msg
+            )
+        )
 
     def test_c_to_p_format(self):
         hgvsc = "NM_022464.4:c.3G>A"

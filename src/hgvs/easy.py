@@ -45,7 +45,9 @@ hp = parser = hgvs_parser = Parser()
 hdp = hgvs_data_provider = connect()
 vm = variant_mapper = hgvs_variant_mapper = VariantMapper(hgvs_data_provider)
 am37 = hgvs_assembly_mapper_37 = AssemblyMapper(hgvs_data_provider, assembly_name="GRCh37")
-am38 = projector = hgvs_assembly_mapper_38 = AssemblyMapper(hgvs_data_provider, assembly_name="GRCh38")
+am38 = projector = hgvs_assembly_mapper_38 = AssemblyMapper(
+    hgvs_data_provider, assembly_name="GRCh38"
+)
 hn = normalizer = hgvs_normalizer = Normalizer(hgvs_data_provider)
 hv = validator = hgvs_validator = Validator(hgvs_data_provider)
 

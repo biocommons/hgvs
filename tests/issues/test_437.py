@@ -48,8 +48,12 @@ class Test437_RMRP(unittest.TestCase):
         self.e2_n = self.parser.parse("NR_003051.3:n.269N>C")
 
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp)
-        self.alm37 = hgvs.alignmentmapper.AlignmentMapper(self.hdp, "NR_003051.3", "NC_000009.11", "splign")
-        self.alm38 = hgvs.alignmentmapper.AlignmentMapper(self.hdp, "NR_003051.3", "NC_000009.12", "splign")
+        self.alm37 = hgvs.alignmentmapper.AlignmentMapper(
+            self.hdp, "NR_003051.3", "NC_000009.11", "splign"
+        )
+        self.alm38 = hgvs.alignmentmapper.AlignmentMapper(
+            self.hdp, "NR_003051.3", "NC_000009.12", "splign"
+        )
 
     def test_tx_start(self):
         hgvs_n = "NR_003051.3:n.1G>T"
