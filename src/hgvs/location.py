@@ -129,13 +129,24 @@ class BaseOffsetPosition(object):
             and self.datum != Datum.CDS_START
             and self.base < 1
         ):
-            return (ValidationLevel.ERROR, "BaseOffsetPosition base must be >=1 for datum = SEQ_START or CDS_END")
+            return (
+                ValidationLevel.ERROR,
+                "BaseOffsetPosition base must be >=1 for datum = SEQ_START or CDS_END",
+            )
         return (ValidationLevel.VALID, None)
 
     def __str__(self):
         self.validate()
-        base_str = "?" if self.base is None else "*" + str(self.base) if self.datum == Datum.CDS_END else str(self.base)
-        offset_str = "+?" if self.offset is None else "" if self.offset == 0 else "%+d" % self.offset
+        base_str = (
+            "?"
+            if self.base is None
+            else "*" + str(self.base)
+            if self.datum == Datum.CDS_END
+            else str(self.base)
+        )
+        offset_str = (
+            "+?" if self.offset is None else "" if self.offset == 0 else "%+d" % self.offset
+        )
         pos = base_str + offset_str
         return "(" + pos + ")" if self.uncertain else pos
 
@@ -166,11 +177,15 @@ class BaseOffsetPosition(object):
     def __sub__(lhs, rhs):
         assert type(lhs) == type(rhs), "Cannot substract coordinates of different representations"
         if lhs.datum != rhs.datum:
-            raise HGVSUnsupportedOperationError("Interval length measured from different datums is ill-defined")
+            raise HGVSUnsupportedOperationError(
+                "Interval length measured from different datums is ill-defined"
+            )
         if lhs.base == rhs.base:
             return lhs.offset - rhs.offset
         if lhs.offset != 0 or rhs.offset != 0:
-            raise HGVSUnsupportedOperationError("Interval length with intronic offsets is ill-defined")
+            raise HGVSUnsupportedOperationError(
+                "Interval length with intronic offsets is ill-defined"
+            )
         straddles_zero = 1 if (lhs.base > 0 and rhs.base < 0) else 0
         return lhs.base - rhs.base - straddles_zero
 
@@ -376,7 +391,9 @@ class BaseOffsetInterval(Interval):
             (Datum.CDS_START, Datum.CDS_END),
             (Datum.CDS_END, Datum.CDS_END),
         ]:
-            raise HGVSInvalidIntervalError("BaseOffsetInterval start datum and end datum are incompatible")
+            raise HGVSInvalidIntervalError(
+                "BaseOffsetInterval start datum and end datum are incompatible"
+            )
 
 
 # <LICENSE>

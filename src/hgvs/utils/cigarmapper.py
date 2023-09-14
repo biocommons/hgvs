@@ -56,10 +56,22 @@ class CIGARMapper:
         return self.tgt_pos[-1]
 
     def map_ref_to_tgt(self, pos, end, strict_bounds=True):
-        return self._map(from_pos=self.ref_pos, to_pos=self.tgt_pos, pos=pos, end=end, strict_bounds=strict_bounds)
+        return self._map(
+            from_pos=self.ref_pos,
+            to_pos=self.tgt_pos,
+            pos=pos,
+            end=end,
+            strict_bounds=strict_bounds,
+        )
 
     def map_tgt_to_ref(self, pos, end, strict_bounds=True):
-        return self._map(from_pos=self.tgt_pos, to_pos=self.ref_pos, pos=pos, end=end, strict_bounds=strict_bounds)
+        return self._map(
+            from_pos=self.tgt_pos,
+            to_pos=self.ref_pos,
+            pos=pos,
+            end=end,
+            strict_bounds=strict_bounds,
+        )
 
     def _map(self, from_pos, to_pos, pos, end, strict_bounds):
         """Map position between aligned segments

@@ -75,7 +75,9 @@ class Interval(object):
         return self.end_i - self.start_i
 
     def __repr__(self):
-        return "{self.__class__.__name__}(start_i={self.start_i},end_i={self.end_i})".format(self=self)
+        return "{self.__class__.__name__}(start_i={self.start_i},end_i={self.end_i})".format(
+            self=self
+        )
 
 
 class IntervalPair(object):
@@ -86,8 +88,14 @@ class IntervalPair(object):
     __slots__ = ("ref", "tgt")
 
     def __init__(self, ref, tgt):
-        if not ((ref.len == tgt.len) or (ref.len == 0 and tgt.len != 0) or (ref.len != 0 and tgt.len == 0)):
-            raise HGVSInvalidIntervalError("IntervalPair doesn't represent a match, insertion, or deletion")
+        if not (
+            (ref.len == tgt.len)
+            or (ref.len == 0 and tgt.len != 0)
+            or (ref.len != 0 and tgt.len == 0)
+        ):
+            raise HGVSInvalidIntervalError(
+                "IntervalPair doesn't represent a match, insertion, or deletion"
+            )
         self.ref = ref
         self.tgt = tgt
 
@@ -143,14 +151,20 @@ class IntervalMapper(object):
         def iv_map(from_ivs, to_ivs, from_start_i, from_end_i, max_extent):
             """returns the <start,end> intervals indexes in which from_start_i and from_end_i occur"""
             # first look for 0-width interval that matches
-            seil = [i for i, iv in enumerate(from_ivs) if iv.start_i == from_start_i and iv.end_i == from_end_i]
+            seil = [
+                i
+                for i, iv in enumerate(from_ivs)
+                if iv.start_i == from_start_i and iv.end_i == from_end_i
+            ]
             if len(seil) > 0:
                 si = ei = seil[0]
             else:
                 sil = [i for i, iv in enumerate(from_ivs) if iv.start_i <= from_start_i <= iv.end_i]
                 eil = [i for i, iv in enumerate(from_ivs) if iv.start_i <= from_end_i <= iv.end_i]
                 if len(sil) == 0 or len(eil) == 0:
-                    raise HGVSInvalidIntervalError("start or end or both are beyond the bounds of transcript record")
+                    raise HGVSInvalidIntervalError(
+                        "start or end or both are beyond the bounds of transcript record"
+                    )
                 si, ei = (sil[0], eil[-1]) if max_extent else (sil[-1], eil[0])
             return si, ei
 
@@ -162,7 +176,9 @@ class IntervalMapper(object):
             si, ei = iv_map(from_ivs, to_ivs, from_start_i, from_end_i, max_extent)
         except ValueError:
             raise HGVSInvalidIntervalError("start_i,end_i interval out of bounds")
-        to_start_i = clip_to_iv(to_ivs[si], to_ivs[si].start_i + (from_start_i - from_ivs[si].start_i))
+        to_start_i = clip_to_iv(
+            to_ivs[si], to_ivs[si].start_i + (from_start_i - from_ivs[si].start_i)
+        )
         to_end_i = clip_to_iv(to_ivs[ei], to_ivs[ei].end_i - (from_ivs[ei].end_i - from_end_i))
         return to_start_i, to_end_i
 
@@ -197,12 +213,15 @@ def cigar_to_intervalpairs(cigar):
 
     cigar_elem_re = re.compile(r"(?P<len>\d+)(?P<op>[=DIMNX])")
     ces = [
-        CIGARElement(op=md["op"], len=int(md["len"])) for md in [m.groupdict() for m in cigar_elem_re.finditer(cigar)]
+        CIGARElement(op=md["op"], len=int(md["len"]))
+        for md in [m.groupdict() for m in cigar_elem_re.finditer(cigar)]
     ]
     ips = [None] * len(ces)
     ref_pos = tgt_pos = 0
     for i, ce in enumerate(ces):
-        ips[i] = IntervalPair(Interval(ref_pos, ref_pos + ce.ref_len), Interval(tgt_pos, tgt_pos + ce.tgt_len))
+        ips[i] = IntervalPair(
+            Interval(ref_pos, ref_pos + ce.ref_len), Interval(tgt_pos, tgt_pos + ce.tgt_len)
+        )
         ref_pos += ce.ref_len
         tgt_pos += ce.tgt_len
     return ips

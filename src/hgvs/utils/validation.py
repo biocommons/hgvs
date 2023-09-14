@@ -47,5 +47,7 @@ def validate_type_ac_pair(type, ac):
     else:
         return (
             ValidationLevel.WARNING,
-            "Accession ({ac}) is not known to be compatible with variant type {type}".format(ac=ac, type=type),
+            "Accession ({ac}) is not known to be compatible with variant type {type}".format(
+                ac=ac, type=type
+            ),
         )

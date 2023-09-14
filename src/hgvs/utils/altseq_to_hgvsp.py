@@ -41,7 +41,9 @@ class AltSeqToHgvsp(object):
 
         if DBG:
             print("len ref seq:{} len alt seq:{}".format(len(self._ref_seq), len(self._alt_seq)))
-            print("fs start:{} protein ac:{}".format(self._frameshift_start, self._protein_accession))
+            print(
+                "fs start:{} protein ac:{}".format(self._frameshift_start, self._protein_accession)
+            )
             print(self._ref_seq)
             print(self._alt_seq)
             print("aa variant start: {}".format(self._alt_data.variant_start_aa))
@@ -133,16 +135,26 @@ class AltSeqToHgvsp(object):
 
         if self._is_ambiguous:
             var_ps = [
-                self._create_variant(None, None, "", "", acc=self._protein_accession, is_ambiguous=self._is_ambiguous)
+                self._create_variant(
+                    None, None, "", "", acc=self._protein_accession, is_ambiguous=self._is_ambiguous
+                )
             ]
         elif len(self._alt_seq) == 0:
             var_ps = [
                 self._create_variant(
-                    None, None, "", "", acc=self._protein_accession, is_ambiguous=self._is_ambiguous, is_no_protein=True
+                    None,
+                    None,
+                    "",
+                    "",
+                    acc=self._protein_accession,
+                    is_ambiguous=self._is_ambiguous,
+                    is_no_protein=True,
                 )
             ]
         else:
-            var_ps = [self._convert_to_sequence_variants(x, self._protein_accession) for x in variants]
+            var_ps = [
+                self._convert_to_sequence_variants(x, self._protein_accession) for x in variants
+            ]
 
         if len(var_ps) > 1:
             raise HGVSError("Got multiple AA variants - not supported")
@@ -202,7 +214,9 @@ class AltSeqToHgvsp(object):
             ref = ""
 
             try:
-                fsext_len = str(insertion.index("*") + 1)  # start w/ 1st change; ends w/ * (inclusive)
+                fsext_len = str(
+                    insertion.index("*") + 1
+                )  # start w/ 1st change; ends w/ * (inclusive)
             except ValueError:
                 fsext_len = "?"
 
@@ -231,7 +245,9 @@ class AltSeqToHgvsp(object):
                     alt = insertion
 
                 else:  # deletion OR stop codon at variant position
-                    if len(deletion) + start == len(self._ref_seq):  # stop codon at variant position
+                    if len(deletion) + start == len(
+                        self._ref_seq
+                    ):  # stop codon at variant position
                         aa_start = AAPosition(base=start, aa=deletion[0])
                         aa_end = AAPosition(base=start, aa=deletion[0])
                         ref = ""
@@ -341,7 +357,11 @@ class AltSeqToHgvsp(object):
                 edit = AARefAlt(ref="", alt="")
             else:
                 edit = AARefAlt(ref=ref, alt=alt)
-            posedit = PosEdit(pos=interval, edit=edit, uncertain=hgvs.global_config.mapping.inferred_p_is_uncertain)
+            posedit = PosEdit(
+                pos=interval,
+                edit=edit,
+                uncertain=hgvs.global_config.mapping.inferred_p_is_uncertain,
+            )
         var_p = hgvs.sequencevariant.SequenceVariant(acc, "p", posedit)
         return var_p
 

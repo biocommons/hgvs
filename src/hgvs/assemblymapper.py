@@ -88,8 +88,12 @@ class AssemblyMapper(VariantMapper):
         self.in_par_assume = in_par_assume
         self._norm = None
         if self.normalize:
-            self._norm = hgvs.normalizer.Normalizer(hdp, alt_aln_method=alt_aln_method, validate=False)
-        self._assembly_map = {k: v for k, v in hdp.get_assembly_map(self.assembly_name).items() if k.startswith("NC_")}
+            self._norm = hgvs.normalizer.Normalizer(
+                hdp, alt_aln_method=alt_aln_method, validate=False
+            )
+        self._assembly_map = {
+            k: v for k, v in hdp.get_assembly_map(self.assembly_name).items() if k.startswith("NC_")
+        }
         self._assembly_accessions = set(self._assembly_map.keys())
 
     def __repr__(self):
@@ -101,30 +105,42 @@ class AssemblyMapper(VariantMapper):
         )
 
     def g_to_c(self, var_g, tx_ac):
-        var_out = super(AssemblyMapper, self).g_to_c(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
+        var_out = super(AssemblyMapper, self).g_to_c(
+            var_g, tx_ac, alt_aln_method=self.alt_aln_method
+        )
         return self._maybe_normalize(var_out)
 
     def g_to_n(self, var_g, tx_ac):
-        var_out = super(AssemblyMapper, self).g_to_n(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
+        var_out = super(AssemblyMapper, self).g_to_n(
+            var_g, tx_ac, alt_aln_method=self.alt_aln_method
+        )
         return self._maybe_normalize(var_out)
 
     def g_to_t(self, var_g, tx_ac):
-        var_out = super(AssemblyMapper, self).g_to_t(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
+        var_out = super(AssemblyMapper, self).g_to_t(
+            var_g, tx_ac, alt_aln_method=self.alt_aln_method
+        )
         return self._maybe_normalize(var_out)
 
     def c_to_g(self, var_c):
         alt_ac = self._alt_ac_for_tx_ac(var_c.ac)
-        var_out = super(AssemblyMapper, self).c_to_g(var_c, alt_ac, alt_aln_method=self.alt_aln_method)
+        var_out = super(AssemblyMapper, self).c_to_g(
+            var_c, alt_ac, alt_aln_method=self.alt_aln_method
+        )
         return self._maybe_normalize(var_out)
 
     def n_to_g(self, var_n):
         alt_ac = self._alt_ac_for_tx_ac(var_n.ac)
-        var_out = super(AssemblyMapper, self).n_to_g(var_n, alt_ac, alt_aln_method=self.alt_aln_method)
+        var_out = super(AssemblyMapper, self).n_to_g(
+            var_n, alt_ac, alt_aln_method=self.alt_aln_method
+        )
         return self._maybe_normalize(var_out)
 
     def t_to_g(self, var_t):
         alt_ac = self._alt_ac_for_tx_ac(var_t.ac)
-        var_out = super(AssemblyMapper, self).t_to_g(var_t, alt_ac, alt_aln_method=self.alt_aln_method)
+        var_out = super(AssemblyMapper, self).t_to_g(
+            var_t, alt_ac, alt_aln_method=self.alt_aln_method
+        )
         return self._maybe_normalize(var_out)
 
     def t_to_p(self, var_t):
@@ -142,7 +158,9 @@ class AssemblyMapper(VariantMapper):
             return "non-coding"
         if var_t.type == "c":
             return self.c_to_p(var_t)
-        raise HGVSInvalidVariantError("Expected a coding (c.) or non-coding (n.) variant; got " + str(var_t))
+        raise HGVSInvalidVariantError(
+            "Expected a coding (c.) or non-coding (n.) variant; got " + str(var_t)
+        )
 
     def c_to_n(self, var_c):
         var_out = super(AssemblyMapper, self).c_to_n(var_c)
@@ -173,7 +191,8 @@ class AssemblyMapper(VariantMapper):
         alt_acs = [
             e["alt_ac"]
             for e in self.hdp.get_tx_mapping_options(tx_ac)
-            if e["alt_aln_method"] == self.alt_aln_method and e["alt_ac"] in self._assembly_accessions
+            if e["alt_aln_method"] == self.alt_aln_method
+            and e["alt_ac"] in self._assembly_accessions
         ]
 
         if not alt_acs:
@@ -187,7 +206,9 @@ class AssemblyMapper(VariantMapper):
         if len(alt_acs) > 1:
             names = set(self._assembly_map[ac] for ac in alt_acs)
             if names != set("XY"):
-                alts = ", ".join(["{ac} ({n})".format(ac=ac, n=self._assembly_map[ac]) for ac in alt_acs])
+                alts = ", ".join(
+                    ["{ac} ({n})".format(ac=ac, n=self._assembly_map[ac]) for ac in alt_acs]
+                )
                 raise HGVSError(
                     "Multiple chromosomal alignments for {tx_ac} in {an}"
                     " using {am} (non-pseudoautosomal region) [{alts}]".format(

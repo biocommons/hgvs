@@ -93,7 +93,7 @@ exclude_lines = [
 ]
 
 [tool.black]
-line-length = 120
+line-length = 100
 
 
 # [tool.flake8]

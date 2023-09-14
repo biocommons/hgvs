@@ -32,7 +32,9 @@ from hgvs.exceptions import (
 class Test_Issues(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        self.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+        self.hdp = hgvs.dataproviders.uta.connect(
+            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
+        )
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp, replace_reference=False)
         self.vm_rr = hgvs.variantmapper.VariantMapper(self.hdp, replace_reference=True)
         self.hp = hgvs.parser.Parser()
@@ -171,13 +173,17 @@ class Test_Issues(unittest.TestCase):
         # normalize to NM_005877.4:c.1104_1105dup2 (which is
         # different).
         original_var = "NM_005877.4:c.1104_1105insGG"
-        self.assertEqual(original_var, str(self.hn.normalize(self.hp.parse_c_variant(original_var))))
+        self.assertEqual(
+            original_var, str(self.hn.normalize(self.hp.parse_c_variant(original_var)))
+        )
 
     def test_379_move_replace_reference_to_variantmapper(self):
         # replace_reference code was in am, not vm. That meant that using vm directly
         # resulted in variants that were not reference corrected.
         g_var = self.hp.parse_hgvs_variant("NC_000006.11:g.44275011T=")
-        c_var = self.hp.parse_hgvs_variant("NM_020745.3:c.1015G>A")  # correct projection with ref replacement
+        c_var = self.hp.parse_hgvs_variant(
+            "NM_020745.3:c.1015G>A"
+        )  # correct projection with ref replacement
         self.assertEqual(c_var, self.am37.g_to_c(g_var, "NM_020745.3"))  # previously okay
         self.assertEqual(c_var, self.vm_rr.g_to_c(g_var, "NM_020745.3"))  # previously wrong
 

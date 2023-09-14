@@ -70,12 +70,18 @@ class Interface(six.with_metaclass(abc.ABCMeta, object)):
             maxsize = None
             print(f"{__file__}: Using unlimited cache size")
 
-        self.data_version = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(self.data_version)
-        self.schema_version = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(self.schema_version)
+        self.data_version = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
+            self.data_version
+        )
+        self.schema_version = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
+            self.schema_version
+        )
         self.get_acs_for_protein_seq = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
             self.get_acs_for_protein_seq
         )
-        self.get_gene_info = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(self.get_gene_info)
+        self.get_gene_info = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
+            self.get_gene_info
+        )
         self.get_pro_ac_for_tx_ac = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
             self.get_pro_ac_for_tx_ac
         )
@@ -83,13 +89,21 @@ class Interface(six.with_metaclass(abc.ABCMeta, object)):
         self.get_similar_transcripts = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
             self.get_similar_transcripts
         )
-        self.get_tx_exons = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(self.get_tx_exons)
-        self.get_tx_for_gene = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(self.get_tx_for_gene)
-        self.get_tx_for_region = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(self.get_tx_for_region)
+        self.get_tx_exons = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
+            self.get_tx_exons
+        )
+        self.get_tx_for_gene = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
+            self.get_tx_for_gene
+        )
+        self.get_tx_for_region = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
+            self.get_tx_for_region
+        )
         self.get_tx_identity_info = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
             self.get_tx_identity_info
         )
-        self.get_tx_info = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(self.get_tx_info)
+        self.get_tx_info = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
+            self.get_tx_info
+        )
         self.get_tx_mapping_options = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
             self.get_tx_mapping_options
         )

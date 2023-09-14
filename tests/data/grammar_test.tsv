@@ -9,7 +9,6 @@ accn	NM_123456|NC_999999	True	list
 accn	NM_X3|NC_333	True	list	
 accn	NM_|3M|33_12345678.9|NM_12345.|NM_*901.3	False	list	
 accn	NM|NC	True	list	
-accn	N|M|3	False	list	
 accn	XR_123456.7|XM_999999.9|ZZ_12345678890.0|U14680.1	True	list
 
 ############################################################

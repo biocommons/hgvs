@@ -53,7 +53,13 @@ def _get_ncbi_db_url():
     return hgvs.global_config["NCBI"][url_key]
 
 
-def connect(db_url=None, pooling=hgvs.global_config.uta.pooling, application_name=None, mode=None, cache=None):
+def connect(
+    db_url=None,
+    pooling=hgvs.global_config.uta.pooling,
+    application_name=None,
+    mode=None,
+    cache=None,
+):
     """Connect to a uta/ncbi database instance.
 
     :param db_url: URL for database connection
@@ -96,7 +102,9 @@ def connect(db_url=None, pooling=hgvs.global_config.uta.pooling, application_nam
 
     url = _parse_url(db_url)
     if url.scheme == "postgresql":
-        conn = NCBI_postgresql(url=url, pooling=pooling, application_name=application_name, mode=mode, cache=cache)
+        conn = NCBI_postgresql(
+            url=url, pooling=pooling, application_name=application_name, mode=mode, cache=cache
+        )
     else:
         # fell through connection scheme cases
         raise RuntimeError("{url.scheme} in {url} is not currently supported".format(url=url))
@@ -234,7 +242,14 @@ class NCBIBase(object):
 
 
 class NCBI_postgresql(NCBIBase):
-    def __init__(self, url, pooling=hgvs.global_config.uta.pooling, application_name=None, mode=None, cache=None):
+    def __init__(
+        self,
+        url,
+        pooling=hgvs.global_config.uta.pooling,
+        application_name=None,
+        mode=None,
+        cache=None,
+    ):
         if url.schema is None:
             raise Exception("No schema name provided in {url}".format(url=url))
         self.application_name = application_name
@@ -282,7 +297,9 @@ class NCBI_postgresql(NCBIBase):
 
     def _ensure_schema_exists(self):
         # N.B. On AWS RDS, information_schema.schemata always returns zero rows
-        r = self._fetchone("select exists(SELECT 1 FROM pg_namespace WHERE nspname = %s)", [self.url.schema])
+        r = self._fetchone(
+            "select exists(SELECT 1 FROM pg_namespace WHERE nspname = %s)", [self.url.schema]
+        )
         if r[0]:
             return
         raise HGVSDataNotAvailableError(
@@ -329,7 +346,9 @@ class NCBI_postgresql(NCBIBase):
                 break
 
             except psycopg2.OperationalError:
-                _logger.warning("Lost connection to {url}; attempting reconnect".format(url=self.url))
+                _logger.warning(
+                    "Lost connection to {url}; attempting reconnect".format(url=self.url)
+                )
                 if self.pooling:
                     self._pool.closeall()
                 self._connect()
@@ -339,7 +358,11 @@ class NCBI_postgresql(NCBIBase):
 
         else:
             # N.B. Probably never reached
-            raise HGVSError("Permanently lost connection to {url} ({n} retries)".format(url=self.url, n=n_retries))
+            raise HGVSError(
+                "Permanently lost connection to {url} ({n} retries)".format(
+                    url=self.url, n=n_retries
+                )
+            )
 
 
 class ParseResult(urlparse.ParseResult):
