@@ -10,7 +10,9 @@ class RefTranscriptData(object):
         tx_seq = hdp.get_seq(tx_ac)
 
         if tx_info is None or tx_seq is None:
-            raise HGVSDataNotAvailableError("Missing transcript data for accession: {}".format(tx_ac))
+            raise HGVSDataNotAvailableError(
+                "Missing transcript data for accession: {}".format(tx_ac)
+            )
 
         # use 1-based hgvs coords
         cds_start = tx_info["cds_start_i"] + 1

@@ -28,7 +28,9 @@ class Babelfish:
     def __init__(self, hdp, assembly_name):
         self.assembly_name = assembly_name
         self.hdp = hdp
-        self.hn = hgvs.normalizer.Normalizer(hdp, cross_boundaries=False, shuffle_direction=5, validate=False)
+        self.hn = hgvs.normalizer.Normalizer(
+            hdp, cross_boundaries=False, shuffle_direction=5, validate=False
+        )
         self.ac_to_name_map = make_ac_name_map(assembly_name)
         self.name_to_ac_map = make_name_ac_map(assembly_name)
 
@@ -118,7 +120,9 @@ if __name__ == "__main__":
     import hgvs.normalizer
 
     babelfish38 = Babelfish(hgvs.easy.hdp, assembly_name="GRCh38")
-    hnl = hgvs.normalizer.Normalizer(hgvs.easy.hdp, cross_boundaries=False, shuffle_direction=5, validate=False)
+    hnl = hgvs.normalizer.Normalizer(
+        hgvs.easy.hdp, cross_boundaries=False, shuffle_direction=5, validate=False
+    )
 
     def _h2v(h):
         return babelfish38.hgvs_to_vcf(hgvs.easy.parser.parse(h))

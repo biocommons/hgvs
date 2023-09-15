@@ -16,8 +16,51 @@ from hgvs.exceptions import HGVSParseError
 def test_parser_variants_with_gene_names(parser):
     assert parser.parse("NM_01234.5(BOGUS):c.22+1A>T")
 
+    # HGNC approved symbols include non-alphanumeric:
+    # dashes     - ADAMTSL4-AS1 or TRL-CAA5-1
+    assert parser.parse("NM_01234.5(BOGUS-EXCELLENT):c.22+1A>T")
+    assert parser.parse("NM_01234.5(BOGUS-MOST-EXCELLENT):c.22+1A>T")
+
+    # underscore - GTF2H2C_2, APOBEC3A_B, C4B_2
+    assert parser.parse("NM_01234.5(BOGUS_EXCELLENT):c.22+1A>T")
+
     with pytest.raises(hgvs.exceptions.HGVSParseError):
-        parser.parse("NM_01234.5(1BOGUS):c.22+1A>T")
+        parser.parse("NM_01234.5(1BOGUS):c.22+1A>T")  # Starts with non-alpha
+
+    with pytest.raises(hgvs.exceptions.HGVSParseError):
+        parser.parse("NM_01234.5(-BOGUS):c.22+1A>T")  # Starts with non-alpha
+
+    with pytest.raises(hgvs.exceptions.HGVSParseError):
+        parser.parse("NM_01234.5(BOGUS-):c.22+1A>T")  # Ends with non-alpha
+
+    with pytest.raises(hgvs.exceptions.HGVSParseError):
+        parser.parse("NM_01234.5(BOGUS/EXCELLENT):c.22+1A>T")  # contains invalid character
+
+
+def test_parser_variants_with_no_transcript_gene_names(parser):
+    """ Test it also works with no transcript provided """
+
+    assert parser.parse("BOGUS:c.22+1A>T")
+
+    # HGNC approved symbols include non-alphanumeric:
+    # dashes     - ADAMTSL4-AS1 or TRL-CAA5-1
+    assert parser.parse("BOGUS-EXCELLENT:c.22+1A>T")
+    assert parser.parse("BOGUS-MOST-EXCELLENT:c.22+1A>T")
+
+    # underscore - GTF2H2C_2, APOBEC3A_B, C4B_2
+    assert parser.parse("BOGUS_EXCELLENT:c.22+1A>T")
+
+    with pytest.raises(hgvs.exceptions.HGVSParseError):
+        parser.parse("1BOGUS:c.22+1A>T")  # Starts with non-alpha
+
+    with pytest.raises(hgvs.exceptions.HGVSParseError):
+        parser.parse("-BOGUS:c.22+1A>T")  # Starts with non-alpha
+
+    with pytest.raises(hgvs.exceptions.HGVSParseError):
+        parser.parse("BOGUS-:c.22+1A>T")  # Ends with non-alpha
+
+    with pytest.raises(hgvs.exceptions.HGVSParseError):
+        parser.parse("BOGUS/EXCELLENT:c.22+1A>T")  # contains invalid character
 
 
 class Test_Parser(unittest.TestCase):
@@ -93,7 +136,9 @@ class Test_Parser(unittest.TestCase):
                 if m:
                     generated_hash = m.group(1)
 
-            msg = "Could not retrieve generated hash from {generated_hash}".format(generated_hash=generated_hash)
+            msg = "Could not retrieve generated hash from {generated_hash}".format(
+                generated_hash=generated_hash
+            )
             self.assertIsNotNone(generated_hash, msg)
 
         msg = (

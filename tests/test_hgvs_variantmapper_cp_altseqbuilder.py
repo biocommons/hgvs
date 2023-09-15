@@ -101,11 +101,10 @@ class TestAltSeqBuilder(unittest.TestCase):
 
     def test_sequence_with_length_that_is_not_divisible_by_3(self):
         hgvsc = "NM_999992.2:c.1del"
-        expected_sequence = "AAAATCAAATGGGGTAGGCCCGGCAGCCAGCTTTATAGAGGAGGCAGTTTCGCC"
         with self.assertRaises(NotImplementedError):
             ac_p = "DUMMY"
             var = self._parser.parse_hgvs_variant(hgvsc)
-            transcript_data = RefTranscriptData(hdp=self._datasource, tx_ac=var.ac, pro_ac=ac_p)
+            RefTranscriptData(hdp=self._datasource, tx_ac=var.ac, pro_ac=ac_p)
 
     # def test_2_substitutions(self):
     #     pass

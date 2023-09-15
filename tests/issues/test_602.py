@@ -14,10 +14,10 @@ def test_602(parser, am37):
 
     hgvs.global_config.mapping.strict_bounds = True  # default
     with pytest.raises(HGVSInvalidIntervalError):
-        var_c = am37.g_to_c(var_g, "NM_006772.2")
+        am37.g_to_c(var_g, "NM_006772.2")
 
     hgvs.global_config.mapping.strict_bounds = False
-    var_c = am37.g_to_c(var_g, "NM_006772.2")  # No error
+    am37.g_to_c(var_g, "NM_006772.2")  # No error
 
 
 if __name__ == "__main__":
