@@ -145,10 +145,14 @@ class AltSeqBuilder(object):
             if self._var_c.posedit.edit.type == "del":
                 edit_type = WHOLE_GENE_DELETED
             elif self._var_c.posedit.edit.type == "dup":
-                _logger.warning("Whole-gene duplication; consequence assumed to not affect protein product")
+                _logger.warning(
+                    "Whole-gene duplication; consequence assumed to not affect protein product"
+                )
                 edit_type = NOT_CDS
             elif self._var_c.posedit.edit.type == "inv":
-                _logger.warning("Whole-gene inversion; consequence assumed to not affect protein product")
+                _logger.warning(
+                    "Whole-gene inversion; consequence assumed to not affect protein product"
+                )
                 edit_type = NOT_CDS
             else:
                 edit_type = NOT_CDS
@@ -158,7 +162,9 @@ class AltSeqBuilder(object):
         try:
             this_alt_data = type_map[edit_type]()
         except KeyError:
-            raise NotImplementedError("c to p translation unsupported for {} type {}".format(self._var_c, edit_type))
+            raise NotImplementedError(
+                "c to p translation unsupported for {} type {}".format(self._var_c, edit_type)
+            )
 
         # get the start of the "terminal" frameshift (i.e. one never "cancelled out")
         this_alt_data = self._get_frameshift_start(this_alt_data)
@@ -174,11 +180,17 @@ class AltSeqBuilder(object):
         :return "exon", "intron", "five_utr", "three_utr", "whole_gene"
         :rtype str
         """
-        if self._var_c.posedit.pos.start.datum == Datum.CDS_END and self._var_c.posedit.pos.end.datum == Datum.CDS_END:
+        if (
+            self._var_c.posedit.pos.start.datum == Datum.CDS_END
+            and self._var_c.posedit.pos.end.datum == Datum.CDS_END
+        ):
             result = self.T_UTR
         elif self._var_c.posedit.pos.start.base < 0 and self._var_c.posedit.pos.end.base < 0:
             result = self.F_UTR
-        elif self._var_c.posedit.pos.start.base < 0 and self._var_c.posedit.pos.end.datum == Datum.CDS_END:
+        elif (
+            self._var_c.posedit.pos.start.base < 0
+            and self._var_c.posedit.pos.end.datum == Datum.CDS_END
+        ):
             result = self.WHOLE_GENE
         elif self._var_c.posedit.pos.start.offset != 0 or self._var_c.posedit.pos.end.offset != 0:
             # leave out anything intronic for now
@@ -209,8 +221,12 @@ class AltSeqBuilder(object):
 
         ref = self._var_c.posedit.edit.ref
         alt = self._var_c.posedit.edit.alt
-        ref_length = end - start if ref is not None else 0  # can't just get from ref since ref isn't always known
-        alt_length = len(self._var_c.posedit.edit.alt) if self._var_c.posedit.edit.alt is not None else 0
+        ref_length = (
+            end - start if ref is not None else 0
+        )  # can't just get from ref since ref isn't always known
+        alt_length = (
+            len(self._var_c.posedit.edit.alt) if self._var_c.posedit.edit.alt is not None else 0
+        )
         net_base_change = alt_length - ref_length
         cds_stop += net_base_change
 
@@ -286,7 +302,9 @@ class AltSeqBuilder(object):
 
     def _incorporate_repeat(self):
         """Incorporate repeat int sequence"""
-        raise NotImplementedError("hgvs c to p conversion does not support {} type: repeats".format(self._var_c))
+        raise NotImplementedError(
+            "hgvs c to p conversion does not support {} type: repeats".format(self._var_c)
+        )
 
     def _setup_incorporate(self):
         """Helper to setup incorporate functions
@@ -323,7 +341,9 @@ class AltSeqBuilder(object):
 
         if DBG:
             print(
-                "len seq:{} cds_start:{} cds_stop:{} start:{} end:{}".format(len(seq), cds_start, cds_stop, start, end)
+                "len seq:{} cds_start:{} cds_stop:{} start:{} end:{}".format(
+                    len(seq), cds_start, cds_stop, start, end
+                )
             )
         return seq, cds_start, cds_stop, start, end
 

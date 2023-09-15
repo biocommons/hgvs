@@ -204,8 +204,7 @@ pm = :x ?(x in '-+') -> x
 snum = <pm? num>:x -> int(x)
 
 # Accessions, possibly versioned. Should accept, e.g., NM_01234.5, LRG_01234_1p1
-accn = <letter letterOrDigit+ ('_' letterOrDigit+)? ('.' digit+)?>
+accn = <letter ((letterOrDigit | ('-'|'_') ~~letterOrDigit)+)? ('.' digit+)?>
 opt_gene_expr = (paren_gene | ->None):gene -> gene
 paren_gene = '(' gene_symbol:symbol ')' -> symbol
-gene_symbol = <letter letterOrDigit+>
-
+gene_symbol = <letter (letterOrDigit | ('-'|'_') ~~letterOrDigit)+>

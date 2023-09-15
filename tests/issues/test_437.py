@@ -48,8 +48,12 @@ class Test437_RMRP(unittest.TestCase):
         self.e2_n = self.parser.parse("NR_003051.3:n.269N>C")
 
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp)
-        self.alm37 = hgvs.alignmentmapper.AlignmentMapper(self.hdp, "NR_003051.3", "NC_000009.11", "splign")
-        self.alm38 = hgvs.alignmentmapper.AlignmentMapper(self.hdp, "NR_003051.3", "NC_000009.12", "splign")
+        self.alm37 = hgvs.alignmentmapper.AlignmentMapper(
+            self.hdp, "NR_003051.3", "NC_000009.11", "splign"
+        )
+        self.alm38 = hgvs.alignmentmapper.AlignmentMapper(
+            self.hdp, "NR_003051.3", "NC_000009.12", "splign"
+        )
 
     def test_tx_start(self):
         hgvs_n = "NR_003051.3:n.1G>T"
@@ -100,10 +104,10 @@ class Test437_RMRP(unittest.TestCase):
         # TODO: These exceptions are raised, but with the wrong message
         # use `match=` arg
         with pytest.raises(HGVSInvalidVariantError):
-            s2_g = self.am37.n_to_g(self.s2_n)
+            self.am37.n_to_g(self.s2_n)
 
         with pytest.raises(HGVSInvalidVariantError):
-            e2_g = self.am37.n_to_g(self.e2_n)
+            self.am37.n_to_g(self.e2_n)
 
 
 def test_oob_dup(parser, am37):
@@ -158,6 +162,6 @@ def test_invitae_examples(parser, am37):
 
 
 if __name__ == "__main__":
-    from hgvs.easy import *
+    from hgvs.easy import am37, parser
 
     test_invitae_examples(parser=parser, am37=am37)
