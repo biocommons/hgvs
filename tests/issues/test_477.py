@@ -126,6 +126,7 @@ tests = (
 )
 
 
+@pytest.mark.vcr
 @pytest.mark.parametrize("pair", tests, ids=[p["rs"] for p in tests])
 def test_pair(parser, am38, pair):
     var_c = parser.parse(pair["c"])

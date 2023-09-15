@@ -6,6 +6,7 @@ import hgvs
 from hgvs.exceptions import HGVSInvalidIntervalError
 
 
+@pytest.mark.vcr
 def test_602(parser, am37):
     """ensure that there's no ref check for variants beyond bounds of transcript"""
 
