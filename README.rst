@@ -103,10 +103,15 @@ Create a virtual environment using your preferrred method.
 **Examples:**
 
 MacOS
+::
+
   $ virtualenv venv
   $ source venv/bin/activate
 
+
 Ubuntu
+::
+
   $ python3 -m venv venv
 
 Run the following commands in your virtual environment:
