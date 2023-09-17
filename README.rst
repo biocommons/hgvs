@@ -72,7 +72,8 @@ Prerequisites
 
 ::
 
-   libpq-dev python3-dev
+   libpq-dev
+   python3-dev
 
 Examples:
 
