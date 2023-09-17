@@ -71,14 +71,8 @@ Prerequisites
 #############
 
 ::
-   sudo apt install gcc libpq-dev python3-dev
 
-
-Installation
-#############
-
-::
-   libpq, python3
+   libpq-dev python3-dev
 
 Examples:
 
@@ -87,7 +81,7 @@ MacOS
 
    brew install libpq
    brew install python3
-   
+
 
 Ubuntu
 ::
@@ -96,6 +90,10 @@ Ubuntu
    sudo apt install gcc libpq-dev python3-dev
 
 ::
+
+
+Installation
+#############
 
 By default, `hgvs` uses remote data sources, which makes installation
 easy.
