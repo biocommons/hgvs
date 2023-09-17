@@ -64,7 +64,7 @@ Important Notes
   <http://semver.org/>`__.
 
 
-Examples
+Installation
 @@@@@@@@
 
 Prerequisites
@@ -138,6 +138,8 @@ UTA_DB_URL to ``postgresql://<user>@<host>/<db>/<schema>`` and set PGPASSWORD. F
 
 See the installation instructions for details.
 
+Examples
+@@@@@@@@
 
 Parsing and Formating
 #####################
