@@ -75,7 +75,7 @@ Prerequisites
    libpq-dev
    python3-dev
 
-Examples:
+**Examples for installation:**
 
 MacOS
 ::
@@ -90,7 +90,6 @@ Ubuntu
 
    sudo apt install gcc libpq-dev python3-dev
 
-::
 
 
 Installation
@@ -101,7 +100,8 @@ easy.
 
 Create a virtual environment using your preferrred method.
 
-Examples:
+**Examples:**
+
 MacOS
   $ virtualenv venv
   $ source venv/bin/activate
