@@ -115,6 +115,9 @@ Ubuntu
   $ python3 -m venv venv
 
 Run the following commands in your virtual environment:
+
+::
+
   (venv)$ pip install --upgrade setuptools
   (venv)$ pip install hgvs
 
