@@ -254,23 +254,6 @@ SequenceVariant(ac=NM_001166478.1, type=c, posedit=35del, gene=None)
 There are [more examples in the
 documentation](http://hgvs.readthedocs.org/en/stable/examples.html).
 
-## **Citing hgvs (the package)**
-
-| **hgvs: A Python package for manipulating sequence variants using HGVS
-  nomenclature: 2018 Update.**
-| Wang M, Callenberg KM, Dalgleish R, Fedtsov A, Fox N, Freeman PJ,
-  Jacobs KB, Kaleta P, McMurry AJ, Prlić A, Rajaraman V, Hart RK
-| Human Mutation. 2018
-  [Pubmed](https://www.ncbi.nlm.nih.gov/pubmed/30129167) \| [Open Access
-  PDF](https://doi.org/10.1002/humu.23615)
-
-| **A Python Package for Parsing, Validating, Mapping, and Formatting
-  Sequence Variants Using HGVS Nomenclature.**
-| Hart RK, Rico R, Hare E, Garcia J, Westbrook J, Fusaro VA.
-| *Bioinformatics*. 2014 Sep 30.
-  [PubMed](http://www.ncbi.nlm.nih.gov/pubmed/25273102) \| [Open Access
-  PDF](http://bioinformatics.oxfordjournals.org/content/31/2/268.full.pdf)
-
 ## **Contributing**
 
 The hgvs package is intended to be a community project. Please see
