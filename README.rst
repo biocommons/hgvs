@@ -84,13 +84,17 @@ Examples:
 
 MacOS
 ::
+
    brew install libpq
    brew install python3
    
+
 Ubuntu
 ::
 
+
    sudo apt install gcc libpq-dev python3-dev
+
 ::
 
 By default, `hgvs` uses remote data sources, which makes installation
