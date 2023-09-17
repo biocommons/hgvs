@@ -67,6 +67,9 @@ Important Notes
 Installation
 @@@@@@@@
 
+**Important:** For more detailed installation and configuration instructions, see the `HGVS readthedocs
+<https://hgvs.readthedocs.io/>`_
+
 Prerequisites
 #############
 
@@ -105,21 +108,21 @@ Create a virtual environment using your preferrred method.
 MacOS
 ::
 
-  $ virtualenv venv
-  $ source venv/bin/activate
+  virtualenv venv
 
 
 Ubuntu
 ::
 
-  $ python3 -m venv venv
+  python3 -m venv venv
 
 Run the following commands in your virtual environment:
 
 ::
 
-  (venv)$ pip install --upgrade setuptools
-  (venv)$ pip install hgvs
+  source venv/bin/activate
+  pip install --upgrade setuptools
+  pip install hgvs
 
 See `Installation instructions
 <http://hgvs.readthedocs.org/en/stable/installation.html>`__ for
