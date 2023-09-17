@@ -71,22 +71,44 @@ Prerequisites
 #############
 
 ::
-   
    sudo apt install gcc libpq-dev python3-dev
 
 
 Installation
 #############
 
-By default, `hgvs` uses remote data sources, which makes installation
-easy.  
+::
+   libpq, python3
 
+Examples:
+
+MacOS
+::
+   brew install libpq
+   brew install python3
+   
+Ubuntu
 ::
 
+   sudo apt install gcc libpq-dev python3-dev
+::
+
+By default, `hgvs` uses remote data sources, which makes installation
+easy.
+
+Create a virtual environment using your preferrred method.
+
+Examples:
+MacOS
+  $ virtualenv venv
+  $ source venv/bin/activate
+
+Ubuntu
   $ python3 -m venv venv
+
+Run the following commands in your virtual environment:
   (venv)$ pip install --upgrade setuptools
   (venv)$ pip install hgvs
-  
 
 See `Installation instructions
 <http://hgvs.readthedocs.org/en/stable/installation.html>`__ for
@@ -138,7 +160,7 @@ object models back into HGVS strings.
   >>> var_g.posedit.pos.start
   SimplePosition(base=36561662, uncertain=False)
 
-  # format by stringification 
+  # format by stringification
   >>> str(var_g)
   'NC_000007.13:g.36561662C>T'
 
@@ -161,7 +183,7 @@ supported.  Alignment data come from the `Universal Transcript Archive
   >>> am = hgvs.assemblymapper.AssemblyMapper(hdp,
   ...          assembly_name='GRCh37', alt_aln_method='splign',
   ...          replace_reference=True)
-  
+
   # identify transcripts that overlap this genomic variant
   >>> transcripts = am.relevant_transcripts(var_g)
   >>> sorted(transcripts)
@@ -346,4 +368,4 @@ Other packages that manipulate HGVS variants:
 
 .. |hit| image:: https://travis-ci.org/biocommons/hgvs-installation-test.svg?branch=main
     :alt: nightly test of ability to pip install, import, and parse a variant
-    :target: https://travis-ci.org/biocommons/hgvs-installation-test	    
+    :target: https://travis-ci.org/biocommons/hgvs-installation-test
