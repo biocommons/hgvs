@@ -3192,7 +3192,9 @@ def createParserClass(GrammarBase, ruleGlobals):
                     def _G_many1_876():
                         def _G_or_877():
                             self._trace("", (12493, 12506), self.input.position)
-                            _G_apply_878, lastError = self._apply(self.rule_letterOrDigit, "letterOrDigit", [])
+                            _G_apply_878, lastError = self._apply(
+                                self.rule_letterOrDigit, "letterOrDigit", []
+                            )
                             self.considerError(lastError, None)
                             return (_G_apply_878, self.currentError)
 
@@ -3214,7 +3216,9 @@ def createParserClass(GrammarBase, ruleGlobals):
 
                             def _G_lookahead_885():
                                 self._trace("", (12521, 12534), self.input.position)
-                                _G_apply_886, lastError = self._apply(self.rule_letterOrDigit, "letterOrDigit", [])
+                                _G_apply_886, lastError = self._apply(
+                                    self.rule_letterOrDigit, "letterOrDigit", []
+                                )
                                 self.considerError(lastError, None)
                                 return (_G_apply_886, self.currentError)
 
@@ -3313,7 +3317,9 @@ def createParserClass(GrammarBase, ruleGlobals):
                 def _G_many1_914():
                     def _G_or_915():
                         self._trace("", (12678, 12691), self.input.position)
-                        _G_apply_916, lastError = self._apply(self.rule_letterOrDigit, "letterOrDigit", [])
+                        _G_apply_916, lastError = self._apply(
+                            self.rule_letterOrDigit, "letterOrDigit", []
+                        )
                         self.considerError(lastError, None)
                         return (_G_apply_916, self.currentError)
 
@@ -3335,7 +3341,9 @@ def createParserClass(GrammarBase, ruleGlobals):
 
                         def _G_lookahead_923():
                             self._trace("", (12706, 12719), self.input.position)
-                            _G_apply_924, lastError = self._apply(self.rule_letterOrDigit, "letterOrDigit", [])
+                            _G_apply_924, lastError = self._apply(
+                                self.rule_letterOrDigit, "letterOrDigit", []
+                            )
                             self.considerError(lastError, None)
                             return (_G_apply_924, self.currentError)
 
