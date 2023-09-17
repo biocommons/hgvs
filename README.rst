@@ -72,8 +72,8 @@ Prerequisites
 
 ::
 
-   libpq-dev
-   python3-dev
+   libpq
+   python3
 
 **Examples for installation:**
 
