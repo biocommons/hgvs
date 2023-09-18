@@ -32,7 +32,7 @@ HGVS recommendations. Please refer to
 
 -   Parsing is based on formal grammar.
 -   An easy-to-use object model that represents most variant types
-    (SNVs, indels, dups, inverstions, etc) and concepts (intronic
+    (SNVs, indels, dups, inversions, etc) and concepts (intronic
     offsets, uncertain positions, intervals)
 -   A variant normalizer that rewrites variants in canoncial forms and
     substitutes reference sequences (if reference and transcript
