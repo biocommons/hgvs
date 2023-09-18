@@ -69,15 +69,15 @@ instructions, see the [HGVS readthedocs](https://hgvs.readthedocs.io/)
     python3
     postgresql
 
-#### Examples for installation:
+Examples for installation:
 
-#### MacOS :
+MacOS :
 
     brew install libpq
     brew install python3
     brew install postgresql@14
 
-#### Ubuntu :
+Ubuntu :
 
     sudo apt install gcc libpq-dev python3-dev
 
@@ -88,22 +88,16 @@ installation easy. If you would like to use local instances of the data sources,
 
 1. Create a virtual environment using your preferred method.
 
-    **Examples:**
-
-    #### MacOS :
-
-        virtualenv venv
-
-    #### Ubuntu :
+    **Example:**
 
         python3 -m venv venv
 
 2. Run the following commands in your virtual environment:
 
 
-      source venv/bin/activate
-      pip install --upgrade setuptools
-      pip install hgvs
+        source venv/bin/activate
+        pip install --upgrade setuptools
+        pip install hgvs
 
 
 See [Installation
