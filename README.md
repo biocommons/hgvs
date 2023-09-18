@@ -15,15 +15,15 @@ diagnostics. The package does not attempt to cover the full scope of
 HGVS recommendations. Please refer to
 [issues](https://github.com/biocommons/hgvs/issues) for limitations.
 
-### Information
+## Information
 
 [![rtd](https://img.shields.io/badge/docs-readthedocs-green.svg)](http://hgvs.readthedocs.io/) [![changelog](https://img.shields.io/badge/docs-changelog-green.svg)](https://hgvs.readthedocs.io/en/stable/changelog/)  [![getting_help](https://img.shields.io/badge/!-help%20me-red.svg)](https://hgvs.readthedocs.io/en/stable/getting_help.html)  [![GitHub license](https://img.shields.io/github/license/biocommons/hgvs.svg)](https://github.com/biocommons/hgvs/blob/main/LICENSE)  [![binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/biocommons/hgvs/main?filepath=examples)
 
-### Latest Release
+## Latest Release
 
 [![GitHub tag](https://img.shields.io/github/tag/biocommons/hgvs.svg)](https://github.com/biocommons/hgvs) [![pypi_rel](https://img.shields.io/pypi/v/hgvs.svg)](https://pypi.org/project/hgvs/)
 
-### Development
+## Development
 
 [![coveralls](https://img.shields.io/coveralls/github/biocommons/hgvs.svg)](https://coveralls.io/github/biocommons/hgvs) [![issues](https://img.shields.io/github/issues-raw/biocommons/hgvs.svg)](https://github.com/biocommons/hgvs/issues)
 [![GitHub Open Pull Requests](https://img.shields.io/github/issues-pr/biocommons/hgvs.svg)](https://github.com/biocommons/hgvs/pull/) [![GitHub license](https://img.shields.io/github/contributors/biocommons/hgvs.svg)](https://github.com/biocommons/hgvs/graphs/contributors/) [![GitHub stars](https://img.shields.io/github/stars/biocommons/hgvs.svg?style=social&label=Stars)](https://github.com/biocommons/hgvs/stargazers) [![GitHub forks](https://img.shields.io/github/forks/biocommons/hgvs.svg?style=social&label=Forks)](https://github.com/biocommons/hgvs/network)
