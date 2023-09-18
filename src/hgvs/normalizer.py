@@ -446,17 +446,6 @@ class Normalizer(object):
 
         return base + start, base + stop, (ref, alt)
 
-
-if __name__ == "__main__":
-    from hgvs.parser import Parser
-
-    hgvsparser = Parser()
-    var = hgvsparser.parse_hgvs_variant("NM_001166478.1:c.61delG")
-    hdp = connect()
-    norm = Normalizer(hdp, shuffle_direction=5, cross_boundaries=False)
-    res = norm.normalize(var)
-    print(str(var) + "    =>    " + str(res))
-
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
 #
