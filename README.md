@@ -58,7 +58,7 @@ HGVS recommendations. Please refer to
     For example, `hgvs>=1.5,<1.6`. hgvs uses [Semantic
     Versioning](http://semver.org/).
 
-## **Installation**
+## **Installing HGVS Locally**
 
 **Important:** For more detailed installation and configuration
 instructions, see the [HGVS readthedocs](https://hgvs.readthedocs.io/)
@@ -84,7 +84,7 @@ instructions, see the [HGVS readthedocs](https://hgvs.readthedocs.io/)
 ### Installation Steps
 
 By default, hgvs uses remote data sources, which makes
-installation easy.
+installation easy. If you would like to use local instances of the data sources, see the [readthedocs](https://hgvs.readthedocs.io/).
 
 1. Create a virtual environment using your preferrred method.
 
@@ -111,24 +111,6 @@ instructions](http://hgvs.readthedocs.org/en/stable/installation.html)
 for details, including instructions for installing [Universal Transcript
 Archive (UTA)](https://github.com/biocommons/uta/) and
 [SeqRepo](https://github.com/biocommons/biocommons.seqrepo/) locally.
-
-## **Configuration**
-
-hgvs will use publicly available data sources unless
-directed otherwise through environment variables, like so:
-
-    # N.B. These are examples. The correct values will depend on your installation
-    $ export UTA_DB_URL=postgresql://anonymous:anonymous@localhost:5432/uta/uta_20210129
-    $ export HGVS_SEQREPO_DIR=/usr/local/share/seqrepo/latest
-
-Alternatively, if you are unable to pass the postgresql password in the
-UTA_DB_URL environment variable (i.e., generating an auth token), you
-can set UTA_DB_URL to `postgresql://<user>@<host>/<db>/<schema>` and set
-PGPASSWORD. For example:
-
-    $ export UTA_DB_URL=postgresql://anonymous@localhost:5432/uta/uta_20210129 PGPASSWORD=anonymous
-
-See the installation instructions for details.
 
 ## Examples and Usage
 
