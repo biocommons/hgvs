@@ -34,7 +34,7 @@ HGVS recommendations. Please refer to
 -   An easy-to-use object model that represents most variant types
     (SNVs, indels, dups, inversions, etc) and concepts (intronic
     offsets, uncertain positions, intervals)
--   A variant normalizer that rewrites variants in canoncial forms and
+-   A variant normalizer that rewrites variants in canonical forms and
     substitutes reference sequences (if reference and transcript
     sequences differ)
 -   Formatters that generate HGVS strings from internal representations
