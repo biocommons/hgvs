@@ -55,6 +55,7 @@ class Test437_RMRP(unittest.TestCase):
             self.hdp, "NR_003051.3", "NC_000009.12", "splign"
         )
 
+    @pytest.mark.vcr
     def test_tx_start(self):
         hgvs_n = "NR_003051.3:n.1G>T"
         hgvs_g = "NC_000009.11:g.35658015C>A"
@@ -70,6 +71,7 @@ class Test437_RMRP(unittest.TestCase):
         assert var_gn.posedit.pos == var_n.posedit.pos
         assert str(var_gn) == hgvs_n
 
+    @pytest.mark.vcr
     def test_terminii(self):
         hgvs.global_config.mapping.strict_bounds = True
 
@@ -110,6 +112,7 @@ class Test437_RMRP(unittest.TestCase):
             self.am37.n_to_g(self.e2_n)
 
 
+@pytest.mark.vcr
 def test_oob_dup(parser, am37):
     """Intentionally preserve dup, derived from genomic sequence, when
     projecting to out-of-bounds transcript coordinates
@@ -129,6 +132,7 @@ def test_oob_dup(parser, am37):
     hgvs.global_config.mapping.strict_bounds = True
 
 
+@pytest.mark.vcr
 def test_invitae_examples(parser, am37):
     """bidirectional g↔t tests of out-of-bounds variants provided by Invitae"""
     invitae_examples = [

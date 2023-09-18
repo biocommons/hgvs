@@ -1,3 +1,6 @@
+import pytest
+
+
 NORM_HGVS_VCF = [
     # Columns are: (normed-HGVS, non-normalized HGVS, VCF coordinates, non-norm VCF)
     # no-op
@@ -52,6 +55,7 @@ NORM_HGVS_VCF = [
 ]
 
 
+@pytest.mark.vcr
 def test_hgvs_to_vcf(parser, babelfish38):
     """
       49949___  400       410       420

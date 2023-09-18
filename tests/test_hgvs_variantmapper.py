@@ -13,6 +13,7 @@ import hgvs.variantmapper
 from hgvs.exceptions import HGVSError, HGVSInvalidVariantError
 
 
+@pytest.mark.vcr
 def test_add_gene_symbol(am38, parser):
     ags = am38.add_gene_symbol
     var_g = parser.parse("NC_000007.13:g.21940852_21940908del")
