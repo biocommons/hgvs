@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import logging
 import os
-import pprint
-import re
-import sys
 import unittest
 
 import pytest
@@ -24,7 +20,6 @@ from hgvs.exceptions import (
     HGVSDataNotAvailableError,
     HGVSError,
     HGVSInvalidVariantError,
-    HGVSParseError,
 )
 
 
