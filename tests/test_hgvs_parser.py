@@ -38,7 +38,7 @@ def test_parser_variants_with_gene_names(parser):
 
 
 def test_parser_variants_with_no_transcript_gene_names(parser):
-    """ Test it also works with no transcript provided """
+    """Test it also works with no transcript provided"""
 
     assert parser.parse("BOGUS:c.22+1A>T")
 
