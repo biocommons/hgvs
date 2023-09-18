@@ -4,7 +4,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import os
 import unittest
 
-import pytest
 from support import CACHE
 
 import hgvs.dataproviders.uta

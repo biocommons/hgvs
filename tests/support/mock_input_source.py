@@ -2,7 +2,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import csv
-from sys import version_info
 
 # Mock test input source
 

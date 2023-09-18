@@ -12,12 +12,7 @@ import hgvs.dataproviders.uta
 import hgvs.location
 import hgvs.parser
 from hgvs.alignmentmapper import AlignmentMapper
-from hgvs.enums import Datum
-from hgvs.exceptions import (
-    HGVSDataNotAvailableError,
-    HGVSError,
-    HGVSInvalidIntervalError,
-)
+from hgvs.exceptions import HGVSDataNotAvailableError, HGVSInvalidIntervalError
 
 
 @pytest.mark.quick

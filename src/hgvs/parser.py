@@ -13,7 +13,6 @@ import re
 import bioutils.sequences
 import ometa.runtime
 import parsley
-from pkg_resources import resource_filename
 
 import hgvs.edit
 
