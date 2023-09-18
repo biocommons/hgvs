@@ -97,11 +97,24 @@ A Quick Contribution Example
 
 * Code, code, code!
 
-  You probably want to test code with::
+.. spacer
+
+* Test, test, test
+
+  You can run the tests using make::
 
     $ make test
 
   See `Local UTA`_ and `make`_ for tips on accellerating testing.
+
+  If your tests make network calls you can capture those calls
+  with vcrpy and the pytest-recording plugin::
+
+    $ pytest --record-mode=once tests
+
+  To confirm that network calls are mocked::
+
+    $ pytest --block-network tests
 
 .. spacer
 
