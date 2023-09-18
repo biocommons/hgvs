@@ -86,7 +86,7 @@ instructions, see the [HGVS readthedocs](https://hgvs.readthedocs.io/)
 By default, hgvs uses remote data sources, which makes
 installation easy. If you would like to use local instances of the data sources, see the [readthedocs](https://hgvs.readthedocs.io/).
 
-1. Create a virtual environment using your preferrred method.
+1. Create a virtual environment using your preferred method.
 
     **Examples:**
 
