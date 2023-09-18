@@ -1,6 +1,6 @@
 # *hgvs* - manipulate biological sequence variants according to Human Genome Variation Society recommendations
 
-**Important:** biocommons packages require Python 3.6+.
+**Important:** biocommons packages require Python 3.8+.
 [More](https://groups.google.com/forum/#!topic/hgvs-discuss/iLUzjzoD-28)
 
 The *hgvs* package provides a Python library to parse, format, validate,
@@ -32,7 +32,7 @@ HGVS recommendations. Please refer to
 
 -   Parsing is based on formal grammar.
 -   An easy-to-use object model that represents most variant types
-    (SNVs, indels, dups, inverstions, etc) and concepts (intronic
+    (SNVs, indels, dups, inversions, etc) and concepts (intronic
     offsets, uncertain positions, intervals)
 -   A variant normalizer that rewrites variants in canoncial forms and
     substitutes reference sequences (if reference and transcript
@@ -86,7 +86,7 @@ instructions, see the [HGVS readthedocs](https://hgvs.readthedocs.io/)
 By default, hgvs uses remote data sources, which makes
 installation easy. If you would like to use local instances of the data sources, see the [readthedocs](https://hgvs.readthedocs.io/).
 
-1. Create a virtual environment using your preferrred method.
+1. Create a virtual environment using your preferred method.
 
     **Examples:**
 
@@ -100,11 +100,11 @@ installation easy. If you would like to use local instances of the data sources,
 
 2. Run the following commands in your virtual environment:
 
-    ```
-    source venv/bin/activate
-    pip install --upgrade setuptools
-    pip install hgvs
-    ```
+
+      source venv/bin/activate
+      pip install --upgrade setuptools
+      pip install hgvs
+
 
 See [Installation
 instructions](http://hgvs.readthedocs.org/en/stable/installation.html)
