@@ -100,11 +100,11 @@ installation easy. If you would like to use local instances of the data sources,
 
 2. Run the following commands in your virtual environment:
 
-    ```
-    source venv/bin/activate
-    pip install --upgrade setuptools
-    pip install hgvs
-    ```
+
+      source venv/bin/activate
+      pip install --upgrade setuptools
+      pip install hgvs
+
 
 See [Installation
 instructions](http://hgvs.readthedocs.org/en/stable/installation.html)
