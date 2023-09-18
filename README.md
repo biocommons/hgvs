@@ -67,6 +67,7 @@ instructions, see the [HGVS readthedocs](https://hgvs.readthedocs.io/)
 
     libpq
     python3
+    postgresql
 
 #### **Examples for installation:**
 
@@ -74,6 +75,7 @@ instructions, see the [HGVS readthedocs](https://hgvs.readthedocs.io/)
 
     brew install libpq
     brew install python3
+    brew install postgresql@14
 
 #### Ubuntu :
 
