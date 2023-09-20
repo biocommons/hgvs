@@ -97,6 +97,30 @@ class Test_SequenceVariant(unittest.TestCase):
         self.assertEqual(str(var), "NM_001166478.1:c.31=")
         self.assertEqual(var.format(conf={"max_ref_length": None}), "NM_001166478.1:c.31T=")
 
+    def test_uncertain(self):
+        hp = hgvs.parser.Parser()
+
+        vs = "NC_000005.9:g.(90136803_90144453)_(90159675_90261231)dup"
+        v = hp.parse(vs)
+        self.assertEqual(vs, str(v))
+        self.assertEqual(v.posedit.pos.start.start.base, 90136803)
+        self.assertEqual(v.posedit.pos.start.end.base, 90144453)
+        self.assertEqual(v.posedit.pos.end.start.base, 90159675)
+        self.assertEqual(v.posedit.pos.end.end.base, 90261231)
+        self.assertEqual(type(v.posedit.edit).__name__, "Dup")
+
+        vs2 = "NC_000009.11:g.(?_108337304)_(108337428_?)del"
+        v2 = hp.parse(vs2)
+        self.assertEqual(vs2, str(v2))
+        self.assertEqual(v2.posedit.pos.start.start.base, None)
+        self.assertEqual(v2.posedit.pos.start.uncertain, True)
+        self.assertEqual(v2.posedit.pos.start.end.base, 108337304)
+        self.assertEqual(v2.posedit.pos.end.start.base, 108337428)
+        self.assertEqual(v2.posedit.pos.end.end.base, None)
+        self.assertEqual(v2.posedit.pos.end.uncertain, True)
+        self.assertEqual(type(v2.posedit.edit).__name__, "NARefAlt")
+
+
 
 if __name__ == "__main__":
     unittest.main()

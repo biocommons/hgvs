@@ -199,6 +199,31 @@ class Test_Interval(unittest.TestCase):
         )
         self.assertEqual(ival._length(), 39)
 
+    def test_uncertain(self):
+        def sp(i): return hgvs.location.SimplePosition(i)
+        ival = hgvs.location.Interval(
+            hgvs.location.Interval(sp(10), sp(20), uncertain=True),
+            hgvs.location.Interval(sp(30), sp(40), uncertain=True)
+        )
+        self.assertEqual("(10_20)_(30_40)", str(ival))
+
+        with self.assertRaises(AssertionError):
+            str(hgvs.location.Interval(
+                sp(10),
+                hgvs.location.Interval(sp(30), sp(40), uncertain=True)
+            ))
+        ival3 = hgvs.location.Interval(
+            hgvs.location.Interval(sp(10), sp(10), uncertain=True),
+            hgvs.location.Interval(sp(30), sp(40), uncertain=True)
+        )
+        self.assertEqual("10_(30_40)", str(ival3))
+
+        ival4 = hgvs.location.Interval(
+            hgvs.location.Interval(sp(10), sp(20), uncertain=True),
+            hgvs.location.Interval(sp(30), sp(30), uncertain=True)
+        )
+        self.assertEqual("(10_20)_30", str(ival4))
+
 
 if __name__ == "__main__":
     unittest.main()
