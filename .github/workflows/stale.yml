@@ -12,18 +12,18 @@ jobs:
       - uses: actions/stale@v8
         with:
           exempt-all-milestones: true
-          exempt-draft-pr: true
           exempt-issue-labels: bug,keep-alive
           exempt-pr-labels: bug,keep-alive
 
-          days-before-close: 7
-          days-before-stale: 30
-
+          days-before-issue-close: 7
+          days-before-issue-stale: 90
           stale-issue-label: stale
-          stale-issue-message: 'This issue is stale because it has been open 30 days with no activity. Remove stale label or comment or this will be closed in 7 days.'
+          stale-issue-message: 'This issue is stale because it has been open 90 days with no activity. Remove stale label or comment or this will be closed in 7 days.'
           close-issue-label: closed-by-stale
           close-issue-message: 'This issue was closed because it has been stalled for 7 days with no activity.'
 
+          days-before-pr-close: 7
+          days-before-pr-stale: 30
           stale-pr-label: stale
           stale-pr-message: 'This PR is stale because it has been open 30 days with no activity. Remove stale label or comment or this will be closed in 7 days.'
           close-pr-label: closed-by-stale
