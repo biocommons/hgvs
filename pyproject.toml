@@ -31,7 +31,7 @@ keywords = [
     "hgvs",
     "variation"
     ]
-dynamic = ["version"]
+dynamic = ["version", "optional-dependencies"]
 
 [project.urls]
 "Homepage" = "https://github.com/biocommons/hgvs"
@@ -40,11 +40,10 @@ dynamic = ["version"]
 [project.scripts]
 "hgvs-shell" = "hgvs.shell:shell"
 
-
 [build-system]
 requires = [
-	 "setuptools >= 65.3",
-   	 "setuptools_scm[toml] ~= 7.0"
+	 "setuptools >= 69.0.2",
+   	 "setuptools_scm[toml] >= 8.0"
 	 ]
 build-backend = "setuptools.build_meta"
 
