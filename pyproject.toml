@@ -33,6 +33,17 @@ keywords = [
     ]
 dynamic = ["version", "optional-dependencies"]
 
+dependencies=[
+    "attrs >= 17.4.0",  # https://github.com/biocommons/hgvs/issues/473
+    "biocommons.seqrepo >= 0.6.5",
+    "bioutils >= 0.4.0,<1.0",
+    "configparser >= 3.3.0",
+    "ipython",
+    "parsley",
+    "psycopg2",
+    "six",
+]
+
 [project.urls]
 "Homepage" = "https://github.com/biocommons/hgvs"
 "Bug Tracker" = "https://github.com/biocommons/hgvs/issues"
