@@ -105,8 +105,10 @@ class Test_SequenceVariant(unittest.TestCase):
         self.assertEqual(vs, str(v))
         self.assertEqual(v.posedit.pos.start.start.base, 90136803)
         self.assertEqual(v.posedit.pos.start.end.base, 90144453)
+        self.assertEqual(v.posedit.pos.start.uncertain, True)
         self.assertEqual(v.posedit.pos.end.start.base, 90159675)
         self.assertEqual(v.posedit.pos.end.end.base, 90261231)
+        self.assertEqual(v.posedit.pos.end.uncertain, True)
         self.assertEqual(type(v.posedit.edit).__name__, "Dup")
 
         vs2 = "NC_000009.11:g.(?_108337304)_(108337428_?)del"
