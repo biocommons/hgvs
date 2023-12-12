@@ -31,7 +31,18 @@ keywords = [
     "hgvs",
     "variation"
     ]
-dynamic = ["version"]
+dynamic = ["version", "optional-dependencies"]
+
+dependencies=[
+    "attrs >= 17.4.0",  # https://github.com/biocommons/hgvs/issues/473
+    "biocommons.seqrepo >= 0.6.5",
+    "bioutils >= 0.4.0,<1.0",
+    "configparser >= 3.3.0",
+    "ipython",
+    "parsley",
+    "psycopg2",
+    "six",
+]
 
 [project.urls]
 "Homepage" = "https://github.com/biocommons/hgvs"
@@ -40,11 +51,10 @@ dynamic = ["version"]
 [project.scripts]
 "hgvs-shell" = "hgvs.shell:shell"
 
-
 [build-system]
 requires = [
-	 "setuptools >= 65.3",
-   	 "setuptools_scm[toml] ~= 7.0"
+	 "setuptools >= 69.0.2",
+   	 "setuptools_scm[toml] >= 8.0"
 	 ]
 build-backend = "setuptools.build_meta"
 
