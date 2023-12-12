@@ -483,8 +483,15 @@ class VariantMapper(object):
         else:
             pos = var.posedit.pos
 
-        seq_start = pos.start.base - 1
-        seq_end = pos.end.base
+        if pos.start.uncertain:
+            seq_start = pos.start.end.base - 1
+        else:
+            seq_start = pos.start.base - 1
+
+        if pos.end.uncertain:
+            seq_end = pos.end.start.base
+        else:
+            seq_end = pos.end.base
 
         # When strict_bounds is False and an error occurs, return
         # variant as-is

@@ -159,10 +159,17 @@ class AlignmentMapper(object):
         if strict_bounds is None:
             strict_bounds = global_config.mapping.strict_bounds
 
-        grs, gre = (
-            g_interval.start.base - 1 - self.gc_offset,
-            g_interval.end.base - 1 - self.gc_offset,
-        )
+        # in case of uncertain ranges, we fall back to the inner (more confident) interval
+        if g_interval.start.uncertain:
+            grs = g_interval.start.end.base - 1 - self.gc_offset
+        else:
+            grs = g_interval.start.base - 1 - self.gc_offset
+
+        if g_interval.end.uncertain:
+            gre = g_interval.end.start.base - 1 - self.gc_offset
+        else:
+            gre = g_interval.end.base - 1 - self.gc_offset
+
         # frs, fre = (f)orward (r)na (s)tart & (e)nd; forward w.r.t. genome
         frs, frs_offset, frs_cigar = self.cigarmapper.map_ref_to_tgt(
             pos=grs, end="start", strict_bounds=strict_bounds

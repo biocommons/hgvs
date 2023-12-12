@@ -76,6 +76,16 @@ class SimplePosition(object):
         assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
         if lhs.uncertain or rhs.uncertain:
             raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+
+        if lhs.base is None and rhs.base is None:
+            raise HGVSUnsupportedOperationError("Cannot compare two positions without bases")
+        
+        # imprecise positions can be on both sides of an interval
+        # This is weird, but because an unknown breakpoint can be expressed on both sides
+        # with a ? character we need to support that both options are true
+        if lhs.base is None or rhs.base is None:
+            return True
+
         return lhs.base < rhs.base
 
 
@@ -326,9 +336,11 @@ class Interval(object):
             (res, msg) = self.end.validate()
             if res != ValidationLevel.VALID:
                 return (res, msg)
+
         # Check start less than or equal to end
         if not self.start or not self.end:
             return (ValidationLevel.VALID, None)
+
         try:
             if self.start <= self.end:
                 return (ValidationLevel.VALID, None)

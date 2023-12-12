@@ -148,9 +148,14 @@ class ExtrinsicValidator:
         else:
             var_ref_seq = getattr(var.posedit.edit, "ref", None) or None
             var_n = self.vm.c_to_n(var) if var.type == "c" else var
-            ref_checks.append(
-                (var_n.ac, var_n.posedit.pos.start.base, var_n.posedit.pos.end.base, var_ref_seq)
-            )
+            if var_n.posedit.pos.start.uncertain or var_n.posedit.pos.end.uncertain:
+                ref_checks.append(
+                    (var_n.ac, None, None, var_ref_seq)
+                )
+            else:
+                ref_checks.append(
+                    (var_n.ac, var_n.posedit.pos.start.base, var_n.posedit.pos.end.base, var_ref_seq)
+                )
 
         for ac, var_ref_start, var_ref_end, var_ref_seq in ref_checks:
             if var_ref_start is None or var_ref_end is None or not var_ref_seq:

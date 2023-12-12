@@ -5,6 +5,8 @@ import os
 import unittest
 
 import pytest
+
+from hgvs.exceptions import HGVSParseError
 from support import CACHE
 
 import hgvs
@@ -22,42 +24,47 @@ def test_gene_formatting(parser):
 @pytest.mark.quick
 @pytest.mark.models
 class Test_SequenceVariant(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.hdp = hgvs.dataproviders.uta.connect(
+            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
+        )
+        cls.vm = hgvs.variantmapper.VariantMapper(cls.hdp)
+        cls.hp = hgvs.parser.Parser()
+
+
     def test_SequenceVariant(self):
         var = hgvs.sequencevariant.SequenceVariant(ac="AC", type="B", posedit="1234DE>FG")
         self.assertEqual(str(var), "AC:B.1234DE>FG")
 
     def test_fill_ref(self):
-        hp = hgvs.parser.Parser()
-        hdp = hgvs.dataproviders.uta.connect(
-            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
-        )
 
         # fill reference for sequence variants
-        var = hp.parse_hgvs_variant("NM_001166478.1:c.31_32del").fill_ref(hdp)
+        var = self.hp.parse_hgvs_variant("NM_001166478.1:c.31_32del").fill_ref(self.hdp)
         self.assertEqual(var.format({"max_ref_length": None}), "NM_001166478.1:c.31_32delTT")
 
-        var = hp.parse_hgvs_variant("NM_001166478.1:c.31_32del2").fill_ref(hdp)
+        var = self.hp.parse_hgvs_variant("NM_001166478.1:c.31_32del2").fill_ref(self.hdp)
         self.assertEqual(var.format({"max_ref_length": None}), "NM_001166478.1:c.31_32delTT")
 
-        var = hp.parse_hgvs_variant("NM_001166478.1:c.2_7delinsTTTAGA").fill_ref(hdp)
+        var = self.hp.parse_hgvs_variant("NM_001166478.1:c.2_7delinsTTTAGA").fill_ref(self.hdp)
         self.assertEqual(
             var.format({"max_ref_length": None}), "NM_001166478.1:c.2_7delTGAAGAinsTTTAGA"
         )
 
-        var = hp.parse_hgvs_variant("NM_001166478.1:c.35_36dup").fill_ref(hdp)
+        var = self.hp.parse_hgvs_variant("NM_001166478.1:c.35_36dup").fill_ref(self.hdp)
         self.assertEqual(var.format({"max_ref_length": None}), "NM_001166478.1:c.35_36dupTC")
 
-        var = hp.parse_hgvs_variant("NM_001166478.1:c.18_19insACT").fill_ref(hdp)
+        var = self.hp.parse_hgvs_variant("NM_001166478.1:c.18_19insACT").fill_ref(self.hdp)
         self.assertEqual(var.format({"max_ref_length": None}), "NM_001166478.1:c.18_19insACT")
 
-        var = hp.parse_hgvs_variant("NM_001166478.1:c.31=").fill_ref(hdp)
+        var = self.hp.parse_hgvs_variant("NM_001166478.1:c.31=").fill_ref(self.hdp)
         self.assertEqual(var.format({"max_ref_length": None}), "NM_001166478.1:c.31T=")
 
     def test_format(self):
-        hp = hgvs.parser.Parser()
 
         # Global default settings
-        var = hp.parse_hgvs_variant("NP_001628.1:p.Gly528Arg")
+        var = self.hp.parse_hgvs_variant("NP_001628.1:p.Gly528Arg")
         self.assertEqual(str(var), "NP_001628.1:p.Gly528Arg")
         self.assertEqual(var.format(), "NP_001628.1:p.Gly528Arg")
 
@@ -70,7 +77,7 @@ class Test_SequenceVariant(unittest.TestCase):
         conf = {"p_3_letter": False}
         self.assertEqual(var.format(conf), "NP_001628.1:p.G528R")
 
-        var = hp.parse_hgvs_variant("NP_001628.1:p.Gly528Ter")
+        var = self.hp.parse_hgvs_variant("NP_001628.1:p.Gly528Ter")
         conf = {"p_term_asterisk": True}
         self.assertEqual(var.format(conf), "NP_001628.1:p.Gly528*")
         self.assertEqual(var.format(), "NP_001628.1:p.Gly528Ter")
@@ -79,29 +86,28 @@ class Test_SequenceVariant(unittest.TestCase):
         self.assertEqual(var.format(), "NP_001628.1:p.Gly528Ter")
 
         # Remove reference sequence
-        var = hp.parse_hgvs_variant("NM_001166478.1:c.31_32delTT")
+        var = self.hp.parse_hgvs_variant("NM_001166478.1:c.31_32delTT")
         self.assertEqual(str(var), "NM_001166478.1:c.31_32del")
         self.assertEqual(var.format(conf={"max_ref_length": 1}), "NM_001166478.1:c.31_32del")
         self.assertEqual(var.format(conf={"max_ref_length": 2}), "NM_001166478.1:c.31_32delTT")
         self.assertEqual(var.format(conf={"max_ref_length": None}), "NM_001166478.1:c.31_32delTT")
 
-        var = hp.parse_hgvs_variant("NM_001166478.1:c.31_32del2")
+        var = self.hp.parse_hgvs_variant("NM_001166478.1:c.31_32del2")
         self.assertEqual(str(var), "NM_001166478.1:c.31_32del")
         self.assertEqual(var.format(conf={"max_ref_length": None}), "NM_001166478.1:c.31_32del2")
 
-        var = hp.parse_hgvs_variant("NM_001166478.1:c.31_32delTTinsAA")
+        var = self.hp.parse_hgvs_variant("NM_001166478.1:c.31_32delTTinsAA")
         self.assertEqual(str(var), "NM_001166478.1:c.31_32delinsAA")
-        var = hp.parse_hgvs_variant("NM_001166478.1:c.35_36dupTC")
+        var = self.hp.parse_hgvs_variant("NM_001166478.1:c.35_36dupTC")
         self.assertEqual(str(var), "NM_001166478.1:c.35_36dup")
-        var = hp.parse_hgvs_variant("NM_001166478.1:c.31T=")
+        var = self.hp.parse_hgvs_variant("NM_001166478.1:c.31T=")
         self.assertEqual(str(var), "NM_001166478.1:c.31=")
         self.assertEqual(var.format(conf={"max_ref_length": None}), "NM_001166478.1:c.31T=")
 
     def test_uncertain(self):
-        hp = hgvs.parser.Parser()
 
         vs = "NC_000005.9:g.(90136803_90144453)_(90159675_90261231)dup"
-        v = hp.parse(vs)
+        v = self.hp.parse(vs)
         self.assertEqual(vs, str(v))
         self.assertEqual(v.posedit.pos.start.start.base, 90136803)
         self.assertEqual(v.posedit.pos.start.end.base, 90144453)
@@ -112,7 +118,7 @@ class Test_SequenceVariant(unittest.TestCase):
         self.assertEqual(type(v.posedit.edit).__name__, "Dup")
 
         vs2 = "NC_000009.11:g.(?_108337304)_(108337428_?)del"
-        v2 = hp.parse(vs2)
+        v2 = self.hp.parse(vs2)
         self.assertEqual(vs2, str(v2))
         self.assertEqual(v2.posedit.pos.start.start.base, None)
         self.assertEqual(v2.posedit.pos.start.uncertain, True)
@@ -122,6 +128,21 @@ class Test_SequenceVariant(unittest.TestCase):
         self.assertEqual(v2.posedit.pos.end.uncertain, True)
         self.assertEqual(type(v2.posedit.edit).__name__, "NARefAlt")
 
+    def test_uncertain_projection_confidence(self):
+
+        data = [
+            ("NC_000005.9:g.(90136803_90144453)_(90159675_90261231)dup", "NM_032119.3:c.17020-1_17856+1dup"),
+            ("NC_000019.9:g.(11211022_11213339)_(11217364_11218067)dup", "NM_000527.5:c.191-1_817+1dup"),
+            ("NC_000009.11:g.(?_108337304)_(108337428_?)del", "NM_001079802.1:c.-10_105+10del")
+        ]
+
+        for hgvs_g, hgvs_c in data:
+            var_g = self.hp.parse(hgvs_g)
+            self.assertEqual(hgvs_g, str(var_g))
+
+            acc = hgvs_c.split(":")[0]
+            var_c = self.vm.g_to_c(var_g, acc)
+            self.assertEqual(hgvs_c, str(var_c))
 
 
 if __name__ == "__main__":
