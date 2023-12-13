@@ -19,8 +19,8 @@ import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
 import hgvs.utils.altseqbuilder as altseqbuilder
 import hgvs.validator
 from hgvs.decorators.lru_cache import lru_cache
-from hgvs.enums import PrevalidationLevel
-from hgvs.exceptions import HGVSInvalidVariantError, HGVSUnsupportedOperationError
+from hgvs.enums import PrevalidationLevel, ShiftOverBoundaryPreference
+from hgvs.exceptions import HGVSInvalidVariantError, HGVSUnsupportedOperationError, HGVSInvalidIntervalError
 from hgvs.utils.reftranscriptdata import RefTranscriptData
 from hgvs.utils.position import get_start_end, get_start_end_interbase
 
@@ -72,6 +72,8 @@ class VariantMapper:
         replace_reference=hgvs.global_config.mapping.replace_reference,
         prevalidation_level=hgvs.global_config.mapping.prevalidation_level,
         add_gene_symbol=hgvs.global_config.mapping.add_gene_symbol,
+        shift_over_boundary=hgvs.global_config.mapping.shift_over_boundary,
+        shift_over_boundary_preference=hgvs.global_config.mapping.shift_over_boundary_preference,
     ):
         """
         :param bool replace_reference: replace reference (entails additional network access)
@@ -94,6 +96,11 @@ class VariantMapper:
         self.left_normalizer = hgvs.normalizer.Normalizer(
             hdp, shuffle_direction=5, variantmapper=self
         )
+        self.shift_over_boundary = shift_over_boundary
+        if shift_over_boundary_preference is None:
+            self.shift_over_boundary_preference = ShiftOverBoundaryPreference.DEFAULT
+        else:
+            self.shift_over_boundary_preference = ShiftOverBoundaryPreference[shift_over_boundary_preference.upper()]
 
     # ############################################################################
     # g⟷t
@@ -491,6 +498,33 @@ class VariantMapper:
             var_c, reference_data, translation_table=translation_table
         )
 
+        # attempt to shift ins/dup variants from the intron into the exon or vice versa
+        if self.shift_over_boundary:
+            shifts_into_exon_and_intron = False
+            is_shifted = False
+            original_region = builder.get_variant_region()
+            if (
+                var_c.posedit.edit.type in ['ins', 'dup']
+                and original_region in [builder.INTRON, builder.EXON]
+            ):
+                if alt_ac is None:
+                    raise HGVSUnsupportedOperationError(f'mapping specific variant {var_c} requires alt_ac')
+                for shifted_var_c in self._var_c_shifts(var_c, alt_ac, alt_aln_method):
+                    shifted_reference_data = RefTranscriptData(self.hdp, shifted_var_c.ac, pro_ac)
+                    shifted_builder = altseqbuilder.AltSeqBuilder(shifted_var_c, shifted_reference_data)
+                    shifted_region = shifted_builder.get_variant_region()
+                    if shifted_region not in [shifted_builder.INTRON, shifted_builder.EXON]:
+                        continue
+                    if original_region != shifted_region:
+                        # a shift is posible
+                        shifts_into_exon_and_intron = True
+                        if self.shift_over_boundary_preference.name.lower() == shifted_region:
+                            # and that shift is preferred
+                            is_shifted = True
+                            reference_data = shifted_reference_data
+                            builder = shifted_builder
+                        break
+
         # TODO: handle case where you get 2+ alt sequences back;
         # currently get list of 1 element loop structure implemented
         # to handle this, but doesn't really do anything currently.
@@ -498,14 +532,18 @@ class VariantMapper:
 
         var_ps = []
         for alt_data in all_alt_data:
-            builder = altseq_to_hgvsp.AltSeqToHgvsp(reference_data, alt_data)
-            var_p = builder.build_hgvsp()
+            hgvsp_builder = altseq_to_hgvsp.AltSeqToHgvsp(reference_data, alt_data)
+            var_p = hgvsp_builder.build_hgvsp()
             var_ps.append(var_p)
 
         var_p = var_ps[0]
 
         if self.add_gene_symbol:
             self._update_gene_symbol(var_p, var_c.gene)
+        var_p.at_boundary = builder.at_boundary
+        if self.shift_over_boundary:
+            var_p.shifts_into_exon_and_intron = shifts_into_exon_and_intron
+            var_p.is_shifted = is_shifted
 
         return var_p
 
@@ -699,6 +737,59 @@ class VariantMapper:
             symbol = self.hdp.get_tx_identity_info(var.ac).get("hgnc", None)
         var.gene = symbol
         return var
+
+    def _var_c_shifts(self, var_c, alt_ac, alt_aln_method):
+        """Try to shift c. variants to find alternative representations."""
+        strand = self._fetch_AlignmentMapper(tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method).strand
+        var_g = VariantMapper.c_to_g(self, var_c, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
+        for shifted_var_g in self._var_g_shifts(var_g, strand=strand, alt_aln_method=alt_aln_method):
+            try:
+                shifted_var_c = VariantMapper.g_to_c(self, shifted_var_g, tx_ac=var_c.ac, alt_aln_method=alt_aln_method)
+                yield shifted_var_c
+            except (HGVSInvalidVariantError, HGVSInvalidIntervalError, HGVSUnsupportedOperationError):
+                pass
+
+    def _var_g_shifts(self, var_g, strand, alt_aln_method):
+        """Try to shift g. variants to find alternative representations."""
+        prev_var_g_strs = [str(var_g)]
+        for shuffle_direction in [3, 5]:
+            try:
+                shifted_var_g = self._var_g_shift_with_rewrite(var_g, shuffle_direction, strand, alt_aln_method)
+                if str(shifted_var_g) in prev_var_g_strs:
+                    continue
+                prev_var_g_strs.append(str(shifted_var_g))
+                yield shifted_var_g
+            except (HGVSInvalidVariantError, HGVSInvalidIntervalError, HGVSUnsupportedOperationError):
+                pass
+
+    def _var_g_shift_with_rewrite(self, var_g, shuffle_direction, strand, alt_aln_method):
+        """Attempt to shift a variant all the way left or right. Rewrite
+        duplications as insertions so that the variant is shifted farther
+        than would normally be possible using the HGVS notation."""
+        var_g = copy.deepcopy(var_g)
+        normalizer = hgvs.normalizer.Normalizer(
+            self.hdp, alt_aln_method=alt_aln_method, validate=False, shuffle_direction=shuffle_direction
+        )
+        var_g = normalizer.normalize(var_g)
+        if var_g.posedit.edit.type == 'dup':
+            self._replace_reference(var_g)
+            if (strand == 1 and shuffle_direction == 3) or (strand == -1 and shuffle_direction == 5):
+                var_g.posedit = hgvs.posedit.PosEdit(
+                    pos=hgvs.location.Interval(
+                        start=hgvs.location.SimplePosition(base=var_g.posedit.pos.start.base-1),
+                        end=hgvs.location.SimplePosition(base=var_g.posedit.pos.start.base),
+                    ),
+                    edit=hgvs.edit.NARefAlt(ref=None, alt=var_g.posedit.edit.ref)
+                )
+            else:
+                var_g.posedit = hgvs.posedit.PosEdit(
+                    pos=hgvs.location.Interval(
+                        start=hgvs.location.SimplePosition(base=var_g.posedit.pos.end.base),
+                        end=hgvs.location.SimplePosition(base=var_g.posedit.pos.end.base+1),
+                    ),
+                    edit=hgvs.edit.NARefAlt(ref=None, alt=var_g.posedit.edit.ref)
+                )
+        return var_g
 
 
 # <LICENSE>
