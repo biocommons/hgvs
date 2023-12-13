@@ -428,6 +428,21 @@ class VariantMapper:
 
         """
 
+        var_p = self._c_to_p(var_c, pro_ac=pro_ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
+
+        if (
+            var_c.posedit.edit.type in ['ins', 'dup']
+            and var_c.type in "cnr"
+            and var_c.posedit.pos is not None
+            and (var_c.posedit.pos.start.offset != 0 or var_c.posedit.pos.end.offset != 0)
+            and var_p.posedit is None
+        ):
+            raise HGVSUnsupportedOperationError('c_to_p not supported on VariantMapper for this var_c, try AssemblyMapper')
+
+        return var_p
+
+
+    def _c_to_p(self, var_c, pro_ac=None, alt_ac=None, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
         if not (var_c.type == "c"):
             raise HGVSInvalidVariantError("Expected a cDNA (c.) variant; got " + str(var_c))
         if self._validator:
