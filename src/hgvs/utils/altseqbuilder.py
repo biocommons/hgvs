@@ -203,8 +203,11 @@ class AltSeqBuilder:
         elif self._var_c.posedit.edit.type == "ins" and self._var_c.posedit.pos.start.offset == 0 and self._var_c.posedit.pos.end.offset == 1:
             # ins at exon-intron boundary
             result = self.EXON
-        elif self._var_c.posedit.edit.type == "dup" and self._var_c.posedit.pos.start.offset <= -1 and self._var_c.posedit.pos.end.offset >= -1:
+        elif self._var_c.posedit.edit.type == "dup" and self._var_c.posedit.pos.end.offset == -1:
             # dup at intron-exon boundary
+            result = self.EXON
+        elif self._var_c.posedit.edit.type == "dup" and self._var_c.posedit.pos.start.offset == 1:
+            # dup at exon-intron boundary
             result = self.EXON
         elif self._var_c.posedit.pos.start.offset != 0 or self._var_c.posedit.pos.end.offset != 0:
             # leave out anything else intronic for now

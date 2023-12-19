@@ -141,34 +141,30 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
         self.assertEqual(str(var_p), "NP_004371.2:p.(Phe1085LeufsTer2)")
 
     def test_map_of_dup_intron_exon_boundary(self):
-        hgvs_c = "NM_004380.2:c.3251-1dup"
-        var_c = self.hp.parse_hgvs_variant(hgvs_c)
-        with self.assertRaises(HGVSError):
-            var_p = self.vm.c_to_p(var_c)
-
         hgvs_c = "NM_024529.4:c.132-2_132-1dup"
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
         with self.assertRaises(HGVSError):
             var_p = self.vm.c_to_p(var_c)
 
-        hgvs_c = "NM_004985.4:c.112-1_113dup"
+        hgvs_c = "NM_004985.4:c.112-8_112-1dup"
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
         with self.assertRaises(HGVSError):
             var_p = self.vm.c_to_p(var_c)
 
-        hgvs_c = "NM_004380.2:c.3251dup"
+    def test_map_of_dup_intron_exon_boundary_rc(self):
+        hgvs_c = "NM_004380.2:c.3251-1dup"
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
-        var_p = self.vm.c_to_p(var_c)
-        self.assertEqual(str(var_p), "NP_004371.2:p.(Phe1085LeufsTer2)")
+        with self.assertRaises(HGVSError):
+            var_p = self.vm.c_to_p(var_c)
 
     def test_map_of_dup_exon_intron_boundary(self):
-        hgvs_c = "NM_021140.3:c.619dup"
+        hgvs_c = "NM_024529.4:c.131+1_131+3dup"
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
-        var_p = self.vm.c_to_p(var_c)
-        self.assertEqual(str(var_p), "NP_066963.2:p.(Ile207AsnfsTer10)")
+        with self.assertRaises(HGVSError):
+            var_p = self.vm.c_to_p(var_c)
 
-    def test_map_of_dup_intron_exon_boundary_rc(self):
-        hgvs_c = "NM_004985.4:c.112-1_112dup"
+    def test_map_of_dup_exon_intron_boundary_rc(self):
+        hgvs_c = "NM_004985.4:c.111+1_111+4dup"
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
         with self.assertRaises(HGVSError):
             var_p = self.vm.c_to_p(var_c)

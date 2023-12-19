@@ -199,14 +199,6 @@ class Test_VariantMapper(unittest.TestCase):
         self.assertEqual(str(var_p), hgvs_p)
 
     def test_map_of_dup_intron_exon_boundary(self):
-        hgvs_c = "NM_004380.2:c.3251-1dup"
-        hgvs_p = "NP_004371.2:p.(Ile1084SerfsTer3)"
-
-        var_c = self.hp.parse_hgvs_variant(hgvs_c)
-        var_p = self.am.c_to_p(var_c)
-
-        self.assertEqual(str(var_p), hgvs_p)
-
         hgvs_c = "NM_024529.4:c.132-2_132-1dup"
         hgvs_p = "NP_078805.3:p.(Thr45GlyfsTer65)"
 
@@ -215,25 +207,8 @@ class Test_VariantMapper(unittest.TestCase):
 
         self.assertEqual(str(var_p), hgvs_p)
 
-        hgvs_c = "NM_004985.4:c.112-1_113dup"
-        hgvs_p = "NP_004976.2:p.(Glu37dup)"
-
-        var_c = self.hp.parse_hgvs_variant(hgvs_c)
-        var_p = self.am.c_to_p(var_c)
-
-        self.assertEqual(str(var_p), hgvs_p)
-
-        hgvs_c = "NM_004380.2:c.3251dup"
-        hgvs_p = "NP_004371.2:p.(Phe1085LeufsTer2)"
-
-        var_c = self.hp.parse_hgvs_variant(hgvs_c)
-        var_p = self.am.c_to_p(var_c)
-
-        self.assertEqual(str(var_p), hgvs_p)
-
-    def test_map_of_dup_exon_intron_boundary(self):
-        hgvs_c = "NM_021140.3:c.619dup"
-        hgvs_p = "NP_066963.2:p.(Ile207AsnfsTer10)"
+        hgvs_c = "NM_004985.4:c.112-8_112-1dup"
+        hgvs_p = "NP_004976.2:p.(Asp38LeufsTer10)"
 
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
         var_p = self.am.c_to_p(var_c)
@@ -241,8 +216,26 @@ class Test_VariantMapper(unittest.TestCase):
         self.assertEqual(str(var_p), hgvs_p)
 
     def test_map_of_dup_intron_exon_boundary_rc(self):
-        hgvs_c = "NM_004985.4:c.112-1_112dup"
-        hgvs_p = "NP_004976.2:p.(Asp38GlyfsTer8)"
+        hgvs_c = "NM_004380.2:c.3251-1dup"
+        hgvs_p = "NP_004371.2:p.(Ile1084SerfsTer3)"
+
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.am.c_to_p(var_c)
+
+        self.assertEqual(str(var_p), hgvs_p)
+
+    def test_map_of_dup_exon_intron_boundary(self):
+        hgvs_c = "NM_024529.4:c.131+1_131+3dup"
+        hgvs_p = "NP_078805.3:p.(Gly44_Thr45insVal)"
+
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.am.c_to_p(var_c)
+
+        self.assertEqual(str(var_p), hgvs_p)
+
+    def test_map_of_dup_exon_intron_boundary_rc(self):
+        hgvs_c = "NM_004985.4:c.111+1_111+4dup"
+        hgvs_p = "NP_004976.2:p.(Asp38GlyfsTer11)"
 
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
         var_p = self.am.c_to_p(var_c)

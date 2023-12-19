@@ -172,7 +172,8 @@ class TestHgvsCToP(unittest.TestCase):
     def test_dup_exon_intron_boundary(self):
         hgvsc = "NM_999999.1:c.39+1dup"
         hgvsp_expected = "MOCK:p.?"
-        self._run_conversion(hgvsc, hgvsp_expected)
+        with self.assertRaises(HGVSError):
+            self._run_conversion(hgvsc, hgvsp_expected)
 
     def test_five_prime_utr(self):
         hgvsc = "NM_999999.1:c.-2A>G"
