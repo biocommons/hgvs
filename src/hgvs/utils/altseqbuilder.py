@@ -345,10 +345,10 @@ class AltSeqBuilder:
                 if pos.base < 0:  # 5' UTR
                     result = cds_start - 1
                 else:  # cds/intron
-                    if pos.offset <= 0:
-                        result = (cds_start - 1) + pos.base + pos.offset - 1
+                    if pos.offset < 0:
+                        result = (cds_start - 1) + pos.base - 2
                     else:
-                        result = (cds_start - 1) + pos.base
+                        result = (cds_start - 1) + pos.base - 1
             elif pos.datum == Datum.CDS_END:  # 3' UTR
                 result = cds_stop + pos.base - 1
             else:
