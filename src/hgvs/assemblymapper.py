@@ -242,22 +242,23 @@ class AssemblyMapper(VariantMapper):
         return alt_acs[0]
 
     def _replace_reference(self, var):
-        if (getattr(var.posedit.pos.start, 'offset', 0) != 0 or getattr(var.posedit.pos.end, 'offset', 0) != 0):
-            if var.type != 'g':
-                alt_ac = self._alt_ac_for_tx_ac(var.ac)
-                if var.type == 'c':
-                    var_g = super(AssemblyMapper, self).c_to_g(var, alt_ac, alt_aln_method=self.alt_aln_method)
-                if var.type == 'n':
-                    var_g = super(AssemblyMapper, self).n_to_g(var, alt_ac, alt_aln_method=self.alt_aln_method)
-                if var.type == 't':
-                    var_g = super(AssemblyMapper, self).t_to_g(var, alt_ac, alt_aln_method=self.alt_aln_method)
-                super(AssemblyMapper, self)._replace_reference(var_g)
-                ref = var_g.posedit.edit.ref
-                if self._fetch_AlignmentMapper(tx_ac=var.ac).strand == -1:
-                    ref = reverse_complement(ref)
-                var.posedit.edit.ref = ref
-                _logger.debug("Replaced reference sequence in {var} with {ref}".format(var=var, ref=var_g.posedit.edit.ref))
-                return var
+        if (
+            var.type in "cn"
+            and var.posedit.pos is not None
+            and (var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0)
+        ):
+            alt_ac = self._alt_ac_for_tx_ac(var.ac)
+            if var.type == 'c':
+                var_g = super(AssemblyMapper, self).c_to_g(var, alt_ac, alt_aln_method=self.alt_aln_method)
+            if var.type == 'n':
+                var_g = super(AssemblyMapper, self).n_to_g(var, alt_ac, alt_aln_method=self.alt_aln_method)
+            super(AssemblyMapper, self)._replace_reference(var_g)
+            ref = var_g.posedit.edit.ref
+            if self._fetch_AlignmentMapper(tx_ac=var.ac).strand == -1:
+                ref = reverse_complement(ref)
+            var.posedit.edit.ref = ref
+            _logger.debug("Replaced reference sequence in {var} with {ref}".format(var=var, ref=var_g.posedit.edit.ref))
+            return var
 
         return super(AssemblyMapper, self)._replace_reference(var)
 

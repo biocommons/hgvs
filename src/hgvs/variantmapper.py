@@ -466,11 +466,13 @@ class VariantMapper:
             # these types have no reference sequence (zero-width), so return as-is
             return var
 
-        pos = var.posedit.pos
-        if (getattr(pos.start, 'offset', 0) != 0 or getattr(pos.end, 'offset', 0) != 0):
-            if var.type != "g":
-                _logger.info("Can't update reference sequence for intronic variant {}".format(var))
-                return var
+        if (
+            var.type in "cnr"
+            and var.posedit.pos is not None
+            and (var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0)
+        ):
+            _logger.info("Can't update reference sequence for intronic variant {}".format(var))
+            return var
 
         # For c. variants, we need coords on underlying sequences
         if var.type == "c":
@@ -481,8 +483,11 @@ class VariantMapper:
         else:
             pos = var.posedit.pos
 
-        seq_start = pos.start.base + getattr(pos.start, 'offset', 0) - 1
-        seq_end = pos.end.base + getattr(pos.end, 'offset', 0)
+        seq_start = pos.start.base - 1
+        seq_end = pos.end.base
+        if var.type in "cnr":
+            seq_start += pos.start.offset
+            seq_end += pos.end.offset
 
         # When strict_bounds is False and an error occurs, return
         # variant as-is
