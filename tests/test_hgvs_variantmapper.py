@@ -116,6 +116,12 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
         with pytest.raises(HGVSError, match="coordinate is out of bounds"):
             self.vm.c_to_p(var_c)
 
+    def test_map_of_dup_three_prime_utr(self):
+        hgvs_c = "NM_153223.3:c.2959_*1dup"
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.vm.c_to_p(var_c)
+        self.assertEqual(str(var_p), "NP_694955.2:p.?")
+
 
 if __name__ == "__main__":
     unittest.main()

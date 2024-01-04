@@ -183,6 +183,11 @@ class AltSeqBuilder:
             and self._var_c.posedit.pos.end.datum == Datum.CDS_END
         ):
             result = self.T_UTR
+        elif (
+            self._var_c.posedit.edit.type == "dup"
+            and self._var_c.posedit.pos.end.datum == Datum.CDS_END
+        ):
+            result = self.T_UTR
         elif self._var_c.posedit.pos.start.base < 0 and self._var_c.posedit.pos.end.base < 0:
             result = self.F_UTR
         elif (
