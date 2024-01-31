@@ -31,6 +31,10 @@
   description: "exempt issue from staleness checks"
   from_name: "keep alive"
 
+- name: "project proposal"
+  color: "d876e3"
+  description: "project proposal for interns and GSoC students"
+
 - name: "question"
   color: "d876e3"
   description: "Further information is requested"
