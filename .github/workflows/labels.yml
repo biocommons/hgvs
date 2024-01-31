@@ -1,4 +1,4 @@
-name: github
+name: Synchronize labels
 
 on:
   push:
