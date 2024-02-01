@@ -1,6 +1,6 @@
-name: Synchronize labels
-
+name: Sync labels
 on:
+  workflow_dispatch:
   push:
     branches:
       - 'main'
@@ -8,16 +8,22 @@ on:
       - '.github/labels.yml'
       - '.github/workflows/labels.yml'
 
+permissions:
+  issues: write
+
 jobs:
-  labeler:
+  labels:
     runs-on: ubuntu-latest
+
     steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v3
-      -
-        name: Run Labeler
-        uses: crazy-max/ghaction-github-labeler@v4
+      - uses: actions/checkout@v4
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          yaml-file: .github/labels.yml
+          sparse-checkout: .github/labels.yml
+
+      - uses: EndBug/label-sync@v2
+        with:
+          config-file: |
+            https://raw.githubusercontent.com/biocommons/.github/main/etc/labels.yml
+            .github/labels.yml
+
+          delete-other-labels: false
