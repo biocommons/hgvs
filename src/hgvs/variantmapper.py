@@ -590,7 +590,7 @@ class VariantMapper(object):
         return seq
 
     def _update_gene_symbol(self, var, symbol):
-        if not symbol:
+        if symbol is None or not symbol:
             symbol = self.hdp.get_tx_identity_info(var.ac).get("hgnc", None)
         var.gene = symbol
         return var
