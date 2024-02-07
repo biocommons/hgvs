@@ -9,8 +9,6 @@ location).
 
 """
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import attr
 import six
 from bioutils.sequences import aa1_to_aa3, aa_to_aa1
