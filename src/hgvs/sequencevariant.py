@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """ represents simple sequence-based variants """
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import attr
 
 import hgvs.variantmapper

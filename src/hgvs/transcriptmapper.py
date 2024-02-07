@@ -4,8 +4,6 @@ genomic (g), non-coding (n), cds (c), and protein (p) coordinates.
 
 """
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import logging
 
 from bioutils.coordinates import strand_int_to_pm
