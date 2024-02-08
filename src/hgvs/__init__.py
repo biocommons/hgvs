@@ -49,8 +49,6 @@ BaseOffsetPosition(base=1582, offset=0, datum=Datum.CDS_START, uncertain=False)
 
 """
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import logging
 import re
 import sys

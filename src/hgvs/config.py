@@ -27,8 +27,6 @@ for str, int, and boolean.
 
 """
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import logging
 import re
 from configparser import ConfigParser, ExtendedInterpolation

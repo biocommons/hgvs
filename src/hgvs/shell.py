@@ -2,8 +2,6 @@
 """start IPython shell with hgvs initialized. Intended to be used for
 experimenting, debugging, and generating bug reports."""
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import logging
 import os
 
