@@ -139,9 +139,3 @@ def _parse_cigar(cigar):
     ref_pos.append(ref_cur)
     tgt_pos.append(tgt_cur)
     return ref_pos, tgt_pos, cigar_op
-
-
-if __name__ == "__main__":
-    # cigar = "2=2N=X=2N=I=2N=D="
-    cigar = "3=2N=X=3N=I=D="
-    cm = CIGARMapper(cigar)
