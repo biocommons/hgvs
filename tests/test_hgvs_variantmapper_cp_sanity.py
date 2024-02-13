@@ -157,8 +157,18 @@ class TestHgvsCToP(unittest.TestCase):
         hgvsp_expected = "MOCK:p.?"
         self._run_conversion(hgvsc, hgvsp_expected)
 
-    def test_three_prime_utr(self):
+    def test_sub_three_prime_utr(self):
         hgvsc = "NM_999999.1:c.*3G>A"
+        hgvsp_expected = "MOCK:p.?"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
+    def test_ins_three_prime_utr(self):
+        hgvsc = "NM_999999.1:c.39_*1insA"
+        hgvsp_expected = "MOCK:p.?"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
+    def test_dup_three_prime_utr(self):
+        hgvsc = "NM_999999.1:c.12_*1dup"
         hgvsp_expected = "MOCK:p.?"
         self._run_conversion(hgvsc, hgvsp_expected)
 
