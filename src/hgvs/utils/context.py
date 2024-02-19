@@ -23,8 +23,6 @@ NM_000399.3  c      902 <                                                    <  
 
 """
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import re
 
 from bioutils.sequences import complement
