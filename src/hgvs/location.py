@@ -77,7 +77,7 @@ class SimplePosition(object):
 
         if lhs.base is None and rhs.base is None:
             raise HGVSUnsupportedOperationError("Cannot compare two positions without bases")
-        
+
         # imprecise positions can be on both sides of an interval
         # This is weird, but because an unknown breakpoint can be expressed on both sides
         # with a ? character we need to support that both options are true
@@ -199,9 +199,11 @@ class BaseOffsetPosition(object):
 
     def __eq__(lhs, rhs):
         assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
-        if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
-        return lhs.datum == rhs.datum and lhs.base == rhs.base and lhs.offset == rhs.offset
+
+        return (lhs.datum == rhs.datum and
+                lhs.base == rhs.base and
+                lhs.offset == rhs.offset and
+                lhs.uncertain == rhs.uncertain)
 
     def __lt__(lhs, rhs):
         assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"

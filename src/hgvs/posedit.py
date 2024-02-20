@@ -7,6 +7,7 @@ import attr
 
 from hgvs.enums import ValidationLevel
 from hgvs.exceptions import HGVSUnsupportedOperationError
+from hgvs.location import Interval
 
 
 @attr.s(slots=True, repr=False)
@@ -98,7 +99,11 @@ class PosEdit(object):
                 # Check del length
                 if self.edit.type in ["del", "delins"]:
                     ref_len = self.edit.ref_n
-                    if ref_len is not None and ref_len != self.pos.end - self.pos.start + 1:
+                    if (ref_len is not None and
+                            not ( isinstance(self.pos.start, Interval) or
+                                isinstance(self.pos.end, Interval)
+                            ) and
+                            ref_len != self.pos.end - self.pos.start + 1):
                         return (
                             ValidationLevel.ERROR,
                             "Length implied by coordinates must equal sequence deletion length",
