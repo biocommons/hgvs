@@ -166,12 +166,18 @@ class AlignmentMapper(object):
         if g_interval.start.uncertain:
             grs = g_interval.start.end.base - 1 - self.gc_offset
         else:
-            grs = g_interval.start.base - 1 - self.gc_offset
+            if isinstance(g_interval.start, Interval):
+                grs = g_interval.start.start.base - 1 - self.gc_offset
+            else:
+                grs = g_interval.start.base - 1 - self.gc_offset
 
         if g_interval.end.uncertain:
             gre = g_interval.end.start.base - 1 - self.gc_offset
         else:
-            gre = g_interval.end.base - 1 - self.gc_offset
+            if isinstance(g_interval.end, Interval):
+                gre = g_interval.end.end.base - 1 - self.gc_offset
+            else:
+                gre = g_interval.end.base - 1 - self.gc_offset
 
         # frs, fre = (f)orward (r)na (s)tart & (e)nd; forward w.r.t. genome
         frs, frs_offset, frs_cigar = self.cigarmapper.map_ref_to_tgt(

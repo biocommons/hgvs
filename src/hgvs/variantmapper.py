@@ -21,6 +21,7 @@ import hgvs.validator
 from hgvs.decorators.lru_cache import lru_cache
 from hgvs.enums import PrevalidationLevel
 from hgvs.exceptions import HGVSInvalidVariantError, HGVSUnsupportedOperationError
+from hgvs.location import Interval
 from hgvs.utils.reftranscriptdata import RefTranscriptData
 
 _logger = logging.getLogger(__name__)
@@ -484,12 +485,18 @@ class VariantMapper(object):
         if pos.start.uncertain:
             seq_start = pos.start.end.base - 1
         else:
-            seq_start = pos.start.base - 1
+            if isinstance(pos.start, Interval):
+                seq_start = pos.start.start.base -1
+            else:
+                seq_start = pos.start.base - 1
 
         if pos.end.uncertain:
             seq_end = pos.end.start.base
         else:
-            seq_end = pos.end.base
+            if isinstance(pos.end, Interval):
+                seq_end = pos.end.end.base
+            else:
+                seq_end = pos.end.base
 
         # When strict_bounds is False and an error occurs, return
         # variant as-is

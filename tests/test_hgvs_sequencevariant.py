@@ -126,20 +126,42 @@ class Test_SequenceVariant(unittest.TestCase):
         self.assertEqual(v2.posedit.pos.end.uncertain, True)
         self.assertEqual(type(v2.posedit.edit).__name__, "NARefAlt")
 
-    def test_uncertain_projection_confidence(self):
+    def test_partial_uncertain_projection(self):
+        data = [
+            ("NC_000009.11:g.108337304_(108337428_?)del", False, True,
+             "NM_001079802.1:n.207_(321+10_?)del",
+             "NM_001079802.1:c.-10_(105+10_?)del"),
+
+            ("NC_000009.11:g.(?_108337304)_108337428del", True, False,
+             "NM_001079802.1:n.(?_207)_321+10del",
+             "NM_001079802.1:c.(?_-10)_105+10del"),
+        ]
+
+        for hgvs_g, start_uncertain, stop_uncertain, hgvs_n, hgvs_c in data:
+            var_g = self.hp.parse(hgvs_g)
+            self.assertEqual(var_g.posedit.pos.start.uncertain, start_uncertain)
+            self.assertEqual(var_g.posedit.pos.end.uncertain, stop_uncertain)
+            self.assertEqual(hgvs_g, str(var_g))
+            acc = hgvs_c.split(":")[0]
+            var_n = self.vm.g_to_n(var_g, acc)
+            self.assertEqual(hgvs_n, str(var_n))
+            var_c = self.vm.g_to_c(var_g, acc)
+            self.assertEqual(hgvs_c, str(var_c))
+
+    def test_uncertain_projection_g_to_c_confidence(self):
 
         data = [
             ("NC_000005.9:g.(90136803_90144453)_(90159675_90261231)dup",
-             "NM_032119.3:n.(17116-1)_(17952+1)dup",
-             "NM_032119.3:c.(17020-1)_(17856+1)dup"),
+             "NM_032119.3:n.(?_17116-1)_(17952+1_?)dup",
+             "NM_032119.3:c.(?_17020-1)_(17856+1_?)dup"),
 
             ("NC_000019.9:g.(11211022_11213339)_(11217364_11218067)dup",
-             "NM_000527.5:n.(277-1)_(903+1)dup",
-             "NM_000527.5:c.(191-1)_(817+1)dup"),
+             "NM_000527.5:n.(?_277-1)_(903+1_?)dup",
+             "NM_000527.5:c.(?_191-1)_(817+1_?)dup"),
 
             ("NC_000009.11:g.(?_108337304)_(108337428_?)del",
-             "NM_001079802.1:n.(207)_(321+10)del",
-             "NM_001079802.1:c.(-10)_(105+10)del"),
+             "NM_001079802.1:n.(?_207)_(321+10_?)del",
+             "NM_001079802.1:c.(?_-10)_(105+10_?)del"),
         ]
 
         for hgvs_g, hgvs_n, hgvs_c in data:
@@ -149,6 +171,28 @@ class Test_SequenceVariant(unittest.TestCase):
             var_n = self.vm.g_to_n(var_g, acc)
             self.assertEqual(hgvs_n, str(var_n))
             var_c = self.vm.g_to_c(var_g, acc)
+            self.assertEqual(hgvs_c, str(var_c))
+
+    def test_uncertain_projection_c_to_g_confidence(self):
+        data = [
+            ("NC_000005.9:g.(90136803_90144453)_(90159675_90261231)dup",
+             "NM_032119.3:n.(?_17116-1)_(17952+1_?)dup",
+             "NM_032119.3:c.(?_17020-1)_(17856+1_?)dup"),
+
+            ("NC_000019.9:g.(11211022_11213339)_(11217364_11218067)dup",
+             "NM_000527.5:n.(?_277-1)_(903+1_?)dup",
+             "NM_000527.5:c.(?_191-1)_(817+1_?)dup"),
+
+            ("NC_000009.11:g.(?_108337304)_(108337428_?)del",
+             "NM_001079802.1:n.(?_207)_(321+10_?)del",
+             "NM_001079802.1:c.(?_-10)_(105+10_?)del"),
+        ]
+        for hgvs_g, hgvs_n, hgvs_c in data:
+            var_c = self.hp.parse(hgvs_c)
+            self.assertEqual(hgvs_c, str(var_c))
+            var_n = self.vm.c_to_n(var_c)
+            self.assertEqual(hgvs_n, str(var_n))
+            var_g = self.vm.n_to_g(var_n)
             self.assertEqual(hgvs_c, str(var_c))
 
 

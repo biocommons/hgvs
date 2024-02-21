@@ -143,7 +143,7 @@ class BaseOffsetPosition(object):
             )
         return (ValidationLevel.VALID, None)
 
-    def __str__(self):
+    def _format_pos(self)->str:
         self.validate()
         base_str = (
             "?"
@@ -156,6 +156,10 @@ class BaseOffsetPosition(object):
             "+?" if self.offset is None else "" if self.offset == 0 else "%+d" % self.offset
         )
         pos = base_str + offset_str
+        return pos
+
+    def __str__(self):
+        pos = self._format_pos()
         return "(" + pos + ")" if self.uncertain else pos
 
     def format(self, conf):
@@ -382,10 +386,31 @@ class Interval(object):
 @attr.s(slots=True, repr=False)
 class BaseOffsetInterval(Interval):
     """BaseOffsetInterval isa Interval of BaseOffsetPositions.  The only
-    additional functionality over Interval is to ensure that the dutum
+    additional functionality over Interval is to ensure that the datum
     of end and start are compatible.
 
     """
+
+    def format(self, conf=None):
+        if self.start is None:
+            return ""
+        if self.end is None or self.start == self.end:
+            return self.start.format(conf)
+
+        s = self.start._format_pos()
+        if self.start.is_uncertain:
+            s_str = f'(?_{s})'
+        else:
+            s_str = s
+        e = self.end._format_pos()
+        if self.end.is_uncertain:
+            e_str = f'({e}_?)'
+        else:
+            e_str = e
+        iv = s_str + "_" + e_str
+        return "(" + iv + ")" if self.uncertain else iv
+
+    __str__ = format
 
     def __attrs_post_init__(self):
         # #330: In a post-ter interval like *87_91, the * binds only
