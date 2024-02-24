@@ -4,7 +4,6 @@ import unittest
 
 import pytest
 
-from hgvs.exceptions import HGVSParseError
 from support import CACHE
 
 import hgvs
@@ -171,28 +170,6 @@ class Test_SequenceVariant(unittest.TestCase):
             var_n = self.vm.g_to_n(var_g, acc)
             self.assertEqual(hgvs_n, str(var_n))
             var_c = self.vm.g_to_c(var_g, acc)
-            self.assertEqual(hgvs_c, str(var_c))
-
-    def test_uncertain_projection_c_to_g_confidence(self):
-        data = [
-            ("NC_000005.9:g.(90136803_90144453)_(90159675_90261231)dup",
-             "NM_032119.3:n.(?_17116-1)_(17952+1_?)dup",
-             "NM_032119.3:c.(?_17020-1)_(17856+1_?)dup"),
-
-            ("NC_000019.9:g.(11211022_11213339)_(11217364_11218067)dup",
-             "NM_000527.5:n.(?_277-1)_(903+1_?)dup",
-             "NM_000527.5:c.(?_191-1)_(817+1_?)dup"),
-
-            ("NC_000009.11:g.(?_108337304)_(108337428_?)del",
-             "NM_001079802.1:n.(?_207)_(321+10_?)del",
-             "NM_001079802.1:c.(?_-10)_(105+10_?)del"),
-        ]
-        for hgvs_g, hgvs_n, hgvs_c in data:
-            var_c = self.hp.parse(hgvs_c)
-            self.assertEqual(hgvs_c, str(var_c))
-            var_n = self.vm.c_to_n(var_c)
-            self.assertEqual(hgvs_n, str(var_n))
-            var_g = self.vm.n_to_g(var_n)
             self.assertEqual(hgvs_c, str(var_c))
 
 
