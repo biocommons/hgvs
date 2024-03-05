@@ -50,7 +50,7 @@ class Edit(abc.ABC):
     @property
     @abc.abstractmethod
     def type(self):
-        """return the type of this Edit
+        """ return the type of this Edit """
         pass
 
 
