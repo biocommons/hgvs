@@ -26,7 +26,7 @@ from hgvs.utils.reftranscriptdata import RefTranscriptData
 _logger = logging.getLogger(__name__)
 
 
-class VariantMapper(object):
+class VariantMapper:
     r"""Maps SequenceVariant objects between g., n., r., c., and p. representations.
 
     g⟷{c,n,r} projections are similar in that c, n, and r variants

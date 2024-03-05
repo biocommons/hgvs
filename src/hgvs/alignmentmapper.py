@@ -57,7 +57,7 @@ def _hgvs_to_zbc(i):
     return i
 
 
-class AlignmentMapper(object):
+class AlignmentMapper:
     """Maps hgvs location objects between genomic (g), non-coding (n) and
     cds (c) coordinates according to a CIGAR string.
 

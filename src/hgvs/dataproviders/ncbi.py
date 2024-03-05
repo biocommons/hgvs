@@ -112,7 +112,7 @@ def connect(
     return conn
 
 
-class NCBIBase(object):
+class NCBIBase:
     required_version = "1.1"
 
     _queries = {

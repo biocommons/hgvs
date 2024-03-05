@@ -37,7 +37,7 @@ from pkg_resources import resource_stream
 logger = logging.getLogger(__name__)
 
 
-class Config(object):
+class Config:
     """provides an attribute-based lookup of configparser sections and
     settings.
 
@@ -75,7 +75,7 @@ class Config(object):
     __getitem__ = __getattr__
 
 
-class ConfigGroup(object):
+class ConfigGroup:
     def __init__(self, section):
         self.__dict__["_section"] = section
 

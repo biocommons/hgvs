@@ -25,7 +25,7 @@ SIMPLE_COORD_TYPES = "gmp"
 _logger = logging.getLogger(__name__)
 
 
-class Validator(object):
+class Validator:
     """invoke intrinsic and extrinsic validation"""
 
     def __init__(self, hdp, strict=hgvs.global_config.validator.strict):
@@ -39,7 +39,7 @@ class Validator(object):
         return self._ivr.validate(var, strict) and self._evr.validate(var, strict)
 
 
-class IntrinsicValidator(object):
+class IntrinsicValidator:
     """
     Attempts to determine if the HGVS name is internally consistent
 

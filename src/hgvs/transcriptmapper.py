@@ -19,7 +19,7 @@ _logger = logging.getLogger(__name__)
 _logger.warning("This module is deprecated and will be removed in a future release")
 
 
-class TranscriptMapper(object):
+class TranscriptMapper:
     """Provides coordinate (not variant) mapping operations between
     genomic (g), non-coding (n), cds (c), and protein (p) coordinates.
     All coordinates are 1-based inclusive, per the HGVS

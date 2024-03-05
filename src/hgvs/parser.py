@@ -25,7 +25,7 @@ from hgvs.exceptions import HGVSParseError
 from hgvs.generated.hgvs_grammar import createParserClass
 
 
-class Parser(object):
+class Parser:
     """Provides comprehensive parsing of HGVS variant strings (*i.e.*,
     variants represented according to the Human Genome Variation
     Society recommendations) into Python representations.  The class
