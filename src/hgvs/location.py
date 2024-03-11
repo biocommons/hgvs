@@ -15,6 +15,7 @@ Classes:
   * :class:`Interval` -- an interval of Positions
 """
 
+import copy
 from functools import total_ordering
 
 import attr
@@ -74,6 +75,16 @@ class SimplePosition(object):
         assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
         if lhs.uncertain or rhs.uncertain:
             raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+
+        if lhs.base is None and rhs.base is None:
+            raise HGVSUnsupportedOperationError("Cannot compare two positions without bases")
+
+        # imprecise positions can be on both sides of an interval
+        # This is weird, but because an unknown breakpoint can be expressed on both sides
+        # with a ? character we need to support that both options are true
+        if lhs.base is None or rhs.base is None:
+            return True
+
         return lhs.base < rhs.base
 
 
@@ -133,7 +144,7 @@ class BaseOffsetPosition(object):
             )
         return (ValidationLevel.VALID, None)
 
-    def __str__(self):
+    def _format_pos(self) -> str:
         self.validate()
         base_str = (
             "?"
@@ -146,6 +157,10 @@ class BaseOffsetPosition(object):
             "+?" if self.offset is None else "" if self.offset == 0 else "%+d" % self.offset
         )
         pos = base_str + offset_str
+        return pos
+
+    def __str__(self):
+        pos = self._format_pos()
         return "(" + pos + ")" if self.uncertain else pos
 
     def format(self, conf):
@@ -189,9 +204,11 @@ class BaseOffsetPosition(object):
 
     def __eq__(lhs, rhs):
         assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
-        if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
-        return lhs.datum == rhs.datum and lhs.base == rhs.base and lhs.offset == rhs.offset
+
+        return (lhs.datum == rhs.datum and
+                lhs.base == rhs.base and
+                lhs.offset == rhs.offset and
+                lhs.uncertain == rhs.uncertain)
 
     def __lt__(lhs, rhs):
         assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
@@ -315,6 +332,10 @@ class Interval(object):
     end = attr.ib(default=None)
     uncertain = attr.ib(default=False)
 
+    def __attrs_post_init__(self):
+        if self.end is None:
+            self.end = copy.deepcopy(self.start)
+
     def validate(self):
         if self.start:
             (res, msg) = self.start.validate()
@@ -324,9 +345,11 @@ class Interval(object):
             (res, msg) = self.end.validate()
             if res != ValidationLevel.VALID:
                 return (res, msg)
+
         # Check start less than or equal to end
         if not self.start or not self.end:
             return (ValidationLevel.VALID, None)
+
         try:
             if self.start <= self.end:
                 return (ValidationLevel.VALID, None)
@@ -338,9 +361,11 @@ class Interval(object):
     def format(self, conf=None):
         if self.start is None:
             return ""
-        if self.end is None or self.start == self.end:
+        if (self.end is None or self.start == self.end) and not self.uncertain:
             return self.start.format(conf)
-        iv = self.start.format(conf) + "_" + self.end.format(conf)
+        iv = self.start.format(conf)
+        if self.end != self.start:
+            iv = iv + "_" + self.end.format(conf)
         return "(" + iv + ")" if self.uncertain else iv
 
     __str__ = format
@@ -368,10 +393,31 @@ class Interval(object):
 @attr.s(slots=True, repr=False)
 class BaseOffsetInterval(Interval):
     """BaseOffsetInterval isa Interval of BaseOffsetPositions.  The only
-    additional functionality over Interval is to ensure that the dutum
+    additional functionality over Interval is to ensure that the datum
     of end and start are compatible.
 
     """
+
+    def format(self, conf=None):
+        if self.start is None:
+            return ""
+        if self.end is None or self.start == self.end:
+            return self.start.format(conf)
+
+        s = self.start._format_pos()
+        if self.start.is_uncertain:
+            s_str = f'(?_{s})'
+        else:
+            s_str = s
+        e = self.end._format_pos()
+        if self.end.is_uncertain:
+            e_str = f'({e}_?)'
+        else:
+            e_str = e
+        iv = s_str + "_" + e_str
+        return "(" + iv + ")" if self.uncertain else iv
+
+    __str__ = format
 
     def __attrs_post_init__(self):
         # #330: In a post-ter interval like *87_91, the * binds only

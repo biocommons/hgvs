@@ -27,6 +27,10 @@ The AlignmentMapper class is at the heart of mapping between aligned sequences.
 #
 
 
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+from typing import Optional
+
 from bioutils.coordinates import strand_int_to_pm
 from six.moves import range
 
@@ -39,6 +43,7 @@ from hgvs.exceptions import (
     HGVSInvalidIntervalError,
     HGVSUsageError,
 )
+from hgvs.location import Interval, BaseOffsetInterval
 from hgvs.utils import build_tx_cigar
 from hgvs.utils.cigarmapper import CIGARMapper
 
@@ -151,16 +156,29 @@ class AlignmentMapper(object):
             )
         )
 
-    def g_to_n(self, g_interval, strict_bounds=None):
+    def g_to_n(self, g_interval: Interval, strict_bounds:Optional[bool]=None)->BaseOffsetInterval:
         """convert a genomic (g.) interval to a transcript cDNA (n.) interval"""
 
         if strict_bounds is None:
             strict_bounds = global_config.mapping.strict_bounds
 
-        grs, gre = (
-            g_interval.start.base - 1 - self.gc_offset,
-            g_interval.end.base - 1 - self.gc_offset,
-        )
+        # in case of uncertain ranges, we fall back to the inner (more confident) interval
+        if g_interval.start.uncertain:
+            grs = g_interval.start.end.base - 1 - self.gc_offset
+        else:
+            if isinstance(g_interval.start, Interval):
+                grs = g_interval.start.start.base - 1 - self.gc_offset
+            else:
+                grs = g_interval.start.base - 1 - self.gc_offset
+
+        if g_interval.end.uncertain:
+            gre = g_interval.end.start.base - 1 - self.gc_offset
+        else:
+            if isinstance(g_interval.end, Interval):
+                gre = g_interval.end.end.base - 1 - self.gc_offset
+            else:
+                gre = g_interval.end.base - 1 - self.gc_offset
+
         # frs, fre = (f)orward (r)na (s)tart & (e)nd; forward w.r.t. genome
         frs, frs_offset, frs_cigar = self.cigarmapper.map_ref_to_tgt(
             pos=grs, end="start", strict_bounds=strict_bounds
@@ -174,17 +192,24 @@ class AlignmentMapper(object):
             frs_offset, fre_offset = -fre_offset, -frs_offset
 
         # The returned interval would be uncertain when locating at alignment gaps
+        # of if the initial interval was uncertain
         return hgvs.location.BaseOffsetInterval(
             start=hgvs.location.BaseOffsetPosition(
-                base=_zbc_to_hgvs(frs), offset=frs_offset, datum=Datum.SEQ_START
+                base=_zbc_to_hgvs(frs),
+                offset=frs_offset,
+                datum=Datum.SEQ_START,
+                uncertain=g_interval.start.uncertain
             ),
             end=hgvs.location.BaseOffsetPosition(
-                base=_zbc_to_hgvs(fre), offset=fre_offset, datum=Datum.SEQ_START
+                base=_zbc_to_hgvs(fre),
+                offset=fre_offset,
+                datum=Datum.SEQ_START,
+                uncertain=g_interval.end.uncertain
             ),
             uncertain=frs_cigar in "DI" or fre_cigar in "DI",
         )
 
-    def n_to_g(self, n_interval, strict_bounds=None):
+    def n_to_g(self, n_interval, strict_bounds=None) ->Interval:
         """convert a transcript (n.) interval to a genomic (g.) interval"""
 
         if strict_bounds is None:
@@ -216,7 +241,7 @@ class AlignmentMapper(object):
             uncertain=grs_cigar in "DI" or gre_cigar in "DI",
         )
 
-    def n_to_c(self, n_interval, strict_bounds=None):
+    def n_to_c(self, n_interval:Interval, strict_bounds:Optional[bool]=None):
         """convert a transcript cDNA (n.) interval to a transcript CDS (c.) interval"""
 
         if strict_bounds is None:
@@ -246,7 +271,10 @@ class AlignmentMapper(object):
             else:
                 c = pos.base - self.cds_end_i
                 c_datum = Datum.CDS_END
-            return hgvs.location.BaseOffsetPosition(base=c, offset=pos.offset, datum=c_datum)
+            return hgvs.location.BaseOffsetPosition(base=c,
+                                                    offset=pos.offset,
+                                                    datum=c_datum,
+                                                    uncertain=pos.uncertain)
 
         c_interval = hgvs.location.BaseOffsetInterval(
             start=pos_n_to_c(n_interval.start),
