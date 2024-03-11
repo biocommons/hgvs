@@ -125,6 +125,40 @@ class Test_SequenceVariant(unittest.TestCase):
         self.assertEqual(v2.posedit.pos.end.uncertain, True)
         self.assertEqual(type(v2.posedit.edit).__name__, "NARefAlt")
 
+        # TODO add to parser test cases
+        v3s = "NC_000005.9:g.(90136803_90159675)dup"
+        v3 = self.hp.parse(v3s)
+
+        # Interval itself is uncertain, but positions are certain
+        self.assertEqual(v3s, str(v3))
+        self.assertEqual(v3.posedit.pos.uncertain, True)
+        self.assertEqual(v3.posedit.pos.start.uncertain, False)
+        self.assertEqual(v3.posedit.pos.end.uncertain, False)
+        self.assertEqual(v3.posedit.pos.start.base, 90136803)
+        self.assertEqual(v3.posedit.pos.end.base, 90159675)
+
+
+        v4s = "NC_000005.9:g.(90136803)_(90159675)dup"
+        v4 = self.hp.parse(v4s)
+        self.assertEqual(v4s, str(v4))
+        self.assertEqual(v4.posedit.pos.uncertain, False)
+        self.assertEqual(v4.posedit.pos.start.uncertain, True)
+        self.assertEqual(str(v4.posedit.pos.start), "(90136803)")
+        self.assertEqual(str(v4.posedit.pos.end), "(90159675)")
+        self.assertEqual(v4.posedit.pos.end.uncertain, True)
+        self.assertEqual(v4.posedit.pos.start.start.base, 90136803)
+        self.assertEqual(v4.posedit.pos.end.start.base, 90159675)
+
+
+        # Test that the start and end positions are not the same object
+        v4.posedit.pos.start.end.base = 90136804
+        self.assertTrue(v4.posedit.pos.start.start is not v4.posedit.pos.start.end)
+        self.assertEqual(v4.posedit.pos.start.end.base, 90136804)
+        self.assertEqual(v4.posedit.pos.start.start.base, 90136803)
+
+        self.assertEqual("NC_000005.9:g.(90136803_90136804)_(90159675)dup", str(v4))
+
+
     def test_partial_uncertain_projection(self):
         data = [
             ("NC_000009.11:g.108337304_(108337428_?)del", False, True,

@@ -15,6 +15,7 @@ Classes:
   * :class:`Interval` -- an interval of Positions
 """
 
+import copy
 from functools import total_ordering
 
 import attr
@@ -143,7 +144,7 @@ class BaseOffsetPosition(object):
             )
         return (ValidationLevel.VALID, None)
 
-    def _format_pos(self)->str:
+    def _format_pos(self) -> str:
         self.validate()
         base_str = (
             "?"
@@ -331,6 +332,10 @@ class Interval(object):
     end = attr.ib(default=None)
     uncertain = attr.ib(default=False)
 
+    def __attrs_post_init__(self):
+        if self.end is None:
+            self.end = copy.deepcopy(self.start)
+
     def validate(self):
         if self.start:
             (res, msg) = self.start.validate()
@@ -356,9 +361,11 @@ class Interval(object):
     def format(self, conf=None):
         if self.start is None:
             return ""
-        if self.end is None or self.start == self.end:
+        if (self.end is None or self.start == self.end) and not self.uncertain:
             return self.start.format(conf)
-        iv = self.start.format(conf) + "_" + self.end.format(conf)
+        iv = self.start.format(conf)
+        if self.end != self.start:
+            iv = iv + "_" + self.end.format(conf)
         return "(" + iv + ")" if self.uncertain else iv
 
     __str__ = format

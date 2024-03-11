@@ -214,13 +214,25 @@ class Test_Interval(unittest.TestCase):
             hgvs.location.Interval(sp(10), sp(10), uncertain=True),
             hgvs.location.Interval(sp(30), sp(40), uncertain=True)
         )
-        self.assertEqual("10_(30_40)", str(ival3))
+        self.assertEqual("(10)_(30_40)", str(ival3))
 
         ival4 = hgvs.location.Interval(
+            hgvs.location.Interval(sp(10), sp(10), uncertain=False),
+            hgvs.location.Interval(sp(30), sp(40), uncertain=True)
+        )
+        self.assertEqual("10_(30_40)", str(ival4))
+
+        ival5 = hgvs.location.Interval(
             hgvs.location.Interval(sp(10), sp(20), uncertain=True),
             hgvs.location.Interval(sp(30), sp(30), uncertain=True)
         )
-        self.assertEqual("(10_20)_30", str(ival4))
+        self.assertEqual("(10_20)_(30)", str(ival5))
+
+        ival6 = hgvs.location.Interval(
+            hgvs.location.Interval(sp(10), sp(20), uncertain=True),
+            hgvs.location.Interval(sp(30), sp(30), uncertain=False)
+        )
+        self.assertEqual("(10_20)_30", str(ival6))
 
 
 if __name__ == "__main__":
