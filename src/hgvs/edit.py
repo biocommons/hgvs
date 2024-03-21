@@ -197,7 +197,7 @@ class AARefAlt(Edit):
         p_3_letter, p_term_asterisk, p_init_met = self._format_config_aa(conf)
 
         if self.init_met and p_init_met:
-            s = "Met1?"
+            s = "Met1?" if p_3_letter else "M1?"
         elif self.init_met and not p_init_met:
             s = "?"
         # subst and delins
