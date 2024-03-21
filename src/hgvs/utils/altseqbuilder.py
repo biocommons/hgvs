@@ -20,7 +20,7 @@ DBG = False
 _logger = logging.getLogger(__name__)
 
 
-class AltTranscriptData(object):
+class AltTranscriptData:
     def __init__(
         self,
         seq,
@@ -79,7 +79,7 @@ class AltTranscriptData(object):
         self.is_ambiguous = is_ambiguous
 
 
-class AltSeqBuilder(object):
+class AltSeqBuilder:
     EXON = "exon"
     INTRON = "intron"
     F_UTR = "five utr"

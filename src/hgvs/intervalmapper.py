@@ -55,7 +55,7 @@ _logger.warning("This module is deprecated and will be removed in a future relea
 
 # N.B. This Interval is internal to intervalmapper.py. It is *NOT* the
 # same as the Interval defined in location.py.
-class Interval(object):
+class Interval:
     """Represents a segment of a sequence in interbase
     coordinates (0-based, right-open).
     """
@@ -78,7 +78,7 @@ class Interval(object):
         )
 
 
-class IntervalPair(object):
+class IntervalPair:
     """Represents a match, insertion, or deletion segment of an
     alignment. If a match, the lengths must be equal; if an insertion or
     deletion, the length of the ref or tgt must be zero respectively."""
@@ -101,7 +101,7 @@ class IntervalPair(object):
         return "{self.__class__.__name__}(ref={self.ref},tgt={self.tgt})".format(self=self)
 
 
-class IntervalMapper(object):
+class IntervalMapper:
     """Provides mapping between sequence coordinates according to an
     ordered set of IntervalPairs."""
 
@@ -181,7 +181,7 @@ class IntervalMapper(object):
         return to_start_i, to_end_i
 
 
-class CIGARElement(object):
+class CIGARElement:
     """represents elements of a CIGAR string and provides methods for
     determining the number of ref and tgt bases consumed by the
     operation"""

@@ -10,7 +10,7 @@ import hgvs
 import hgvs.alignmentmapper
 
 
-class Projector(object):
+class Projector:
     """
     The Projector class implements liftover between two transcripts via a
     common reference sequence.

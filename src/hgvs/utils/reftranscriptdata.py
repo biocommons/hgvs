@@ -3,7 +3,7 @@ from bioutils.sequences import translate_cds
 from hgvs.exceptions import HGVSDataNotAvailableError
 
 
-class RefTranscriptData(object):
+class RefTranscriptData:
     def __init__(self, hdp, tx_ac, pro_ac):
         """helper for generating RefTranscriptData from for c_to_p"""
         tx_info = hdp.get_tx_identity_info(tx_ac)

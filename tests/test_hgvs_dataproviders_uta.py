@@ -19,7 +19,7 @@ import hgvs.variantmapper
 from hgvs.exceptions import HGVSDataNotAvailableError, HGVSError
 
 
-class UTA_Base(object):
+class UTA_Base:
     def test_get_acs_for_protein_seq(self):
         exp = ["NP_001005405.1", "MD5_8fc09b1d9a38a8c55176a0fa922df227"]
         s = """

@@ -10,7 +10,7 @@ from hgvs.exceptions import HGVSUnsupportedOperationError
 
 
 @attr.s(slots=True, repr=False)
-class PosEdit(object):
+class PosEdit:
     """
     represents a **simple** variant, consisting of a single position and edit pair
     """

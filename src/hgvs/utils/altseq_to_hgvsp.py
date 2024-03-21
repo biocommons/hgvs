@@ -17,7 +17,7 @@ from ..posedit import PosEdit
 DBG = False
 
 
-class AltSeqToHgvsp(object):
+class AltSeqToHgvsp:
     def __init__(self, ref_data, alt_data):
         """Constructor
 
