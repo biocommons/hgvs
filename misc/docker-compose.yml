@@ -29,7 +29,7 @@ services:
     # Test:
     # psql -XAt postgres://anonymous@localhost/uta -c 'select count(*) from transcript'
     # 249909
-    image: biocommons/uta:uta_20180821
+    image: biocommons/uta:uta_20210129
     volumes:
       - uta_vol:/var/lib/postgresql/data
     network_mode: host
