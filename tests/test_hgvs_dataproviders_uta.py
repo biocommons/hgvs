@@ -73,7 +73,7 @@ class UTA_Base:
             ("ENST00000345392", "NC_000003.11"),
         ]
         found = 0
-        for hgnc, cds_start_i, cds_end_i, tx_ac, alt_ac, alt_aln_method in tig:
+        for _, _, _, tx_ac, alt_ac, _ in tig:
             for t_tx_ac, t_alt_ac in expected_data:
                 if t_tx_ac == tx_ac and t_alt_ac == alt_ac:
                     found += 1
