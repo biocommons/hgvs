@@ -66,7 +66,19 @@ class UTA_Base:
 
     def test_get_tx_for_gene(self):
         tig = self.hdp.get_tx_for_gene("VHL")
-        self.assertEqual(16, len(tig))
+        
+        expected_data = [
+            ("NM_001354723.1", "NC_000003.11"),
+            ("NM_198156.2", "NC_018914.2"),
+            ("ENST00000345392", "NC_000003.11"),
+        ]
+        found = 0
+        for _, _, _, tx_ac, alt_ac, _ in tig:
+            for t_tx_ac, t_alt_ac in expected_data:
+                if t_tx_ac == tx_ac and t_alt_ac == alt_ac:
+                    found += 1
+
+        self.assertEqual(found, 3)
 
     def test_get_tx_for_gene_invalid_gene(self):
         tig = self.hdp.get_tx_for_gene("GENE")
