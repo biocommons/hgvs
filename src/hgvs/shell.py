@@ -24,6 +24,7 @@ The following variables are defined:
 * am38, projector, hgvs_assembly_mapper_38 -- GRCh38 Assembly Mapper instances
 * hn, normalizer, hgvs_normalizer -- Normalizer instance
 * hv, validator, hgvs_validator) -- Validator instance
+* pretty -- PrettyPrint instance
 
 The following functions are available:
   * parse, normalize, validate

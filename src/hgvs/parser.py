@@ -99,7 +99,7 @@ class Parser:
         self._logger = logging.getLogger(__name__)
         self._expose_rule_functions(expose_all_rules)
 
-    def parse(self, v):
+    def parse(self, v) -> hgvs.sequencevariant.SequenceVariant:
         """parse HGVS variant `v`, returning a SequenceVariant
 
         :param str v: an HGVS-formatted variant as a string
