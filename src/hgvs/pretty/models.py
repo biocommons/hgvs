@@ -5,7 +5,7 @@ from hgvs.alignmentmapper import AlignmentMapper
 from hgvs.assemblymapper import AssemblyMapper
 from hgvs.location import Interval
 from hgvs.sequencevariant import SequenceVariant
-
+from typing import List
 
 @dataclass(eq=True, repr=True, frozen=True, order=True)
 class VariantCoords:
@@ -71,7 +71,7 @@ class VariantData:
     alignmentmapper: AlignmentMapper
     var_g: SequenceVariant
     var_c: SequenceVariant = None
-    position_details: list[PositionDetail] = None
+    position_details: List[PositionDetail] = None
 
 
 @dataclass
