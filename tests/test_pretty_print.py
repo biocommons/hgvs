@@ -16,7 +16,7 @@ class Test_SimplePosition(unittest.TestCase):
     def setUpClass(cls):
         cls.hp = hgvs.parser.Parser()
         cls.hdp = hgvs.dataproviders.uta.connect(
-            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
+            mode=None, cache=None
         )
         cls.pp = PrettyPrint(
             cls.hdp,
@@ -486,10 +486,6 @@ class Test_SimplePosition(unittest.TestCase):
         ).split("\n")
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
-
-    def test_ref_disagree_tx_ins(self):
-        """ A variant that is a tx ref disagree with an insertion in the ref genome"""
-        aa!
 
 
     @pytest.mark.skip(reason="actually not that special, but still a nice variant.")
