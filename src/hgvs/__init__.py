@@ -21,7 +21,7 @@ SequenceVariant(ac=NC_000007.13, type=g, posedit=36561662C>T, gene=None)
 >>> var_g.posedit.pos.start
 SimplePosition(base=36561662, uncertain=False)
 
-# format by stringification 
+# format by stringification
 >>> str(var_g)
 'NC_000007.13:g.36561662C>T'
 

@@ -2,7 +2,7 @@
 # variant specification.  The subset is limited to is limited to those
 # rules that define sequence variants precisely.  It does not current
 # cover rules for translocations or conversions.
- 
+
 # The basic structure of a HGVS sequence variant is:
 #    <ac>:<type>.<posedit>
 # where <ac> is a sequence accession, <type> determines the sequence
@@ -26,7 +26,7 @@ r_variant = accn:ac opt_gene_expr:gene ':' 'r':type '.' r_posedit:posedit -> hgv
 
 ############################################################################
 ## HGVS Position -- e.g., NM_01234.5:c.22+6 (without an edit)
-# This is unofficial syntax 
+# This is unofficial syntax
 
 hgvs_position     = g_hgvs_position | m_hgvs_position | c_hgvs_position | n_hgvs_position | r_hgvs_position | p_hgvs_position
 
@@ -65,7 +65,7 @@ r_posedit = (r_interval:pos rna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=e
 p_posedit   = (p_interval:pos pro_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit))
    | ('(' p_interval:pos pro_edit:edit ')' -> hgvs.posedit.PosEdit(pos=pos,edit=edit, uncertain=True))
    | p_posedit_special
-p_posedit_special = 
+p_posedit_special =
       '=':x -> hgvs.posedit.PosEdit(pos=None,edit=x,uncertain=False)
 	| '(' '=':x ')' -> hgvs.posedit.PosEdit(pos=None,edit=x,uncertain=True)
 	| '0':x '?' -> hgvs.posedit.PosEdit(pos=None,edit=x,uncertain=True)
