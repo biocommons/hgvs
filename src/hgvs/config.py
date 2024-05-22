@@ -8,7 +8,7 @@ You should not import hgvs.config directly.
 Config are read from an ini-format file.  `hgvs.config` implements a
 thin wrapper on the ConfigParser instance in order to provide
 *attribute* based lookups (rather than key). It also returns
-heuristically typed values (e.g., "True" becomes True). 
+heuristically typed values (e.g., "True" becomes True).
 
 Although keys are settable, they are stringified on setting and
 type-inferred on getting, which means that round-tripping works only

@@ -148,7 +148,7 @@ class UTABase(Interface):
         "alignments_for_region": """
             select tx_ac,alt_ac,alt_strand,alt_aln_method,min(start_i) as start_i,max(end_i) as end_i
             from exon_set ES
-            join exon E on ES.exon_set_id=E.exon_set_id 
+            join exon E on ES.exon_set_id=E.exon_set_id
             where alt_ac=?
             group by tx_ac,alt_ac,alt_strand,alt_aln_method
             having min(start_i) < ? and ? <= max(end_i)

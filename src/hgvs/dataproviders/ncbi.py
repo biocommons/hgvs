@@ -127,28 +127,28 @@ class NCBIBase:
             where tx_ac=?
             """,
         "tx_for_gene_id": """
-            select tx_ac 
+            select tx_ac
             from assocacs
             where gene_id=?
             """,
         "hgnc_for_gene_id": """
-            select distinct(hgnc) 
+            select distinct(hgnc)
             from assocacs
             where gene_id=?
             """,
         "gene_info_for_gene_id": """
-            select gene_id, tax_id, hgnc, maploc, aliases, type, summary, descr, xrefs   
+            select gene_id, tax_id, hgnc, maploc, aliases, type, summary, descr, xrefs
             from geneinfo
             where gene_id=?
             """,
         "gene_info_for_hgnc": """
-            select gene_id, tax_id, hgnc, maploc, aliases, type, summary, descr, xrefs   
+            select gene_id, tax_id, hgnc, maploc, aliases, type, summary, descr, xrefs
             from geneinfo
             where hgnc=?
             """,
         "all_transcripts": """
-                select distinct(tx_ac) 
-                from assocacs                 
+                select distinct(tx_ac)
+                from assocacs
             """,
     }
 
@@ -236,7 +236,7 @@ class NCBIBase:
         sql = """
                 insert into assocacs (hgnc, tx_ac, gene_id, pro_ac, origin)
                 values (%s,%s,%s,%s,%s)
-                
+
             """
         self._update(sql, [hgnc, tx_ac, gene_id, pro_ac, origin])
 

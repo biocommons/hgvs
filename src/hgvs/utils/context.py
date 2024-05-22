@@ -3,12 +3,12 @@
 
 This code requires uta-align and pysam packages, which are NOT part of
 a typical hgvs installation because they change periodically in ways
-that break dependencies. 
+that break dependencies.
 
 
 Something like this:
 
-(default-2.7)snafu$ ./sbin/hgvs-shell 
+(default-2.7)snafu$ ./sbin/hgvs-shell
 In [1]: import hgvs.utils.context as huc
 In [2]: h = 'NM_000399.3:n.2689_2690insA'
 In [3]: v = hp.parse_hgvs_variant(h)
@@ -17,7 +17,7 @@ In [5]: print(huc.variant_context_w_alignment(am, vn))
                                               v                               NC_000010.10:g.64572045dupT
 NC_000010.10 g 64572025 > ACTCAGGGAGTGATTTTTTTTCTCCATAATAAGGCAACCCA          > 64572065 NC_000010.10:g.64572045dupT
 NC_000010.10 g 64572025 < TGAGTCCCTCACTAAAAAAAAGAGGTATTATTCCGTTGGGT          < 64572065 NC_000010.10:g.64572045dupT
-                          |||||||||||||-|||||||||||||||||||||||||||          13=1D27= 
+                          |||||||||||||-|||||||||||||||||||||||||||          13=1D27=
 NM_000399.3  n     2670 < TGAGTCCCTCACT-AAAAAAAGAGGTATTATTCCGTTGGGT          <     2709 NM_000399.3:n.2696dupA
 NM_000399.3  c      902 <                                                    <      941 NM_000399.3:c.*928dupA
 
