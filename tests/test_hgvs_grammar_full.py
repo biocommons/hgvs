@@ -4,7 +4,10 @@ import pprint
 import re
 import unittest
 from sys import version_info
-from importlib import resources
+try:
+    from importlib.resources import files as resources_files
+except ImportError:
+    from importlib_resources import files as resources_files
 
 #
 # Tests of the grammar
@@ -51,7 +54,7 @@ class TestGrammarFull(unittest.TestCase):
         """ensure that all rules in grammar have tests"""
 
         grammar_rule_re = re.compile(r"^(\w+)")
-        grammar_fn = resources.files("hgvs") / "_data" / "hgvs.pymeta"
+        grammar_fn = resources_files("hgvs") / "_data" / "hgvs.pymeta"
         with open(grammar_fn, "r") as f:
             grammar_rules = set(r.group(1) for r in filter(None, map(grammar_rule_re.match, f)))
 
