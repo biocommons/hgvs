@@ -33,7 +33,6 @@ from configparser import ConfigParser, ExtendedInterpolation
 from copy import copy
 from importlib import resources
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -116,6 +115,6 @@ def _val_xform(v):
 
 
 _default_config = Config()
-_default_config.read_stream(resources.files(__name__) / "_data"/ "defaults.ini")
+_default_config.read_stream(resources.files(__name__) / "_data" / "defaults.ini")
 
 global_config = copy(_default_config)
