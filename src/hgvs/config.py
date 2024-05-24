@@ -31,8 +31,8 @@ import logging
 import re
 from configparser import ConfigParser, ExtendedInterpolation
 from copy import copy
+from importlib import resources
 
-from pkg_resources import resource_stream
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +53,7 @@ class Config:
 
     def read_stream(self, flo):
         """read configuration from ini-formatted file-like object"""
-        self._cp.read_string(flo.read().decode("ascii"))
+        self._cp.read_string(flo.open("rb").read().decode("ascii"))
 
     def __copy__(self):
         new_config = Config.__new__(Config)
@@ -116,6 +116,6 @@ def _val_xform(v):
 
 
 _default_config = Config()
-_default_config.read_stream(resource_stream(__name__, "_data/defaults.ini"))
+_default_config.read_stream(resources.files(__name__) / "_data"/ "defaults.ini")
 
 global_config = copy(_default_config)
