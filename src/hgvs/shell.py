@@ -79,6 +79,7 @@ def shell():
         validator,
         variant_mapper,
         vm,
+        pretty,
     )
     from hgvs.utils.context import variant_context_w_alignment  # noqa
 

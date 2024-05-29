@@ -47,13 +47,23 @@ class PositionDetail:
     n_interval: Interval = None
     c_interval: Interval = None
     protein_data: ProteinData = None
+    exon_nr: int = None
+    variant_feature: str = None
+
+    @classmethod
+    def get_header(cls) -> str:
+        return (
+            "alignment_pos\tc_pos\tc_offset\tc_interval\tcigar_ref\tchromosome_pos\tref\tmapped_pos\t"
+            "mapped_pos_offset\tn_pos\ttx\tvariant_feature\texon_nr"
+        )
 
     def __repr__(self) -> str:
         return (
-            f"{self.mapped_pos}\t{self.c_pos}\t{self.c_offset}\t{self.c_interval}\t"
+            f"{self.alignment_pos}\t{self.c_pos}\t{self.c_offset}\t{self.c_interval}\t"
             + f"{self.cigar_ref}\t"
-            + f"{self.chromosome_pos}\t{self.ref}\t{self.alignment_pos}\t{self.mapped_pos_offset}\t"
+            + f"{self.chromosome_pos}\t{self.ref}\t{self.mapped_pos}\t{self.mapped_pos_offset}\t"
             + f"\t{self.n_pos}\t{self.tx}"
+            + f"\t{self.variant_feature} {self.exon_nr}"
         )
 
 
@@ -70,8 +80,11 @@ class VariantData:
     tx_seq: str
     alignmentmapper: AlignmentMapper
     var_g: SequenceVariant
-    var_c: SequenceVariant = None
+    strand:int
+    var_c_or_n: SequenceVariant = None
     position_details: List[PositionDetail] = None
+    all: bool = False
+    
 
 
 @dataclass
@@ -87,3 +100,4 @@ class PrettyConfig:
     useColor: bool = False
     showLegend: bool = True
     infer_hgvs_c: bool = True
+    all:bool = False

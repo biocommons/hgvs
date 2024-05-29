@@ -6,7 +6,7 @@ from bioutils.sequences import aa1_to_aa3_lut
 import hgvs
 import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
 import hgvs.utils.altseqbuilder as altseqbuilder
-from hgvs.exceptions import HGVSInvalidIntervalError
+from hgvs.exceptions import HGVSDataNotAvailableError, HGVSInvalidIntervalError
 from hgvs.pretty.models import (
     PositionDetail,
     PrettyConfig,
@@ -16,7 +16,7 @@ from hgvs.pretty.models import (
 )
 from hgvs.sequencevariant import SequenceVariant
 from hgvs.utils.reftranscriptdata import RefTranscriptData
-
+from typing import Optional
 
 class DataCompiler:
 
@@ -91,6 +91,26 @@ class DataCompiler:
 
         return start, end, ref, alt
 
+    def _get_exon_nr(self, tx_exons, genomic_pos)-> Tuple[int, str]:
+
+        i = -1
+        for ex in tx_exons:
+            i+=1
+            exon_nr = ex['ord'] + 1
+            
+            if ex ['alt_start_i'] < genomic_pos and ex['alt_end_i'] >= genomic_pos:                
+                return (exon_nr, 'exon')
+            
+            if i > 0:
+                if ex['alt_strand'] > 0:
+                    if tx_exons[i - 1]["alt_end_i"] < genomic_pos and tx_exons[i]["alt_start_i"] >= genomic_pos:
+                        return (exon_nr, 'intron')
+                else:
+                    if tx_exons[i]["alt_start_i"] < genomic_pos and tx_exons[i-1]["alt_end_i"] >= genomic_pos:
+                        return (i, 'intron')
+
+        return (-1, 'no-overlap')
+    
     def _get_prot_alt(
         self, tx_ac: str, strand: int, reference_data, ref_base, c_interval
     ) -> ProteinData:
@@ -133,7 +153,7 @@ class DataCompiler:
     def data(
         self,
         var_g: SequenceVariant,
-        var_c: SequenceVariant = None,
+        var_c_or_n: SequenceVariant = None,
         display_start: int = None,
         display_end: int = None,
     ) -> VariantData:
@@ -160,34 +180,60 @@ class DataCompiler:
         else:
             seq_end = display_end
 
+        if var_c_or_n is not None:
+            tx_ac = var_c_or_n.ac
+        else:
+            tx_ac = '' # can't show transcript , since there is none.
+        
+        alt_ac = var_g.ac
+        alt_aln_method = 'splign'
+        
+        if tx_ac:
+            tx_exons = self.config.hdp.get_tx_exons(tx_ac, alt_ac, alt_aln_method)
+            tx_exons = sorted(tx_exons, key=lambda e: e["ord"])
+        else:
+            tx_exons = []
+        
         chrom_seq = self.config.hdp.get_seq(var_g.ac)
         disp_seq = chrom_seq[seq_start:seq_end]
+        
+        if tx_ac :
+            tx_seq = self.config.hdp.get_seq(tx_ac)
+            if self.config.default_assembly == "GRCh37":
+                am = self.config.am37
+            else:
+                am = self.config.am38
 
-        tx_ac = var_c.ac
-        tx_seq = self.config.hdp.get_seq(tx_ac)
+            mapper = am._fetch_AlignmentMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method="splign")
+
+        else:
+            tx_seq = ""
+            mapper = None
         #print(tx_seq)
 
-        if self.config.default_assembly == "GRCh37":
-            am = self.config.am37
-        else:
-            am = self.config.am38
-
-        mapper = am._fetch_AlignmentMapper(tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method="splign")
-
+        
         # we don't know the protein ac, get it looked up:
         pro_ac = None
-        reference_data = RefTranscriptData(self.config.hdp, tx_ac, pro_ac)
+        if var_c_or_n and var_c_or_n.type == 'c':
+            reference_data = RefTranscriptData(self.config.hdp, tx_ac, pro_ac)
+        else:
+            reference_data = None
 
         position_details = []
         prev_mapped_pos = None
+        prev_c_pos = -1
 
         for chromosome_pos in range(seq_start + 1, seq_end + 1):
 
-            pdata = PositionDetail(chromosome_pos=chromosome_pos)
+            exon_nr, feat = self._get_exon_nr(tx_exons, chromosome_pos)
+
+            pdata = PositionDetail(chromosome_pos=chromosome_pos, exon_nr=exon_nr, variant_feature=feat)
             position_details.append(pdata)
             
             pdata.ref = chrom_seq[chromosome_pos - 1]
 
+            if not mapper:
+                continue
             try:
                 gr = chromosome_pos - mapper.gc_offset - 1
                 pdata.alignment_pos = gr
@@ -210,12 +256,12 @@ class DataCompiler:
                     pdata.mapped_pos = prev_mapped_pos
 
                     # a region in ref that has been deleted. Fill in gaps.
-                    self._backfill_gap_in_ref(tx_ac, tx_seq, mapper, reference_data, pdata, cig, prev_c_pos +1, prev_n_pos+1)
+                    self._backfill_gap_in_ref(var_c_or_n, tx_seq, tx_exons, mapper, reference_data, pdata, cig, prev_c_pos +1, prev_n_pos+1)
 
-                    print(f"pdata at end of backfill: {pdata}")
-                
+                                    
+                    exon_nr, feat = self._get_exon_nr(tx_exons, chromosome_pos)
                     #prev_mapped_pos += 1
-                    pdata = PositionDetail(chromosome_pos=chromosome_pos)
+                    pdata = PositionDetail(chromosome_pos=chromosome_pos, exon_nr=exon_nr, variant_feature=feat)
                     position_details.append(pdata)
 
                     pdata.alignment_pos = gr
@@ -241,33 +287,40 @@ class DataCompiler:
 
             try:
                 n_interval = mapper.g_to_n(g_interval)
-                c_interval = mapper.n_to_c(n_interval)
+                if var_c_or_n.type == 'c':
+                    c_interval = mapper.n_to_c(n_interval)
+                else:
+                    c_interval = None
             except hgvs.exceptions.HGVSInvalidIntervalError:
                 # we are beyond the transcript space, can't set any of the other values.
                 continue
 
             pdata.n_interval = n_interval
-            pdata.c_interval = c_interval
-
-            n_pos = int(n_interval.start.base) - 1
-            c_pos = int(c_interval.start.base) - 1
+            if c_interval is not None:
+                pdata.c_interval = c_interval
+                c_pos = int(c_interval.start.base) - 1
+                prev_c_pos = c_pos
+            else:
+                prev_c_pos = -1
+            
+            n_pos = int(n_interval.start.base) - 1            
             prev_n_pos = n_pos
-            prev_c_pos = c_pos
-
+            
             self._populate_with_n_c(
-                var_c.ac, tx_seq, mapper, reference_data, pdata, cig, n_interval, c_interval
+                var_c_or_n, tx_seq, tx_exons, mapper, reference_data, pdata, cig, n_interval, c_interval
             )
 
-        for p in position_details:
-            print(f"{p}\t{p.protein_data}\t")
+        # print(position_details[0].get_header())
+        # for p in position_details:
+        #     print(f"{p}\t{p.protein_data}\t")
 
         vd = VariantData(
-            seq_start, seq_end, ls, rs, fs, disp_seq, tx_seq, mapper, var_g, var_c, position_details
+            seq_start, seq_end, ls, rs, fs, disp_seq, tx_seq, mapper, var_g, mapper.strand, var_c_or_n, position_details
         )
 
         return vd
 
-    def _backfill_gap_in_ref(self, tx_ac, tx_seq, mapper, reference_data, pdata, cig, prev_c_pos, prev_n_pos ):
+    def _backfill_gap_in_ref(self, var_c_or_n, tx_seq, tx_exons, mapper, reference_data, pdata, cig, prev_c_pos, prev_n_pos ):
         
         pdata.chromosome_pos = None
         pdata.ref = None
@@ -290,25 +343,33 @@ class DataCompiler:
         pdata.c_interval = c_interval
 
         self._populate_with_n_c(
-                        tx_ac, tx_seq, mapper, reference_data, pdata, cig, n_interval, c_interval
+                        var_c_or_n, tx_seq, tx_exons, mapper, reference_data, pdata, cig, n_interval, c_interval
                     )
 
         
 
     def _populate_with_n_c(
-        self, tx_ac, tx_seq, mapper, reference_data, pdata, cig, n_interval, c_interval
+        self, var_c_or_n, tx_seq, tx_exons, mapper, reference_data, pdata, cig, n_interval, c_interval
     ):
         n_pos = int(n_interval.start.base) - 1
-        c_pos = int(c_interval.start.base) - 1
 
+        if c_interval:
+            c_pos = int(c_interval.start.base) - 1
+            pdata.c_pos = c_pos
+            pdata.c_offset = c_interval.start.offset
+        else:
+            c_pos = None
         # print(f"{n_interval} {c_pos} {c_interval.start.datum}")
+        # set transcript_feature:
+        tx_ac = var_c_or_n.ac
 
         pdata.n_pos = n_pos
-        pdata.c_pos = c_pos
-        pdata.c_offset = c_interval.start.offset
+        
         pdata.tx = tx_seq[pdata.n_pos]
 
         coding = True
+        if var_c_or_n.type == 'n': # rna coding can't be in protein space
+            coding = False
         if cig == "N" or pdata.c_offset != 0:
             coding = False
 
@@ -319,7 +380,6 @@ class DataCompiler:
         if coding:
             if not ref_base or pdata.tx:
                 ref_base = pdata.tx
-
             prot_data = self._get_prot_alt(
                 tx_ac, mapper.strand, reference_data, ref_base, c_interval
             )

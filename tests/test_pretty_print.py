@@ -58,6 +58,8 @@ class Test_SimplePosition(unittest.TestCase):
         ).split("\n")
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
+        
+    
 
     def test_var_c1_reverse(self):
         """test c1 on <- strand"""
@@ -82,6 +84,7 @@ class Test_SimplePosition(unittest.TestCase):
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
 
+
     def test_var_g_substitution(self):
         hgvs_g = "NC_000007.13:g.36561662C>T"
         var_g = self.hp.parse(hgvs_g)
@@ -103,6 +106,7 @@ class Test_SimplePosition(unittest.TestCase):
         ).split("\n")
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
+        
 
     def test_var_g_ins(self):
         """[ATTA]x2 -> x3"""
@@ -413,7 +417,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "chrom pos : |    .    |    .    |    .    |    .    |\n"
             + "seq    -> : TCTCTGGAGCCCCTGACTTCTGAGATGCACGCCCCTGGGGA\n"
             + "tx ref dif:                     X                    \n"
-            + "region    :                     T                    \n"
+            + "region    :                     =                    \n"
             + "aa seq <- : ArgGlnLeuGlyGlnSerGlyLeuHisValGlyArgProVa\n"
             + "tx seq <- : AGAGACCTCGGGGACTGAAGGCTCTACGTGCGGGGACCCCT\n"
             + "tx pos    :    .    |    .    |    .    |    .    |  \n"
@@ -445,7 +449,7 @@ class Test_SimplePosition(unittest.TestCase):
             "chrom pos :     |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |  \n"
             "seq    -> : CGACTGCCCAGAGAGCTGCTGCGAGCCCCCCTGCTGCGCCCCCAGCTGCTGCGCCCCGGCCCCCTGCCTGAGCCTGGTCTGCACCCCAGTGAGCCGT\n"
             "tx ref dif:                               IIIIIIIIIIIIIII                                                 XX \n"
-            "region    :                               =-------------------------=                                        \n"
+            "region    :                               x-------------------------x                                        \n"
             "aa seq -> : pAspCysProGluSerCysCysGluProPr---------------oCysCysAlaProAlaProCysLeuSerLeuValCysThrProValSerTyr\n"
             "tx seq -> : CGACTGCCCAGAGAGCTGCTGCGAGCCCCC---------------CTGCTGCGCCCCGGCCCCCTGCCTGAGCCTGGTCTGCACCCCAGTGAGCTAT\n"
             "tx pos    : .    |    .    |    .    |                   .    |    .    |    .    |    .    |    .    |    . \n"
@@ -498,8 +502,6 @@ class Test_SimplePosition(unittest.TestCase):
 
         print(result)
 
-        assert False
-
     def test_ruler(self):
         """Test the ruler display option turned on."""
         hgvs_c = "NM_001111.4:c.298G>A"
@@ -520,11 +522,23 @@ class Test_SimplePosition(unittest.TestCase):
             + "|    .    |    .    |    .    |    .    |\n"
             + "TCTCTGGAGCCCCTGACTTCTGAGATGCACGCCCCTGGGGA\n"
             + "                    X                    \n"
-            + "                    T                    \n"
+            + "                    =                    \n"
             + "ArgGlnLeuGlyGlnSerGlyLeuHisValGlyArgProVa\n"
             + "AGAGACCTCGGGGACTGAAGGCTCTACGTGCGGGGACCCCT\n"
             + "   .    |    .    |    .    |    .    |  \n"
             + "        310       300       290       280\n"
         ).split("\n")
+        for r, e in zip(result, expected_str):
+            self.assertEqual(e, r)
+
+    def test_rna_coding(self):
+        """ a rna coding transcript."""
+        hgvs_n = 'NR_146230.2:n.10G>A'
+        var_n = self.hp.parse(hgvs_n)
+        result = self.pp.display(var_n)
+        print(result)
+        expected_str = (
+            
+        )
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
