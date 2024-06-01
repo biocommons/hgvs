@@ -6,6 +6,7 @@ from hgvs.assemblymapper import AssemblyMapper
 from hgvs.pretty.datacompiler import DataCompiler
 from hgvs.pretty.models import PrettyConfig
 from hgvs.pretty.renderer.chrom_seq_renderer import ChromSeqRendered
+from hgvs.pretty.renderer.chrom_seq_reverse_renderer import ChromReverseSeqRendered
 from hgvs.pretty.renderer.pos_info import ChrPositionInfo
 from hgvs.pretty.renderer.prot_seq_renderer import ProtSeqRenderer
 from hgvs.pretty.renderer.ruler import ChrRuler
@@ -42,7 +43,8 @@ class PrettyPrint:
         useColor=False,
         showLegend=True,
         infer_hgvs_c=True,
-        all=False
+        all=False,
+        show_reverse_strand = False
     ):
         """
         :param hdp: HGVS Data Provider Interface-compliant instance
@@ -63,7 +65,8 @@ class PrettyPrint:
             useColor,
             showLegend,
             infer_hgvs_c,
-            all
+            all,
+            show_reverse_strand
         )
 
 
@@ -198,7 +201,12 @@ class PrettyPrint:
                 var_c_print = str(var_c_or_n)
             var_str += head + var_c_print + "\n"
 
-        renderer_cls= [ChrPositionInfo,ChrRuler , ChromSeqRendered, TxRefDisagreeRenderer]
+        renderer_cls= [ChrPositionInfo,ChrRuler , ChromSeqRendered]
+        
+        if self.config.show_reverse_strand:
+            renderer_cls.append(ChromReverseSeqRendered)
+
+        renderer_cls.append(TxRefDisagreeRenderer)
 
         renderers = []
         for cls in renderer_cls:

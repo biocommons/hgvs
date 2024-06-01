@@ -100,4 +100,5 @@ class PrettyConfig:
     useColor: bool = False
     showLegend: bool = True
     infer_hgvs_c: bool = True
-    all:bool = False
+    all:bool = False # print all possible hgvs_c (for all UTA transcripts)
+    show_reverse_strand:bool = False # show the reverse strand sequence for the chromosome

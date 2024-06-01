@@ -89,7 +89,9 @@ class Test_SimplePosition(unittest.TestCase):
         hgvs_g = "NC_000007.13:g.36561662C>T"
         var_g = self.hp.parse(hgvs_g)
 
-        result = self.pp.display(var_g)
+        pp = PrettyPrint(self.hdp, show_reverse_strand=True)
+
+        result = pp.display(var_g)
         print(result)
         result = result.split("\n")
         expected_str = (
@@ -98,6 +100,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "          :         36,561,650          36,561,670\n"
             + "chrom pos :    .    |    .    |    .    |    .    |  \n"
             + "seq    -> : TACCTCGTTGGGGTGGAATCCATCCACGGGCTCGATGAGCT\n"
+            + "seq    <- : ATGGAGCAACCCCACCTTAGGTAGGTGCCCGAGCTACTCGA\n"
             + "region    :                     T                    \n"
             + "aa seq <- :    GluAsnProHisPheGlyAspValProGluIleLeuGl\n"
             + "tx seq <- :    GAGCAACCCCACCTTAGGTAGGTGCCCGAGCTACTCGA\n"
@@ -535,10 +538,23 @@ class Test_SimplePosition(unittest.TestCase):
         """ a rna coding transcript."""
         hgvs_n = 'NR_146230.2:n.10G>A'
         var_n = self.hp.parse(hgvs_n)
-        result = self.pp.display(var_n)
+
+        pp = PrettyPrint(self.hdp, show_reverse_strand=True)
+        result = pp.display(var_n)
         print(result)
         expected_str = (
-            
+            "hgvs      : NC_000001.10:g.167905930G>A\n"
+            + "hgvs      : NR_146230.2:n.10G>A\n"
+            + "          : 167,905,910         167,905,930         167,905,950\n"
+            + "chrom pos : |    .    |    .    |    .    |    .    |\n"
+            + "seq    -> : TGCTGATCTTTGGATGTTCTGGTTAGTCTAAGAAGGAGAGT\n"
+            + "seq    <- : ACGACTAGAAACCTACAAGACCAATCAGATTCTTCCTCTCA\n"
+            + "region    :                     A                    \n"
+            + "aa seq -> :                                          \n"
+            + "tx seq -> :             GATGTTCTGGTTAGTCTAAGAAGGAGAGT\n"
+            + "tx pos    :                .    |    .    |    .    |\n"    
+            + "          :                     10        20        30\n"        
         )
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
+        
