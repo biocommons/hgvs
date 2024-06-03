@@ -3,17 +3,17 @@ from hgvs.pretty.renderer.renderer import BasicRenderer
 
 
 class TxRefDisagreeRenderer(BasicRenderer):
-    """ Display tx-ref-disagree positions"""
-    def legend(self)->str:
+    """Display tx-ref-disagree positions"""
 
-        return f"tx ref dif: " 
+    def legend(self) -> str:
+
+        return f"tx ref dif: "
 
     def display(self, data: VariantData) -> str:
         """show differences between tx and ref genome, if there are any"""
 
         if not data.var_c_or_n:
             return ""
-
 
         from hgvs.pretty_print import ENDC, TRED
 
@@ -42,6 +42,5 @@ class TxRefDisagreeRenderer(BasicRenderer):
 
         if var_str.isspace():
             return ""
-
 
         return var_str

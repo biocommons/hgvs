@@ -2,11 +2,9 @@ from hgvs.pretty.models import VariantData
 from hgvs.pretty.renderer.renderer import BasicRenderer
 
 
-
-
 class TxRulerRenderer(BasicRenderer):
-        
-    def legend(self)->str:
+
+    def legend(self) -> str:
         return "          : "
 
     def display(self, data: VariantData) -> str:
@@ -28,7 +26,7 @@ class TxRulerRenderer(BasicRenderer):
                 c_pos = pdata.n_pos
                 interval = pdata.n_interval
 
-            if c_pos is None:                
+            if c_pos is None:
                 var_str += " "
                 continue
 

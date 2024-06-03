@@ -15,9 +15,7 @@ class Test_SimplePosition(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.hp = hgvs.parser.Parser()
-        cls.hdp = hgvs.dataproviders.uta.connect(
-            mode=None, cache=None
-        )
+        cls.hdp = hgvs.dataproviders.uta.connect(mode=None, cache=None)
         cls.pp = PrettyPrint(
             cls.hdp,
         )
@@ -58,8 +56,6 @@ class Test_SimplePosition(unittest.TestCase):
         ).split("\n")
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
-        
-    
 
     def test_var_c1_reverse(self):
         """test c1 on <- strand"""
@@ -83,7 +79,6 @@ class Test_SimplePosition(unittest.TestCase):
         ).split("\n")
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
-
 
     def test_var_g_substitution(self):
         hgvs_g = "NC_000007.13:g.36561662C>T"
@@ -109,7 +104,6 @@ class Test_SimplePosition(unittest.TestCase):
         ).split("\n")
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
-        
 
     def test_var_g_ins(self):
         """[ATTA]x2 -> x3"""
@@ -156,7 +150,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "          :      1,643,270 1,643,280 1,643,290 1,643,300 1,643,310\n"
             + "chrom pos : .    |    .    |    .    |    .    |    .    |  \n"
             + "seq    -> : TCACTGGGGTGTCATCCTCATCGTCATCTTCGTAATTGAGGGAGCAAA\n"
-            + "region    :                     |------|                    \n"            
+            + "region    :                     |------|                    \n"
             + "aa seq <- : sValProThrAspAspGluAspAspAspGluTyrAsnLeuSerCysLe\n"
             + "tx seq <- : AGTGACCCCACAGTAGGAGTAGCAGTAGAAGCATTAACTCCCTCGTTT\n"
             + "tx pos    :   |    .    |    .    |    .    |    .    |    .\n"
@@ -182,7 +176,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "seq    -> : ACCTCGTTGGGGTGGAATCCATCCACGGGCTCGATGAGCT\n"
             + "region    :                    ^^                   \n"
             + "aa seq <- :   GluAsnProHisPheGlyAspValProGluIleLeuGl\n"
-            + "tx seq <- :   GAGCAACCCCACCTTAGGTAGGTGCCCGAGCTACTCGA\n"  
+            + "tx seq <- :   GAGCAACCCCACCTTAGGTAGGTGCCCGAGCTACTCGA\n"
             + "tx pos    :      |    .    |    .    |    .    |    \n"
             + "          :      1500      1490      1480      1470\n"
         ).split("\n")
@@ -208,7 +202,6 @@ class Test_SimplePosition(unittest.TestCase):
             + "tx seq <- :    GAGCAACCCCACCTTAGGTAGGTGCCCGAGCTACTCGAC\n"
             + "tx pos    :       |    .    |    .    |    .    |    .\n"
             + "          :       1500      1490      1480      1470\n"
-            
         ).split("\n")
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
@@ -232,7 +225,6 @@ class Test_SimplePosition(unittest.TestCase):
             + "tx seq <- :     GAGCAACCCCACCTTAGGTAGGTGCCCGAGCTACTCGA\n"
             + "tx pos    :        |    .    |    .    |    .    |    \n"
             + "          :        1500      1490      1480      1470\n"
-            
             + "ref>alt   : CC>C\n"
         ).split("\n")
         for r, e in zip(result, expected_str):
@@ -257,7 +249,6 @@ class Test_SimplePosition(unittest.TestCase):
             + "tx seq <- :   GAGCAACCCCACCTTAGGTAGGTGCCCGAGCTACTCGAC\n"
             + "tx pos    :      |    .    |    .    |    .    |    .\n"
             + "          :      1500      1490      1480      1470\n"
-                        
         ).split("\n")
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
@@ -330,7 +321,6 @@ class Test_SimplePosition(unittest.TestCase):
             + "tx seq <- :   GAGCAACCCCACCTTAGGTAGGTGCCCGAGCTACTCGAC\n"
             + "tx pos    :      |    .    |    .    |    .    |    .\n"
             + "          :      1500      1490      1480      1470\n"
-            
         ).split("\n")
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
@@ -425,7 +415,6 @@ class Test_SimplePosition(unittest.TestCase):
             + "tx seq <- : AGAGACCTCGGGGACTGAAGGCTCTACGTGCGGGGACCCCT\n"
             + "tx pos    :    .    |    .    |    .    |    .    |  \n"
             + "          :         310       300       290       280\n"
-                        
         ).split("\n")
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
@@ -464,10 +453,9 @@ class Test_SimplePosition(unittest.TestCase):
             self.assertEqual(e, r)
 
     def test_ref_disagree_del(self):
-        # hgvs_g = "NC_000001.10:g.154574820_154574821delinsCA" - one base is a svn relative to the tx and part of the variant -> NM_001025107.2:c.-589C>T 
+        # hgvs_g = "NC_000001.10:g.154574820_154574821delinsCA" - one base is a svn relative to the tx and part of the variant -> NM_001025107.2:c.-589C>T
         # var_g = self.hp.parse(hgvs_g)
         # hgvs_c = "NM_020469.2:c.188_189=" is  NC_000009.11:g.136135237_136135238delinsGC in ref
-
 
         hgvs_c = "NM_000682.6:c.901_911del"  # a del variant
 
@@ -493,7 +481,6 @@ class Test_SimplePosition(unittest.TestCase):
         ).split("\n")
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
-
 
     @pytest.mark.skip(reason="actually not that special, but still a nice variant.")
     def test_exon_boundary_overlap_forward_strand(self):
@@ -535,8 +522,8 @@ class Test_SimplePosition(unittest.TestCase):
             self.assertEqual(e, r)
 
     def test_rna_coding(self):
-        """ a rna coding transcript."""
-        hgvs_n = 'NR_146230.2:n.10G>A'
+        """a rna coding transcript."""
+        hgvs_n = "NR_146230.2:n.10G>A"
         var_n = self.hp.parse(hgvs_n)
 
         pp = PrettyPrint(self.hdp, show_reverse_strand=True)
@@ -552,9 +539,8 @@ class Test_SimplePosition(unittest.TestCase):
             + "region    :                     A                    \n"
             + "aa seq -> :                                          \n"
             + "tx seq -> :             GATGTTCTGGTTAGTCTAAGAAGGAGAGT\n"
-            + "tx pos    :                .    |    .    |    .    |\n"    
-            + "          :                     10        20        30\n"        
+            + "tx pos    :                .    |    .    |    .    |\n"
+            + "          :                     10        20        30\n"
         )
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
-        

@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 
+
 class BasicRenderer(ABC):
-    def __init__(self, config, orientation:int):
+    def __init__(self, config, orientation: int):
         self.config = config
         self.orientation = orientation
 

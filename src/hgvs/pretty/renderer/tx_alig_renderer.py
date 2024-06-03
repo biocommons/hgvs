@@ -1,25 +1,26 @@
 import math
+
 from hgvs.pretty.models import VariantData
 from hgvs.pretty.renderer.renderer import BasicRenderer
 
 
 class TxAligRenderer(BasicRenderer):
 
-    def legend(self)->str:
+    def legend(self) -> str:
         orientation = "->"
         if self.orientation < 0:
             orientation = "<-"
         return f"tx seq {orientation} : "
 
-    
     def display(self, data: VariantData) -> str:
         """If transcript info is available show the details of the tx for the region."""
         if not data.var_c_or_n:
             return ""
 
-        from hgvs.pretty_print import ENDC, TYELLOW, TPURPLE
+        from hgvs.pretty_print import ENDC, TPURPLE, TYELLOW
+
         var_str = ""
-        
+
         first_c = None
         last_c = None
 
@@ -28,14 +29,13 @@ class TxAligRenderer(BasicRenderer):
 
         counter = -1
         for pdata in data.position_details:
-            
+
             counter += 1
 
             if not pdata.mapped_pos:
                 var_str += " "
                 continue
 
-            
             n_pos = pdata.n_pos
             c_pos = pdata.c_pos
             cig = pdata.cigar_ref
@@ -45,9 +45,8 @@ class TxAligRenderer(BasicRenderer):
                 coding = False
                 var_str += " "
                 continue
-    
 
-            if c_pos:                
+            if c_pos:
                 # if we get here we are coding...
                 last_c = f"c.{c_pos}"
             else:
@@ -61,7 +60,7 @@ class TxAligRenderer(BasicRenderer):
                 coding = True
 
             if cig == "=":
-                #c3 = (c_pos - 1) % 3
+                # c3 = (c_pos - 1) % 3
                 if c_pos:
                     bg_col = math.ceil(c_pos / 3) % 2
                 elif n_pos:
@@ -69,7 +68,7 @@ class TxAligRenderer(BasicRenderer):
                 else:
                     var_str += " "
                     continue
-                
+
                 # print(p, c_pos, c3, bg_col )
                 if n_pos >= 0:
                     base = pdata.tx

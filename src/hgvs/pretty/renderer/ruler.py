@@ -3,9 +3,9 @@ from hgvs.pretty.renderer.renderer import BasicRenderer
 
 
 class ChrRuler(BasicRenderer):
-    
+
     def legend(self):
-        """ returns the legend for this category of display"""
+        """returns the legend for this category of display"""
         return "chrom pos : "
 
     def display(self, data: VariantData) -> str:

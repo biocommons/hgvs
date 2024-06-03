@@ -1,5 +1,3 @@
-
-
 from hgvs.pretty.models import VariantCoords, VariantData
 from hgvs.pretty.renderer.renderer import BasicRenderer
 from hgvs.sequencevariant import SequenceVariant
@@ -7,20 +5,17 @@ from hgvs.sequencevariant import SequenceVariant
 
 class ShuffledVariant(BasicRenderer):
 
-    def __init__(self, config, orientation:int, var_g: SequenceVariant, vc: VariantCoords)->None:
-        super().__init__(config, orientation)  
+    def __init__(self, config, orientation: int, var_g: SequenceVariant, vc: VariantCoords) -> None:
+        super().__init__(config, orientation)
 
         self.var_g = var_g
         self.vc = vc
 
-    def legend(self
-    ) ->str:
-        
+    def legend(self) -> str:
+
         return "region    : "
 
-    def display(
-        self, data: VariantData
-    ) -> str:
+    def display(self, data: VariantData) -> str:
 
         from hgvs.pretty_print import ENDC, TBLUE, TGREEN, TRED, TYELLOW
 
