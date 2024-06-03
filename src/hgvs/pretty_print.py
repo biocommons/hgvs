@@ -1,6 +1,5 @@
-
-
 from typing import List
+
 import hgvs
 from hgvs.assemblymapper import AssemblyMapper
 from hgvs.pretty.datacompiler import DataCompiler
@@ -44,7 +43,7 @@ class PrettyPrint:
         showLegend=True,
         infer_hgvs_c=True,
         all=False,
-        show_reverse_strand = False
+        show_reverse_strand=False,
     ):
         """
         :param hdp: HGVS Data Provider Interface-compliant instance
@@ -66,28 +65,25 @@ class PrettyPrint:
             showLegend,
             infer_hgvs_c,
             all,
-            show_reverse_strand
+            show_reverse_strand,
         )
 
-
-    def _get_assembly_mapper(self)->AssemblyMapper:
+    def _get_assembly_mapper(self) -> AssemblyMapper:
         if self.config.default_assembly == "GRCh37":
             am = self.config.am37
         else:
             am = self.config.am38
-        
+
         return am
 
-    def _get_all_transcripts(self, var_g) ->List[str]:
+    def _get_all_transcripts(self, var_g) -> List[str]:
         am = self._get_assembly_mapper()
 
         transcripts = am.relevant_transcripts(var_g)
 
         return transcripts
 
-
-    def _infer_hgvs_c(self, var_g: SequenceVariant, tx_ac:str=None) -> SequenceVariant:
-        
+    def _infer_hgvs_c(self, var_g: SequenceVariant, tx_ac: str = None) -> SequenceVariant:
 
         if not tx_ac:
             transcripts = self._get_all_transcripts(var_g)
@@ -98,13 +94,11 @@ class PrettyPrint:
 
         am = self._get_assembly_mapper()
 
-        if tx_ac.startswith('NR_'):
-            var_n = am.g_to_n(var_g, tx_ac)    
+        if tx_ac.startswith("NR_"):
+            var_n = am.g_to_n(var_g, tx_ac)
             return var_n
         var_c = am.g_to_c(var_g, tx_ac)
         return var_c
-
-    
 
     def _map_to_chrom(self, sv: SequenceVariant) -> SequenceVariant:
         """maps a variant to chromosomal coords, if needed."""
@@ -136,7 +130,11 @@ class PrettyPrint:
         return var_str
 
     def display(
-        self, sv: SequenceVariant, tx_ac: str = None, display_start: int = None, display_end: int = None
+        self,
+        sv: SequenceVariant,
+        tx_ac: str = None,
+        display_start: int = None,
+        display_end: int = None,
     ) -> str:
         """Takes a variant and prints the genomic context around it."""
 
@@ -163,19 +161,27 @@ class PrettyPrint:
             print(f"displaying {len(tx_acs)} alternative transcripts")
             for tx_ac in tx_acs:
                 var_c_or_n = self._infer_hgvs_c(var_g, tx_ac)
-                response += self.create_repre(var_g, var_c_or_n, display_start, display_end, data_compiler)
+                response += self.create_repre(
+                    var_g, var_c_or_n, display_start, display_end, data_compiler
+                )
                 response += "\n---\n"
             return response
-        else:        
+        else:
 
             if not var_c_or_n:
                 if self.config.infer_hgvs_c:
                     var_c_or_n = self._infer_hgvs_c(var_g)
 
-        
             return self.create_repre(var_g, var_c_or_n, display_start, display_end, data_compiler)
 
-    def create_repre(self, var_g:SequenceVariant,  var_c_or_n:SequenceVariant, display_start:int, display_end:int, data_compiler:DataCompiler):
+    def create_repre(
+        self,
+        var_g: SequenceVariant,
+        var_c_or_n: SequenceVariant,
+        display_start: int,
+        display_end: int,
+        data_compiler: DataCompiler,
+    ):
         data = data_compiler.data(var_g, var_c_or_n, display_start, display_end)
 
         left_shuffled_var = data.left_shuffled
@@ -201,8 +207,8 @@ class PrettyPrint:
                 var_c_print = str(var_c_or_n)
             var_str += head + var_c_print + "\n"
 
-        renderer_cls= [ChrPositionInfo,ChrRuler , ChromSeqRendered]
-        
+        renderer_cls = [ChrPositionInfo, ChrRuler, ChromSeqRendered]
+
         if self.config.show_reverse_strand:
             renderer_cls.append(ChromReverseSeqRendered)
 
@@ -213,50 +219,51 @@ class PrettyPrint:
             r = cls(self.config, data.strand)
             renderers.append(r)
 
-
         for renderer in renderers:
-            d = ''
+            d = ""
             if self.config.showLegend:
-                d += renderer.legend() 
-            str_results = renderer.display(data) 
+                d += renderer.legend()
+            str_results = renderer.display(data)
 
             if str_results:
                 var_str += d + str_results + "\n"
 
-  
         left_shuffled_renderer = ShuffledVariant(self.config, data.strand, var_g, left_shuffled_var)
         left_shuffled_str = left_shuffled_renderer.display(data)
 
-        right_shuffled_renderer = ShuffledVariant(self.config, data.strand, var_g, right_shuffled_var)
+        right_shuffled_renderer = ShuffledVariant(
+            self.config, data.strand, var_g, right_shuffled_var
+        )
         right_shuffled_str = right_shuffled_renderer.display(data)
         if self.config.showLegend:
-            shuffled_seq_header = left_shuffled_renderer.legend() 
+            shuffled_seq_header = left_shuffled_renderer.legend()
         else:
-            shuffled_seq_header = ''
-        
+            shuffled_seq_header = ""
+
         if left_shuffled_str != right_shuffled_str:
-            fully_justified_renderer = ShuffledVariant(self.config, data.strand, var_g, fully_justified_var)
+            fully_justified_renderer = ShuffledVariant(
+                self.config, data.strand, var_g, fully_justified_var
+            )
             fully_justified_str = fully_justified_renderer.display(data)
 
-            #var_str += shuffled_seq_header + left_shuffled_str + "\n"
-            #var_str += shuffled_seq_header + right_shuffled_str + "\n"
+            # var_str += shuffled_seq_header + left_shuffled_str + "\n"
+            # var_str += shuffled_seq_header + right_shuffled_str + "\n"
             var_str += shuffled_seq_header + fully_justified_str + "\n"
 
         else:
             var_str += shuffled_seq_header + left_shuffled_str + "\n"
 
-        renderers_cls = [ProtSeqRenderer, TxAligRenderer ,TxMappingRenderer, TxRulerRenderer]
+        renderers_cls = [ProtSeqRenderer, TxAligRenderer, TxMappingRenderer, TxRulerRenderer]
         for cls in renderers_cls:
             renderer = cls(self.config, data.strand)
 
-            d = ''
+            d = ""
             if self.config.showLegend:
-                d += renderer.legend() 
-            str_results = renderer.display(data) 
+                d += renderer.legend()
+            str_results = renderer.display(data)
 
             if str_results:
                 var_str += d + str_results + "\n"
-
 
         if left_shuffled_str != right_shuffled_str:
             # TODO: detect repeats?

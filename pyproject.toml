@@ -31,7 +31,7 @@ keywords = [
     "hgvs",
     "variation"
     ]
-dynamic = ["version", "optional-dependencies"]
+dynamic = ["version"]
 
 dependencies=[
     "attrs >= 17.4.0",  # https://github.com/biocommons/hgvs/issues/473
@@ -42,6 +42,11 @@ dependencies=[
     "parsley",
     "psycopg2",
     "six",
+]
+
+[project.optional-dependencies]
+dev = [
+    "parameterized"
 ]
 
 [project.urls]

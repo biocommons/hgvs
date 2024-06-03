@@ -1,11 +1,12 @@
 from dataclasses import dataclass
+from typing import List
 
 import hgvs
 from hgvs.alignmentmapper import AlignmentMapper
 from hgvs.assemblymapper import AssemblyMapper
 from hgvs.location import Interval
 from hgvs.sequencevariant import SequenceVariant
-from typing import List
+
 
 @dataclass(eq=True, repr=True, frozen=True, order=True)
 class VariantCoords:
@@ -80,11 +81,10 @@ class VariantData:
     tx_seq: str
     alignmentmapper: AlignmentMapper
     var_g: SequenceVariant
-    strand:int
+    strand: int
     var_c_or_n: SequenceVariant = None
     position_details: List[PositionDetail] = None
     all: bool = False
-    
 
 
 @dataclass
@@ -94,11 +94,11 @@ class PrettyConfig:
     hdp: hgvs.dataproviders.interface.Interface
     am37: AssemblyMapper
     am38: AssemblyMapper
-    padding_left: int
-    padding_right: int
+    padding_left: int = 20
+    padding_right: int = 20
     default_assembly: str = "GRCh37"
     useColor: bool = False
     showLegend: bool = True
     infer_hgvs_c: bool = True
-    all:bool = False # print all possible hgvs_c (for all UTA transcripts)
-    show_reverse_strand:bool = False # show the reverse strand sequence for the chromosome
+    all: bool = False  # print all possible hgvs_c (for all UTA transcripts)
+    show_reverse_strand: bool = False  # show the reverse strand sequence for the chromosome
