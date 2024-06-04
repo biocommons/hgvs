@@ -128,6 +128,57 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
         var_p = self.vm.c_to_p(var_c)
         self.assertEqual(str(var_p), "NP_694955.2:p.?")
 
+    def test_map_of_ins_intron_exon_boundary(self):
+        hgvs_c = "NM_004380.2:c.3251-1_3251insA"
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.vm.c_to_p(var_c)
+        self.assertEqual(str(var_p), "NP_004371.2:p.(Ile1084AsnfsTer3)")
+
+    def test_map_of_ins_exon_intron_boundary(self):
+        hgvs_c = "NM_004380.2:c.3250_3250+1insT"
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.vm.c_to_p(var_c)
+        self.assertEqual(str(var_p), "NP_004371.2:p.(Phe1085LeufsTer2)")
+
+    def test_map_of_dup_intron_exon_boundary(self):
+        hgvs_c = "NM_024529.4:c.132-1_132dup"
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.vm.c_to_p(var_c)
+        self.assertEqual(str(var_p), "NP_078805.3:p.?")
+
+        hgvs_c = "NM_024529.4:c.132-2_132-1dup"
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        with self.assertRaises(HGVSError):
+            var_p = self.vm.c_to_p(var_c)
+
+        hgvs_c = "NM_004985.4:c.112-8_112-1dup"
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        with self.assertRaises(HGVSError):
+            var_p = self.vm.c_to_p(var_c)
+
+    def test_map_of_dup_intron_exon_boundary_rc(self):
+        hgvs_c = "NM_004380.2:c.3251-1dup"
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        with self.assertRaises(HGVSError):
+            var_p = self.vm.c_to_p(var_c)
+
+    def test_map_of_dup_exon_intron_boundary(self):
+        hgvs_c = "NM_024529.4:c.130_131+1dup"
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.vm.c_to_p(var_c)
+        self.assertEqual(str(var_p), "NP_078805.3:p.?")
+
+        hgvs_c = "NM_024529.4:c.131+1_131+3dup"
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        with self.assertRaises(HGVSError):
+            var_p = self.vm.c_to_p(var_c)
+
+    def test_map_of_dup_exon_intron_boundary_rc(self):
+        hgvs_c = "NM_004985.4:c.111+1_111+4dup"
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        with self.assertRaises(HGVSError):
+            var_p = self.vm.c_to_p(var_c)
+
 
 if __name__ == "__main__":
     unittest.main()
