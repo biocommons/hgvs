@@ -12,7 +12,7 @@ Supported Platforms
 to work on Mac.  Other platforms and dependency versions are expected
 to work but have not been tested. Reports of successful operation on
 other platforms (and patches to enable this) are appreciated.
-**Python >=3.5 is now required.**
+**Python >=3.10 is now required.**
 
 
 
@@ -38,8 +38,8 @@ method for this is::
   $ python3 -m venv venv
   $ source venv/bin/activate
 
-Your shell prompt will change upon activation. 
-  
+Your shell prompt will change upon activation.
+
 See `this tutorial
 <https://realpython.com/python-virtual-environments-a-primer/>`__ for
 more information about virtual environments.
@@ -59,7 +59,7 @@ Install hgvs via pip::
 Installing hgvs from source (for developers)
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-For the project at https://github.com/biocommons/hgvs. 
+For the project at https://github.com/biocommons/hgvs.
 
 Fetch the source code::
 
@@ -131,7 +131,7 @@ Test your installation
 `hgvs` installs `hgvs-shell`, a command line tool based on
 IPython.  It's a convenience utility that imports and initializes
 frequently-used components.  Try this::
-  
+
   (default-2.7) snafu$ hgvs-shell
   INFO:root:Starting hgvs-shell 1.0.0a1
   INFO:biocommons.seqrepo:biocommons.seqrepo 0.3.1
@@ -170,4 +170,4 @@ in setup.py or requirements.txt indicates that version 1.0 (any patch
 level) is required, and that future 1.x-series releases are
 acceptable.
 
-  
+
