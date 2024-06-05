@@ -103,10 +103,6 @@ exclude_lines = [
     "if __name__ == .__main__.:",
 ]
 
-[tool.black]
-line-length = 100
-
-
 # [tool.flake8]
 # flake8 does not support configuration in pyproject.toml
 # https://github.com/PyCQA/flake8/issues/234#issuecomment-812800832
@@ -120,4 +116,9 @@ disable = "R0913"
 
 
 [tool.pylint.format]
-max-line-length = "120"
+max-line-length = "100"
+
+
+[tool.ruff]
+src = ["src", "test"]
+line-length = 100

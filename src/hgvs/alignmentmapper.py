@@ -26,7 +26,6 @@ The AlignmentMapper class is at the heart of mapping between aligned sequences.
 #    g.   ... 123   124   125   126   127   128   129   130   131   132   133 ...
 #
 
-
 from bioutils.coordinates import strand_int_to_pm
 from six.moves import range
 

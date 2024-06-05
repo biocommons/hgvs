@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""provides sequencing fetching from NCBI and Ensembl
-
-"""
+"""provides sequencing fetching from NCBI and Ensembl"""
 
 import logging
 import os

@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Represent partial HGVS tags that refer to a position without alleles
-
-"""
+"""Represent partial HGVS tags that refer to a position without alleles"""
 
 import attr
 

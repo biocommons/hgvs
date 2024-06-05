@@ -15,7 +15,6 @@ The conceptual swap occurs in the _map function.
 
 """
 
-
 import re
 
 from hgvs.exceptions import HGVSInvalidIntervalError

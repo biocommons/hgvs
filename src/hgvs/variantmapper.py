@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Projects variants between sequences using AlignmentMapper.
-
-"""
+"""Projects variants between sequences using AlignmentMapper."""
 
 import copy
 import logging

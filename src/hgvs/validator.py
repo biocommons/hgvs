@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""implements validation of hgvs variants
-
-"""
+"""implements validation of hgvs variants"""
 
 import logging
 

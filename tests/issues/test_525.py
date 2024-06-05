@@ -1,4 +1,5 @@
 """https://github.com/biocommons/hgvs/issues/525"""
+
 import pytest
 
 

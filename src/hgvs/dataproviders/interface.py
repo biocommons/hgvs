@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Defines the abstract data provider interface
-
-"""
+"""Defines the abstract data provider interface"""
 
 import abc
 import os

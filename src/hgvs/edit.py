@@ -8,6 +8,7 @@ different (e.g., the ref AA in a protein substitution is part of the
 location).
 
 """
+
 import abc
 
 import attr
@@ -50,7 +51,7 @@ class Edit(abc.ABC):
     @property
     @abc.abstractmethod
     def type(self):
-        """ return the type of this Edit """
+        """return the type of this Edit"""
         pass
 
 

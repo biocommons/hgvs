@@ -4,6 +4,7 @@ import pprint
 import re
 import unittest
 from sys import version_info
+
 try:
     from importlib.resources import files as resources_files
 except ImportError:

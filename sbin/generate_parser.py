@@ -18,7 +18,7 @@ if __name__ == "__main__":
     grammar_file = os.path.join(hgvs_base_dir, "src/hgvs/_data/hgvs.pymeta")
     generated_code_dir = os.path.join(hgvs_base_dir, "src/hgvs/generated")
 
-    grammar_hash = hashlib.md5(open(grammar_file, 'rb').read()).hexdigest()
+    grammar_hash = hashlib.md5(open(grammar_file, "rb").read()).hexdigest()
     prefix_length = len(hgvs_base_dir) + 1  # extra to also remove slash
 
     header_template = """# --------------------------------------------------
@@ -31,11 +31,13 @@ if __name__ == "__main__":
 #  Python version: {python_version}
 # --------------------------------------------------
 """
-    header = header_template.format(generate_script=script_path[prefix_length:],
-                                    grammar_file=grammar_file[prefix_length:],
-                                    grammar_hash=grammar_hash,
-                                    parsley_version=parsley.__version__,
-                                    python_version=sys.version)
+    header = header_template.format(
+        generate_script=script_path[prefix_length:],
+        grammar_file=grammar_file[prefix_length:],
+        grammar_hash=grammar_hash,
+        parsley_version=parsley.__version__,
+        python_version=sys.version,
+    )
 
     g = OMeta(open(grammar_file).read(), name="Grammar")
     tree = g.parseGrammar("Grammar")
