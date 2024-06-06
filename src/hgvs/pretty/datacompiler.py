@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
 from bioutils.normalize import normalize
 from bioutils.sequences import aa1_to_aa3_lut
@@ -154,7 +154,7 @@ class DataCompiler:
         if strand < 0:
             aa_char = tlc[2 - c3]
 
-        return ProteinData(c_pos, aa, tlc, aa_char, var_p, is_init_met, is_stop_codon)
+        return ProteinData(c_pos, aa, tlc, aa_char, var_p, is_init_met, is_stop_codon, aa_index)
 
     def data(
         self,
@@ -226,7 +226,7 @@ class DataCompiler:
         else:
             reference_data = None
 
-        position_details = []
+        position_details:List[PositionDetail] = []
         prev_mapped_pos = None
         prev_c_pos = -1
 
@@ -337,9 +337,9 @@ class DataCompiler:
                 c_interval,
             )
 
-        # print(position_details[0].get_header())
-        # for p in position_details:
-        #     print(f"{p}\t{p.protein_data}\t")
+        print(position_details[0].get_header()+"\t"+ProteinData.get_header())
+        for p in position_details:
+            print(f"{p}\t{p.protein_data}\t")
 
         vd = VariantData(
             seq_start,

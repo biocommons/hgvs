@@ -26,10 +26,12 @@ class Test_SimplePosition(unittest.TestCase):
             + "chrom pos :   |    .    |    .    |    .    |    .    |    .\n"
             + "seq    -> : ATAAAGCTTTTCCAAATGTTATTAATTACTGGCATTGCTTTTTGCCAA\n"
             + "region    :                     |------|                    \n"
-            + "aa seq <- :                      TerAsnSerAlaAsnSerLysAlaLeu\n"
             + "tx seq <- : TATTTCGAAAAGGTTTACAATAATTAATGACCGTAACGAAAAACGGTT\n"
             + "tx pos    :  |    .    |    .   |   |    .    |    .    |   \n"
             + "          :  *20       *10      *1  2880      2870      2860\n"
+            + "aa seq <- :                      TerAsnSerAlaAsnSerLysAlaLeu\n"
+            + "aa pos    :                         |||            ...      \n"
+            + "          :                         960                     \n"
             + "ref>alt   : ATTAATTA>ATTAATTAATTA\n"
         )
 
@@ -49,10 +51,12 @@ class Test_SimplePosition(unittest.TestCase):
             + "seq    -> : CCTCCAGTTCAATCCCCAGCATGGCCGCGTCCACTATGTCT\n"
             + "tx ref dif:                          X               \n"
             + "region    :                     =                    \n"
-            + "aa seq -> :                     MetAlaAlaSerThrMetSer\n"
             + "tx seq -> : cctccagttcaatccccagcATGGCTGCGTCCACTATGTCT\n"
             + "tx pos    : |    .    |    .    |   .    |    .    | \n"
             + "          : -20       -10       1        10        20\n"
+            + "aa seq -> :                     MetAlaAlaSerThrMetSer\n"
+            + "aa pos    :                                 ...      \n"
+            + "          :                     1                    \n"
         ).split("\n")
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
@@ -72,10 +76,12 @@ class Test_SimplePosition(unittest.TestCase):
             + "chrom pos :   .    |    .    |    .    |    .    |   \n"
             + "seq    -> : GATTTTCCAGGGGGACTGCATCTCCGAGCTATGCACCCCAA\n"
             + "region    :                     =                    \n"
-            + "aa seq <- : IleLysTrpProSerGlnMet                    \n"
             + "tx seq <- : CTAAAAGGTCCCCCTGACGTAgaggctcgatacgtggggtt\n"
             + "tx pos    :  |    .    |    .   |    .    |    .    |\n"
             + "          :  20        10       1         -10       -20\n"
+            + "aa seq <- : IleLysTrpProSerGlnMet                    \n"
+            + "aa pos    :       ...                                \n"
+            + "          :                   1                      \n"
         ).split("\n")
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
@@ -97,10 +103,12 @@ class Test_SimplePosition(unittest.TestCase):
             + "seq    -> : TACCTCGTTGGGGTGGAATCCATCCACGGGCTCGATGAGCT\n"
             + "seq    <- : ATGGAGCAACCCCACCTTAGGTAGGTGCCCGAGCTACTCGA\n"
             + "region    :                     T                    \n"
-            + "aa seq <- :    GluAsnProHisPheGlyAspValProGluIleLeuGl\n"
             + "tx seq <- :    GAGCAACCCCACCTTAGGTAGGTGCCCGAGCTACTCGA\n"
             + "tx pos    :       |    .    |    .    |    .    |    \n"
             + "          :       1500      1490      1480      1470\n"
+            + "aa seq <- :    GluAsnProHisPheGlyAspValProGluIleLeuGl\n"
+            + "aa pos    :       |||            ...            |||  \n"
+            + "          :       500                           490  \n"
         ).split("\n")
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
@@ -150,11 +158,13 @@ class Test_SimplePosition(unittest.TestCase):
             + "          :      1,643,270 1,643,280 1,643,290 1,643,300 1,643,310\n"
             + "chrom pos : .    |    .    |    .    |    .    |    .    |  \n"
             + "seq    -> : TCACTGGGGTGTCATCCTCATCGTCATCTTCGTAATTGAGGGAGCAAA\n"
-            + "region    :                     |------|                    \n"
-            + "aa seq <- : sValProThrAspAspGluAspAspAspGluTyrAsnLeuSerCysLe\n"
+            + "region    :                     |------|                    \n"            
             + "tx seq <- : AGTGACCCCACAGTAGGAGTAGCAGTAGAAGCATTAACTCCCTCGTTT\n"
             + "tx pos    :   |    .    |    .    |    .    |    .    |    .\n"
             + "          :   950       940       930       920       910\n"
+            + "aa seq <- : sValProThrAspAspGluAspAspAspGluTyrAsnLeuSerCysLe\n"
+            + "aa pos    :        ...            |||            ...        \n"
+            + "          :                       310                       \n"
             + "ref>alt   : TCGTCATC>TCGTCATCGTCGTCATC\n"
         ).split("\n")
         for r, e in zip(result, expected_str):
@@ -174,11 +184,13 @@ class Test_SimplePosition(unittest.TestCase):
             + "          :        36,561,650          36,561,670\n"
             + "chrom pos :   .    |    .    |    .    |    .    |  \n"
             + "seq    -> : ACCTCGTTGGGGTGGAATCCATCCACGGGCTCGATGAGCT\n"
-            + "region    :                    ^^                   \n"
-            + "aa seq <- :   GluAsnProHisPheGlyAspValProGluIleLeuGl\n"
+            + "region    :                    ^^                   \n"            
             + "tx seq <- :   GAGCAACCCCACCTTAGGTAGGTGCCCGAGCTACTCGA\n"
             + "tx pos    :      |    .    |    .    |    .    |    \n"
             + "          :      1500      1490      1480      1470\n"
+            + "aa seq <- :   GluAsnProHisPheGlyAspValProGluIleLeuGl\n"
+            + "aa pos    :      |||            ...            |||  \n"
+            + "          :      500                           490  \n"
         ).split("\n")
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
@@ -197,11 +209,13 @@ class Test_SimplePosition(unittest.TestCase):
             + "          :         36,561,650          36,561,670\n"
             + "chrom pos :    .    |    .    |    .    |    .    |   \n"
             + "seq    -> : TACCTCGTTGGGGTGGAATCCATCCACGGGCTCGATGAGCTG\n"
-            + "region    :                     xx                    \n"
-            + "aa seq <- :    GluAsnProHisPheGlyAspValProGluIleLeuGln\n"
+            + "region    :                     xx                    \n"            
             + "tx seq <- :    GAGCAACCCCACCTTAGGTAGGTGCCCGAGCTACTCGAC\n"
             + "tx pos    :       |    .    |    .    |    .    |    .\n"
             + "          :       1500      1490      1480      1470\n"
+            + "aa seq <- :    GluAsnProHisPheGlyAspValProGluIleLeuGln\n"
+            + "aa pos    :       |||            ...            |||   \n"
+            + "          :       500                           490   \n"
         ).split("\n")
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
@@ -220,11 +234,13 @@ class Test_SimplePosition(unittest.TestCase):
             + "          :          36,561,650          36,561,670\n"
             + "chrom pos :     .    |    .    |    .    |    .    |  \n"
             + "seq    -> : TTACCTCGTTGGGGTGGAATCCATCCACGGGCTCGATGAGCT\n"
-            + "region    :                     xx                    \n"
-            + "aa seq <- :     GluAsnProHisPheGlyAspValProGluIleLeuGl\n"
+            + "region    :                     xx                    \n"            
             + "tx seq <- :     GAGCAACCCCACCTTAGGTAGGTGCCCGAGCTACTCGA\n"
             + "tx pos    :        |    .    |    .    |    .    |    \n"
             + "          :        1500      1490      1480      1470\n"
+            + "aa seq <- :     GluAsnProHisPheGlyAspValProGluIleLeuGl\n"
+            + "aa pos    :        |||            ...            |||  \n"
+            + "          :        500                           490  \n"
             + "ref>alt   : CC>C\n"
         ).split("\n")
         for r, e in zip(result, expected_str):
@@ -245,10 +261,12 @@ class Test_SimplePosition(unittest.TestCase):
             + "chrom pos :   .    |    .    |    .    |    .    |   \n"
             + "seq    -> : ACCTCGTTGGGGTGGAATCCATCCACGGGCTCGATGAGCTG\n"
             + "region    :                     x                    \n"
-            + "aa seq <- :   GluAsnProHisPheGlyAspValProGluIleLeuGln\n"
             + "tx seq <- :   GAGCAACCCCACCTTAGGTAGGTGCCCGAGCTACTCGAC\n"
             + "tx pos    :      |    .    |    .    |    .    |    .\n"
             + "          :      1500      1490      1480      1470\n"
+            + "aa seq <- :   GluAsnProHisPheGlyAspValProGluIleLeuGln\n"
+            + "aa pos    :      |||            ...            |||   \n"
+            + "          :      500                           490   \n"
         ).split("\n")
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
@@ -268,10 +286,12 @@ class Test_SimplePosition(unittest.TestCase):
             + "chrom pos :     .    |    .    |    .    |    .    |  \n"
             + "seq    -> : TTACCTCGTTGGGGTGGAATCCATCCACGGGCTCGATGAGCT\n"
             + "region    :                     ||                    \n"
-            + "aa seq <- :     GluAsnProHisPheGlyAspValProGluIleLeuGl\n"
             + "tx seq <- :     GAGCAACCCCACCTTAGGTAGGTGCCCGAGCTACTCGA\n"
             + "tx pos    :        |    .    |    .    |    .    |    \n"
             + "          :        1500      1490      1480      1470\n"
+            + "aa seq <- :     GluAsnProHisPheGlyAspValProGluIleLeuGl\n"
+            + "aa pos    :        |||            ...            |||  \n"
+            + "          :        500                           490  \n"
             + "ref>alt   : CC>CCC\n"
         ).split("\n")
         for r, e in zip(result, expected_str):
@@ -292,10 +312,12 @@ class Test_SimplePosition(unittest.TestCase):
             + "chrom pos :   .    |    .    |    .    |    .    |   \n"
             + "seq    -> : ACCTCGTTGGGGTGGAATCCATCCACGGGCTCGATGAGCTG\n"
             + "region    :                     |                    \n"
-            + "aa seq <- :   GluAsnProHisPheGlyAspValProGluIleLeuGln\n"
             + "tx seq <- :   GAGCAACCCCACCTTAGGTAGGTGCCCGAGCTACTCGAC\n"
             + "tx pos    :      |    .    |    .    |    .    |    .\n"
             + "          :      1500      1490      1480      1470\n"
+            + "aa seq <- :   GluAsnProHisPheGlyAspValProGluIleLeuGln\n"
+            + "aa pos    :      |||            ...            |||   \n"
+            + "          :      500                           490   \n"            
             + "ref>alt   : A>AA\n"
         ).split("\n")
         for r, e in zip(result, expected_str):
@@ -316,11 +338,13 @@ class Test_SimplePosition(unittest.TestCase):
             + "          :        36,561,650          36,561,670\n"
             + "chrom pos :   .    |    .    |    .    |    .    |   \n"
             + "seq    -> : ACCTCGTTGGGGTGGAATCCATCCACGGGCTCGATGAGCTG\n"
-            + "region    :                     =                    \n"
-            + "aa seq <- :   GluAsnProHisPheGlyAspValProGluIleLeuGln\n"
+            + "region    :                     =                    \n"            
             + "tx seq <- :   GAGCAACCCCACCTTAGGTAGGTGCCCGAGCTACTCGAC\n"
             + "tx pos    :      |    .    |    .    |    .    |    .\n"
             + "          :      1500      1490      1480      1470\n"
+            + "aa seq <- :   GluAsnProHisPheGlyAspValProGluIleLeuGln\n"
+            + "aa pos    :      |||            ...            |||   \n"
+            + "          :      500                           490   \n"
         ).split("\n")
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
@@ -344,10 +368,12 @@ class Test_SimplePosition(unittest.TestCase):
             + "chrom pos :   |    .\n"
             + "seq    -> : ATTAATTA\n"
             + "region    : |------|\n"
-            + "aa seq <- :  TerAsnS\n"
             + "tx seq <- : TAATTAAT\n"
             + "tx pos    : |   |   \n"
             + "          : *1  2880\n"
+            + "aa seq <- :  TerAsnS\n"
+            + "aa pos    :     ||| \n"
+            + "          :     960 \n"
             + "ref>alt   : ATTAATTA>ATTAATTAATTA"
         ).split("\n")
 
@@ -382,11 +408,13 @@ class Test_SimplePosition(unittest.TestCase):
             + "      33,049,650          33,049,670          33,049,690          33,049,710          33,049,730          33,049,750          33,049,770          33,049,790\n"
             + " .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |\n"
             + "CTGGGGCGCCGGGGGCTGCCATGGGGCCGGTGGGGGCGACCGAGCTGCTCGCCTGCCTCTGGACTCGCGGGCGAAGCCGCCACGGAGCTGGGGGCGCTGGCGCGAGCCCCGCCCCGCTCGAGTCCGGCCCCGCCCCTGGCCCGCCCC\n"
-            + "          |-------------------------|                                                                                                              \n"
-            + "aProAlaGlyProAlaAlaMet                                                                                                                             \n"
+            + "          |-------------------------|                                                                                                              \n"            
             + "GACCCCGCGGCCCCCGACGGTAccccggccacccccgctggctcgacgagcggacggagacctgagcgcccgcttcggcggtgcctcgacccccgcgaccgcgctcggggcggggcgagctcaggccggggcgggga          \n"
             + "  |    .    |    .   |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .          \n"
             + "  20        10       1         -10       -20       -30       -40       -50       -60       -70       -80       -90       -100      -110\n"
+            + "aProAlaGlyProAlaAlaMet                                                                                                                             \n"
+            + "       ...                                                                                                                                         \n"
+            + "                   1                                                                                                                               \n"
             + "GGGGGCTGCCATGGGGCCGGTGGGGGC>GGGGGCTGCCATGGGGCCGGTGGGGGCTGCCATGGGGCCGGTGGGGGC"
         ).split("\n")
         for r, e in zip(result, expected_str):
@@ -411,10 +439,12 @@ class Test_SimplePosition(unittest.TestCase):
             + "seq    -> : TCTCTGGAGCCCCTGACTTCTGAGATGCACGCCCCTGGGGA\n"
             + "tx ref dif:                     X                    \n"
             + "region    :                     =                    \n"
-            + "aa seq <- : ArgGlnLeuGlyGlnSerGlyLeuHisValGlyArgProVa\n"
             + "tx seq <- : AGAGACCTCGGGGACTGAAGGCTCTACGTGCGGGGACCCCT\n"
             + "tx pos    :    .    |    .    |    .    |    .    |  \n"
             + "          :         310       300       290       280\n"
+            + "aa seq <- : ArgGlnLeuGlyGlnSerGlyLeuHisValGlyArgProVa\n"
+            + "aa pos    :    ...            |||            ...     \n"
+            + "          :                   100                    \n"
         ).split("\n")
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
@@ -442,10 +472,12 @@ class Test_SimplePosition(unittest.TestCase):
             "seq    -> : CGACTGCCCAGAGAGCTGCTGCGAGCCCCCCTGCTGCGCCCCCAGCTGCTGCGCCCCGGCCCCCTGCCTGAGCCTGGTCTGCACCCCAGTGAGCCGT\n"
             "tx ref dif:                               IIIIIIIIIIIIIII                                                 XX \n"
             "region    :                               x-------------------------x                                        \n"
-            "aa seq -> : pAspCysProGluSerCysCysGluProPr---------------oCysCysAlaProAlaProCysLeuSerLeuValCysThrProValSerTyr\n"
             "tx seq -> : CGACTGCCCAGAGAGCTGCTGCGAGCCCCC---------------CTGCTGCGCCCCGGCCCCCTGCCTGAGCCTGGTCTGCACCCCAGTGAGCTAT\n"
             "tx pos    : .    |    .    |    .    |                   .    |    .    |    .    |    .    |    .    |    . \n"
             "          :      110       120       130                      140       150       160       170       180\n"
+            "aa seq -> : pAspCysProGluSerCysCysGluProPr---------------oCysCysAlaProAlaProCysLeuSerLeuValCysThrProValSerTyr\n"
+            "aa pos    : .            |||            ..               .            |||            ...            |||      \n"
+            "          :              40                                           50                            60       \n"
             "ref>alt   : CTGCTGCGCCCCCAGCTGCTGCGCCCC>CTGCTGCGCCCC\n"
         ).split("\n")
 
@@ -473,10 +505,12 @@ class Test_SimplePosition(unittest.TestCase):
             + "seq    -> : TGCCTGGGGTTCACACTCTTCCTCCTCCTCCTCCTCCTCTTC.........GGCTTCATCCTCTGGAGATGCCCCACAAACACCCTCCTTC\n"
             + "tx ref dif:                                           DDDDDDDDD                               \n"
             + "region    :                               x----------x                                                 \n"
-            + "aa seq <- : AlaGlnProGluCysGluGluGluGluGluGluGluGluGluGluGluGluAlaGluAspGluProSerAlaGlyCysValGlyGluLysG\n"
             + "tx seq <- : ACGGACCCCAAGTGTGAGAAGGAGGAGGAGGAGGAGGAGAAGGAGGAGAAGTCGAAGTAGGAGACCTCTACGGGGTGTTTGTGGGAGGAAG\n"
             + "tx pos    :   |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .   \n"
             + "          :   940       930       920       910       900       890       880       870       860\n"
+            + "aa seq <- : AlaGlnProGluCysGluGluGluGluGluGluGluGluGluGluGluGluAlaGluAspGluProSerAlaGlyCysValGlyGluLysG\n"
+            + "aa pos    :             |||            ...            |||            ...            |||            ... \n"
+            + "          :             310                           300                           290                \n"
             + "ref>alt   : CTCCTCCTCTTC>C\n"
         ).split("\n")
         for r, e in zip(result, expected_str):
@@ -513,10 +547,12 @@ class Test_SimplePosition(unittest.TestCase):
             + "TCTCTGGAGCCCCTGACTTCTGAGATGCACGCCCCTGGGGA\n"
             + "                    X                    \n"
             + "                    =                    \n"
-            + "ArgGlnLeuGlyGlnSerGlyLeuHisValGlyArgProVa\n"
             + "AGAGACCTCGGGGACTGAAGGCTCTACGTGCGGGGACCCCT\n"
             + "   .    |    .    |    .    |    .    |  \n"
             + "        310       300       290       280\n"
+            + "ArgGlnLeuGlyGlnSerGlyLeuHisValGlyArgProVa\n"
+            + "   ...            |||            ...     \n"
+            + "                  100                    \n"
         ).split("\n")
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
@@ -536,11 +572,13 @@ class Test_SimplePosition(unittest.TestCase):
             + "chrom pos : |    .    |    .    |    .    |    .    |\n"
             + "seq    -> : TGCTGATCTTTGGATGTTCTGGTTAGTCTAAGAAGGAGAGT\n"
             + "seq    <- : ACGACTAGAAACCTACAAGACCAATCAGATTCTTCCTCTCA\n"
-            + "region    :                     A                    \n"
-            + "aa seq -> :                                          \n"
+            + "region    :                     A                    \n"            
             + "tx seq -> :             GATGTTCTGGTTAGTCTAAGAAGGAGAGT\n"
             + "tx pos    :                .    |    .    |    .    |\n"
             + "          :                     10        20        30\n"
+            + "aa seq -> :                                          \n"
+            + "aa pos    :                                          \n"
+            + "          :                                          \n"
         )
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)

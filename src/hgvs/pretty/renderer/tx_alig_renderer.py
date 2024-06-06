@@ -59,12 +59,11 @@ class TxAligRenderer(BasicRenderer):
 
                 coding = True
 
-            if cig == "=":
-                # c3 = (c_pos - 1) % 3
+            if cig == "=":                
                 if c_pos:
-                    bg_col = math.ceil(c_pos / 3) % 2
+                    bg_col = math.ceil((c_pos+1) / 3) % 2
                 elif n_pos:
-                    bg_col = math.ceil(n_pos / 3) % 2
+                    bg_col = math.ceil((n_pos+1) / 3) % 2
                 else:
                     var_str += " "
                     continue

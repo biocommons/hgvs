@@ -7,6 +7,8 @@ from hgvs.pretty.models import PrettyConfig
 from hgvs.pretty.renderer.chrom_seq_renderer import ChromSeqRendered
 from hgvs.pretty.renderer.chrom_seq_reverse_renderer import ChromReverseSeqRendered
 from hgvs.pretty.renderer.pos_info import ChrPositionInfo
+from hgvs.pretty.renderer.prot_mapping_renderer import ProtMappingRenderer
+from hgvs.pretty.renderer.prot_ruler_renderer import ProtRulerRenderer
 from hgvs.pretty.renderer.prot_seq_renderer import ProtSeqRenderer
 from hgvs.pretty.renderer.ruler import ChrRuler
 from hgvs.pretty.renderer.shuffled_variant import ShuffledVariant
@@ -253,7 +255,7 @@ class PrettyPrint:
         else:
             var_str += shuffled_seq_header + left_shuffled_str + "\n"
 
-        renderers_cls = [ProtSeqRenderer, TxAligRenderer, TxMappingRenderer, TxRulerRenderer]
+        renderers_cls = [TxAligRenderer, TxMappingRenderer, TxRulerRenderer, ProtSeqRenderer, ProtMappingRenderer, ProtRulerRenderer ]
         for cls in renderers_cls:
             renderer = cls(self.config, data.strand)
 

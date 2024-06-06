@@ -27,9 +27,14 @@ class ProteinData:
     var_p: SequenceVariant = None
     is_init_met: bool = False
     is_stop_codon: bool = False
+    aa_pos: int = -1
+
+    @classmethod
+    def get_header(cls) -> str:
+        return f"c_pos\ttlc\taa_char\tc_pos\taa_pos"
 
     def __repr__(self) -> str:
-        return f"{self.c_pos}\t{self.tlc}\t{self.aa_char}\t{self.c_pos %3}"
+        return f"{self.c_pos}\t{self.tlc}\t{self.aa_char}\t{self.c_pos %3}\t{self.aa_pos}"
 
 
 @dataclass(eq=True, frozen=False, order=True)
