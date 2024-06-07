@@ -15,6 +15,17 @@ def count_pattern_occurence(pattern, string):
     matches = re.findall(pattern, string)
     return len(matches)
 
+def count_repetitive_units(s):
+    length = len(s)
+    
+    for i in range(1, length + 1):
+        unit = s[:i]
+        if length % i == 0:
+            if unit * (length // i) == s:
+                return length // i, unit
+                
+    return 1, s
+
 
 class RepeatAnalyser:
 
@@ -48,20 +59,26 @@ class RepeatAnalyser:
     def _get_repeat_unit(self, fs: VariantCoords) -> Optional[str]:
         """Takes fully justified coordiantes and tries to detect a repeat in them."""
         # analyze for repeat:
-        if len(fs.ref) == len(fs.alt):
+        if len(fs.ref) == len(fs.alt) > 0:
             # seems we cant shuffle. is an SVN or delins
             return None
+
+        print(len(fs.alt))
 
         if len(fs.alt) > 0:
             if fs.alt in fs.ref:
                 if fs.ref.startswith(fs.alt):
                     d = fs.ref[len(fs.alt) :]
                     if count_pattern_occurence(d, fs.ref) > 1:
-                        return d
+                        c, u = count_repetitive_units(d)
+                        print (f"found repeat {d} has {c} smaller repeats {u}")
+                        return u
             elif fs.ref in fs.alt:
                 if fs.alt.startswith(fs.ref):
                     d = fs.alt[len(fs.ref) :]
                     if count_pattern_occurence(d, fs.ref) > 1:
-                        return d
+                        c, u = count_repetitive_units(d)
+                        print (f"found repeat {d} has {c} smaller repeats {u}")
+                        return u
 
         return None
