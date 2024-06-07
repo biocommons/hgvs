@@ -17,7 +17,7 @@ from hgvs.pretty.renderer.tx_mapping_renderer import TxMappingRenderer
 from hgvs.pretty.renderer.tx_pos import TxRulerRenderer
 from hgvs.pretty.renderer.tx_ref_disagree_renderer import TxRefDisagreeRenderer
 from hgvs.sequencevariant import SequenceVariant
-
+from hgvs.repeats import RepeatAnalyser
 TGREEN = "\033[32m"  # Green Text
 TGREENBG = "\033[30;42m"
 TRED = "\033[31m"  # Red Text
@@ -271,6 +271,11 @@ class PrettyPrint:
             # TODO: detect repeats?
             fully_justified_ref = fully_justified_var.ref
             fully_justified_alt = fully_justified_var.alt
-            var_str += refa + f"{fully_justified_ref}>{fully_justified_alt}"
+
+            ra = RepeatAnalyser(fully_justified_var)
+            if ra.is_repeat:
+                var_str += refa + str(ra)
+            else:
+                var_str += refa + f"{fully_justified_ref}>{fully_justified_alt}"
 
         return var_str

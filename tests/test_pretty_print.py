@@ -32,7 +32,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "aa seq <- :                      TerAsnSerAlaAsnSerLysAlaLeu\n"
             + "aa pos    :                         |||            ...      \n"
             + "          :                         960                     \n"
-            + "ref>alt   : ATTAATTA>ATTAATTAATTA\n"
+            + "ref>alt   : ATTA[2]>ATTA[3]\n"
         )
 
     def test_var_c1_forward(self):
@@ -241,7 +241,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "aa seq <- :     GluAsnProHisPheGlyAspValProGluIleLeuGl\n"
             + "aa pos    :        |||            ...            |||  \n"
             + "          :        500                           490  \n"
-            + "ref>alt   : CC>C\n"
+            + "ref>alt   : C[2]>C[1]\n"
         ).split("\n")
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
@@ -292,7 +292,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "aa seq <- :     GluAsnProHisPheGlyAspValProGluIleLeuGl\n"
             + "aa pos    :        |||            ...            |||  \n"
             + "          :        500                           490  \n"
-            + "ref>alt   : CC>CCC\n"
+            + "ref>alt   : C[2]>C[3]\n"
         ).split("\n")
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
@@ -374,7 +374,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "aa seq <- :  TerAsnS\n"
             + "aa pos    :     ||| \n"
             + "          :     960 \n"
-            + "ref>alt   : ATTAATTA>ATTAATTAATTA"
+            + "ref>alt   : ATTA[2]>ATTA[3]"
         ).split("\n")
 
         for r, e in zip(result, expected_str):

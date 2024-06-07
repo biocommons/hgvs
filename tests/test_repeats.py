@@ -1,14 +1,15 @@
 import os
 from unittest import TestCase
 
+from hgvs.pretty.datacompiler import DataCompiler
+from hgvs.pretty.models import PrettyConfig
 import pytest
 from parameterized import parameterized
 from support import CACHE
 
 import hgvs
-from hgvs.parser import Parser
+
 from hgvs.repeats import RepeatAnalyser, count_repetitive_units
-from hgvs.variantmapper import VariantMapper
 
 
 class TestRepeats(TestCase):
@@ -46,15 +47,17 @@ class TestRepeats(TestCase):
             ("NC_000019.10:g.45770204_45770205del", True, "C", 6, 4, "C[6]>C[4]"),
             ("NC_000019.10:g.45770205insC", True, "C", 6, 7, "C[6]>C[7]"),
             ("NC_000019.10:g.45770206del", False, None, 0, 0, "A>"),
-            ("NC_000007.13:g.36561662dup", True, "C", 2, 3, "C[2]>C[3]"),
-            ("NC_000019.10:g.45770210_45770212del", True, 'GCA', 20, 19, "GCA[20]>GCA[19]")
+            ("NC_000007.13:g.36561662dup", True, "C", 2, 3, "C[2]>C[3]"),            
         ]
     )
     def test_homopolymer(self, hgvs_g, is_repeat, repeat_unit, ref_count, alt_count, s):
 
         var_g = self.hp.parse_hgvs_variant(hgvs_g)
-        ra = RepeatAnalyser(self.hdp, var_g)
-        print(f"{hgvs_g} : {ra} : desired: {repeat_unit} {ref_count} {s}")
+        config = PrettyConfig(self.hdp, None, None)
+        dc = DataCompiler(config)
+        fs = dc.get_shuffled_variant(var_g, 0)
+        ra = RepeatAnalyser(fs)
+        
         self.assertEqual(s, str(ra))
         self.assertEqual(is_repeat, ra.is_repeat)
         self.assertEqual(repeat_unit, ra.repeat_unit)
@@ -82,13 +85,17 @@ class TestRepeats(TestCase):
             ),
             ("NC_000005.10:g.123346517_123346518insATTA", True, "ATTA", 2, 3, "ATTA[2]>ATTA[3]"),
             ("NC_000005.10:g.123346522_123346525dup", True, "ATTA", 2, 3, "ATTA[2]>ATTA[3]"),
+            ("NC_000019.10:g.45770210_45770212del", True, 'GCA', 20, 19, "GCA[20]>GCA[19]")
         ]
     )
     def test_repeats(self, hgvs_g, is_repeat, repeat_unit, ref_count, alt_count, s):
-        # hgvs_g = "NC_000019.10:g.45770205del"
 
         var_g = self.hp.parse_hgvs_variant(hgvs_g)
-        ra = RepeatAnalyser(self.hdp, var_g)
+        config = PrettyConfig(self.hdp, None, None)
+        dc = DataCompiler(config)
+        fs = dc.get_shuffled_variant(var_g, 0)
+        ra = RepeatAnalyser(fs)
+
         self.assertEqual(is_repeat, ra.is_repeat)
         self.assertEqual(repeat_unit, ra.repeat_unit)
         self.assertEqual(ref_count, ra.ref_count)

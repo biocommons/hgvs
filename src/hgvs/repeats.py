@@ -29,13 +29,9 @@ def count_repetitive_units(s):
 
 class RepeatAnalyser:
 
-    def __init__(self, hdp: Interface, var_g: SequenceVariant) -> None:
+    def __init__(self, fs: VariantCoords) -> None:
 
-        config = PrettyConfig(hdp, None, None)
-        dc = DataCompiler(config)
-
-        fs = dc.get_shuffled_variant(var_g, 0)
-
+        
         self.is_repeat = False
         self.ref_count = 0
         self.alt_count = 0
