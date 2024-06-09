@@ -21,7 +21,7 @@ SequenceVariant(ac=NC_000007.13, type=g, posedit=36561662C>T, gene=None)
 >>> var_g.posedit.pos.start
 SimplePosition(base=36561662, uncertain=False)
 
-# format by stringification 
+# format by stringification
 >>> str(var_g)
 'NC_000007.13:g.36561662C>T'
 
@@ -53,8 +53,7 @@ import logging
 import re
 import sys
 import warnings
-
-import pkg_resources
+from importlib import metadata
 
 from .config import global_config  # noqa (importing symbol)
 
@@ -71,11 +70,11 @@ if sys.version_info < (3, 6):
 
 _is_released_version = False
 try:
-    __version__ = pkg_resources.get_distribution("hgvs").version
+    __version__ = metadata.version("hgvs")
     # TODO: match other valid release tags, like .post\d+
     if re.match(r"^\d+\.\d+\.\d+$", __version__) is not None:
         _is_released_version = True
-except pkg_resources.DistributionNotFound:
+except metadata.PackageNotFoundError:
     warnings.warn("can't get __version__ because %s package isn't installed" % __package__, Warning)
     __version__ = None
 

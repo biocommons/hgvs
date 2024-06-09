@@ -38,6 +38,7 @@ dependencies=[
     "biocommons.seqrepo >= 0.6.5",
     "bioutils >= 0.4.0,<1.0",
     "configparser >= 3.3.0",
+    "importlib_resources",
     "ipython",
     "parsley",
     "psycopg2",

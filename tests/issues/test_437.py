@@ -9,7 +9,7 @@ https://github.com/biocommons/hgvs/issues/437
                              |       |  //         |              |         |
                +      acaaaaaACAGCCGCG  //  CACGAACCacgtcctcagcttcacagagtagtatt
                -      tgtttttTGTCGGCGC  //  GTGCTTGGtgcaggagtcgaagtgtctcatcataa
-                      aaaaaaaTGTCGGCGC  //  GTGCTTGG                 
+                      aaaaaaaTGTCGGCGC  //  GTGCTTGG
                              |       |  //         |\        |         |
     NR_003051.3            268     260  //        <1 -1    -10       -20
 
