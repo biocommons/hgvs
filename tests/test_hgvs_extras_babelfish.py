@@ -93,3 +93,8 @@ def test_vcf_to_hgvs(parser, babelfish38):
             hgvs_g = _v2h(*v)
             hgvs_string = hgvs_g.format()
             assert hgvs_string == expected_hgvs_string
+
+
+def test_vcf_to_hgvs_contig_chrom(parser, babelfish38):
+    hgvs_g = babelfish38.vcf_to_g_hgvs("NC_000006.12", 49949409, "GAA", "G")
+    assert hgvs_g.format() == "NC_000006.12:g.49949413_49949414del"
