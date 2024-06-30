@@ -17,7 +17,7 @@
 .. _peg: http://en.wikipedia.org/wiki/Parsing_expression_grammar
 .. _pep8: https://www.python.org/dev/peps/pep-0008/
 .. _uta: https://github.com/biocommons/uta/
-.. _yapf: https://github.com/google/yapf
+.. _ruff: https://docs.astral.sh/ruff/
 
 
 .. |eg| replace:: *e.g.,*

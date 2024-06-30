@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-"""hgvs.normalizer
-"""
+"""hgvs.normalizer"""
 
 import copy
 import logging
@@ -443,6 +442,7 @@ class Normalizer:
                 stop = orig_stop
 
         return base + start, base + stop, (ref, alt)
+
 
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)

@@ -35,7 +35,7 @@ Highlights
   close to it).
 
 * Abide by current `code style`_.  Use ``make reformat`` to reformat all
-  code with `yapf`_ prior to submitting a PR.
+  code with `ruff`_ prior to submitting a PR.
 
 * Email the `hgvs-discuss`_ mailing list if you have questions.
 
@@ -158,11 +158,11 @@ setting UTA_DB_URL.  The format is
 ``postgresql://<user>:<pass>@<host>/<db>/<schema>``. For example:
 
    ``postgresql://anonymous:anonymous@uta.biocommons.org/uta/uta_20140210``
-  
-explicitly selects the public database, and 
+
+explicitly selects the public database, and
 
    ``postgresql://localhost/uta/uta_20140210``
- 
+
 selects a local instance.  Developers can test connectivity like this:
 
    ``$ UTA_DB_URL=postgresql://localhost/uta/uta_20140210 make test-quick``
@@ -215,7 +215,7 @@ changes::
   spaces_before_comment = 4
   split_before_named_assigns = True
 
-These code conventions are uniformly enforce by yapf_.  The entire code
+These code conventions are uniformly enforce by ruff_.  The entire code
 base is periodically automatically reformatted for consistency.
 
 
@@ -232,13 +232,13 @@ understand the code.
   variable names. |eg| ``var_c`` in a function argument list signifies
   that a SequenceVariant object with type='c' is expected.
 
-:hgvs*: a string representing an HGVS variant name.  
+:hgvs*: a string representing an HGVS variant name.
 
 :var*: a :class:`hgvs.variant.SequenceVariant` object
 
-:pos: 
+:pos:
 
-:posedit: 
+:posedit:
 
 :hgvs_position:
 
