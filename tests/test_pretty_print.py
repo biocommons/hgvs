@@ -44,8 +44,9 @@ class Test_SimplePosition(unittest.TestCase):
         print(result)
         result = result.split("\n")
         expected_str = (
-            "hgvs      : NC_000021.8:g.46020522=\n"
-            + "hgvs      : NM_198689.2:c.1=\n"
+            "hgvs_g    : NC_000021.8:g.46020522=\n"
+            + "hgvs_c    : NM_198689.2:c.1=\n"
+            + "hgvs_p    : NP_941962.1:p.Met1?\n"
             + "          :         46,020,510          46,020,530\n"
             + "chrom pos :    .    |    .    |    .    |    .    |  \n"
             + "seq    -> : CCTCCAGTTCAATCCCCAGCATGGCCGCGTCCACTATGTCT\n"
@@ -70,8 +71,9 @@ class Test_SimplePosition(unittest.TestCase):
         print(result)
         result = result.split("\n")
         expected_str = (
-            "hgvs      : NC_000007.13:g.36763753=\n"
-            + "hgvs      : NM_001177507.2:c.1=\n"
+            "hgvs_g    : NC_000007.13:g.36763753=\n"
+            + "hgvs_c    : NM_001177507.2:c.1=\n"
+            + "hgvs_p    : NP_001170978.1:p.Met1?\n"
             + "          :        36,763,740          36,763,760\n"
             + "chrom pos :   .    |    .    |    .    |    .    |   \n"
             + "seq    -> : GATTTTCCAGGGGGACTGCATCTCCGAGCTATGCACCCCAA\n"
@@ -96,8 +98,9 @@ class Test_SimplePosition(unittest.TestCase):
         print(result)
         result = result.split("\n")
         expected_str = (
-            "hgvs      : NC_000007.13:g.36561662C>T\n"
-            + "hgvs      : NM_001177507.2:c.1486G>A\n"
+            "hgvs_g    : NC_000007.13:g.36561662C>T\n"
+            + "hgvs_c    : NM_001177507.2:c.1486G>A\n"
+            + "hgvs_p    : NP_001170978.1:p.(Gly496Arg)\n"
             + "          :         36,561,650          36,561,670\n"
             + "chrom pos :    .    |    .    |    .    |    .    |  \n"
             + "seq    -> : TACCTCGTTGGGGTGGAATCCATCCACGGGCTCGATGAGCT\n"
@@ -122,8 +125,9 @@ class Test_SimplePosition(unittest.TestCase):
         print(result)
         result = result.split("\n")
         expected_str = (
-            "hgvs      : NC_000005.10:g.123346517_123346518insATTA\n"
-            + "hgvs      : NM_001166226.1:c.*1_*2insTAAT\n"
+            "hgvs_g    : NC_000005.10:g.123346517_123346518insATTA\n"
+            + "hgvs_c    : NM_001166226.1:c.*1_*2insTAAT\n"
+            + "hgvs_p    : NP_001159698.1:p.?\n"
             + self.atta_expected_results
         ).split("\n")
         for r, e in zip(result, expected_str):
@@ -137,8 +141,9 @@ class Test_SimplePosition(unittest.TestCase):
         print(result)
         result = result.split("\n")
         expected_str = (
-            "hgvs      : NC_000005.10:g.123346522_123346525dup\n"
-            + "hgvs      : NM_001166226.1:c.2880_2883dup\n"
+            "hgvs_g    : NC_000005.10:g.123346522_123346525dup\n"
+            + "hgvs_c    : NM_001166226.1:c.2880_2883dup\n"
+            + "hgvs_p    : NP_001159698.1:p.(=)\n"
             + self.atta_expected_results
         ).split("\n")
         for r, e in zip(result, expected_str):
@@ -153,8 +158,9 @@ class Test_SimplePosition(unittest.TestCase):
         print(result)
         result = result.split("\n")
         expected_str = (
-            "hgvs      : NC_000004.11:g.1643284_1643285insTCGTCATCG\n"
-            + "hgvs      : NM_001174070.2:c.932_933insCGATGACGA\n"
+            "hgvs_g    : NC_000004.11:g.1643284_1643285insTCGTCATCG\n"
+            + "hgvs_c    : NM_001174070.2:c.932_933insCGATGACGA\n"
+            + "hgvs_p    : NP_001167541.1:p.(Asp309_Asp311dup)\n"
             + "          :      1,643,270 1,643,280 1,643,290 1,643,300 1,643,310\n"
             + "chrom pos : .    |    .    |    .    |    .    |    .    |  \n"
             + "seq    -> : TCACTGGGGTGTCATCCTCATCGTCATCTTCGTAATTGAGGGAGCAAA\n"
@@ -179,8 +185,9 @@ class Test_SimplePosition(unittest.TestCase):
 
         result = result.split("\n")
         expected_str = (
-            "hgvs      : NC_000007.13:g.36561662_36561663insT\n"
-            + "hgvs      : NM_001177507.2:c.1485_1486insA\n"
+            "hgvs_g    : NC_000007.13:g.36561662_36561663insT\n"
+            + "hgvs_c    : NM_001177507.2:c.1485_1486insA\n"
+            + "hgvs_p    : NP_001170978.1:p.(Gly496ArgfsTer39)\n"
             + "          :        36,561,650          36,561,670\n"
             + "chrom pos :   .    |    .    |    .    |    .    |  \n"
             + "seq    -> : ACCTCGTTGGGGTGGAATCCATCCACGGGCTCGATGAGCT\n"
@@ -204,8 +211,9 @@ class Test_SimplePosition(unittest.TestCase):
 
         result = result.split("\n")
         expected_str = (
-            "hgvs      : NC_000007.13:g.36561662_36561663del\n"
-            + "hgvs      : NM_001177507.2:c.1485_1486del\n"
+            "hgvs_g    : NC_000007.13:g.36561662_36561663del\n"
+            + "hgvs_c    : NM_001177507.2:c.1485_1486del\n"
+            + "hgvs_p    : NP_001170978.1:p.(Asp495GlufsTer39)\n"
             + "          :         36,561,650          36,561,670\n"
             + "chrom pos :    .    |    .    |    .    |    .    |   \n"
             + "seq    -> : TACCTCGTTGGGGTGGAATCCATCCACGGGCTCGATGAGCTG\n"
@@ -229,8 +237,9 @@ class Test_SimplePosition(unittest.TestCase):
 
         result = result.split("\n")
         expected_str = (
-            "hgvs      : NC_000007.13:g.36561662del\n"
-            + "hgvs      : NM_001177507.2:c.1487del\n"
+            "hgvs_g    : NC_000007.13:g.36561662del\n"
+            + "hgvs_c    : NM_001177507.2:c.1487del\n"
+            + "hgvs_p    : NP_001170978.1:p.(Gly496AspfsTer122)\n"
             + "          :          36,561,650          36,561,670\n"
             + "chrom pos :     .    |    .    |    .    |    .    |  \n"
             + "seq    -> : TTACCTCGTTGGGGTGGAATCCATCCACGGGCTCGATGAGCT\n"
@@ -255,8 +264,9 @@ class Test_SimplePosition(unittest.TestCase):
 
         result = result.split("\n")
         expected_str = (
-            "hgvs      : NC_000007.13:g.36561663del\n"
-            + "hgvs      : NM_001177507.2:c.1485del\n"
+              "hgvs_g    : NC_000007.13:g.36561663del\n"
+            + "hgvs_c    : NM_001177507.2:c.1485del\n"
+            + "hgvs_p    : NP_001170978.1:p.(Asp495GlufsTer123)\n"
             + "          :        36,561,650          36,561,670\n"
             + "chrom pos :   .    |    .    |    .    |    .    |   \n"
             + "seq    -> : ACCTCGTTGGGGTGGAATCCATCCACGGGCTCGATGAGCTG\n"
@@ -280,8 +290,9 @@ class Test_SimplePosition(unittest.TestCase):
 
         result = result.split("\n")
         expected_str = (
-            "hgvs      : NC_000007.13:g.36561662dup\n"
-            + "hgvs      : NM_001177507.2:c.1487dup\n"
+            "hgvs_g    : NC_000007.13:g.36561662dup\n"
+            + "hgvs_c    : NM_001177507.2:c.1487dup\n"
+            + "hgvs_p    : NP_001170978.1:p.(Phe497IlefsTer38)\n"
             + "          :          36,561,650          36,561,670\n"
             + "chrom pos :     .    |    .    |    .    |    .    |  \n"
             + "seq    -> : TTACCTCGTTGGGGTGGAATCCATCCACGGGCTCGATGAGCT\n"
@@ -306,8 +317,9 @@ class Test_SimplePosition(unittest.TestCase):
 
         result = result.split("\n")
         expected_str = (
-            "hgvs      : NC_000007.13:g.36561663dup\n"
-            + "hgvs      : NM_001177507.2:c.1485dup\n"
+            "hgvs_g    : NC_000007.13:g.36561663dup\n"
+            + "hgvs_c    : NM_001177507.2:c.1485dup\n"
+            + "hgvs_p    : NP_001170978.1:p.(Gly496TrpfsTer39)\n"
             + "          :        36,561,650          36,561,670\n"
             + "chrom pos :   .    |    .    |    .    |    .    |   \n"
             + "seq    -> : ACCTCGTTGGGGTGGAATCCATCCACGGGCTCGATGAGCTG\n"
@@ -333,8 +345,9 @@ class Test_SimplePosition(unittest.TestCase):
 
         result = result.split("\n")
         expected_str = (
-            "hgvs      : NC_000007.13:g.36561663=\n"
-            + "hgvs      : NM_001177507.2:c.1485=\n"
+            "hgvs_g    : NC_000007.13:g.36561663=\n"
+            + "hgvs_c    : NM_001177507.2:c.1485=\n"
+            + "hgvs_p    : NP_001170978.1:p.(Asp495=)\n"
             + "          :        36,561,650          36,561,670\n"
             + "chrom pos :   .    |    .    |    .    |    .    |   \n"
             + "seq    -> : ACCTCGTTGGGGTGGAATCCATCCACGGGCTCGATGAGCTG\n"
@@ -362,8 +375,9 @@ class Test_SimplePosition(unittest.TestCase):
         result = result.split("\n")
 
         expected_str = (
-            "hgvs      : NC_000005.10:g.123346517_123346518insATTA\n"
-            + "hgvs      : NM_001166226.1:c.*1_*2insTAAT\n"
+            "hgvs_g    : NC_000005.10:g.123346517_123346518insATTA\n"
+            + "hgvs_c    : NM_001166226.1:c.*1_*2insTAAT\n"
+            + "hgvs_p    : NP_001159698.1:p.?\n"
             + "          :   123,346,520\n"
             + "chrom pos :   |    .\n"
             + "seq    -> : ATTAATTA\n"
@@ -405,6 +419,7 @@ class Test_SimplePosition(unittest.TestCase):
         expected_str = (
             "NC_000012.11:g.33049660_33049680dup\n"
             + "NM_004572.3:c.-9_12dup\n"
+            + "NP_004563.2:p.(Met1_Pro4dup)\n"
             + "      33,049,650          33,049,670          33,049,690          33,049,710          33,049,730          33,049,750          33,049,770          33,049,790\n"
             + " .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |\n"
             + "CTGGGGCGCCGGGGGCTGCCATGGGGCCGGTGGGGGCGACCGAGCTGCTCGCCTGCCTCTGGACTCGCGGGCGAAGCCGCCACGGAGCTGGGGGCGCTGGCGCGAGCCCCGCCCCGCTCGAGTCCGGCCCCGCCCCTGGCCCGCCCC\n"
@@ -432,8 +447,9 @@ class Test_SimplePosition(unittest.TestCase):
 
         # note the X in the transscript sequence
         expected_str = (
-            "hgvs      : NC_000001.10:g.154574820=\n"
-            + "hgvs      : NM_001111.4:c.298G>A\n"
+            "hgvs_g    : NC_000001.10:g.154574820=\n"
+            + "hgvs_c    : NM_001111.4:c.298G>A\n"
+            + "hgvs_p    : NP_001102.2:p.(Gly100Arg)\n"
             + "          : 154,574,800         154,574,820         154,574,840\n"
             + "chrom pos : |    .    |    .    |    .    |    .    |\n"
             + "seq    -> : TCTCTGGAGCCCCTGACTTCTGAGATGCACGCCCCTGGGGA\n"
@@ -465,8 +481,9 @@ class Test_SimplePosition(unittest.TestCase):
         print(result)
         result = result.split("\n")
         expected_str = (
-            "hgvs      : NC_000021.8:g.46020668_46020682del\n"
-            "hgvs      : NM_198689.2:c.124_135=\n"
+            "hgvs_g    : NC_000021.8:g.46020668_46020682del\n"
+            "hgvs_c    : NM_198689.2:c.124_135=\n"
+            "hgvs_p    : NP_941962.1:p.(Cys42=)\n"
             "          :     46,020,630          46,020,650          46,020,670          46,020,690          46,020,710\n"
             "chrom pos :     |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |  \n"
             "seq    -> : CGACTGCCCAGAGAGCTGCTGCGAGCCCCCCTGCTGCGCCCCCAGCTGCTGCGCCCCGGCCCCCTGCCTGAGCCTGGTCTGCACCCCAGTGAGCCGT\n"
@@ -498,8 +515,9 @@ class Test_SimplePosition(unittest.TestCase):
         result = result.split("\n")
 
         expected_str = (
-            "hgvs      : NC_000002.11:g.96780987_96780997del\n"
-            + "hgvs      : NM_000682.6:c.901_911del\n"
+            "hgvs_g    : NC_000002.11:g.96780987_96780997del\n"
+            + "hgvs_c    : NM_000682.6:c.901_911del\n"
+            + "hgvs_p    : NP_000673.2:p.(Glu301GlyfsTer7)\n"
             + "          :     96,780,960          96,780,980                   96,781,000          96,781,020\n"
             + "chrom pos :     |    .    |    .    |    .    |    .  _________  |    .    |    .    |    .    |    .  \n"
             + "seq    -> : TGCCTGGGGTTCACACTCTTCCTCCTCCTCCTCCTCCTCTTC.........GGCTTCATCCTCTGGAGATGCCCCACAAACACCCTCCTTC\n"
@@ -542,6 +560,7 @@ class Test_SimplePosition(unittest.TestCase):
         expected_str = (
             "NC_000001.10:g.154574820=\n"
             + "NM_001111.4:c.298G>A\n"
+            + "NP_001102.2:p.(Gly100Arg)\n"
             + "154,574,800         154,574,820         154,574,840\n"
             + "|    .    |    .    |    .    |    .    |\n"
             + "TCTCTGGAGCCCCTGACTTCTGAGATGCACGCCCCTGGGGA\n"
@@ -566,8 +585,8 @@ class Test_SimplePosition(unittest.TestCase):
         result = pp.display(var_n)
         print(result)
         expected_str = (
-            "hgvs      : NC_000001.10:g.167905930G>A\n"
-            + "hgvs      : NR_146230.2:n.10G>A\n"
+            "hgvs_g    : NC_000001.10:g.167905930G>A\n"
+            + "hgvs_n    : NR_146230.2:n.10G>A\n"
             + "          : 167,905,910         167,905,930         167,905,950\n"
             + "chrom pos : |    .    |    .    |    .    |    .    |\n"
             + "seq    -> : TGCTGATCTTTGGATGTTCTGGTTAGTCTAAGAAGGAGAGT\n"

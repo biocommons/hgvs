@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 import hgvs
 from hgvs.assemblymapper import AssemblyMapper
@@ -131,15 +131,9 @@ class PrettyPrint:
 
         return var_str
 
-    def display(
-        self,
-        sv: SequenceVariant,
-        tx_ac: str = None,
-        display_start: int = None,
-        display_end: int = None,
-    ) -> str:
-        """Takes a variant and prints the genomic context around it."""
 
+    def get_hgvs_names(self, sv: SequenceVariant, tx_ac:str =None)->Tuple[SequenceVariant, SequenceVariant]:
+    
         var_c_or_n = None
         if sv.type == "g":
             var_g = sv
@@ -152,19 +146,31 @@ class PrettyPrint:
             # map back to genome
             var_g = self._map_to_chrom(sv)
             var_c_or_n = sv
+        
+        return var_g, var_c_or_n
 
-        data_compiler = DataCompiler(config=self.config)
+    def display(
+        self,
+        sv: SequenceVariant,
+        tx_ac: str = None,
+        display_start: int = None,
+        display_end: int = None,
+    ) -> str:
+        """Takes a variant and prints the genomic context around it."""
+
+        var_g, var_c_or_n = self.get_hgvs_names(sv,tx_ac)
+
+        self.data_compiler = DataCompiler(config=self.config)
 
         if self.config.all:
             # get all overlapping transcripts
 
             response = ""
             tx_acs = self._get_all_transcripts(var_g)
-            print(f"displaying {len(tx_acs)} alternative transcripts")
             for tx_ac in tx_acs:
                 var_c_or_n = self._infer_hgvs_c(var_g, tx_ac)
                 response += self.create_repre(
-                    var_g, var_c_or_n, display_start, display_end, data_compiler
+                    var_g, var_c_or_n, display_start, display_end, self.data_compiler
                 )
                 response += "\n---\n"
             return response
@@ -174,7 +180,7 @@ class PrettyPrint:
                 if self.config.infer_hgvs_c:
                     var_c_or_n = self._infer_hgvs_c(var_g)
 
-            return self.create_repre(var_g, var_c_or_n, display_start, display_end, data_compiler)
+            return self.create_repre(var_g, var_c_or_n, display_start, display_end, self.data_compiler)
 
     def create_repre(
         self,
@@ -191,10 +197,13 @@ class PrettyPrint:
         fully_justified_var = data.fully_justified
 
         if self.config.showLegend:
-            head = "hgvs      : "
+            head   = "hgvs_g    : "
+            head_c = "hgvs_c    : "
+            head_n = "hgvs_n    : "
+            head_p = "hgvs_p    : "
             refa = "ref>alt   : "
         else:
-            head = refa = ""
+            head = head_c = head_p = refa = ""
 
         if self.config.useColor:
             var_g_print = self._colorize_hgvs(str(var_g))
@@ -207,7 +216,18 @@ class PrettyPrint:
                 var_c_print = self._colorize_hgvs(str(var_c_or_n))
             else:
                 var_c_print = str(var_c_or_n)
-            var_str += head + var_c_print + "\n"
+            if data.var_c_or_n.type == 'c':
+                var_str += head_c 
+            elif data.var_c_or_n.type == 'n':
+                var_str += head_n
+            var_str += var_c_print + "\n"
+
+        if data.var_p:
+            if self.config.useColor:
+                var_p_print = self._colorize_hgvs(str(data.var_p))
+            else:
+                var_p_print = str(data.var_p)
+            var_str += head_p + var_p_print + "\n"
 
         renderer_cls = [ChrPositionInfo, ChrRuler, ChromSeqRendered]
 
@@ -248,8 +268,9 @@ class PrettyPrint:
             )
             fully_justified_str = fully_justified_renderer.display(data)
 
-            # var_str += shuffled_seq_header + left_shuffled_str + "\n"
-            # var_str += shuffled_seq_header + right_shuffled_str + "\n"
+            if self.config.showAllShuffleableRegions :
+                var_str += shuffled_seq_header + left_shuffled_str + "\n"
+                var_str += shuffled_seq_header + right_shuffled_str + "\n"
             var_str += shuffled_seq_header + fully_justified_str + "\n"
 
         else:

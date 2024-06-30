@@ -6,7 +6,7 @@ from bioutils.sequences import aa1_to_aa3_lut
 import hgvs
 import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
 import hgvs.utils.altseqbuilder as altseqbuilder
-from hgvs.exceptions import HGVSDataNotAvailableError, HGVSInvalidIntervalError
+from hgvs.exceptions import HGVSInvalidIntervalError
 from hgvs.pretty.models import (
     PositionDetail,
     PrettyConfig,
@@ -187,7 +187,7 @@ class DataCompiler:
             seq_end = display_end
 
         if var_c_or_n is not None:
-            tx_ac = var_c_or_n.ac
+            tx_ac = var_c_or_n.ac            
         else:
             tx_ac = ""  # can't show transcript , since there is none.
 
@@ -222,13 +222,16 @@ class DataCompiler:
         # we don't know the protein ac, get it looked up:
         pro_ac = None
         if var_c_or_n and var_c_or_n.type == "c":
+            var_p = am.c_to_p(var_c_or_n)
             reference_data = RefTranscriptData(self.config.hdp, tx_ac, pro_ac)
         else:
+            var_p = None
             reference_data = None
 
         position_details:List[PositionDetail] = []
         prev_mapped_pos = None
         prev_c_pos = -1
+        prev_n_pos = -1
 
         for chromosome_pos in range(seq_start + 1, seq_end + 1):
 
@@ -337,9 +340,9 @@ class DataCompiler:
                 c_interval,
             )
 
-        print(position_details[0].get_header()+"\t"+ProteinData.get_header())
-        for p in position_details:
-            print(f"{p}\t{p.protein_data}\t")
+        # print(position_details[0].get_header()+"\t"+ProteinData.get_header())
+        # for p in position_details:
+        #     print(f"{p}\t{p.protein_data}\t")
 
         vd = VariantData(
             seq_start,
@@ -353,6 +356,7 @@ class DataCompiler:
             var_g,
             mapper.strand,
             var_c_or_n,
+            var_p,
             position_details,
         )
 

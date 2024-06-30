@@ -88,6 +88,7 @@ class VariantData:
     var_g: SequenceVariant
     strand: int
     var_c_or_n: SequenceVariant = None
+    var_p: SequenceVariant = None
     position_details: List[PositionDetail] = None
     all: bool = False
 
@@ -104,6 +105,7 @@ class PrettyConfig:
     default_assembly: str = "GRCh37"
     useColor: bool = False
     showLegend: bool = True
+    showAllShuffleableRegions = False
     infer_hgvs_c: bool = True
     all: bool = False  # print all possible hgvs_c (for all UTA transcripts)
     show_reverse_strand: bool = False  # show the reverse strand sequence for the chromosome

@@ -4,10 +4,7 @@
 import re
 from typing import Optional
 
-from hgvs.dataproviders.interface import Interface
-from hgvs.pretty.datacompiler import DataCompiler
-from hgvs.pretty.models import PrettyConfig, VariantCoords
-from hgvs.sequencevariant import SequenceVariant
+from hgvs.pretty.models import VariantCoords
 
 
 def count_pattern_occurence(pattern, string):
@@ -59,22 +56,18 @@ class RepeatAnalyser:
             # seems we cant shuffle. is an SVN or delins
             return None
 
-        print(len(fs.alt))
-
         if len(fs.alt) > 0:
             if fs.alt in fs.ref:
                 if fs.ref.startswith(fs.alt):
                     d = fs.ref[len(fs.alt) :]
                     if count_pattern_occurence(d, fs.ref) > 1:
                         c, u = count_repetitive_units(d)
-                        print (f"found repeat {d} has {c} smaller repeats {u}")
                         return u
             elif fs.ref in fs.alt:
                 if fs.alt.startswith(fs.ref):
                     d = fs.alt[len(fs.ref) :]
                     if count_pattern_occurence(d, fs.ref) > 1:
                         c, u = count_repetitive_units(d)
-                        print (f"found repeat {d} has {c} smaller repeats {u}")
                         return u
 
         return None
