@@ -187,7 +187,7 @@ class DataCompiler:
             seq_end = display_end
 
         if var_c_or_n is not None:
-            tx_ac = var_c_or_n.ac            
+            tx_ac = var_c_or_n.ac
         else:
             tx_ac = ""  # can't show transcript , since there is none.
 
@@ -228,7 +228,7 @@ class DataCompiler:
             var_p = None
             reference_data = None
 
-        position_details:List[PositionDetail] = []
+        position_details: List[PositionDetail] = []
         prev_mapped_pos = None
         prev_c_pos = -1
         prev_n_pos = -1

@@ -28,19 +28,18 @@ class ProtRulerRenderer(BasicRenderer):
                 prev_aa = -1
                 continue
 
-            
             if len(var_str) > count:
                 continue
 
             aa_pos = prot_data.aa_pos
 
-            if aa_pos == prev_aa :
-                var_str += ' '
+            if aa_pos == prev_aa:
+                var_str += " "
                 continue
 
             prev_aa = aa_pos
 
-            if (aa_pos + 1) % 10 == 0:                
+            if (aa_pos + 1) % 10 == 0:
                 var_str += f"{aa_pos+1} "
                 continue
 

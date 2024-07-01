@@ -16,8 +16,9 @@ from hgvs.pretty.renderer.tx_alig_renderer import TxAligRenderer
 from hgvs.pretty.renderer.tx_mapping_renderer import TxMappingRenderer
 from hgvs.pretty.renderer.tx_pos import TxRulerRenderer
 from hgvs.pretty.renderer.tx_ref_disagree_renderer import TxRefDisagreeRenderer
-from hgvs.sequencevariant import SequenceVariant
 from hgvs.repeats import RepeatAnalyser
+from hgvs.sequencevariant import SequenceVariant
+
 TGREEN = "\033[32m"  # Green Text
 TGREENBG = "\033[30;42m"
 TRED = "\033[31m"  # Red Text
@@ -131,9 +132,10 @@ class PrettyPrint:
 
         return var_str
 
+    def get_hgvs_names(
+        self, sv: SequenceVariant, tx_ac: str = None
+    ) -> Tuple[SequenceVariant, SequenceVariant]:
 
-    def get_hgvs_names(self, sv: SequenceVariant, tx_ac:str =None)->Tuple[SequenceVariant, SequenceVariant]:
-    
         var_c_or_n = None
         if sv.type == "g":
             var_g = sv
@@ -146,7 +148,7 @@ class PrettyPrint:
             # map back to genome
             var_g = self._map_to_chrom(sv)
             var_c_or_n = sv
-        
+
         return var_g, var_c_or_n
 
     def display(
@@ -158,7 +160,7 @@ class PrettyPrint:
     ) -> str:
         """Takes a variant and prints the genomic context around it."""
 
-        var_g, var_c_or_n = self.get_hgvs_names(sv,tx_ac)
+        var_g, var_c_or_n = self.get_hgvs_names(sv, tx_ac)
 
         self.data_compiler = DataCompiler(config=self.config)
 
@@ -180,7 +182,9 @@ class PrettyPrint:
                 if self.config.infer_hgvs_c:
                     var_c_or_n = self._infer_hgvs_c(var_g)
 
-            return self.create_repre(var_g, var_c_or_n, display_start, display_end, self.data_compiler)
+            return self.create_repre(
+                var_g, var_c_or_n, display_start, display_end, self.data_compiler
+            )
 
     def create_repre(
         self,
@@ -197,7 +201,7 @@ class PrettyPrint:
         fully_justified_var = data.fully_justified
 
         if self.config.showLegend:
-            head   = "hgvs_g    : "
+            head = "hgvs_g    : "
             head_c = "hgvs_c    : "
             head_n = "hgvs_n    : "
             head_p = "hgvs_p    : "
@@ -216,9 +220,9 @@ class PrettyPrint:
                 var_c_print = self._colorize_hgvs(str(var_c_or_n))
             else:
                 var_c_print = str(var_c_or_n)
-            if data.var_c_or_n.type == 'c':
-                var_str += head_c 
-            elif data.var_c_or_n.type == 'n':
+            if data.var_c_or_n.type == "c":
+                var_str += head_c
+            elif data.var_c_or_n.type == "n":
                 var_str += head_n
             var_str += var_c_print + "\n"
 
@@ -268,7 +272,7 @@ class PrettyPrint:
             )
             fully_justified_str = fully_justified_renderer.display(data)
 
-            if self.config.showAllShuffleableRegions :
+            if self.config.showAllShuffleableRegions:
                 var_str += shuffled_seq_header + left_shuffled_str + "\n"
                 var_str += shuffled_seq_header + right_shuffled_str + "\n"
             var_str += shuffled_seq_header + fully_justified_str + "\n"
@@ -276,7 +280,14 @@ class PrettyPrint:
         else:
             var_str += shuffled_seq_header + left_shuffled_str + "\n"
 
-        renderers_cls = [TxAligRenderer, TxMappingRenderer, TxRulerRenderer, ProtSeqRenderer, ProtMappingRenderer, ProtRulerRenderer ]
+        renderers_cls = [
+            TxAligRenderer,
+            TxMappingRenderer,
+            TxRulerRenderer,
+            ProtSeqRenderer,
+            ProtMappingRenderer,
+            ProtRulerRenderer,
+        ]
         for cls in renderers_cls:
             renderer = cls(self.config, data.strand)
 

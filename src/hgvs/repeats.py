@@ -12,15 +12,16 @@ def count_pattern_occurence(pattern, string):
     matches = re.findall(pattern, string)
     return len(matches)
 
+
 def count_repetitive_units(s):
     length = len(s)
-    
+
     for i in range(1, length + 1):
         unit = s[:i]
         if length % i == 0:
             if unit * (length // i) == s:
                 return length // i, unit
-                
+
     return 1, s
 
 
@@ -28,7 +29,6 @@ class RepeatAnalyser:
 
     def __init__(self, fs: VariantCoords) -> None:
 
-        
         self.is_repeat = False
         self.ref_count = 0
         self.alt_count = 0

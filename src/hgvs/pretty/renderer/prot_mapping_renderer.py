@@ -13,21 +13,20 @@ class ProtMappingRenderer(BasicRenderer):
 
         var_str = ""
 
-        count = -1        
+        count = -1
         for pdata in data.position_details:
             count += 1
             if not pdata.mapped_pos:
-                var_str += " "                
+                var_str += " "
                 continue
 
             prot_data = pdata.protein_data
 
             if not prot_data or prot_data.aa_pos < 0:
-                var_str +=" "
+                var_str += " "
                 continue
 
-                        
-            if len(var_str) > count:            
+            if len(var_str) > count:
                 continue
 
             aa_pos = prot_data.aa_pos
@@ -39,7 +38,6 @@ class ProtMappingRenderer(BasicRenderer):
                 var_str += "."
                 continue
 
-            
             var_str += " "
 
         return var_str
