@@ -37,6 +37,7 @@ from hgvs.assemblymapper import AssemblyMapper
 from hgvs.dataproviders.uta import connect
 from hgvs.normalizer import Normalizer
 from hgvs.parser import Parser
+from hgvs.pretty_print import PrettyPrint
 from hgvs.validator import Validator
 from hgvs.variantmapper import VariantMapper
 
@@ -66,6 +67,7 @@ n_to_g = projector.n_to_g
 t_to_g = projector.t_to_g
 t_to_p = projector.t_to_p
 get_relevant_transcripts = am38.relevant_transcripts
+pretty = PrettyPrint(hdp, useColor=True, showLegend=True)
 
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
