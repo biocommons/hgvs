@@ -199,6 +199,65 @@ class Test_VariantMapper(unittest.TestCase):
         self.assertEqual(str(var_p), hgvs_p)
 
 
+    def test_map_of_ins_splice_region_preserved(self):
+        hgvs_c = "NM_004119.2:c.1837+21_1837+22insCGAGAGAATATGAATATGATCTCAAATGGGAGTTTCCAAGAGAAAATTTAGAGTTTGGTAAGAATGGAATGTGCCAAA"
+        hgvs_p = "NP_004110.2:p.(Lys614_Val615insAsnGlyMetCysGlnThrArgGluTyrGluTyrAspLeuLysTrpGluPheProArgGluAsnLeuGluPheGlyLys)"
+
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.am.c_to_p(var_c)
+
+        self.assertEqual(str(var_p), hgvs_p)
+
+    def test_map_of_dup_splice_region_preserved(self):
+        hgvs_c = "NM_004119.2:c.1835_1837+3dup"
+        hgvs_p = "NP_004110.2:p.(Gly613_Lys614insIleGly)"
+
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.am.c_to_p(var_c)
+
+        self.assertEqual(str(var_p), hgvs_p)
+
+        hgvs_c = "NM_005228.4:c.2284-5_2290dup"
+        hgvs_p = "NP_005219.2:p.(Ala763_Tyr764insPheGlnGluAla)"
+
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.am.c_to_p(var_c)
+
+        self.assertEqual(str(var_p), hgvs_p)
+
+        hgvs_c = "NM_004456.4:c.2196-1_2196dup"
+        hgvs_p = "NP_004447.2:p.(Tyr733AspfsTer8)"
+
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.am.c_to_p(var_c)
+
+        self.assertEqual(str(var_p), hgvs_p)
+
+        hgvs_c = "NM_024529.4:c.130_131+1dup"
+        hgvs_p = "NP_078805.3:p.(Gly44dup)"
+
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.am.c_to_p(var_c)
+
+        self.assertEqual(str(var_p), hgvs_p)
+
+        hgvs_c = "NM_016222.3:c.27+2_27+5dup"
+        hgvs_p = "NP_057306.2:p.(Arg10ValfsTer20)"
+
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.am.c_to_p(var_c)
+
+        self.assertEqual(str(var_p), hgvs_p)
+
+        hgvs_c = "NM_182758.2:c.2953-31_2953-26dup"
+        hgvs_p = "NP_877435.2:p.?"
+
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.am37.c_to_p(var_c)
+
+        self.assertEqual(str(var_p), hgvs_p)
+
+
 class Test_RefReplacement(unittest.TestCase):
     test_cases = [
         # These casese attempt to test reference update in four dimensions:
