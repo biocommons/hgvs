@@ -33,6 +33,8 @@ class Babelfish:
         )
         self.ac_to_name_map = make_ac_name_map(assembly_name)
         self.name_to_ac_map = make_name_ac_map(assembly_name)
+        # We need to accept accessions as chromosome names, so add them pointing at themselves
+        self.name_to_ac_map.update({ac: ac for ac in self.name_to_ac_map.values()})
 
     def hgvs_to_vcf(self, var_g):
         """**EXPERIMENTAL**
