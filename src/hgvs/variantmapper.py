@@ -431,6 +431,7 @@ class VariantMapper:
             raise HGVSInvalidVariantError("Expected a cDNA (c.) variant; got " + str(var_c))
         if self._validator:
             self._validator.validate(var_c)
+        self._replace_reference(var_c)
         reference_data = RefTranscriptData(self.hdp, var_c.ac, pro_ac)
         builder = altseqbuilder.AltSeqBuilder(var_c, reference_data)
 
@@ -465,9 +466,10 @@ class VariantMapper:
             # these types have no reference sequence (zero-width), so return as-is
             return var
 
-        pos = var.posedit.pos
-        if (isinstance(pos.start, hgvs.location.BaseOffsetPosition) and pos.start.offset != 0) or (
-            isinstance(pos.end, hgvs.location.BaseOffsetPosition) and pos.end.offset != 0
+        if (
+            var.type in "cnr"
+            and var.posedit.pos is not None
+            and (var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0)
         ):
             _logger.info("Can't update reference sequence for intronic variant {}".format(var))
             return var
@@ -483,6 +485,9 @@ class VariantMapper:
 
         seq_start = pos.start.base - 1
         seq_end = pos.end.base
+        if var.type in "cnr":
+            seq_start += pos.start.offset
+            seq_end += pos.end.offset
 
         # When strict_bounds is False and an error occurs, return
         # variant as-is
