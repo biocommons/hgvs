@@ -107,9 +107,9 @@ tox:
 .PHONY: reformat
 reformat:
 	@if ! git diff --cached --exit-code >/dev/null; then echo "Repository not clean" 1>&2; exit 1; fi
-	black src tests
+	ruff format src tests
 	isort src tests
-	git commit -a -m "reformatted with black and isort"
+	git commit -a -m "reformatted with ruff and isort"
 
 #=> docs -- make sphinx docs
 .PHONY: docs

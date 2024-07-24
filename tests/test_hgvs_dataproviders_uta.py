@@ -66,7 +66,7 @@ class UTA_Base:
 
     def test_get_tx_for_gene(self):
         tig = self.hdp.get_tx_for_gene("VHL")
-        
+
         expected_data = [
             ("NM_001354723.1", "NC_000003.11"),
             ("NM_198156.2", "NC_018914.2"),

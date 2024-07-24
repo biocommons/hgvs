@@ -35,7 +35,7 @@ Highlights
   close to it).
 
 * Abide by current `code style`_.  Use ``make reformat`` to reformat all
-  code with `yapf`_ prior to submitting a PR.
+  code with `ruff`_ prior to submitting a PR.
 
 * Email the `hgvs-discuss`_ mailing list if you have questions.
 
@@ -213,7 +213,7 @@ changes::
   spaces_before_comment = 4
   split_before_named_assigns = True
 
-These code conventions are uniformly enforce by yapf_.  The entire code
+These code conventions are uniformly enforce by ruff_.  The entire code
 base is periodically automatically reformatted for consistency.
 
 

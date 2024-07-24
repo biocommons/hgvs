@@ -8,10 +8,12 @@ NORM_HGVS_VCF = [
         "NC_000006.12:g.49949407=",
         [],
         ("6", 49949407, "A", ".", "identity"),
-        [("6", 49949407, "A", "A", "identity"),
-         # Test case insensitivity
-         ("6", 49949407, "A", "a", "identity"),
-         ("6", 49949407, "a", "A", "identity"),]
+        [
+            ("6", 49949407, "A", "A", "identity"),
+            # Test case insensitivity
+            ("6", 49949407, "A", "a", "identity"),
+            ("6", 49949407, "a", "A", "identity"),
+        ],
     ),
     # Test multi-base identity
     (

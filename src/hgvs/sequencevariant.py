@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-""" represents simple sequence-based variants """
+"""represents simple sequence-based variants"""
 
 import attr
 
