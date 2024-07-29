@@ -97,7 +97,8 @@ class AltSeqToHgvsp:
                     # get size diff from diff in ref/alt lengths
                     start = self._alt_data.variant_start_aa - 1
                     delta = len(self._alt_seq) - len(self._ref_seq)
-                    while self._ref_seq[start] == self._alt_seq[start]:
+                    start_max = min(len(self._ref_seq), len(self._alt_seq))
+                    while start < start_max and self._ref_seq[start] == self._alt_seq[start]:
                         start += 1
                     offset = start + abs(delta)
 
@@ -190,10 +191,15 @@ class AltSeqToHgvsp:
             self._is_ambiguous = True  # side-effect
 
         if insertion and insertion.find("*") == 0:  # stop codon at variant position
-            aa_start = aa_end = AAPosition(base=start, aa=deletion[0])
-            ref = ""
-            alt = "*"
             is_sub = True
+            alt = "*"
+            if start == len(self._alt_seq) and not deletion:
+                # insertion of stop codon at end of sequence, a special case of "stop_retained"
+                aa_start = aa_end = AAPosition(base=start, aa="*")
+                ref = "*"
+            else:
+                aa_start = aa_end = AAPosition(base=start, aa=deletion[0])
+                ref = ""
 
         elif start == len(self._ref_seq):  # extension
             if self._alt_seq[-1] == "*":
