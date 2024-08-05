@@ -9,6 +9,7 @@ import hgvs.assemblymapper
 import hgvs.dataproviders.uta
 import hgvs.parser
 import hgvs.variantmapper
+from hgvs.enums import PrevalidationLevel
 from hgvs.exceptions import HGVSInvalidVariantError
 
 
@@ -417,12 +418,12 @@ class Test_RefReplacement(unittest.TestCase):
 class Test_AssemblyMapper(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        hdp = hgvs.dataproviders.uta.connect(
+        cls.hdp = hgvs.dataproviders.uta.connect(
             mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
         )
         cls.hp = hgvs.parser.Parser()
         cls.am = hgvs.assemblymapper.AssemblyMapper(
-            hdp, assembly_name="GRCh37", alt_aln_method="splign"
+            cls.hdp, assembly_name="GRCh37", alt_aln_method="splign"
         )
 
     def _test_mapping(self, hgvs_set):
@@ -472,6 +473,18 @@ class Test_AssemblyMapper(unittest.TestCase):
         assert "NP_000050.2:p.(Lys2597=)" == str(
             self.am.t_to_p(self.hp.parse("NM_000059.3:c.7791A>G"))
         )
+
+    def test_issue_704_set_prevalidation_level(self):
+        # Doesn't set prevalidation_level
+
+        for prevalidation_level in PrevalidationLevel:
+            am = hgvs.assemblymapper.AssemblyMapper(
+                self.hdp, replace_reference=True, assembly_name="GRCh37", alt_aln_method="splign",
+                normalize=True, prevalidation_level=prevalidation_level.name,
+            )
+            vm = am._norm.vm
+            self.assertEqual(vm.prevalidation_level, prevalidation_level,
+                             "AssemblyMapper Normalizer has 'prevalidation_level' set")
 
 
 if __name__ == "__main__":

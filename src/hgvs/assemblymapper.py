@@ -86,8 +86,11 @@ class AssemblyMapper(VariantMapper):
         self.in_par_assume = in_par_assume
         self._norm = None
         if self.normalize:
+            vm = VariantMapper(hdp=hdp, replace_reference=replace_reference,
+                               prevalidation_level=prevalidation_level,
+                               add_gene_symbol=add_gene_symbol)
             self._norm = hgvs.normalizer.Normalizer(
-                hdp, alt_aln_method=alt_aln_method, validate=False
+                hdp, alt_aln_method=alt_aln_method, validate=False, variantmapper=vm,
             )
         self._assembly_map = {
             k: v for k, v in hdp.get_assembly_map(self.assembly_name).items() if k.startswith("NC_")
