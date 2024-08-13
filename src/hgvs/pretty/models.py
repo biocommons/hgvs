@@ -1,12 +1,11 @@
 from dataclasses import dataclass
 from typing import List
 
-import hgvs
 from hgvs.alignmentmapper import AlignmentMapper
 from hgvs.assemblymapper import AssemblyMapper
 from hgvs.location import Interval
 from hgvs.sequencevariant import SequenceVariant
-
+from hgvs.dataproviders.interface import Interface
 
 @dataclass(eq=True, repr=True, frozen=True, order=True)
 class VariantCoords:
@@ -31,7 +30,7 @@ class ProteinData:
 
     @classmethod
     def get_header(cls) -> str:
-        return f"c_pos\ttlc\taa_char\tc_pos\taa_pos"
+        return "c_pos\ttlc\taa_char\tc_pos\taa_pos"
 
     def __repr__(self) -> str:
         return f"{self.c_pos}\t{self.tlc}\t{self.aa_char}\t{self.c_pos %3}\t{self.aa_pos}"
@@ -97,7 +96,7 @@ class VariantData:
 class PrettyConfig:
     """acontainer for various configurations."""
 
-    hdp: hgvs.dataproviders.interface.Interface
+    hdp: Interface
     am37: AssemblyMapper
     am38: AssemblyMapper
     padding_left: int = 20
