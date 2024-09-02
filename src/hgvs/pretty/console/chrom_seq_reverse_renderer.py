@@ -11,7 +11,7 @@ class ChromReverseSeqRendered(BasicRenderer):
 
     def display(self, data: VariantData) -> str:
         """colors the ref sequences with adenine (A, green), thymine (T, red), cytosine (C, yellow), and guanine (G, blue)"""
-        from hgvs.pretty.pretty_print import ENDC, TBLUE, TGREEN, TRED, TYELLOW
+        from hgvs.pretty.console.constants import ENDC, TBLUE, TGREEN, TRED, TYELLOW
 
         var_seq = ""
         for p in data.position_details:

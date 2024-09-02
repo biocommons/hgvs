@@ -17,7 +17,7 @@ class TxAligRenderer(BasicRenderer):
         if not data.var_c_or_n:
             return ""
 
-        from hgvs.pretty.pretty_print import ENDC, TPURPLE, TYELLOW
+        from hgvs.pretty.console.constants import ENDC, TPURPLE, TYELLOW
 
         var_str = ""
 

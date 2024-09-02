@@ -24,6 +24,7 @@ class DataCompiler:
         self.config = config
 
     def get_shuffled_variant(self, var_g: SequenceVariant, direction: int) -> VariantCoords:
+        """ Takes a sequence variant and returns VariantCoords that have been shuffled accordingly."""
 
         # get shuffled representation:
         if direction == 5:

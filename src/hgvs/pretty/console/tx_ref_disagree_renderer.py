@@ -6,8 +6,7 @@ class TxRefDisagreeRenderer(BasicRenderer):
     """Display tx-ref-disagree positions"""
 
     def legend(self) -> str:
-
-        return f"tx ref dif: "
+        return "tx ref dif: "
 
     def display(self, data: VariantData) -> str:
         """show differences between tx and ref genome, if there are any"""
@@ -15,7 +14,7 @@ class TxRefDisagreeRenderer(BasicRenderer):
         if not data.var_c_or_n:
             return ""
 
-        from hgvs.pretty.pretty_print import ENDC, TRED
+        from hgvs.pretty.console.constants import ENDC, TRED
 
         var_str = ""
         counter = -1

@@ -3,7 +3,7 @@ from hgvs.pretty.console.renderer import BasicRenderer
 
 
 class ProtMappingRenderer(BasicRenderer):
-    """prints the position in p (amino acid) coordinates."""
+    """Prints the position in p (amino acid) coordinates."""
 
     def legend(self):
         return "aa pos    : "

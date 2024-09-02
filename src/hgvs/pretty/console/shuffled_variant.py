@@ -17,7 +17,7 @@ class ShuffledVariant(BasicRenderer):
 
     def display(self, data: VariantData) -> str:
 
-        from hgvs.pretty.pretty_print import ENDC, TBLUE, TGREEN, TRED, TYELLOW
+        from hgvs.pretty.console.constants import ENDC, TRED
 
         seq_start = data.display_start
         seq_end = data.display_end
