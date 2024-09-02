@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 from bioutils.normalize import normalize
 from bioutils.sequences import aa1_to_aa3_lut

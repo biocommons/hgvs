@@ -2,35 +2,25 @@ from typing import List, Tuple
 
 import hgvs
 from hgvs.assemblymapper import AssemblyMapper
+from hgvs.pretty.console.renderer import colorize_hgvs
 from hgvs.pretty.datacompiler import DataCompiler
 from hgvs.pretty.models import PrettyConfig
-from hgvs.pretty.renderer.chrom_seq_renderer import ChromSeqRendered
-from hgvs.pretty.renderer.chrom_seq_reverse_renderer import ChromReverseSeqRendered
-from hgvs.pretty.renderer.pos_info import ChrPositionInfo
-from hgvs.pretty.renderer.prot_mapping_renderer import ProtMappingRenderer
-from hgvs.pretty.renderer.prot_ruler_renderer import ProtRulerRenderer
-from hgvs.pretty.renderer.prot_seq_renderer import ProtSeqRenderer
-from hgvs.pretty.renderer.ruler import ChrRuler
-from hgvs.pretty.renderer.shuffled_variant import ShuffledVariant
-from hgvs.pretty.renderer.tx_alig_renderer import TxAligRenderer
-from hgvs.pretty.renderer.tx_mapping_renderer import TxMappingRenderer
-from hgvs.pretty.renderer.tx_pos import TxRulerRenderer
-from hgvs.pretty.renderer.tx_ref_disagree_renderer import TxRefDisagreeRenderer
+from hgvs.pretty.console.chrom_seq_renderer import ChromSeqRendered
+from hgvs.pretty.console.chrom_seq_reverse_renderer import ChromReverseSeqRendered
+from hgvs.pretty.console.pos_info import ChrPositionInfo
+from hgvs.pretty.console.prot_mapping_renderer import ProtMappingRenderer
+from hgvs.pretty.console.prot_ruler_renderer import ProtRulerRenderer
+from hgvs.pretty.console.prot_seq_renderer import ProtSeqRenderer
+from hgvs.pretty.console.ruler import ChrRuler
+from hgvs.pretty.console.shuffled_variant import ShuffledVariant
+from hgvs.pretty.console.tx_alig_renderer import TxAligRenderer
+from hgvs.pretty.console.tx_mapping_renderer import TxMappingRenderer
+from hgvs.pretty.console.tx_pos import TxRulerRenderer
+from hgvs.pretty.console.tx_ref_disagree_renderer import TxRefDisagreeRenderer
 from hgvs.repeats import RepeatAnalyser
 from hgvs.sequencevariant import SequenceVariant
 
-TGREEN = "\033[32m"  # Green Text
-TGREENBG = "\033[30;42m"
-TRED = "\033[31m"  # Red Text
-TREDBG = "\033[30;41m"
-TBLUE = "\033[34m"  # Blue Text
-TBLUEBG = "\033[30;44m"
-TPURPLE = "\033[35m"  # Purple Text
-TPURPLEBG = "\033[30;45m"
-TYELLOW = "\033[33m"  # Yellow Text
-TYELLOWBG = "\033[30;43m"
 
-ENDC = "\033[m"  # reset to the defaults
 
 
 class PrettyPrint:
@@ -117,20 +107,6 @@ class PrettyPrint:
         elif sv.type == "t":
             return am.t_to_g(sv)
 
-    def _colorize_hgvs(self, hgvs_str: str) -> str:
-        if not self.config.useColor:
-            return hgvs_str
-
-        spl = hgvs_str.split(":")
-        var_str = TPURPLE + spl[0] + ENDC
-        var_str += ":"
-
-        sec = spl[1].split(".")
-        var_str += TYELLOW + sec[0] + ENDC
-        var_str += "."
-        var_str += sec[1]
-
-        return var_str
 
     def get_hgvs_names(
         self, sv: SequenceVariant, tx_ac: str = None
@@ -210,14 +186,14 @@ class PrettyPrint:
             head = head_c = head_p = refa = ""
 
         if self.config.useColor:
-            var_g_print = self._colorize_hgvs(str(var_g))
+            var_g_print = colorize_hgvs(str(var_g))
         else:
             var_g_print = str(var_g)
 
         var_str = head + var_g_print + "\n"
         if data.var_c_or_n:
             if self.config.useColor:
-                var_c_print = self._colorize_hgvs(str(var_c_or_n))
+                var_c_print = colorize_hgvs(str(var_c_or_n))
             else:
                 var_c_print = str(var_c_or_n)
             if data.var_c_or_n.type == "c":
@@ -228,7 +204,7 @@ class PrettyPrint:
 
         if data.var_p:
             if self.config.useColor:
-                var_p_print = self._colorize_hgvs(str(data.var_p))
+                var_p_print = colorize_hgvs(str(data.var_p))
             else:
                 var_p_print = str(data.var_p)
             var_str += head_p + var_p_print + "\n"

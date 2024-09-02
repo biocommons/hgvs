@@ -94,7 +94,7 @@ class VariantData:
 
 @dataclass
 class PrettyConfig:
-    """acontainer for various configurations."""
+    """A container for various configurations."""
 
     hdp: Interface
     am37: AssemblyMapper

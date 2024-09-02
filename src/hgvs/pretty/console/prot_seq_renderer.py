@@ -1,5 +1,5 @@
 from hgvs.pretty.models import VariantData
-from hgvs.pretty.renderer.renderer import BasicRenderer
+from hgvs.pretty.console.renderer import BasicRenderer
 
 
 class ProtSeqRenderer(BasicRenderer):
@@ -14,7 +14,7 @@ class ProtSeqRenderer(BasicRenderer):
         if not data.var_c_or_n:
             return ""
 
-        from hgvs.pretty_print import ENDC, TGREEN, TRED
+        from hgvs.pretty.pretty_print import ENDC, TGREEN, TRED
 
         var_str = ""
         for pdata in data.position_details:

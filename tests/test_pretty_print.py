@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-import os
 import unittest
 
 import pytest
-from support import CACHE
 
 import hgvs
-from hgvs.pretty_print import PrettyPrint
+from hgvs.pretty.pretty_print import PrettyPrint
 
 
 @pytest.mark.quick

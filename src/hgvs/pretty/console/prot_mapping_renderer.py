@@ -1,5 +1,5 @@
 from hgvs.pretty.models import VariantData
-from hgvs.pretty.renderer.renderer import BasicRenderer
+from hgvs.pretty.console.renderer import BasicRenderer
 
 
 class ProtMappingRenderer(BasicRenderer):

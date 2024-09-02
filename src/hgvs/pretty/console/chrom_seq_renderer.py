@@ -1,21 +1,19 @@
-from bioutils.sequences import reverse_complement
-
 from hgvs.pretty.models import VariantData
-from hgvs.pretty.renderer.renderer import BasicRenderer
+from hgvs.pretty.console.renderer import BasicRenderer
 
 
-class ChromReverseSeqRendered(BasicRenderer):
+class ChromSeqRendered(BasicRenderer):
 
     def legend(self) -> str:
-        return "seq    <- : "
+        return "seq    -> : "
 
     def display(self, data: VariantData) -> str:
         """colors the ref sequences with adenine (A, green), thymine (T, red), cytosine (C, yellow), and guanine (G, blue)"""
-        from hgvs.pretty_print import ENDC, TBLUE, TGREEN, TRED, TYELLOW
+        from hgvs.pretty.pretty_print import ENDC, TBLUE, TGREEN, TRED, TYELLOW
 
         var_seq = ""
         for p in data.position_details:
-            c = reverse_complement(p.ref)
+            c = p.ref
 
             if not c:
                 var_seq += "."

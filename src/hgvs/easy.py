@@ -37,7 +37,7 @@ from hgvs.assemblymapper import AssemblyMapper
 from hgvs.dataproviders.uta import connect
 from hgvs.normalizer import Normalizer
 from hgvs.parser import Parser
-from hgvs.pretty_print import PrettyPrint
+from hgvs.pretty.pretty_print import PrettyPrint
 from hgvs.validator import Validator
 from hgvs.variantmapper import VariantMapper
 

@@ -1,5 +1,5 @@
 from hgvs.pretty.models import VariantCoords, VariantData
-from hgvs.pretty.renderer.renderer import BasicRenderer
+from hgvs.pretty.console.renderer import BasicRenderer
 from hgvs.sequencevariant import SequenceVariant
 
 
@@ -17,7 +17,7 @@ class ShuffledVariant(BasicRenderer):
 
     def display(self, data: VariantData) -> str:
 
-        from hgvs.pretty_print import ENDC, TBLUE, TGREEN, TRED, TYELLOW
+        from hgvs.pretty.pretty_print import ENDC, TBLUE, TGREEN, TRED, TYELLOW
 
         seq_start = data.display_start
         seq_end = data.display_end

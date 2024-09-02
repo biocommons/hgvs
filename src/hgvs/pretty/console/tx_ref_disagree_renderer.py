@@ -1,5 +1,5 @@
 from hgvs.pretty.models import VariantData
-from hgvs.pretty.renderer.renderer import BasicRenderer
+from hgvs.pretty.console.renderer import BasicRenderer
 
 
 class TxRefDisagreeRenderer(BasicRenderer):
@@ -15,7 +15,7 @@ class TxRefDisagreeRenderer(BasicRenderer):
         if not data.var_c_or_n:
             return ""
 
-        from hgvs.pretty_print import ENDC, TRED
+        from hgvs.pretty.pretty_print import ENDC, TRED
 
         var_str = ""
         counter = -1
