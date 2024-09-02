@@ -41,9 +41,7 @@ Highlights
 
 * Test your code with ``make test`` before you submit a PR.
 
-* Currently, only Python 2.7 is supported. Support for Python 3.5 is
-  slated for the next release
-  (`#190 <https://github.com/biocommons/hgvs/issues/190/>`__).
+* Currently, only Python >=3.10 is supported, per `Biocommons policy <https://biocommons.org/en/latest/contributing/coding-guidelines/#other>`_.
 
 
 A Quick Contribution Example
@@ -158,11 +156,11 @@ setting UTA_DB_URL.  The format is
 ``postgresql://<user>:<pass>@<host>/<db>/<schema>``. For example:
 
    ``postgresql://anonymous:anonymous@uta.biocommons.org/uta/uta_20140210``
-  
-explicitly selects the public database, and 
+
+explicitly selects the public database, and
 
    ``postgresql://localhost/uta/uta_20140210``
- 
+
 selects a local instance.  Developers can test connectivity like this:
 
    ``$ UTA_DB_URL=postgresql://localhost/uta/uta_20140210 make test-quick``
@@ -232,13 +230,13 @@ understand the code.
   variable names. |eg| ``var_c`` in a function argument list signifies
   that a SequenceVariant object with type='c' is expected.
 
-:hgvs*: a string representing an HGVS variant name.  
+:hgvs*: a string representing an HGVS variant name.
 
 :var*: a :class:`hgvs.variant.SequenceVariant` object
 
-:pos: 
+:pos:
 
-:posedit: 
+:posedit:
 
 :hgvs_position:
 
