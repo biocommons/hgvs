@@ -2,6 +2,7 @@ import unittest
 
 from parameterized import parameterized
 
+import pytest
 import hgvs
 import hgvs.dataproviders
 from hgvs.pretty.datacompiler import DataCompiler
@@ -32,6 +33,7 @@ class TestRepeats(unittest.TestCase):
         self.assertEqual(u, observed_u)
         self.assertEqual(c, observed_c)
 
+    @pytest.mark.skip(reason="would add too much caching burden.")
     @parameterized.expand(
         [
             ("NC_000019.10:g.45770205del", True, "C", 6, 5, "C[6]>C[5]"),
@@ -56,6 +58,7 @@ class TestRepeats(unittest.TestCase):
         self.assertEqual(ref_count, ra.ref_count)
         self.assertEqual(alt_count, ra.alt_count)
 
+    @pytest.mark.skip(reason="would add too much caching burden.")
     @parameterized.expand(
         [
             (

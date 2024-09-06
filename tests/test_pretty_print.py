@@ -7,7 +7,7 @@ import hgvs
 from hgvs.pretty.pretty_print import PrettyPrint
 
 
-@pytest.mark.skip("The pretty print tests are data hungry. If we were to add the data to the test cache, we would inflate the size of the cache. As such only running when necessary.")
+@pytest.mark.skip(reason="The pretty print tests are data hungry. If we were to add the data to the test cache, we would inflate the size of the cache. As such only running when necessary.")
 @pytest.mark.quick
 @pytest.mark.models
 class Test_SimplePosition(unittest.TestCase):
