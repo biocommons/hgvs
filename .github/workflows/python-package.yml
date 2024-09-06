@@ -57,7 +57,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -e .[dev]
+          pip install setuptools
+          pip install -e .[dev]          
           pip install pytest pytest-cov
 
       - name: Test with pytest
