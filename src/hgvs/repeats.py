@@ -9,8 +9,8 @@ from hgvs.pretty.models import VariantCoords
 
 def count_pattern_occurence(pattern, string):
     """Counts how often a pattern can be found in the string."""
-    matches = re.findall(pattern, string)
-    return len(matches)
+    matches = re.finditer(f'(?={pattern})', string)
+    return sum(1 for _ in matches)
 
 
 def count_repetitive_units(s):

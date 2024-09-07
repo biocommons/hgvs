@@ -7,7 +7,7 @@ import hgvs
 import hgvs.dataproviders
 from hgvs.pretty.datacompiler import DataCompiler
 from hgvs.pretty.models import PrettyConfig
-from hgvs.repeats import RepeatAnalyser, count_repetitive_units
+from hgvs.repeats import RepeatAnalyser, count_pattern_occurence, count_repetitive_units
 
 
 class TestRepeats(unittest.TestCase):
@@ -32,6 +32,22 @@ class TestRepeats(unittest.TestCase):
 
         self.assertEqual(u, observed_u)
         self.assertEqual(c, observed_c)
+
+    @parameterized.expand(
+            [
+                ('T','TTTTTTT',7),
+                ('TT','TTTTTTT',6),
+                ('TTTT','TTTTTTT',4),
+                ('GA', 'GAGA', 2),
+                ('abc', 'abc', 1),
+                ('C', 'CC', 2),
+                ('', '', 1),
+                ('AA', 'A', 0)
+            ]
+    )
+    def test_count_pattern_occurence(self, pattern:str, string:str, c: int):
+        l_matches = count_pattern_occurence(pattern, string)
+        self.assertEqual(l_matches, c)
 
     @pytest.mark.skip(reason="would add too much caching burden.")
     @parameterized.expand(
@@ -80,6 +96,7 @@ class TestRepeats(unittest.TestCase):
             ("NC_000005.10:g.123346517_123346518insATTA", True, "ATTA", 2, 3, "ATTA[2]>ATTA[3]"),
             ("NC_000005.10:g.123346522_123346525dup", True, "ATTA", 2, 3, "ATTA[2]>ATTA[3]"),
             ("NC_000019.10:g.45770210_45770212del", True, "GCA", 20, 19, "GCA[20]>GCA[19]"),
+            ("NC_000007.14:g.117548628_117548629insTTTT", True, "T", 7 , 11, "T[7]>T[11]")
         ]
     )
     def test_repeats(self, hgvs_g, is_repeat, repeat_unit, ref_count, alt_count, s):
