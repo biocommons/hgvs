@@ -6,55 +6,61 @@ import re
 try:
     # get release from hgvs if available
     import hgvs
+
     release = str(hgvs.__version__)
 except ModuleNotFoundError:
     # else get release from first tag (raise exception if not available)
     import subprocess
+
     release = subprocess.check_output(["git", "describe", "--tags"]).decode().strip().split()[0]
 version = re.sub(r"\.post\d+$", "", release)
 
 
-project = u'HGVS'
-authors = project + ' Contributors'
-copyright = u'2021, ' + authors
+project = "HGVS"
+authors = project + " Contributors"
+copyright = "2021, " + authors
 
-extlinks = {'issue': ('https://github.com/biocommons/hgvs/issues/%s', 'issue '), }
+extlinks = {
+    "issue": ("https://github.com/biocommons/hgvs/issues/%s", "issue "),
+}
 
-man_pages = [('index', project, project + u' Documentation', [project + u' Contributors'], 1)]
+man_pages = [("index", project, project + " Documentation", [project + " Contributors"], 1)]
 
 # even for local builds
-html_theme = 'sphinx_rtd_theme'
+html_theme = "sphinx_rtd_theme"
 
 #
 # Boilerplate
 
-autodoc_default_flags = ['members', 'undoc-members', 'show-inheritance']    #, 'inherited-members']
-autoclass_content = 'both'
-exclude_patterns = ['build', 'static', 'templates', 'themes']
+autodoc_default_flags = ["members", "undoc-members", "show-inheritance"]  # , 'inherited-members']
+autoclass_content = "both"
+exclude_patterns = ["build", "static", "templates", "themes"]
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
-    'sphinx.ext.coverage',
-    'sphinx.ext.extlinks',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.todo',
-    'sphinx.ext.viewcode',
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.coverage",
+    "sphinx.ext.extlinks",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.todo",
+    "sphinx.ext.viewcode",
 ]
-html_favicon = 'static/favicon.ico'
-html_logo = 'static/hgvs-logo.png'
-html_static_path = ['static']
-html_title = '{project} {release}'.format(project=project, release=release)
-intersphinx_mapping = {'http://docs.python.org/': None, }
-master_doc = 'index'
-pygments_style = 'sphinx'
-source_suffix = '.rst'
-templates_path = ['templates']
+html_favicon = "static/favicon.ico"
+html_logo = "static/hgvs-logo.png"
+html_static_path = ["static"]
+html_title = "{project} {release}".format(project=project, release=release)
+intersphinx_mapping = {
+    "http://docs.python.org/": None,
+}
+master_doc = "index"
+pygments_style = "sphinx"
+source_suffix = ".rst"
+templates_path = ["templates"]
 
 
 # rst_epilog is appended to all rst files
 # it's a good place to define global aliases
 # If ends in .rst, sphinx will append it to itself :-(
-rst_epilog_fn = os.path.join(os.path.dirname(__file__), 'rst_epilog')
+rst_epilog_fn = os.path.join(os.path.dirname(__file__), "rst_epilog")
 rst_epilog = open(rst_epilog_fn).read()
 
 # <LICENSE>
