@@ -11,7 +11,10 @@ class TxRulerRenderer(BasicRenderer):
         """show the position of the transcript seq"""
         var_str = ""
 
-        rna_coding = data.var_c_or_n.ac.startswith("NR_")
+        if data.var_c_or_n:
+            rna_coding =  data.var_c_or_n.ac.startswith("NR_") 
+        else:
+            rna_coding = False
 
         count = -1
         for pdata in data.position_details:

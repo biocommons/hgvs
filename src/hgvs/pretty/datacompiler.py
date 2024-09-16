@@ -345,6 +345,8 @@ class DataCompiler:
         # for p in position_details:
         #     print(f"{p}\t{p.protein_data}\t")
 
+        strand = mapper.strand if mapper else 1
+
         vd = VariantData(
             seq_start,
             seq_end,
@@ -355,7 +357,7 @@ class DataCompiler:
             tx_seq,
             mapper,
             var_g,
-            mapper.strand,
+            strand,
             var_c_or_n,
             var_p,
             position_details,
