@@ -37,6 +37,7 @@ class PrettyPrint:
         infer_hgvs_c=True,
         all=False,
         show_reverse_strand=False,
+        alt_aln_method='splign'
     ):
         """
         :param hdp: HGVS Data Provider Interface-compliant instance
@@ -44,8 +45,8 @@ class PrettyPrint:
 
         :param padding: spacing left and right of the variant for display purposes.
         """
-        am37: AssemblyMapper = AssemblyMapper(hdp, assembly_name="GRCh37")
-        am38: AssemblyMapper = AssemblyMapper(hdp, assembly_name="GRCh38")
+        am37: AssemblyMapper = AssemblyMapper(hdp, assembly_name="GRCh37", alt_aln_method=alt_aln_method)
+        am38: AssemblyMapper = AssemblyMapper(hdp, assembly_name="GRCh38", alt_aln_method=alt_aln_method)
 
         self.config = PrettyConfig(
             hdp,
@@ -59,6 +60,7 @@ class PrettyPrint:
             infer_hgvs_c,
             all,
             show_reverse_strand,
+            alt_aln_method
         )
 
     def _get_assembly_mapper(self) -> AssemblyMapper:

@@ -75,6 +75,7 @@ class TestHGVSExamples(unittest.TestCase):
         assert ra2.alt_str == "C[1]TGC[26]"
         assert to_hgvs_repeat(var_g.ac, fs, ra2) == 'NC_000019.10:g.13207859_13207898C[1]TGC[26]' # not valid, we should trim off the shuffle-able C for that.
                 
+
     def test_ATXN7_repeat(self):
         """ A repeated AGC tri-nucleotide sequence in the ATXN7 gene on chromosome 3
         
@@ -179,7 +180,8 @@ class TestRepeats(unittest.TestCase):
             ("NC_000005.10:g.123346517_123346518insATTA", True, "ATTA", 2, 3, "ATTA[2]>ATTA[3]"),
             ("NC_000005.10:g.123346522_123346525dup", True, "ATTA", 2, 3, "ATTA[2]>ATTA[3]"),
             ("NC_000019.10:g.45770210_45770212del", True, "CAG", 20, 19, "CAG[20]C[1]A[1]>CAG[19]C[1]A[1]"), # note this one can be shuffled CAG/GCA
-            ("NC_000007.14:g.117548628_117548629insTTTT", True, "T", 7 , 11, "T[7]>T[11]")
+            ("NC_000007.14:g.117548628_117548629insTTTT", True, "T", 7 , 11, "T[7]>T[11]"),
+            ("NC_000009.11:g.35079521_35079523del", True, 'TGG', 2, 1, "TGG[2]>TGG[1]" ),           
         ]
     )
     def test_repeats(self, hgvs_g, is_repeat, repeat_unit, ref_count, alt_count, s):
@@ -194,11 +196,23 @@ class TestRepeats(unittest.TestCase):
 
         # note: in some cases is_repeat is False, although repeat_unit contains some data.
         # however in those cases the repeat patter was not considered significant enough to name the whole variant accordingly
-        self.assertEqual(is_repeat, ra.is_repeat)
+        self.assertEqual(is_repeat, ra.is_repeat)        
         self.assertEqual(repeat_unit, ra.repeat_units_alt[0].repeat_unit)
-        self.assertEqual(ref_count, ra.repeat_units_ref[0].repeat_count)
+        self.assertEqual(ref_count, ra.repeat_units_ref[0].repeat_count)        
         self.assertEqual(alt_count, ra.repeat_units_alt[0].repeat_count)        
         
+
+    def test_large_variant(self):
+        """ Large variants would take too much time to analyze, plus the results are not that useful."""
+
+        hgvs_g = "NC_000001.11:g.9976249_9983617dup"
+        hp = hgvs.parser.Parser()
+        var_g = hp.parse_hgvs_variant(hgvs_g)
+        config = PrettyConfig(self.hdp, None, None)
+        dc = DataCompiler(config)
+        fs = dc.get_shuffled_variant(var_g, 0)
+        ra = RepeatAnalyser(fs)
+        assert not ra.is_repeat
 
         
     @parameterized.expand(

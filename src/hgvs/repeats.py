@@ -26,9 +26,15 @@ class RepeatAnalyser:
         self.alt_str = fs.alt
         self.reverse = reverse
 
-        self.repeat_units_ref = detect_repetitive_block_lengths(self.ref_str, self.reverse)
-        self.repeat_units_alt = detect_repetitive_block_lengths(self.alt_str, self.reverse)
-        
+        # protect from too large sequences getting analyzed.
+        if len(self.ref_str) > 350:
+            self.repeat_units_ref = []
+            self.repeat_units_alt = []
+            return
+
+        self.repeat_units_ref = detect_repetitive_block_lengths(self.ref_str, reverse=self.reverse)
+        self.repeat_units_alt = detect_repetitive_block_lengths(self.alt_str, reverse = self.reverse)
+
         if len(self.repeat_units_ref) == 0 and len(self.repeat_units_alt) ==0 :
             return
         
@@ -38,7 +44,7 @@ class RepeatAnalyser:
         longest_r_unit = self._get_longest_repeat_unit(self.repeat_units_ref)
         if longest_r_unit is None:
             return
-    
+            
         # filter our too fragmented results
         expected_size = len(self.ref_str) / 3
         if longest_r_unit.block_size < expected_size:            
@@ -47,6 +53,7 @@ class RepeatAnalyser:
         if longest_r_unit.repeat_unit not in self.alt_str:
             return
 
+        self.repeat_units_alt = detect_repetitive_block_lengths(self.alt_str, longest_ref_unit = longest_r_unit, reverse = self.reverse)
 
         self.is_repeat = True
 
@@ -72,7 +79,7 @@ class RepeatAnalyser:
         return lru
 
 
-def detect_repetitive_block_lengths(sequence: str, reverse: bool = False) -> list[RepeatUnit]:
+def detect_repetitive_block_lengths(sequence: str, longest_ref_unit:RepeatUnit|None=None, reverse: bool = False) -> list[RepeatUnit]:
     """Detects the length of repetitive blocks in a string, with an option to search from left to right or reverse.
 
     In reverse mode, it creates the largest possible blocks of the smallest possible units.
@@ -80,6 +87,16 @@ def detect_repetitive_block_lengths(sequence: str, reverse: bool = False) -> lis
     result: list[RepeatUnit] = []
     seq_len = len(sequence)
 
+    if longest_ref_unit is not None:
+        # look for full containment of the longest ref repeat
+        # this is so we can detect [2]>[1] (or really any repeat length variation to just 1)
+        pattern = f'({re.escape(longest_ref_unit.repeat_unit)})+'
+        match = re.fullmatch(pattern, sequence)
+        if match:
+            repeat_count = len(sequence) // len(longest_ref_unit.repeat_unit)
+            ru = RepeatUnit(repeat_count, longest_ref_unit.repeat_unit, len(sequence), sequence)
+            return [ru]
+        
     if reverse:
         i = seq_len  # Start from the end of the sequence
         while i > 0:

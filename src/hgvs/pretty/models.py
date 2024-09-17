@@ -108,3 +108,4 @@ class PrettyConfig:
     infer_hgvs_c: bool = True
     all: bool = False  # print all possible hgvs_c (for all UTA transcripts)
     show_reverse_strand: bool = False  # show the reverse strand sequence for the chromosome
+    alt_aln_method:str = 'splign'
