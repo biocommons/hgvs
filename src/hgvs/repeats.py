@@ -37,7 +37,7 @@ class RepeatAnalyser:
 
         if len(self.repeat_units_ref) == 0 and len(self.repeat_units_alt) ==0 :
             return
-        
+                
         # check longest repeat blocks:
         # we only look at ref to determine if there are repeats 
         # If ref has no repeat, we don't call this a repeat variant, even if alt would have a repetitive unit
@@ -98,9 +98,8 @@ def detect_repetitive_block_lengths(sequence: str, longest_ref_unit:RepeatUnit|N
             ru = RepeatUnit(repeat_count, longest_ref_unit.repeat_unit, len(block), block)                        
             result.append(ru)
             shuffleable_bases = sequence[repeat_count*len(ru.repeat_unit):]
-            for b in shuffleable_bases:
-                ru = RepeatUnit(1, b, 1, b)
-                result.append(ru)
+            rus = detect_repetitive_block_lengths(shuffleable_bases, reverse = reverse)
+            result.extend(rus)
             return result
             
 
@@ -236,9 +235,16 @@ def assemble_repeat_string(sequence: str, repeat_units: list[RepeatUnit], revers
                     break
             if not found_unit:
                 # remove one character if no matching repeat unit is found
+                count = 1
                 seq_char = seq[0]
                 seq = seq[:-1]
-                return_str = f"{seq_char}[1]" + return_str
+
+                # count consecutive repeating chars  from the end
+                while seq and seq[-1] == seq_char:
+                    count += 1
+                    seq = seq[:-1]
+
+                return_str = f"{seq_char}[{count}]" + return_str
 
     else: # forward direction
         while len(seq) > 0:
@@ -251,9 +257,16 @@ def assemble_repeat_string(sequence: str, repeat_units: list[RepeatUnit], revers
                     break
             if not found_unit:
                 # remove one character if no matching repeat unit is found
+                count = 1
                 seq_char = seq[0]
                 seq = seq[1:]
-                return_str += f"{seq_char}[1]"
+
+                # count consecutive repeating chars 
+                while seq and seq[0] == seq_char:
+                    count += 1
+                    seq = seq[1:]
+                
+                return_str += f"{seq_char}[{count}]"
 
     
     return return_str
