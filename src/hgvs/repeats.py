@@ -3,7 +3,7 @@
 
 from dataclasses import dataclass
 import re
-
+import hgvs
 from hgvs.pretty.models import VariantCoords
 
 
@@ -27,7 +27,7 @@ class RepeatAnalyser:
         self.reverse = reverse
 
         # protect from too large sequences getting analyzed.
-        if len(self.ref_str) > 350:
+        if len(self.ref_str) > hgvs.global_config.repeats.max_repeat_length:
             self.repeat_units_ref = []
             self.repeat_units_alt = []
             return
@@ -49,7 +49,7 @@ class RepeatAnalyser:
         expected_size = len(self.ref_str) / 3
         if longest_r_unit.block_size < expected_size:            
             return
-        
+            
         if longest_r_unit.repeat_unit not in self.alt_str:
             return
 
@@ -59,7 +59,6 @@ class RepeatAnalyser:
 
         ref_repeat = get_repeat_str(self.ref_str, self.alt_str, self.repeat_units_ref, self.repeat_units_alt, self.reverse)
         alt_repeat = get_repeat_str(self.alt_str, self.ref_str, self.repeat_units_alt, self.repeat_units_ref, self.reverse)
-
         self.ref_str = ref_repeat
         self.alt_str = alt_repeat
 
@@ -91,11 +90,20 @@ def detect_repetitive_block_lengths(sequence: str, longest_ref_unit:RepeatUnit|N
         # look for full containment of the longest ref repeat
         # this is so we can detect [2]>[1] (or really any repeat length variation to just 1)
         pattern = f'({re.escape(longest_ref_unit.repeat_unit)})+'
-        match = re.fullmatch(pattern, sequence)
+        match = re.search(pattern, sequence)
+        
         if match:
             repeat_count = len(sequence) // len(longest_ref_unit.repeat_unit)
-            ru = RepeatUnit(repeat_count, longest_ref_unit.repeat_unit, len(sequence), sequence)
-            return [ru]
+            block = repeat_count* longest_ref_unit.repeat_unit
+            ru = RepeatUnit(repeat_count, longest_ref_unit.repeat_unit, len(block), block)                        
+            result.append(ru)
+            shuffleable_bases = sequence[repeat_count*len(ru.repeat_unit):]
+            for b in shuffleable_bases:
+                ru = RepeatUnit(1, b, 1, b)
+                result.append(ru)
+            return result
+            
+
         
     if reverse:
         i = seq_len  # Start from the end of the sequence
@@ -217,7 +225,6 @@ def assemble_repeat_string(sequence: str, repeat_units: list[RepeatUnit], revers
     return_str = ""
     primary_repeat_unit = repeat_units.copy()
     seq = sequence
-
     if reverse:
         while len(seq) > 0:
             found_unit = None

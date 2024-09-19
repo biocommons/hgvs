@@ -2,7 +2,7 @@ import unittest
 
 from hgvs.assemblymapper import AssemblyMapper
 from parameterized import parameterized
-
+import time
 import pytest
 import hgvs
 import hgvs.dataproviders
@@ -114,7 +114,6 @@ class TestHGVSExamples(unittest.TestCase):
         # invalid HGVS, due to the shuffle-able bases, but comes pretty close to what HGVS recommends. 
         assert to_hgvs_repeat(var_g.ac, fs, ra2) == 'NC_000003.12:g.63912685_63912716G[1]C[1]AGC[13]' 
 
-
 class TestRepeats(unittest.TestCase):
 
     @classmethod
@@ -181,7 +180,8 @@ class TestRepeats(unittest.TestCase):
             ("NC_000005.10:g.123346522_123346525dup", True, "ATTA", 2, 3, "ATTA[2]>ATTA[3]"),
             ("NC_000019.10:g.45770210_45770212del", True, "CAG", 20, 19, "CAG[20]C[1]A[1]>CAG[19]C[1]A[1]"), # note this one can be shuffled CAG/GCA
             ("NC_000007.14:g.117548628_117548629insTTTT", True, "T", 7 , 11, "T[7]>T[11]"),
-            ("NC_000009.11:g.35079521_35079523del", True, 'TGG', 2, 1, "TGG[2]>TGG[1]" ),           
+            ("NC_000009.11:g.35079521_35079523del", True, 'TGG', 2, 1, "TGG[2]>TGG[1]" ),  
+            ("NC_000001.11:g.6490477_6490484del", True, "TCTAAGGC", 2, 1, "TCTAAGGC[2]T[1]C[1]>TCTAAGGC[1]T[1]C[1]")
         ]
     )
     def test_repeats(self, hgvs_g, is_repeat, repeat_unit, ref_count, alt_count, s):
@@ -279,5 +279,5 @@ class TestRepeats(unittest.TestCase):
         assert alt_repeat == expected_alt_repeat
 
         
-    
+
 
