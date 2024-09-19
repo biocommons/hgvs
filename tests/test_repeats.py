@@ -2,7 +2,6 @@ import unittest
 
 from hgvs.assemblymapper import AssemblyMapper
 from parameterized import parameterized
-import time
 import pytest
 import hgvs
 import hgvs.dataproviders
@@ -19,7 +18,8 @@ def to_hgvs_repeat(chrom_ac, fs: VariantCoords , ra: RepeatAnalyser):
     """
     return f"{chrom_ac}:g.{fs.start+1}_{fs.end}{ra.alt_str}"
 
-    
+
+@pytest.mark.skip(reason="too data hungry")    
 class TestHGVSExamples(unittest.TestCase):
     """ The variants in this class are taken from the HGVS nomenclature page about repeats
     https://hgvs-nomenclature.org/stable/recommendations/DNA/repeated/
@@ -114,6 +114,7 @@ class TestHGVSExamples(unittest.TestCase):
         # invalid HGVS, due to the shuffle-able bases, but comes pretty close to what HGVS recommends. 
         assert to_hgvs_repeat(var_g.ac, fs, ra2) == 'NC_000003.12:g.63912685_63912716G[1]C[1]AGC[13]' 
 
+@pytest.mark.skip(reason="too data hungry")
 class TestRepeats(unittest.TestCase):
 
     @classmethod
@@ -214,6 +215,8 @@ class TestRepeats(unittest.TestCase):
         ra = RepeatAnalyser(fs)
         assert not ra.is_repeat
 
+
+class TestRepeatMethods:
         
     @parameterized.expand(
                 [
