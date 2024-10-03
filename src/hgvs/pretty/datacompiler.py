@@ -351,6 +351,8 @@ class DataCompiler:
             pd = reversed(position_details)
             position_details = list(pd)
 
+        is_rna = var_c_or_n.ac.startswith("NR_") # not sure how to check this for ENSTs
+
         vd = VariantData(
             seq_start,
             seq_end,
@@ -365,6 +367,7 @@ class DataCompiler:
             var_c_or_n,
             var_p,
             position_details,
+            is_rna
         )
 
         return vd

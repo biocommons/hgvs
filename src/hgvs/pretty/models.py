@@ -90,6 +90,7 @@ class VariantData:
     var_p: SequenceVariant = None
     position_details: List[PositionDetail] = None
     all: bool = False
+    is_rna: bool = False
 
 
 @dataclass
