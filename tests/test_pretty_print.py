@@ -17,6 +17,7 @@ class Test_SimplePosition(unittest.TestCase):
         cls.hdp = hgvs.dataproviders.uta.connect(mode=None, cache=None)
         cls.pp = PrettyPrint(
             cls.hdp,
+            reverse_display=False
         )
         cls.pp.useColor = False
 
@@ -87,11 +88,39 @@ class Test_SimplePosition(unittest.TestCase):
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
 
+    def test_var_c1_reverse_flipped_display(self):
+        """ test the reversed display on <- strand"""
+        hgvs_c = "NM_001177507.2:c.1="
+        var_c = self.hp.parse(hgvs_c)
+
+        pp = PrettyPrint(self.hdp, show_reverse_strand=True, reverse_display=True)
+        result = pp.display(var_c)
+        print(result)
+        result = result.split("\n")
+        expected_str = (
+            "hgvs_g    : NC_000007.13:g.36763753=\n" +
+            "hgvs_c    : NM_001177507.2:c.1=\n" +
+            "hgvs_p    : NP_001170978.1:p.Met1?\n" +
+            "          :    36,763,770          36,763,750\n" +
+            "chrom pos :    |    .    |    .    |    .    |    .  \n" +
+            "seq    <- : AACCCCACGTATCGAGCCTCTACGTCAGGGGGACCTTTTAG\n" +
+            "seq    -> : TTGGGGTGCATAGCTCGGAGATGCAGTCCCCCTGGAAAATC\n" +
+            "region    :                     =                    \n" +
+            "tx seq -> : ttggggtgcatagctcggagATGCAGTCCCCCTGGAAAATC\n" +
+            "tx pos    : |    .    |    .    |   .    |    .    | \n" +
+            "          : -20       -10       1        10        20\n" +
+            "aa seq -> :                     MetGlnSerProTrpLysIle\n" +
+            "aa pos    :                                 ...      \n" +
+            "          :                     1                    \n"
+        ).split("\n")
+        for r, e in zip(result, expected_str):
+            self.assertEqual(e, r)
+
     def test_var_g_substitution(self):
         hgvs_g = "NC_000007.13:g.36561662C>T"
         var_g = self.hp.parse(hgvs_g)
 
-        pp = PrettyPrint(self.hdp, show_reverse_strand=True)
+        pp = PrettyPrint(self.hdp, show_reverse_strand=True, reverse_display=False)
 
         result = pp.display(var_g)
         print(result)
@@ -132,6 +161,35 @@ class Test_SimplePosition(unittest.TestCase):
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
 
+    def test_atta_forward(self):
+        """ the ATTA[2]>ATTA[3] variant now displayed forward facing:"""
+
+        hgvs_g = "NC_000005.10:g.123346517_123346518insATTA"
+        var_g = self.hp.parse(hgvs_g)
+        pp = PrettyPrint(self.hdp, show_reverse_strand=True, reverse_display=True)
+        result = pp.display(var_g)
+        print(result)
+        result = result.split("\n")
+        expected_str = (
+            "hgvs_g    : NC_000005.10:g.123346517_123346518insATTA\n" +
+            "hgvs_c    : NM_001166226.1:c.*1_*2insTAAT\n" +
+            "hgvs_p    : NP_001159698.1:p.?\n" +
+            "          :      123,346,540         123,346,520         123,346,500\n" +
+            "chrom pos : .    |    .    |    .    |    .    |    .    |  \n" +
+            "seq    <- : AACCGTTTTTCGTTACGGTCATTAATTATTGTAAACCTTTTCGAAATA\n" +
+            "seq    -> : TTGGCAAAAAGCAATGCCAGTAATTAATAACATTTGGAAAAGCTTTAT\n" +
+            "region    :                     |------|                    \n" +
+            "tx seq -> : TTGGCAAAAAGCAATGCCAGTAATTAATAACATTTGGAAAAGCTTTAT\n" +
+            "tx pos    :    |    .    |    .    |   |   .    |    .    | \n" +
+            "          :    2860      2870      2880         *10       *20\n" +
+            "aa seq -> : LeuAlaLysSerAsnAlaSerAsnTer                     \n" +
+            "aa pos    :       ...            |||                        \n" +
+            "          :                      960                        \n" +
+            "ref>alt   : ATTA[2]>ATTA[3]\n"
+        ).split("\n")
+        for r, e in zip(result, expected_str):
+            self.assertEqual(e, r)
+        
     def test_var_g_dup(self):
         hgvs_g = "NC_000005.10:g.123346522_123346525dup"
         var_g = self.hp.parse(hgvs_g)
@@ -366,7 +424,7 @@ class Test_SimplePosition(unittest.TestCase):
         hgvs_g = "NC_000005.10:g.123346517_123346518insATTA"
         var_g = self.hp.parse(hgvs_g)
 
-        tiny_pp = PrettyPrint(self.hdp, padding_left=0, padding_right=0)
+        tiny_pp = PrettyPrint(self.hdp, padding_left=0, padding_right=0, reverse_display=False)
 
         result = tiny_pp.display(var_g)
         print(result)
@@ -408,7 +466,7 @@ class Test_SimplePosition(unittest.TestCase):
         hgvs_c = "NM_004572.3:c.-9_12dup"
         var_c = self.hp.parse(hgvs_c)
         pp = PrettyPrint(
-            self.hdp, padding_left=10, padding_right=110, useColor=False, showLegend=False
+            self.hdp, padding_left=10, padding_right=110, useColor=False, showLegend=False, reverse_display=False
         )
         result = pp.display(var_c)
 
@@ -508,7 +566,7 @@ class Test_SimplePosition(unittest.TestCase):
         hgvs_c = "NM_000682.6:c.901_911del"  # a del variant
 
         var_c = self.hp.parse(hgvs_c)
-        pp = PrettyPrint(self.hdp, infer_hgvs_c=True, padding_left=30, padding_right=40)
+        pp = PrettyPrint(self.hdp, infer_hgvs_c=True, padding_left=30, padding_right=40, reverse_display=False)
         result = pp.display(var_c)
         print(result)
         result = result.split("\n")
@@ -520,7 +578,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "          :     96,780,960          96,780,980                   96,781,000          96,781,020\n"
             + "chrom pos :     |    .    |    .    |    .    |    .  _________  |    .    |    .    |    .    |    .  \n"
             + "seq    -> : TGCCTGGGGTTCACACTCTTCCTCCTCCTCCTCCTCCTCTTC.........GGCTTCATCCTCTGGAGATGCCCCACAAACACCCTCCTTC\n"
-            + "tx ref dif:                                           DDDDDDDDD                               \n"
+            + "tx ref dif:                                           DDDDDDDDD                                        \n"
             + "region    :                               x----------x                                                 \n"
             + "tx seq <- : ACGGACCCCAAGTGTGAGAAGGAGGAGGAGGAGGAGGAGAAGGAGGAGAAGTCGAAGTAGGAGACCTCTACGGGGTGTTTGTGGGAGGAAG\n"
             + "tx pos    :   |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .   \n"
@@ -547,7 +605,7 @@ class Test_SimplePosition(unittest.TestCase):
         """Test the ruler display option turned on."""
         hgvs_c = "NM_001111.4:c.298G>A"
         var_c = self.hp.parse(hgvs_c)
-        pp = PrettyPrint(self.hdp, showLegend=False)
+        pp = PrettyPrint(self.hdp, showLegend=False, reverse_display=False)
 
         result = pp.display(var_c)
 

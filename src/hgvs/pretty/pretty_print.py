@@ -21,8 +21,6 @@ from hgvs.repeats import RepeatAnalyser
 from hgvs.sequencevariant import SequenceVariant
 
 
-
-
 class PrettyPrint:
     """A class that provides a pretty display of the genomic context of a variant."""
 
@@ -37,7 +35,8 @@ class PrettyPrint:
         infer_hgvs_c=True,
         all=False,
         show_reverse_strand=False,
-        alt_aln_method='splign'
+        alt_aln_method='splign',
+        reverse_display = True
     ):
         """
         :param hdp: HGVS Data Provider Interface-compliant instance
@@ -60,7 +59,8 @@ class PrettyPrint:
             infer_hgvs_c,
             all,
             show_reverse_strand,
-            alt_aln_method
+            alt_aln_method,
+            reverse_display
         )
 
     def _get_assembly_mapper(self) -> AssemblyMapper:
@@ -213,7 +213,9 @@ class PrettyPrint:
 
         renderer_cls = [ChrPositionInfo, ChrRuler, ChromSeqRendered]
 
-        if self.config.show_reverse_strand:
+        # if we show reverse strand transcripts in forward facing orientation, always
+        # show both forward and reverse strand sequences.
+        if self.config.show_reverse_strand or self.config.reverse_display and data.strand < 0:
             renderer_cls.append(ChromReverseSeqRendered)
 
         renderer_cls.append(TxRefDisagreeRenderer)
@@ -249,7 +251,6 @@ class PrettyPrint:
                 self.config, data.strand, var_g, fully_justified_var
             )
             fully_justified_str = fully_justified_renderer.display(data)
-
             if self.config.showAllShuffleableRegions:
                 var_str += shuffled_seq_header + left_shuffled_str + "\n"
                 var_str += shuffled_seq_header + right_shuffled_str + "\n"

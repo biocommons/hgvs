@@ -5,10 +5,15 @@ from hgvs.pretty.console.renderer import BasicRenderer
 class ProtSeqRenderer(BasicRenderer):
 
     def legend(self):
-        legend = "aa seq -> : "
-        if self.orientation < 0:
-            legend = "aa seq <- : "
-        return legend
+
+        if self.orientation > 0:
+            arrow = "->"
+        elif self.orientation < 0 and self.config.reverse_display:
+            arrow = "->"
+        else:
+            arrow = "<-"
+
+        return f"aa seq {arrow} : "
 
     def display(self, data: VariantData) -> str:
         if not data.var_c_or_n:
@@ -18,8 +23,6 @@ class ProtSeqRenderer(BasicRenderer):
 
         var_str = ""
         for pdata in data.position_details:
-
-            p = pdata.chromosome_pos
 
             if not pdata.mapped_pos:
                 var_str += " "

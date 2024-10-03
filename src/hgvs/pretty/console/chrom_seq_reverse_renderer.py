@@ -7,7 +7,12 @@ from hgvs.pretty.console.renderer import BasicRenderer
 class ChromReverseSeqRendered(BasicRenderer):
 
     def legend(self) -> str:
-        return "seq    <- : "
+        if self.orientation < 0 and self.config.reverse_display:
+            arrow = '->'
+        else:
+            arrow = '<-'
+
+        return f"seq    {arrow} : "
 
     def display(self, data: VariantData) -> str:
         """colors the ref sequences with adenine (A, green), thymine (T, red), cytosine (C, yellow), and guanine (G, blue)"""

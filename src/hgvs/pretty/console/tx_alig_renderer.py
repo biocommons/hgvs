@@ -7,8 +7,11 @@ from hgvs.pretty.console.renderer import BasicRenderer
 class TxAligRenderer(BasicRenderer):
 
     def legend(self) -> str:
-        orientation = "->"
-        if self.orientation < 0:
+        if self.orientation > 0:
+            orientation = "->"
+        elif self.orientation < 0 and self.config.reverse_display:
+            orientation = "->"
+        else:
             orientation = "<-"
         return f"tx seq {orientation} : "
 

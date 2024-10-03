@@ -152,7 +152,7 @@ class DataCompiler:
         c_pos = int(c_interval.start.base) - 1
         c3 = (c_pos) % 3
         aa_char = tlc[c3]
-        if strand < 0:
+        if strand < 0 and not self.config.reverse_display:
             aa_char = tlc[2 - c3]
 
         return ProteinData(c_pos, aa, tlc, aa_char, var_p, is_init_met, is_stop_codon, aa_index)
@@ -346,6 +346,10 @@ class DataCompiler:
         #     print(f"{p}\t{p.protein_data}\t")
 
         strand = mapper.strand if mapper else 1
+
+        if strand < 0 and self.config.reverse_display:
+            pd = reversed(position_details)
+            position_details = list(pd)
 
         vd = VariantData(
             seq_start,

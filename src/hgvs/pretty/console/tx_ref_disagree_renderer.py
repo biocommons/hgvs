@@ -17,10 +17,8 @@ class TxRefDisagreeRenderer(BasicRenderer):
         from hgvs.pretty.console.constants import ENDC, TRED
 
         var_str = ""
-        counter = -1
-        for p in range(data.display_start + 1, data.display_end + 1):
-            counter += 1
-            pdata = data.position_details[counter]
+
+        for pdata in data.position_details:            
             c_offset = pdata.c_offset
             if not pdata.mapped_pos:
                 var_str += " "

@@ -1,3 +1,4 @@
+from logging import info
 from hgvs.pretty.models import VariantCoords, VariantData
 from hgvs.pretty.console.renderer import BasicRenderer
 from hgvs.sequencevariant import SequenceVariant
@@ -61,9 +62,13 @@ class ShuffledVariant(BasicRenderer):
 
         var_str = ""
         in_range = False
+
+        reverse_display = False
+        if self.orientation < 0 and self.config.reverse_display:
+            reverse_display = True        
+    
         for pdata in data.position_details:
             p = pdata.chromosome_pos
-
             if not p:
                 if in_range:
                     var_str += "-"
@@ -71,13 +76,22 @@ class ShuffledVariant(BasicRenderer):
                     var_str += " "
                 continue
 
-            if p == start:
+            if not reverse_display and p == start:
                 var_str += split_char
                 in_range = True
-            elif p == end:
+            elif reverse_display and p == end:
+                var_str += split_char
+                in_range = True
+            elif not reverse_display and p == end:
                 var_str += split_char
                 in_range = False
-            elif p > end and in_range:
+            elif reverse_display and p == start:
+                var_str += split_char
+                in_range = False
+            elif not reverse_display and p > end and in_range:
+                in_range = False
+                var_str += " "
+            elif reverse_display and p < start and in_range:
                 in_range = False
                 var_str += " "
             elif in_range:
