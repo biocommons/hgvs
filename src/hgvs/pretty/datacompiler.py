@@ -367,7 +367,7 @@ class DataCompiler:
             var_c_or_n,
             var_p,
             position_details,
-            is_rna
+            is_rna=is_rna
         )
 
         return vd
