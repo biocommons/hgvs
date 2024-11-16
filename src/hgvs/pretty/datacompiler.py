@@ -206,24 +206,19 @@ class DataCompiler:
 
         if tx_ac:
             tx_seq = self.config.hdp.get_seq(tx_ac)
-            if self.config.default_assembly == "GRCh37":
-                am = self.config.am37
-            else:
-                am = self.config.am38
-
-            mapper = am._fetch_AlignmentMapper(
+            
+            mapper = self.config.assembly_mapper._fetch_AlignmentMapper(
                 tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method="splign"
             )
 
         else:
             tx_seq = ""
             mapper = None
-        # print(tx_seq)
 
         # we don't know the protein ac, get it looked up:
         pro_ac = None
         if var_c_or_n and var_c_or_n.type == "c":
-            var_p = am.c_to_p(var_c_or_n)
+            var_p = self.config.assembly_mapper.c_to_p(var_c_or_n)
             reference_data = RefTranscriptData(self.config.hdp, tx_ac, pro_ac)
         else:
             var_p = None
@@ -277,8 +272,8 @@ class DataCompiler:
                         reference_data,
                         pdata,
                         cig,
-                        prev_c_pos + 1,
-                        prev_n_pos + 1,
+                        prev_c_pos,
+                        prev_n_pos,
                     )
 
                     exon_nr, feat = self._get_exon_nr(tx_exons, chromosome_pos)
@@ -292,7 +287,7 @@ class DataCompiler:
                     pdata.mapped_pos = prev_mapped_pos
                     pdata.mapped_pos_offset = mapped_pos_offset
                     pdata.cigar_ref = cig
-                    pdata.ref = chrom_seq[chromosome_pos]
+                    pdata.ref = chrom_seq[chromosome_pos-1]
 
                     if mapper.strand > 0:
                         prev_c_pos += 1
@@ -321,12 +316,12 @@ class DataCompiler:
             pdata.n_interval = n_interval
             if c_interval is not None:
                 pdata.c_interval = c_interval
-                c_pos = int(c_interval.start.base) - 1
+                c_pos = int(c_interval.start.base)
                 prev_c_pos = c_pos
             else:
                 prev_c_pos = -1
 
-            n_pos = int(n_interval.start.base) - 1
+            n_pos = int(n_interval.start.base)
             prev_n_pos = n_pos
 
             self._populate_with_n_c(
@@ -351,7 +346,7 @@ class DataCompiler:
             pd = reversed(position_details)
             position_details = list(pd)
 
-        is_rna = var_c_or_n.ac.startswith("NR_") # not sure how to check this for ENSTs
+        is_rna = var_c_or_n and var_c_or_n.ac.startswith("NR_") # not sure how to check this for ENSTs
 
         vd = VariantData(
             seq_start,
@@ -421,10 +416,10 @@ class DataCompiler:
         n_interval,
         c_interval,
     ):
-        n_pos = int(n_interval.start.base) - 1
+        n_pos = int(n_interval.start.base) 
 
         if c_interval:
-            c_pos = int(c_interval.start.base) - 1
+            c_pos = int(c_interval.start.base) 
             pdata.c_pos = c_pos
             pdata.c_offset = c_interval.start.offset
         else:
@@ -435,7 +430,7 @@ class DataCompiler:
 
         pdata.n_pos = n_pos
 
-        pdata.tx = tx_seq[pdata.n_pos]
+        pdata.tx = tx_seq[pdata.n_pos-1]
 
         coding = True
         if var_c_or_n.type == "n":  # rna coding can't be in protein space

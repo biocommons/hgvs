@@ -40,12 +40,12 @@ class TxMappingRenderer(BasicRenderer):
                 prev_c_pos = c_pos
                 continue
 
-            if (c_pos + 1) % 10 == 0:
+            if (c_pos) % 10 == 0:
                 var_str += "|"
                 prev_c_pos = c_pos
                 continue
 
-            elif (c_pos + 1) % 5 == 0:
+            elif (c_pos) % 5 == 0:
                 var_str += "."
                 prev_c_pos = c_pos
                 continue
@@ -69,7 +69,7 @@ class TxMappingRenderer(BasicRenderer):
                 prev_c_pos = c_pos
                 continue
 
-            elif c_pos == 0:
+            elif c_pos == 1:
                 var_str += "|"
 
             var_str += " "

@@ -27,7 +27,7 @@ class PrettyPrint:
     def __init__(
         self,
         hdp: hgvs.dataproviders.interface.Interface,
-        default_assembly: str = "GRCh37",
+        assembly_mapper:AssemblyMapper,
         padding_left: int = 20,
         padding_right: int = 20,
         useColor=False,
@@ -44,37 +44,24 @@ class PrettyPrint:
 
         :param padding: spacing left and right of the variant for display purposes.
         """
-        am37: AssemblyMapper = AssemblyMapper(hdp, assembly_name="GRCh37", alt_aln_method=alt_aln_method)
-        am38: AssemblyMapper = AssemblyMapper(hdp, assembly_name="GRCh38", alt_aln_method=alt_aln_method)
-
+        
         self.config = PrettyConfig(
-            hdp,
-            am37,
-            am38,
-            padding_left,
-            padding_right,
-            default_assembly,
-            useColor,
-            showLegend,
-            infer_hgvs_c,
-            all,
-            show_reverse_strand,
-            alt_aln_method,
-            reverse_display
+            hdp=hdp,
+            assembly_mapper=assembly_mapper,
+            padding_left=padding_left,
+            padding_right=padding_right,
+            useColor=useColor,
+            showLegend=showLegend,
+            infer_hgvs_c=infer_hgvs_c,
+            all=all,
+            show_reverse_strand=show_reverse_strand,
+            alt_aln_method=alt_aln_method,
+            reverse_display=reverse_display
         )
 
-    def _get_assembly_mapper(self) -> AssemblyMapper:
-        if self.config.default_assembly == "GRCh37":
-            am = self.config.am37
-        else:
-            am = self.config.am38
-
-        return am
-
     def _get_all_transcripts(self, var_g) -> List[str]:
-        am = self._get_assembly_mapper()
-
-        transcripts = am.relevant_transcripts(var_g)
+        
+        transcripts = self.config.assembly_mapper.relevant_transcripts(var_g)
 
         return transcripts
 
@@ -87,7 +74,7 @@ class PrettyPrint:
             else:
                 return None
 
-        am = self._get_assembly_mapper()
+        am = self.config.assembly_mapper
 
         if tx_ac.startswith("NR_"):
             var_n = am.g_to_n(var_g, tx_ac)
@@ -97,10 +84,7 @@ class PrettyPrint:
 
     def _map_to_chrom(self, sv: SequenceVariant) -> SequenceVariant:
         """maps a variant to chromosomal coords, if needed."""
-        if self.config.default_assembly == "GRCh37":
-            am = self.config.am37
-        else:
-            am = self.config.am38
+        am = self.config.assembly_mapper
 
         if sv.type == "c":
             return am.c_to_g(sv)

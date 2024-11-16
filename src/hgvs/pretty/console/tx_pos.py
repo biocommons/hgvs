@@ -33,13 +33,13 @@ class TxRulerRenderer(BasicRenderer):
             if len(var_str) > count:
                 continue
 
-            if (c_pos + 1) % 10 == 0:
+            if (c_pos) % 10 == 0:
                 # if pdata.c_interval.start.datum == Datum.CDS_END:
                 #     var_str += "*"
                 var_str += f"{interval} "
                 continue
 
-            elif c_pos == 0:
+            elif c_pos == 1:
                 var_str += f"{interval} "
                 continue
             var_str += " "

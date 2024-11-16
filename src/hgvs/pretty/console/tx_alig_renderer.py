@@ -35,7 +35,7 @@ class TxAligRenderer(BasicRenderer):
 
             counter += 1
 
-            if not pdata.mapped_pos:
+            if pdata.mapped_pos is None:
                 var_str += " "
                 continue
 

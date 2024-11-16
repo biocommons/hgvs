@@ -98,11 +98,9 @@ class PrettyConfig:
     """A container for various configurations."""
 
     hdp: Interface
-    am37: AssemblyMapper
-    am38: AssemblyMapper
+    assembly_mapper: AssemblyMapper
     padding_left: int = 20
     padding_right: int = 20
-    default_assembly: str = "GRCh37"
     useColor: bool = False
     showLegend: bool = True
     showAllShuffleableRegions = False

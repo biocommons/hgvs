@@ -4,6 +4,7 @@ import unittest
 import pytest
 
 import hgvs
+from hgvs.assemblymapper import AssemblyMapper
 from hgvs.pretty.pretty_print import PrettyPrint
 
 
@@ -15,8 +16,11 @@ class Test_SimplePosition(unittest.TestCase):
     def setUpClass(cls):
         cls.hp = hgvs.parser.Parser()
         cls.hdp = hgvs.dataproviders.uta.connect(mode=None, cache=None)
+        cls.assembly_mapper37 = AssemblyMapper(cls.hdp, assembly_name="GRCh37")
+        cls.assembly_mapper38 = AssemblyMapper(cls.hdp, assembly_name="GRCh38")
         cls.pp = PrettyPrint(
             cls.hdp,
+            cls.assembly_mapper37,
             reverse_display=False
         )
         cls.pp.useColor = False
@@ -93,7 +97,7 @@ class Test_SimplePosition(unittest.TestCase):
         hgvs_c = "NM_001177507.2:c.1="
         var_c = self.hp.parse(hgvs_c)
 
-        pp = PrettyPrint(self.hdp, show_reverse_strand=True, reverse_display=True)
+        pp = PrettyPrint(self.hdp, self.assembly_mapper37, show_reverse_strand=True, reverse_display=True)
         result = pp.display(var_c)
         print(result)
         result = result.split("\n")
@@ -120,7 +124,7 @@ class Test_SimplePosition(unittest.TestCase):
         hgvs_g = "NC_000007.13:g.36561662C>T"
         var_g = self.hp.parse(hgvs_g)
 
-        pp = PrettyPrint(self.hdp, show_reverse_strand=True, reverse_display=False)
+        pp = PrettyPrint(self.hdp, self.assembly_mapper38, show_reverse_strand=True, reverse_display=False, useColor=False)
 
         result = pp.display(var_g)
         print(result)
@@ -166,7 +170,7 @@ class Test_SimplePosition(unittest.TestCase):
 
         hgvs_g = "NC_000005.10:g.123346517_123346518insATTA"
         var_g = self.hp.parse(hgvs_g)
-        pp = PrettyPrint(self.hdp, show_reverse_strand=True, reverse_display=True)
+        pp = PrettyPrint(self.hdp, self.assembly_mapper37, show_reverse_strand=True, reverse_display=True)
         result = pp.display(var_g)
         print(result)
         result = result.split("\n")
@@ -284,6 +288,51 @@ class Test_SimplePosition(unittest.TestCase):
         ).split("\n")
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
+
+    def test_first_base(self):
+        hgvs_n = 'NM_198689.2:n.1C>G'
+        var_n = self.hp.parse(hgvs_n)
+
+        result = self.pp.display(var_n)
+        print(result)
+        result = result.split("\n")
+        expected_str = (
+            "hgvs_g    : NC_000021.8:g.46020497C>G\n" +
+            "hgvs_n    : NM_198689.2:n.1C>G\n" +
+            "          :    46,020,480          46,020,500\n" +
+            "chrom pos :    |    .    |    .    |    .    |    .  \n" +
+            "seq    -> : CTCACTCACCCACTCACTCCCATCTCCTCCAGTTCAATCCC\n" +
+            "region    :                     G                    \n" +
+            "tx seq -> :                     CATCTCCTCCAGTTCAATCCC\n" +
+            "tx pos    :                         .    |    .    | \n" +
+            "aa seq -> :                                          \n" +
+            "aa pos    :                                          \n" +
+            "          :                                          \n"
+        ).split("\n")
+
+        for r, e in zip(result, expected_str):
+            self.assertEqual(e, r)
+
+    def test_intergenic(self):
+        hgvs_g = "NC_000021.8:g.29894C>A"
+        var_g = self.hp.parse(hgvs_g)
+
+        result = self.pp.display(var_g)
+        print(result)
+        result = result.split("\n")
+        expected_str = (
+            "hgvs_g    : NC_000021.8:g.29894C>A\n" +
+            "          :       29,880    29,890    29,900    29,910\n" +
+            "chrom pos :  .    |    .    |    .    |    .    |    \n" +
+            "seq    -> : NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN\n" +
+            "region    :                     A                    \n" +
+            "tx pos    :                                          \n" +
+            "aa pos    :                                          \n" +
+            "          :                                          "
+        ).split("\n")
+        for r, e in zip(result, expected_str):
+            self.assertEqual(e, r)
+
 
     def test_del_1bp_shuffleable(self):
         hgvs_g = "NC_000007.13:g.36561662del"
@@ -424,7 +473,7 @@ class Test_SimplePosition(unittest.TestCase):
         hgvs_g = "NC_000005.10:g.123346517_123346518insATTA"
         var_g = self.hp.parse(hgvs_g)
 
-        tiny_pp = PrettyPrint(self.hdp, padding_left=0, padding_right=0, reverse_display=False)
+        tiny_pp = PrettyPrint(self.hdp, self.assembly_mapper37, padding_left=0, padding_right=0, reverse_display=False)
 
         result = tiny_pp.display(var_g)
         print(result)
@@ -466,7 +515,7 @@ class Test_SimplePosition(unittest.TestCase):
         hgvs_c = "NM_004572.3:c.-9_12dup"
         var_c = self.hp.parse(hgvs_c)
         pp = PrettyPrint(
-            self.hdp, padding_left=10, padding_right=110, useColor=False, showLegend=False, reverse_display=False
+            self.hdp,self.assembly_mapper37, padding_left=10, padding_right=110, useColor=False, showLegend=False, reverse_display=False
         )
         result = pp.display(var_c)
 
@@ -533,7 +582,7 @@ class Test_SimplePosition(unittest.TestCase):
         hgvs_c = "NM_198689.2:c.124_135="
         # this would match chromosome: "NM_198689.2:c.124_135insCTGCTGCGCCCCCAG"
         var_c = self.hp.parse(hgvs_c)
-        pp = PrettyPrint(self.hdp, infer_hgvs_c=True, padding_left=30, padding_right=40)
+        pp = PrettyPrint(self.hdp, self.assembly_mapper37, infer_hgvs_c=True, padding_left=30, padding_right=40)
         result = pp.display(var_c)
         print(result)
         result = result.split("\n")
@@ -564,9 +613,8 @@ class Test_SimplePosition(unittest.TestCase):
         # hgvs_c = "NM_020469.2:c.188_189=" is  NC_000009.11:g.136135237_136135238delinsGC in ref
 
         hgvs_c = "NM_000682.6:c.901_911del"  # a del variant
-
         var_c = self.hp.parse(hgvs_c)
-        pp = PrettyPrint(self.hdp, infer_hgvs_c=True, padding_left=30, padding_right=40, reverse_display=False)
+        pp = PrettyPrint(self.hdp, self.assembly_mapper37,infer_hgvs_c=True, padding_left=30, padding_right=40, reverse_display=False)
         result = pp.display(var_c)
         print(result)
         result = result.split("\n")
@@ -577,7 +625,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "hgvs_p    : NP_000673.2:p.(Glu301GlyfsTer7)\n"
             + "          :     96,780,960          96,780,980                   96,781,000          96,781,020\n"
             + "chrom pos :     |    .    |    .    |    .    |    .  _________  |    .    |    .    |    .    |    .  \n"
-            + "seq    -> : TGCCTGGGGTTCACACTCTTCCTCCTCCTCCTCCTCCTCTTC.........GGCTTCATCCTCTGGAGATGCCCCACAAACACCCTCCTTC\n"
+            + "seq    -> : TGCCTGGGGTTCACACTCTTCCTCCTCCTCCTCCTCCTCTTC.........AGCTTCATCCTCTGGAGATGCCCCACAAACACCCTCCTTC\n"
             + "tx ref dif:                                           DDDDDDDDD                                        \n"
             + "region    :                               x----------x                                                 \n"
             + "tx seq <- : ACGGACCCCAAGTGTGAGAAGGAGGAGGAGGAGGAGGAGAAGGAGGAGAAGTCGAAGTAGGAGACCTCTACGGGGTGTTTGTGGGAGGAAG\n"
@@ -591,21 +639,52 @@ class Test_SimplePosition(unittest.TestCase):
         for r, e in zip(result, expected_str):
             self.assertEqual(e, r)
 
-    @pytest.mark.skip(reason="actually not that special, but still a nice variant.")
+    def test_ref_disagree_del_reverse(self):
+        hgvs_c = "NM_000682.6:c.901_911del"  # a del variant
+        
+        var_c = self.hp.parse(hgvs_c)
+        pp = PrettyPrint(self.hdp, self.assembly_mapper37,infer_hgvs_c=True, padding_left=30, padding_right=40, reverse_display=True)
+        result = pp.display(var_c)
+        print(result)
+        result = result.split("\n")
+
+        expected_str = (
+            "hgvs_g    : NC_000002.11:g.96780987_96780997del\n"
+            "hgvs_c    : NM_000682.6:c.901_911del\n"
+            "hgvs_p    : NP_000673.2:p.(Glu301GlyfsTer7)\n"
+            "          :        96,781,030          96,781,010                   96,780,990          96,780,970\n"
+            "chrom pos :   .    |    .    |    .    |    .    |  _________  .    |    .    |    .    |    .    |    \n"
+            "seq    <- : CTTCCTCCCACAAACACCCCGTAGAGGTCTCCTACTTCGA.........CTTCTCCTCCTCCTCCTCCTCCTTCTCACACTTGGGGTCCGT\n"
+            "seq    -> : GAAGGAGGGTGTTTGTGGGGCATCTCCAGAGGATGAAGCT.........GAAGAGGAGGAGGAGGAGGAGGAAGAGTGTGAACCCCAGGCA\n"
+            "tx ref dif:                                         DDDDDDDDD                                          \n"
+            "region    :                                                  x----------x                              \n"
+            "tx seq -> : GAAGGAGGGTGTTTGTGGGGCATCTCCAGAGGATGAAGCTGAAGAGGAGGAAGAGGAGGAGGAGGAGGAGGAAGAGTGTGAACCCCAGGCA\n"
+            "tx pos    :    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |  \n"
+            "          :         860       870       880       890       900       910       920       930       940\n"
+            "aa seq -> : nLysGluGlyValCysGlyAlaSerProGluAspGluAlaGluGluGluGluGluGluGluGluGluGluGluGluCysGluProGlnAla\n"
+            "aa pos    :  ...            |||            ...            |||            ...            |||            \n"
+            "          :                 290                           300                           310            \n"
+            "ref>alt   : CTCCTCCTCTTC>C"
+        ).split("\n")
+        for r, e in zip(result, expected_str):
+            self.assertEqual(e, r)
+
+    @pytest.mark.skip(reason="actually not that special, but still a nice variant since there is a large shuffle-able sequence on both ends.")
     def test_exon_boundary_overlap_forward_strand(self):
         hgvs_c = "NM_001283009.2:c.1228_1266+39del"
         var_c = self.hp.parse(hgvs_c)
-        pp = PrettyPrint(self.hdp, showLegend=True, useColor=False)
+        pp = PrettyPrint(self.hdp, self.assembly_mapper37, showLegend=True, useColor=False)
 
         result = pp.display(var_c)
 
         print(result)
 
+
     def test_ruler(self):
         """Test the ruler display option turned on."""
         hgvs_c = "NM_001111.4:c.298G>A"
         var_c = self.hp.parse(hgvs_c)
-        pp = PrettyPrint(self.hdp, showLegend=False, reverse_display=False)
+        pp = PrettyPrint(self.hdp, self.assembly_mapper37, showLegend=False, reverse_display=False)
 
         result = pp.display(var_c)
 
@@ -638,7 +717,7 @@ class Test_SimplePosition(unittest.TestCase):
         hgvs_n = "NR_146230.2:n.10G>A"
         var_n = self.hp.parse(hgvs_n)
 
-        pp = PrettyPrint(self.hdp, show_reverse_strand=True)
+        pp = PrettyPrint(self.hdp, self.assembly_mapper37, show_reverse_strand=True)
         result = pp.display(var_n)
         print(result)
         expected_str = (
@@ -649,7 +728,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "seq    -> : TGCTGATCTTTGGATGTTCTGGTTAGTCTAAGAAGGAGAGT\n"
             + "seq    <- : ACGACTAGAAACCTACAAGACCAATCAGATTCTTCCTCTCA\n"
             + "region    :                     A                    \n"
-            + "tx seq -> :             GATGTTCTGGTTAGTCTAAGAAGGAGAGT\n"
+            + "tx seq -> :            GGATGTTCTGGTTAGTCTAAGAAGGAGAGT\n"
             + "tx pos    :                .    |    .    |    .    |\n"
             + "          :                     10        20        30\n"
             + "aa seq -> :                                          \n"
