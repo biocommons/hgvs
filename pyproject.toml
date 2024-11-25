@@ -41,6 +41,7 @@ dependencies=[
     "importlib_resources",
     "ipython",
     "parsley",
+    "pre-commit ~= 3.4",
     "psycopg2",
     "six",
 ]
