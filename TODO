@@ -1,0 +1,4 @@
+- remove 2.7 support, including six
+- replace test caching layer
+add pre-commit (incl fix current breakages)
+kill setup.py and setup.cfg
