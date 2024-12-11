@@ -34,16 +34,27 @@ keywords = [
 dynamic = ["version", "optional-dependencies"]
 
 dependencies=[
-    "attrs >= 17.4.0",  # https://github.com/biocommons/hgvs/issues/473
-    "biocommons.seqrepo >= 0.6.5",
+    "attrs ~= 17.4",  # https://github.com/biocommons/hgvs/issues/473
+    "biocommons.seqrepo != 0.6",
     "bioutils >= 0.4.0,<1.0",
-    "configparser >= 3.3.0",
+    "configparser ~= 3.3",
     "importlib_resources",
     "ipython",
     "parsley",
-    "pre-commit ~= 3.4",
     "psycopg2",
     "six",
+]
+
+[project.optional-dependencies]
+dev = [
+	"pre-commit ~= 3.4",
+	"pytest-cov ~= 4.1",
+	"pytest-optional-tests",
+	"pytest ~= 7.1",
+	"pyright ~= 1.1",
+	"ruff ~= 0.4",
+	"tox ~= 4.15",
+	"vcrpy ~= 6.0",
 ]
 
 [project.urls]
@@ -55,8 +66,8 @@ dependencies=[
 
 [build-system]
 requires = [
-	 "setuptools >= 69.0.2",
-   	 "setuptools_scm[toml] >= 8.0"
+	 "setuptools >= 70.1",
+   	 "setuptools_scm[toml] ~= 8.1"
 	 ]
 build-backend = "setuptools.build_meta"
 
@@ -107,6 +118,64 @@ exclude_lines = [
 [tool.black]
 line-length = 100
 
+[tool.pyright]
+include = ["src", "tests"]
+
+[tool.ruff]
+src = ["src", "tests"]
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "F",  # https://docs.astral.sh/ruff/rules/#pyflakes-f
+    "E", "W",  # https://docs.astral.sh/ruff/rules/#pycodestyle-e-w
+    "I",  # https://docs.astral.sh/ruff/rules/#isort-i
+    "N",  # https://docs.astral.sh/ruff/rules/#pep8-naming-n
+    "UP",  # https://docs.astral.sh/ruff/rules/#pyupgrade-up
+    "YTT",  # https://docs.astral.sh/ruff/rules/#flake8-2020-ytt
+    "S",  # https://docs.astral.sh/ruff/rules/#flake8-bandit-s
+    "B",  # https://docs.astral.sh/ruff/rules/#flake8-bugbear-b
+    "A",  # https://docs.astral.sh/ruff/rules/#flake8-builtins-a
+    "C4",  # https://docs.astral.sh/ruff/rules/#flake8-comprehensions-c4
+    "DTZ",  # https://docs.astral.sh/ruff/rules/#flake8-datetimez-dtz
+    "EM",  # https://docs.astral.sh/ruff/rules/#flake8-errmsg-em
+    "LOG",  # https://docs.astral.sh/ruff/rules/#flake8-logging-log
+    "G",  # https://docs.astral.sh/ruff/rules/#flake8-logging-format-g
+    "PIE",  # https://docs.astral.sh/ruff/rules/#flake8-pie-pie
+    "PT",  # https://docs.astral.sh/ruff/rules/#flake8-pytest-style-pt
+    "RSE",  # https://docs.astral.sh/ruff/rules/#flake8-raise-rse
+    "RET",  # https://docs.astral.sh/ruff/rules/#flake8-return-ret
+    "SIM",  # https://docs.astral.sh/ruff/rules/#flake8-simplify-sim
+    "ARG",  # https://docs.astral.sh/ruff/rules/#flake8-unused-arguments-arg
+    "PTH",  # https://docs.astral.sh/ruff/rules/#flake8-use-pathlib-pth
+    "PL",  # https://docs.astral.sh/ruff/rules/#pylint-pl
+    "TRY",  # https://docs.astral.sh/ruff/rules/#tryceratops-try
+    "PERF",  # https://docs.astral.sh/ruff/rules/#perflint-perf
+    "RUF",  # https://docs.astral.sh/ruff/rules/#ruff-specific-rules-ruf
+]
+fixable = [
+    "F401",
+    "F541",
+    "I",
+    "D",
+    "UP",
+    "B",
+    "C4",
+    "EM",
+    "PIE",
+    "PT",
+    "RSE",
+    "RET",
+    "SIM",
+    "PERF",
+    "RUF",
+]
+ignore = [
+    # ignore for compatibility with formatter
+    "W191", "E111", "E114", "E117", "S321",
+    # other
+    "PLR0913",
+]
 
 # [tool.flake8]
 # flake8 does not support configuration in pyproject.toml
