@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import absolute_import, division, print_function, unicode_literals
 """compare hgvs and mutalyzer outputs
 
 eg$ ./bin/hgvs-mutalyzer-compare -vv -eid -H acmg-g-current-hgvs.tsv -M acmg-g-current-mzr.tsv -B bermuda.tsv

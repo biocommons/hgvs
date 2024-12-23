@@ -45,8 +45,6 @@ start_i and minimal end_i.
 import logging
 import re
 
-from six.moves import range
-
 from hgvs.exceptions import HGVSInvalidIntervalError
 
 _logger = logging.getLogger(__name__)

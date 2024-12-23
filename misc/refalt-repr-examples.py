@@ -3,7 +3,6 @@
 import hgvs
 import hgvs.parser
 from tabulate import tabulate
-from six.moves import map
 
 hp = hgvs.parser.Parser()
 

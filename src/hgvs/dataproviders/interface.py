@@ -6,16 +6,13 @@
 import abc
 import os
 
-import six
-from six.moves import map
-
 import hgvs
 
 from ..decorators.lru_cache import LEARN, RUN, VERIFY, lru_cache
 from ..utils.PersistentDict import PersistentDict
 
 
-class Interface(six.with_metaclass(abc.ABCMeta, object)):
+class Interface(metaclass=abc.ABCMeta):
     """Variant mapping and validation requires access to external data,
     specifically exon structures, transcript alignments, and protein
     accessions.  In order to isolate the hgvs package from the myriad
