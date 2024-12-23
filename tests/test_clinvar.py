@@ -42,19 +42,14 @@ class Test_Clinvar(unittest.TestCase, CrossChecker):
 
         In other words, you really want to run this with local sequences and UTA.
         """
-        if sys.version_info < (3,):
-            fh = LineIterator(
-                fh=gzip.open(fn) if fn.endswith(".gz") else io.open(fn), skip_comments=True
-            )
-        else:
-            fh = LineIterator(
-                fh=(
-                    io.TextIOWrapper(gzip.open(fn), encoding="utf-8")
-                    if fn.endswith(".gz")
-                    else io.open(fn)
-                ),
-                skip_comments=True,
-            )
+        fh = LineIterator(
+            fh=(
+                io.TextIOWrapper(gzip.open(fn), encoding="utf-8")
+                if fn.endswith(".gz")
+                else io.open(fn)
+            ),
+            skip_comments=True,
+        )
         for rec in csv.DictReader(fh, delimiter=str("\t")):
             if mod and fh.lines_read % mod != 0:
                 continue

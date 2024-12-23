@@ -3,11 +3,7 @@ import os
 import pprint
 import re
 import unittest
-from sys import version_info
-try:
-    from importlib.resources import files as resources_files
-except ImportError:
-    from importlib_resources import files as resources_files
+from importlib.resources import files as resources_files
 
 #
 # Tests of the grammar
@@ -32,13 +28,7 @@ except ImportError:
 #
 
 
-if version_info < (3,):
-    import unicodecsv as csv
-else:
-    import csv
-
-import six
-from six.moves import map
+import csv
 
 import hgvs.parser
 
@@ -88,13 +78,13 @@ class TestGrammarFull(unittest.TestCase):
                 is_valid = True if row["Valid"].lower() == "true" else False
 
                 for key in expected_map:
-                    expected_result = six.text_type(expected_map[key]).replace("u'", "'")
+                    expected_result = str(expected_map[key]).replace("u'", "'")
                     function_to_test = getattr(self.p._grammar(key), row["Func"])
                     row_str = "{}\t{}\t{}\t{}\t{}".format(
                         row["Func"], key, row["Valid"], "one", expected_result
                     )
                     try:
-                        actual_result = six.text_type(function_to_test()).replace("u'", "'")
+                        actual_result = str(function_to_test()).replace("u'", "'")
                         if not is_valid or (expected_result != actual_result):
                             print("expected: {} actual:{}".format(expected_result, actual_result))
                             fail_cases.append(row_str)

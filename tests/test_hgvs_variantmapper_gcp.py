@@ -4,10 +4,7 @@ import re
 import sys
 import unittest
 
-if sys.version_info < (3,):
-    import unicodecsv as csv
-else:
-    import csv
+import csv
 
 import pytest
 from support import CACHE

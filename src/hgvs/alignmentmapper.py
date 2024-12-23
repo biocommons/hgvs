@@ -28,7 +28,6 @@ The AlignmentMapper class is at the heart of mapping between aligned sequences.
 
 
 from bioutils.coordinates import strand_int_to_pm
-from six.moves import range
 
 import hgvs.location
 from hgvs import global_config

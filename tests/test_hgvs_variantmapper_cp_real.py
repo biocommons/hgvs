@@ -2,15 +2,11 @@
 import os
 import re
 import unittest
-from sys import version_info
 
 # Real data - cp tests
 
 
-if version_info < (3,):
-    import unicodecsv as csv
-else:
-    import csv
+import csv
 
 from support import CACHE
 

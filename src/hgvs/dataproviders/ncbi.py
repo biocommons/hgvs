@@ -14,8 +14,7 @@ import re
 import psycopg2
 import psycopg2.extras
 import psycopg2.pool
-import six
-from six.moves.urllib import parse as urlparse
+from urllib import parse as urlparse
 
 import hgvs
 from hgvs.exceptions import HGVSDataNotAvailableError, HGVSError
