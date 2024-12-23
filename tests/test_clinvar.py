@@ -3,18 +3,17 @@ import csv
 import gzip
 import io
 import os
-import sys
 import unittest
 
 import pytest
-from support import CACHE
-from support.crosschecker import CrossChecker, LineIterator
 
 import hgvs
 import hgvs.dataproviders.uta
 import hgvs.parser
 import hgvs.sequencevariant
 import hgvs.variantmapper
+from support import CACHE
+from support.crosschecker import CrossChecker, LineIterator
 
 data_fn = os.path.join(os.path.dirname(__file__), "data", "clinvar.gz")
 

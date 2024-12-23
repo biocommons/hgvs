@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
+import csv
 import os
 import pprint
 import re
 import unittest
 from importlib.resources import files as resources_files
+
+import hgvs.parser
+
 
 #
 # Tests of the grammar
@@ -26,11 +30,6 @@ from importlib.resources import files as resources_files
 # Expected: expected result (if stringifying input does not return the same answer, e,g. "+1" -> "1")
 # - if expected is left blank, then it is assumed that stringifying the parsed input returns the same answer.
 #
-
-
-import csv
-
-import hgvs.parser
 
 
 class TestGrammarFull(unittest.TestCase):

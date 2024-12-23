@@ -16,11 +16,9 @@ Multiline config breaks variables. If any are found, they're skipped
 """
 
 import argparse
-import ConfigParser
 import logging
-import os
-import sys
 
+import ConfigParser
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.WARN)
