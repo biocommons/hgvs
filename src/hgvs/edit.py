@@ -428,7 +428,7 @@ class Dup(Edit):
         """
         return (
             self.ref
-            if (isinstance(self.ref, six.string_types) and self.ref and self.ref[0] in "ACGTUN")
+            if (isinstance(self.ref, str) and self.ref and self.ref[0] in "ACGTUN")
             else None
         )
 

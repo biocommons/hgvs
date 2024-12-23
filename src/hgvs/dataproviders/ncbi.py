@@ -292,7 +292,7 @@ class NCBI_postgresql(NCBIBase):
         self._ensure_schema_exists()
 
         # remap sqlite's ? placeholders to psycopg2's %s
-        self._queries = {k: v.replace("?", "%s") for k, v in six.iteritems(self._queries)}
+        self._queries = {k: v.replace("?", "%s") for k, v in self._queries.items()}
 
     def _ensure_schema_exists(self):
         # N.B. On AWS RDS, information_schema.schemata always returns zero rows
