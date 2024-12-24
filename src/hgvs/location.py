@@ -28,7 +28,7 @@ from hgvs.exceptions import HGVSInvalidIntervalError, HGVSUnsupportedOperationEr
 
 @attr.s(slots=True, repr=False, cmp=False)
 @total_ordering
-class SimplePosition(object):
+class SimplePosition:
     base = attr.ib(default=None)
     uncertain = attr.ib(default=False)
 
@@ -90,7 +90,7 @@ class SimplePosition(object):
 
 @attr.s(slots=True, repr=False, cmp=False)
 @total_ordering
-class BaseOffsetPosition(object):
+class BaseOffsetPosition:
     """
     Class for dealing with CDS coordinates in transcript variants.
 
@@ -236,7 +236,7 @@ class BaseOffsetPosition(object):
 
 
 @attr.s(slots=True, repr=False, cmp=False)
-class AAPosition(object):
+class AAPosition:
     base = attr.ib(default=None)
     aa = attr.ib(default=None)
     uncertain = attr.ib(default=False)
@@ -327,7 +327,7 @@ class AAPosition(object):
 
 
 @attr.s(slots=True, repr=False)
-class Interval(object):
+class Interval:
     start = attr.ib(default=None)
     end = attr.ib(default=None)
     uncertain = attr.ib(default=False)

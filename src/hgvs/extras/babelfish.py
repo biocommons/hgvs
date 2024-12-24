@@ -33,6 +33,8 @@ class Babelfish:
         )
         self.ac_to_name_map = make_ac_name_map(assembly_name)
         self.name_to_ac_map = make_name_ac_map(assembly_name)
+        # We need to accept accessions as chromosome names, so add them pointing at themselves
+        self.name_to_ac_map.update({ac: ac for ac in self.name_to_ac_map.values()})
 
     def hgvs_to_vcf(self, var_g):
         """**EXPERIMENTAL**
@@ -74,16 +76,24 @@ class Babelfish:
         return chrom, start_i + 1, ref, alt, typ
 
     def vcf_to_g_hgvs(self, chrom, position, ref, alt):
+        # VCF spec https://samtools.github.io/hts-specs/VCFv4.1.pdf
+        # says for REF/ALT "Each base must be one of A,C,G,T,N (case insensitive)"
+        ref = ref.upper()
+        alt = alt.upper()
+
         ac = self.name_to_ac_map[chrom]
 
-        # Strip common prefix
-        if len(alt) > 1 and len(ref) > 1:
-            pfx = os.path.commonprefix([ref, alt])
-            lp = len(pfx)
-            if lp > 0:
-                ref = ref[lp:]
-                alt = alt[lp:]
-                position += lp
+        if ref != alt:
+            # Strip common prefix
+            if len(alt) > 1 and len(ref) > 1:
+                pfx = os.path.commonprefix([ref, alt])
+                lp = len(pfx)
+                if lp > 0:
+                    ref = ref[lp:]
+                    alt = alt[lp:]
+                    position += lp
+            elif alt == ".":
+                alt = ref
 
         if ref == "":  # Insert
             # Insert uses coordinates around the insert point.
@@ -92,9 +102,6 @@ class Babelfish:
         else:
             start = position
             end = position + len(ref) - 1
-
-        if alt == ".":
-            alt = ref
 
         var_g = SequenceVariant(
             ac=ac,

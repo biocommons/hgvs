@@ -8,6 +8,7 @@ different (e.g., the ref AA in a protein substitution is part of the
 location).
 
 """
+import abc
 
 import attr
 import six
@@ -18,7 +19,7 @@ from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError
 
 
 @attr.s(slots=True)
-class Edit(object):
+class Edit(abc.ABC):
     def format(self, conf=None):
         return str(self)
 
@@ -45,6 +46,12 @@ class Edit(object):
         raise HGVSUnsupportedOperationError(
             "internal function _del_ins_lengths not implemented for this variant type"
         )
+
+    @property
+    @abc.abstractmethod
+    def type(self):
+        """ return the type of this Edit """
+        pass
 
 
 @attr.s(slots=True)
@@ -190,7 +197,7 @@ class AARefAlt(Edit):
         p_3_letter, p_term_asterisk, p_init_met = self._format_config_aa(conf)
 
         if self.init_met and p_init_met:
-            s = "Met1?"
+            s = "Met1?" if p_3_letter else "M1?"
         elif self.init_met and not p_init_met:
             s = "?"
         # subst and delins

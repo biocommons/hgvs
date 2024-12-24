@@ -10,7 +10,7 @@ import hgvs.variantmapper
 from hgvs.exceptions import HGVSDataNotAvailableError
 
 
-class LineIterator(object):
+class LineIterator:
     """iterate over a stream, keeping last line and # lines read"""
 
     def __init__(self, fh, skip_comments=False):
@@ -29,7 +29,7 @@ class LineIterator(object):
             yield line
 
 
-class CrossChecker(object):
+class CrossChecker:
     """base class for testing a group of related variants.  Checks all reasonable combinations of
     g <-> t --> p
 

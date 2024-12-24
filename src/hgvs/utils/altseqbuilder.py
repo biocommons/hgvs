@@ -20,7 +20,7 @@ DBG = False
 _logger = logging.getLogger(__name__)
 
 
-class AltTranscriptData(object):
+class AltTranscriptData:
     def __init__(
         self,
         seq,
@@ -79,7 +79,7 @@ class AltTranscriptData(object):
         self.is_ambiguous = is_ambiguous
 
 
-class AltSeqBuilder(object):
+class AltSeqBuilder:
     EXON = "exon"
     INTRON = "intron"
     F_UTR = "five utr"
@@ -180,6 +180,11 @@ class AltSeqBuilder(object):
         """
         if (
             self._var_c.posedit.pos.start.datum == Datum.CDS_END
+            and self._var_c.posedit.pos.end.datum == Datum.CDS_END
+        ):
+            result = self.T_UTR
+        elif (
+            self._var_c.posedit.edit.type in ["dup", "ins"]
             and self._var_c.posedit.pos.end.datum == Datum.CDS_END
         ):
             result = self.T_UTR

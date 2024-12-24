@@ -6,7 +6,7 @@ authors = [
 description = "HGVS Parser, Formatter, Mapper, Validator"
 readme = "README.rst"
 license = { file="LICENSE.txt" }
-requires-python = ">=3.6"
+requires-python = ">=3.10"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
@@ -15,8 +15,8 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
@@ -38,8 +38,10 @@ dependencies=[
     "biocommons.seqrepo >= 0.6.5",
     "bioutils >= 0.4.0,<1.0",
     "configparser >= 3.3.0",
+    "importlib_resources",
     "ipython",
     "parsley",
+    "pre-commit ~= 3.4",
     "psycopg2",
     "six",
 ]

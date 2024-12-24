@@ -37,6 +37,13 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
         cls.vm = hgvs.variantmapper.VariantMapper(cls.hdp)
         cls.hp = hgvs.parser.Parser()
 
+    def test_map_stop_retained(self):
+        hgvs_c = "NM_001253909.2:c.416_417insGTG"
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.vm.c_to_p(var_c)
+
+        assert str(var_p) == "NP_001240838.1:p.(Ter140Ter)"
+
     def test_gcrp_invalid_input_type(self):
         hgvs_g = "NC_000007.13:g.36561662C>T"
         hgvs_c = "NM_001637.3:c.1582G>A"
@@ -115,6 +122,18 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
         with pytest.raises(HGVSError, match="coordinate is out of bounds"):
             self.vm.c_to_p(var_c)
+
+    def test_map_of_ins_three_prime_utr(self):
+        hgvs_c = "NM_004985.4:c.567_*1insCCC"
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.vm.c_to_p(var_c)
+        self.assertEqual(str(var_p), "NP_004976.2:p.?")
+
+    def test_map_of_dup_three_prime_utr(self):
+        hgvs_c = "NM_153223.3:c.2959_*1dup"
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.vm.c_to_p(var_c)
+        self.assertEqual(str(var_p), "NP_694955.2:p.?")
 
 
 if __name__ == "__main__":

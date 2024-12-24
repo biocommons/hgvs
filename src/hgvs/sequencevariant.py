@@ -9,7 +9,7 @@ from hgvs.utils.validation import validate_type_ac_pair
 
 
 @attr.s(slots=True, repr=False)
-class SequenceVariant(object):
+class SequenceVariant:
     """
     represents a basic HGVS variant.  The only requirement is that each
     component can be stringified; for example, passing pos as either a string

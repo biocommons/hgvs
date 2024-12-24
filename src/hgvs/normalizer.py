@@ -21,7 +21,7 @@ from hgvs.utils.norm import normalize_alleles
 _logger = logging.getLogger(__name__)
 
 
-class Normalizer(object):
+class Normalizer:
     """Perform variant normalization"""
 
     def __init__(
