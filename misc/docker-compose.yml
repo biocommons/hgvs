@@ -33,7 +33,9 @@ services:
     volumes:
       - uta_vol:/var/lib/postgresql/data
     network_mode: host
-
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    
   # vr-rest-interface:
 
 volumes:

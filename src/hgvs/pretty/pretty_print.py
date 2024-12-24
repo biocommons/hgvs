@@ -92,6 +92,8 @@ class PrettyPrint:
             return am.n_to_g(sv)
         elif sv.type == "t":
             return am.t_to_g(sv)
+        elif sv.type == 'r':
+            return am.r
 
 
     def get_hgvs_names(
@@ -104,6 +106,9 @@ class PrettyPrint:
             if tx_ac is not None:
                 var_c_or_n = self._infer_hgvs_c(var_g, tx_ac=tx_ac)
         elif sv.type == "c":
+            var_g = self._map_to_chrom(sv)
+            var_c_or_n = sv
+        elif sv.type == 'r':
             var_g = self._map_to_chrom(sv)
             var_c_or_n = sv
         elif sv.type == "n":
