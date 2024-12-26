@@ -124,8 +124,18 @@ def mock_vm(mock_hdp):
     return hgvs.variantmapper.VariantMapper(mock_hdp, prevalidation_level="INTRINSIC")
 
 
+@pytest.fixture()
+def ref_at_boundary_is_exonic():
+    original = hgvs.global_config.mapping.ref_at_boundary_is_intronic
+    hgvs.global_config.mapping.ref_at_boundary_is_intronic = False
+    try:
+        yield
+    finally:
+        hgvs.global_config.mapping.ref_at_boundary_is_intronic = original
+
+
 @pytest.mark.parametrize("case", sanity_cases)
-def test_sanity_c_to_p(case, hp, mock_vm):
+def test_sanity_c_to_p(case, hp, mock_vm, ref_at_boundary_is_exonic):
     var_c = hp.parse(case["var_c"])
     if "exc" in case:
         with pytest.raises(case["exc"]):
@@ -135,7 +145,7 @@ def test_sanity_c_to_p(case, hp, mock_vm):
 
 
 @pytest.mark.parametrize("case", real_cases)
-def test_real_c_to_p(case, hp, vm, am37):
+def test_real_c_to_p(case, hp, vm, am37, ref_at_boundary_is_exonic):
     var_c = hp.parse(case["var_c"])
     if "exc" in case:
         with pytest.raises(case["exc"]):
