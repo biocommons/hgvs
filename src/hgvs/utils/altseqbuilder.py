@@ -9,6 +9,7 @@ Used in hgvsc to hgvsp conversion.
 import logging
 import math
 
+from hgvs import global_config
 from hgvs.exceptions import HGVSError
 
 from bioutils.sequences import reverse_complement, translate_cds
@@ -198,16 +199,16 @@ class AltSeqBuilder:
             result = self.WHOLE_GENE
         elif self._var_c.posedit.edit.type == "ins" and self._var_c.posedit.pos.start.offset == -1 and self._var_c.posedit.pos.end.offset == 0:
             # ins at intron-exon boundary
-            result = self.EXON
+            result = self.INTRON if global_config.mapping.ref_at_boundary_is_intronic else self.EXON
         elif self._var_c.posedit.edit.type == "ins" and self._var_c.posedit.pos.start.offset == 0 and self._var_c.posedit.pos.end.offset == 1:
             # ins at exon-intron boundary
-            result = self.EXON
+            result = self.INTRON if global_config.mapping.ref_at_boundary_is_intronic else self.EXON
         elif self._var_c.posedit.edit.type == "dup" and self._var_c.posedit.pos.end.offset == -1:
             # dup at intron-exon boundary
-            result = self.EXON
+            result = self.INTRON if global_config.mapping.ref_at_boundary_is_intronic else self.EXON
         elif self._var_c.posedit.edit.type == "dup" and self._var_c.posedit.pos.start.offset == 1:
             # dup at exon-intron boundary
-            result = self.EXON
+            result = self.INTRON if global_config.mapping.ref_at_boundary_is_intronic else self.EXON
         elif self._var_c.posedit.pos.start.offset != 0 or self._var_c.posedit.pos.end.offset != 0:
             # leave out anything else intronic for now
             result = self.INTRON
