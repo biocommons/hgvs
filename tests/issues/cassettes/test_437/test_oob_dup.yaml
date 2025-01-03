@@ -9,14 +9,18 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.3
     method: GET
     uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000009.11&rettype=fasta&seq_start=35658034&seq_stop=35658034&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAALLzc443AAFLPUNDK2NTM1MLA2MTXRhDwSM/N1+hOLEgMzWvWCE5owjILc7PTVWw
-        1FFwD3LOMDbXKzA0VggoysxNLKpUcCwuTs1NyqnkcuTiAgAAAP//AwDSXvpeWgAAAA==
+      string: '>NC_000009.11:35658034-35658034 Homo sapiens chromosome 9, GRCh37.p13
+        Primary Assembly
+
+        A
+
+
+        '
     headers:
       Access-Control-Allow-Origin:
       - '*'
@@ -33,20 +37,20 @@ interactions:
       Content-Type:
       - text/plain
       Date:
-      - Fri, 15 Sep 2023 22:57:33 GMT
+      - Fri, 03 Jan 2025 04:03:11 GMT
       Keep-Alive:
       - timeout=4, max=40
       NCBI-PHID:
-      - 322C409D773A9D45000047B962710F68.1.1.m_5
+      - 322C0114E2C07945000060CE90C2F6B3.1.1.m_5
       NCBI-SID:
-      - BF954E15F29A6889_CC72SID
+      - E8B0DE944CD2BB26_80D8SID
       Referrer-Policy:
       - origin-when-cross-origin
       Server:
       - Finatra
       Set-Cookie:
-      - ncbi_sid=BF954E15F29A6889_CC72SID; domain=.nih.gov; path=/; expires=Sun, 15
-        Sep 2024 22:57:33 GMT
+      - ncbi_sid=E8B0DE944CD2BB26_80D8SID; domain=.nih.gov; path=/; expires=Sat, 03
+        Jan 2026 04:03:12 GMT
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -54,7 +58,7 @@ interactions:
       X-RateLimit-Limit:
       - '3'
       X-RateLimit-Remaining:
-      - '2'
+      - '0'
       X-UA-Compatible:
       - IE=Edge
       X-XSS-Protection:
@@ -74,15 +78,18 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.3
     method: GET
     uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000009.11&rettype=fasta&seq_start=35658033&seq_stop=35658053&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAALLzc443AAFLPUNDK2NTM1MLA2NjXQjD1FjBIz83X6E4sSAzNa9YITmjCMgtzs9N
-        VbDUUXAPcs4wNtcrMDRWCCjKzE0sqlRwLC5OzU3KqeRyd3QPAaEQIHAEspydnUMcubgAAAAA//8D
-        AKFKeJ5uAAAA
+      string: '>NC_000009.11:35658033-35658053 Homo sapiens chromosome 9, GRCh37.p13
+        Primary Assembly
+
+        GAGTAGTATTTTATAGCCCTA
+
+
+        '
     headers:
       Access-Control-Allow-Origin:
       - '*'
@@ -99,20 +106,20 @@ interactions:
       Content-Type:
       - text/plain
       Date:
-      - Fri, 15 Sep 2023 22:57:35 GMT
+      - Fri, 03 Jan 2025 04:03:12 GMT
       Keep-Alive:
       - timeout=4, max=40
       NCBI-PHID:
-      - 939B73A67CF44655000025D12265497B.1.1.m_5
+      - 322C0114E2C07945000048CE91704242.1.1.m_5
       NCBI-SID:
-      - C53BABC9F649216A_D325SID
+      - 01BFC7EE6D510AA4_7DB4SID
       Referrer-Policy:
       - origin-when-cross-origin
       Server:
       - Finatra
       Set-Cookie:
-      - ncbi_sid=C53BABC9F649216A_D325SID; domain=.nih.gov; path=/; expires=Sun, 15
-        Sep 2024 22:57:35 GMT
+      - ncbi_sid=01BFC7EE6D510AA4_7DB4SID; domain=.nih.gov; path=/; expires=Sat, 03
+        Jan 2026 04:03:12 GMT
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -120,7 +127,7 @@ interactions:
       X-RateLimit-Limit:
       - '3'
       X-RateLimit-Remaining:
-      - '2'
+      - '0'
       X-UA-Compatible:
       - IE=Edge
       X-XSS-Protection:
@@ -140,14 +147,18 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.3
     method: GET
     uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000009.11&rettype=fasta&seq_start=35658038&seq_stop=35658040&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAALLzc443AAFLPUNDK2NTM1MLA2MLXQjDxEDBIz83X6E4sSAzNa9YITmjCMgtzs9N
-        VbDUUXAPcs4wNtcrMDRWCCjKzE0sqlRwLC5OzU3KqeRyD3Hk4gIAAAD//wMAnn+I2FwAAAA=
+      string: '>NC_000009.11:35658038-35658040 Homo sapiens chromosome 9, GRCh37.p13
+        Primary Assembly
+
+        GTA
+
+
+        '
     headers:
       Access-Control-Allow-Origin:
       - '*'
@@ -164,20 +175,20 @@ interactions:
       Content-Type:
       - text/plain
       Date:
-      - Fri, 15 Sep 2023 22:57:38 GMT
+      - Fri, 03 Jan 2025 04:03:12 GMT
       Keep-Alive:
       - timeout=4, max=40
       NCBI-PHID:
-      - 322C409D773A9D45000048B96ECBBE2B.1.1.m_5
+      - 322C0114E2C0794500004CCE922E2907.1.1.m_5
       NCBI-SID:
-      - 995898FF856838A8_48C9SID
+      - 1EAEE7A4CAF62A10_130BSID
       Referrer-Policy:
       - origin-when-cross-origin
       Server:
       - Finatra
       Set-Cookie:
-      - ncbi_sid=995898FF856838A8_48C9SID; domain=.nih.gov; path=/; expires=Sun, 15
-        Sep 2024 22:57:38 GMT
+      - ncbi_sid=1EAEE7A4CAF62A10_130BSID; domain=.nih.gov; path=/; expires=Sat, 03
+        Jan 2026 04:03:13 GMT
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -185,7 +196,7 @@ interactions:
       X-RateLimit-Limit:
       - '3'
       X-RateLimit-Remaining:
-      - '2'
+      - '0'
       X-UA-Compatible:
       - IE=Edge
       X-XSS-Protection:
@@ -205,14 +216,18 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.3
     method: GET
     uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000009.11&rettype=fasta&seq_start=35658040&seq_stop=35658040&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAALLzc443AAFLPUNDK2NTM1MLAxMDXRhDwSM/N1+hOLEgMzWvWCE5owjILc7PTVWw
-        1FFwD3LOMDbXKzA0VggoysxNLKpUcCwuTs1NyqnkcuTiAgAAAP//AwCy3/HeWgAAAA==
+      string: '>NC_000009.11:35658040-35658040 Homo sapiens chromosome 9, GRCh37.p13
+        Primary Assembly
+
+        A
+
+
+        '
     headers:
       Access-Control-Allow-Origin:
       - '*'
@@ -229,20 +244,20 @@ interactions:
       Content-Type:
       - text/plain
       Date:
-      - Fri, 15 Sep 2023 22:57:39 GMT
+      - Fri, 03 Jan 2025 04:03:13 GMT
       Keep-Alive:
       - timeout=4, max=40
       NCBI-PHID:
-      - D0BD088E3BFC1F95000034D4B66314A8.1.1.m_5
+      - D0BD4D15A8D0CB65000048CB1E1C6457.1.1.m_5
       NCBI-SID:
-      - 514F9B5A8760A13A_68A8SID
+      - E95AE013DE773B79_B72CSID
       Referrer-Policy:
       - origin-when-cross-origin
       Server:
       - Finatra
       Set-Cookie:
-      - ncbi_sid=514F9B5A8760A13A_68A8SID; domain=.nih.gov; path=/; expires=Sun, 15
-        Sep 2024 22:57:40 GMT
+      - ncbi_sid=E95AE013DE773B79_B72CSID; domain=.nih.gov; path=/; expires=Sat, 03
+        Jan 2026 04:03:13 GMT
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -250,7 +265,7 @@ interactions:
       X-RateLimit-Limit:
       - '3'
       X-RateLimit-Remaining:
-      - '2'
+      - '0'
       X-UA-Compatible:
       - IE=Edge
       X-XSS-Protection:
@@ -270,15 +285,18 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.3
     method: GET
     uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000009.11&rettype=fasta&seq_start=35658018&seq_stop=35658040&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAALLzc443AAFLPUNDK2NTM1MLA0MLXQjDxEDBIz83X6E4sSAzNa9YITmjCMgtzs9N
-        VbDUUXAPcs4wNtcrMDRWCCjKzE0sqlRwLC5OzU3KqeRyD3F2DnF2dHcOAZJA2tE9BIS4uAAAAAD/
-        /wMAwkyRzHAAAAA=
+      string: '>NC_000009.11:35658018-35658040 Homo sapiens chromosome 9, GRCh37.p13
+        Primary Assembly
+
+        GTCCTCAGCTTCACAGAGTAGTA
+
+
+        '
     headers:
       Access-Control-Allow-Origin:
       - '*'
@@ -295,20 +313,20 @@ interactions:
       Content-Type:
       - text/plain
       Date:
-      - Fri, 15 Sep 2023 22:57:42 GMT
+      - Fri, 03 Jan 2025 04:03:13 GMT
       Keep-Alive:
       - timeout=4, max=40
       NCBI-PHID:
-      - D0BD088E3BFC1F9500004ED4BBC1B657.1.1.m_5
+      - D0BD4D15A8D0CB65000043CB1EAE9CB5.1.1.m_5
       NCBI-SID:
-      - E473C8335E7AC266_409ESID
+      - D8DFA2833619ED8B_8F12SID
       Referrer-Policy:
       - origin-when-cross-origin
       Server:
       - Finatra
       Set-Cookie:
-      - ncbi_sid=E473C8335E7AC266_409ESID; domain=.nih.gov; path=/; expires=Sun, 15
-        Sep 2024 22:57:42 GMT
+      - ncbi_sid=D8DFA2833619ED8B_8F12SID; domain=.nih.gov; path=/; expires=Sat, 03
+        Jan 2026 04:03:13 GMT
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -316,7 +334,7 @@ interactions:
       X-RateLimit-Limit:
       - '3'
       X-RateLimit-Remaining:
-      - '2'
+      - '0'
       X-UA-Compatible:
       - IE=Edge
       X-XSS-Protection:
@@ -336,14 +354,18 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.3
     method: GET
     uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000009.11&rettype=fasta&seq_start=35658034&seq_stop=35658036&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAALLzc443AAFLPUNDK2NTM1MLA2MTXSjDTMEjPzdfoTixIDM1r1ghOaMIyC3Oz01V
-        sNRRcA9yzjA21yswNFYIKMrMTSyqVHAsLk7NTcqp5HJ0D+HiAgAAAP//AwAE0yTcXAAAAA==
+      string: '>NC_000009.11:35658034-35658036 Homo sapiens chromosome 9, GRCh37.p13
+        Primary Assembly
+
+        AGT
+
+
+        '
     headers:
       Access-Control-Allow-Origin:
       - '*'
@@ -360,20 +382,20 @@ interactions:
       Content-Type:
       - text/plain
       Date:
-      - Fri, 15 Sep 2023 22:57:44 GMT
+      - Fri, 03 Jan 2025 04:03:13 GMT
       Keep-Alive:
       - timeout=4, max=40
       NCBI-PHID:
-      - 939B73A67CF44655000026D13C57E639.1.1.m_5
+      - 322C0114E2C0794500004FCE94F68F86.1.1.m_5
       NCBI-SID:
-      - A3F344DD80098BCE_CE79SID
+      - 264A9930C75630D5_D345SID
       Referrer-Policy:
       - origin-when-cross-origin
       Server:
       - Finatra
       Set-Cookie:
-      - ncbi_sid=A3F344DD80098BCE_CE79SID; domain=.nih.gov; path=/; expires=Sun, 15
-        Sep 2024 22:57:44 GMT
+      - ncbi_sid=264A9930C75630D5_D345SID; domain=.nih.gov; path=/; expires=Sat, 03
+        Jan 2026 04:03:14 GMT
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -381,7 +403,7 @@ interactions:
       X-RateLimit-Limit:
       - '3'
       X-RateLimit-Remaining:
-      - '2'
+      - '0'
       X-UA-Compatible:
       - IE=Edge
       X-XSS-Protection:

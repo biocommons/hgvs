@@ -9,14 +9,18 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.3
     method: GET
     uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000016.10&rettype=fasta&seq_start=31427775&seq_stop=31427775&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAALLzc443AAJDMz1DAytjQxMjc3NzU10YQ8EjPzdfoTixIDM1r1ghOaMIyC3Oz01V
-        MDTTUXAPcs4wttArMDRRCCjKzE0sqlRwLC5OzU3KqeRy5uICAAAA//8DAEJQGdxbAAAA
+      string: '>NC_000016.10:31427775-31427775 Homo sapiens chromosome 16, GRCh38.p14
+        Primary Assembly
+
+        C
+
+
+        '
     headers:
       Access-Control-Allow-Origin:
       - '*'
@@ -33,20 +37,20 @@ interactions:
       Content-Type:
       - text/plain
       Date:
-      - Fri, 15 Sep 2023 22:59:21 GMT
+      - Fri, 03 Jan 2025 04:01:50 GMT
       Keep-Alive:
       - timeout=4, max=40
       NCBI-PHID:
-      - 939B73A67CF44655000037D2012A69D4.1.1.m_5
+      - D0BD4D15A8D0CB6500005ECA587F14A0.1.1.m_5
       NCBI-SID:
-      - C7E272CE05884366_8DC0SID
+      - BF98407258831876_E5DCSID
       Referrer-Policy:
       - origin-when-cross-origin
       Server:
       - Finatra
       Set-Cookie:
-      - ncbi_sid=C7E272CE05884366_8DC0SID; domain=.nih.gov; path=/; expires=Sun, 15
-        Sep 2024 22:59:22 GMT
+      - ncbi_sid=BF98407258831876_E5DCSID; domain=.nih.gov; path=/; expires=Sat, 03
+        Jan 2026 04:01:50 GMT
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -54,7 +58,7 @@ interactions:
       X-RateLimit-Limit:
       - '3'
       X-RateLimit-Remaining:
-      - '2'
+      - '0'
       X-UA-Compatible:
       - IE=Edge
       X-XSS-Protection:
@@ -74,14 +78,18 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.3
     method: GET
     uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NM_005205.3&rettype=fasta&seq_start=396&seq_stop=396&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAALLz8403MDA1MjDVM7YytjTTBWIFj/zcfIXixILM1LxiheTKkvzkjKL83FSFZIX8
-        isyUxOJUheLSpNK8zBIFM0cjBQ1n/wggramjkBvk58jlzsUFAAAA//8DAJ1+Y5FVAAAA
+      string: '>NM_005205.3:396-396 Homo sapiens cytochrome c oxidase subunit 6A2
+        (COX6A2), mRNA
+
+        G
+
+
+        '
     headers:
       Access-Control-Allow-Origin:
       - '*'
@@ -98,20 +106,20 @@ interactions:
       Content-Type:
       - text/plain
       Date:
-      - Fri, 15 Sep 2023 22:59:25 GMT
+      - Fri, 03 Jan 2025 04:01:50 GMT
       Keep-Alive:
       - timeout=4, max=40
       NCBI-PHID:
-      - D0BD088E3BFC1F95000059D5CF772A1C.1.1.m_5
+      - D0BD4D15A8D0CB65000050CA597D44EB.1.1.m_5
       NCBI-SID:
-      - 70D7715EBEBD7E43_30F3SID
+      - 47C3016D4974665E_8340SID
       Referrer-Policy:
       - origin-when-cross-origin
       Server:
       - Finatra
       Set-Cookie:
-      - ncbi_sid=70D7715EBEBD7E43_30F3SID; domain=.nih.gov; path=/; expires=Sun, 15
-        Sep 2024 22:59:24 GMT
+      - ncbi_sid=47C3016D4974665E_8340SID; domain=.nih.gov; path=/; expires=Sat, 03
+        Jan 2026 04:01:51 GMT
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -119,7 +127,7 @@ interactions:
       X-RateLimit-Limit:
       - '3'
       X-RateLimit-Remaining:
-      - '2'
+      - '1'
       X-UA-Compatible:
       - IE=Edge
       X-XSS-Protection:
@@ -139,14 +147,18 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.3
     method: GET
     uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NM_005205.3&rettype=fasta&seq_start=396&seq_stop=397&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAALLz8403MDA1MjDVM7YytjTTNbY0V/DIz81XKE4syEzNK1ZIrizJT84oys9NVUhW
-        yK/ITEksTlUoLk0qzcssUTBzNFLQcPaPANKaOgq5QX6OXO6OXFwAAAAA//8DAG0Mdk1WAAAA
+      string: '>NM_005205.3:396-397 Homo sapiens cytochrome c oxidase subunit 6A2
+        (COX6A2), mRNA
+
+        GA
+
+
+        '
     headers:
       Access-Control-Allow-Origin:
       - '*'
@@ -163,20 +175,20 @@ interactions:
       Content-Type:
       - text/plain
       Date:
-      - Fri, 15 Sep 2023 22:59:26 GMT
+      - Fri, 03 Jan 2025 04:01:51 GMT
       Keep-Alive:
       - timeout=4, max=40
       NCBI-PHID:
-      - 322C409D773A9D4500005ABA9B07548F.1.1.m_5
+      - D0BD4D15A8D0CB65000037CA5A1553F9.1.1.m_5
       NCBI-SID:
-      - 18DB94CBC09842F1_1BCCSID
+      - A5444AAE27ADB307_07DFSID
       Referrer-Policy:
       - origin-when-cross-origin
       Server:
       - Finatra
       Set-Cookie:
-      - ncbi_sid=18DB94CBC09842F1_1BCCSID; domain=.nih.gov; path=/; expires=Sun, 15
-        Sep 2024 22:59:27 GMT
+      - ncbi_sid=A5444AAE27ADB307_07DFSID; domain=.nih.gov; path=/; expires=Sat, 03
+        Jan 2026 04:01:51 GMT
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -184,7 +196,7 @@ interactions:
       X-RateLimit-Limit:
       - '3'
       X-RateLimit-Remaining:
-      - '2'
+      - '0'
       X-UA-Compatible:
       - IE=Edge
       X-XSS-Protection:
