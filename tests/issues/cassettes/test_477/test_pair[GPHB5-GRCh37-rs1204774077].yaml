@@ -9,14 +9,18 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.3
     method: GET
     uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000014.8&rettype=fasta&seq_start=63779558&seq_stop=63779558&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAALLzc443AAJDEz0LKzNjc3NLU1MLXRhDwSM/N1+hOLEgMzWvWCE5owjILc7PTVUw
-        NNFRcA9yzjA21yswNFYIKMrMTSyqVHAsLk7NTcqp5Arh4gIAAAD//wMAQtvi81oAAAA=
+      string: '>NC_000014.8:63779558-63779558 Homo sapiens chromosome 14, GRCh37.p13
+        Primary Assembly
+
+        T
+
+
+        '
     headers:
       Access-Control-Allow-Origin:
       - '*'
@@ -33,20 +37,20 @@ interactions:
       Content-Type:
       - text/plain
       Date:
-      - Fri, 15 Sep 2023 22:58:38 GMT
+      - Fri, 03 Jan 2025 04:01:40 GMT
       Keep-Alive:
       - timeout=4, max=40
       NCBI-PHID:
-      - 322C409D773A9D4500002FBA11BB18D0.1.1.m_5
+      - D0BD4D15A8D0CB65000030CA449A2276.1.1.m_5
       NCBI-SID:
-      - AA0A6DBB5D042576_18F7SID
+      - 1F254826008346CE_E2A4SID
       Referrer-Policy:
       - origin-when-cross-origin
       Server:
       - Finatra
       Set-Cookie:
-      - ncbi_sid=AA0A6DBB5D042576_18F7SID; domain=.nih.gov; path=/; expires=Sun, 15
-        Sep 2024 22:58:39 GMT
+      - ncbi_sid=1F254826008346CE_E2A4SID; domain=.nih.gov; path=/; expires=Sat, 03
+        Jan 2026 04:01:40 GMT
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -54,7 +58,7 @@ interactions:
       X-RateLimit-Limit:
       - '3'
       X-RateLimit-Remaining:
-      - '2'
+      - '0'
       X-UA-Compatible:
       - IE=Edge
       X-XSS-Protection:
@@ -74,14 +78,18 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.3
     method: GET
     uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NM_145171.3&rettype=fasta&seq_start=534&seq_stop=534&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAALLz8403NDE1NDfUM7YyNTbRBWIFj/zcfIXixILM1LxihfScyuT8gqL8ktTMPIWM
-        /KLc/LxUheLSpNK8zBKFpNSSRAVTBQ33AA8nU00dhdwgP0cuRy4uAAAAAP//AwCOq2a2VwAAAA==
+      string: '>NM_145171.3:534-534 Homo sapiens glycoprotein hormone subunit beta
+        5 (GPHB5), mRNA
+
+        A
+
+
+        '
     headers:
       Access-Control-Allow-Origin:
       - '*'
@@ -98,20 +106,20 @@ interactions:
       Content-Type:
       - text/plain
       Date:
-      - Fri, 15 Sep 2023 22:58:41 GMT
+      - Fri, 03 Jan 2025 04:01:40 GMT
       Keep-Alive:
       - timeout=4, max=40
       NCBI-PHID:
-      - 322C409D773A9D4500005ABA166723B1.1.1.m_5
+      - 939BDCA5806832D5000032B25EF685C6.1.1.m_5
       NCBI-SID:
-      - 8D633E2FC000A6F1_5AE0SID
+      - 28AD7F0CDD8CBAFB_3778SID
       Referrer-Policy:
       - origin-when-cross-origin
       Server:
       - Finatra
       Set-Cookie:
-      - ncbi_sid=8D633E2FC000A6F1_5AE0SID; domain=.nih.gov; path=/; expires=Sun, 15
-        Sep 2024 22:58:41 GMT
+      - ncbi_sid=28AD7F0CDD8CBAFB_3778SID; domain=.nih.gov; path=/; expires=Sat, 03
+        Jan 2026 04:01:41 GMT
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -119,7 +127,7 @@ interactions:
       X-RateLimit-Limit:
       - '3'
       X-RateLimit-Remaining:
-      - '2'
+      - '1'
       X-UA-Compatible:
       - IE=Edge
       X-XSS-Protection:
@@ -139,15 +147,18 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.3
     method: GET
     uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NM_145171.3&rettype=fasta&seq_start=534&seq_stop=543&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAALLz8403NDE1NDfUM7YyNTbRNTUxVvDIz81XKE4syEzNK1ZIz6lMzi8oyi9JzcxT
-        yMgvys3PS1UoLk0qzcssUUhKLUlUMFXQcA/wcDLV1FHIDfJz5HJ0dnYEQiDJxQUAAAD//wMAz67Y
-        GWAAAAA=
+      string: '>NM_145171.3:534-543 Homo sapiens glycoprotein hormone subunit beta
+        5 (GPHB5), mRNA
+
+        ACCACACCCA
+
+
+        '
     headers:
       Access-Control-Allow-Origin:
       - '*'
@@ -164,20 +175,20 @@ interactions:
       Content-Type:
       - text/plain
       Date:
-      - Fri, 15 Sep 2023 22:58:44 GMT
+      - Fri, 03 Jan 2025 04:01:42 GMT
       Keep-Alive:
       - timeout=4, max=40
       NCBI-PHID:
-      - D0BD088E3BFC1F95000015D5629C9757.1.1.m_5
+      - D0BD4D15A8D0CB65000024CA47E8B2BA.1.1.m_5
       NCBI-SID:
-      - 74BF1B8640E2EEBC_3EB6SID
+      - 353A42B08C601AEC_CA88SID
       Referrer-Policy:
       - origin-when-cross-origin
       Server:
       - Finatra
       Set-Cookie:
-      - ncbi_sid=74BF1B8640E2EEBC_3EB6SID; domain=.nih.gov; path=/; expires=Sun, 15
-        Sep 2024 22:58:44 GMT
+      - ncbi_sid=353A42B08C601AEC_CA88SID; domain=.nih.gov; path=/; expires=Sat, 03
+        Jan 2026 04:01:42 GMT
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -185,7 +196,7 @@ interactions:
       X-RateLimit-Limit:
       - '3'
       X-RateLimit-Remaining:
-      - '2'
+      - '1'
       X-UA-Compatible:
       - IE=Edge
       X-XSS-Protection:

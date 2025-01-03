@@ -9,14 +9,18 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.3
     method: GET
     uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000014.8&rettype=fasta&seq_start=63779543&seq_stop=63779543&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAALLzc443AAJDEz0LKzNjc3NLUxNjXRhDwSM/N1+hOLEgMzWvWCE5owjILc7PTVUw
-        NNFRcA9yzjA21yswNFYIKMrMTSyqVHAsLk7NTcqp5HLm4gIAAAD//wMAMmN+FVoAAAA=
+      string: '>NC_000014.8:63779543-63779543 Homo sapiens chromosome 14, GRCh37.p13
+        Primary Assembly
+
+        C
+
+
+        '
     headers:
       Access-Control-Allow-Origin:
       - '*'
@@ -33,20 +37,20 @@ interactions:
       Content-Type:
       - text/plain
       Date:
-      - Fri, 15 Sep 2023 22:58:46 GMT
+      - Fri, 03 Jan 2025 04:01:42 GMT
       Keep-Alive:
       - timeout=4, max=40
       NCBI-PHID:
-      - D0BD088E3BFC1F9500003ED569FC8BC9.1.1.m_5
+      - 322C0114E2C07945000047CE2EC3D243.1.1.m_5
       NCBI-SID:
-      - D4BF080FC12F5E39_830DSID
+      - 140304B3B7D51BAF_F128SID
       Referrer-Policy:
       - origin-when-cross-origin
       Server:
       - Finatra
       Set-Cookie:
-      - ncbi_sid=D4BF080FC12F5E39_830DSID; domain=.nih.gov; path=/; expires=Sun, 15
-        Sep 2024 22:58:46 GMT
+      - ncbi_sid=140304B3B7D51BAF_F128SID; domain=.nih.gov; path=/; expires=Sat, 03
+        Jan 2026 04:01:42 GMT
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -54,7 +58,7 @@ interactions:
       X-RateLimit-Limit:
       - '3'
       X-RateLimit-Remaining:
-      - '2'
+      - '1'
       X-UA-Compatible:
       - IE=Edge
       X-XSS-Protection:
