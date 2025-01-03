@@ -10,6 +10,7 @@ from hgvs.extras.babelfish import Babelfish
 
 @pytest.fixture(scope="function")
 def vcr_config(request):
+    """See https://pytest-vcr.readthedocs.io/en/latest/configuration/"""
     test_file_path = Path(request.node.fspath)
     return {
         "cassette_library_dir": str(test_file_path.with_name("cassettes") / test_file_path.stem),
