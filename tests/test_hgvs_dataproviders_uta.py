@@ -46,7 +46,7 @@ class UTA_Base:
         gene_info = self.hdp.get_gene_info("VHL")
         self.assertEqual("VHL", gene_info["hgnc"])
         self.assertEqual("3p25.3", gene_info["maploc"])
-        self.assertEqual(6, len(gene_info))
+        self.assertEqual(10, len(gene_info))
 
     def test_get_tx_exons(self):
         tx_exons = self.hdp.get_tx_exons("NM_000551.3", "NC_000003.11", "splign")

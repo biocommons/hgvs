@@ -51,7 +51,7 @@ ${VE_DIR}:
 .PHONY: develop
 develop:
 	uv pip install -e ".[dev]"
-	pre-commit install
+	# pre-commit install
 
 #=> install: install package
 .PHONY: install
@@ -85,17 +85,17 @@ test-%:
 
 #=> test-learn: build test data cache
 #=> test-relearn: destroy and rebuild test data cache
+# export HGVS_SEQREPO_URL=http://localhost:5000/seqrepo
 test-learn:
-	# The appropriate environment should be set up using misc/docker-compose.yml
-	# export UTA_DB_URL=postgresql://anonymous@localhost:5432/uta/uta_20180821
-	# export HGVS_SEQREPO_URL=http://localhost:5000/seqrepo
+	UTA_DB_URL=postgresql://anonymous@uta.biocommons.org:5432/uta_dev/uta_20240523b \
+	HGVS_SEQREPO_DIR=/usr/local/share/seqrepo/2024-05-23 \
 	HGVS_CACHE_MODE=learn \
-	pytest -s
+	pytest -sx
 test-relearn:
 	rm -f tests/data/cache-py3.hdp
 	make test-learn
 
-#=> tox -- run all tox tests
+#=> tox: run all tox tests
 tox:
 	tox
 
@@ -113,7 +113,7 @@ reformat:
 	ruff check --fix
 	ruff format
 
-#=> docs -- make sphinx docs
+#=> docs: make sphinx docs
 .PHONY: docs
 docs: develop
 	# RTD makes json. Build here to ensure that it works.
@@ -157,16 +157,16 @@ distclean: cleanest
 ############################################################################
 #= HGVS specific
 
-#=> code-check -- check code with flake8
+#=> code-check: check code with flake8
 code-check:
 	flake8 hgvs test --output-file=$@.txt
 
-#=> docs-aux -- make generated docs for sphinx
+#=> docs-aux: make generated docs for sphinx
 docs-aux:
 	make -C misc/railroad docs-install
 	make -C examples docs-install
 
-#=> hgvs.svg -- import graph; requires snakefood
+#=> hgvs.svg: import graph; requires snakefood
 hgvs.sfood:
 	sfood hgvs >"$@.tmp"
 	/bin/mv "$@.tmp" "$@"
