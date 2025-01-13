@@ -8,7 +8,6 @@ import pprint
 
 import hgvs.dataproviders.uta
 import hgvs.parser
-import hgvs.validator
 import hgvs.variantmapper
 
 logging.basicConfig(level=logging.DEBUG)

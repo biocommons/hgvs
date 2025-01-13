@@ -11,7 +11,6 @@ location).
 import abc
 
 import attr
-import six
 from bioutils.sequences import aa1_to_aa3, aa_to_aa1
 
 import hgvs
@@ -81,7 +80,7 @@ class NARefAlt(Edit):
         """
         return (
             self.ref
-            if (isinstance(self.ref, six.string_types) and self.ref and self.ref[0] in "ACGTUN")
+            if (isinstance(self.ref, str) and self.ref and self.ref[0] in "ACGTUN")
             else None
         )
 
@@ -429,7 +428,7 @@ class Dup(Edit):
         """
         return (
             self.ref
-            if (isinstance(self.ref, six.string_types) and self.ref and self.ref[0] in "ACGTUN")
+            if (isinstance(self.ref, str) and self.ref and self.ref[0] in "ACGTUN")
             else None
         )
 
@@ -557,7 +556,7 @@ class Inv(Edit):
     def ref_s(self):
         return (
             self.ref
-            if (isinstance(self.ref, six.string_types) and self.ref and self.ref[0] in "ACGTUN")
+            if (isinstance(self.ref, str) and self.ref and self.ref[0] in "ACGTUN")
             else None
         )
 

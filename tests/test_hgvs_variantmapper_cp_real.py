@@ -1,22 +1,16 @@
 # -*- coding: utf-8 -*-
+import csv
 import os
 import re
 import unittest
-from sys import version_info
-
-# Real data - cp tests
-
-
-if version_info < (3,):
-    import unicodecsv as csv
-else:
-    import csv
-
-from support import CACHE
 
 import hgvs.dataproviders.uta
 import hgvs.parser
 import hgvs.variantmapper
+from support import CACHE
+
+
+# Real data - cp tests
 
 
 def gcp_file_reader(fn):

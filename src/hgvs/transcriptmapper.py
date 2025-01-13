@@ -7,7 +7,6 @@ genomic (g), non-coding (n), cds (c), and protein (p) coordinates.
 import logging
 
 from bioutils.coordinates import strand_int_to_pm
-from six.moves import range
 
 import hgvs.intervalmapper
 import hgvs.location

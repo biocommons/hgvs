@@ -4,7 +4,7 @@ Using hgvs
 
 This notebook demonstrates major features of the hgvs package.
 
-.. code:: ipython2
+.. code:: ipython3
 
     import hgvs
     hgvs.__version__
@@ -24,7 +24,7 @@ Variant I/O
 Initialize the parser
 ~~~~~~~~~~~~~~~~~~~~~
 
-.. code:: ipython2
+.. code:: ipython3
 
     # You only need to do this once per process
     import hgvs.parser
@@ -33,11 +33,11 @@ Initialize the parser
 Parse a simple variant
 ~~~~~~~~~~~~~~~~~~~~~~
 
-.. code:: ipython2
+.. code:: ipython3
 
     v = hp.parse_hgvs_variant("NC_000007.13:g.21726874G>A")
 
-.. code:: ipython2
+.. code:: ipython3
 
     v
 
@@ -50,7 +50,7 @@ Parse a simple variant
 
 
 
-.. code:: ipython2
+.. code:: ipython3
 
     v.ac, v.type
 
@@ -63,7 +63,7 @@ Parse a simple variant
 
 
 
-.. code:: ipython2
+.. code:: ipython3
 
     v.posedit
 
@@ -76,7 +76,7 @@ Parse a simple variant
 
 
 
-.. code:: ipython2
+.. code:: ipython3
 
     v.posedit.pos
 
@@ -89,7 +89,7 @@ Parse a simple variant
 
 
 
-.. code:: ipython2
+.. code:: ipython3
 
     v.posedit.pos.start
 
@@ -105,11 +105,11 @@ Parse a simple variant
 Parsing complex variants
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code:: ipython2
+.. code:: ipython3
 
     v = hp.parse_hgvs_variant("NM_003777.3:c.13552_*36del57")
 
-.. code:: ipython2
+.. code:: ipython3
 
     v.posedit.pos.start, v.posedit.pos.end
 
@@ -123,7 +123,7 @@ Parsing complex variants
 
 
 
-.. code:: ipython2
+.. code:: ipython3
 
     v.posedit.edit
 
@@ -142,7 +142,7 @@ Formatting variants
 All objects may be formatted simply by “stringifying” or printing them
 using ``str``, ``print()``, or ``"".format()``.
 
-.. code:: ipython2
+.. code:: ipython3
 
     str(v)
 
@@ -155,7 +155,7 @@ using ``str``, ``print()``, or ``"".format()``.
 
 
 
-.. code:: ipython2
+.. code:: ipython3
 
     print(v)
 
@@ -165,7 +165,7 @@ using ``str``, ``print()``, or ``"".format()``.
     NM_003777.3:c.13552_*36del57
 
 
-.. code:: ipython2
+.. code:: ipython3
 
     "{v} spans the CDS end".format(v=v)
 
@@ -189,7 +189,7 @@ raw sequence. These are provided by a ``hgvs.dataprovider`` instance.
 The only dataprovider provided with hgvs uses UTA. You may write your
 own by subsclassing hgvs.dataproviders.interface.
 
-.. code:: ipython2
+.. code:: ipython3
 
     import hgvs.dataproviders.uta
     hdp = hgvs.dataproviders.uta.connect()
@@ -206,7 +206,7 @@ AssemblyMapper builds on VariantMapper and handles identifying
 appropriate sequences. It is configured for a particular genome
 assembly.
 
-.. code:: ipython2
+.. code:: ipython3
 
     import hgvs.variantmapper
     #vm = variantmapper = hgvs.variantmapper.VariantMapper(hdp)
@@ -220,13 +220,13 @@ This is the easiest case because there is typically only one alignment
 between a transcript and the genome. (Exceptions exist for
 pseudoautosomal regions.)
 
-.. code:: ipython2
+.. code:: ipython3
 
     var_c = hp.parse_hgvs_variant("NM_015120.4:c.35G>C")
     var_g = am37.c_to_g(var_c)
     var_g
 
-.. code:: ipython2
+.. code:: ipython3
 
     am38.c_to_g(var_c)
 
@@ -236,7 +236,7 @@ g_to_c
 In order to project a genomic variant onto a transcript, you must tell
 the AssemblyMapper which transcript to use.
 
-.. code:: ipython2
+.. code:: ipython3
 
     am37.relevant_transcripts(var_g)
 
@@ -249,7 +249,7 @@ the AssemblyMapper which transcript to use.
 
 
 
-.. code:: ipython2
+.. code:: ipython3
 
     am37.g_to_c(var_g, "NM_015120.4")
 
@@ -265,7 +265,7 @@ the AssemblyMapper which transcript to use.
 c_to_p
 ~~~~~~
 
-.. code:: ipython2
+.. code:: ipython3
 
     var_p = am37.c_to_p(var_c)
     str(var_p)
@@ -279,7 +279,7 @@ c_to_p
 
 
 
-.. code:: ipython2
+.. code:: ipython3
 
     var_p.posedit.uncertain = False
     str(var_p)
@@ -316,7 +316,7 @@ CDS positions 35 and 39.
     NC_000002.11 g   73613021 > CCGGGCGAGCT---GGAGGAGGAG  > 73613041
     NC_000002.11 g   73613021 < GGCCCGCTCGA---CCTCCTCCTC  < 73613041                                                  
 
-.. code:: ipython2
+.. code:: ipython3
 
     str(am37.c_to_g(hp.parse_hgvs_variant("NM_015120.4:c.35G>C")))
 
@@ -329,7 +329,7 @@ CDS positions 35 and 39.
 
 
 
-.. code:: ipython2
+.. code:: ipython3
 
     str(am37.c_to_g(hp.parse_hgvs_variant("NM_015120.4:c.39G>C")))
 
@@ -359,12 +359,12 @@ should be shifted 3’ and is better written as dup, as shown below:
     NM_001166478.1 n         41 < TCTTTCTTTTTATTTTGTTTC  <       21 NM_001166478.1:n.35dupT
     NM_001166478.1 c         41 <                        <       21 NM_001166478.1:c.30_31insT
 
-.. code:: ipython2
+.. code:: ipython3
 
     import hgvs.normalizer
     hn = hgvs.normalizer.Normalizer(hdp)
 
-.. code:: ipython2
+.. code:: ipython3
 
     v = hp.parse_hgvs_variant("NM_001166478.1:c.30_31insT")
     str(hn.normalize(v))
@@ -395,7 +395,7 @@ This example is based on https://github.com/biocommons/hgvs/issues/382/.
                                             NM_001029882.3:n.832_833delAT
                                             NC_000001.11:g.27552114_27552115delAT
 
-.. code:: ipython2
+.. code:: ipython3
 
     am38.c_to_g(hp.parse_hgvs_variant("NM_001029882.3:c.1A>G"))
 
@@ -408,7 +408,7 @@ This example is based on https://github.com/biocommons/hgvs/issues/382/.
 
 
 
-.. code:: ipython2
+.. code:: ipython3
 
     am38.c_to_g(hp.parse_hgvs_variant("NM_001029882.3:c.2T>G"))
 
@@ -421,7 +421,7 @@ This example is based on https://github.com/biocommons/hgvs/issues/382/.
 
 
 
-.. code:: ipython2
+.. code:: ipython3
 
     am38.c_to_g(hp.parse_hgvs_variant("NM_001029882.3:c.1_2del"))
 
@@ -439,7 +439,7 @@ del at c.1_2. Good!
 
 Now, notice what happens with c.1_3del, c.1_4del, and c.1_5del:
 
-.. code:: ipython2
+.. code:: ipython3
 
     am38.c_to_g(hp.parse_hgvs_variant("NM_001029882.3:c.1_3del"))
 
@@ -452,7 +452,7 @@ Now, notice what happens with c.1_3del, c.1_4del, and c.1_5del:
 
 
 
-.. code:: ipython2
+.. code:: ipython3
 
     am38.c_to_g(hp.parse_hgvs_variant("NM_001029882.3:c.1_4del"))
 
@@ -465,7 +465,7 @@ Now, notice what happens with c.1_3del, c.1_4del, and c.1_5del:
 
 
 
-.. code:: ipython2
+.. code:: ipython3
 
     am38.c_to_g(hp.parse_hgvs_variant("NM_001029882.3:c.1_5del"))
 
@@ -511,12 +511,12 @@ nucleotide in the variant matches that implied by the reference sequence
 and position. Validation returns ``True`` if successful, and raises an
 exception otherwise.
 
-.. code:: ipython2
+.. code:: ipython3
 
     import hgvs.validator
     hv = hgvs.validator.Validator(hdp)
 
-.. code:: ipython2
+.. code:: ipython3
 
     hv.validate(hp.parse_hgvs_variant("NM_001166478.1:c.30_31insT"))
 
@@ -529,7 +529,7 @@ exception otherwise.
 
 
 
-.. code:: ipython2
+.. code:: ipython3
 
     from hgvs.exceptions import HGVSError
     

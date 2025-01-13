@@ -1,7 +1,5 @@
 import itertools
 
-from six.moves import map
-
 import hgvs.dataproviders.uta
 import hgvs.edit
 import hgvs.parser
