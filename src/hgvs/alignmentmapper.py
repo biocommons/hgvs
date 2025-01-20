@@ -32,7 +32,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from typing import Optional
 
 from bioutils.coordinates import strand_int_to_pm
-from six.moves import range
 
 import hgvs.location
 from hgvs import global_config

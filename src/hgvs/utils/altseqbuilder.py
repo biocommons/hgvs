@@ -9,7 +9,6 @@ Used in hgvsc to hgvsp conversion.
 import logging
 import math
 
-import six
 from bioutils.sequences import reverse_complement, translate_cds
 
 from ..edit import Dup, Inv, NARefAlt, Repeat
@@ -54,7 +53,7 @@ class AltTranscriptData:
         """
 
         if len(seq) > 0:
-            if isinstance(seq, six.string_types):
+            if isinstance(seq, str):
                 seq = list(seq)
             seq_cds = seq[cds_start - 1 :]
             seq_cds = "".join(seq_cds)

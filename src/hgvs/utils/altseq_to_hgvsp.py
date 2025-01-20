@@ -5,8 +5,6 @@ Used in hgvsc to hgvsp conversion.
 
 """
 
-from six.moves import range
-
 import hgvs
 
 from ..edit import AAExt, AAFs, AARefAlt, AASub, Dup

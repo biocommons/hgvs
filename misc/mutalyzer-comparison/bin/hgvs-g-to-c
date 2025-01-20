@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import absolute_import, division, print_function, unicode_literals
 """compare hgvs and mutalyzer for c. and g. variants provided on the command line
 
 The comparison has two basic cases:
