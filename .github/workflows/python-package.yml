@@ -69,6 +69,7 @@ jobs:
 
       - name: Test with pytest
         run: |
+          pip install pytest
           make test
 
   deploy:
