@@ -26,7 +26,6 @@ NM_000399.3  c      902 <                                                    <  
 import re
 
 from bioutils.sequences import complement
-from six.moves import range
 
 from ..location import Interval, SimplePosition
 

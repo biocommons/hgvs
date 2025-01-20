@@ -43,7 +43,6 @@ dependencies=[
     "parsley",
     "pre-commit ~= 3.4",
     "psycopg2",
-    "six",
 ]
 
 [project.optional-dependencies]

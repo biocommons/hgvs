@@ -11,8 +11,6 @@ TNFRSF1A:n.426T>C	1	NR_144351.1:n.426T>C
 
 """
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import copy
 import logging
 import sys

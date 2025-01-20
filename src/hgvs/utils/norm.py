@@ -7,9 +7,6 @@ https://github.com/bioinformed/vgraph
 
 from collections import namedtuple
 
-from six.moves import range
-
-
 def trim_common_suffixes(strs, min_len=0):
     """
     trim common suffixes

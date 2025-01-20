@@ -10,7 +10,6 @@ from bioutils.sequences import reverse_complement
 import hgvs
 import hgvs.validator
 import hgvs.variantmapper
-from hgvs.dataproviders.ncbi import connect
 from hgvs.exceptions import (
     HGVSDataNotAvailableError,
     HGVSInvalidVariantError,
