@@ -43,7 +43,10 @@ class SimplePosition:
     def __repr__(self):
         return "{0}({1})".format(
             self.__class__.__name__,
-            ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
+            ", ".join(
+                (a.name + "=" + str(getattr(self, a.name)))
+                for a in self.__attrs_attrs__
+            ),
         )
 
     @property
@@ -62,22 +65,31 @@ class SimplePosition:
         return (ValidationLevel.VALID, None)
 
     def __sub__(lhs, rhs):
-        assert type(lhs) == type(rhs), "Cannot substract coordinates of different representations"
+        assert type(lhs) is type(rhs), (
+            "Cannot substract coordinates of different representations"
+        )
         return lhs.base - rhs.base
 
     def __eq__(lhs, rhs):
-        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
-        if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
-        return lhs.base == rhs.base
+        assert type(lhs) is type(rhs), (
+            "Cannot compare coordinates of different representations"
+        )
+
+        return lhs.base == rhs.base and lhs.uncertain == rhs.uncertain
 
     def __lt__(lhs, rhs):
-        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+        assert type(lhs) is type(rhs), (
+            "Cannot compare coordinates of different representations"
+        )
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            raise HGVSUnsupportedOperationError(
+                "Cannot compare coordinates of uncertain positions"
+            )
 
         if lhs.base is None and rhs.base is None:
-            raise HGVSUnsupportedOperationError("Cannot compare two positions without bases")
+            raise HGVSUnsupportedOperationError(
+                "Cannot compare two positions without bases"
+            )
 
         # imprecise positions can be on both sides of an interval
         # This is weird, but because an unknown breakpoint can be expressed on both sides
@@ -154,7 +166,11 @@ class BaseOffsetPosition:
             else str(self.base)
         )
         offset_str = (
-            "+?" if self.offset is None else "" if self.offset == 0 else "%+d" % self.offset
+            "+?"
+            if self.offset is None
+            else ""
+            if self.offset == 0
+            else "%+d" % self.offset
         )
         pos = base_str + offset_str
         return pos
@@ -169,7 +185,10 @@ class BaseOffsetPosition:
     def __repr__(self):
         return "{0}({1})".format(
             self.__class__.__name__,
-            ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
+            ", ".join(
+                (a.name + "=" + str(getattr(self, a.name)))
+                for a in self.__attrs_attrs__
+            ),
         )
 
     def _set_uncertain(self):
@@ -188,7 +207,9 @@ class BaseOffsetPosition:
         return self.offset is None or self.offset != 0
 
     def __sub__(lhs, rhs):
-        assert type(lhs) == type(rhs), "Cannot substract coordinates of different representations"
+        assert type(lhs) is type(rhs), (
+            "Cannot substract coordinates of different representations"
+        )
         if lhs.datum != rhs.datum:
             raise HGVSUnsupportedOperationError(
                 "Interval length measured from different datums is ill-defined"
@@ -203,17 +224,25 @@ class BaseOffsetPosition:
         return lhs.base - rhs.base - straddles_zero
 
     def __eq__(lhs, rhs):
-        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+        assert type(lhs) is type(rhs), (
+            "Cannot compare coordinates of different representations"
+        )
 
-        return (lhs.datum == rhs.datum and
-                lhs.base == rhs.base and
-                lhs.offset == rhs.offset and
-                lhs.uncertain == rhs.uncertain)
+        return (
+            lhs.datum == rhs.datum
+            and lhs.base == rhs.base
+            and lhs.offset == rhs.offset
+            and lhs.uncertain == rhs.uncertain
+        )
 
     def __lt__(lhs, rhs):
-        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+        assert type(lhs) is type(rhs), (
+            "Cannot compare coordinates of different representations"
+        )
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            raise HGVSUnsupportedOperationError(
+                "Cannot compare coordinates of uncertain positions"
+            )
         if lhs.datum == rhs.datum:
             if lhs.base == rhs.base:
                 return lhs.offset < rhs.offset
@@ -273,7 +302,10 @@ class AAPosition:
     def __repr__(self):
         return "{0}({1})".format(
             self.__class__.__name__,
-            ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
+            ", ".join(
+                (a.name + "=" + str(getattr(self, a.name)))
+                for a in self.__attrs_attrs__
+            ),
         )
 
     @property
@@ -292,37 +324,59 @@ class AAPosition:
         return self.uncertain or self.base is None or self.aa is None
 
     def __sub__(lhs, rhs):
-        assert type(lhs) == type(rhs), "Cannot substract coordinates of different representations"
+        assert type(lhs) is type(rhs), (
+            "Cannot substract coordinates of different representations"
+        )
         return lhs.base - rhs.base
 
     def __eq__(lhs, rhs):
-        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+        assert type(lhs) is type(rhs), (
+            "Cannot compare coordinates of different representations"
+        )
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            raise HGVSUnsupportedOperationError(
+                "Cannot compare coordinates of uncertain positions"
+            )
         return lhs.base == rhs.base and lhs.aa == rhs.aa
 
     def __lt__(lhs, rhs):
-        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+        assert type(lhs) is type(rhs), (
+            "Cannot compare coordinates of different representations"
+        )
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            raise HGVSUnsupportedOperationError(
+                "Cannot compare coordinates of uncertain positions"
+            )
         return lhs.base < rhs.base
 
     def __gt__(lhs, rhs):
-        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+        assert type(lhs) is type(rhs), (
+            "Cannot compare coordinates of different representations"
+        )
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            raise HGVSUnsupportedOperationError(
+                "Cannot compare coordinates of uncertain positions"
+            )
         return lhs.base > rhs.base
 
     def __le__(lhs, rhs):
-        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+        assert type(lhs) is type(rhs), (
+            "Cannot compare coordinates of different representations"
+        )
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            raise HGVSUnsupportedOperationError(
+                "Cannot compare coordinates of uncertain positions"
+            )
         return lhs.base <= rhs.base
 
     def __ge__(lhs, rhs):
-        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+        assert type(lhs) is type(rhs), (
+            "Cannot compare coordinates of different representations"
+        )
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            raise HGVSUnsupportedOperationError(
+                "Cannot compare coordinates of uncertain positions"
+            )
         return lhs.base >= rhs.base
 
 
@@ -354,7 +408,10 @@ class Interval:
             if self.start <= self.end:
                 return (ValidationLevel.VALID, None)
             else:
-                return (ValidationLevel.ERROR, "base start position must be <= end position")
+                return (
+                    ValidationLevel.ERROR,
+                    "base start position must be <= end position",
+                )
         except HGVSUnsupportedOperationError as err:
             return (ValidationLevel.WARNING, str(err))
 
@@ -373,7 +430,10 @@ class Interval:
     def __repr__(self):
         return "{0}({1})".format(
             self.__class__.__name__,
-            ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
+            ", ".join(
+                (a.name + "=" + str(getattr(self, a.name)))
+                for a in self.__attrs_attrs__
+            ),
         )
 
     def _set_uncertain(self):
@@ -406,12 +466,12 @@ class BaseOffsetInterval(Interval):
 
         s = self.start._format_pos()
         if self.start.is_uncertain:
-            s_str = f'(?_{s})'
+            s_str = f"(?_{s})"
         else:
             s_str = s
         e = self.end._format_pos()
         if self.end.is_uncertain:
-            e_str = f'({e}_?)'
+            e_str = f"({e}_?)"
         else:
             e_str = e
         iv = s_str + "_" + e_str

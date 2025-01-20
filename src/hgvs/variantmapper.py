@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Projects variants between sequences using AlignmentMapper.
-
-"""
+"""Projects variants between sequences using AlignmentMapper."""
 
 import copy
 import logging
@@ -97,7 +95,9 @@ class VariantMapper:
 
     # ############################################################################
     # g⟷t
-    def g_to_t(self, var_g, tx_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
+    def g_to_t(
+        self, var_g, tx_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method
+    ):
         if not (var_g.type == "g"):
             raise HGVSInvalidVariantError("Expected a g. variant; got " + str(var_g))
         if self._validator:
@@ -116,9 +116,13 @@ class VariantMapper:
             )
         return var_out
 
-    def t_to_g(self, var_t, alt_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
+    def t_to_g(
+        self, var_t, alt_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method
+    ):
         if var_t.type not in "cn":
-            raise HGVSInvalidVariantError("Expected a c. or n. variant; got " + str(var_t))
+            raise HGVSInvalidVariantError(
+                "Expected a c. or n. variant; got " + str(var_t)
+            )
         if self._validator:
             self._validator.validate(var_t)
         var_t.fill_ref(self.hdp)
@@ -134,7 +138,9 @@ class VariantMapper:
 
     # ############################################################################
     # g⟷n
-    def g_to_n(self, var_g, tx_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
+    def g_to_n(
+        self, var_g, tx_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method
+    ):
         """Given a parsed g. variant, return a n. variant on the specified
         transcript using the specified alignment method (default is
         "splign" from NCBI).
@@ -160,7 +166,9 @@ class VariantMapper:
             and not hgvs.global_config.mapping.strict_bounds
             and not mapper.g_interval_is_inbounds(var_g.posedit.pos)
         ):
-            _logger.info("Renormalizing out-of-bounds minus strand variant on genomic sequence")
+            _logger.info(
+                "Renormalizing out-of-bounds minus strand variant on genomic sequence"
+            )
             var_g = self.left_normalizer.normalize(var_g)
 
         var_g.fill_ref(self.hdp)
@@ -196,7 +204,9 @@ class VariantMapper:
             self._update_gene_symbol(var_n, var_g.gene)
         return var_n
 
-    def n_to_g(self, var_n, alt_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
+    def n_to_g(
+        self, var_n, alt_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method
+    ):
         """Given a parsed n. variant, return a g. variant on the specified
         transcript using the specified alignment method (default is
         "splign" from NCBI).
@@ -241,7 +251,9 @@ class VariantMapper:
 
     # ############################################################################
     # g⟷c
-    def g_to_c(self, var_g, tx_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
+    def g_to_c(
+        self, var_g, tx_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method
+    ):
         """Given a parsed g. variant, return a c. variant on the specified
         transcript using the specified alignment method (default is
         "splign" from NCBI).
@@ -290,7 +302,9 @@ class VariantMapper:
             self._update_gene_symbol(var_c, var_g.gene)
         return var_c
 
-    def c_to_g(self, var_c, alt_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
+    def c_to_g(
+        self, var_c, alt_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method
+    ):
         """Given a parsed c. variant, return a g. variant on the specified
         transcript using the specified alignment method (default is
         "splign" from NCBI).
@@ -429,7 +443,9 @@ class VariantMapper:
         """
 
         if not (var_c.type == "c"):
-            raise HGVSInvalidVariantError("Expected a cDNA (c.) variant; got " + str(var_c))
+            raise HGVSInvalidVariantError(
+                "Expected a cDNA (c.) variant; got " + str(var_c)
+            )
         if self._validator:
             self._validator.validate(var_c)
         reference_data = RefTranscriptData(self.hdp, var_c.ac, pro_ac)
@@ -460,17 +476,25 @@ class VariantMapper:
         """fetch reference sequence for variant and update (in-place) if necessary"""
 
         if var.type not in "cgmnr":
-            raise HGVSUnsupportedOperationError("Can only update references for type c, g, m, n, r")
+            raise HGVSUnsupportedOperationError(
+                "Can only update references for type c, g, m, n, r"
+            )
 
         if var.posedit.edit.type in ("ins", "con"):
             # these types have no reference sequence (zero-width), so return as-is
             return var
 
         pos = var.posedit.pos
-        if (isinstance(pos.start, hgvs.location.BaseOffsetPosition) and pos.start.offset != 0) or (
-            isinstance(pos.end, hgvs.location.BaseOffsetPosition) and pos.end.offset != 0
+        if (
+            isinstance(pos.start, hgvs.location.BaseOffsetPosition)
+            and pos.start.offset != 0
+        ) or (
+            isinstance(pos.end, hgvs.location.BaseOffsetPosition)
+            and pos.end.offset != 0
         ):
-            _logger.info("Can't update reference sequence for intronic variant {}".format(var))
+            _logger.info(
+                "Can't update reference sequence for intronic variant {}".format(var)
+            )
             return var
 
         # For c. variants, we need coords on underlying sequences
@@ -483,15 +507,22 @@ class VariantMapper:
             pos = var.posedit.pos
 
         if pos.start.uncertain:
-            seq_start = pos.start.end.base - 1
+            # pos can be either a BaseOffsetPosition or an Interval
+            if isinstance(pos.start, Interval):
+                seq_start = pos.start.end.base - 1
+            else:
+                seq_start = pos.start.base - 1
         else:
             if isinstance(pos.start, Interval):
-                seq_start = pos.start.start.base -1
+                seq_start = pos.start.start.base - 1
             else:
                 seq_start = pos.start.base - 1
 
         if pos.end.uncertain:
-            seq_end = pos.end.start.base
+            if isinstance(pos.end, Interval):
+                seq_end = pos.end.start.base
+            else:
+                seq_end = pos.end.base
         else:
             if isinstance(pos.end, Interval):
                 seq_end = pos.end.end.base
@@ -514,7 +545,9 @@ class VariantMapper:
         edit = var.posedit.edit
         if edit.ref != seq:
             _logger.debug(
-                "Replaced reference sequence in {var} with {seq}".format(var=var, seq=seq)
+                "Replaced reference sequence in {var} with {seq}".format(
+                    var=var, seq=seq
+                )
             )
             edit.ref = seq
 
@@ -566,7 +599,9 @@ class VariantMapper:
                     ref = reverse_complement(edit_in.ref)
                 edit_out = hgvs.edit.Inv(ref=ref)
         else:
-            raise NotImplementedError("Only NARefAlt/Dup/Inv types are currently implemented")
+            raise NotImplementedError(
+                "Only NARefAlt/Dup/Inv types are currently implemented"
+            )
         return edit_out
 
     def _get_altered_sequence(self, strand, interval, var):
@@ -588,12 +623,16 @@ class VariantMapper:
         elif edit.type == "dup":
             seq.insert(pos_end, "".join(seq[pos_start:pos_end]))
         elif edit.type == "inv":
-            seq[pos_start:pos_end] = list(reverse_complement("".join(seq[pos_start:pos_end])))
+            seq[pos_start:pos_end] = list(
+                reverse_complement("".join(seq[pos_start:pos_end]))
+            )
         elif edit.type == "identity":
             pass
         else:
             raise HGVSUnsupportedOperationError(
-                "Getting altered sequence for {type} is unsupported".format(type=edit.type)
+                "Getting altered sequence for {type} is unsupported".format(
+                    type=edit.type
+                )
             )
 
         seq = "".join(seq)
