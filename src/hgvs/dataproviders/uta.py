@@ -14,10 +14,9 @@ import weakref
 import psycopg2
 import psycopg2.extras
 import psycopg2.pool
-import six
 from bioutils.assemblies import make_ac_name_map
 from bioutils.digests import seq_md5
-from six.moves.urllib import parse as urlparse
+from urllib import parse as urlparse
 
 import hgvs
 
@@ -565,7 +564,7 @@ class UTA_postgresql(UTABase):
         self._ensure_schema_exists()
 
         # remap sqlite's ? placeholders to psycopg2's %s
-        self._queries = {k: v.replace("?", "%s") for k, v in six.iteritems(self._queries)}
+        self._queries = {k: v.replace("?", "%s") for k, v in self._queries.items()}
 
     def _ensure_schema_exists(self):
         # N.B. On AWS RDS, information_schema.schemata always returns zero rows
