@@ -122,7 +122,7 @@ pro_ident  = '='                             -> hgvs.edit.AARefAlt(ref='',alt=''
 
 # potentially indefinite/uncertain intervals
 c_interval = def_c_interval | '(' def_c_interval:iv ')' -> iv._set_uncertain()
-g_interval = uncertain_g_interval:iv | ('(' def_g_interval:iv ')' -> iv._set_uncertain()) | def_g_interval
+g_interval = uncertain_g_interval:iv |  def_g_interval
 m_interval = def_m_interval | '(' def_m_interval:iv ')' -> iv._set_uncertain()
 n_interval = def_n_interval | '(' def_n_interval:iv ')' -> iv._set_uncertain()
 p_interval = def_p_interval | '(' def_p_interval:iv ')' -> iv._set_uncertain()
@@ -139,7 +139,8 @@ def_n_interval = (n_pos:start '_' n_pos:end -> hgvs.location.BaseOffsetInterval(
 # indefinite ranges
 uncertain_g_interval = '(' def_g_interval:ivl_start ')' '_' '(' def_g_interval:ivl_end ')' -> hgvs.location.Interval(start=ivl_start._set_uncertain(), end=ivl_end._set_uncertain())
                         | def_g_interval:ivl_start '_' '(' def_g_interval:ivl_end ')' -> hgvs.location.Interval(start=ivl_start, end=ivl_end._set_uncertain())
-                        | '(' def_g_interval:ivl_start ')' '_' def_g_interval:ivl_end -> hgvs.location.Interval(start=ivl_start._set_uncertain(), end=ivl_end)
+                        | '(' def_g_interval:ivl_start ')' '_' def_g_interval:ivl_end -> hgvs.location.Interval(start=ivl_start._set_uncertain(), end=ivl_end) 
+                        | ('(' def_g_interval:iv ')' -> iv._set_uncertain()) 
 
 
 # positions
