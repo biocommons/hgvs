@@ -65,12 +65,13 @@ jobs:
 
       - name: Install dependencies
         run: |
+          pip install --upgrade setuptools
+          pip install pytest
+          pip install pytest-cov
           pip install -e .[dev]
 
       - name: Test with pytest
         run: |
-          pip install pytest
-          pip install pytest-cov
           make test
 
   deploy:
