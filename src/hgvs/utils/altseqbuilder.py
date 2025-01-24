@@ -198,37 +198,37 @@ class AltSeqBuilder:
         ):
             result = self.WHOLE_GENE
         elif (
-            global_config.mapping.ref_at_boundary_is_intronic
+            global_config.mapping.ins_at_boundary_is_intronic
             and self._var_c.posedit.edit.type == "dup"
             and self._var_c.posedit.pos.start.base in self._transcript_data.exon_start_positions
         ):
             result = self.INTRON
         elif (
-            global_config.mapping.ref_at_boundary_is_intronic
+            global_config.mapping.ins_at_boundary_is_intronic
             and self._var_c.posedit.edit.type == "dup"
             and self._var_c.posedit.pos.end.base in self._transcript_data.exon_end_positions
         ):
             result = self.INTRON
         elif (
-            not global_config.mapping.ref_at_boundary_is_intronic
+            not global_config.mapping.ins_at_boundary_is_intronic
             and self._var_c.posedit.edit.type == "ins"
             and self._var_c.posedit.pos.start.offset == -1 and self._var_c.posedit.pos.end.offset == 0
         ):
             result = self.EXON
         elif (
-            not global_config.mapping.ref_at_boundary_is_intronic
+            not global_config.mapping.ins_at_boundary_is_intronic
             and self._var_c.posedit.edit.type == "ins"
             and self._var_c.posedit.pos.start.offset == 0 and self._var_c.posedit.pos.end.offset == 1
         ):
             result = self.EXON
         elif (
-            not global_config.mapping.ref_at_boundary_is_intronic
+            not global_config.mapping.ins_at_boundary_is_intronic
             and self._var_c.posedit.edit.type == "dup"
             and self._var_c.posedit.pos.end.offset == -1
         ):
             result = self.EXON
         elif (
-            not global_config.mapping.ref_at_boundary_is_intronic
+            not global_config.mapping.ins_at_boundary_is_intronic
             and self._var_c.posedit.edit.type == "dup"
             and self._var_c.posedit.pos.start.offset == 1
         ):
