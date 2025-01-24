@@ -9,6 +9,9 @@ Used in hgvsc to hgvsp conversion.
 import logging
 import math
 
+from hgvs import global_config
+from hgvs.exceptions import HGVSError
+
 from bioutils.sequences import reverse_complement, translate_cds
 
 from ..edit import Dup, Inv, NARefAlt, Repeat
@@ -194,8 +197,44 @@ class AltSeqBuilder:
             and self._var_c.posedit.pos.end.datum == Datum.CDS_END
         ):
             result = self.WHOLE_GENE
+        elif (
+            global_config.mapping.ins_at_boundary_is_intronic
+            and self._var_c.posedit.edit.type == "dup"
+            and self._var_c.posedit.pos.start.base in self._transcript_data.exon_start_positions
+        ):
+            result = self.INTRON
+        elif (
+            global_config.mapping.ins_at_boundary_is_intronic
+            and self._var_c.posedit.edit.type == "dup"
+            and self._var_c.posedit.pos.end.base in self._transcript_data.exon_end_positions
+        ):
+            result = self.INTRON
+        elif (
+            not global_config.mapping.ins_at_boundary_is_intronic
+            and self._var_c.posedit.edit.type == "ins"
+            and self._var_c.posedit.pos.start.offset == -1 and self._var_c.posedit.pos.end.offset == 0
+        ):
+            result = self.EXON
+        elif (
+            not global_config.mapping.ins_at_boundary_is_intronic
+            and self._var_c.posedit.edit.type == "ins"
+            and self._var_c.posedit.pos.start.offset == 0 and self._var_c.posedit.pos.end.offset == 1
+        ):
+            result = self.EXON
+        elif (
+            not global_config.mapping.ins_at_boundary_is_intronic
+            and self._var_c.posedit.edit.type == "dup"
+            and self._var_c.posedit.pos.end.offset == -1
+        ):
+            result = self.EXON
+        elif (
+            not global_config.mapping.ins_at_boundary_is_intronic
+            and self._var_c.posedit.edit.type == "dup"
+            and self._var_c.posedit.pos.start.offset == 1
+        ):
+            result = self.EXON
         elif self._var_c.posedit.pos.start.offset != 0 or self._var_c.posedit.pos.end.offset != 0:
-            # leave out anything intronic for now
+            # leave out anything else intronic for now
             result = self.INTRON
         else:  # anything else that contains an exon
             result = self.EXON
@@ -265,7 +304,10 @@ class AltSeqBuilder:
         """Incorporate dup into sequence"""
         seq, cds_start, cds_stop, start, end = self._setup_incorporate()
 
-        dup_seq = seq[start:end]
+        if not self._var_c.posedit.edit.ref:
+            raise HGVSError('Duplication variant is missing reference sequence')
+
+        dup_seq = self._var_c.posedit.edit.ref
         seq[end:end] = dup_seq
 
         is_frameshift = len(dup_seq) % 3 != 0
@@ -327,10 +369,10 @@ class AltSeqBuilder:
                 if pos.base < 0:  # 5' UTR
                     result = cds_start - 1
                 else:  # cds/intron
-                    if pos.offset <= 0:
-                        result = (cds_start - 1) + pos.base - 1
+                    if pos.offset < 0:
+                        result = (cds_start - 1) + pos.base - 2
                     else:
-                        result = (cds_start - 1) + pos.base
+                        result = (cds_start - 1) + pos.base - 1
             elif pos.datum == Datum.CDS_END:  # 3' UTR
                 result = cds_stop + pos.base - 1
             else:
