@@ -30,33 +30,33 @@ HGVS recommendations. Please refer to
 
 ## Features
 
--   Parsing is based on formal grammar.
--   An easy-to-use object model that represents most variant types
-    (SNVs, indels, dups, inversions, etc) and concepts (intronic
-    offsets, uncertain positions, intervals)
--   A variant normalizer that rewrites variants in canonical forms and
-    substitutes reference sequences (if reference and transcript
-    sequences differ)
--   Formatters that generate HGVS strings from internal representations
--   Tools to map variants between genome, transcript, and protein
-    sequences
--   Reliable handling of regions genome-transcript discrepancies
--   Pluggable data providers support alternative sources of transcript
-    mapping data
--   Extensive automated tests, including those for all variant types and
-    \"problematic\" transcripts
--   Easily installed using remote data sources. Installation with local
-    data sources is straightforward and completely obviates network
-    access
+- Parsing is based on formal grammar.
+- An easy-to-use object model that represents most variant types
+  (SNVs, indels, dups, inversions, etc) and concepts (intronic
+  offsets, uncertain positions, intervals)
+- A variant normalizer that rewrites variants in canonical forms and
+  substitutes reference sequences (if reference and transcript
+  sequences differ)
+- Formatters that generate HGVS strings from internal representations
+- Tools to map variants between genome, transcript, and protein
+  sequences
+- Reliable handling of regions genome-transcript discrepancies
+- Pluggable data providers support alternative sources of transcript
+  mapping data
+- Extensive automated tests, including those for all variant types and
+  \"problematic\" transcripts
+- Easily installed using remote data sources. Installation with local
+  data sources is straightforward and completely obviates network
+  access
 
 ## Important Notes
 
--   **You are encouraged to** [browse
-    issues](https://github.com/biocommons/hgvs/issues). All known issues
-    are listed there. Please report any issues you find.
--   **Use a pip package specification to stay within minor releases.**
-    For example, `hgvs>=1.5,<1.6`. hgvs uses [Semantic
-    Versioning](http://semver.org/).
+- **You are encouraged to** [browse
+  issues](https://github.com/biocommons/hgvs/issues). All known issues
+  are listed there. Please report any issues you find.
+- **Use a pip package specification to stay within minor releases.**
+  For example, `hgvs>=1.5,<1.6`. hgvs uses [Semantic
+  Versioning](http://semver.org/).
 
 ## Installing HGVS Locally
 
@@ -94,11 +94,9 @@ installation easy. If you would like to use local instances of the data sources,
 
 2. Run the following commands in your virtual environment:
 
-
         source venv/bin/activate
         pip install --upgrade setuptools
         pip install hgvs
-
 
 See [Installation
 instructions](http://hgvs.readthedocs.org/en/stable/installation.html)
@@ -121,5 +119,5 @@ Thanks for getting involved!
 
 Other packages that manipulate HGVS variants:
 
--   [pyhgvs](https://github.com/counsyl/hgvs)
--   [Mutalyzer](https://mutalyzer.nl/)
+- [pyhgvs](https://github.com/counsyl/hgvs)
+- [Mutalyzer](https://mutalyzer.nl/)
