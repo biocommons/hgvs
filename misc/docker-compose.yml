@@ -13,7 +13,7 @@ services:
   seqrepo:    
     # This container rsyncs sequence data from dl.biocommons.org
     # and exits when done. 
-    image: biocommons/seqrepo:latest
+    image: biocommons/seqrepo:2024-12-20
     volumes:
       - seqrepo_vol:/usr/local/share/seqrepo
     
@@ -23,13 +23,13 @@ services:
     volumes:
       - seqrepo_vol:/usr/local/share/seqrepo
     network_mode: host
-    command: seqrepo-rest-service /usr/local/share/seqrepo/2021-01-29
+    command: seqrepo-rest-service /usr/local/share/seqrepo/2024-12-20
     
   uta:
     # Test:
     # psql -XAt postgres://anonymous@localhost/uta -c 'select count(*) from transcript'
     # 249909
-    image: biocommons/uta:uta_20210129b
+    image: biocommons/uta:uta_20241220
     volumes:
       - uta_vol:/var/lib/postgresql/data
     network_mode: host

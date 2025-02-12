@@ -18,6 +18,10 @@ SRC_DIRS:=src
 TEST_DIRS:=tests
 DOC_TESTS:=docs hgvs ./README.rst
 
+# TESTING sources
+export UTA_DB_URL=postgresql://anonymous@localhost:5432/uta_dev/uta_20241220
+export HGVS_SEQREPO_URL=http://localhost:5000/seqrepo
+
 
 ############################################################################
 #= BASIC USAGE
@@ -83,17 +87,10 @@ stest:
 test-%:
 	pytest -m '$*' ${TEST_DIRS}
 
-#=> test-learn: build test data cache
 #=> test-relearn: destroy and rebuild test data cache
-test-learn:
-	# The appropriate environment should be set up using misc/docker-compose.yml
-	# export UTA_DB_URL=postgresql://anonymous@localhost:5432/uta/uta_20180821
-	# export HGVS_SEQREPO_URL=http://localhost:5000/seqrepo
-	HGVS_CACHE_MODE=learn \
-	pytest -s
 test-relearn:
-	rm -f tests/data/cache-py3.hdp
-	make test-learn
+	rm -fr tests/data/cache-py3.hdp tests/cassettes
+	HGVS_CACHE_MODE=learn pytest -s
 
 #=> tox -- run all tox tests
 tox:
