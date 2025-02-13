@@ -1,14 +1,15 @@
 repos:
-- repo: local
-  hooks:
-    -  id: pyright
-       name: pyright
-       entry: pyright
-       language: system
-       types: [python]
+# disabled for now due to excessive errors reported with new version
+# - repo: local
+#   hooks:
+#     -  id: pyright
+#        name: pyright
+#        entry: pyright
+#        language: system
+#        types: [python]
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.4.4
+  rev: v0.9.6
   hooks:
     - id: ruff
+      args: [ --fix ]
     - id: ruff-format
-      args: [ --check ]

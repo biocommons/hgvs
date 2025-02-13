@@ -13,9 +13,11 @@ def vcr_config(request):
     """See https://pytest-vcr.readthedocs.io/en/latest/configuration/"""
     test_file_path = Path(request.node.fspath)
     return {
-        "cassette_library_dir": str(test_file_path.with_name("cassettes") / test_file_path.stem),
+        "cassette_library_dir": str(
+            test_file_path.with_name("cassettes") / test_file_path.stem
+        ),
         "record_mode": os.environ.get("VCR_RECORD_MODE", "new_episodes"),
-        "cassette_name": f"{request.node.name}.yaml"
+        "cassette_name": f"{request.node.name}.yaml",
     }
 
 
@@ -51,8 +53,8 @@ def babelfish38(hdp):
 
 def pytest_report_header(config):
     env_vars = ["UTA_DB_URL", "HGVS_SEQREPO_URL", "HGVS_CACHE_MODE"]
-    rv = [f"{ev}: {os.environ.get(ev)}" for ev in sorted(env_vars)]
-    rv += [f"hgvs.easy.hdp={hgvs.easy.hdp.url}"]
+    rv = [f"{ev}={os.environ.get(ev)}" for ev in sorted(env_vars)]
+    rv += [f"hgvs.easy.hdp.url={str(hgvs.easy.hdp.url)}"]
     rv += [f"{hgvs.easy.hdp.seqfetcher.source=}"]
     return "\n".join(rv)
 
@@ -79,4 +81,3 @@ def kitchen_sink_setup(request, hdp, parser, am37, am38):
     request.cls.parser = parser
     request.cls.am37 = am37
     request.cls.am38 = am38
-
