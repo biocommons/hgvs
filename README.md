@@ -110,10 +110,17 @@ See [examples](https://github.com/biocommons/hgvs/tree/main/examples) and [readt
 
 ## Contributing
 
-The hgvs package is intended to be a community project. Please see
-[Contributing](http://hgvs.readthedocs.org/en/stable/contributing.html)
-to get started in submitting source code, tests, or documentation.
-Thanks for getting involved!
+The hgvs package is a community effort. Please see
+[Contributing](http://hgvs.readthedocs.org/en/stable/contributing.html) to get
+started in submitting source code, tests, or documentation. Thanks for getting
+involved!
+
+### Testing
+
+Existing tests use a cache that is committed with the repo to ensure that tests do not require external networking.  To develop new tests, which requires loading the cache, you should install UTA and Seqrepo (and the rest service) locally.
+
+    docker compose --project-name biocommons -f $PWD/misc/docker-compose.yml up seqrepo
+
 
 ## See Also
 

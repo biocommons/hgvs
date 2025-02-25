@@ -3,11 +3,9 @@
 # ```
 # docker volume create --name=uta_vol
 # docker volume create --name=seqrepo_vol
-# docker-compose up
+# docker compose up
 # ```
 
-
-version: "3"
 
 services:
   seqrepo:    
@@ -30,6 +28,8 @@ services:
     # psql -XAt postgres://anonymous@localhost/uta -c 'select count(*) from transcript'
     # 249909
     image: biocommons/uta:uta_20241220
+    environment:
+      - POSTGRES_PASSWORD=password
     volumes:
       - uta_vol:/var/lib/postgresql/data
     network_mode: host
@@ -38,6 +38,4 @@ services:
 
 volumes:
   seqrepo_vol:
-    external: true
   uta_vol:
-    external: true
