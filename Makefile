@@ -19,8 +19,9 @@ TEST_DIRS:=tests
 DOC_TESTS:=docs hgvs ./README.rst
 
 # TESTING sources
+# UTA_DB_URL must be accessible at test time (for now)
 export HGVS_CACHE_MODE=
-export UTA_DB_URL=postgresql://anonymous@localhost:5432/uta/uta_20241220
+export UTA_DB_URL=postgresql://anonymous@uta.biocommons.org:5432/uta/uta_20241220
 export HGVS_SEQREPO_URL=http://localhost:5000/seqrepo
 
 
@@ -78,7 +79,7 @@ build: %:
 #=> test-docs: test example code in docs
 .PHONY: test test-code test-docs
 test:
-	pytest --cov ${SRC_DIRS}
+	HGVS_CACHE_MODE=run pytest --cov ${SRC_DIRS}
 test-code:
 	pytest ${TEST_DIRS}
 test-docs:
@@ -88,10 +89,18 @@ stest:
 test-%:
 	pytest -m '$*' ${TEST_DIRS}
 
+#=> test-learn: add new data to test data cache
+test-learn:
+	HGVS_CACHE_MODE=learn pytest -s
 #=> test-relearn: destroy and rebuild test data cache
 test-relearn:
 	rm -fr tests/data/cache-py3.hdp tests/cassettes
 	HGVS_CACHE_MODE=learn pytest -s
+#=> test-relearn-iteratively: destroy and rebuild test data cache (biocommons/hgvs#760)
+# temporary workaround for https://github.com/biocommons/hgvs/issues/760
+test-relearn-iteratively:
+	rm -fr tests/data/cache-py3.hdp tests/cassettes
+	find tests/ -name 'test*.py' | HGVS_CACHE_MODE=learn xargs -tn1 -- pytest --no-cov -x -s
 
 #=> tox -- run all tox tests
 tox:
