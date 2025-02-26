@@ -20,7 +20,7 @@ DOC_TESTS:=docs hgvs ./README.rst
 
 # TESTING sources
 export HGVS_CACHE_MODE=
-export UTA_DB_URL=postgresql://anonymous@localhost:5432/uta_dev/uta_20241220
+export UTA_DB_URL=postgresql://anonymous@localhost:5432/uta/uta_20241220
 export HGVS_SEQREPO_URL=http://localhost:5000/seqrepo
 
 
