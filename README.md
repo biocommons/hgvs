@@ -119,8 +119,13 @@ involved!
 
 Existing tests use a cache that is committed with the repo to ensure that tests do not require external networking.  To develop new tests, which requires loading the cache, you should install UTA and Seqrepo (and the rest service) locally.
 
-    docker compose --project-name biocommons -f $PWD/misc/docker-compose.yml up seqrepo
+    docker compose --project-name biocommons -f $PWD/misc/docker-compose.yml up
 
+IMPORTANT: Loading the test caches is currently hampered b
+[#551](https://github.com/biocommons/hgvs/issues/551),
+[#760](https://github.com/biocommons/hgvs/issues/760), and
+[#761](https://github.com/biocommons/hgvs/issues/761). To load reliably, use
+`make test-relearn-iteratively` for now.
 
 ## See Also
 
