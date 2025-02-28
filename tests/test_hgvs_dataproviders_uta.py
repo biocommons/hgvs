@@ -46,7 +46,7 @@ class UTA_Base:
         gene_info = self.hdp.get_gene_info("VHL")
         self.assertEqual("VHL", gene_info["hgnc"])
         self.assertEqual("3p25.3", gene_info["maploc"])
-        self.assertEqual(6, len(gene_info))
+        self.assertEqual(10, len(gene_info))
 
     def test_get_tx_exons(self):
         tx_exons = self.hdp.get_tx_exons("NM_000551.3", "NC_000003.11", "splign")
@@ -66,7 +66,7 @@ class UTA_Base:
 
     def test_get_tx_for_gene(self):
         tig = self.hdp.get_tx_for_gene("VHL")
-        
+
         expected_data = [
             ("NM_001354723.1", "NC_000003.11"),
             ("NM_198156.2", "NC_018914.2"),
@@ -120,7 +120,9 @@ class Test_hgvs_dataproviders_uta_UTA_default_with_pooling(unittest.TestCase, UT
         )
 
 
-class Test_hgvs_dataproviders_uta_with_pooling_without_cache(unittest.TestCase, UTA_Base):
+class Test_hgvs_dataproviders_uta_with_pooling_without_cache(
+    unittest.TestCase, UTA_Base
+):
     """
     Currently used to test pool errors, since we need to reach out to
     the database and not use the cache

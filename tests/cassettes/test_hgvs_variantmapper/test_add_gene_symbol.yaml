@@ -9,59 +9,23 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.3
     method: GET
-    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000007.13&rettype=fasta&seq_start=21940852&seq_stop=21940908&tool=bioutils&email=biocommons-dev@googlegroups.com
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000007.13?start=21940851&end=21940908
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAACyKwQrCMBBE7/mK/QAtSaOk9SAse1hPIpK7VAm00JiSPfXv3Rbn8JjhzfVOL7sl
-        NM5fWtefbHduj3vpbQe3kgvIsEzpK/AZq04pOUE4AD9p9KFZnIdHnfJQV0CRlN/zapgiRYUSGZGJ
-        o3IDoQomVEW7pf+VGTmyMT8AAAD//wMAgcqFPJIAAAA=
+      string: GCTCTGCTTCTAGAAGCGTAAGGTAACACTGGCATTCCTCTAGCCTCTGCTGGAGTG
     headers:
-      Access-Control-Allow-Origin:
-      - '*'
-      Access-Control-Expose-Headers:
-      - X-RateLimit-Limit,X-RateLimit-Remaining
-      Cache-Control:
-      - private
       Connection:
-      - Keep-Alive
-      Content-Disposition:
-      - attachment; filename="sequence.fasta"
-      Content-Security-Policy:
-      - upgrade-insecure-requests
+      - close
+      Content-Length:
+      - '57'
       Content-Type:
-      - text/plain
+      - text/plain; charset=utf-8
       Date:
-      - Fri, 15 Sep 2023 22:55:11 GMT
-      Keep-Alive:
-      - timeout=4, max=40
-      NCBI-PHID:
-      - D0BD088E3BFC1F95000027D342CD3AA1.1.1.m_5
-      NCBI-SID:
-      - 5E15FE75BF75F081_EF40SID
-      Referrer-Policy:
-      - origin-when-cross-origin
+      - Wed, 26 Feb 2025 23:03:09 GMT
       Server:
-      - Finatra
-      Set-Cookie:
-      - ncbi_sid=5E15FE75BF75F081_EF40SID; domain=.nih.gov; path=/; expires=Sun, 15
-        Sep 2024 22:55:12 GMT
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Transfer-Encoding:
-      - chunked
-      X-RateLimit-Limit:
-      - '3'
-      X-RateLimit-Remaining:
-      - '2'
-      X-UA-Compatible:
-      - IE=Edge
-      X-XSS-Protection:
-      - 1; mode=block
-      content-encoding:
-      - gzip
+      - Werkzeug/2.2.3 Python/3.10.12
     status:
       code: 200
       message: OK
@@ -75,59 +39,23 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.3
     method: GET
-    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NM_003777.3&rettype=fasta&seq_start=13583&seq_stop=13639&tool=bioutils&email=biocommons-dev@googlegroups.com
+    uri: http://localhost:5000/seqrepo/1/sequence/NM_003777.3?start=13582&end=13639
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAACzKsQoCMQyA4b1PkVHhlAtBqw5CiJBb7CDdpWjhCrYVDsR7e6u4fMv/H9352vdk
-        rV3TAWmzoxXSlvYw1FxhCs8UywT3ucRUOgjvWmIOjw7GGF4z3MaQCiDC4uR4QFx2kC+OjYoX32iy
-        Mquob34RbkGFW5Jflf+qyurVmA8AAAD//wMAvVGMaZEAAAA=
+      string: GCTCTGCTTCTAGAAGCGTAAGGTAACACTGGCATTCCTCTAGCCTCTGCTGGAGTG
     headers:
-      Access-Control-Allow-Origin:
-      - '*'
-      Access-Control-Expose-Headers:
-      - X-RateLimit-Limit,X-RateLimit-Remaining
-      Cache-Control:
-      - private
       Connection:
-      - Keep-Alive
-      Content-Disposition:
-      - attachment; filename="sequence.fasta"
-      Content-Security-Policy:
-      - upgrade-insecure-requests
+      - close
+      Content-Length:
+      - '57'
       Content-Type:
-      - text/plain
+      - text/plain; charset=utf-8
       Date:
-      - Fri, 15 Sep 2023 22:55:16 GMT
-      Keep-Alive:
-      - timeout=4, max=40
-      NCBI-PHID:
-      - D0BD088E3BFC1F9500004ED35B50876A.1.1.m_5
-      NCBI-SID:
-      - FCDA44B12F41665D_36D6SID
-      Referrer-Policy:
-      - origin-when-cross-origin
+      - Wed, 26 Feb 2025 23:03:09 GMT
       Server:
-      - Finatra
-      Set-Cookie:
-      - ncbi_sid=FCDA44B12F41665D_36D6SID; domain=.nih.gov; path=/; expires=Sun, 15
-        Sep 2024 22:55:16 GMT
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Transfer-Encoding:
-      - chunked
-      X-RateLimit-Limit:
-      - '3'
-      X-RateLimit-Remaining:
-      - '2'
-      X-UA-Compatible:
-      - IE=Edge
-      X-XSS-Protection:
-      - 1; mode=block
-      content-encoding:
-      - gzip
+      - Werkzeug/2.2.3 Python/3.10.12
     status:
       code: 200
       message: OK
@@ -141,58 +69,23 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.3
     method: GET
-    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NM_003777.3&rettype=fasta&seq_start=13639&seq_stop=13639&tool=bioutils&email=biocommons-dev@googlegroups.com
+    uri: http://localhost:5000/seqrepo/1/sequence/NM_003777.3?start=13638&end=13639
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAALLz8403MDA2NzfXM7YyNDYzttQFkwoe+bn5CsWJBZmpecUKKZV5qZl5OgqJFfl5
-        qbmJOToKGamJZZUKyRmJmXkKhoYKGi5+jh6Ghpo6CrlBfo5c7lxcAAAAAP//AwDevCrBWQAAAA==
+      string: G
     headers:
-      Access-Control-Allow-Origin:
-      - '*'
-      Access-Control-Expose-Headers:
-      - X-RateLimit-Limit,X-RateLimit-Remaining
-      Cache-Control:
-      - private
       Connection:
-      - Keep-Alive
-      Content-Disposition:
-      - attachment; filename="sequence.fasta"
-      Content-Security-Policy:
-      - upgrade-insecure-requests
+      - close
+      Content-Length:
+      - '1'
       Content-Type:
-      - text/plain
+      - text/plain; charset=utf-8
       Date:
-      - Fri, 15 Sep 2023 22:55:19 GMT
-      Keep-Alive:
-      - timeout=4, max=40
-      NCBI-PHID:
-      - D0BD088E3BFC1F95000050D37376716A.1.1.m_5
-      NCBI-SID:
-      - A6329ACD128DFC2C_9424SID
-      Referrer-Policy:
-      - origin-when-cross-origin
+      - Wed, 26 Feb 2025 23:03:09 GMT
       Server:
-      - Finatra
-      Set-Cookie:
-      - ncbi_sid=A6329ACD128DFC2C_9424SID; domain=.nih.gov; path=/; expires=Sun, 15
-        Sep 2024 22:55:20 GMT
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Transfer-Encoding:
-      - chunked
-      X-RateLimit-Limit:
-      - '3'
-      X-RateLimit-Remaining:
-      - '2'
-      X-UA-Compatible:
-      - IE=Edge
-      X-XSS-Protection:
-      - 1; mode=block
-      content-encoding:
-      - gzip
+      - Werkzeug/2.2.3 Python/3.10.12
     status:
       code: 200
       message: OK

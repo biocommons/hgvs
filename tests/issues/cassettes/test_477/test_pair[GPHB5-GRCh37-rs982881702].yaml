@@ -206,4 +206,94 @@ interactions:
     status:
       code: 200
       message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000014.8?start=63785591&end=63785592
+  response:
+    body:
+      string: C
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '1'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 12 Feb 2025 23:35:04 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.12.3
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NM_145171.3?start=1&end=2
+  response:
+    body:
+      string: G
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '1'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 12 Feb 2025 23:35:04 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.12.3
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NM_145171.3?start=1&end=22
+  response:
+    body:
+      string: GAAATCTTAGTGCAAGTTTCA
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '21'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 12 Feb 2025 23:35:04 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.12.3
+    status:
+      code: 200
+      message: OK
 version: 1
