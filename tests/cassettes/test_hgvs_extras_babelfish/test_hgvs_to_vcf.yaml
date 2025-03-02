@@ -11,60 +11,51 @@ interactions:
       User-Agent:
       - python-requests/2.32.3
     method: GET
-    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000006.12&rettype=fasta&seq_start=49949414&seq_stop=49949415&tool=bioutils&email=biocommons-dev@googlegroups.com
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949406&end=49949407
   response:
     body:
-      string: '>NC_000006.12:49949414-49949415 Homo sapiens chromosome 6, GRCh38.p14
-        Primary Assembly
-
-        AT
-
-
-        '
+      string: A
     headers:
-      Access-Control-Allow-Origin:
-      - '*'
-      Access-Control-Expose-Headers:
-      - X-RateLimit-Limit,X-RateLimit-Remaining
-      Cache-Control:
-      - private
       Connection:
-      - Keep-Alive
-      Content-Disposition:
-      - attachment; filename="sequence.fasta"
-      Content-Security-Policy:
-      - upgrade-insecure-requests
+      - close
+      Content-Length:
+      - '1'
       Content-Type:
-      - text/plain
+      - text/plain; charset=utf-8
       Date:
-      - Fri, 03 Jan 2025 04:02:05 GMT
-      Keep-Alive:
-      - timeout=4, max=40
-      NCBI-PHID:
-      - D0BD4D15A8D0CB6500002CCA7BA628A9.1.1.m_5
-      NCBI-SID:
-      - B5E65F09E640AF6F_32EDSID
-      Referrer-Policy:
-      - origin-when-cross-origin
+      - Wed, 26 Feb 2025 23:02:55 GMT
       Server:
-      - Finatra
-      Set-Cookie:
-      - ncbi_sid=B5E65F09E640AF6F_32EDSID; domain=.nih.gov; path=/; expires=Sat, 03
-        Jan 2026 04:02:05 GMT
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Transfer-Encoding:
-      - chunked
-      X-RateLimit-Limit:
-      - '3'
-      X-RateLimit-Remaining:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949406&end=49949408
+  response:
+    body:
+      string: AA
+    headers:
+      Connection:
+      - close
+      Content-Length:
       - '2'
-      X-UA-Compatible:
-      - IE=Edge
-      X-XSS-Protection:
-      - 1; mode=block
-      content-encoding:
-      - gzip
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
     status:
       code: 200
       message: OK
@@ -80,60 +71,81 @@ interactions:
       User-Agent:
       - python-requests/2.32.3
     method: GET
-    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000006.12&rettype=fasta&seq_start=49949409&seq_stop=49949410&tool=bioutils&email=biocommons-dev@googlegroups.com
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949386&end=49949407
   response:
     body:
-      string: '>NC_000006.12:49949409-49949410 Homo sapiens chromosome 6, GRCh38.p14
-        Primary Assembly
-
-        GA
-
-
-        '
+      string: TGGTGGCAATGGGGACCAGAA
     headers:
-      Access-Control-Allow-Origin:
-      - '*'
-      Access-Control-Expose-Headers:
-      - X-RateLimit-Limit,X-RateLimit-Remaining
-      Cache-Control:
-      - private
       Connection:
-      - Keep-Alive
-      Content-Disposition:
-      - attachment; filename="sequence.fasta"
-      Content-Security-Policy:
-      - upgrade-insecure-requests
+      - close
+      Content-Length:
+      - '21'
       Content-Type:
-      - text/plain
+      - text/plain; charset=utf-8
       Date:
-      - Fri, 03 Jan 2025 04:02:05 GMT
-      Keep-Alive:
-      - timeout=4, max=40
-      NCBI-PHID:
-      - D0BD4D15A8D0CB65000045CA7D6F7D95.1.1.m_5
-      NCBI-SID:
-      - 375641326575F5C7_EFA8SID
-      Referrer-Policy:
-      - origin-when-cross-origin
+      - Wed, 26 Feb 2025 23:02:55 GMT
       Server:
-      - Finatra
-      Set-Cookie:
-      - ncbi_sid=375641326575F5C7_EFA8SID; domain=.nih.gov; path=/; expires=Sat, 03
-        Jan 2026 04:02:05 GMT
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Transfer-Encoding:
-      - chunked
-      X-RateLimit-Limit:
-      - '3'
-      X-RateLimit-Remaining:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949412&end=49949414
+  response:
+    body:
+      string: AA
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '2'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949413&end=49949414
+  response:
+    body:
+      string: A
+    headers:
+      Connection:
+      - close
+      Content-Length:
       - '1'
-      X-UA-Compatible:
-      - IE=Edge
-      X-XSS-Protection:
-      - 1; mode=block
-      content-encoding:
-      - gzip
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
     status:
       code: 200
       message: OK
@@ -149,60 +161,51 @@ interactions:
       User-Agent:
       - python-requests/2.32.3
     method: GET
-    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000006.12&rettype=fasta&seq_start=49949409&seq_stop=49949410&tool=bioutils&email=biocommons-dev@googlegroups.com
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949392&end=49949414
   response:
     body:
-      string: '>NC_000006.12:49949409-49949410 Homo sapiens chromosome 6, GRCh38.p14
-        Primary Assembly
-
-        GA
-
-
-        '
+      string: CAATGGGGACCAGAAAGAAAAA
     headers:
-      Access-Control-Allow-Origin:
-      - '*'
-      Access-Control-Expose-Headers:
-      - X-RateLimit-Limit,X-RateLimit-Remaining
-      Cache-Control:
-      - private
       Connection:
-      - Keep-Alive
-      Content-Disposition:
-      - attachment; filename="sequence.fasta"
-      Content-Security-Policy:
-      - upgrade-insecure-requests
+      - close
+      Content-Length:
+      - '22'
       Content-Type:
-      - text/plain
+      - text/plain; charset=utf-8
       Date:
-      - Fri, 03 Jan 2025 04:02:05 GMT
-      Keep-Alive:
-      - timeout=4, max=40
-      NCBI-PHID:
-      - D0BD4D15A8D0CB6500005ACA7F2DA474.1.1.m_5
-      NCBI-SID:
-      - 6B97C4485D6B0418_FFABSID
-      Referrer-Policy:
-      - origin-when-cross-origin
+      - Wed, 26 Feb 2025 23:02:55 GMT
       Server:
-      - Finatra
-      Set-Cookie:
-      - ncbi_sid=6B97C4485D6B0418_FFABSID; domain=.nih.gov; path=/; expires=Sat, 03
-        Jan 2026 04:02:06 GMT
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Transfer-Encoding:
-      - chunked
-      X-RateLimit-Limit:
-      - '3'
-      X-RateLimit-Remaining:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949414&end=49949415
+  response:
+    body:
+      string: T
+    headers:
+      Connection:
+      - close
+      Content-Length:
       - '1'
-      X-UA-Compatible:
-      - IE=Edge
-      X-XSS-Protection:
-      - 1; mode=block
-      content-encoding:
-      - gzip
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
     status:
       code: 200
       message: OK
@@ -218,60 +221,141 @@ interactions:
       User-Agent:
       - python-requests/2.32.3
     method: GET
-    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000006.12&rettype=fasta&seq_start=49949409&seq_stop=49949411&tool=bioutils&email=biocommons-dev@googlegroups.com
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949394&end=49949415
   response:
     body:
-      string: '>NC_000006.12:49949409-49949411 Homo sapiens chromosome 6, GRCh38.p14
-        Primary Assembly
-
-        GAA
-
-
-        '
+      string: ATGGGGACCAGAAAGAAAAAT
     headers:
-      Access-Control-Allow-Origin:
-      - '*'
-      Access-Control-Expose-Headers:
-      - X-RateLimit-Limit,X-RateLimit-Remaining
-      Cache-Control:
-      - private
       Connection:
-      - Keep-Alive
-      Content-Disposition:
-      - attachment; filename="sequence.fasta"
-      Content-Security-Policy:
-      - upgrade-insecure-requests
+      - close
+      Content-Length:
+      - '21'
       Content-Type:
-      - text/plain
+      - text/plain; charset=utf-8
       Date:
-      - Fri, 03 Jan 2025 04:02:07 GMT
-      Keep-Alive:
-      - timeout=4, max=40
-      NCBI-PHID:
-      - D0BD4D15A8D0CB6500003BCA80E7730E.1.1.m_5
-      NCBI-SID:
-      - 4044C0246B690CD8_05BBSID
-      Referrer-Policy:
-      - origin-when-cross-origin
+      - Wed, 26 Feb 2025 23:02:55 GMT
       Server:
-      - Finatra
-      Set-Cookie:
-      - ncbi_sid=4044C0246B690CD8_05BBSID; domain=.nih.gov; path=/; expires=Sat, 03
-        Jan 2026 04:02:06 GMT
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Transfer-Encoding:
-      - chunked
-      X-RateLimit-Limit:
-      - '3'
-      X-RateLimit-Remaining:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949413&end=49949415
+  response:
+    body:
+      string: AT
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '2'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949393&end=49949414
+  response:
+    body:
+      string: AATGGGGACCAGAAAGAAAAA
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '21'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949408&end=49949410
+  response:
+    body:
+      string: GA
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '2'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949412&end=49949413
+  response:
+    body:
+      string: A
+    headers:
+      Connection:
+      - close
+      Content-Length:
       - '1'
-      X-UA-Compatible:
-      - IE=Edge
-      X-XSS-Protection:
-      - 1; mode=block
-      content-encoding:
-      - gzip
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
     status:
       code: 200
       message: OK
@@ -287,60 +371,111 @@ interactions:
       User-Agent:
       - python-requests/2.32.3
     method: GET
-    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000006.12&rettype=fasta&seq_start=49949413&seq_stop=49949413&tool=bioutils&email=biocommons-dev@googlegroups.com
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949392&end=49949413
   response:
     body:
-      string: '>NC_000006.12:49949413-49949413 Homo sapiens chromosome 6, GRCh38.p14
-        Primary Assembly
-
-        A
-
-
-        '
+      string: CAATGGGGACCAGAAAGAAAA
     headers:
-      Access-Control-Allow-Origin:
-      - '*'
-      Access-Control-Expose-Headers:
-      - X-RateLimit-Limit,X-RateLimit-Remaining
-      Cache-Control:
-      - private
       Connection:
-      - Keep-Alive
-      Content-Disposition:
-      - attachment; filename="sequence.fasta"
-      Content-Security-Policy:
-      - upgrade-insecure-requests
+      - close
+      Content-Length:
+      - '21'
       Content-Type:
-      - text/plain
+      - text/plain; charset=utf-8
       Date:
-      - Fri, 03 Jan 2025 04:02:07 GMT
-      Keep-Alive:
-      - timeout=4, max=40
-      NCBI-PHID:
-      - D0BD4D15A8D0CB6500005ECA8225323D.1.1.m_5
-      NCBI-SID:
-      - D5375407447D0B09_0348SID
-      Referrer-Policy:
-      - origin-when-cross-origin
+      - Wed, 26 Feb 2025 23:02:55 GMT
       Server:
-      - Finatra
-      Set-Cookie:
-      - ncbi_sid=D5375407447D0B09_0348SID; domain=.nih.gov; path=/; expires=Sat, 03
-        Jan 2026 04:02:07 GMT
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Transfer-Encoding:
-      - chunked
-      X-RateLimit-Limit:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949408&end=49949410
+  response:
+    body:
+      string: GA
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '2'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949408&end=49949411
+  response:
+    body:
+      string: GAA
+    headers:
+      Connection:
+      - close
+      Content-Length:
       - '3'
-      X-RateLimit-Remaining:
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949412&end=49949413
+  response:
+    body:
+      string: A
+    headers:
+      Connection:
+      - close
+      Content-Length:
       - '1'
-      X-UA-Compatible:
-      - IE=Edge
-      X-XSS-Protection:
-      - 1; mode=block
-      content-encoding:
-      - gzip
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
     status:
       code: 200
       message: OK
@@ -356,60 +491,21 @@ interactions:
       User-Agent:
       - python-requests/2.32.3
     method: GET
-    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000006.12&rettype=fasta&seq_start=49949414&seq_stop=49949414&tool=bioutils&email=biocommons-dev@googlegroups.com
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949414&end=49949416
   response:
     body:
-      string: '>NC_000006.12:49949414-49949414 Homo sapiens chromosome 6, GRCh38.p14
-        Primary Assembly
-
-        A
-
-
-        '
+      string: TA
     headers:
-      Access-Control-Allow-Origin:
-      - '*'
-      Access-Control-Expose-Headers:
-      - X-RateLimit-Limit,X-RateLimit-Remaining
-      Cache-Control:
-      - private
       Connection:
-      - Keep-Alive
-      Content-Disposition:
-      - attachment; filename="sequence.fasta"
-      Content-Security-Policy:
-      - upgrade-insecure-requests
+      - close
+      Content-Length:
+      - '2'
       Content-Type:
-      - text/plain
+      - text/plain; charset=utf-8
       Date:
-      - Fri, 03 Jan 2025 04:02:07 GMT
-      Keep-Alive:
-      - timeout=4, max=40
-      NCBI-PHID:
-      - D0BD4D15A8D0CB65000058CA8318052C.1.1.m_5
-      NCBI-SID:
-      - 50BF5D1D880D91CF_2B78SID
-      Referrer-Policy:
-      - origin-when-cross-origin
+      - Wed, 26 Feb 2025 23:02:55 GMT
       Server:
-      - Finatra
-      Set-Cookie:
-      - ncbi_sid=50BF5D1D880D91CF_2B78SID; domain=.nih.gov; path=/; expires=Sat, 03
-        Jan 2026 04:02:07 GMT
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Transfer-Encoding:
-      - chunked
-      X-RateLimit-Limit:
-      - '3'
-      X-RateLimit-Remaining:
-      - '0'
-      X-UA-Compatible:
-      - IE=Edge
-      X-XSS-Protection:
-      - 1; mode=block
-      content-encoding:
-      - gzip
+      - Werkzeug/2.2.3 Python/3.10.12
     status:
       code: 200
       message: OK
@@ -425,60 +521,21 @@ interactions:
       User-Agent:
       - python-requests/2.32.3
     method: GET
-    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000006.12&rettype=fasta&seq_start=49949409&seq_stop=49949410&tool=bioutils&email=biocommons-dev@googlegroups.com
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949413&end=49949414
   response:
     body:
-      string: '>NC_000006.12:49949409-49949410 Homo sapiens chromosome 6, GRCh38.p14
-        Primary Assembly
-
-        GA
-
-
-        '
+      string: A
     headers:
-      Access-Control-Allow-Origin:
-      - '*'
-      Access-Control-Expose-Headers:
-      - X-RateLimit-Limit,X-RateLimit-Remaining
-      Cache-Control:
-      - private
       Connection:
-      - Keep-Alive
-      Content-Disposition:
-      - attachment; filename="sequence.fasta"
-      Content-Security-Policy:
-      - upgrade-insecure-requests
-      Content-Type:
-      - text/plain
-      Date:
-      - Fri, 03 Jan 2025 04:02:08 GMT
-      Keep-Alive:
-      - timeout=4, max=40
-      NCBI-PHID:
-      - 322C0114E2C0794500005CCE59D04F07.1.1.m_5
-      NCBI-SID:
-      - 4A67366FA09E39B3_C25BSID
-      Referrer-Policy:
-      - origin-when-cross-origin
-      Server:
-      - Finatra
-      Set-Cookie:
-      - ncbi_sid=4A67366FA09E39B3_C25BSID; domain=.nih.gov; path=/; expires=Sat, 03
-        Jan 2026 04:02:08 GMT
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Transfer-Encoding:
-      - chunked
-      X-RateLimit-Limit:
-      - '3'
-      X-RateLimit-Remaining:
+      - close
+      Content-Length:
       - '1'
-      X-UA-Compatible:
-      - IE=Edge
-      X-XSS-Protection:
-      - 1; mode=block
-      content-encoding:
-      - gzip
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
     status:
       code: 200
       message: OK
@@ -494,60 +551,21 @@ interactions:
       User-Agent:
       - python-requests/2.32.3
     method: GET
-    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000006.12&rettype=fasta&seq_start=49949409&seq_stop=49949410&tool=bioutils&email=biocommons-dev@googlegroups.com
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949409&end=49949410
   response:
     body:
-      string: '>NC_000006.12:49949409-49949410 Homo sapiens chromosome 6, GRCh38.p14
-        Primary Assembly
-
-        GA
-
-
-        '
+      string: A
     headers:
-      Access-Control-Allow-Origin:
-      - '*'
-      Access-Control-Expose-Headers:
-      - X-RateLimit-Limit,X-RateLimit-Remaining
-      Cache-Control:
-      - private
       Connection:
-      - Keep-Alive
-      Content-Disposition:
-      - attachment; filename="sequence.fasta"
-      Content-Security-Policy:
-      - upgrade-insecure-requests
-      Content-Type:
-      - text/plain
-      Date:
-      - Fri, 03 Jan 2025 04:02:09 GMT
-      Keep-Alive:
-      - timeout=4, max=40
-      NCBI-PHID:
-      - D0BD4D15A8D0CB6500004CCA86B19A4D.1.1.m_5
-      NCBI-SID:
-      - 6697A7BD401D6818_4853SID
-      Referrer-Policy:
-      - origin-when-cross-origin
-      Server:
-      - Finatra
-      Set-Cookie:
-      - ncbi_sid=6697A7BD401D6818_4853SID; domain=.nih.gov; path=/; expires=Sat, 03
-        Jan 2026 04:02:09 GMT
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Transfer-Encoding:
-      - chunked
-      X-RateLimit-Limit:
-      - '3'
-      X-RateLimit-Remaining:
+      - close
+      Content-Length:
       - '1'
-      X-UA-Compatible:
-      - IE=Edge
-      X-XSS-Protection:
-      - 1; mode=block
-      content-encoding:
-      - gzip
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
     status:
       code: 200
       message: OK
@@ -563,60 +581,21 @@ interactions:
       User-Agent:
       - python-requests/2.32.3
     method: GET
-    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000006.12&rettype=fasta&seq_start=49949409&seq_stop=49949410&tool=bioutils&email=biocommons-dev@googlegroups.com
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949408&end=49949410
   response:
     body:
-      string: '>NC_000006.12:49949409-49949410 Homo sapiens chromosome 6, GRCh38.p14
-        Primary Assembly
-
-        GA
-
-
-        '
+      string: GA
     headers:
-      Access-Control-Allow-Origin:
-      - '*'
-      Access-Control-Expose-Headers:
-      - X-RateLimit-Limit,X-RateLimit-Remaining
-      Cache-Control:
-      - private
       Connection:
-      - Keep-Alive
-      Content-Disposition:
-      - attachment; filename="sequence.fasta"
-      Content-Security-Policy:
-      - upgrade-insecure-requests
+      - close
+      Content-Length:
+      - '2'
       Content-Type:
-      - text/plain
+      - text/plain; charset=utf-8
       Date:
-      - Fri, 03 Jan 2025 04:02:09 GMT
-      Keep-Alive:
-      - timeout=4, max=40
-      NCBI-PHID:
-      - D0BD4D15A8D0CB65000051CA87E9D3A3.1.1.m_5
-      NCBI-SID:
-      - ACD37FC81739AFA9_ADBDSID
-      Referrer-Policy:
-      - origin-when-cross-origin
+      - Wed, 26 Feb 2025 23:02:55 GMT
       Server:
-      - Finatra
-      Set-Cookie:
-      - ncbi_sid=ACD37FC81739AFA9_ADBDSID; domain=.nih.gov; path=/; expires=Sat, 03
-        Jan 2026 04:02:09 GMT
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Transfer-Encoding:
-      - chunked
-      X-RateLimit-Limit:
-      - '3'
-      X-RateLimit-Remaining:
-      - '1'
-      X-UA-Compatible:
-      - IE=Edge
-      X-XSS-Protection:
-      - 1; mode=block
-      content-encoding:
-      - gzip
+      - Werkzeug/2.2.3 Python/3.10.12
     status:
       code: 200
       message: OK
@@ -632,60 +611,21 @@ interactions:
       User-Agent:
       - python-requests/2.32.3
     method: GET
-    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000006.12&rettype=fasta&seq_start=49949409&seq_stop=49949411&tool=bioutils&email=biocommons-dev@googlegroups.com
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949408&end=49949410
   response:
     body:
-      string: '>NC_000006.12:49949409-49949411 Homo sapiens chromosome 6, GRCh38.p14
-        Primary Assembly
-
-        GAA
-
-
-        '
+      string: GA
     headers:
-      Access-Control-Allow-Origin:
-      - '*'
-      Access-Control-Expose-Headers:
-      - X-RateLimit-Limit,X-RateLimit-Remaining
-      Cache-Control:
-      - private
       Connection:
-      - Keep-Alive
-      Content-Disposition:
-      - attachment; filename="sequence.fasta"
-      Content-Security-Policy:
-      - upgrade-insecure-requests
+      - close
+      Content-Length:
+      - '2'
       Content-Type:
-      - text/plain
+      - text/plain; charset=utf-8
       Date:
-      - Fri, 03 Jan 2025 04:02:10 GMT
-      Keep-Alive:
-      - timeout=4, max=40
-      NCBI-PHID:
-      - D0BD4D15A8D0CB6500002FCA89158C42.1.1.m_5
-      NCBI-SID:
-      - 4C684EC10F270AAB_0DD2SID
-      Referrer-Policy:
-      - origin-when-cross-origin
+      - Wed, 26 Feb 2025 23:02:55 GMT
       Server:
-      - Finatra
-      Set-Cookie:
-      - ncbi_sid=4C684EC10F270AAB_0DD2SID; domain=.nih.gov; path=/; expires=Sat, 03
-        Jan 2026 04:02:10 GMT
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Transfer-Encoding:
-      - chunked
-      X-RateLimit-Limit:
-      - '3'
-      X-RateLimit-Remaining:
-      - '0'
-      X-UA-Compatible:
-      - IE=Edge
-      X-XSS-Protection:
-      - 1; mode=block
-      content-encoding:
-      - gzip
+      - Werkzeug/2.2.3 Python/3.10.12
     status:
       code: 200
       message: OK
@@ -701,60 +641,111 @@ interactions:
       User-Agent:
       - python-requests/2.32.3
     method: GET
-    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000006.12&rettype=fasta&seq_start=49949409&seq_stop=49949411&tool=bioutils&email=biocommons-dev@googlegroups.com
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949408&end=49949410
   response:
     body:
-      string: '>NC_000006.12:49949409-49949411 Homo sapiens chromosome 6, GRCh38.p14
-        Primary Assembly
-
-        GAA
-
-
-        '
+      string: GA
     headers:
-      Access-Control-Allow-Origin:
-      - '*'
-      Access-Control-Expose-Headers:
-      - X-RateLimit-Limit,X-RateLimit-Remaining
-      Cache-Control:
-      - private
       Connection:
-      - Keep-Alive
-      Content-Disposition:
-      - attachment; filename="sequence.fasta"
-      Content-Security-Policy:
-      - upgrade-insecure-requests
+      - close
+      Content-Length:
+      - '2'
       Content-Type:
-      - text/plain
+      - text/plain; charset=utf-8
       Date:
-      - Fri, 03 Jan 2025 04:02:09 GMT
-      Keep-Alive:
-      - timeout=4, max=40
-      NCBI-PHID:
-      - 322C0114E2C0794500004DCE5C73DA5B.1.1.m_5
-      NCBI-SID:
-      - B897D3A82ED6A4FD_B858SID
-      Referrer-Policy:
-      - origin-when-cross-origin
+      - Wed, 26 Feb 2025 23:02:55 GMT
       Server:
-      - Finatra
-      Set-Cookie:
-      - ncbi_sid=B897D3A82ED6A4FD_B858SID; domain=.nih.gov; path=/; expires=Sat, 03
-        Jan 2026 04:02:10 GMT
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Transfer-Encoding:
-      - chunked
-      X-RateLimit-Limit:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949409&end=49949411
+  response:
+    body:
+      string: AA
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '2'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949408&end=49949411
+  response:
+    body:
+      string: GAA
+    headers:
+      Connection:
+      - close
+      Content-Length:
       - '3'
-      X-RateLimit-Remaining:
-      - '0'
-      X-UA-Compatible:
-      - IE=Edge
-      X-XSS-Protection:
-      - 1; mode=block
-      content-encoding:
-      - gzip
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:56 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949408&end=49949411
+  response:
+    body:
+      string: GAA
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '3'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:56 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
     status:
       code: 200
       message: OK
