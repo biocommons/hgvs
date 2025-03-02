@@ -3,6 +3,18 @@ from hgvs.pretty.console.renderer import BasicRenderer
 
 
 class TxRulerRenderer(BasicRenderer):
+    """
+    TxRulerRenderer is a class that extends BasicRenderer to provide a display of the transcript position.
+    Methods
+    -------
+    legend() -> str:
+        Returns a string representing the legend for the transcript ruler.
+    display(data: VariantData) -> str:
+        Generates a string that shows the position of the transcript sequence based on the
+        provided VariantData. The display method takes into account whether the data is RNA
+        and adjusts the position accordingly. It marks positions at intervals of 10 and
+        handles cases where positions are not mapped or are at specific intervals.
+    """
 
     def legend(self) -> str:
         return "          : "

@@ -3,7 +3,20 @@ from hgvs.pretty.console.renderer import BasicRenderer
 
 
 class TxMappingRenderer(BasicRenderer):
-    """prints the position in c/n coordinates."""
+    """
+    TxMappingRenderer is a class that extends BasicRenderer to provide
+    functionality for rendering transcript position information by printing a | eveery 10 bases and a . every 5 bases.
+
+    Methods
+    -------
+    legend():
+        Returns a string representing the legend for the transcript position.
+    display(data: VariantData) -> str:
+        Generates a string representation of the transcript sequence positions
+        based on the provided VariantData. The output string uses specific
+        characters to denote different positions and offsets within the
+        transcript sequence.
+    """
 
     def legend(self):
         return "tx pos    : "

@@ -5,6 +5,19 @@ from hgvs.pretty.console.renderer import BasicRenderer
 
 
 class TxAligRenderer(BasicRenderer):
+    """
+    TxAligRenderer is a class that extends BasicRenderer to provide functionality for rendering
+    the transcript sequence, optional with alternating colors per codon.
+    It includes methods to generate a legend and display data with the transcript sequence.
+
+    Methods
+    -------
+    legend() -> str:
+        Generates a legend string indicating the orientation of the transcript sequence.
+    display(data: VariantData) -> str:
+        Generates a string representation of the variant data, showing details of the transcript
+        for the specified region. It uses color coding if enabled in the configuration.
+    """
 
     def legend(self) -> str:
         if self.orientation > 0:
@@ -20,7 +33,7 @@ class TxAligRenderer(BasicRenderer):
         if not data.var_c_or_n:
             return ""
 
-        from hgvs.pretty.console.constants import ENDC, TPURPLE, TYELLOW
+        from hgvs.pretty.console.constants import ENDC, COLOR_MAP
 
         var_str = ""
 
@@ -32,7 +45,6 @@ class TxAligRenderer(BasicRenderer):
 
         counter = -1
         for pdata in data.position_details:
-
             counter += 1
 
             if pdata.mapped_pos is None:
@@ -56,7 +68,6 @@ class TxAligRenderer(BasicRenderer):
                 last_c = f"n.{n_pos}"
                 c_pos = n_pos
             if not coding:
-
                 if not first_c:
                     first_c = last_c
 
@@ -64,9 +75,9 @@ class TxAligRenderer(BasicRenderer):
 
             if cig == "=":
                 if c_pos:
-                    bg_col = math.ceil((c_pos + 1) / 3) % 2
+                    bg_col = math.ceil((c_pos) / 3) % 2
                 elif n_pos:
-                    bg_col = math.ceil((n_pos + 1) / 3) % 2
+                    bg_col = math.ceil((n_pos) / 3) % 2
                 else:
                     var_str += " "
                     continue
@@ -74,11 +85,11 @@ class TxAligRenderer(BasicRenderer):
                 # print(p, c_pos, c3, bg_col )
                 if n_pos >= 0:
                     base = pdata.tx
-                    if self.config.useColor and c_pos > 0:
+                    if self.config.use_color and c_pos > 0:
                         if bg_col:
-                            var_str += TPURPLE + base + ENDC
+                            var_str += COLOR_MAP["codon1"] + base + ENDC
                         else:
-                            var_str += TYELLOW + base + ENDC
+                            var_str += COLOR_MAP["codon2"] + base + ENDC
                     else:
                         if c_pos is None or c_pos < 0:
                             var_str += base.lower()

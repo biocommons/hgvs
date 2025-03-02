@@ -19,12 +19,36 @@ from hgvs.utils.reftranscriptdata import RefTranscriptData
 
 
 class DataCompiler:
+    """
+    DataCompiler is a class responsible for compiling and processing sequence variant data for pretty printing.
+    Attributes:
+        config (PrettyConfig): Configuration object containing various settings and data providers.
+    Methods:
+        __init__(config: PrettyConfig):
+            Initializes the DataCompiler with the given configuration.
+        get_shuffled_variant(var_g: SequenceVariant, direction: int) -> VariantCoords:
+            Takes a sequence variant and returns VariantCoords that have been shuffled accordingly.
+        get_position_and_state(sv: hgvs.sequencevariant.SequenceVariant) -> Tuple[int, int, str, str]:
+            Get the start, end, ref, alt details of a sequence variant.
+        _get_exon_nr(tx_exons, genomic_pos) -> Tuple[int, str]:
+            Determines the exon number and feature type (exon or intron) for a given genomic position.
+        _get_prot_alt(tx_ac: str, strand: int, reference_data, ref_base, c_interval) -> ProteinData:
+            Retrieves the protein alteration data for a given transcript and coding interval.
+        data(var_g: SequenceVariant, var_c_or_n: SequenceVariant = None, display_start: int = None, display_end: int = None) -> VariantData:
+            Takes a sequence variant and provides all the data needed for pretty printing. This is the main method of the class.
+        _backfill_gap_in_ref(var_c_or_n, tx_seq, tx_exons, mapper, reference_data, pdata, cig, prev_c_pos, prev_n_pos):
+            Fills in gaps in the reference sequence for regions that have been deleted.
+        _populate_with_n_c(var_c_or_n, tx_seq, tx_exons, mapper, reference_data, pdata, cig, n_interval, c_interval):
+            Populates the PositionDetail object with nucleotide and coding information.
+    """
 
     def __init__(self, config: PrettyConfig):
         self.config = config
 
-    def get_shuffled_variant(self, var_g: SequenceVariant, direction: int) -> VariantCoords:
-        """ Takes a sequence variant and returns VariantCoords that have been shuffled accordingly."""
+    def get_shuffled_variant(
+        self, var_g: SequenceVariant, direction: int
+    ) -> VariantCoords:
+        """Takes a sequence variant and returns VariantCoords that have been shuffled accordingly."""
 
         # get shuffled representation:
         if direction == 5:
@@ -42,11 +66,17 @@ class DataCompiler:
             return VariantCoords(start, end, ref, alt)
 
         shuffled_interval, shuffled_alleles = normalize(
-            chrom_seq, interval=(start, end), alleles=(None, alt), mode=shuffle_direction
+            chrom_seq,
+            interval=(start, end),
+            alleles=(None, alt),
+            mode=shuffle_direction,
         )
 
         return VariantCoords(
-            shuffled_interval[0], shuffled_interval[1], shuffled_alleles[0], shuffled_alleles[1]
+            shuffled_interval[0],
+            shuffled_interval[1],
+            shuffled_alleles[0],
+            shuffled_alleles[1],
         )
 
     def get_position_and_state(
@@ -93,7 +123,6 @@ class DataCompiler:
         return start, end, ref, alt
 
     def _get_exon_nr(self, tx_exons, genomic_pos) -> Tuple[int, str]:
-
         i = -1
         for ex in tx_exons:
             i += 1
@@ -155,7 +184,9 @@ class DataCompiler:
         if strand < 0 and not self.config.reverse_display:
             aa_char = tlc[2 - c3]
 
-        return ProteinData(c_pos, aa, tlc, aa_char, var_p, is_init_met, is_stop_codon, aa_index)
+        return ProteinData(
+            c_pos, aa, tlc, aa_char, var_p, is_init_met, is_stop_codon, aa_index
+        )
 
     def data(
         self,
@@ -164,7 +195,16 @@ class DataCompiler:
         display_start: int = None,
         display_end: int = None,
     ) -> VariantData:
-        """Takes a sequence variant and provides all the data we need for pretty printing."""
+        """
+        Takes a sequence variant and provides all the data needed for pretty printing.
+        Args:
+            var_g (SequenceVariant): The genomic sequence variant.
+            var_c_or_n (SequenceVariant, optional): The coding or non-coding sequence variant. Defaults to None.
+            display_start (int, optional): The start position for display. Defaults to None.
+            display_end (int, optional): The end position for display. Defaults to None.
+        Returns:
+            VariantData: An object containing all the necessary data for pretty printing the variant.
+        """
 
         start, end, ref, alt = self.get_position_and_state(var_g)
 
@@ -206,7 +246,7 @@ class DataCompiler:
 
         if tx_ac:
             tx_seq = self.config.hdp.get_seq(tx_ac)
-            
+
             mapper = self.config.assembly_mapper._fetch_AlignmentMapper(
                 tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method="splign"
             )
@@ -230,7 +270,6 @@ class DataCompiler:
         prev_n_pos = -1
 
         for chromosome_pos in range(seq_start + 1, seq_end + 1):
-
             exon_nr, feat = self._get_exon_nr(tx_exons, chromosome_pos)
 
             pdata = PositionDetail(
@@ -256,9 +295,7 @@ class DataCompiler:
             pdata.cigar_ref = cig
 
             if prev_mapped_pos:
-
                 while mapped_pos - prev_mapped_pos > 1:
-
                     prev_mapped_pos = prev_mapped_pos + 1
 
                     pdata.mapped_pos = prev_mapped_pos
@@ -279,7 +316,9 @@ class DataCompiler:
                     exon_nr, feat = self._get_exon_nr(tx_exons, chromosome_pos)
                     # prev_mapped_pos += 1
                     pdata = PositionDetail(
-                        chromosome_pos=chromosome_pos, exon_nr=exon_nr, variant_feature=feat
+                        chromosome_pos=chromosome_pos,
+                        exon_nr=exon_nr,
+                        variant_feature=feat,
                     )
                     position_details.append(pdata)
 
@@ -287,7 +326,7 @@ class DataCompiler:
                     pdata.mapped_pos = prev_mapped_pos
                     pdata.mapped_pos_offset = mapped_pos_offset
                     pdata.cigar_ref = cig
-                    pdata.ref = chrom_seq[chromosome_pos-1]
+                    pdata.ref = chrom_seq[chromosome_pos - 1]
 
                     if mapper.strand > 0:
                         prev_c_pos += 1
@@ -346,7 +385,9 @@ class DataCompiler:
             pd = reversed(position_details)
             position_details = list(pd)
 
-        is_rna = var_c_or_n and var_c_or_n.ac.startswith("NR_") # not sure how to check this for ENSTs
+        is_rna = var_c_or_n and var_c_or_n.ac.startswith(
+            "NR_"
+        )  # not sure how to check this for ENSTs
 
         vd = VariantData(
             seq_start,
@@ -362,7 +403,7 @@ class DataCompiler:
             var_c_or_n,
             var_p,
             position_details,
-            is_rna=is_rna
+            is_rna=is_rna,
         )
 
         return vd
@@ -379,7 +420,6 @@ class DataCompiler:
         prev_c_pos,
         prev_n_pos,
     ):
-
         pdata.chromosome_pos = None
         pdata.ref = None
 
@@ -401,7 +441,15 @@ class DataCompiler:
         pdata.c_interval = c_interval
 
         self._populate_with_n_c(
-            var_c_or_n, tx_seq, tx_exons, mapper, reference_data, pdata, cig, n_interval, c_interval
+            var_c_or_n,
+            tx_seq,
+            tx_exons,
+            mapper,
+            reference_data,
+            pdata,
+            cig,
+            n_interval,
+            c_interval,
         )
 
     def _populate_with_n_c(
@@ -416,10 +464,10 @@ class DataCompiler:
         n_interval,
         c_interval,
     ):
-        n_pos = int(n_interval.start.base) 
+        n_pos = int(n_interval.start.base)
 
         if c_interval:
-            c_pos = int(c_interval.start.base) 
+            c_pos = int(c_interval.start.base)
             pdata.c_pos = c_pos
             pdata.c_offset = c_interval.start.offset
         else:
@@ -430,7 +478,7 @@ class DataCompiler:
 
         pdata.n_pos = n_pos
 
-        pdata.tx = tx_seq[pdata.n_pos-1]
+        pdata.tx = tx_seq[pdata.n_pos - 1]
 
         coding = True
         if var_c_or_n.type == "n":  # rna coding can't be in protein space

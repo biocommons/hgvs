@@ -3,7 +3,17 @@ from hgvs.pretty.console.renderer import BasicRenderer
 
 
 class ProtMappingRenderer(BasicRenderer):
-    """Prints the position in p (amino acid) coordinates."""
+    """
+    A renderer class for displaying protein position by printing a | every 10 and a . every 5 positions.
+
+    Methods
+    -------
+    legend() -> str
+        Returns a string representing the legend for the protein mapping display.
+
+    display(data: VariantData) -> str
+        Generates a string representation of the protein mapping positions based on the provided VariantData.
+    """
 
     def legend(self):
         return "aa pos    : "

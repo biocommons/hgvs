@@ -7,6 +7,7 @@ from hgvs.location import Interval
 from hgvs.sequencevariant import SequenceVariant
 from hgvs.dataproviders.interface import Interface
 
+
 @dataclass(eq=True, repr=True, frozen=True, order=True)
 class VariantCoords:
     """Representation of a variant in one of the shuffled representation"""
@@ -33,12 +34,13 @@ class ProteinData:
         return "c_pos\ttlc\taa_char\tc_pos\taa_pos"
 
     def __repr__(self) -> str:
-        return f"{self.c_pos}\t{self.tlc}\t{self.aa_char}\t{self.c_pos %3}\t{self.aa_pos}"
+        return (
+            f"{self.c_pos}\t{self.tlc}\t{self.aa_char}\t{self.c_pos % 3}\t{self.aa_pos}"
+        )
 
 
 @dataclass(eq=True, frozen=False, order=True)
 class PositionDetail:
-
     chromosome_pos: int = None
     alignment_pos: int = None
     mapped_pos: int = None
@@ -74,7 +76,26 @@ class PositionDetail:
 
 @dataclass(eq=True, repr=True, frozen=True, order=True)
 class VariantData:
-    """A data container for knowledge we have about a variant."""
+    """
+    A data container for knowledge we have about a variant.
+
+    Attributes:
+        display_start (int): The start position of the variant for display purposes.
+        display_end (int): The end position of the variant for display purposes.
+        left_shuffled (VariantCoords): The coordinates of the variant after left shuffling.
+        right_shuffled (VariantCoords): The coordinates of the variant after right shuffling.
+        fully_justified (VariantCoords): The coordinates of the variant after full justification.
+        display_seq (str): The sequence of the variant for display purposes.
+        tx_seq (str): The transcript sequence of the variant.
+        alignmentmapper (AlignmentMapper): The alignment mapper associated with the variant.
+        var_g (SequenceVariant): The genomic sequence HGVS representation of the variant.
+        strand (int): The strand of the variant (1 for positive, -1 for negative).
+        var_c_or_n (SequenceVariant, optional): The coding or non-coding sequence HGVS representation of the variant. Defaults to None.
+        var_p (SequenceVariant, optional): The protein sequence HGVS representation of the variant. Defaults to None.
+        position_details (List[PositionDetail], optional): The list of position details associated with the variant. Defaults to None.
+        all (bool, optional): A flag indicating if all overlapping transcripts should be included. Defaults to False.
+        is_rna (bool, optional): A flag indicating if the variant is RNA. Defaults to False.
+    """
 
     display_start: int
     display_end: int
@@ -101,11 +122,13 @@ class PrettyConfig:
     assembly_mapper: AssemblyMapper
     padding_left: int = 20
     padding_right: int = 20
-    useColor: bool = False
-    showLegend: bool = True
-    showAllShuffleableRegions = False
+    use_color: bool = False
+    show_legend: bool = True
+    show_all_shuffleable_regions = False
     infer_hgvs_c: bool = True
     all: bool = False  # print all possible hgvs_c (for all UTA transcripts)
-    show_reverse_strand: bool = False  # show the reverse strand sequence for the chromosome
-    alt_aln_method:str = 'splign'
-    reverse_display:bool = True # display reverse strand as the main strand (5'->3')
+    show_reverse_strand: bool = (
+        False  # show the reverse strand sequence for the chromosome
+    )
+    alt_aln_method: str = "splign"
+    reverse_display: bool = True  # display reverse strand as the main strand (5'->3')

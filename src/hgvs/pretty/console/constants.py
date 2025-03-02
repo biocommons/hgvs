@@ -12,3 +12,18 @@ TYELLOW = "\033[33m"  # Yellow Text
 TYELLOWBG = "\033[30;43m"
 
 ENDC = "\033[m"  # reset to the defaults
+
+# standard colors for nucleotides and special codons
+COLOR_MAP = {
+    "A": TGREEN,
+    "T": TRED,
+    "C": TYELLOW,
+    "G": TBLUE,
+    "N": TPURPLE,
+    "init_met": TGREEN,
+    "stop_codon": TRED,
+    "codon1": TBLUE,
+    "codon2": TYELLOW,
+    "tx_ref_disagree": TRED,
+    "del": TRED,
+}

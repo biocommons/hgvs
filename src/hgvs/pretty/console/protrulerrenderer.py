@@ -3,6 +3,17 @@ from hgvs.pretty.console.renderer import BasicRenderer
 
 
 class ProtRulerRenderer(BasicRenderer):
+    """
+    ProtRulerRenderer is a class that extends BasicRenderer to provide
+    functionality for rendering protein sequence positions in p (amino acid) coordinates.
+    Methods
+    -------
+    legend() -> str
+        Returns a string representing the legend for the protein ruler.
+    display(data: VariantData) -> str
+        Generates a string that visually represents the positions of the protein
+        sequence based on the provided VariantData.
+    """
 
     def legend(self) -> str:
         return "          : "
@@ -40,11 +51,11 @@ class ProtRulerRenderer(BasicRenderer):
             prev_aa = aa_pos
 
             if (aa_pos + 1) % 10 == 0:
-                var_str += f"{aa_pos+1} "
+                var_str += f"{aa_pos + 1} "
                 continue
 
             elif aa_pos == 0:
-                var_str += f"{aa_pos+1} "
+                var_str += f"{aa_pos + 1} "
                 continue
 
             var_str += " "
