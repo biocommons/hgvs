@@ -1,0 +1,11 @@
+# https://github.com/actions/stale
+
+name: 'Close stale issues and PRs'
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '1 1 * * *'
+
+jobs:
+  stale:
+    uses: biocommons/.github/.github/workflows/stale.yml@main

@@ -4,7 +4,7 @@
 # To update documentation:
 # 1. Add/edit notebooks in this directory (hgvs/examples/)
 # 2. Type `make install` to convert and copy to the documentation
-#    examples directory (hgvs/doc/examples)
+#    examples directory (hgvs/docs/examples)
 # 3. In the top level directory (hgvs/), type `make docs`. Verify that
 #    the examples are rendered as intended.
 
@@ -14,7 +14,7 @@
 
 SHELL:=/bin/bash
 
-DOC_EXAMPLES_DIR:=../doc/examples
+DOC_EXAMPLES_DIR:=../docs/examples
 
 nbs=$(subst .ipynb,,$(wildcard *.ipynb))
 rst_nbs:=$(addsuffix .rst,${nbs})

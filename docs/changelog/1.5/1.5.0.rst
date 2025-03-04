@@ -1,0 +1,34 @@
+
+1.5.0 (2020-03-16)
+###################
+
+Changes since 1.4.0 (2020-01-26).
+
+Special Attention
+$$$$$$$$$$$$$$$$$$
+
+* Closes `#552 <https://github.com/biocommons/hgvs/issues/552/>`_: Python 2.7 is no longer supported [`cf3b95b <https://github.com/biocommons/hgvs/commit/cf3b95b>`_] (Reece Hart)
+
+New Features
+$$$$$$$$$$$$$
+
+* Closes `#437 <https://github.com/biocommons/hgvs/issues/437/>`_: Optionally allow out-of-bounds transcript variation (`#590 <https://github.com/biocommons/hgvs/issues/590/>`_) [`c66b7d4 <https://github.com/biocommons/hgvs/commit/c66b7d4>`_] (Reece Hart)
+An new optional flag, `strict_bounds`, enables allows hgvs to
+manipulate variants that are extrapolated beyond the transcript
+bounds. When projecting out-of-bounds variation from the genome to the
+transcript, the normalized representation from the genome is
+preserved. Sponsored by Invitae.
+
+Other Changes
+$$$$$$$$$$$$$$
+
+* Closes `#570 <https://github.com/biocommons/hgvs/issues/570/>`_: Set search path only when necessary [`914a4b4 <https://github.com/biocommons/hgvs/commit/914a4b4>`_] (Clayton Wheeler)
+* Remove Biopython dependency (`#527 <https://github.com/biocommons/hgvs/issues/527/>`_) [`b30f963 <https://github.com/biocommons/hgvs/commit/b30f963>`_] (Alan Rubin)
+* Update setup.py (`#575 <https://github.com/biocommons/hgvs/issues/575/>`_) [`5424f19 <https://github.com/biocommons/hgvs/commit/5424f19>`_] (Jake Peacock)
+* removed enum34 dependency [`852186e <https://github.com/biocommons/hgvs/commit/852186e>`_] (Reece Hart)
+* updated AssemblyMapper documentation [`0beb504 <https://github.com/biocommons/hgvs/commit/0beb504>`_] (Reece Hart)
+
+Internal and Developer Changes
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+* Extensive changes in tox, pytest, and travis configurations

@@ -1,0 +1,21 @@
+
+1.5.3 (2022-11-10)
+###################
+
+Changes since 1.5.2 (2021-12-17).
+
+Bug Fixes
+$$$$$$$$$$
+
+* Improve uta pooling [`d095ba3 <https://github.com/biocommons/hgvs/commit/d095ba3>`_] (jdasilva-invitae)
+
+Other Changes
+$$$$$$$$$$$$$$
+
+* Update readme for setting PGPASSWORD when unable to include password in UTA_DB_URL (`#635 <https://github.com/biocommons/hgvs/issues/635/>`_) [`9386562 <https://github.com/biocommons/hgvs/commit/9386562>`_] (Kori Kuzma)
+
+Internal and Developer Changes
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+* Add unittests for pooling [`c384fa0 <https://github.com/biocommons/hgvs/commit/c384fa0>`_] (jdasilva-invitae)
+* Closes `#630 <https://github.com/biocommons/hgvs/issues/630/>`_: Migrate testing and packaging to github actions; update packaging tools; speed up testing by reducing number of connections and improving caching [`8f14276 <https://github.com/biocommons/hgvs/commit/8f14276>`_] (Reece Hart)

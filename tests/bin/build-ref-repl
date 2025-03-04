@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import absolute_import, division, print_function, unicode_literals
 """Builds reference replacement test sets"""
 
 import logging
@@ -10,14 +9,13 @@ import pprint
 import hgvs.dataproviders.uta
 import hgvs.parser
 import hgvs.variantmapper
-import hgvs.validator
 
 logging.basicConfig(level=logging.DEBUG)
 
 hdp = hgvs.dataproviders.uta.connect()
 hp = hgvsparser = hgvs.parser.Parser()
 vm = variantmapper = hgvs.variantmapper.VariantMapper(hdp)
-am = easyvariantmapper = hgvs.variantmapper.AssemblyMapper(
+am = easyvariantmapper = hgvs.assemblymapper.AssemblyMapper(
     hdp, assembly_name='GRCh37', alt_aln_method='splign')
 
 

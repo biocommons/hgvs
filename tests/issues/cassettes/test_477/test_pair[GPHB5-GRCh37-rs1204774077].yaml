@@ -1,0 +1,299 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000014.8&rettype=fasta&seq_start=63779558&seq_stop=63779558&tool=bioutils&email=biocommons-dev@googlegroups.com
+  response:
+    body:
+      string: '>NC_000014.8:63779558-63779558 Homo sapiens chromosome 14, GRCh37.p13
+        Primary Assembly
+
+        T
+
+
+        '
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - X-RateLimit-Limit,X-RateLimit-Remaining
+      Cache-Control:
+      - private
+      Connection:
+      - Keep-Alive
+      Content-Disposition:
+      - attachment; filename="sequence.fasta"
+      Content-Security-Policy:
+      - upgrade-insecure-requests
+      Content-Type:
+      - text/plain
+      Date:
+      - Fri, 03 Jan 2025 04:01:40 GMT
+      Keep-Alive:
+      - timeout=4, max=40
+      NCBI-PHID:
+      - D0BD4D15A8D0CB65000030CA449A2276.1.1.m_5
+      NCBI-SID:
+      - 1F254826008346CE_E2A4SID
+      Referrer-Policy:
+      - origin-when-cross-origin
+      Server:
+      - Finatra
+      Set-Cookie:
+      - ncbi_sid=1F254826008346CE_E2A4SID; domain=.nih.gov; path=/; expires=Sat, 03
+        Jan 2026 04:01:40 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-RateLimit-Limit:
+      - '3'
+      X-RateLimit-Remaining:
+      - '0'
+      X-UA-Compatible:
+      - IE=Edge
+      X-XSS-Protection:
+      - 1; mode=block
+      content-encoding:
+      - gzip
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NM_145171.3&rettype=fasta&seq_start=534&seq_stop=534&tool=bioutils&email=biocommons-dev@googlegroups.com
+  response:
+    body:
+      string: '>NM_145171.3:534-534 Homo sapiens glycoprotein hormone subunit beta
+        5 (GPHB5), mRNA
+
+        A
+
+
+        '
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - X-RateLimit-Limit,X-RateLimit-Remaining
+      Cache-Control:
+      - private
+      Connection:
+      - Keep-Alive
+      Content-Disposition:
+      - attachment; filename="sequence.fasta"
+      Content-Security-Policy:
+      - upgrade-insecure-requests
+      Content-Type:
+      - text/plain
+      Date:
+      - Fri, 03 Jan 2025 04:01:40 GMT
+      Keep-Alive:
+      - timeout=4, max=40
+      NCBI-PHID:
+      - 939BDCA5806832D5000032B25EF685C6.1.1.m_5
+      NCBI-SID:
+      - 28AD7F0CDD8CBAFB_3778SID
+      Referrer-Policy:
+      - origin-when-cross-origin
+      Server:
+      - Finatra
+      Set-Cookie:
+      - ncbi_sid=28AD7F0CDD8CBAFB_3778SID; domain=.nih.gov; path=/; expires=Sat, 03
+        Jan 2026 04:01:41 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-RateLimit-Limit:
+      - '3'
+      X-RateLimit-Remaining:
+      - '1'
+      X-UA-Compatible:
+      - IE=Edge
+      X-XSS-Protection:
+      - 1; mode=block
+      content-encoding:
+      - gzip
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NM_145171.3&rettype=fasta&seq_start=534&seq_stop=543&tool=bioutils&email=biocommons-dev@googlegroups.com
+  response:
+    body:
+      string: '>NM_145171.3:534-543 Homo sapiens glycoprotein hormone subunit beta
+        5 (GPHB5), mRNA
+
+        ACCACACCCA
+
+
+        '
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - X-RateLimit-Limit,X-RateLimit-Remaining
+      Cache-Control:
+      - private
+      Connection:
+      - Keep-Alive
+      Content-Disposition:
+      - attachment; filename="sequence.fasta"
+      Content-Security-Policy:
+      - upgrade-insecure-requests
+      Content-Type:
+      - text/plain
+      Date:
+      - Fri, 03 Jan 2025 04:01:42 GMT
+      Keep-Alive:
+      - timeout=4, max=40
+      NCBI-PHID:
+      - D0BD4D15A8D0CB65000024CA47E8B2BA.1.1.m_5
+      NCBI-SID:
+      - 353A42B08C601AEC_CA88SID
+      Referrer-Policy:
+      - origin-when-cross-origin
+      Server:
+      - Finatra
+      Set-Cookie:
+      - ncbi_sid=353A42B08C601AEC_CA88SID; domain=.nih.gov; path=/; expires=Sat, 03
+        Jan 2026 04:01:42 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-RateLimit-Limit:
+      - '3'
+      X-RateLimit-Remaining:
+      - '1'
+      X-UA-Compatible:
+      - IE=Edge
+      X-XSS-Protection:
+      - 1; mode=block
+      content-encoding:
+      - gzip
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000014.8?start=63779557&end=63779558
+  response:
+    body:
+      string: T
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '1'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 12 Feb 2025 23:35:04 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.12.3
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NM_145171.3?start=533&end=534
+  response:
+    body:
+      string: A
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '1'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 12 Feb 2025 23:35:04 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.12.3
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NM_145171.3?start=533&end=543
+  response:
+    body:
+      string: ACCACACCCA
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '10'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 12 Feb 2025 23:35:04 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.12.3
+    status:
+      code: 200
+      message: OK
+version: 1

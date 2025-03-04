@@ -1,24 +1,67 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
+import hashlib
 import os
 import pprint
+import re
 import unittest
 
 import pytest
 
-from hgvs.exceptions import HGVSParseError
 import hgvs.parser
+from hgvs.exceptions import HGVSParseError
 
 
 def test_parser_variants_with_gene_names(parser):
     assert parser.parse("NM_01234.5(BOGUS):c.22+1A>T")
-    
+
+    # HGNC approved symbols include non-alphanumeric:
+    # dashes     - ADAMTSL4-AS1 or TRL-CAA5-1
+    assert parser.parse("NM_01234.5(BOGUS-EXCELLENT):c.22+1A>T")
+    assert parser.parse("NM_01234.5(BOGUS-MOST-EXCELLENT):c.22+1A>T")
+
+    # underscore - GTF2H2C_2, APOBEC3A_B, C4B_2
+    assert parser.parse("NM_01234.5(BOGUS_EXCELLENT):c.22+1A>T")
+
     with pytest.raises(hgvs.exceptions.HGVSParseError):
-        parser.parse("NM_01234.5(1BOGUS):c.22+1A>T")
+        parser.parse("NM_01234.5(1BOGUS):c.22+1A>T")  # Starts with non-alpha
+
+    with pytest.raises(hgvs.exceptions.HGVSParseError):
+        parser.parse("NM_01234.5(-BOGUS):c.22+1A>T")  # Starts with non-alpha
+
+    with pytest.raises(hgvs.exceptions.HGVSParseError):
+        parser.parse("NM_01234.5(BOGUS-):c.22+1A>T")  # Ends with non-alpha
+
+    with pytest.raises(hgvs.exceptions.HGVSParseError):
+        parser.parse("NM_01234.5(BOGUS/EXCELLENT):c.22+1A>T")  # contains invalid character
 
 
-class Test_Position(unittest.TestCase):
+def test_parser_variants_with_no_transcript_gene_names(parser):
+    """Test it also works with no transcript provided"""
+
+    assert parser.parse("BOGUS:c.22+1A>T")
+
+    # HGNC approved symbols include non-alphanumeric:
+    # dashes     - ADAMTSL4-AS1 or TRL-CAA5-1
+    assert parser.parse("BOGUS-EXCELLENT:c.22+1A>T")
+    assert parser.parse("BOGUS-MOST-EXCELLENT:c.22+1A>T")
+
+    # underscore - GTF2H2C_2, APOBEC3A_B, C4B_2
+    assert parser.parse("BOGUS_EXCELLENT:c.22+1A>T")
+
+    with pytest.raises(hgvs.exceptions.HGVSParseError):
+        parser.parse("1BOGUS:c.22+1A>T")  # Starts with non-alpha
+
+    with pytest.raises(hgvs.exceptions.HGVSParseError):
+        parser.parse("-BOGUS:c.22+1A>T")  # Starts with non-alpha
+
+    with pytest.raises(hgvs.exceptions.HGVSParseError):
+        parser.parse("BOGUS-:c.22+1A>T")  # Ends with non-alpha
+
+    with pytest.raises(hgvs.exceptions.HGVSParseError):
+        parser.parse("BOGUS/EXCELLENT:c.22+1A>T")  # contains invalid character
+
+
+class Test_Parser(unittest.TestCase):
     longMessage = True
 
     @classmethod
@@ -36,8 +79,11 @@ class Test_Position(unittest.TestCase):
             if var.startswith("#") or var == "":
                 continue
             v = self.parser.parse_hgvs_variant(var)
-            self.assertEqual(var, v.format(conf={'max_ref_length': None}),
-                             "parse-format roundtrip failed:" + pprint.pformat(v.posedit))
+            self.assertEqual(
+                var,
+                v.format(conf={"max_ref_length": None}),
+                "parse-format roundtrip failed:" + pprint.pformat(v.posedit),
+            )
 
     @pytest.mark.quick
     def test_parser_reject(self):
@@ -55,13 +101,52 @@ class Test_Position(unittest.TestCase):
         # See note in grammar about parsing p.=, p.?, and p.0
         self.assertEqual(str(self.parser.parse_p_posedit("0")), "0")
         self.assertEqual(str(self.parser.parse_p_posedit("0?")), "0?")
-        #self.assertEqual( str(self.parser.parse_p_posedit("(0)")), "0?" )
+        # self.assertEqual( str(self.parser.parse_p_posedit("(0)")), "0?" )
 
         self.assertIsNone(self.parser.parse_p_posedit("?"))
 
         self.assertEqual(str(self.parser.parse_p_posedit("=")), "=")
-        #self.assertEqual( str(self.parser.parse_p_posedit("=?")), "(=)" )
+        # self.assertEqual( str(self.parser.parse_p_posedit("=?")), "(=)" )
         self.assertEqual(str(self.parser.parse_p_posedit("(=)")), "(=)")
+
+    @pytest.mark.quick
+    def test_grammar_and_generated_code_in_sync(self):
+        """We generate Python code from the OMeta grammar
+        This test checks that the grammar file hasn't changed since we generated the Python code"""
+
+        script_path = os.path.realpath(__file__)
+        script_dir = os.path.dirname(script_path)
+        hgvs_base_dir = os.path.dirname(script_dir)
+        grammar_filename = "src/hgvs/_data/hgvs.pymeta"
+        generated_filename = "src/hgvs/generated/hgvs_grammar.py"
+
+        # Hash the grammar file
+        with open(os.path.join(hgvs_base_dir, grammar_filename), "rb") as grammar_f:
+            grammar_hash = hashlib.md5(grammar_f.read()).hexdigest()
+
+        # Read the stored grammar file hash from generated file
+        with open(os.path.join(hgvs_base_dir, generated_filename), "r") as generated_f:
+            generated_hash = None
+            for line in generated_f:
+                if not line.startswith("#"):
+                    break
+                m = re.match(r".*Grammar hash: ([a-fA-F0-9]{32})", line)
+                if m:
+                    generated_hash = m.group(1)
+
+            msg = "Could not retrieve generated hash from {generated_hash}".format(
+                generated_hash=generated_hash
+            )
+            self.assertIsNotNone(generated_hash, msg)
+
+        msg = (
+            "OMeta source '{grammar_filename}' is different than the version used to generate "
+            "Python code '{generated_filename}'. You need to run "
+            "'sbin/generate_parser.py' ".format(
+                grammar_filename=grammar_filename, generated_filename=generated_filename
+            )
+        )
+        self.assertEqual(generated_hash, grammar_hash, msg)
 
 
 if __name__ == "__main__":

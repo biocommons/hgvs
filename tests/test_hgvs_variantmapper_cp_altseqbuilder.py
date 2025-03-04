@@ -1,18 +1,15 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import os
 import unittest
+
+import support.mock_input_source as mock_input_data_source
 
 import hgvs.parser
 import hgvs.utils.altseqbuilder as altseqbuilder
 from hgvs.utils.reftranscriptdata import RefTranscriptData
 
-import support.mock_input_source as mock_input_data_source
-
 
 class TestAltSeqBuilder(unittest.TestCase):
-
     # root sequence = ""
     fn = os.path.join(os.path.dirname(__file__), "data", "sanity_cp.tsv")
     _datasource = mock_input_data_source.MockInputSource(fn)
@@ -102,11 +99,10 @@ class TestAltSeqBuilder(unittest.TestCase):
 
     def test_sequence_with_length_that_is_not_divisible_by_3(self):
         hgvsc = "NM_999992.2:c.1del"
-        expected_sequence = "AAAATCAAATGGGGTAGGCCCGGCAGCCAGCTTTATAGAGGAGGCAGTTTCGCC"
         with self.assertRaises(NotImplementedError):
             ac_p = "DUMMY"
             var = self._parser.parse_hgvs_variant(hgvsc)
-            transcript_data = RefTranscriptData(hdp=self._datasource, tx_ac=var.ac, pro_ac=ac_p)
+            RefTranscriptData(hdp=self._datasource, tx_ac=var.ac, pro_ac=ac_p)
 
     # def test_2_substitutions(self):
     #     pass
@@ -118,7 +114,6 @@ class TestAltSeqBuilder(unittest.TestCase):
     #     pass
 
     def _run_comparison(self, hgvsc, expected_sequence):
-
         ac_p = "DUMMY"
         var = self._parser.parse_hgvs_variant(hgvsc)
         transcript_data = RefTranscriptData(hdp=self._datasource, tx_ac=var.ac, pro_ac=ac_p)

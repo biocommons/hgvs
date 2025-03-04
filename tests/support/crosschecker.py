@@ -1,19 +1,14 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import itertools
-import re
-import unittest
 
-from hgvs.exceptions import HGVSDataNotAvailableError
 import hgvs.dataproviders.uta
 import hgvs.edit
 import hgvs.parser
 import hgvs.sequencevariant
 import hgvs.variantmapper
-from six.moves import map
+from hgvs.exceptions import HGVSDataNotAvailableError
 
 
-class LineIterator(object):
+class LineIterator:
     """iterate over a stream, keeping last line and # lines read"""
 
     def __init__(self, fh, skip_comments=False):
@@ -32,7 +27,7 @@ class LineIterator(object):
             yield line
 
 
-class CrossChecker(object):
+class CrossChecker:
     """base class for testing a group of related variants.  Checks all reasonable combinations of
     g <-> t --> p
 
@@ -46,12 +41,13 @@ class CrossChecker(object):
         variants = sorted(variants, key=lambda v: v.type)
         binned_variants = {k: [] for k in "cgmnrp"}
         binned_variants.update(
-            {g: list(gi)
-             for g, gi in itertools.groupby(variants, lambda v: v.type)})
+            {g: list(gi) for g, gi in itertools.groupby(variants, lambda v: v.type)}
+        )
         binned_variants["t"] = binned_variants["c"] + binned_variants["n"]
 
         assert len(binned_variants["g"]) == len(
-            [v.ac for v in binned_variants["g"]]), "variants have multiple alignments"
+            [v.ac for v in binned_variants["g"]]
+        ), "variants have multiple alignments"
 
         # g -> t: for each g., map to each transcript accession.
         for g_var in binned_variants["g"]:
@@ -62,7 +58,8 @@ class CrossChecker(object):
                     continue
                 if t_var != r:
                     return "g_to_t({g_var},{t_var.ac}): got {r}; expected {t_var}".format(
-                        g_var=g_var, t_var=t_var, r=r)
+                        g_var=g_var, t_var=t_var, r=r
+                    )
 
         # t -> g: for each t., map to each genomic accession
         for t_var in binned_variants["t"]:
@@ -73,7 +70,8 @@ class CrossChecker(object):
                     continue
                 if g_var != r:
                     return "t_to_g({t_var},{g_var.ac}): got {r}; expected {g_var}".format(
-                        g_var=g_var, t_var=t_var, r=r)
+                        g_var=g_var, t_var=t_var, r=r
+                    )
 
         # c -> p: for each c., map to a protein variant and check whether it's in result set
 
@@ -85,10 +83,13 @@ class CrossChecker(object):
                     continue
                 r.posedit.uncertain = False
                 if isinstance(r.posedit.edit, hgvs.edit.AAFs):
-                    r.posedit.edit.length = None    # Clinvar doesn't have distance to Ter, so remove it
+                    r.posedit.edit.length = (
+                        None  # Clinvar doesn't have distance to Ter, so remove it
+                    )
                 if r not in binned_variants["p"]:
                     return "c_to_p({c_var}): got {r}; expected on of {p_vars}".format(
-                        c_var=c_var, p_vars=" ".join(map(str, binned_variants["p"])), r=r)
+                        c_var=c_var, p_vars=" ".join(map(str, binned_variants["p"])), r=r
+                    )
 
         return None
 

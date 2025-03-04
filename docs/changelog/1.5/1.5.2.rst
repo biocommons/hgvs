@@ -1,0 +1,34 @@
+
+1.5.2 (2021-12-17)
+###################
+
+Changes since 1.5.1 (2020-03-28).
+
+Bug Fixes
+$$$$$$$$$$
+
+* Catch invalid interval for guess-plausible-variant (`#605 <https://github.com/biocommons/hgvs/issues/605/>`_) [`15c3937 <https://github.com/biocommons/hgvs/commit/15c3937>`_] (Jeff Tratner)
+* Close `#602 <https://github.com/biocommons/hgvs/issues/602/>`_: Added test to ensure no ref check for oob variant [`c00107d <https://github.com/biocommons/hgvs/commit/c00107d>`_] (Reece Hart)
+* Fix `#602 <https://github.com/biocommons/hgvs/issues/602/>`_: Fixed bug in transcript bounds check that caused n. variants outside bounds to be deemed valid [`c05c85f <https://github.com/biocommons/hgvs/commit/c05c85f>`_] (Reece Hart)
+* Fix broken misc/experimental/vcf-add-hgvs [`1d5a47f <https://github.com/biocommons/hgvs/commit/1d5a47f>`_] (Reece Hart)
+* Fix bug in is_valid_seq when using NCBI for sequence backend [`fceff98 <https://github.com/biocommons/hgvs/commit/fceff98>`_] (Reece Hart)
+* Fix formatting of example docker command (`#601 <https://github.com/biocommons/hgvs/issues/601/>`_) [`c38b2df <https://github.com/biocommons/hgvs/commit/c38b2df>`_] (Alex Henrie)
+* Fix minor bug in doctests: sort transcripts to stabilize result order [`1f28dc0 <https://github.com/biocommons/hgvs/commit/1f28dc0>`_] (Reece Hart)
+* Fix table spacing that prevented rendering :-/ [`a8b93f4 <https://github.com/biocommons/hgvs/commit/a8b93f4>`_] (Reece Hart)
+* Fix for error file open (`#613 <https://github.com/biocommons/hgvs/issues/613/>`_) [`a000c3c <https://github.com/biocommons/hgvs/commit/a000c3c>`_] (pjcoenen)
+* Fix README references to old master (now main) branch [`d22ac12 <https://github.com/biocommons/hgvs/commit/d22ac12>`_] (Reece Hart)
+
+New Features
+$$$$$$$$$$$$$
+
+* Close `#628 <https://github.com/biocommons/hgvs/issues/628/>`_: add support for SeqFetcher to use seqrepo-rest-service as data source (`#632 <https://github.com/biocommons/hgvs/issues/632/>`_) [`1fef0b3 <https://github.com/biocommons/hgvs/commit/1fef0b3>`_] (Ben Robinson)
+* Close `#596 <https://github.com/biocommons/hgvs/issues/596/>`_: add dataprovider method  to fetch all alignments for all alignment methods (`#597 <https://github.com/biocommons/hgvs/issues/597/>`_) [`7e67edc <https://github.com/biocommons/hgvs/commit/7e67edc>`_] (Reece Hart)
+
+Internal and Developer Changes
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+* Close `#623 <https://github.com/biocommons/hgvs/issues/623/>`_: Switch to psycopg2 from wheel-only psycopg2-binary (`#625 <https://github.com/biocommons/hgvs/issues/625/>`_) [`18d8dc9 <https://github.com/biocommons/hgvs/commit/18d8dc9>`_] (David Cain)
+* Default to Python 3.9 [`ce26a30 <https://github.com/biocommons/hgvs/commit/ce26a30>`_] (Reece Hart)
+* Fixes `#614 <https://github.com/biocommons/hgvs/issues/614/>`_: update doc to match relocated AssemblyMapper [`4c7b45f <https://github.com/biocommons/hgvs/commit/4c7b45f>`_] (Reece Hart)
+* Pin pickle protocol to 4 (Python 3.4+) and rebuild cache [`c8a2a54 <https://github.com/biocommons/hgvs/commit/c8a2a54>`_] (Reece Hart)
+* Use hgvs cache for hgvs.easy.hdp connections [`1469be3 <https://github.com/biocommons/hgvs/commit/1469be3>`_] (Reece Hart)

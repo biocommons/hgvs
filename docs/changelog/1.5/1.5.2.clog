@@ -1,0 +1,23 @@
+clog format: 1; -*-outline-*-
+* 1.5.2 (2021-12-17)
+Changes since 1.5.1 (2020-03-28).
+** Bug Fixes
+*** Catch invalid interval for guess-plausible-variant (#605) [15c3937] (Jeff Tratner)
+*** Close #602: Added test to ensure no ref check for oob variant [c00107d] (Reece Hart)
+*** Fix #602: Fixed bug in transcript bounds check that caused n. variants outside bounds to be deemed valid [c05c85f] (Reece Hart)
+*** Fix broken misc/experimental/vcf-add-hgvs [1d5a47f] (Reece Hart)
+*** Fix bug in is_valid_seq when using NCBI for sequence backend [fceff98] (Reece Hart)
+*** Fix formatting of example docker command (#601) [c38b2df] (Alex Henrie)
+*** Fix minor bug in doctests: sort transcripts to stabilize result order [1f28dc0] (Reece Hart)
+*** Fix table spacing that prevented rendering :-/ [a8b93f4] (Reece Hart)
+*** Fix for error file open (#613) [a000c3c] (pjcoenen)
+*** Fix README references to old master (now main) branch [d22ac12] (Reece Hart)
+** New Features
+*** Close #628: add support for SeqFetcher to use seqrepo-rest-service as data source (#632) [1fef0b3] (Ben Robinson)
+*** Close #596: add dataprovider method  to fetch all alignments for all alignment methods (#597) [7e67edc] (Reece Hart)
+** Internal and Developer Changes
+*** Close #623: Switch to psycopg2 from wheel-only psycopg2-binary (#625) [18d8dc9] (David Cain)
+*** Default to Python 3.9 [ce26a30] (Reece Hart)
+*** Fixes #614: update doc to match relocated AssemblyMapper [4c7b45f] (Reece Hart)
+*** Pin pickle protocol to 4 (Python 3.4+) and rebuild cache [c8a2a54] (Reece Hart)
+*** Use hgvs cache for hgvs.easy.hdp connections [1469be3] (Reece Hart)

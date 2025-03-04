@@ -1,0 +1,752 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949406&end=49949407
+  response:
+    body:
+      string: A
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '1'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949406&end=49949408
+  response:
+    body:
+      string: AA
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '2'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949386&end=49949407
+  response:
+    body:
+      string: TGGTGGCAATGGGGACCAGAA
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '21'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949412&end=49949414
+  response:
+    body:
+      string: AA
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '2'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949413&end=49949414
+  response:
+    body:
+      string: A
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '1'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949392&end=49949414
+  response:
+    body:
+      string: CAATGGGGACCAGAAAGAAAAA
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '22'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949414&end=49949415
+  response:
+    body:
+      string: T
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '1'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949394&end=49949415
+  response:
+    body:
+      string: ATGGGGACCAGAAAGAAAAAT
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '21'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949413&end=49949415
+  response:
+    body:
+      string: AT
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '2'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949393&end=49949414
+  response:
+    body:
+      string: AATGGGGACCAGAAAGAAAAA
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '21'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949408&end=49949410
+  response:
+    body:
+      string: GA
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '2'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949412&end=49949413
+  response:
+    body:
+      string: A
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '1'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949392&end=49949413
+  response:
+    body:
+      string: CAATGGGGACCAGAAAGAAAA
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '21'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949408&end=49949410
+  response:
+    body:
+      string: GA
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '2'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949408&end=49949411
+  response:
+    body:
+      string: GAA
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '3'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949412&end=49949413
+  response:
+    body:
+      string: A
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '1'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949414&end=49949416
+  response:
+    body:
+      string: TA
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '2'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949413&end=49949414
+  response:
+    body:
+      string: A
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '1'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949409&end=49949410
+  response:
+    body:
+      string: A
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '1'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949408&end=49949410
+  response:
+    body:
+      string: GA
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '2'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949408&end=49949410
+  response:
+    body:
+      string: GA
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '2'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949408&end=49949410
+  response:
+    body:
+      string: GA
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '2'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949409&end=49949411
+  response:
+    body:
+      string: AA
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '2'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:55 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949408&end=49949411
+  response:
+    body:
+      string: GAA
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '3'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:56 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949408&end=49949411
+  response:
+    body:
+      string: GAA
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '3'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 26 Feb 2025 23:02:56 GMT
+      Server:
+      - Werkzeug/2.2.3 Python/3.10.12
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,0 +1,210 @@
+# This file describes an OMeta grammar for a subset of the HGVS
+# variant specification.  The subset is limited to is limited to those
+# rules that define sequence variants precisely.  It does not current
+# cover rules for translocations or conversions.
+ 
+# The basic structure of a HGVS sequence variant is:
+#    <ac>:<type>.<posedit>
+# where <ac> is a sequence accession, <type> determines the sequence
+# type and coordinate system ([cgmnpr]), and <posedit> is a
+# string/list/object of positions and edit operations.  A posedit is
+# itself composed of a position and an edit.
+
+
+############################################################################
+## HGVS Sequence Variant
+
+hgvs_variant = g_variant | m_variant | c_variant | n_variant  | r_variant | p_variant
+
+c_variant = accn:ac opt_gene_expr:gene ':' 'c':type '.' c_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(ac=ac, gene=gene, type=type, posedit=posedit)
+g_variant = accn:ac opt_gene_expr:gene ':' 'g':type '.' g_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(ac=ac, gene=gene, type=type, posedit=posedit)
+m_variant = accn:ac opt_gene_expr:gene ':' 'm':type '.' m_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(ac=ac, gene=gene, type=type, posedit=posedit)
+n_variant = accn:ac opt_gene_expr:gene ':' 'n':type '.' n_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(ac=ac, gene=gene, type=type, posedit=posedit)
+p_variant = accn:ac opt_gene_expr:gene ':' 'p':type '.' p_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(ac=ac, gene=gene, type=type, posedit=posedit)
+r_variant = accn:ac opt_gene_expr:gene ':' 'r':type '.' r_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(ac=ac, gene=gene, type=type, posedit=posedit)
+
+
+############################################################################
+## HGVS Position -- e.g., NM_01234.5:c.22+6 (without an edit)
+# This is unofficial syntax 
+
+hgvs_position     = g_hgvs_position | m_hgvs_position | c_hgvs_position | n_hgvs_position | r_hgvs_position | p_hgvs_position
+
+c_hgvs_position = accn:ac opt_gene_expr:gene ':' 'c':type '.' c_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac=ac, gene=gene, type=type, pos=pos)
+g_hgvs_position = accn:ac opt_gene_expr:gene ':' 'g':type '.' g_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac=ac, gene=gene, type=type, pos=pos)
+m_hgvs_position = accn:ac opt_gene_expr:gene ':' 'm':type '.' m_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac=ac, gene=gene, type=type, pos=pos)
+n_hgvs_position = accn:ac opt_gene_expr:gene ':' 'n':type '.' n_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac=ac, gene=gene, type=type, pos=pos)
+p_hgvs_position = accn:ac opt_gene_expr:gene ':' 'p':type '.' p_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac=ac, gene=gene, type=type, pos=pos)
+r_hgvs_position = accn:ac opt_gene_expr:gene ':' 'r':type '.' r_interval:pos -> hgvs.hgvsposition.HGVSPosition(ac=ac, gene=gene, type=type, pos=pos)
+
+
+############################################################################
+## HGVS Edit (without accession); e.g., c.76+3A>T
+# This family of rules exists primarily to aid parsing variants from
+# sources that use non-standard syntax. For example, some LOVD
+# installations provide variants like c.222A>T.
+
+c_typed_posedit = 'c':type '.' c_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(None,type,posedit)
+g_typed_posedit = 'g':type '.' g_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(None,type,posedit)
+m_typed_posedit = 'm':type '.' m_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(None,type,posedit)
+n_typed_posedit = 'n':type '.' n_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(None,type,posedit)
+p_typed_posedit = 'p':type '.' p_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(None,type,posedit)
+r_typed_posedit = 'r':type '.' r_posedit:posedit -> hgvs.sequencevariant.SequenceVariant(None,type,posedit)
+
+
+############################################################################
+## PosEdits -- position + edit objects
+
+c_posedit = c_interval:pos dna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit)
+g_posedit = g_interval:pos dna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit)
+m_posedit = m_interval:pos dna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit)
+n_posedit = n_interval:pos dna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit)
+r_posedit = (r_interval:pos rna_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit))
+   | ('(' r_interval:pos rna_edit:edit ')' -> hgvs.posedit.PosEdit(pos=pos,edit=edit, uncertain=True))
+
+p_posedit   = (p_interval:pos pro_edit:edit -> hgvs.posedit.PosEdit(pos=pos,edit=edit))
+   | ('(' p_interval:pos pro_edit:edit ')' -> hgvs.posedit.PosEdit(pos=pos,edit=edit, uncertain=True))
+   | p_posedit_special
+p_posedit_special = 
+      '=':x -> hgvs.posedit.PosEdit(pos=None,edit=x,uncertain=False)
+	| '(' '=':x ')' -> hgvs.posedit.PosEdit(pos=None,edit=x,uncertain=True)
+	| '0':x '?' -> hgvs.posedit.PosEdit(pos=None,edit=x,uncertain=True)
+	| '0':x -> hgvs.posedit.PosEdit(pos=None,edit=x,uncertain=False)
+	| '?':x -> None
+
+
+############################################################################
+## Edits -- sequence-specific operations at a position
+## subst, delins, del, and ins are represented using two classes, NARefAlt
+## and AARefAlt.  See edit.py for the meaning of the ref and alt instance
+## variables.
+## "_mu" = "maybe uncertain"
+
+dna_edit_mu = dna_edit | '(' dna_edit:edit ')' -> edit._set_uncertain()
+dna_edit   = dna_ident | dna_subst | dna_delins | dna_ins | dna_del | dna_dup | dna_inv | dna_con | dna_copy
+dna_ident  = <dna*>:ref '='           -> hgvs.edit.NARefAlt(ref=ref,alt=ref)
+dna_subst  = dna:ref '>' dna:alt      -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
+dna_delins = 'del' (<num>|<dna*>):ref 'ins' <dna+>:alt  -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
+dna_del    = 'del' (<num>|<dna*>):ref -> hgvs.edit.NARefAlt(ref=ref,alt=None)
+dna_ins    = 'ins' <dna+>:alt         -> hgvs.edit.NARefAlt(ref=None,alt=alt)
+dna_dup    = 'dup' <dna*>:ref         -> hgvs.edit.Dup(ref=ref)
+dna_inv    = 'inv' (<num>|<dna*>):ref -> hgvs.edit.Inv(ref=None)
+dna_con    = 'con' hgvs_position:pos  -> hgvs.edit.Conv(from_ac=pos.ac, from_type=pos.type, from_pos=pos.pos)
+dna_copy   = 'copy' num:n -> hgvs.edit.NACopy(copy=n)
+
+rna_edit_mu = rna_edit | '(' rna_edit:edit ')' -> edit._set_uncertain()
+rna_edit   = rna_ident | rna_subst | rna_delins | rna_ins | rna_del | rna_dup | rna_inv | rna_con
+rna_ident  = <rna*>:ref '='                  -> hgvs.edit.NARefAlt(ref=ref,alt=ref)
+rna_subst  = rna:ref '>' rna:alt             -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
+rna_delins = 'del' (<num>|<rna*>):ref 'ins' <rna+>:alt  -> hgvs.edit.NARefAlt(ref=ref,alt=alt)
+rna_del    = 'del' (<num>|<rna*>):ref        -> hgvs.edit.NARefAlt(ref=ref,alt=None)
+rna_ins    = 'ins' <rna+>:alt                -> hgvs.edit.NARefAlt(ref=None,alt=alt)
+rna_dup    = 'dup' <rna*>:ref                -> hgvs.edit.Dup(ref=ref)
+rna_inv    = 'inv' (<num>|<rna*>):ref        -> hgvs.edit.Inv(ref=None)
+rna_con    = 'con' hgvs_position:pos         -> hgvs.edit.Conv(from_ac=pos.ac, from_type=pos.type, from_pos=pos.pos)
+
+pro_edit_mu = pro_edit | '(' pro_edit:edit ')' -> edit._set_uncertain()
+pro_edit   = pro_fs | pro_ext | pro_subst | pro_delins | pro_ins | pro_del | pro_dup | pro_ident
+pro_subst  = (aat13|'?'):alt                 -> hgvs.edit.AASub(ref='',alt=alt)
+pro_delins = 'delins' aat13_seq:alt          -> hgvs.edit.AARefAlt(ref='',alt=alt)
+pro_del    = 'del'                           -> hgvs.edit.AARefAlt(ref='',alt=None)
+pro_ins    = 'ins' aat13_seq:alt             -> hgvs.edit.AARefAlt(ref=None,alt=alt)
+pro_dup    = 'dup'                           -> hgvs.edit.Dup(ref='')
+pro_fs     = (aat13 | (-> '')):alt fs:length -> hgvs.edit.AAFs(ref='', alt=alt, length=length)
+pro_ext    = aat13?:alt ext:(aaterm, length) -> hgvs.edit.AAExt(ref='', alt=alt, aaterm=aaterm, length=length)
+pro_ident  = '='                             -> hgvs.edit.AARefAlt(ref='',alt='')
+
+
+############################################################################
+## Locations
+# Much of the complexity below is to handle the combinations of various
+# location syntax and uncertainty
+
+# potentially indefinite/uncertain intervals
+c_interval = def_c_interval | '(' def_c_interval:iv ')' -> iv._set_uncertain()
+g_interval = def_g_interval | '(' def_g_interval:iv ')' -> iv._set_uncertain()
+m_interval = def_m_interval | '(' def_m_interval:iv ')' -> iv._set_uncertain()
+n_interval = def_n_interval | '(' def_n_interval:iv ')' -> iv._set_uncertain()
+p_interval = def_p_interval | '(' def_p_interval:iv ')' -> iv._set_uncertain()
+r_interval = def_r_interval | '(' def_r_interval:iv ')' -> iv._set_uncertain()
+
+# definite intervals
+def_g_interval = (g_pos:start '_' g_pos:end -> hgvs.location.Interval(start,end)) | (g_pos:start -> hgvs.location.Interval(start,copy.deepcopy(start)))
+def_m_interval = (m_pos:start '_' m_pos:end -> hgvs.location.Interval(start,end)) | (m_pos:start -> hgvs.location.Interval(start,copy.deepcopy(start)))
+def_p_interval = (p_pos:start '_' p_pos:end -> hgvs.location.Interval(start,end)) | (p_pos:start -> hgvs.location.Interval(start,copy.deepcopy(start)))
+def_r_interval = (r_pos:start '_' r_pos:end -> hgvs.location.Interval(start,end)) | (r_pos:start -> hgvs.location.Interval(start,copy.deepcopy(start)))
+def_c_interval = (c_pos:start '_' c_pos:end -> hgvs.location.BaseOffsetInterval(start,end)) | (c_pos:start -> hgvs.location.BaseOffsetInterval(start,copy.deepcopy(start)))
+def_n_interval = (n_pos:start '_' n_pos:end -> hgvs.location.BaseOffsetInterval(start,end)) | (n_pos:start -> hgvs.location.BaseOffsetInterval(start,copy.deepcopy(start)))
+
+# positions
+c_pos = def_c_pos #| '(' def_c_pos:pos ')' -> pos._set_uncertain()
+g_pos = def_g_pos #| '(' def_g_pos:pos ')' -> pos._set_uncertain()
+m_pos = def_m_pos #| '(' def_m_pos:pos ')' -> pos._set_uncertain()
+n_pos = def_n_pos #| '(' def_n_pos:pos ')' -> pos._set_uncertain()
+p_pos = def_p_pos #| '(' def_p_pos:pos ')' -> pos._set_uncertain()
+r_pos = def_r_pos #| '(' def_r_pos:pos ')' -> pos._set_uncertain()
+
+# definite positions
+def_c_pos = base:b offset:o -> hgvs.location.BaseOffsetPosition(b,o,datum=hgvs.enums.Datum.CDS_START)
+       | '*' num:b offset:o -> hgvs.location.BaseOffsetPosition(b,o,datum=hgvs.enums.Datum.CDS_END)
+def_g_pos = (num|'?'->None):pos -> hgvs.location.SimplePosition(pos)
+def_m_pos = (num|'?'->None):pos -> hgvs.location.SimplePosition(pos)
+def_n_pos = base:b offset:o -> hgvs.location.BaseOffsetPosition(b,o,datum=hgvs.enums.Datum.SEQ_START)
+def_p_pos = (term13|aa13):aa num:pos -> hgvs.location.AAPosition(pos,bioutils.sequences.aa_to_aa1(aa))
+def_r_pos = base:b offset:o -> hgvs.location.BaseOffsetPosition(b,o,datum=hgvs.enums.Datum.SEQ_START)
+
+
+############################################################################
+## Basic types
+# Amino acids may be referred to with 1 or 3 letters.  In the following
+# rules, '1' = 1-letter AA, '3' = 3-letter, '13' = 1 or 3, and 't' =
+# includes terminator codon.  '_seq' refers to a sequence of any of these.
+
+# AA fs/ext
+fs = 'fs' (aa13_fs | -> None):n -> n
+ext = 'ext' (aa13_ext | -> (None, None)):(aat, n) -> (aat, n)
+aa13_fs = term13 fsext_offset:n -> n
+aa13_ext = term13:aat fsext_offset:n -> (aat, n)
+         | (aa13 | (-> None)):aat nnum:n -> (aat, n)
+fsext_offset = num|'?'| (-> None)
+
+# sequences of NA/AA
+dna_seq = <dna+>
+rna_seq = <rna+>
+aat13_seq = <aat3_seq> | <aat1_seq>
+aat1_seq = <term1> | <aa1+ term1?>
+aat3_seq = <term3> | <aa3+ term3?>
+aa13_seq = <aa3_seq> | <aa1_seq>
+aa1_seq = <aa1+>
+aa3_seq = <aa3+>
+
+# individual residues
+aa1 = :x ?(x in 'ACDEFGHIKLMNPQRSTVWYBZXU') -> x
+aa13 = aa3 | aa1
+aa3 = 'Ala'|'Cys'|'Asp'|'Glu'|'Phe'|'Gly'|'His'|'Ile'|'Lys'|'Leu'|'Met'|'Asn'|'Pro'|'Gln'|'Arg'|'Ser'|'Thr'|'Val'|'Trp'|'Tyr' | 'Asx' | 'Glx' | 'Xaa' | 'Sec'
+aat1 = term1 | aa1
+aat13 = aat3 | aat1
+aat3 = term3 | aa3
+dna = dna_iupac
+dna_iupac = :x ?(x in 'ACGTRYMKWSBDHVNacgtrymkwsbdhvn') -> x
+na_iupac = :x ?(x in 'ACGTURYMKWSBDHVNacgturymkwsbdhvn') -> x
+rna = rna_iupac
+rna_iupac = :x ?(x in 'ACGURYMKWSBDHVNacgurymkwsbdhvn') -> x
+term1 = :x ?(x in 'X*') -> x
+term13 = term3 | term1
+term3 = 'Ter'
+
+# position primitives
+# TODO: #331: support uncertain (?) bases and offsets
+base = snum
+nnum = <'-' num>:x -> int(x)
+num = <digit+>:x -> int(x)
+offset = snum | (-> 0)
+pm = :x ?(x in '-+') -> x
+snum = <pm? num>:x -> int(x)
+
+# Accessions, possibly versioned. Should accept, e.g., NM_01234.5, LRG_01234_1p1
+accn = <letter ((letterOrDigit | ('-'|'_') ~~letterOrDigit)+)? ('.' digit+)?>
+opt_gene_expr = (paren_gene | ->None):gene -> gene
+paren_gene = '(' gene_symbol:symbol ')' -> symbol
+gene_symbol = <letter (letterOrDigit | ('-'|'_') ~~letterOrDigit)+>

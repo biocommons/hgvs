@@ -2,19 +2,28 @@
 
 .DELETE_ON_ERROR:
 .PHONY: FORCE
-.PRECIOUS :
+.PRECIOUS:
 .SUFFIXES:
 
-SHELL:=/bin/bash -e -o pipefail
+ifeq ("","$(shell command -v zsh)")
+$(error "zsh not found; you must install zsh first")
+endif
+
+SHELL:=zsh -eu -o pipefail -o null_glob
 SELF:=$(firstword $(MAKEFILE_LIST))
 
-PKG=hgvs
-PKGD=$(subst .,/,${PKG})
-PYV:=3.7
-VEDIR=venv/${PYV}
+VE_DIR=venv
 
+SRC_DIRS:=src
 TEST_DIRS:=tests
-DOC_TESTS:=doc hgvs ./README.rst
+DOC_TESTS:=docs hgvs ./README.rst
+
+# TESTING sources
+# UTA_DB_URL must be accessible at test time (for now)
+export HGVS_CACHE_MODE=
+_UTAPW=anonymous
+export UTA_DB_URL=postgresql://anonymous:${_UTAPW}@uta.biocommons.org:5432/uta/uta_20241220
+export HGVS_SEQREPO_URL=http://localhost:5000/seqrepo
 
 
 ############################################################################
@@ -29,89 +38,94 @@ help:
 ############################################################################
 #= SETUP, INSTALLATION, PACKAGING
 
-#=> venv: make a Python 2.7 virtual environment
-venv/2.7: venv/%:
-	virtualenv -p $$(type -p python$*) $@; \
-	source $@/bin/activate; \
-	pip install --upgrade pip setuptools
-
-#=> venv: make a Python 3 virtual environment
-venv/3.5 venv/3.6 venv/3.7: venv/%:
-	python$* -mvenv $@; \
-	source $@/bin/activate; \
-	python -m ensurepip --upgrade; \
-	pip install --upgrade pip setuptools
-
-#=> setup: setup/upgrade packages *in current environment*
-.PHONY: setup
-setup: etc/develop.reqs etc/install.reqs
-	if [ -s $(word 1,$^) ]; then pip install --upgrade -r $(word 1,$^); fi
-	if [ -s $(word 2,$^) ]; then pip install --upgrade -r $(word 2,$^); fi
-
 #=> devready: create venv, install prerequisites, install pkg in develop mode
 .PHONY: devready
 devready:
-	make ${VEDIR} && source ${VEDIR}/bin/activate && make setup develop
+	make ${VE_DIR} && source ${VE_DIR}/bin/activate && make develop
 	@echo '#################################################################################'
-	@echo '###  Do not forget to `source ${VEDIR}/bin/activate` to use this environment  ###'
+	@echo '###  Do not forget to `source ${VE_DIR}/bin/activate` to use this environment  ###'
 	@echo '#################################################################################'
+
+#=> venv: make a Python 3 virtual environment
+${VE_DIR}:
+	python3 --version
+	python3 -mvenv $@; \
+	source $@/bin/activate; \
+	python3 -m ensurepip --upgrade; \
+	pip install --upgrade pip setuptools uv wheel
 
 #=> develop: install package in develop mode
-#=> install: install package
-#=> bdist bdist_egg bdist_wheel build sdist: distribution options
-.PHONY: bdist bdist_egg bdist_wheel build build_sphinx sdist install develop
+.PHONY: develop
 develop:
-	pip install -e .
-bdist bdist_egg bdist_wheel build sdist install: %:
-	python setup.py $@
+	uv pip install -e ".[dev]"
+	pre-commit install
 
+#=> install: install package
+.PHONY: install
+install:
+	uv pip install "."
 
+#=> build: make sdist and wheel
+.PHONY: build
+build: %:
+	python -m build
 
 
 ############################################################################
 #= TESTING
 # see test configuration in setup.cfg
 
-
 #=> test: execute tests
 #=> test-code: test code (including embedded doctests)
 #=> test-docs: test example code in docs
-#=> test-/tag/ -- run tests marked with /tag/
-# TODO: rationalize tags
-# find tests -name \*.py | xargs perl -ln0e 'while (m/@pytest.mark.(\w+)/g) {print $1 if not $seen{$1}++}'  | sort
-# => extra fx issues mapping models normalization parametrize pnd quick regression validation
 .PHONY: test test-code test-docs
 test:
-	python setup.py pytest
+	HGVS_CACHE_MODE=run pytest --cov ${SRC_DIRS}
 test-code:
-	python setup.py pytest --addopts="${TEST_DIRS}"
+	pytest ${TEST_DIRS}
 test-docs:
-	python setup.py pytest --addopts="${DOC_TESTS}"
+	pytest ${DOC_TESTS}
+stest:
+	pytest -vvv -s -k ${t}
 test-%:
-	python setup.py pytest --addopts="-m '$*' ${TEST_DIRS}"
+	pytest -m '$*' ${TEST_DIRS}
+
+#=> test-learn: add new data to test data cache
+test-learn:
+	HGVS_CACHE_MODE=learn pytest -s
+#=> test-relearn: destroy and rebuild test data cache
+test-relearn:
+	rm -fr tests/data/cache-py3.hdp tests/cassettes
+	HGVS_CACHE_MODE=learn pytest -s
+#=> test-relearn-iteratively: destroy and rebuild test data cache (biocommons/hgvs#760)
+# temporary workaround for https://github.com/biocommons/hgvs/issues/760
+test-relearn-iteratively:
+	rm -fr tests/data/cache-py3.hdp tests/cassettes
+	find tests/ -name 'test*.py' | HGVS_CACHE_MODE=learn xargs -tn1 -- pytest --no-cov -x -s
 
 #=> tox -- run all tox tests
 tox:
 	tox
 
+#=> cqa: execute code quality tests
+cqa:
+	ruff format --check
+	ruff check
 
 ############################################################################
 #= UTILITY TARGETS
 
-# N.B. Although code is stored in github, I use hg and hg-git on the command line
-#=> reformat: reformat code with yapf and commit
+#=> reformat: reformat code
 .PHONY: reformat
 reformat:
-	@if hg sum | grep -qL '^commit:.*modified'; then echo "Repository not clean" 1>&2; exit 1; fi
-	@if hg sum | grep -qL ' applied'; then echo "Repository has applied patches" 1>&2; exit 1; fi
-	yapf -i -r "${PKGD}" tests
-	hg commit -m "reformatted with yapf"
+	ruff check --fix
+	ruff format
 
 #=> docs -- make sphinx docs
 .PHONY: docs
 docs: develop
 	# RTD makes json. Build here to ensure that it works.
-	make -C doc html json
+	make -C docs html json
 
 ############################################################################
 #= CLEANUP
@@ -119,43 +133,37 @@ docs: develop
 #=> clean: remove temporary and backup files
 .PHONY: clean
 clean:
-	find . \( -name \*~ -o -name \*.bak \) -print0 | xargs -0r rm
-	-make -C doc $@
+	rm -frv **/*~ **/*.bak
+	-make -C docs $@
 	-make -C examples $@
 
 #=> cleaner: remove files and directories that are easily rebuilt
 .PHONY: cleaner
 cleaner: clean
-	rm -fr .cache *.egg-info build dist doc/_build htmlcov
-	find . \( -name \*.pyc -o -name \*.orig -o -name \*.rej \) -print0 | xargs -0r rm
-	find . -name __pycache__ -print0 | xargs -0r rm -fr
-	/bin/rm -fr examples/.ipynb_checkpoints
-	/bin/rm -f hgvs.{dot,svg,png,sfood}
-	-make -C doc $@
+	rm -frv .cache build dist docs/_build
+	rm -frv **/__pycache__
+	rm -frv **/*.egg-info
+	rm -frv **/*.pyc
+	rm -frv **/*.orig
+	rm -frv **/*.rej
+	-make -C docs $@
 	-make -C examples $@
 
-#=> cleanest: remove files and directories that require more time/network fetches to rebuild
+#=> cleanest: remove files and directories that are more expensive to rebuild
 .PHONY: cleanest
 cleanest: cleaner
-	rm -fr .eggs .tox venv
-	-make -C doc $@
+	rm -frv .eggs .tox venv
+	-make -C docs $@
 	-make -C examples $@
 
-#=> pristine distclean: above, and delete anything unknown to mercurial
-.PHONY: pristine distclean
-pristine distclean: cleanest
-	if [ -d .hg ]; then hg st -inu0 | xargs -0r /bin/rm -fv; fi
+#=> distclean: remove untracked files and other detritus
+.PHONY: distclean
+distclean: cleanest
+	git clean -df
 
 
 ############################################################################
 #= HGVS specific
-
-changelog:
-	make -C doc/changelog 0.4.rst
-
-#=> changelog
-doc/source/changelog.rst: CHANGELOG
-	./sbin/clog-txt-to-rst <$< >$@
 
 #=> code-check -- check code with flake8
 code-check:
@@ -163,8 +171,8 @@ code-check:
 
 #=> docs-aux -- make generated docs for sphinx
 docs-aux:
-	make -C misc/railroad doc-install
-	make -C examples doc-install
+	make -C misc/railroad docs-install
+	make -C examples docs-install
 
 #=> hgvs.svg -- import graph; requires snakefood
 hgvs.sfood:

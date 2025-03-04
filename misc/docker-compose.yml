@@ -1,0 +1,41 @@
+# Creates a stack of data services for hgvs and vr-python
+#
+# ```
+# docker volume create --name=uta_vol
+# docker volume create --name=seqrepo_vol
+# docker compose up
+# ```
+
+
+services:
+  seqrepo:    
+    # This container rsyncs sequence data from dl.biocommons.org
+    # and exits when done. 
+    image: biocommons/seqrepo:2024-12-20
+    volumes:
+      - seqrepo_vol:/usr/local/share/seqrepo
+    
+  seqrepo-rest-service:    
+    # Test: curl http://localhost:5000/seqrepo/1/sequence/refseq:NM_000551.3
+    image: biocommons/seqrepo-rest-service:latest
+    volumes:
+      - seqrepo_vol:/usr/local/share/seqrepo
+    network_mode: host
+    command: seqrepo-rest-service /usr/local/share/seqrepo/2024-12-20
+    
+  uta:
+    # Test:
+    # psql -XAt postgres://anonymous@localhost/uta -c 'select count(*) from transcript'
+    # 249909
+    image: biocommons/uta:uta_20241220
+    environment:
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - uta_vol:/var/lib/postgresql/data
+    network_mode: host
+    
+  # vr-rest-interface:
+
+volumes:
+  seqrepo_vol:
+  uta_vol:

@@ -1,0 +1,10 @@
+clog format: 1; -*-outline-*-
+* 1.5.3 (2022-11-10)
+Changes since 1.5.2 (2021-12-17).
+** Bug Fixes
+*** Improve uta pooling [d095ba3] (jdasilva-invitae)
+** Other Changes
+*** Update readme for setting PGPASSWORD when unable to include password in UTA_DB_URL (#635) [9386562] (Kori Kuzma)
+** Internal and Developer Changes
+*** Add unittests for pooling [c384fa0] (jdasilva-invitae)
+*** Closes #630: Migrate testing and packaging to github actions; update packaging tools; speed up testing by reducing number of connections and improving caching [8f14276] (Reece Hart)

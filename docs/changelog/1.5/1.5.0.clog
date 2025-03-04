@@ -1,0 +1,20 @@
+clog format: 1; -*-outline-*-
+* 1.5.0 (2020-03-16)
+Changes since 1.4.0 (2020-01-26).
+** Special Attention
+*** Closes #552: Python 2.7 is no longer supported [cf3b95b] (Reece Hart)
+** New Features
+*** Closes #437: Optionally allow out-of-bounds transcript variation (#590) [c66b7d4] (Reece Hart)
+An new optional flag, `strict_bounds`, enables allows hgvs to
+manipulate variants that are extrapolated beyond the transcript
+bounds. When projecting out-of-bounds variation from the genome to the
+transcript, the normalized representation from the genome is
+preserved. Sponsored by Invitae.
+** Other Changes
+*** Closes #570: Set search path only when necessary [914a4b4] (Clayton Wheeler)
+*** Remove Biopython dependency (#527) [b30f963] (Alan Rubin)
+*** Update setup.py (#575) [5424f19] (Jake Peacock)
+*** removed enum34 dependency [852186e] (Reece Hart)
+*** updated AssemblyMapper documentation [0beb504] (Reece Hart)
+** Internal and Developer Changes
+*** Extensive changes in tox, pytest, and travis configurations
