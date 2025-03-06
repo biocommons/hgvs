@@ -4,7 +4,6 @@ from contextlib import contextmanager
 import hgvs
 from hgvs.exceptions import HGVSError
 import pytest
-from support import CACHE
 import support.mock_input_source as mock_input_data_source
 
 sanity_cases = [
@@ -294,28 +293,6 @@ real_cases = [
 
 
 @pytest.fixture(scope="module")
-def hp():
-    return hgvs.parser.Parser()
-
-
-@pytest.fixture(scope="module")
-def hdp():
-    return hgvs.dataproviders.uta.connect(
-        mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
-    )
-
-
-@pytest.fixture(scope="module")
-def vm(hdp):
-    return hgvs.variantmapper.VariantMapper(hdp)
-
-
-@pytest.fixture(scope="module")
-def am37(hdp):
-    return hgvs.assemblymapper.AssemblyMapper(hdp, assembly_name="GRCh37")
-
-
-@pytest.fixture(scope="module")
 def mock_hdp():
     fn = os.path.join(os.path.dirname(__file__), "..", "data", "sanity_cp.tsv")
     return mock_input_data_source.MockInputSource(fn)
@@ -337,16 +314,16 @@ def config_setting(module, setting, temp_value):
 
 
 @pytest.mark.parametrize("case", sanity_cases)
-def test_sanity_c_to_p(case, hp, mock_vm):
+def test_sanity_c_to_p(case, parser, mock_vm):
     with config_setting(hgvs.global_config.mapping, 'ins_at_boundary_is_intronic', False):
-        var_c = hp.parse(case["var_c"])
+        var_c = parser.parse(case["var_c"])
         if "exc" in case["exonic"]:
             with pytest.raises(case["exonic"]["exc"]):
                 mock_vm.c_to_p(var_c, "MOCK")
         else:
             assert str(mock_vm.c_to_p(var_c, "MOCK")) == case["exonic"]["var_p"]
     with config_setting(hgvs.global_config.mapping, 'ins_at_boundary_is_intronic', True):
-        var_c = hp.parse(case["var_c"])
+        var_c = parser.parse(case["var_c"])
         if "exc" in case["intronic"]:
             with pytest.raises(case["intronic"]["exc"]):
                 mock_vm.c_to_p(var_c, "MOCK")
@@ -355,9 +332,9 @@ def test_sanity_c_to_p(case, hp, mock_vm):
 
 
 @pytest.mark.parametrize("case", real_cases)
-def test_real_c_to_p(case, hp, vm, am37):
+def test_real_c_to_p(case, parser, vm, am37):
     with config_setting(hgvs.global_config.mapping, 'ins_at_boundary_is_intronic', False):
-        var_c = hp.parse(case["var_c"])
+        var_c = parser.parse(case["var_c"])
         if "exc" in case["exonic"]:
             with pytest.raises(case["exonic"]["exc"]):
                 vm.c_to_p(var_c)
@@ -365,7 +342,7 @@ def test_real_c_to_p(case, hp, vm, am37):
             assert str(vm.c_to_p(var_c)) == case["exonic"]["var_p"]
         assert str(am37.c_to_p(var_c)) == case["exonic"]["var_p"]
     with config_setting(hgvs.global_config.mapping, 'ins_at_boundary_is_intronic', True):
-        var_c = hp.parse(case["var_c"])
+        var_c = parser.parse(case["var_c"])
         if "exc" in case["intronic"]:
             with pytest.raises(case["intronic"]["exc"]):
                 vm.c_to_p(var_c)
