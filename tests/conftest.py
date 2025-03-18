@@ -4,8 +4,10 @@ from pathlib import Path
 import pytest
 from support import CACHE
 
+from hgvs.assemblymapper import AssemblyMapper
 import hgvs.easy
 from hgvs.extras.babelfish import Babelfish
+from hgvs.variantmapper import VariantMapper
 
 
 @pytest.fixture(scope="function")
@@ -30,18 +32,18 @@ def parser():
 
 
 @pytest.fixture(scope="session")
-def vm():
-    return hgvs.easy.vm
+def vm(hdp):
+    return VariantMapper(hdp)
 
 
 @pytest.fixture(scope="session")
-def am37():
-    return hgvs.easy.am37
+def am37(hdp):
+    return AssemblyMapper(hdp, assembly_name="GRCh37")
 
 
 @pytest.fixture(scope="session")
-def am38():
-    return hgvs.easy.am38
+def am38(hdp):
+    return AssemblyMapper(hdp, assembly_name="GRCh38")
 
 
 @pytest.fixture(scope="session")
