@@ -1,8 +1,5 @@
 # *hgvs* - manipulate biological sequence variants according to Human Genome Variation Society recommendations
 
-**Important:** biocommons packages require Python 3.10+.
-[More](https://biocommons.org/en/latest/contributing/coding-guidelines/#other)
-
 The *hgvs* package provides a Python library to parse, format, validate,
 normalize, and map sequence variants according to [Variation
 Nomenclature](http://varnomen.hgvs.org/) (aka Human Genome Variation
@@ -48,6 +45,12 @@ HGVS recommendations. Please refer to
 - Easily installed using remote data sources. Installation with local
   data sources is straightforward and completely obviates network
   access
+
+## Citation
+
+Wang M, Callenberg KM, Dalgleish R, Fedtsov A, Fox N, Freeman PJ, et al.
+<br/>**hgvs: A Python package for manipulating sequence variants using HGVS nomenclature: 2018 Update.**
+<br/>Hum Mutat. 2018. [doi:10.1002/humu.23615](https://doi.org/10.1002/humu.23615)
 
 ## Important Notes
 
