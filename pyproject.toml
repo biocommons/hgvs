@@ -58,6 +58,7 @@ dev = [
   "ipython",
   "isort",
   "jupyter",
+  "parameterized",
   "pyright",
   "pytest",
   "pytest-cov",
