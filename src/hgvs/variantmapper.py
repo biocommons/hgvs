@@ -281,6 +281,7 @@ class VariantMapper:
                 edit_c.type == "ins"
                 and pos_c.start.offset == 0
                 and pos_c.end.offset == 0
+                and pos_c.start.datum == pos_c.end.datum
                 and pos_c.end - pos_c.start > 1
             ):
                 pos_c.start.base += 1
