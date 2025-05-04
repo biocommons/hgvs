@@ -382,8 +382,8 @@ class AAPosition:
 
 @attr.s(slots=True, repr=False)
 class Interval:
-    start = attr.ib(default=None)
-    end = attr.ib(default=None)
+    start = attr.ib(default=None)  # Interval or SimplePosition or BaseOffsetPosition
+    end = attr.ib(default=None)  # Interval or SimplePosition or BaseOffsetPosition
     uncertain = attr.ib(default=False)
 
     def __attrs_post_init__(self):

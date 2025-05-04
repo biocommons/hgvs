@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""implements validation of hgvs variants
-
-"""
+"""implements validation of hgvs variants"""
 
 import logging
 
@@ -12,9 +10,7 @@ import hgvs.variantmapper
 from hgvs.enums import Datum, ValidationLevel
 from hgvs.exceptions import HGVSInvalidVariantError
 
-SEQ_ERROR_MSG = (
-    "Variant reference ({var_ref_seq}) does not agree with reference sequence ({ref_seq})"
-)
+SEQ_ERROR_MSG = "Variant reference ({var_ref_seq}) does not agree with reference sequence ({ref_seq})"
 CDS_BOUND_ERROR_MSG = "Variant is outside CDS bounds (CDS length : {cds_length})"
 TX_BOUND_ERROR_MSG = "Variant is outside the transcript bounds"
 
@@ -49,9 +45,9 @@ class IntrinsicValidator:
         self.strict = strict
 
     def validate(self, var, strict=None):
-        assert isinstance(
-            var, hgvs.sequencevariant.SequenceVariant
-        ), "variant must be a parsed HGVS sequence variant object"
+        assert isinstance(var, hgvs.sequencevariant.SequenceVariant), (
+            "variant must be a parsed HGVS sequence variant object"
+        )
         if strict is None:
             strict = self.strict
         fail_level = ValidationLevel.WARNING if strict else ValidationLevel.ERROR
@@ -72,9 +68,9 @@ class ExtrinsicValidator:
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp, prevalidation_level=None)
 
     def validate(self, var, strict=None):
-        assert isinstance(
-            var, hgvs.sequencevariant.SequenceVariant
-        ), "variant must be a parsed HGVS sequence variant object"
+        assert isinstance(var, hgvs.sequencevariant.SequenceVariant), (
+            "variant must be a parsed HGVS sequence variant object"
+        )
         if strict is None:
             strict = self.strict
         fail_level = ValidationLevel.WARNING if strict else ValidationLevel.ERROR
@@ -91,7 +87,8 @@ class ExtrinsicValidator:
                 if hgvs.global_config.mapping.strict_bounds:
                     raise HGVSInvalidVariantError(msg)
                 _logger.warning(
-                    "{}: Variant outside transcript bounds;" " no validation provided".format(var)
+                    "{}: Variant outside transcript bounds;"
+                    " no validation provided".format(var)
                 )
                 return True  # no other checking performed
 
@@ -106,11 +103,13 @@ class ExtrinsicValidator:
         return True
 
     def _ref_is_valid(self, var):
+        s, e = self._get_start_end(var)
+
         # use reference sequence of original variant, even if later converted (eg c_to_n)
         if (
             var.type in BASE_OFFSET_COORD_TYPES
             and var.posedit.pos is not None
-            and (var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0)
+            and (s.offset != 0 or e.offset != 0)
         ):
             return (
                 ValidationLevel.WARNING,
@@ -147,12 +146,15 @@ class ExtrinsicValidator:
             var_ref_seq = getattr(var.posedit.edit, "ref", None) or None
             var_n = self.vm.c_to_n(var) if var.type == "c" else var
             if var_n.posedit.pos.start.uncertain or var_n.posedit.pos.end.uncertain:
-                ref_checks.append(
-                    (var_n.ac, None, None, var_ref_seq)
-                )
+                ref_checks.append((var_n.ac, None, None, var_ref_seq))
             else:
                 ref_checks.append(
-                    (var_n.ac, var_n.posedit.pos.start.base, var_n.posedit.pos.end.base, var_ref_seq)
+                    (
+                        var_n.ac,
+                        var_n.posedit.pos.start.base,
+                        var_n.posedit.pos.end.base,
+                        var_ref_seq,
+                    )
                 )
 
         for ac, var_ref_start, var_ref_end, var_ref_seq in ref_checks:
@@ -177,6 +179,17 @@ class ExtrinsicValidator:
 
         return (ValidationLevel.VALID, None)
 
+    def _get_start_end(self, var):
+        if isinstance(var.posedit.pos, hgvs.location.Interval):
+            s = var.posedit.pos.start.start
+        else:
+            s = var.posedit.pos.start
+        if isinstance(var.posedit.pos.end, hgvs.location.Interval):
+            e = var.posedit.pos.end.end
+        else:
+            e = var.posedit.pos.end
+        return s, e
+
     def _c_within_cds_bound(self, var):
         if var.type != "c":
             return (ValidationLevel.VALID, None)
@@ -187,13 +200,19 @@ class ExtrinsicValidator:
                 "No transcript data for accession: {ac}".format(ac=var.ac),
             )
         cds_length = tx_info["cds_end_i"] - tx_info["cds_start_i"]
-        if (
-            var.posedit.pos.start.datum == Datum.CDS_START
-            and var.posedit.pos.start.base > cds_length
-        ):
-            return (ValidationLevel.ERROR, CDS_BOUND_ERROR_MSG.format(cds_length=cds_length))
-        if var.posedit.pos.end.datum == Datum.CDS_START and var.posedit.pos.end.base > cds_length:
-            return (ValidationLevel.ERROR, CDS_BOUND_ERROR_MSG.format(cds_length=cds_length))
+
+        s, e = self._get_start_end(var)
+
+        if s.datum == Datum.CDS_START and s.base > cds_length:
+            return (
+                ValidationLevel.ERROR,
+                CDS_BOUND_ERROR_MSG.format(cds_length=cds_length),
+            )
+        if e.datum == Datum.CDS_START and e.base > cds_length:
+            return (
+                ValidationLevel.ERROR,
+                CDS_BOUND_ERROR_MSG.format(cds_length=cds_length),
+            )
         return (ValidationLevel.VALID, None)
 
     def _n_within_transcript_bounds(self, var):
@@ -206,9 +225,12 @@ class ExtrinsicValidator:
                 ValidationLevel.WARNING,
                 "No transcript data for accession: {ac}".format(ac=var.ac),
             )
-        if var.posedit.pos.start.datum == Datum.SEQ_START and var.posedit.pos.start.base <= 0:
+
+        s, e = self._get_start_end(var)
+
+        if s.datum == Datum.SEQ_START and s.base <= 0:
             return (ValidationLevel.ERROR, TX_BOUND_ERROR_MSG.format())
-        if var.posedit.pos.end.datum == Datum.SEQ_START and var.posedit.pos.end.base > tx_len:
+        if e.datum == Datum.SEQ_START and e.base > tx_len:
             return (ValidationLevel.ERROR, TX_BOUND_ERROR_MSG.format())
         return (ValidationLevel.VALID, None)
 

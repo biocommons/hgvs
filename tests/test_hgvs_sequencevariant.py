@@ -337,16 +337,40 @@ class Test_SequenceVariant(unittest.TestCase):
 
         chrom_ac = var_g.ac
         tx_ac = clinvar_hgvs_c.split(":")[0]
+
+        # first test only with inner intervals
+        var_c_inner = self.vm.g_to_c(var_g, tx_ac, imprecise_inner_interval_only=True)
+        print(f"var_c_inner: {var_c_inner} should be: {hgvs_hgvs_c}")
+        self.assertEqual(hgvs_hgvs_c, str(var_c_inner))
+
         var_c = self.vm.g_to_c(var_g, tx_ac)
-        self.assertEqual(hgvs_hgvs_c, str(var_c))
+        self.assertEqual(clinvar_hgvs_c, str(var_c))
 
         # the start/stop positions are uncertain, but the whole range is not:
         assert not var_c.posedit.pos.uncertain
         assert var_c.posedit.pos.start.uncertain
         assert var_c.posedit.pos.end.uncertain
 
+        var_n = self.vm.g_to_n(var_g, tx_ac)
+        print(f"var_n: {var_n}")
+
+        print(f" var_c like clinvar: {var_c}")
         var_g_reverse = self.vm.c_to_g(var_c, chrom_ac)
+        print(f"{var_g_reverse}")
         self.assertEqual(hgvs_hgvs_g, str(var_g_reverse))
+
+        print(f"clinvar: {clinvar_hgvs_c} hgvs:{hgvs_hgvs_c} event: {event_type}")
+
+
+def test_clinvar_uncertain_ranges_mini(parser, am38):
+    var_g1 = parser.parse("NC_000019.9:g.(11211022_11213339)_(11217364_11218067)dup")
+
+    # should not be "NM_000527.5:c.(?_191-1)_(817+1_?)dup"
+    var_c1 = am38.g_to_c(var_g1, "NM_000527.5")
+    assert str(var_c1) == "NM_000527.5:c.(190+1_191-1)_(817+1_818-1)dup"
+
+    var_g2 = am38.c_to_g(var_c1)
+    assert str(var_g1) == str(var_g2)
 
 
 if __name__ == "__main__":

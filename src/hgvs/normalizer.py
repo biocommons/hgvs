@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-"""hgvs.normalizer
-"""
+"""hgvs.normalizer"""
 
 import copy
 import logging
@@ -42,9 +41,9 @@ class Normalizer:
         :param validate: whether validating the input variant before normalizing
 
         """
-        assert (
-            shuffle_direction == 3 or shuffle_direction == 5
-        ), "The shuffling direction should be 3 (3' most) or 5 (5' most)."
+        assert shuffle_direction == 3 or shuffle_direction == 5, (
+            "The shuffling direction should be 3 (3' most) or 5 (5' most)."
+        )
         self.hdp = hdp
         self.shuffle_direction = shuffle_direction
         self.cross_boundaries = cross_boundaries
@@ -56,9 +55,9 @@ class Normalizer:
 
     def normalize(self, var):
         """Perform sequence variants normalization for single variant"""
-        assert isinstance(
-            var, hgvs.sequencevariant.SequenceVariant
-        ), "variant must be a parsed HGVS sequence variant object"
+        assert isinstance(var, hgvs.sequencevariant.SequenceVariant), (
+            "variant must be a parsed HGVS sequence variant object"
+        )
 
         # keep a shallow reference to the original variant, to be returned
         # as-is under certain circumstances
@@ -71,7 +70,12 @@ class Normalizer:
         if var.posedit is not None and isinstance(var.posedit, hgvs.edit.AARefAlt):
             init_met = var.posedit.init_met
 
-        if var.posedit is None or var.posedit.uncertain or init_met or var.posedit.pos is None:
+        if (
+            var.posedit is None
+            or var.posedit.uncertain
+            or init_met
+            or var.posedit.pos is None
+        ):
             return var
 
         type = var.type
@@ -97,8 +101,10 @@ class Normalizer:
         if type == "c":
             var = self.vm.c_to_n(var)
 
+        s, e = self._get_start_end(var)
+
         if var.type in "nr":
-            if var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0:
+            if s.offset != 0 or e.offset != 0:
                 raise HGVSUnsupportedOperationError(
                     "Normalization of intronic variants is not supported"
                 )
@@ -116,7 +122,7 @@ class Normalizer:
                 # was invalid.
                 return "Bad Request" not in str(e)
 
-        if var.posedit.pos.start.base < 0 or not is_valid_pos(var.ac, var.posedit.pos.end.base):
+        if s.base < 0 or not is_valid_pos(var.ac, e.base):
             if hgvs.global_config.mapping.strict_bounds:
                 raise HGVSInvalidVariantError(f"{var}: coordinates are out-of-bounds")
             _logger.warning(f"{var}: coordinates are out-of-bounds; returning as-is")
@@ -201,14 +207,31 @@ class Normalizer:
             ref_end = tgt_len
 
         var_norm = copy.deepcopy(var)
+        s_norm, e_norm = self._get_start_end(var_norm)
         var_norm.posedit.edit = edit
-        var_norm.posedit.pos.start.base = ref_start
-        var_norm.posedit.pos.end.base = ref_end
+        s_norm.base = ref_start
+        e_norm.base = ref_end
 
         if type == "c":
             var_norm = self.vm.n_to_c(var_norm)
 
         return var_norm
+
+    def _get_start_end(self, var):
+        if isinstance(var.posedit.pos, hgvs.location.Interval):
+            s = var.posedit.pos.start.start
+            if not s.base:
+                s = var.posedit.pos.start.end
+            print(f" is interval {s}")
+        else:
+            s = var.posedit.pos.start
+        if isinstance(var.posedit.pos.end, hgvs.location.Interval):
+            e = var.posedit.pos.end.end
+            if not e.base:
+                e = var.posedit.pos.end.start
+        else:
+            e = var.posedit.pos.end
+        return s, e
 
     def _get_boundary(self, var):
         """Get the position of exon-intron boundary for current variant"""
@@ -223,7 +246,9 @@ class Normalizer:
                         "No mapping info available for {ac}".format(ac=var.ac)
                     )
                 map_info = [
-                    item for item in map_info if item["alt_aln_method"] == self.alt_aln_method
+                    item
+                    for item in map_info
+                    if item["alt_aln_method"] == self.alt_aln_method
                 ]
                 alt_ac = map_info[0]["alt_ac"]
 
@@ -346,7 +371,11 @@ class Normalizer:
             # For NARefAlt and Inv
             if var.posedit.edit.ref_s is None or var.posedit.edit.ref == "":
                 ref = self._fetch_bounded_seq(
-                    var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, 0, boundary
+                    var,
+                    var.posedit.pos.start.base - 1,
+                    var.posedit.pos.end.base,
+                    0,
+                    boundary,
                 )
             else:
                 ref = var.posedit.edit.ref
@@ -362,7 +391,11 @@ class Normalizer:
             alt = ""
         elif var.posedit.edit.type == "dup":
             alt = var.posedit.edit.ref or self._fetch_bounded_seq(
-                var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, 0, boundary
+                var,
+                var.posedit.pos.start.base - 1,
+                var.posedit.pos.end.base,
+                0,
+                boundary,
             )
         elif var.posedit.edit.type == "inv":
             alt = reverse_complement(ref)
@@ -377,19 +410,21 @@ class Normalizer:
         ref, alt = self._get_ref_alt(var, boundary)
         win_size = hgvs.global_config.normalizer.window_size
 
+        s, e = self._get_start_end(var)
+
         if self.shuffle_direction == 3:
             if var.posedit.edit.type == "ins":
-                base = var.posedit.pos.start.base
+                base = s.base
                 start = 1
                 stop = 1
             elif var.posedit.edit.type == "dup":
-                base = var.posedit.pos.end.base
+                base = e.base
                 start = 1
                 stop = 1
             else:
-                base = var.posedit.pos.start.base
+                base = s.base
                 start = 0
-                stop = var.posedit.pos.end.base - base + 1
+                stop = e.base - base + 1
 
             while True:
                 ref_seq = self._fetch_bounded_seq(
@@ -427,7 +462,9 @@ class Normalizer:
                     start -= boundary[0] + 1 - base
                     stop -= boundary[0] + 1 - base
                     base = boundary[0] + 1
-                ref_seq = self._fetch_bounded_seq(var, base - 1, base + stop - 1, start, boundary)
+                ref_seq = self._fetch_bounded_seq(
+                    var, base - 1, base + stop - 1, start, boundary
+                )
                 if ref_seq == "":
                     break
                 orig_start, orig_stop = start, stop
@@ -442,6 +479,7 @@ class Normalizer:
                 stop = orig_stop
 
         return base + start, base + stop, (ref, alt)
+
 
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)
