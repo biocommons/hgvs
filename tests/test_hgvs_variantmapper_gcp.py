@@ -1,27 +1,16 @@
 # -*- coding: utf-8 -*-
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
-import logging
+import csv
 import os
-import pprint
 import re
-import sys
 import unittest
 
-if sys.version_info < (3,):
-    import unicodecsv as csv
-else:
-    import csv
-
 import pytest
-from support import CACHE
 
 import hgvs.dataproviders.uta
 import hgvs.parser
 import hgvs.sequencevariant
 import hgvs.variantmapper
-from hgvs.exceptions import HGVSError
+from support import CACHE
 
 
 def gxp_file_reader(fn):
@@ -36,7 +25,9 @@ def gxp_file_reader(fn):
 class Test_VariantMapper(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        self.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+        self.hdp = hgvs.dataproviders.uta.connect(
+            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
+        )
         self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
         self.hp = hgvs.parser.Parser()
 
@@ -142,7 +133,11 @@ class Test_VariantMapper(unittest.TestCase):
 
         var_g = self.hp.parse_hgvs_variant(rec["HGVSg"])
         var_x = self.hp.parse_hgvs_variant(rec["HGVSc"])
-        var_p = self.hp.parse_hgvs_variant(rec["HGVSp"]) if rec["HGVSp"] is not None and rec["HGVSp"] != "" else None
+        var_p = (
+            self.hp.parse_hgvs_variant(rec["HGVSp"])
+            if rec["HGVSp"] is not None and rec["HGVSp"] != ""
+            else None
+        )
 
         # g -> x
         if var_x.type == "c":
@@ -152,7 +147,8 @@ class Test_VariantMapper(unittest.TestCase):
         self.assertEqual(
             _rm_del_seq(str(var_x)),
             _rm_del_seq(str(var_x_test)),
-            msg="%s != %s (g>t; %s; HGVSg=%s)" % (str(var_x_test), str(var_x), rec["id"], rec["HGVSg"]),
+            msg="%s != %s (g>t; %s; HGVSg=%s)"
+            % (str(var_x_test), str(var_x), rec["id"], rec["HGVSg"]),
         )
 
         # c,n -> g
@@ -163,7 +159,8 @@ class Test_VariantMapper(unittest.TestCase):
         self.assertEqual(
             _rm_del_seq(str(var_g)),
             _rm_del_seq(str(var_g_test)),
-            msg="%s != %s (t>g; %s; HGVSc=%s)" % (str(var_g_test), str(var_g), rec["id"], rec["HGVSc"]),
+            msg="%s != %s (t>g; %s; HGVSc=%s)"
+            % (str(var_g_test), str(var_g), rec["id"], rec["HGVSc"]),
         )
 
         if var_p is not None:
@@ -181,7 +178,9 @@ class Test_VariantMapper(unittest.TestCase):
                 # if expected value doesn't have a count, strip it from the test
                 hgvs_p_test = re.sub(r"Ter\d+$", "Ter", hgvs_p_test)
 
-            self.assertEqual(hgvs_p_exp, hgvs_p_test, msg="%s != %s (%s)" % (hgvs_p_exp, hgvs_p_test, rec["id"]))
+            self.assertEqual(
+                hgvs_p_exp, hgvs_p_test, msg="%s != %s (%s)" % (hgvs_p_exp, hgvs_p_test, rec["id"])
+            )
 
 
 if __name__ == "__main__":

@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
+import csv
 import os
 import pprint
 import re
 import unittest
-from sys import version_info
+from importlib.resources import files as resources_files
 
-import pkg_resources
+import hgvs.parser
+
 
 #
 # Tests of the grammar
@@ -33,17 +32,6 @@ import pkg_resources
 #
 
 
-if version_info < (3,):
-    import unicodecsv as csv
-else:
-    import csv
-
-import six
-from six.moves import map
-
-import hgvs.parser
-
-
 class TestGrammarFull(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -55,7 +43,7 @@ class TestGrammarFull(unittest.TestCase):
         """ensure that all rules in grammar have tests"""
 
         grammar_rule_re = re.compile(r"^(\w+)")
-        grammar_fn = pkg_resources.resource_filename("hgvs", "_data/hgvs.pymeta")
+        grammar_fn = resources_files("hgvs") / "_data" / "hgvs.pymeta"
         with open(grammar_fn, "r") as f:
             grammar_rules = set(r.group(1) for r in filter(None, map(grammar_rule_re.match, f)))
 
@@ -79,17 +67,23 @@ class TestGrammarFull(unittest.TestCase):
 
                 # setup input
                 inputs = self._split_inputs(row["Test"], row["InType"])
-                expected_results = self._split_inputs(row["Expected"], row["InType"]) if row["Expected"] else inputs
+                expected_results = (
+                    self._split_inputs(row["Expected"], row["InType"])
+                    if row["Expected"]
+                    else inputs
+                )
                 expected_map = dict(zip(inputs, expected_results))
                 # step through each item and check
                 is_valid = True if row["Valid"].lower() == "true" else False
 
                 for key in expected_map:
-                    expected_result = six.text_type(expected_map[key]).replace("u'", "'")
+                    expected_result = str(expected_map[key]).replace("u'", "'")
                     function_to_test = getattr(self.p._grammar(key), row["Func"])
-                    row_str = "{}\t{}\t{}\t{}\t{}".format(row["Func"], key, row["Valid"], "one", expected_result)
+                    row_str = "{}\t{}\t{}\t{}\t{}".format(
+                        row["Func"], key, row["Valid"], "one", expected_result
+                    )
                     try:
-                        actual_result = six.text_type(function_to_test()).replace("u'", "'")
+                        actual_result = str(function_to_test()).replace("u'", "'")
                         if not is_valid or (expected_result != actual_result):
                             print("expected: {} actual:{}".format(expected_result, actual_result))
                             fail_cases.append(row_str)

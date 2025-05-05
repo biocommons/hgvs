@@ -8,12 +8,9 @@ different (e.g., the ref AA in a protein substitution is part of the
 location).
 
 """
-
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+import abc
 
 import attr
-import six
 from bioutils.sequences import aa1_to_aa3, aa_to_aa1
 
 import hgvs
@@ -21,7 +18,7 @@ from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError
 
 
 @attr.s(slots=True)
-class Edit(object):
+class Edit(abc.ABC):
     def format(self, conf=None):
         return str(self)
 
@@ -45,7 +42,15 @@ class Edit(object):
         return p_3_letter, p_term_asterisk, p_init_met
 
     def _del_ins_lengths(self, ilen):
-        raise HGVSUnsupportedOperationError("internal function _del_ins_lengths not implemented for this variant type")
+        raise HGVSUnsupportedOperationError(
+            "internal function _del_ins_lengths not implemented for this variant type"
+        )
+
+    @property
+    @abc.abstractmethod
+    def type(self):
+        """ return the type of this Edit """
+        pass
 
 
 @attr.s(slots=True)
@@ -73,7 +78,11 @@ class NARefAlt(Edit):
         >>> NARefAlt(7).ref_s
 
         """
-        return self.ref if (isinstance(self.ref, six.string_types) and self.ref and self.ref[0] in "ACGTUN") else None
+        return (
+            self.ref
+            if (isinstance(self.ref, str) and self.ref and self.ref[0] in "ACGTUN")
+            else None
+        )
 
     @property
     def ref_n(self):
@@ -111,7 +120,9 @@ class NARefAlt(Edit):
         if self.ref is not None and self.alt is not None:
             if self.ref == self.alt:
                 s = "{ref}=".format(ref=ref)
-            elif len(self.alt) == 1 and len(self.ref) == 1 and not self.ref.isdigit():  # don't turn del5insT into 5>T
+            elif (
+                len(self.alt) == 1 and len(self.ref) == 1 and not self.ref.isdigit()
+            ):  # don't turn del5insT into 5>T
                 s = "{self.ref}>{self.alt}".format(self=self)
             else:
                 s = "del{ref}ins{alt}".format(ref=ref, alt=self.alt)
@@ -185,7 +196,7 @@ class AARefAlt(Edit):
         p_3_letter, p_term_asterisk, p_init_met = self._format_config_aa(conf)
 
         if self.init_met and p_init_met:
-            s = "Met1?"
+            s = "Met1?" if p_3_letter else "M1?"
         elif self.init_met and not p_init_met:
             s = "?"
         # subst and delins
@@ -415,7 +426,11 @@ class Dup(Edit):
         """
         returns a string representing the ref sequence, if it is not None and smells like a sequence
         """
-        return self.ref if (isinstance(self.ref, six.string_types) and self.ref and self.ref[0] in "ACGTUN") else None
+        return (
+            self.ref
+            if (isinstance(self.ref, str) and self.ref and self.ref[0] in "ACGTUN")
+            else None
+        )
 
     def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
@@ -539,7 +554,11 @@ class Inv(Edit):
 
     @property
     def ref_s(self):
-        return self.ref if (isinstance(self.ref, six.string_types) and self.ref and self.ref[0] in "ACGTUN") else None
+        return (
+            self.ref
+            if (isinstance(self.ref, str) and self.ref and self.ref[0] in "ACGTUN")
+            else None
+        )
 
     @property
     def ref_n(self):

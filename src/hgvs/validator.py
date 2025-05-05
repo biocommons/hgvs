@@ -3,9 +3,6 @@
 
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import logging
 
 import hgvs
@@ -13,10 +10,11 @@ import hgvs.edit
 import hgvs.parser
 import hgvs.variantmapper
 from hgvs.enums import Datum, ValidationLevel
-from hgvs.exceptions import (HGVSInvalidVariantError,
-                             HGVSUnsupportedOperationError)
+from hgvs.exceptions import HGVSInvalidVariantError
 
-SEQ_ERROR_MSG = "Variant reference ({var_ref_seq}) does not agree with reference sequence ({ref_seq})"
+SEQ_ERROR_MSG = (
+    "Variant reference ({var_ref_seq}) does not agree with reference sequence ({ref_seq})"
+)
 CDS_BOUND_ERROR_MSG = "Variant is outside CDS bounds (CDS length : {cds_length})"
 TX_BOUND_ERROR_MSG = "Variant is outside the transcript bounds"
 
@@ -27,7 +25,7 @@ SIMPLE_COORD_TYPES = "gmp"
 _logger = logging.getLogger(__name__)
 
 
-class Validator(object):
+class Validator:
     """invoke intrinsic and extrinsic validation"""
 
     def __init__(self, hdp, strict=hgvs.global_config.validator.strict):
@@ -41,7 +39,7 @@ class Validator(object):
         return self._ivr.validate(var, strict) and self._evr.validate(var, strict)
 
 
-class IntrinsicValidator(object):
+class IntrinsicValidator:
     """
     Attempts to determine if the HGVS name is internally consistent
 
@@ -92,7 +90,9 @@ class ExtrinsicValidator:
             if res != ValidationLevel.VALID:
                 if hgvs.global_config.mapping.strict_bounds:
                     raise HGVSInvalidVariantError(msg)
-                _logger.warning("{}: Variant outside transcript bounds;" " no validation provided".format(var))
+                _logger.warning(
+                    "{}: Variant outside transcript bounds;" " no validation provided".format(var)
+                )
                 return True  # no other checking performed
 
         res, msg = self._c_within_cds_bound(var)
@@ -112,19 +112,43 @@ class ExtrinsicValidator:
             and var.posedit.pos is not None
             and (var.posedit.pos.start.offset != 0 or var.posedit.pos.end.offset != 0)
         ):
-            return (ValidationLevel.WARNING, "Cannot validate sequence of an intronic variant ({})".format(str(var)))
+            return (
+                ValidationLevel.WARNING,
+                "Cannot validate sequence of an intronic variant ({})".format(str(var)),
+            )
 
         ref_checks = []
         if var.type == "p":
-            if not var.posedit or not var.posedit.pos or not var.posedit.pos.start or not var.posedit.pos.end:
+            if (
+                not var.posedit
+                or not var.posedit.pos
+                or not var.posedit.pos.start
+                or not var.posedit.pos.end
+            ):
                 return (ValidationLevel.VALID, None)
-            ref_checks.append((var.ac, var.posedit.pos.start.pos, var.posedit.pos.start.pos, var.posedit.pos.start.aa))
+            ref_checks.append(
+                (
+                    var.ac,
+                    var.posedit.pos.start.pos,
+                    var.posedit.pos.start.pos,
+                    var.posedit.pos.start.aa,
+                )
+            )
             if var.posedit.pos.start.pos != var.posedit.pos.end.pos:
-                ref_checks.append((var.ac, var.posedit.pos.end.pos, var.posedit.pos.end.pos, var.posedit.pos.end.aa))
+                ref_checks.append(
+                    (
+                        var.ac,
+                        var.posedit.pos.end.pos,
+                        var.posedit.pos.end.pos,
+                        var.posedit.pos.end.aa,
+                    )
+                )
         else:
             var_ref_seq = getattr(var.posedit.edit, "ref", None) or None
             var_n = self.vm.c_to_n(var) if var.type == "c" else var
-            ref_checks.append((var_n.ac, var_n.posedit.pos.start.base, var_n.posedit.pos.end.base, var_ref_seq))
+            ref_checks.append(
+                (var_n.ac, var_n.posedit.pos.start.base, var_n.posedit.pos.end.base, var_ref_seq)
+            )
 
         for ac, var_ref_start, var_ref_end, var_ref_seq in ref_checks:
             if var_ref_start is None or var_ref_end is None or not var_ref_seq:
@@ -141,7 +165,9 @@ class ExtrinsicValidator:
             if ref_seq != var_ref_seq:
                 return (
                     ValidationLevel.ERROR,
-                    str(var) + ": " + SEQ_ERROR_MSG.format(ref_seq=ref_seq, var_ref_seq=var_ref_seq),
+                    str(var)
+                    + ": "
+                    + SEQ_ERROR_MSG.format(ref_seq=ref_seq, var_ref_seq=var_ref_seq),
                 )
 
         return (ValidationLevel.VALID, None)
@@ -151,9 +177,15 @@ class ExtrinsicValidator:
             return (ValidationLevel.VALID, None)
         tx_info = self.hdp.get_tx_identity_info(var.ac)
         if tx_info is None:
-            return (ValidationLevel.WARNING, "No transcript data for accession: {ac}".format(ac=var.ac))
+            return (
+                ValidationLevel.WARNING,
+                "No transcript data for accession: {ac}".format(ac=var.ac),
+            )
         cds_length = tx_info["cds_end_i"] - tx_info["cds_start_i"]
-        if var.posedit.pos.start.datum == Datum.CDS_START and var.posedit.pos.start.base > cds_length:
+        if (
+            var.posedit.pos.start.datum == Datum.CDS_START
+            and var.posedit.pos.start.base > cds_length
+        ):
             return (ValidationLevel.ERROR, CDS_BOUND_ERROR_MSG.format(cds_length=cds_length))
         if var.posedit.pos.end.datum == Datum.CDS_START and var.posedit.pos.end.base > cds_length:
             return (ValidationLevel.ERROR, CDS_BOUND_ERROR_MSG.format(cds_length=cds_length))
@@ -165,7 +197,10 @@ class ExtrinsicValidator:
         tx_info = self.hdp.get_tx_identity_info(var.ac)
         tx_len = sum(tx_info["lengths"])
         if tx_info is None:
-            return (ValidationLevel.WARNING, "No transcript data for accession: {ac}".format(ac=var.ac))
+            return (
+                ValidationLevel.WARNING,
+                "No transcript data for accession: {ac}".format(ac=var.ac),
+            )
         if var.posedit.pos.start.datum == Datum.SEQ_START and var.posedit.pos.start.base <= 0:
             return (ValidationLevel.ERROR, TX_BOUND_ERROR_MSG.format())
         if var.posedit.pos.end.datum == Datum.SEQ_START and var.posedit.pos.end.base > tx_len:

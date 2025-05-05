@@ -3,14 +3,16 @@ from bioutils.sequences import translate_cds
 from hgvs.exceptions import HGVSDataNotAvailableError
 
 
-class RefTranscriptData(object):
+class RefTranscriptData:
     def __init__(self, hdp, tx_ac, pro_ac):
         """helper for generating RefTranscriptData from for c_to_p"""
         tx_info = hdp.get_tx_identity_info(tx_ac)
         tx_seq = hdp.get_seq(tx_ac)
 
         if tx_info is None or tx_seq is None:
-            raise HGVSDataNotAvailableError("Missing transcript data for accession: {}".format(tx_ac))
+            raise HGVSDataNotAvailableError(
+                "Missing transcript data for accession: {}".format(tx_ac)
+            )
 
         # use 1-based hgvs coords
         cds_start = tx_info["cds_start_i"] + 1

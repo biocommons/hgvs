@@ -1,12 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
-import logging
 import os
-import pprint
-import re
-import sys
 import unittest
 
 import pytest
@@ -19,16 +12,16 @@ import hgvs.parser
 import hgvs.sequencevariant
 import hgvs.validator
 import hgvs.variantmapper
-from hgvs.enums import Datum
-from hgvs.exceptions import (HGVSDataNotAvailableError, HGVSError,
-                             HGVSInvalidVariantError, HGVSParseError)
+from hgvs.exceptions import HGVSDataNotAvailableError
 
 
 @pytest.mark.issues
 class Test_Issues(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        self.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+        self.hdp = hgvs.dataproviders.uta.connect(
+            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
+        )
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp, replace_reference=False)
         self.vm_rr = hgvs.variantmapper.VariantMapper(self.hdp, replace_reference=True)
         self.hp = hgvs.parser.Parser()

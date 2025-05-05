@@ -1,13 +1,7 @@
 # -*- coding: utf-8 -*-
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import csv
-from sys import version_info
 
 # Mock test input source
-
-
 
 
 class MockInputSource:
@@ -81,14 +75,6 @@ class MockInputSource:
                 }
 
         return result
-
-
-def main():
-    pass
-
-
-if __name__ == "__main__":
-    main()
 
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)

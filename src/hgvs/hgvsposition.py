@@ -3,14 +3,11 @@
 
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import attr
 
 
 @attr.s(slots=True, repr=False)
-class HGVSPosition(object):
+class HGVSPosition:
     """
     HGVSPosition -- Represent partial HGVS tags that refer to a position without alleles
 

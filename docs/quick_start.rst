@@ -20,13 +20,25 @@ transcript.
 ========================  ================================= =========================
 transcript (c.)           protein (p.)                      comment
 ========================  ================================= =========================
-NM_007294.3:c.3844del     NP_009225.1:p.(Glu1282AsnfsTer25) 
-NM_007297.3:c.3703del     NP_009228.2:p.(Glu1235AsnfsTer25) 
-NM_007300.3:c.3844del     NP_009231.2:p.(Glu1282AsnfsTer25) 
+NM_007294.3:c.3844del     NP_009225.1:p.(Glu1282AsnfsTer25)
+NM_007297.3:c.3703del     NP_009228.2:p.(Glu1235AsnfsTer25)
+NM_007300.3:c.3844del     NP_009231.2:p.(Glu1282AsnfsTer25)
 NM_007298.3:c.788-655del  NP_009229.2:p.?                   intronic variant
 NM_007299.3:c.788-655del  NP_009230.2:p.?                   intronic variant
 NR_027676.1:n.3980del     non-coding                        non-coding transcript
 ========================  ================================= =========================
+
+Install Prerequisites
+@@@@@@@@@@@@@@@@@@@@@
+
+`hgvs` currently requires PostgreSQL client libraries.  On Ubuntu,
+try::
+
+  apt-get install libpq-dev
+
+On a Mac with homebrew::
+
+  brew install postgresql
 
 
 Install hgvs
@@ -54,7 +66,7 @@ This is approximately the same thing as::
   >>> from hgvs.easy import *
 
 :mod:`hgvs.easy` connects to data sources and initializes commonly used
-objects that provide most functionality.  
+objects that provide most functionality.
 
 .. note:: Variant validation, normalization, and projection require
 	  access to external data, specifically exon structures,

@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import unittest
 
 import pytest
@@ -17,15 +14,23 @@ from hgvs.exceptions import HGVSError
 class Test_Edit(unittest.TestCase):
     def test_NARefAlt_exceptions(self):
         with self.assertRaises(HGVSError):
-            edit = str(hgvs.edit.NARefAlt(None, None))
+            str(hgvs.edit.NARefAlt(None, None))
 
     def test_NARefAlt(self):
         self.assertEqual(hgvs.edit.NARefAlt("A", "A").format(conf={"max_ref_length": None}), "A=")
         self.assertEqual(hgvs.edit.NARefAlt("A", "T").format(conf={"max_ref_length": None}), "A>T")
-        self.assertEqual(hgvs.edit.NARefAlt("AA", None).format(conf={"max_ref_length": None}), "delAA")
-        self.assertEqual(hgvs.edit.NARefAlt(None, "TT").format(conf={"max_ref_length": None}), "insTT")
-        self.assertEqual(hgvs.edit.NARefAlt("AA", "T").format(conf={"max_ref_length": None}), "delAAinsT")
-        self.assertEqual(hgvs.edit.NARefAlt("A", "TT").format(conf={"max_ref_length": None}), "delAinsTT")
+        self.assertEqual(
+            hgvs.edit.NARefAlt("AA", None).format(conf={"max_ref_length": None}), "delAA"
+        )
+        self.assertEqual(
+            hgvs.edit.NARefAlt(None, "TT").format(conf={"max_ref_length": None}), "insTT"
+        )
+        self.assertEqual(
+            hgvs.edit.NARefAlt("AA", "T").format(conf={"max_ref_length": None}), "delAAinsT"
+        )
+        self.assertEqual(
+            hgvs.edit.NARefAlt("A", "TT").format(conf={"max_ref_length": None}), "delAinsTT"
+        )
         # edit types
         self.assertEqual(str(hgvs.edit.NARefAlt("A", "A").type), "identity")
         self.assertEqual(str(hgvs.edit.NARefAlt("A", "T").type), "sub")
@@ -82,13 +87,15 @@ class Test_Edit(unittest.TestCase):
         self.assertEqual(str(hgvs.edit.Dup("T").type), "dup")
 
     def test_Repeat(self):
-        self.assertEqual(hgvs.edit.Repeat("CAG", 12, 34).format(conf={"max_ref_length": None}), "CAG(12_34)")
+        self.assertEqual(
+            hgvs.edit.Repeat("CAG", 12, 34).format(conf={"max_ref_length": None}), "CAG(12_34)"
+        )
         # edit types
         self.assertEqual(str(hgvs.edit.Repeat("CAG", 12, 34).type), "repeat")
 
     def test_Repeat_exceptions(self):
         with self.assertRaises(HGVSError):
-            edit = str(hgvs.edit.Repeat("CAG", 34, 12))
+            str(hgvs.edit.Repeat("CAG", 34, 12))
 
     def test_Inv(self):
         self.assertEqual(str(hgvs.edit.Inv()), "inv")
@@ -99,7 +106,9 @@ class Test_Edit(unittest.TestCase):
         start = hgvs.location.BaseOffsetPosition(base=61, offset=-6, datum=Datum.CDS_START)
         end = hgvs.location.BaseOffsetPosition(base=22, datum=Datum.CDS_END)
         pos = hgvs.location.Interval(start=start, end=end)
-        self.assertEqual(str(hgvs.edit.Conv("NM_001166478.1", "c", pos)), "conNM_001166478.1:c.61-6_*22")
+        self.assertEqual(
+            str(hgvs.edit.Conv("NM_001166478.1", "c", pos)), "conNM_001166478.1:c.61-6_*22"
+        )
         # edit types
         self.assertEqual(str(hgvs.edit.Conv("NM_001166478.1", "c", pos).type), "con")
 

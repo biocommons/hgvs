@@ -37,6 +37,7 @@ from hgvs.assemblymapper import AssemblyMapper
 from hgvs.dataproviders.uta import connect
 from hgvs.normalizer import Normalizer
 from hgvs.parser import Parser
+from hgvs.pretty.prettyprint import PrettyPrint
 from hgvs.validator import Validator
 from hgvs.variantmapper import VariantMapper
 
@@ -44,8 +45,12 @@ from hgvs.variantmapper import VariantMapper
 hp = parser = hgvs_parser = Parser()
 hdp = hgvs_data_provider = connect()
 vm = variant_mapper = hgvs_variant_mapper = VariantMapper(hgvs_data_provider)
-am37 = hgvs_assembly_mapper_37 = AssemblyMapper(hgvs_data_provider, assembly_name="GRCh37")
-am38 = projector = hgvs_assembly_mapper_38 = AssemblyMapper(hgvs_data_provider, assembly_name="GRCh38")
+am37 = hgvs_assembly_mapper_37 = AssemblyMapper(
+    hgvs_data_provider, assembly_name="GRCh37"
+)
+am38 = projector = hgvs_assembly_mapper_38 = AssemblyMapper(
+    hgvs_data_provider, assembly_name="GRCh38"
+)
 hn = normalizer = hgvs_normalizer = Normalizer(hgvs_data_provider)
 hv = validator = hgvs_validator = Validator(hgvs_data_provider)
 
@@ -64,6 +69,8 @@ n_to_g = projector.n_to_g
 t_to_g = projector.t_to_g
 t_to_p = projector.t_to_p
 get_relevant_transcripts = am38.relevant_transcripts
+pretty37 = PrettyPrint(hdp, am37, use_color=True, show_legend=True)
+pretty38 = PrettyPrint(hdp, am38, use_color=True, show_legend=True)
 
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)

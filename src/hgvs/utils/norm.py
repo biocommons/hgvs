@@ -5,13 +5,7 @@ https://github.com/bioinformed/vgraph
 
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 from collections import namedtuple
-
-from six.moves import range
-
 
 def trim_common_suffixes(strs, min_len=0):
     """
@@ -115,8 +109,6 @@ def normalize_alleles_right(ref, start, stop, alleles, bound, ref_step, shuffle=
     """
 
     normalized_alleles = namedtuple("shuffled_alleles", "start stop alleles")
-
-    chrom_stop = len(ref)
 
     if len(alleles) < 2:
         return normalized_alleles(start, stop, alleles)

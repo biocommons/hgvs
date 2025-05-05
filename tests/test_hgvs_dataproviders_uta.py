@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 """Tests uta postgresql client"""
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import os
 import re
 import unittest
@@ -22,7 +19,7 @@ import hgvs.variantmapper
 from hgvs.exceptions import HGVSDataNotAvailableError, HGVSError
 
 
-class UTA_Base(object):
+class UTA_Base:
     def test_get_acs_for_protein_seq(self):
         exp = ["NP_001005405.1", "MD5_8fc09b1d9a38a8c55176a0fa922df227"]
         s = """
@@ -49,7 +46,7 @@ class UTA_Base(object):
         gene_info = self.hdp.get_gene_info("VHL")
         self.assertEqual("VHL", gene_info["hgnc"])
         self.assertEqual("3p25.3", gene_info["maploc"])
-        self.assertEqual(6, len(gene_info))
+        self.assertEqual(10, len(gene_info))
 
     def test_get_tx_exons(self):
         tx_exons = self.hdp.get_tx_exons("NM_000551.3", "NC_000003.11", "splign")
@@ -69,7 +66,19 @@ class UTA_Base(object):
 
     def test_get_tx_for_gene(self):
         tig = self.hdp.get_tx_for_gene("VHL")
-        self.assertEqual(16, len(tig))
+
+        expected_data = [
+            ("NM_001354723.1", "NC_000003.11"),
+            ("NM_198156.2", "NC_018914.2"),
+            ("ENST00000345392", "NC_000003.11"),
+        ]
+        found = 0
+        for _, _, _, tx_ac, alt_ac, _ in tig:
+            for t_tx_ac, t_alt_ac in expected_data:
+                if t_tx_ac == tx_ac and t_alt_ac == alt_ac:
+                    found += 1
+
+        self.assertEqual(found, 3)
 
     def test_get_tx_for_gene_invalid_gene(self):
         tig = self.hdp.get_tx_for_gene("GENE")
@@ -98,7 +107,9 @@ class UTA_Base(object):
 class Test_hgvs_dataproviders_uta_UTA_default(unittest.TestCase, UTA_Base):
     @classmethod
     def setUpClass(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+        cls.hdp = hgvs.dataproviders.uta.connect(
+            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
+        )
 
 
 class Test_hgvs_dataproviders_uta_UTA_default_with_pooling(unittest.TestCase, UTA_Base):
@@ -109,7 +120,9 @@ class Test_hgvs_dataproviders_uta_UTA_default_with_pooling(unittest.TestCase, UT
         )
 
 
-class Test_hgvs_dataproviders_uta_with_pooling_without_cache(unittest.TestCase, UTA_Base):
+class Test_hgvs_dataproviders_uta_with_pooling_without_cache(
+    unittest.TestCase, UTA_Base
+):
     """
     Currently used to test pool errors, since we need to reach out to
     the database and not use the cache

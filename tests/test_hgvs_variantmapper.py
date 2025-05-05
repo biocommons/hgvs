@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import os
 import unittest
 
@@ -14,6 +11,7 @@ import hgvs.variantmapper
 from hgvs.exceptions import HGVSError, HGVSInvalidVariantError
 
 
+@pytest.mark.vcr
 def test_add_gene_symbol(am38, parser):
     ags = am38.add_gene_symbol
     var_g = parser.parse("NC_000007.13:g.21940852_21940908del")
@@ -33,9 +31,18 @@ def test_add_gene_symbol(am38, parser):
 class Test_VariantMapper_Exceptions(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+        cls.hdp = hgvs.dataproviders.uta.connect(
+            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
+        )
         cls.vm = hgvs.variantmapper.VariantMapper(cls.hdp)
         cls.hp = hgvs.parser.Parser()
+
+    def test_map_stop_retained(self):
+        hgvs_c = "NM_001253909.2:c.416_417insGTG"
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.vm.c_to_p(var_c)
+
+        assert str(var_p) == "NP_001240838.1:p.(Ter140Ter)"
 
     def test_gcrp_invalid_input_type(self):
         hgvs_g = "NC_000007.13:g.36561662C>T"
@@ -60,7 +67,7 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
         for key in cases:
             try:
                 func, args = cases[key]
-                var_result = func(*args)
+                func(*args)
                 failures.append(key)
             except hgvs.exceptions.HGVSInvalidVariantError:
                 pass
@@ -71,7 +78,7 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
         hgvs_g = "NC_000007.13:g.36561662C>T"
         var_g = self.hp.parse_hgvs_variant(hgvs_g)
         with self.assertRaises(hgvs.exceptions.HGVSError):
-            var_p = self.vm.c_to_p(var_g, "NM_999999.1")
+            self.vm.c_to_p(var_g, "NM_999999.1")
 
     def test_undefined_cds(self):
         """Raise exception when requesting mapping to/from c. with non-coding transcript"""
@@ -79,7 +86,6 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
         hgvs_c = "NR_111984.1:c.44G>A"  # bogus: c. with non-coding tx accession
         var_n = self.hp.parse_hgvs_variant(hgvs_n)
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
-        tx_ac = var_n.ac
 
         with self.assertRaises(hgvs.exceptions.HGVSUsageError):
             var_c = self.vm.n_to_c(var_n)  # n_to_c: transcript is non-coding
@@ -116,6 +122,18 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
         with pytest.raises(HGVSError, match="coordinate is out of bounds"):
             self.vm.c_to_p(var_c)
+
+    def test_map_of_ins_three_prime_utr(self):
+        hgvs_c = "NM_004985.4:c.567_*1insCCC"
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.vm.c_to_p(var_c)
+        self.assertEqual(str(var_p), "NP_004976.2:p.?")
+
+    def test_map_of_dup_three_prime_utr(self):
+        hgvs_c = "NM_153223.3:c.2959_*1dup"
+        var_c = self.hp.parse_hgvs_variant(hgvs_c)
+        var_p = self.vm.c_to_p(var_c)
+        self.assertEqual(str(var_p), "NP_694955.2:p.?")
 
 
 if __name__ == "__main__":

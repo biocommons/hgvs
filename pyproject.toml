@@ -1,109 +1,198 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [
+  "setuptools >= 69.0.2",
+  "setuptools_scm[toml] >= 8.0"
+]
+
 [project]
-name = "hgvs"
 authors = [
-  { name="HGVS Contributors", email="biocommons-dev@googlegroups.com" },
+  {name = "HGVS Contributors", email = "biocommons-dev@googlegroups.com"}
+]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Healthcare Industry",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python",
+  "Topic :: Scientific/Engineering :: Bio-Informatics",
+  "Topic :: Scientific/Engineering :: Medical Science Apps."
+]
+dependencies = [
+  "attrs >= 17.4.0", # https://github.com/biocommons/hgvs/issues/473
+  "biocommons.seqrepo >= 0.6.10",
+  "bioutils >= 0.4.0,<1.0",
+  "configparser >= 3.3.0",
+  "importlib_resources",
+  "ipython",
+  "parsley",
+  "pre-commit ~= 3.4",
+  "psycopg2"
 ]
 description = "HGVS Parser, Formatter, Mapper, Validator"
-readme = "README.rst"
-license = { file="LICENSE.txt" }
-requires-python = ">=3.6"
-classifiers = [
-    "Development Status :: 5 - Production/Stable",
-    "Intended Audience :: Developers",
-    "Intended Audience :: Healthcare Industry",
-    "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: Apache Software License",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python",
-    "Topic :: Scientific/Engineering :: Bio-Informatics",
-    "Topic :: Scientific/Engineering :: Medical Science Apps."
-]
-keywords = [
-    "biocommons",
-    "bioinformatics",
-    "computational biology",
-    "genome variation",
-    "genomics",
-    "hgvs",
-    "variation"
-    ]
 dynamic = ["version"]
+keywords = [
+  "biocommons",
+  "bioinformatics",
+  "computational biology",
+  "genome variation",
+  "genomics",
+  "hgvs",
+  "variation"
+]
+license = {file = "LICENSE.txt"}
+name = "hgvs"
+readme = "README.md"
+requires-python = ">=3.10"
 
-[project.urls]
-"Homepage" = "https://github.com/biocommons/hgvs"
-"Bug Tracker" = "https://github.com/biocommons/hgvs/issues"
+[project.optional-dependencies]
+dev = [
+  "black",
+  "flake8",
+  "ipython",
+  "isort",
+  "jupyter",
+  "pyright",
+  "pytest",
+  "pytest-cov",
+  "pytest-recording",
+  "restview",
+  "setuptools",
+  "sphinx",
+  "sphinx_rtd_theme",
+  "sphinxcontrib-fulltoc >= 1.1",
+  "toml-sort",
+  "tox",
+  "vcrpy",
+  "yapf"
+]
 
 [project.scripts]
 "hgvs-shell" = "hgvs.shell:shell"
 
+[project.urls]
+"Bug Tracker" = "https://github.com/biocommons/hgvs/issues"
+"Homepage" = "https://github.com/biocommons/hgvs"
 
-[build-system]
-requires = [
-	 "setuptools >= 65.3",
-   	 "setuptools_scm[toml] ~= 7.0"
-	 ]
-build-backend = "setuptools.build_meta"
+[tool.black]
+line-length = 100
 
-
-[tool.setuptools_scm]
-
-
-# https://docs.pytest.org/en/6.2.x/customize.html#pyproject-toml
-[tool.pytest.ini_options]
-addopts = "-s -v -x --strict-markers -m 'not extra' --doctest-modules --cov=src"
-doctest_optionflags = [
-    "ALLOW_BYTES",
-    "ALLOW_UNICODE",
-    "ELLIPSIS",
-    "IGNORE_EXCEPTION_DETAIL",
-    "NORMALIZE_WHITESPACE",
+[tool.coverage.report]
+exclude_lines = [
+  # Have to re-enable the standard pragma
+  "pragma: no cover",
+  # Don't complain about missing debug-only code:
+  "def __repr__",
+  "if self.debug",
+  # Don't complain if tests don't hit defensive assertion code:
+  "raise AssertionError",
+  "raise NotImplementedError",
+  # Don't complain if non-runnable code isn't run:
+  "if __name__ == .__main__.:"
 ]
-markers = [
-	"network: tests that require network connectivity",
-	"slow: slow tests that should be run infrequently",
-]
-
+show_missing = true
 
 [tool.coverage.run]
 branch = true
-source = ["hgvs"]
-omit = ["*_test.py", "*/test/*"]
-
-
-[tool.coverage.report]
-show_missing = true
-exclude_lines = [
-    # Have to re-enable the standard pragma
-    "pragma: no cover",
-
-    # Don't complain about missing debug-only code:
-    "def __repr__",
-    "if self.debug",
-
-    # Don't complain if tests don't hit defensive assertion code:
-    "raise AssertionError",
-    "raise NotImplementedError",
-
-    # Don't complain if non-runnable code isn't run:
-    "if __name__ == .__main__.:",
+omit = [
+  "*_test.py",
+  "*/test/*",
+  "hgvs/__init__.py",
+  "hgvs/dataproviders/interface.py",
+  "hgvs/dataproviders/ncbi.py",
+  "hgvs/dataproviders/uta.py",
+  "hgvs/decorators/*",
+  "hgvs/intervalmapper.py",
+  "hgvs/shell.py",
+  "hgvs/transcriptmapper.py",
+  "hgvs/utils/PersistentDict.py",
+  "hgvs/utils/context.py",
+  "hgvs/utils/orderedenum.py"
 ]
+source = ["hgvs"]
 
-[tool.black]
-line-length = 120
+[tool.flake8]
+exclude = ["tests/*"]
+ignore = ["E129", "E221", "E241", "E251", "E303", "W291"]
+max-complexity = 10
+max-line-length = 120
 
+[tool.isort]
+profile = "black"
 
-# [tool.flake8]
-# flake8 does not support configuration in pyproject.toml
-# https://github.com/PyCQA/flake8/issues/234#issuecomment-812800832
-# The config in setup.cfg
+[tool.pylint]
 
 [tool.pylint.'MESSAGES CONTROL']
 disable = "R0913"
 
-
 [tool.pylint.format]
 max-line-length = "120"
+
+# https://docs.pytest.org/en/6.2.x/customize.html#pyproject-toml
+[tool.pytest.ini_options]
+addopts = "-s -v -x --strict-markers -m 'not extra' --cov=src"  # --doctest-modules 
+# addopts = [
+#   "-rsvx",
+#   "-m 'not extra'",
+#   "--cov=src",
+#   "--ignore=hgvs/dataproviders/ncbi.py"
+# ]
+doctest_optionflags = [
+  "ALLOW_BYTES",
+  "ALLOW_UNICODE",
+  "ELLIPSIS",
+  "IGNORE_EXCEPTION_DETAIL",
+  "NORMALIZE_WHITESPACE"
+]
+markers = [
+  "extra",
+  "issues",
+  "mapping",
+  "models",
+  "network: tests that require network connectivity",
+  "normalization",
+  "quick",
+  "regression",
+  "slow: slow tests that should be run infrequently",
+  "validation",
+]
+norecursedirs = [
+  ".eggs",
+  "archive",
+  "build",
+  "cover",
+  "dist",
+  "etc",
+  "examples",
+  "hgvs.egg-info",
+  "misc",
+  "prof",
+  "sbin",
+  "tmp",
+  "venv"
+]
+
+[tool.setuptools]
+include-package-data = true
+package-dir = {"" = "src"}
+zip-safe = true
+
+[tool.setuptools.package-data]
+hgvs = ["_data/*"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools_scm]
+
+[tool.sphinx-build]
+all-files = true
+
+[tool.wheel]
+universal = 1

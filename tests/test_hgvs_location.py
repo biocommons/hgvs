@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import unittest
 
 import pytest
@@ -92,7 +89,6 @@ class Test_BaseOffsetPosition(unittest.TestCase):
     def test_baseoffset_subtraction(self):
         v30 = hgvs.location.BaseOffsetPosition(3, 0)
         v50 = hgvs.location.BaseOffsetPosition(5, 0)
-        v52 = hgvs.location.BaseOffsetPosition(5, 2)
         v54 = hgvs.location.BaseOffsetPosition(5, 4)
 
         self.assertEqual(v50 - v30, 2)
@@ -185,7 +181,8 @@ class Test_AAPosition(unittest.TestCase):
 class Test_Interval(unittest.TestCase):
     def test_Interval(self):
         ival = hgvs.location.Interval(
-            hgvs.location.BaseOffsetPosition(base=12, offset=+34), hgvs.location.BaseOffsetPosition(base=56, offset=-78)
+            hgvs.location.BaseOffsetPosition(base=12, offset=+34),
+            hgvs.location.BaseOffsetPosition(base=56, offset=-78),
         )
         self.assertEqual(ival.start.base, 12)
         self.assertEqual(ival.start.offset, 34)
@@ -195,7 +192,8 @@ class Test_Interval(unittest.TestCase):
 
     def test_length(self):
         ival = hgvs.location.Interval(
-            hgvs.location.BaseOffsetPosition(base=12, offset=0), hgvs.location.BaseOffsetPosition(base=50, offset=0)
+            hgvs.location.BaseOffsetPosition(base=12, offset=0),
+            hgvs.location.BaseOffsetPosition(base=50, offset=0),
         )
         self.assertEqual(ival._length(), 39)
 

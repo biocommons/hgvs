@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 #
 # Tests for conversion of hgvs tags
 #
@@ -15,7 +12,6 @@ import hgvs.variantmapper as variantmapper
 
 
 class TestHgvsCToP(unittest.TestCase):
-
     fn = os.path.join(os.path.dirname(__file__), "data", "sanity_cp.tsv")
     _datasource = mock_input_data_source.MockInputSource(fn)
     _mapper = variantmapper.VariantMapper(_datasource, prevalidation_level="INTRINSIC")
@@ -161,8 +157,18 @@ class TestHgvsCToP(unittest.TestCase):
         hgvsp_expected = "MOCK:p.?"
         self._run_conversion(hgvsc, hgvsp_expected)
 
-    def test_three_prime_utr(self):
+    def test_sub_three_prime_utr(self):
         hgvsc = "NM_999999.1:c.*3G>A"
+        hgvsp_expected = "MOCK:p.?"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
+    def test_ins_three_prime_utr(self):
+        hgvsc = "NM_999999.1:c.39_*1insA"
+        hgvsp_expected = "MOCK:p.?"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
+    def test_dup_three_prime_utr(self):
+        hgvsc = "NM_999999.1:c.12_*1dup"
         hgvsp_expected = "MOCK:p.?"
         self._run_conversion(hgvsc, hgvsp_expected)
 

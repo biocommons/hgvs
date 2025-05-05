@@ -4,9 +4,6 @@ components, such as intronic-offset coordiates
 
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import copy
 import logging
 import re
@@ -14,9 +11,9 @@ import re
 import bioutils.sequences
 import ometa.runtime
 import parsley
-from pkg_resources import resource_filename
 
 import hgvs.edit
+
 # The following imports are referenced by fully-qualified name in the
 # hgvs grammar.
 import hgvs.enums
@@ -25,9 +22,10 @@ import hgvs.location
 import hgvs.posedit
 import hgvs.sequencevariant
 from hgvs.exceptions import HGVSParseError
+from hgvs.generated.hgvs_grammar import createParserClass
 
 
-class Parser(object):
+class Parser:
     """Provides comprehensive parsing of HGVS variant strings (*i.e.*,
     variants represented according to the Human Genome Variation
     Society recommendations) into Python representations.  The class
@@ -88,16 +86,20 @@ class Parser(object):
 
     """
 
-    __default_grammar_fn = resource_filename(__name__, "_data/hgvs.pymeta")
-
-    def __init__(self, grammar_fn=__default_grammar_fn, expose_all_rules=False):
-        self._grammar_fn = grammar_fn
-        with open(grammar_fn, "r") as grammar_file:
-            self._grammar = parsley.makeGrammar(grammar_file.read(), {"hgvs": hgvs, "bioutils": bioutils, "copy": copy})
+    def __init__(self, grammar_fn=None, expose_all_rules=False):
+        bindings = {"hgvs": hgvs, "bioutils": bioutils, "copy": copy}
+        if grammar_fn is None:
+            self._grammar = parsley.wrapGrammar(
+                createParserClass(ometa.runtime.OMetaGrammarBase, bindings)
+            )
+        else:
+            # Still allow other grammars if you want
+            with open(grammar_fn, "r") as grammar_file:
+                self._grammar = parsley.makeGrammar(grammar_file.read(), bindings)
         self._logger = logging.getLogger(__name__)
         self._expose_rule_functions(expose_all_rules)
 
-    def parse(self, v):
+    def parse(self, v) -> hgvs.sequencevariant.SequenceVariant:
         """parse HGVS variant `v`, returning a SequenceVariant
 
         :param str v: an HGVS-formatted variant as a string
@@ -125,23 +127,36 @@ class Parser(object):
                     return self._grammar(s).__getattr__(rule_name)()
                 except ometa.runtime.ParseError as exc:
                     raise HGVSParseError(
-                        "{s}: char {exc.position}: {reason}".format(s=s, exc=exc, reason=exc.formatReason())
+                        "{s}: char {exc.position}: {reason}".format(
+                            s=s, exc=exc, reason=exc.formatReason()
+                        )
                     )
 
             rule_fxn.__doc__ = "parse string s using `%s' rule" % rule_name
             return rule_fxn
 
         exposed_rule_re = re.compile(
-            r"hgvs_(variant|position)|(c|g|m|n|p|r)" r"_(edit|hgvs_position|interval|pos|posedit|variant)"
+            r"hgvs_(variant|position)|(c|g|m|n|p|r)"
+            r"_(edit|hgvs_position|interval|pos|posedit|variant)"
         )
-        exposed_rules = [m.replace("rule_", "") for m in dir(self._grammar._grammarClass) if m.startswith("rule_")]
+        exposed_rules = [
+            m.replace("rule_", "")
+            for m in dir(self._grammar._grammarClass)
+            if m.startswith("rule_")
+        ]
         if not expose_all_rules:
-            exposed_rules = [rule_name for rule_name in exposed_rules if exposed_rule_re.match(rule_name)]
+            exposed_rules = [
+                rule_name for rule_name in exposed_rules if exposed_rule_re.match(rule_name)
+            ]
         for rule_name in exposed_rules:
             att_name = "parse_" + rule_name
             rule_fxn = make_parse_rule_function(rule_name)
             self.__setattr__(att_name, rule_fxn)
-        self._logger.debug("Exposed {n} rules ({rules})".format(n=len(exposed_rules), rules=", ".join(exposed_rules)))
+        self._logger.debug(
+            "Exposed {n} rules ({rules})".format(
+                n=len(exposed_rules), rules=", ".join(exposed_rules)
+            )
+        )
 
 
 # <LICENSE>

@@ -3,9 +3,6 @@
 
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import logging
 import os
 
@@ -16,7 +13,7 @@ from ..exceptions import HGVSDataNotAvailableError
 _logger = logging.getLogger(__name__)
 
 
-class SeqFetcher(object):
+class SeqFetcher:
     """This class is intended primarily as a mixin for HGVS data providers
     that doen't otherwise have access to sequence data.  It uses the
     fetch_seq() function in this module to fetch sequences from
@@ -50,7 +47,9 @@ class SeqFetcher(object):
             from biocommons.seqrepo.dataproxy import SeqRepoRESTDataProxy
 
             self.sr = SeqRepoRESTDataProxy(seqrepo_url)
-            self.fetcher = lambda ac, start_i=None, end_i=None: self.sr.get_sequence(ac, start_i, end_i)
+            self.fetcher = lambda ac, start_i=None, end_i=None: self.sr.get_sequence(
+                ac, start_i, end_i
+            )
             self.source = f"SeqRepo REST ({seqrepo_url})"
         else:
             self.sr = None

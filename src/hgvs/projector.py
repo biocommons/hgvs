@@ -4,16 +4,13 @@ via a common reference sequence.
 
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import copy
 
 import hgvs
 import hgvs.alignmentmapper
 
 
-class Projector(object):
+class Projector:
     """
     The Projector class implements liftover between two transcripts via a
     common reference sequence.
@@ -72,7 +69,9 @@ class Projector(object):
         :returns: c_variant: an :class:`hgvs.sequencevariant.SequenceVariant` object on the destination transcript
         """
         if c_variant.ac != self.src_tm.tx_ac:
-            raise RuntimeError("variant accession does not match that used to initialize " + __name__)
+            raise RuntimeError(
+                "variant accession does not match that used to initialize " + __name__
+            )
         new_c_variant = copy.deepcopy(c_variant)
         new_c_variant.ac = self.dst_tm.tx_ac
         new_c_variant.posedit.pos = self.project_interval_forward(c_variant.posedit.pos)
@@ -86,7 +85,9 @@ class Projector(object):
         :returns: c_variant: an :class:`hgvs.sequencevariant.SequenceVariant` object on the destination transcript
         """
         if c_variant.ac != self.dst_tm.tx_ac:
-            raise RuntimeError("variant accession does not match that used to initialize " + __name__)
+            raise RuntimeError(
+                "variant accession does not match that used to initialize " + __name__
+            )
         new_c_variant = copy.deepcopy(c_variant)
         new_c_variant.ac = self.src_tm.tx_ac
         new_c_variant.posedit.pos = self.project_interval_backward(c_variant.posedit.pos)

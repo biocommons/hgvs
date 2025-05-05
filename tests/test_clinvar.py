@@ -1,26 +1,19 @@
 # -*- coding: utf-8 -*-
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import csv
-import fileinput
 import gzip
 import io
 import os
-import sys
-import types
 import unittest
 
 import pytest
-from support import CACHE
-from support.crosschecker import CrossChecker, LineIterator
 
 import hgvs
 import hgvs.dataproviders.uta
 import hgvs.parser
 import hgvs.sequencevariant
 import hgvs.variantmapper
-from hgvs.exceptions import HGVSError
+from support import CACHE
+from support.crosschecker import CrossChecker, LineIterator
 
 data_fn = os.path.join(os.path.dirname(__file__), "data", "clinvar.gz")
 
@@ -28,7 +21,9 @@ data_fn = os.path.join(os.path.dirname(__file__), "data", "clinvar.gz")
 class Test_Clinvar(unittest.TestCase, CrossChecker):
     @classmethod
     def setUpClass(self):
-        self.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+        self.hdp = hgvs.dataproviders.uta.connect(
+            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
+        )
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp)
         self.hp = hgvs.parser.Parser()
 
@@ -46,13 +41,14 @@ class Test_Clinvar(unittest.TestCase, CrossChecker):
 
         In other words, you really want to run this with local sequences and UTA.
         """
-        if sys.version_info < (3,):
-            fh = LineIterator(fh=gzip.open(fn) if fn.endswith(".gz") else io.open(fn), skip_comments=True)
-        else:
-            fh = LineIterator(
-                fh=(io.TextIOWrapper(gzip.open(fn), encoding="utf-8") if fn.endswith(".gz") else io.open(fn)),
-                skip_comments=True,
-            )
+        fh = LineIterator(
+            fh=(
+                io.TextIOWrapper(gzip.open(fn), encoding="utf-8")
+                if fn.endswith(".gz")
+                else io.open(fn)
+            ),
+            skip_comments=True,
+        )
         for rec in csv.DictReader(fh, delimiter=str("\t")):
             if mod and fh.lines_read % mod != 0:
                 continue
@@ -64,7 +60,9 @@ class Test_Clinvar(unittest.TestCase, CrossChecker):
             except Exception as e:
                 e.args = (e.args[0] + "\n  at line {fh.lines_read}: {fh.last_line}".format(fh=fh),)
                 raise e
-            self.assertIsNone(msg, lambda: msg + "\n   on line {fh.lines_read}: {fh.last_line}".format(fh=fh))
+            self.assertIsNone(
+                msg, lambda: msg + "\n   on line {fh.lines_read}: {fh.last_line}".format(fh=fh)
+            )
 
 
 if __name__ == "__main__":

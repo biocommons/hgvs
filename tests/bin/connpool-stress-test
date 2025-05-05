@@ -10,9 +10,6 @@ With 0.4.5a4.post0, it runs until terminated (several runs of at least two minut
 https://github.com/biocommons/hgvs/issues/321/
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import gzip
 import logging
 import random
@@ -22,7 +19,6 @@ import threading
 import hgvs.assemblymapper
 import hgvs.dataproviders.uta
 import hgvs.parser
-import hgvs.validator
 import hgvs.variantmapper
 from hgvs.exceptions import HGVSError
 

@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 __doc__ = """add HGVS tags to a VCF file on stdin, output to stdout
 
 eg$ vcf-add-hgvs <in.vcf >out.vcf

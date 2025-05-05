@@ -1,6 +1,8 @@
 """https://github.com/biocommons/hgvs/issues/525"""
+import pytest
 
 
+@pytest.mark.vcr
 def test_525(parser, am38):
     """https://github.com/biocommons/hgvs/issues/525"""
 

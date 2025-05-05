@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import os
 import unittest
 
@@ -13,9 +10,7 @@ import hgvs.dataproviders.uta
 import hgvs.location
 import hgvs.parser
 from hgvs.alignmentmapper import AlignmentMapper
-from hgvs.enums import Datum
-from hgvs.exceptions import (HGVSDataNotAvailableError, HGVSError,
-                             HGVSInvalidIntervalError)
+from hgvs.exceptions import HGVSDataNotAvailableError, HGVSInvalidIntervalError
 
 
 @pytest.mark.quick
@@ -24,7 +19,9 @@ class Test_AlignmentMapper(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+        cls.hdp = hgvs.dataproviders.uta.connect(
+            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
+        )
         cls.parser = hgvs.parser.Parser()
 
     def test_alignmentmapper_failures(self):
@@ -32,11 +29,15 @@ class Test_AlignmentMapper(unittest.TestCase):
         with self.assertRaises(HGVSDataNotAvailableError):
             AlignmentMapper(self.hdp, tx_ac="bogus", alt_ac="NM_033089.6", alt_aln_method="splign")
         with self.assertRaises(HGVSDataNotAvailableError):
-            AlignmentMapper(self.hdp, tx_ac="bogus", alt_ac="NM_033089.6", alt_aln_method="transcript")
+            AlignmentMapper(
+                self.hdp, tx_ac="bogus", alt_ac="NM_033089.6", alt_aln_method="transcript"
+            )
         with self.assertRaises(HGVSDataNotAvailableError):
             AlignmentMapper(self.hdp, tx_ac="NM_033089.6", alt_ac="bogus", alt_aln_method="splign")
         with self.assertRaises(HGVSDataNotAvailableError):
-            AlignmentMapper(self.hdp, tx_ac="NM_000051.3", alt_ac="NC_000011.9", alt_aln_method="bogus")
+            AlignmentMapper(
+                self.hdp, tx_ac="NM_000051.3", alt_ac="NC_000011.9", alt_aln_method="bogus"
+            )
         with self.assertRaises(HGVSInvalidIntervalError):
             AlignmentMapper(self.hdp, "NM_000348.3", "NC_000002.11", "splign").n_to_c(
                 self.parser.parse_n_interval("-1")
@@ -53,14 +54,14 @@ class Test_AlignmentMapper(unittest.TestCase):
         alt_ac = "NC_000001.10"
         test_cases = [
             {
-                "g": parser.parse_g_interval("(?_152573139)"),
-                "n": parser.parse_n_interval("(?_2)"),
-                "c": parser.parse_c_interval("(?_-69)"),
+                "g": self.parser.parse_g_interval("(?_152573139)"),
+                "n": self.parser.parse_n_interval("(?_2)"),
+                "c": self.parser.parse_c_interval("(?_-69)"),
             },
             {
-                "g": parser.parse_g_interval("(152573138_?)"),
-                "n": parser.parse_n_interval("(1_?)"),
-                "c": parser.parse_c_interval("(-70_?)"),
+                "g": self.parser.parse_g_interval("(152573138_?)"),
+                "n": self.parser.parse_n_interval("(1_?)"),
+                "c": self.parser.parse_c_interval("(-70_?)"),
             },
         ]
         self.run_cases(tx_ac, alt_ac, test_cases)
@@ -320,12 +321,24 @@ class Test_AlignmentMapper(unittest.TestCase):
     def run_cases(self, tx_ac, alt_ac, test_cases):
         am = AlignmentMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
         for test_case in test_cases:
-            assert test_case["c"] == am.g_to_c(test_case["g"]), f"{tx_ac}~{alt_ac} {test_case['c']} am.g_to_c failed"
-            assert test_case["c"] == am.n_to_c(test_case["n"]), f"{tx_ac}~{alt_ac} {test_case['c']} am.n_to_c failed"
-            assert test_case["g"] == am.c_to_g(test_case["c"]), f"{tx_ac}~{alt_ac} {test_case['g']} am.c_to_g failed"
-            assert test_case["g"] == am.n_to_g(test_case["n"]), f"{tx_ac}~{alt_ac} {test_case['g']} am.n_to_g failed"
-            assert test_case["n"] == am.c_to_n(test_case["c"]), f"{tx_ac}~{alt_ac} {test_case['n']} am.c_to_n failed"
-            assert test_case["n"] == am.g_to_n(test_case["g"]), f"{tx_ac}~{alt_ac} {test_case['n']} am.g_to_n failed"
+            assert test_case["c"] == am.g_to_c(
+                test_case["g"]
+            ), f"{tx_ac}~{alt_ac} {test_case['c']} am.g_to_c failed"
+            assert test_case["c"] == am.n_to_c(
+                test_case["n"]
+            ), f"{tx_ac}~{alt_ac} {test_case['c']} am.n_to_c failed"
+            assert test_case["g"] == am.c_to_g(
+                test_case["c"]
+            ), f"{tx_ac}~{alt_ac} {test_case['g']} am.c_to_g failed"
+            assert test_case["g"] == am.n_to_g(
+                test_case["n"]
+            ), f"{tx_ac}~{alt_ac} {test_case['g']} am.n_to_g failed"
+            assert test_case["n"] == am.c_to_n(
+                test_case["c"]
+            ), f"{tx_ac}~{alt_ac} {test_case['n']} am.c_to_n failed"
+            assert test_case["n"] == am.g_to_n(
+                test_case["g"]
+            ), f"{tx_ac}~{alt_ac} {test_case['n']} am.g_to_n failed"
 
 
 if __name__ == "__main__":

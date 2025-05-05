@@ -3,9 +3,6 @@
 
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import attr
 
 from hgvs.enums import ValidationLevel
@@ -13,7 +10,7 @@ from hgvs.exceptions import HGVSUnsupportedOperationError
 
 
 @attr.s(slots=True, repr=False)
-class PosEdit(object):
+class PosEdit:
     """
     represents a **simple** variant, consisting of a single position and edit pair
     """
@@ -60,7 +57,7 @@ class PosEdit(object):
         method hides this complexity from callers.
 
         :param hgvs.posedit.PosEdit self: a PosEdit instance
-        :param bool on_error_raise: whether to raise an exception on errors 
+        :param bool on_error_raise: whether to raise an exception on errors
 
         :returns: A signed int for the net change in length.  Negative \
         values imply net deletions, 0 implies a balanced insertion and \

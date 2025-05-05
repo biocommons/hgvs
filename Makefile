@@ -5,14 +5,25 @@
 .PRECIOUS:
 .SUFFIXES:
 
-SHELL:=/bin/bash -e -o pipefail
+ifeq ("","$(shell command -v zsh)")
+$(error "zsh not found; you must install zsh first")
+endif
+
+SHELL:=zsh -eu -o pipefail -o null_glob
 SELF:=$(firstword $(MAKEFILE_LIST))
 
-PY_VERSION:=$(shell python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
-VE_DIR=venv/${PY_VERSION}
+VE_DIR=venv
 
+SRC_DIRS:=src
 TEST_DIRS:=tests
 DOC_TESTS:=docs hgvs ./README.rst
+
+# TESTING sources
+# UTA_DB_URL must be accessible at test time (for now)
+export HGVS_CACHE_MODE=
+_UTAPW=anonymous
+export UTA_DB_URL=postgresql://anonymous:${_UTAPW}@uta.biocommons.org:5432/uta/uta_20241220
+export HGVS_SEQREPO_URL=http://localhost:5000/seqrepo
 
 
 ############################################################################
@@ -36,22 +47,23 @@ devready:
 	@echo '#################################################################################'
 
 #=> venv: make a Python 3 virtual environment
-venv: ${VEDIR}
-${VE_DIR}: venv/%:
-	python$* -mvenv $@; \
+${VE_DIR}:
+	python3 --version
+	python3 -mvenv $@; \
 	source $@/bin/activate; \
-	python -m ensurepip --upgrade; \
-	pip install --upgrade pip setuptools wheel
+	python3 -m ensurepip --upgrade; \
+	pip install --upgrade pip setuptools uv wheel
 
 #=> develop: install package in develop mode
-.PHONY: develop install
+.PHONY: develop
 develop:
-	@if [ -z "$${VIRTUAL_ENV}" ]; then echo "Not in a virtual environment; see README.md" 1>&2; exit 1; fi
-	pip install -e .[dev]
+	uv pip install -e ".[dev]"
+	pre-commit install
 
 #=> install: install package
+.PHONY: install
 install:
-	pip install .
+	uv pip install "."
 
 #=> build: make sdist and wheel
 .PHONY: build
@@ -66,14 +78,9 @@ build: %:
 #=> test: execute tests
 #=> test-code: test code (including embedded doctests)
 #=> test-docs: test example code in docs
-#=> stest: test a specific test or set of tests, also useful using ipdb
-#=> test-/tag/ -- run tests marked with /tag/
-# TODO: rationalize tags
-# find tests -name \*.py | xargs perl -ln0e 'while (m/@pytest.mark.(\w+)/g) {print $1 if not $seen{$1}++}'  | sort
-# => extra fx issues mapping models normalization parametrize pnd quick regression validation
-.PHONY: test test-code test-docs stest
+.PHONY: test test-code test-docs
 test:
-	pytest
+	HGVS_CACHE_MODE=run pytest --cov ${SRC_DIRS}
 test-code:
 	pytest ${TEST_DIRS}
 test-docs:
@@ -83,33 +90,36 @@ stest:
 test-%:
 	pytest -m '$*' ${TEST_DIRS}
 
-#=> test-learn: build test data cache
-#=> test-relearn: destroy and rebuild test data cache
+#=> test-learn: add new data to test data cache
 test-learn:
-	# The appropriate environment should be set up using misc/docker-compose.yml
-	UTA_DB_URL=postgresql://anonymous@localhost:5432/uta/uta_20180821 \
-	HGVS_SEQREPO_URL=http://localhost:5000/seqrepo \
-	HGVS_CACHE_MODE=learn \
-	pytest -s
+	HGVS_CACHE_MODE=learn pytest -s
+#=> test-relearn: destroy and rebuild test data cache
 test-relearn:
-	rm -f tests/data/cache-py3.hdp
-	make test-learn
+	rm -fr tests/data/cache-py3.hdp tests/cassettes
+	HGVS_CACHE_MODE=learn pytest -s
+#=> test-relearn-iteratively: destroy and rebuild test data cache (biocommons/hgvs#760)
+# temporary workaround for https://github.com/biocommons/hgvs/issues/760
+test-relearn-iteratively:
+	rm -fr tests/data/cache-py3.hdp tests/cassettes
+	find tests/ -name 'test*.py' | HGVS_CACHE_MODE=learn xargs -tn1 -- pytest --no-cov -x -s
 
 #=> tox -- run all tox tests
 tox:
 	tox
 
+#=> cqa: execute code quality tests
+cqa:
+	ruff format --check
+	ruff check
 
 ############################################################################
 #= UTILITY TARGETS
 
-#=> reformat: reformat code with yapf and commit
+#=> reformat: reformat code
 .PHONY: reformat
 reformat:
-	@if ! git diff --cached --exit-code >/dev/null; then echo "Repository not clean" 1>&2; exit 1; fi
-	black src tests
-	isort src tests
-	git commit -a -m "reformatted with black and isort"
+	ruff check --fix
+	ruff format
 
 #=> docs -- make sphinx docs
 .PHONY: docs
@@ -136,6 +146,8 @@ cleaner: clean
 	rm -frv **/*.pyc
 	rm -frv **/*.orig
 	rm -frv **/*.rej
+	-make -C docs $@
+	-make -C examples $@
 
 #=> cleanest: remove files and directories that are more expensive to rebuild
 .PHONY: cleanest

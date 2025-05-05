@@ -3,12 +3,12 @@
 
 This code requires uta-align and pysam packages, which are NOT part of
 a typical hgvs installation because they change periodically in ways
-that break dependencies. 
+that break dependencies.
 
 
 Something like this:
 
-(default-2.7)snafu$ ./sbin/hgvs-shell 
+(default-2.7)snafu$ ./sbin/hgvs-shell
 In [1]: import hgvs.utils.context as huc
 In [2]: h = 'NM_000399.3:n.2689_2690insA'
 In [3]: v = hp.parse_hgvs_variant(h)
@@ -17,19 +17,15 @@ In [5]: print(huc.variant_context_w_alignment(am, vn))
                                               v                               NC_000010.10:g.64572045dupT
 NC_000010.10 g 64572025 > ACTCAGGGAGTGATTTTTTTTCTCCATAATAAGGCAACCCA          > 64572065 NC_000010.10:g.64572045dupT
 NC_000010.10 g 64572025 < TGAGTCCCTCACTAAAAAAAAGAGGTATTATTCCGTTGGGT          < 64572065 NC_000010.10:g.64572045dupT
-                          |||||||||||||-|||||||||||||||||||||||||||          13=1D27= 
+                          |||||||||||||-|||||||||||||||||||||||||||          13=1D27=
 NM_000399.3  n     2670 < TGAGTCCCTCACT-AAAAAAAGAGGTATTATTCCGTTGGGT          <     2709 NM_000399.3:n.2696dupA
 NM_000399.3  c      902 <                                                    <      941 NM_000399.3:c.*928dupA
 
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import re
 
 from bioutils.sequences import complement
-from six.moves import range
 
 from ..location import Interval, SimplePosition
 
@@ -43,7 +39,9 @@ def full_house(am, var, tx_ac=None):
                 raise RuntimeError("no relevant transcripts for {var.ac}".format(var=var))
             if len(rtx) > 1:
                 raise RuntimeError(
-                    "{n} relevant transcripts for {var.ac}; you need to pick one".format(n=len(rtx), var=var)
+                    "{n} relevant transcripts for {var.ac}; you need to pick one".format(
+                        n=len(rtx), var=var
+                    )
                 )
             tx_ac = rtx[0]
         var_n = am.g_to_n(var_g, tx_ac)
@@ -106,13 +104,21 @@ def variant_context_w_alignment(am, var, margin=20, tx_ac=None):
         [
             1,
             0,
-            seq_line_fmt(var=fh["c"], span=span_c if strand == 1 else list(reversed(span_c)), content="", dir=s_dir),
+            seq_line_fmt(
+                var=fh["c"],
+                span=span_c if strand == 1 else list(reversed(span_c)),
+                content="",
+                dir=s_dir,
+            ),
         ],
         [
             2,
             0,
             seq_line_fmt(
-                var=fh["n"], span=span_n if strand == 1 else list(reversed(span_n)), content=aseq_n, dir=s_dir
+                var=fh["n"],
+                span=span_n if strand == 1 else list(reversed(span_n)),
+                content=aseq_n,
+                dir=s_dir,
             ),
         ],
         [
@@ -167,7 +173,7 @@ def seq_line_fmt(var, span, content, dir=""):
 def pointer_line(var, span):
     s0 = span[0]
     o = var.posedit.pos.start.base - s0
-    l = var.posedit.pos.end.base - var.posedit.pos.start.base + 1
+    l = var.posedit.pos.end.base - var.posedit.pos.start.base + 1  # noqa: E741
     if var.posedit.edit.type == "ins":
         p = " " * o + "><"
     else:
@@ -204,7 +210,10 @@ def format_sequence(seq, start=None, end=None, group_size=3):
     for ls in range(start, end, rpl):
         le = ls + rpl
 
-        groups = [ge_fmt.format(ge=str(gs + group_size)[-group_size + 1 :]) for gs in range(ls, le, group_size)]
+        groups = [
+            ge_fmt.format(ge=str(gs + group_size)[-group_size + 1 :])
+            for gs in range(ls, le, group_size)
+        ]
         blocks += [line_fmt.format(l="", body=sep.join(groups)) + "\n"]
 
         groups = [seq[gs : min(gs + group_size, end)] for gs in range(ls, le, group_size)]

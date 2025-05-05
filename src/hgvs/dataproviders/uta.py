@@ -4,9 +4,6 @@
 
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import contextlib
 import inspect
 import logging
@@ -17,10 +14,9 @@ import weakref
 import psycopg2
 import psycopg2.extras
 import psycopg2.pool
-import six
 from bioutils.assemblies import make_ac_name_map
 from bioutils.digests import seq_md5
-from six.moves.urllib import parse as urlparse
+from urllib import parse as urlparse
 
 import hgvs
 
@@ -61,7 +57,13 @@ def _get_uta_db_url():
     return hgvs.global_config["uta"][url_key]
 
 
-def connect(db_url=None, pooling=hgvs.global_config.uta.pooling, application_name=None, mode=None, cache=None):
+def connect(
+    db_url=None,
+    pooling=hgvs.global_config.uta.pooling,
+    application_name=None,
+    mode=None,
+    cache=None,
+):
     """Connect to a UTA database instance and return a UTA interface instance.
 
     :param db_url: URL for database connection
@@ -103,10 +105,10 @@ def connect(db_url=None, pooling=hgvs.global_config.uta.pooling, application_nam
         _logger.warning(f"You are executing tests using remote data ({db_url})")
 
     url = _parse_url(db_url)
-    if url.scheme == "sqlite":
-        conn = UTA_sqlite(url, mode, cache)
-    elif url.scheme == "postgresql":
-        conn = UTA_postgresql(url=url, pooling=pooling, application_name=application_name, mode=mode, cache=cache)
+    if url.scheme == "postgresql":
+        conn = UTA_postgresql(
+            url=url, pooling=pooling, application_name=application_name, mode=mode, cache=cache
+        )
     else:
         # fell through connection scheme cases
         raise RuntimeError("{url.scheme} in {url} is not currently supported".format(url=url))
@@ -145,7 +147,7 @@ class UTABase(Interface):
         "alignments_for_region": """
             select tx_ac,alt_ac,alt_strand,alt_aln_method,min(start_i) as start_i,max(end_i) as end_i
             from exon_set ES
-            join exon E on ES.exon_set_id=E.exon_set_id 
+            join exon E on ES.exon_set_id=E.exon_set_id
             where alt_ac=?
             group by tx_ac,alt_ac,alt_strand,alt_aln_method
             having min(start_i) < ? and ? <= max(end_i)
@@ -241,7 +243,9 @@ class UTABase(Interface):
         list.
         """
         md5 = seq_md5(seq)
-        return [r["ac"] for r in self._fetchall(self._queries["acs_for_protein_md5"], [md5])] + ["MD5_" + md5]
+        return [r["ac"] for r in self._fetchall(self._queries["acs_for_protein_md5"], [md5])] + [
+            "MD5_" + md5
+        ]
 
     def get_gene_info(self, gene):
         """
@@ -355,7 +359,9 @@ class UTABase(Interface):
         :param str alt_aln_method: OPTIONAL alignment method (e.g., splign)
         """
 
-        alignments = self._fetchall(self._queries["alignments_for_region"], [alt_ac, start_i, end_i])
+        alignments = self._fetchall(
+            self._queries["alignments_for_region"], [alt_ac, start_i, end_i]
+        )
         if alt_aln_method is not None:
             alignments = [a for a in alignments if a["alt_aln_method"] == alt_aln_method]
         return alignments
@@ -379,7 +385,9 @@ class UTABase(Interface):
         """
         rows = self._fetchall(self._queries["tx_identity_info"], [tx_ac])
         if len(rows) == 0:
-            raise HGVSDataNotAvailableError("No transcript definition for (tx_ac={tx_ac})".format(tx_ac=tx_ac))
+            raise HGVSDataNotAvailableError(
+                "No transcript definition for (tx_ac={tx_ac})".format(tx_ac=tx_ac)
+            )
         return rows[0]
 
     def get_tx_info(self, tx_ac, alt_ac, alt_aln_method):
@@ -498,12 +506,20 @@ class UTABase(Interface):
 
 
 class UTA_postgresql(UTABase):
-    def __init__(self, url, pooling=hgvs.global_config.uta.pooling, application_name=None, mode=None, cache=None):
+    def __init__(
+        self,
+        url,
+        pooling=hgvs.global_config.uta.pooling,
+        application_name=None,
+        mode=None,
+        cache=None,
+    ):
         if url.schema is None:
             raise Exception("No schema name provided in {url}".format(url=url))
         self.application_name = application_name
         self.pooling = pooling
         self._conn = None
+        self._pool = None
         # If we're using connection pooling, track the set of DB
         # connections we've seen; on first use we set the schema
         # search path. Use weak references to avoid keeping connection
@@ -516,7 +532,8 @@ class UTA_postgresql(UTABase):
 
     def close(self):
         if self.pooling:
-            self._pool.closeall()
+            if self._pool is not None:
+                self._pool.closeall()
         else:
             if self._conn is not None:
                 self._conn.close()
@@ -547,11 +564,13 @@ class UTA_postgresql(UTABase):
         self._ensure_schema_exists()
 
         # remap sqlite's ? placeholders to psycopg2's %s
-        self._queries = {k: v.replace("?", "%s") for k, v in six.iteritems(self._queries)}
+        self._queries = {k: v.replace("?", "%s") for k, v in self._queries.items()}
 
     def _ensure_schema_exists(self):
         # N.B. On AWS RDS, information_schema.schemata always returns zero rows
-        r = self._fetchone("select exists(SELECT 1 FROM pg_namespace WHERE nspname = %s)", [self.url.schema])
+        r = self._fetchone(
+            "select exists(SELECT 1 FROM pg_namespace WHERE nspname = %s)", [self.url.schema]
+        )
         if r[0]:
             return
         raise HGVSDataNotAvailableError(
@@ -580,7 +599,6 @@ class UTA_postgresql(UTABase):
         n_tries_rem = n_retries + 1
         while n_tries_rem > 0:
             try:
-
                 conn = self._pool.getconn() if self.pooling else self._conn
 
                 # autocommit=True obviates closing explicitly
@@ -604,8 +622,9 @@ class UTA_postgresql(UTABase):
                 break
 
             except psycopg2.OperationalError:
-
-                _logger.warning("Lost connection to {url}; attempting reconnect".format(url=self.url))
+                _logger.warning(
+                    "Lost connection to {url}; attempting reconnect".format(url=self.url)
+                )
                 if self.pooling:
                     self._pool.putconn(conn)
                     _logger.warning("Put away pool connection from {url}".format(url=self.url))
@@ -616,9 +635,12 @@ class UTA_postgresql(UTABase):
             n_tries_rem -= 1
 
         else:
-
             # N.B. Probably never reached
-            raise HGVSError("Permanently lost connection to {url} ({n} retries)".format(url=self.url, n=n_retries))
+            raise HGVSError(
+                "Permanently lost connection to {url} ({n} retries)".format(
+                    url=self.url, n=n_retries
+                )
+            )
 
     def _set_search_path(self, cur):
         cur.execute("set search_path = {self.url.schema},public;".format(self=self))

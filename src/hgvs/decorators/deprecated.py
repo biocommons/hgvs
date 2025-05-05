@@ -4,14 +4,11 @@ marks a function as deprecated.
 
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import collections
 import warnings
 
 
-class deprecated(object):
+class deprecated:
     """Decorator factory class which returns a decorator function that
     marks a function as deprecated. It will result in a warning being
     emitted when the function is used, once per invocation point and

@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import os
 import unittest
 
@@ -12,6 +9,7 @@ import hgvs.assemblymapper
 import hgvs.dataproviders.uta
 import hgvs.parser
 import hgvs.variantmapper
+from hgvs.enums import PrevalidationLevel
 from hgvs.exceptions import HGVSInvalidVariantError
 
 
@@ -19,7 +17,9 @@ from hgvs.exceptions import HGVSInvalidVariantError
 class Test_VariantMapper(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+        cls.hdp = hgvs.dataproviders.uta.connect(
+            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
+        )
         cls.am = hgvs.assemblymapper.AssemblyMapper(cls.hdp)
         cls.am37 = hgvs.assemblymapper.AssemblyMapper(cls.hdp, assembly_name="GRCh37")
         cls.hp = hgvs.parser.Parser()
@@ -214,16 +214,56 @@ class Test_RefReplacement(unittest.TestCase):
         # gseq[280:290] = "CAATGGAAGC"
         #                      ^ @ n.285
         # These variants are in and around the first sub:
-        {"c": "NM_000024.5:c.42C>N", "g": "NC_000005.9:g.148206436C>N", "n": "NM_000024.5:n.281C>N"},
-        {"c": "NM_000024.5:c.43A>N", "g": "NC_000005.9:g.148206437A>N", "n": "NM_000024.5:n.282A>N"},
-        {"c": "NM_000024.5:c.44A>N", "g": "NC_000005.9:g.148206438A>N", "n": "NM_000024.5:n.283A>N"},
-        {"c": "NM_000024.5:c.45T>N", "g": "NC_000005.9:g.148206439T>N", "n": "NM_000024.5:n.284T>N"},
-        {"c": "NM_000024.5:c.46A>N", "g": "NC_000005.9:g.148206440G>N", "n": "NM_000024.5:n.285A>N"},  # ref repl
-        {"c": "NM_000024.5:c.47G>N", "g": "NC_000005.9:g.148206441G>N", "n": "NM_000024.5:n.286G>N"},
-        {"c": "NM_000024.5:c.48A>N", "g": "NC_000005.9:g.148206442A>N", "n": "NM_000024.5:n.287A>N"},
-        {"c": "NM_000024.5:c.49A>N", "g": "NC_000005.9:g.148206443A>N", "n": "NM_000024.5:n.288A>N"},
-        {"c": "NM_000024.5:c.50G>N", "g": "NC_000005.9:g.148206444G>N", "n": "NM_000024.5:n.289G>N"},
-        {"c": "NM_000024.5:c.51C>N", "g": "NC_000005.9:g.148206445C>N", "n": "NM_000024.5:n.290C>N"},
+        {
+            "c": "NM_000024.5:c.42C>N",
+            "g": "NC_000005.9:g.148206436C>N",
+            "n": "NM_000024.5:n.281C>N",
+        },
+        {
+            "c": "NM_000024.5:c.43A>N",
+            "g": "NC_000005.9:g.148206437A>N",
+            "n": "NM_000024.5:n.282A>N",
+        },
+        {
+            "c": "NM_000024.5:c.44A>N",
+            "g": "NC_000005.9:g.148206438A>N",
+            "n": "NM_000024.5:n.283A>N",
+        },
+        {
+            "c": "NM_000024.5:c.45T>N",
+            "g": "NC_000005.9:g.148206439T>N",
+            "n": "NM_000024.5:n.284T>N",
+        },
+        {
+            "c": "NM_000024.5:c.46A>N",
+            "g": "NC_000005.9:g.148206440G>N",
+            "n": "NM_000024.5:n.285A>N",
+        },  # ref repl
+        {
+            "c": "NM_000024.5:c.47G>N",
+            "g": "NC_000005.9:g.148206441G>N",
+            "n": "NM_000024.5:n.286G>N",
+        },
+        {
+            "c": "NM_000024.5:c.48A>N",
+            "g": "NC_000005.9:g.148206442A>N",
+            "n": "NM_000024.5:n.287A>N",
+        },
+        {
+            "c": "NM_000024.5:c.49A>N",
+            "g": "NC_000005.9:g.148206443A>N",
+            "n": "NM_000024.5:n.288A>N",
+        },
+        {
+            "c": "NM_000024.5:c.50G>N",
+            "g": "NC_000005.9:g.148206444G>N",
+            "n": "NM_000024.5:n.289G>N",
+        },
+        {
+            "c": "NM_000024.5:c.51C>N",
+            "g": "NC_000005.9:g.148206445C>N",
+            "n": "NM_000024.5:n.290C>N",
+        },
         # ins, del, delins, dup:
         {
             "c": "NM_000024.5:c.46_47insNN",
@@ -245,7 +285,11 @@ class Test_RefReplacement(unittest.TestCase):
             "g": "NC_000005.9:g.148206439_148206441delTGGinsNNNN",
             "n": "NM_000024.5:n.284_286delTAGinsNNNN",
         },
-        {"c": "NM_000024.5:c.46dupA", "g": "NC_000005.9:g.148206440dupG", "n": "NM_000024.5:n.285dupA"},
+        {
+            "c": "NM_000024.5:c.46dupA",
+            "g": "NC_000005.9:g.148206440dupG",
+            "n": "NM_000024.5:n.285dupA",
+        },
         # IFNA16   │ NM_002173.2 │    6 │  576 │ NC_000009.11 │ -1 │  21216371, 21217310 | 691=2X246=
         # cseq = hdp.fetch_seq("NM_002173.2")
         # gseq = reverse_complement(hdp.fetch_seq("NC_000009.11",21216371,21217310))
@@ -253,16 +297,56 @@ class Test_RefReplacement(unittest.TestCase):
         # gseq[685:695] = "AAATTTTCAA"
         #                        ^^ @ n.692_693
         # These variants are in and around the 2X substitution
-        {"c": "NM_002173.2:c.*110A>N", "g": "NC_000009.11:g.21216625T>N", "n": "NM_002173.2:n.686A>N"},
-        {"c": "NM_002173.2:c.*111A>N", "g": "NC_000009.11:g.21216624T>N", "n": "NM_002173.2:n.687A>N"},
-        {"c": "NM_002173.2:c.*112A>N", "g": "NC_000009.11:g.21216623T>N", "n": "NM_002173.2:n.688A>N"},
-        {"c": "NM_002173.2:c.*113T>N", "g": "NC_000009.11:g.21216622A>N", "n": "NM_002173.2:n.689T>N"},
-        {"c": "NM_002173.2:c.*114T>N", "g": "NC_000009.11:g.21216621A>N", "n": "NM_002173.2:n.690T>N"},
-        {"c": "NM_002173.2:c.*115T>N", "g": "NC_000009.11:g.21216620A>N", "n": "NM_002173.2:n.691T>N"},
-        {"c": "NM_002173.2:c.*116C>N", "g": "NC_000009.11:g.21216619A>N", "n": "NM_002173.2:n.692C>N"},  # ref repl
-        {"c": "NM_002173.2:c.*117A>N", "g": "NC_000009.11:g.21216618G>N", "n": "NM_002173.2:n.693A>N"},  # ref repl
-        {"c": "NM_002173.2:c.*118A>N", "g": "NC_000009.11:g.21216617T>N", "n": "NM_002173.2:n.694A>N"},
-        {"c": "NM_002173.2:c.*119A>N", "g": "NC_000009.11:g.21216616T>N", "n": "NM_002173.2:n.695A>N"},
+        {
+            "c": "NM_002173.2:c.*110A>N",
+            "g": "NC_000009.11:g.21216625T>N",
+            "n": "NM_002173.2:n.686A>N",
+        },
+        {
+            "c": "NM_002173.2:c.*111A>N",
+            "g": "NC_000009.11:g.21216624T>N",
+            "n": "NM_002173.2:n.687A>N",
+        },
+        {
+            "c": "NM_002173.2:c.*112A>N",
+            "g": "NC_000009.11:g.21216623T>N",
+            "n": "NM_002173.2:n.688A>N",
+        },
+        {
+            "c": "NM_002173.2:c.*113T>N",
+            "g": "NC_000009.11:g.21216622A>N",
+            "n": "NM_002173.2:n.689T>N",
+        },
+        {
+            "c": "NM_002173.2:c.*114T>N",
+            "g": "NC_000009.11:g.21216621A>N",
+            "n": "NM_002173.2:n.690T>N",
+        },
+        {
+            "c": "NM_002173.2:c.*115T>N",
+            "g": "NC_000009.11:g.21216620A>N",
+            "n": "NM_002173.2:n.691T>N",
+        },
+        {
+            "c": "NM_002173.2:c.*116C>N",
+            "g": "NC_000009.11:g.21216619A>N",
+            "n": "NM_002173.2:n.692C>N",
+        },  # ref repl
+        {
+            "c": "NM_002173.2:c.*117A>N",
+            "g": "NC_000009.11:g.21216618G>N",
+            "n": "NM_002173.2:n.693A>N",
+        },  # ref repl
+        {
+            "c": "NM_002173.2:c.*118A>N",
+            "g": "NC_000009.11:g.21216617T>N",
+            "n": "NM_002173.2:n.694A>N",
+        },
+        {
+            "c": "NM_002173.2:c.*119A>N",
+            "g": "NC_000009.11:g.21216616T>N",
+            "n": "NM_002173.2:n.695A>N",
+        },
         # ins, del, delins, dup:
         {
             "c": "NM_002173.2:c.*115_*117insNN",
@@ -308,7 +392,9 @@ class Test_RefReplacement(unittest.TestCase):
             rec["pv"] = {x: cls.hp.parse_hgvs_variant(rec[x]) for x in "cgn"}
             return rec
 
-        cls.hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+        cls.hdp = hgvs.dataproviders.uta.connect(
+            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
+        )
         cls.am = hgvs.assemblymapper.AssemblyMapper(
             cls.hdp, replace_reference=True, assembly_name="GRCh37", alt_aln_method="splign"
         )
@@ -332,9 +418,13 @@ class Test_RefReplacement(unittest.TestCase):
 class Test_AssemblyMapper(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+        cls.hdp = hgvs.dataproviders.uta.connect(
+            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
+        )
         cls.hp = hgvs.parser.Parser()
-        cls.am = hgvs.assemblymapper.AssemblyMapper(hdp, assembly_name="GRCh37", alt_aln_method="splign")
+        cls.am = hgvs.assemblymapper.AssemblyMapper(
+            cls.hdp, assembly_name="GRCh37", alt_aln_method="splign"
+        )
 
     def _test_mapping(self, hgvs_set):
         """given list of variant strings, test all valid combinations of
@@ -380,7 +470,21 @@ class Test_AssemblyMapper(unittest.TestCase):
 
     def test_t_to_p(self):
         assert "non-coding" == str(self.am.t_to_p(self.hp.parse("NR_027676.1:n.3980del")))
-        assert "NP_000050.2:p.(Lys2597=)" == str(self.am.t_to_p(self.hp.parse("NM_000059.3:c.7791A>G")))
+        assert "NP_000050.2:p.(Lys2597=)" == str(
+            self.am.t_to_p(self.hp.parse("NM_000059.3:c.7791A>G"))
+        )
+
+    def test_issue_704_set_prevalidation_level(self):
+        # Doesn't set prevalidation_level
+
+        for prevalidation_level in PrevalidationLevel:
+            am = hgvs.assemblymapper.AssemblyMapper(
+                self.hdp, replace_reference=True, assembly_name="GRCh37", alt_aln_method="splign",
+                normalize=True, prevalidation_level=prevalidation_level.name,
+            )
+            vm = am._norm.vm
+            self.assertEqual(vm.prevalidation_level, prevalidation_level,
+                             "AssemblyMapper Normalizer has 'prevalidation_level' set")
 
 
 if __name__ == "__main__":
