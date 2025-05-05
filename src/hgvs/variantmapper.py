@@ -51,7 +51,7 @@ class VariantMapper:
     of the aligned sequences (shown with "1") and the exon structure.
     The g⟷c transformation is akin to g⟷n transformation, but
     requires an addition offset to account for the translation start
-    site (c.1).  The CDS in uppercase. The g⟷c transformation is
+    site (c.1).  The CDS in uppercase. The g⟷r transformation is
     akin to g⟷n transformation with a change of alphabet.
 
     Therefore, this this code uses g⟷n as the core transformation
