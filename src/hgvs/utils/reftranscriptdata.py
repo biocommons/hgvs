@@ -34,8 +34,16 @@ class RefTranscriptData:
             # TODO: drop get_acs_for_protein_seq; use known mapping or digest (wo/pro ac inference)
             pro_ac = hdp.get_pro_ac_for_tx_ac(tx_ac) or hdp.get_acs_for_protein_seq(protein_seq)[0]
 
+        exon_start_positions = [-tx_info["cds_start_i"]]
+        exon_end_positions = [exon_start_positions[0] + tx_info["lengths"][0]]
+        for exon_length in tx_info["lengths"][1:]:
+            exon_start_positions.append(exon_end_positions[-1] + 1)
+            exon_end_positions.append(exon_end_positions[-1] + exon_length)
+
         self.transcript_sequence = tx_seq
         self.aa_sequence = protein_seq
         self.cds_start = cds_start
         self.cds_stop = cds_stop
         self.protein_accession = pro_ac
+        self.exon_start_positions = exon_start_positions
+        self.exon_end_positions = exon_end_positions
