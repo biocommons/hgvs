@@ -288,7 +288,7 @@ class AlignmentMapper:
             return self._g_to_n_interval(g_interval, strict_bounds)
 
         print(
-            f"check ranges {self.strand} {g_interval.start} {g_interval.start.uncertain} {imprecise_inner_interval_only}"
+            f"check ranges {self.strand} gc offset: {self.gc_offset} {g_interval.start}-{g_interval.end} start uncertain:{g_interval.start.uncertain} imprecise inner: {imprecise_inner_interval_only}"
         )
         # in case of uncertain ranges, we fall back to the inner (more confident) interval
         if imprecise_inner_interval_only and g_interval.start.uncertain:
@@ -628,10 +628,11 @@ class AlignmentMapper:
         imprecise_inner_interval_only: bool | None = None,
     ):
         """convert a genomic (g.) interval to a transcript CDS (c.) interval"""
+        var_n = self.g_to_n(
+            g_interval, imprecise_inner_interval_only=imprecise_inner_interval_only
+        )
         return self.n_to_c(
-            self.g_to_n(
-                g_interval, imprecise_inner_interval_only=imprecise_inner_interval_only
-            ),
+            var_n,
             strict_bounds=strict_bounds,
             imprecise_inner_interval_only=imprecise_inner_interval_only,
         )

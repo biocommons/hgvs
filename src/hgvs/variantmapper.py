@@ -322,7 +322,7 @@ class VariantMapper:
         else:
             print("g_to_c: pos_c.uncertain")
             # variant at alignment gap
-            pos_g = mapper.c_to_g(pos_c)
+            pos_g = mapper.c_to_g(pos_c, alt_ac=var_g.ac)
             print("g_to_c: pos_g")
             edit_c = hgvs.edit.NARefAlt(
                 ref="", alt=self._get_altered_sequence(mapper.strand, pos_g, var_g)

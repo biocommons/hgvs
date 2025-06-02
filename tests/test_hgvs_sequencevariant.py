@@ -10,6 +10,7 @@ from support import CACHE
 import hgvs
 import hgvs.parser
 import hgvs.sequencevariant
+from hgvs.pretty.prettyprint import PrettyPrint
 
 
 def test_gene_formatting(parser):
@@ -339,8 +340,16 @@ class Test_SequenceVariant(unittest.TestCase):
         tx_ac = clinvar_hgvs_c.split(":")[0]
 
         # first test only with inner intervals
-        var_c_inner = self.vm.g_to_c(var_g, tx_ac, imprecise_inner_interval_only=True)
+        am38 = hgvs.assemblymapper.AssemblyMapper(self.hdp, "GRCh38")
+        var_c_inner = am38.g_to_c(var_g, tx_ac, imprecise_inner_interval_only=True)
+        # var_c = hgvs.sequencevariant.SequenceVariant(
+        #     ac=tx_ac, type="c", posedit=hgvs.posedit.PosEdit(pos=, var_g.posedit.edit)
+        # )
         print(f"var_c_inner: {var_c_inner} should be: {hgvs_hgvs_c}")
+
+        pp = PrettyPrint(self.hdp, am38)
+        print(f"pp.display(var_c): {pp.display(var_c_inner, tx_ac=tx_ac)}")
+
         self.assertEqual(hgvs_hgvs_c, str(var_c_inner))
 
         var_c = self.vm.g_to_c(var_g, tx_ac)

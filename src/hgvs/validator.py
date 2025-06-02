@@ -180,7 +180,9 @@ class ExtrinsicValidator:
         return (ValidationLevel.VALID, None)
 
     def _get_start_end(self, var):
-        if isinstance(var.posedit.pos, hgvs.location.Interval):
+        if isinstance(var.posedit.pos, hgvs.location.BaseOffsetInterval):
+            s = var.posedit.pos.start
+        elif isinstance(var.posedit.pos, hgvs.location.Interval):
             s = var.posedit.pos.start.start
         else:
             s = var.posedit.pos.start

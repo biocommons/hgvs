@@ -79,6 +79,26 @@ class DataCompiler:
             shuffled_alleles[1],
         )
 
+    def _get_start_end(self, var):
+        if isinstance(var.posedit.pos, hgvs.location.BaseOffsetInterval):
+            s = var.posedit.pos.start
+        elif isinstance(var.posedit.pos, hgvs.location.Interval):
+            s = var.posedit.pos.start.start
+            if not s.base:
+                s = var.posedit.pos.start.end
+        else:
+            s = var.posedit.pos.start
+
+        if isinstance(var.posedit.pos.end, hgvs.location.BaseOffsetPosition):
+            e = var.posedit.pos.end
+        elif isinstance(var.posedit.pos.end, hgvs.location.Interval):
+            e = var.posedit.pos.end.end
+            if not e.base:
+                e = var.posedit.pos.end.start
+        else:
+            e = var.posedit.pos.end
+        return s, e
+
     def get_position_and_state(
         self, sv: hgvs.sequencevariant.SequenceVariant
     ) -> Tuple[int, int, str, str]:
@@ -112,9 +132,10 @@ class DataCompiler:
                 ref = sv.posedit.edit.ref
 
         elif sv.posedit.edit.type == "dup":
-            start = sv.posedit.pos.start.base - 1
-            end = sv.posedit.pos.end.base
-            ref = self.config.hdp.get_seq(sv.ac, start, end)
+            start, end = self._get_start_end(sv)
+            # start = sv.posedit.pos.start.base - 1
+            # end = sv.posedit.pos.end.base
+            ref = self.config.hdp.get_seq(sv.ac, start.base - 1, end.base)
             alt = ref + ref
 
         else:
