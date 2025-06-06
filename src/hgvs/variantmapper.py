@@ -439,9 +439,13 @@ class VariantMapper:
         ):
             if alt_ac is None:
                 raise HGVSUnsupportedOperationError('c_to_p not supported on VariantMapper for this var_c, try AssemblyMapper')
-            shifted_var_p = self._try_shift_var_c(var_c, pro_ac, alt_ac, alt_aln_method)
-            if shifted_var_p:
-                var_p = shifted_var_p
+
+            for shifted_var_c in self._var_c_shifts(var_c, alt_ac, alt_aln_method):
+                shifted_var_p = self._c_to_p(shifted_var_c, pro_ac=pro_ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
+                if shifted_var_p.posedit is not None:
+                    var_p = shifted_var_p
+                    var_p.posedit.shifted = True
+                    break
 
         return var_p
 
@@ -644,7 +648,7 @@ class VariantMapper:
         var.gene = symbol
         return var
 
-    def _try_shift_var_c(self, var_c, pro_ac, alt_ac, alt_aln_method):
+    def _var_c_shifts(self, var_c, alt_ac, alt_aln_method):
         """Try to shuffle intronic ins/dup variants to find a protein representation."""
         strand = self._fetch_AlignmentMapper(tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method).strand
 
@@ -652,18 +656,11 @@ class VariantMapper:
             try:
                 var_g = VariantMapper.c_to_g(self, var_c, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
                 shifted_var_g = self._shift_with_rewrite(var_g, shuffle_direction, strand, alt_aln_method)
-                shifted_var_c = VariantMapper.g_to_c(
-                    self, shifted_var_g, var_c.ac, alt_aln_method=alt_aln_method
-                )
-                shifted_var_p = VariantMapper._c_to_p(
-                    self, shifted_var_c, pro_ac=pro_ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method
-                )
+                shifted_var_c = VariantMapper.g_to_c(self, shifted_var_g, tx_ac=var_c.ac, alt_aln_method=alt_aln_method)
+                yield shifted_var_c
             except (HGVSInvalidVariantError, HGVSInvalidIntervalError, HGVSUnsupportedOperationError):
                 pass
 
-            if shifted_var_p.posedit is not None:
-                return shifted_var_p
-        return None
 
     def _shift_with_rewrite(self, var_g, shuffle_direction, strand, alt_aln_method):
         """Attempt to shift a variant all the way left or right. Rewrite

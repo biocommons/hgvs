@@ -63,4 +63,7 @@ def am37(hdp):
 @pytest.mark.parametrize("case", cases)
 def test_real_c_to_p(case, hp, am37):
     var_c = hp.parse(case["var_c"])
-    assert str(am37.c_to_p(var_c)) == case["var_p"]
+    var_p = am37.c_to_p(var_c)
+    assert str(var_p) == case["var_p"]
+    if var_p.posedit:
+        assert var_p.posedit.shifted

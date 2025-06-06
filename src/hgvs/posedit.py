@@ -18,6 +18,7 @@ class PosEdit:
     pos = attr.ib(default=None)
     edit = attr.ib(default=None)
     uncertain = attr.ib(default=False)
+    shifted = attr.ib(default=False)
 
     def format(self, conf=None):
         """Formatting the string of PosEdit"""
