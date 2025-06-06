@@ -14,7 +14,7 @@ sanity_cases = [
             "var_p": "MOCK:p.Met1?",
         },
         "intronic":{
-            "var_p": "MOCK:p.?",
+            "exc": HGVSError,
         },
     },
     {
@@ -24,7 +24,7 @@ sanity_cases = [
             "var_p": "MOCK:p.(Lys9AsnfsTer?)",
         },
         "intronic":{
-            "var_p": "MOCK:p.?",
+            "exc": HGVSError,
         },
     },
     {
@@ -44,7 +44,7 @@ sanity_cases = [
             "exc": HGVSError,
         },
         "intronic":{
-            "var_p": "MOCK:p.?",
+            "exc": HGVSError,
         },
 
     },
@@ -65,7 +65,7 @@ sanity_cases = [
             "exc": HGVSError,
         },
         "intronic":{
-            "var_p": "MOCK:p.?",
+            "exc": HGVSError,
         },
     },
 ]
@@ -79,6 +79,7 @@ real_cases = [
         },
         "intronic":{
             "var_p": "NP_004371.2:p.?",
+            "exc": HGVSError,
         },
     },
     {
@@ -89,6 +90,7 @@ real_cases = [
         },
         "intronic":{
             "var_p": "NP_004371.2:p.?",
+            "exc": HGVSError,
         },
     },
     {
@@ -120,6 +122,7 @@ real_cases = [
         },
         "intronic":{
             "var_p": "NP_078805.3:p.?",
+            "exc": HGVSError,
         },
     },
     {
@@ -131,6 +134,7 @@ real_cases = [
         },
         "intronic":{
             "var_p": "NP_078805.3:p.?",
+            "exc": HGVSError,
         },
     },
     {
@@ -162,6 +166,7 @@ real_cases = [
         },
         "intronic":{
             "var_p": "NP_004371.2:p.?",
+            "exc": HGVSError,
         },
     },
     {
@@ -173,6 +178,7 @@ real_cases = [
         },
         "intronic":{
             "var_p": "NP_004371.2:p.?",
+            "exc": HGVSError,
         },
     },
     {
@@ -203,7 +209,8 @@ real_cases = [
             "exc": HGVSError,
         },
         "intronic":{
-            "var_p": "NP_078805.3:p.?",
+            "var_p": "NP_078805.3:p.(Thr45AspfsTer21)",
+            "exc": HGVSError,
         },
     },
     {
@@ -215,6 +222,7 @@ real_cases = [
         },
         "intronic":{
             "var_p": "NP_078805.3:p.?",
+            "exc": HGVSError,
         },
     },
     {
@@ -245,7 +253,8 @@ real_cases = [
             "exc": HGVSError,
         },
         "intronic":{
-            "var_p": "NP_004976.2:p.?",
+            "var_p": "NP_004976.2:p.(Asp38GlyfsTer10)",
+            "exc": HGVSError,
         },
     },
     {
@@ -257,6 +266,7 @@ real_cases = [
         },
         "intronic":{
             "var_p": "NP_004976.2:p.?",
+            "exc": HGVSError,
         },
     },
     {
@@ -274,9 +284,11 @@ real_cases = [
         "var_c": "NM_004799.2:c.71-7048_71-7047insATAT",
         "exonic":{
             "var_p": "NP_004790.2:p.?",
+            "exc": HGVSError,
         },
         "intronic":{
             "var_p": "NP_004790.2:p.?",
+            "exc": HGVSError,
         },
     },
     {

@@ -20,7 +20,7 @@ import hgvs.utils.altseqbuilder as altseqbuilder
 import hgvs.validator
 from hgvs.decorators.lru_cache import lru_cache
 from hgvs.enums import PrevalidationLevel
-from hgvs.exceptions import HGVSInvalidVariantError, HGVSUnsupportedOperationError
+from hgvs.exceptions import HGVSInvalidVariantError, HGVSUnsupportedOperationError, HGVSInvalidIntervalError
 from hgvs.utils.reftranscriptdata import RefTranscriptData
 
 _logger = logging.getLogger(__name__)
@@ -428,6 +428,29 @@ class VariantMapper:
 
         """
 
+        var_p = self._c_to_p(var_c, pro_ac=pro_ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
+
+        if (
+            var_c.posedit.edit.type in ['ins', 'dup']
+            and var_c.type in "cnr"
+            and var_c.posedit.pos is not None
+            and (var_c.posedit.pos.start.offset != 0 or var_c.posedit.pos.end.offset != 0)
+            and var_p.posedit is None
+        ):
+            if alt_ac is None:
+                raise HGVSUnsupportedOperationError('c_to_p not supported on VariantMapper for this var_c, try AssemblyMapper')
+
+            for shifted_var_c in self._var_c_shifts(var_c, alt_ac, alt_aln_method):
+                shifted_var_p = self._c_to_p(shifted_var_c, pro_ac=pro_ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
+                if shifted_var_p.posedit is not None:
+                    var_p = shifted_var_p
+                    var_p.posedit.shifted = True
+                    break
+
+        return var_p
+
+
+    def _c_to_p(self, var_c, pro_ac=None, alt_ac=None, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
         if not (var_c.type == "c"):
             raise HGVSInvalidVariantError("Expected a cDNA (c.) variant; got " + str(var_c))
         if self._validator:
@@ -624,6 +647,48 @@ class VariantMapper:
             symbol = self.hdp.get_tx_identity_info(var.ac).get("hgnc", None)
         var.gene = symbol
         return var
+
+    def _var_c_shifts(self, var_c, alt_ac, alt_aln_method):
+        """Try to shuffle intronic ins/dup variants to find a protein representation."""
+        strand = self._fetch_AlignmentMapper(tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method).strand
+
+        for shuffle_direction in [3, 5]:
+            try:
+                var_g = VariantMapper.c_to_g(self, var_c, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
+                shifted_var_g = self._shift_with_rewrite(var_g, shuffle_direction, strand, alt_aln_method)
+                shifted_var_c = VariantMapper.g_to_c(self, shifted_var_g, tx_ac=var_c.ac, alt_aln_method=alt_aln_method)
+                yield shifted_var_c
+            except (HGVSInvalidVariantError, HGVSInvalidIntervalError, HGVSUnsupportedOperationError):
+                pass
+
+
+    def _shift_with_rewrite(self, var_g, shuffle_direction, strand, alt_aln_method):
+        """Attempt to shift a variant all the way left or right. Rewrite
+        duplications as insertions so that the variant is shifted farther
+        than would normally be possible using the HGVS notation."""
+        normalizer = hgvs.normalizer.Normalizer(
+            self.hdp, alt_aln_method=alt_aln_method, validate=False, shuffle_direction=shuffle_direction
+        )
+        shifted_var_g = normalizer.normalize(var_g)
+        if shifted_var_g.posedit.edit.type == 'dup':
+            self._replace_reference(shifted_var_g)
+            if (strand == 1 and shuffle_direction == 3) or (strand == -1 and shuffle_direction == 5):
+                shifted_var_g.posedit = hgvs.posedit.PosEdit(
+                    pos=hgvs.location.Interval(
+                        start=hgvs.location.SimplePosition(base=shifted_var_g.posedit.pos.start.base-1),
+                        end=hgvs.location.SimplePosition(base=shifted_var_g.posedit.pos.start.base),
+                    ),
+                    edit=hgvs.edit.NARefAlt(ref=None, alt=shifted_var_g.posedit.edit.ref)
+                )
+            else:
+                shifted_var_g.posedit = hgvs.posedit.PosEdit(
+                    pos=hgvs.location.Interval(
+                        start=hgvs.location.SimplePosition(base=shifted_var_g.posedit.pos.end.base),
+                        end=hgvs.location.SimplePosition(base=shifted_var_g.posedit.pos.end.base+1),
+                    ),
+                    edit=hgvs.edit.NARefAlt(ref=None, alt=shifted_var_g.posedit.edit.ref)
+                )
+        return shifted_var_g
 
 
 # <LICENSE>
