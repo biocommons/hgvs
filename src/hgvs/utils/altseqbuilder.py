@@ -104,6 +104,7 @@ class AltSeqBuilder:
 
         # check reference for special characteristics
         self._ref_has_multiple_stops = self._transcript_data.aa_sequence.count("*") > 1
+        self.at_boundary = False
 
     def build_altseq(self):
         """given a variant and a sequence, incorporate the variant and return the new sequence
@@ -198,47 +199,55 @@ class AltSeqBuilder:
         ):
             result = self.WHOLE_GENE
         elif (
-            global_config.mapping.ins_at_boundary_is_intronic
-            and self._var_c.posedit.edit.type == "dup"
+            self._var_c.posedit.edit.type == "dup"
             and self._var_c.posedit.pos.start.base in self._transcript_data.exon_start_positions
+            and self._var_c.posedit.pos.start.offset == 0
         ):
-            result = self.INTRON
+            self.at_boundary = True
+            result = self.INTRON if global_config.mapping.ins_at_boundary_is_intronic else self.EXON
         elif (
-            global_config.mapping.ins_at_boundary_is_intronic
-            and self._var_c.posedit.edit.type == "dup"
+            self._var_c.posedit.edit.type == "dup"
             and self._var_c.posedit.pos.end.base in self._transcript_data.exon_end_positions
+            and self._var_c.posedit.pos.start.offset == 0
         ):
-            result = self.INTRON
+            self.at_boundary = True
+            result = self.INTRON if global_config.mapping.ins_at_boundary_is_intronic else self.EXON
         elif (
-            not global_config.mapping.ins_at_boundary_is_intronic
-            and self._var_c.posedit.edit.type == "ins"
+            self._var_c.posedit.edit.type == "ins"
             and self._var_c.posedit.pos.start.offset == -1 and self._var_c.posedit.pos.end.offset == 0
         ):
-            result = self.EXON
+            self.at_boundary = True
+            result = self.INTRON if global_config.mapping.ins_at_boundary_is_intronic else self.EXON
         elif (
-            not global_config.mapping.ins_at_boundary_is_intronic
-            and self._var_c.posedit.edit.type == "ins"
+            self._var_c.posedit.edit.type == "ins"
             and self._var_c.posedit.pos.start.offset == 0 and self._var_c.posedit.pos.end.offset == 1
         ):
-            result = self.EXON
+            self.at_boundary = True
+            result = self.INTRON if global_config.mapping.ins_at_boundary_is_intronic else self.EXON
         elif (
-            not global_config.mapping.ins_at_boundary_is_intronic
-            and self._var_c.posedit.edit.type == "dup"
+            self._var_c.posedit.edit.type == "dup"
             and self._var_c.posedit.pos.end.offset == -1
         ):
-            result = self.EXON
+            self.at_boundary = True
+            result = self.INTRON if global_config.mapping.ins_at_boundary_is_intronic else self.EXON
         elif (
-            not global_config.mapping.ins_at_boundary_is_intronic
-            and self._var_c.posedit.edit.type == "dup"
+            self._var_c.posedit.edit.type == "dup"
             and self._var_c.posedit.pos.start.offset == 1
         ):
-            result = self.EXON
+            self.at_boundary = True
+            result = self.INTRON if global_config.mapping.ins_at_boundary_is_intronic else self.EXON
         elif self._var_c.posedit.pos.start.offset != 0 or self._var_c.posedit.pos.end.offset != 0:
             # leave out anything else intronic for now
             result = self.INTRON
         else:  # anything else that contains an exon
             result = self.EXON
         return result
+
+    def is_intronic(self):
+        return self._get_variant_region() == self.INTRON
+
+    def is_exonic(self):
+        return self._get_variant_region() == self.EXON
 
     # def _is_intron_only(self):
     #     """Checks if variant is entirely intronic"""
