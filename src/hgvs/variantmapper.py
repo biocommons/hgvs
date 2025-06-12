@@ -18,6 +18,7 @@ import hgvs.sequencevariant
 import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
 import hgvs.utils.altseqbuilder as altseqbuilder
 import hgvs.validator
+from hgvs import global_config
 from hgvs.decorators.lru_cache import lru_cache
 from hgvs.enums import PrevalidationLevel
 from hgvs.exceptions import HGVSInvalidVariantError, HGVSUnsupportedOperationError, HGVSInvalidIntervalError
@@ -418,39 +419,6 @@ class VariantMapper:
     # ############################################################################
     # c ⟶ p
     def c_to_p(self, var_c, pro_ac=None, alt_ac=None, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
-        """
-        Converts a c. SequenceVariant to a p. SequenceVariant on the specified protein accession
-        Author: Rudy Rico
-
-        :param SequenceVariant var_c: hgvsc tag
-        :param str pro_ac: protein accession
-        :rtype: hgvs.sequencevariant.SequenceVariant
-
-        """
-
-        var_p = self._c_to_p(var_c, pro_ac=pro_ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
-
-        if (
-            var_c.posedit.edit.type in ['ins', 'dup']
-            and var_c.type in "cnr"
-            and var_c.posedit.pos is not None
-            and (var_c.posedit.pos.start.offset != 0 or var_c.posedit.pos.end.offset != 0)
-            and var_p.posedit is None
-        ):
-            if alt_ac is None:
-                raise HGVSUnsupportedOperationError('c_to_p not supported on VariantMapper for this var_c, try AssemblyMapper')
-
-            for shifted_var_c in self._var_c_shifts(var_c, alt_ac, alt_aln_method):
-                shifted_var_p = self._c_to_p(shifted_var_c, pro_ac=pro_ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
-                if shifted_var_p.posedit is not None:
-                    var_p = shifted_var_p
-                    var_p.posedit.shifted = True
-                    break
-
-        return var_p
-
-
-    def _c_to_p(self, var_c, pro_ac=None, alt_ac=None, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
         if not (var_c.type == "c"):
             raise HGVSInvalidVariantError("Expected a cDNA (c.) variant; got " + str(var_c))
         if self._validator:
@@ -459,6 +427,23 @@ class VariantMapper:
         reference_data = RefTranscriptData(self.hdp, var_c.ac, pro_ac)
         builder = altseqbuilder.AltSeqBuilder(var_c, reference_data)
 
+        # attempt to shift ins/dup variants from the intron into the exon or vice versa
+        is_shifted = False
+        if (
+            var_c.posedit.edit.type in ['ins', 'dup']
+            and self._var_c_needs_shifting(builder)
+        ):
+            if alt_ac is None:
+                raise HGVSUnsupportedOperationError(f'mapping specific variant {var_c} requires alt_ac')
+            for shifted_var_c in self._var_c_shifts(var_c, alt_ac, alt_aln_method):
+                shifted_reference_data = RefTranscriptData(self.hdp, shifted_var_c.ac, pro_ac)
+                shifted_builder = altseqbuilder.AltSeqBuilder(shifted_var_c, shifted_reference_data)
+                if not self._var_c_needs_shifting(shifted_builder):
+                    is_shifted = True
+                    reference_data = shifted_reference_data
+                    builder = shifted_builder
+                    break
+
         # TODO: handle case where you get 2+ alt sequences back;
         # currently get list of 1 element loop structure implemented
         # to handle this, but doesn't really do anything currently.
@@ -466,14 +451,18 @@ class VariantMapper:
 
         var_ps = []
         for alt_data in all_alt_data:
-            builder = altseq_to_hgvsp.AltSeqToHgvsp(reference_data, alt_data)
-            var_p = builder.build_hgvsp()
+            hgvsp_builder = altseq_to_hgvsp.AltSeqToHgvsp(reference_data, alt_data)
+            var_p = hgvsp_builder.build_hgvsp()
             var_ps.append(var_p)
 
         var_p = var_ps[0]
 
         if self.add_gene_symbol:
             self._update_gene_symbol(var_p, var_c.gene)
+        if var_p.posedit and is_shifted:
+            var_p.posedit.is_shifted = True
+        if var_p.posedit and builder.at_boundary:
+            var_p.posedit.at_boundary = True
 
         return var_p
 
@@ -648,21 +637,25 @@ class VariantMapper:
         var.gene = symbol
         return var
 
+    def _var_c_needs_shifting(self, builder):
+        if global_config.mapping.shift_over_boundary_is_intronic:
+            return builder.is_exonic()
+        return builder.is_intronic()
+
     def _var_c_shifts(self, var_c, alt_ac, alt_aln_method):
-        """Try to shuffle intronic ins/dup variants to find a protein representation."""
+        """Try to shift ins/dup variants to find a protein representation."""
         strand = self._fetch_AlignmentMapper(tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method).strand
+        var_g = VariantMapper.c_to_g(self, var_c, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
 
         for shuffle_direction in [3, 5]:
             try:
-                var_g = VariantMapper.c_to_g(self, var_c, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
-                shifted_var_g = self._shift_with_rewrite(var_g, shuffle_direction, strand, alt_aln_method)
+                shifted_var_g = self._var_g_shift_with_rewrite(var_g, shuffle_direction, strand, alt_aln_method)
                 shifted_var_c = VariantMapper.g_to_c(self, shifted_var_g, tx_ac=var_c.ac, alt_aln_method=alt_aln_method)
                 yield shifted_var_c
             except (HGVSInvalidVariantError, HGVSInvalidIntervalError, HGVSUnsupportedOperationError):
                 pass
 
-
-    def _shift_with_rewrite(self, var_g, shuffle_direction, strand, alt_aln_method):
+    def _var_g_shift_with_rewrite(self, var_g, shuffle_direction, strand, alt_aln_method):
         """Attempt to shift a variant all the way left or right. Rewrite
         duplications as insertions so that the variant is shifted farther
         than would normally be possible using the HGVS notation."""

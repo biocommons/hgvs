@@ -14,7 +14,7 @@ sanity_cases = [
             "var_p": "MOCK:p.Met1?",
         },
         "intronic":{
-            "exc": HGVSError,
+            "var_p": "MOCK:p.?",
         },
     },
     {
@@ -24,7 +24,7 @@ sanity_cases = [
             "var_p": "MOCK:p.(Lys9AsnfsTer?)",
         },
         "intronic":{
-            "exc": HGVSError,
+            "var_p": "MOCK:p.?",
         },
     },
     {
@@ -44,7 +44,7 @@ sanity_cases = [
             "exc": HGVSError,
         },
         "intronic":{
-            "exc": HGVSError,
+            "var_p": "MOCK:p.?",
         },
 
     },
@@ -65,7 +65,7 @@ sanity_cases = [
             "exc": HGVSError,
         },
         "intronic":{
-            "exc": HGVSError,
+            "var_p": "MOCK:p.?",
         },
     },
 ]
@@ -79,7 +79,6 @@ real_cases = [
         },
         "intronic":{
             "var_p": "NP_004371.2:p.?",
-            "exc": HGVSError,
         },
     },
     {
@@ -90,7 +89,6 @@ real_cases = [
         },
         "intronic":{
             "var_p": "NP_004371.2:p.?",
-            "exc": HGVSError,
         },
     },
     {
@@ -122,7 +120,6 @@ real_cases = [
         },
         "intronic":{
             "var_p": "NP_078805.3:p.?",
-            "exc": HGVSError,
         },
     },
     {
@@ -134,7 +131,6 @@ real_cases = [
         },
         "intronic":{
             "var_p": "NP_078805.3:p.?",
-            "exc": HGVSError,
         },
     },
     {
@@ -166,7 +162,6 @@ real_cases = [
         },
         "intronic":{
             "var_p": "NP_004371.2:p.?",
-            "exc": HGVSError,
         },
     },
     {
@@ -178,7 +173,6 @@ real_cases = [
         },
         "intronic":{
             "var_p": "NP_004371.2:p.?",
-            "exc": HGVSError,
         },
     },
     {
@@ -209,8 +203,7 @@ real_cases = [
             "exc": HGVSError,
         },
         "intronic":{
-            "var_p": "NP_078805.3:p.(Thr45AspfsTer21)",
-            "exc": HGVSError,
+            "var_p": "NP_078805.3:p.?",
         },
     },
     {
@@ -222,7 +215,6 @@ real_cases = [
         },
         "intronic":{
             "var_p": "NP_078805.3:p.?",
-            "exc": HGVSError,
         },
     },
     {
@@ -253,8 +245,7 @@ real_cases = [
             "exc": HGVSError,
         },
         "intronic":{
-            "var_p": "NP_004976.2:p.(Asp38GlyfsTer10)",
-            "exc": HGVSError,
+            "var_p": "NP_004976.2:p.?",
         },
     },
     {
@@ -266,7 +257,6 @@ real_cases = [
         },
         "intronic":{
             "var_p": "NP_004976.2:p.?",
-            "exc": HGVSError,
         },
     },
     {
@@ -288,7 +278,6 @@ real_cases = [
         },
         "intronic":{
             "var_p": "NP_004790.2:p.?",
-            "exc": HGVSError,
         },
     },
     {
@@ -315,49 +304,49 @@ def mock_vm(mock_hdp):
     return hgvs.variantmapper.VariantMapper(mock_hdp, prevalidation_level="INTRINSIC")
 
 
-@contextmanager
-def config_setting(module, setting, temp_value):
-    old_value = getattr(module, setting)
-    try:
-        setattr(module, setting, temp_value)
-        yield
-    finally:
-        setattr(module, setting, old_value)
-
-
 @pytest.mark.parametrize("case", sanity_cases)
-def test_sanity_c_to_p(case, parser, mock_vm):
-    with config_setting(hgvs.global_config.mapping, 'ins_at_boundary_is_intronic', False):
-        var_c = parser.parse(case["var_c"])
-        if "exc" in case["exonic"]:
-            with pytest.raises(case["exonic"]["exc"]):
-                mock_vm.c_to_p(var_c, "MOCK")
-        else:
-            assert str(mock_vm.c_to_p(var_c, "MOCK")) == case["exonic"]["var_p"]
-    with config_setting(hgvs.global_config.mapping, 'ins_at_boundary_is_intronic', True):
-        var_c = parser.parse(case["var_c"])
-        if "exc" in case["intronic"]:
-            with pytest.raises(case["intronic"]["exc"]):
-                mock_vm.c_to_p(var_c, "MOCK")
-        else:
-            assert str(mock_vm.c_to_p(var_c, "MOCK")) == case["intronic"]["var_p"]
+def test_sanity_c_to_p(case, parser, mock_vm, monkeypatch):
+    var_c = parser.parse(case["var_c"])
+
+    monkeypatch.setattr(hgvs.global_config.mapping, 'ins_at_boundary_is_intronic', False)
+    monkeypatch.setattr(hgvs.global_config.mapping, 'shift_over_boundary_is_intronic', False)
+
+    if "exc" in case["exonic"]:
+        with pytest.raises(case["exonic"]["exc"]):
+            mock_vm.c_to_p(var_c, "MOCK")
+    else:
+        assert str(mock_vm.c_to_p(var_c, "MOCK")) == case["exonic"]["var_p"]
+
+    monkeypatch.setattr(hgvs.global_config.mapping, 'ins_at_boundary_is_intronic', True)
+    monkeypatch.setattr(hgvs.global_config.mapping, 'shift_over_boundary_is_intronic', True)
+
+    if "exc" in case["intronic"]:
+        with pytest.raises(case["intronic"]["exc"]):
+            mock_vm.c_to_p(var_c, "MOCK")
+    else:
+        assert str(mock_vm.c_to_p(var_c, "MOCK")) == case["intronic"]["var_p"]
 
 
 @pytest.mark.parametrize("case", real_cases)
-def test_real_c_to_p(case, parser, vm, am37):
-    with config_setting(hgvs.global_config.mapping, 'ins_at_boundary_is_intronic', False):
-        var_c = parser.parse(case["var_c"])
-        if "exc" in case["exonic"]:
-            with pytest.raises(case["exonic"]["exc"]):
-                vm.c_to_p(var_c)
-        else:
-            assert str(vm.c_to_p(var_c)) == case["exonic"]["var_p"]
-        assert str(am37.c_to_p(var_c)) == case["exonic"]["var_p"]
-    with config_setting(hgvs.global_config.mapping, 'ins_at_boundary_is_intronic', True):
-        var_c = parser.parse(case["var_c"])
-        if "exc" in case["intronic"]:
-            with pytest.raises(case["intronic"]["exc"]):
-                vm.c_to_p(var_c)
-        else:
-            assert str(vm.c_to_p(var_c)) == case["intronic"]["var_p"]
-        assert str(am37.c_to_p(var_c)) == case["intronic"]["var_p"]
+def test_real_c_to_p(case, parser, vm, am37, monkeypatch):
+    monkeypatch.setattr(hgvs.global_config.mapping, 'ins_at_boundary_is_intronic', False)
+    monkeypatch.setattr(hgvs.global_config.mapping, 'shift_over_boundary_is_intronic', False)
+
+    var_c = parser.parse(case["var_c"])
+    if "exc" in case["exonic"]:
+        with pytest.raises(case["exonic"]["exc"]):
+            vm.c_to_p(var_c)
+    else:
+        assert str(vm.c_to_p(var_c)) == case["exonic"]["var_p"]
+    assert str(am37.c_to_p(var_c)) == case["exonic"]["var_p"]
+
+    monkeypatch.setattr(hgvs.global_config.mapping, 'ins_at_boundary_is_intronic', True)
+    monkeypatch.setattr(hgvs.global_config.mapping, 'shift_over_boundary_is_intronic', True)
+
+    var_c = parser.parse(case["var_c"])
+    if "exc" in case["intronic"]:
+        with pytest.raises(case["intronic"]["exc"]):
+            vm.c_to_p(var_c)
+    else:
+        assert str(vm.c_to_p(var_c)) == case["intronic"]["var_p"]
+    assert str(am37.c_to_p(var_c)) == case["intronic"]["var_p"]
