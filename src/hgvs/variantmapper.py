@@ -419,6 +419,16 @@ class VariantMapper:
     # ############################################################################
     # c ⟶ p
     def c_to_p(self, var_c, pro_ac=None, alt_ac=None, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
+        """
+        Converts a c. SequenceVariant to a p. SequenceVariant on the specified protein accession
+        Author: Rudy Rico
+
+        :param SequenceVariant var_c: hgvsc tag
+        :param str pro_ac: protein accession
+        :rtype: hgvs.sequencevariant.SequenceVariant
+
+        """
+
         if not (var_c.type == "c"):
             raise HGVSInvalidVariantError("Expected a cDNA (c.) variant; got " + str(var_c))
         if self._validator:
@@ -646,7 +656,6 @@ class VariantMapper:
         """Try to shift ins/dup variants to find a protein representation."""
         strand = self._fetch_AlignmentMapper(tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method).strand
         var_g = VariantMapper.c_to_g(self, var_c, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
-
         for shuffle_direction in [3, 5]:
             try:
                 shifted_var_g = self._var_g_shift_with_rewrite(var_g, shuffle_direction, strand, alt_aln_method)
