@@ -10,7 +10,6 @@ from support import CACHE
 import hgvs
 import hgvs.parser
 import hgvs.sequencevariant
-from hgvs.pretty.prettyprint import PrettyPrint
 
 
 def test_gene_formatting(parser):
@@ -244,7 +243,7 @@ class Test_SequenceVariant(unittest.TestCase):
                 "DEL",
                 "NC_000023.11:g.(133661675_133661730)_(133661850_133661926)del",
                 "NC_000023.11:g.(?_133661730)_(133661850_?)del",
-                "NM_004484.3:c.(1293_1293)-76_(1413_1413)del",
+                "NM_004484.3:c.(1293-76_1293)_(1413_1413+55)del",  # orig is this but it is wrong:"NM_004484.3:c.(1293_1293)-76_(1413_1413)del",
                 "NM_004484.3:c.(?_1293)_(1413_?)del",
             ),
             (
@@ -347,8 +346,8 @@ class Test_SequenceVariant(unittest.TestCase):
         # )
         print(f"var_c_inner: {var_c_inner} should be: {hgvs_hgvs_c}")
 
-        pp = PrettyPrint(self.hdp, am38)
-        print(f"pp.display(var_c): {pp.display(var_c_inner, tx_ac=tx_ac)}")
+        # pp = PrettyPrint(self.hdp, am38)
+        # print(f"pp.display(var_c): {str(pp.display(var_c_inner, tx_ac=tx_ac))}")
 
         self.assertEqual(hgvs_hgvs_c, str(var_c_inner))
 
@@ -364,9 +363,15 @@ class Test_SequenceVariant(unittest.TestCase):
         print(f"var_n: {var_n}")
 
         print(f" var_c like clinvar: {var_c}")
-        var_g_reverse = self.vm.c_to_g(var_c, chrom_ac)
-        print(f"{var_g_reverse}")
+        var_g_reverse = self.vm.c_to_g(
+            var_c, chrom_ac, imprecise_inner_interval_only=True
+        )
+        print(f" var_g_reverse:{var_g_reverse}")
         self.assertEqual(hgvs_hgvs_g, str(var_g_reverse))
+
+        var_g_reverse_precise = self.vm.c_to_g(var_c, chrom_ac)
+        print(f"{var_g_reverse_precise}")
+        self.assertEqual(clinvar_hgvs_g, str(var_g_reverse_precise))
 
         print(f"clinvar: {clinvar_hgvs_c} hgvs:{hgvs_hgvs_c} event: {event_type}")
 

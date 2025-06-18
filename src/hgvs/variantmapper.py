@@ -23,6 +23,7 @@ from hgvs.enums import PrevalidationLevel
 from hgvs.exceptions import HGVSInvalidVariantError, HGVSUnsupportedOperationError
 from hgvs.location import Interval
 from hgvs.utils.reftranscriptdata import RefTranscriptData
+from hgvs.utils.position import get_start_end
 
 _logger = logging.getLogger(__name__)
 
@@ -139,20 +140,15 @@ class VariantMapper:
         return var_out
 
     def _get_start_end(self, var):
-        if isinstance(var.posedit.pos, hgvs.location.Interval):
-            s = var.posedit.pos.start.start
-            if not s.base:
-                s = var.posedit.pos.start.end
-            print(f" is interval {s}")
-        else:
-            s = var.posedit.pos.start
-        if isinstance(var.posedit.pos.end, hgvs.location.Interval):
-            e = var.posedit.pos.end.end
-            if not e.base:
-                e = var.posedit.pos.end.start
-        else:
-            e = var.posedit.pos.end
-        return s, e
+        """Get start and end positions from the variant.
+
+        Args:
+            var: A variant object with posedit.pos attribute
+
+        Returns:
+            tuple: (start_position, end_position) where positions can be SimplePosition or BaseOffsetPosition
+        """
+        return get_start_end(var)
 
     # ############################################################################
     # g⟷n
@@ -322,7 +318,7 @@ class VariantMapper:
         else:
             print("g_to_c: pos_c.uncertain")
             # variant at alignment gap
-            pos_g = mapper.c_to_g(pos_c, alt_ac=var_g.ac)
+            pos_g = mapper.c_to_g(pos_c)
             print("g_to_c: pos_g")
             edit_c = hgvs.edit.NARefAlt(
                 ref="", alt=self._get_altered_sequence(mapper.strand, pos_g, var_g)
@@ -339,7 +335,11 @@ class VariantMapper:
         return var_c
 
     def c_to_g(
-        self, var_c, alt_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method
+        self,
+        var_c,
+        alt_ac,
+        alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
+        imprecise_inner_interval_only: bool | None = None,
     ):
         """Given a parsed c. variant, return a g. variant on the specified
         transcript using the specified alignment method (default is
@@ -361,7 +361,11 @@ class VariantMapper:
         mapper = self._fetch_AlignmentMapper(
             tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method
         )
-        pos_g = mapper.c_to_g(var_c.posedit.pos)
+        print(f"c_to_g: var_c: {var_c}")
+        pos_g = mapper.c_to_g(
+            var_c.posedit.pos,
+            imprecise_inner_interval_only=imprecise_inner_interval_only,
+        )
 
         print(f"vm.c_to_g pos_g: {pos_g} uncertain: {pos_g.uncertain}")
         if not pos_g.uncertain:

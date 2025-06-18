@@ -15,6 +15,7 @@ from hgvs.exceptions import (
     HGVSUnsupportedOperationError,
 )
 from hgvs.utils.norm import normalize_alleles
+from hgvs.utils.position import get_start_end
 
 _logger = logging.getLogger(__name__)
 
@@ -101,8 +102,7 @@ class Normalizer:
         if type == "c":
             var = self.vm.c_to_n(var)
 
-        s, e = self._get_start_end(var)
-
+        s, e = get_start_end(var)
         if var.type in "nr":
             if s.offset != 0 or e.offset != 0:
                 raise HGVSUnsupportedOperationError(
@@ -122,6 +122,7 @@ class Normalizer:
                 # was invalid.
                 return "Bad Request" not in str(e)
 
+        print(f"normalizer: s: {s}, e: {e}")
         if s.base < 0 or not is_valid_pos(var.ac, e.base):
             if hgvs.global_config.mapping.strict_bounds:
                 raise HGVSInvalidVariantError(f"{var}: coordinates are out-of-bounds")
@@ -207,7 +208,7 @@ class Normalizer:
             ref_end = tgt_len
 
         var_norm = copy.deepcopy(var)
-        s_norm, e_norm = self._get_start_end(var_norm)
+        s_norm, e_norm = get_start_end(var_norm)
         var_norm.posedit.edit = edit
         s_norm.base = ref_start
         e_norm.base = ref_end
@@ -218,24 +219,15 @@ class Normalizer:
         return var_norm
 
     def _get_start_end(self, var):
-        if isinstance(var.posedit.pos, hgvs.location.BaseOffsetInterval):
-            s = var.posedit.pos.start
-        elif isinstance(var.posedit.pos, hgvs.location.Interval):
-            s = var.posedit.pos.start.start
-            if not s.base:
-                s = var.posedit.pos.start.end
-        else:
-            s = var.posedit.pos.start
+        """Get start and end positions from the variant.
 
-        if isinstance(var.posedit.pos.end, hgvs.location.BaseOffsetPosition):
-            e = var.posedit.pos.end
-        elif isinstance(var.posedit.pos.end, hgvs.location.Interval):
-            e = var.posedit.pos.end.end
-            if not e.base:
-                e = var.posedit.pos.end.start
-        else:
-            e = var.posedit.pos.end
-        return s, e
+        Args:
+            var: A variant object with posedit.pos attribute
+
+        Returns:
+            tuple: (start_position, end_position) where positions can be SimplePosition or BaseOffsetPosition
+        """
+        return get_start_end(var)
 
     def _get_boundary(self, var):
         """Get the position of exon-intron boundary for current variant"""

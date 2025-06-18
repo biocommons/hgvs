@@ -122,8 +122,12 @@ class DataCompiler:
             alt = sv.posedit.edit.alt
 
         elif sv.posedit.edit.type in ("sub", "del", "delins", "identity"):
-            start = sv.posedit.pos.start.base - 1
-            end = sv.posedit.pos.end.base
+            if isinstance(sv.posedit.pos.start, hgvs.location.Interval):
+                start = sv.posedit.pos.start.end.base - 1
+                end = sv.posedit.pos.end.start.base
+            else:
+                start = sv.posedit.pos.start.base - 1
+                end = sv.posedit.pos.end.base
             if sv.posedit.edit.type == "identity":
                 alt = self.config.hdp.get_seq(sv.ac, start, end)
                 ref = alt
