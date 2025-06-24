@@ -934,10 +934,7 @@ class AlignmentMapper:
         if isinstance(pos, int):
             return pos
 
-        if pos.offset < 0:
-            return _hgvs_to_zbc(pos.base) - pos.offset
-        else:
-            return _hgvs_to_zbc(pos.base) + pos.offset
+        return _hgvs_to_zbc(pos.base)
 
     def _n_to_g_interval(
         self,
@@ -971,9 +968,16 @@ class AlignmentMapper:
         fre_start = self.fix_offset(end_start)
         fre_end = self.fix_offset(end_end)
 
+        ss_offset = start_start.offset
+        se_offset = start_end.offset
+        es_offset = end_start.offset
+        ee_offset = end_end.offset
+
+        print(f"n_to_g_interval: {start_start} {start_end} {end_start} {end_end}")
         print(
-            f"n_to_g_interval: U frs_start {frs_start} frs_end {frs_end} fre_start {fre_start} fre_end {fre_end}"
+            f"n_to_g_interval: U frs_start {frs_start} _ {frs_end} | {fre_start} _ {fre_end}"
         )
+        print(f"n_to_g_interval: tgt_len {self.tgt_len}")
 
         # For reverse strand, transform coordinates before mapping
         if self.strand == -1:
@@ -982,15 +986,23 @@ class AlignmentMapper:
             orig_frs_end = frs_end
             orig_fre_start = fre_start
             orig_fre_end = fre_end
+            orig_ss_offset = ss_offset
+            orig_se_offset = se_offset
+            orig_es_offset = es_offset
+            orig_ee_offset = ee_offset
 
             # Transform coordinates
             frs_start = self.tgt_len - 1 - orig_frs_end
             frs_end = self.tgt_len - 1 - orig_frs_start
-            fre_start = self.tgt_len - 1 - orig_fre_end
-            fre_end = self.tgt_len - 1 - orig_fre_start
+            fre_start = self.tgt_len - 1 - orig_fre_start
+            fre_end = self.tgt_len - 1 - orig_fre_end
+            ss_offset = orig_ss_offset
+            se_offset = orig_se_offset
+            es_offset = orig_es_offset
+            ee_offset = orig_ee_offset
 
         print(
-            f"n_to_g_interval:  L frs_start {frs_start} frs_end {frs_end} fre_start {fre_start} fre_end {fre_end}"
+            f"n_to_g_interval:  L frs_start {frs_start} _ {frs_end} | {fre_start} _ {fre_end}"
         )
 
         if imprecise_inner_interval_only and start_start.offset < 0:
@@ -1002,26 +1014,9 @@ class AlignmentMapper:
         else:
             right_boundary_out_of_bounds = False
 
-        # re-order if needed
-        if self.strand == -1:
-            orig_frs_start = frs_start
-            orig_frs_end = frs_end
-            orig_fre_start = fre_start
-            orig_fre_end = fre_end
-            orig_left_boundary_out_of_bounds = left_boundary_out_of_bounds
-            orig_right_boundary_out_of_bounds = right_boundary_out_of_bounds
-
-            if frs_end > fre_start:
-                frs_start, frs_end, fre_start, fre_end = (
-                    orig_fre_start,
-                    orig_fre_end,
-                    orig_frs_end,
-                    orig_frs_start,
-                )
-                left_boundary_out_of_bounds, right_boundary_out_of_bounds = (
-                    orig_right_boundary_out_of_bounds,
-                    orig_left_boundary_out_of_bounds,
-                )
+        print(
+            f"n_to_g_interval: before reverse: frs_start {frs_start} _ {frs_end} | {fre_start} _ {fre_end}"
+        )
 
         print(
             f"n_to_g_interval: after sort: frs_start {frs_start} frs_end {frs_end} fre_start {fre_start} fre_end {fre_end}"
@@ -1041,14 +1036,37 @@ class AlignmentMapper:
             pos=fre_end, end="end", strict_bounds=strict_bounds
         )
 
+        print(
+            f"n_to_g_interval: frs/fre {frs_start} _ {frs_end} | {fre_start} _ {fre_end}"
+        )
+        print(
+            f"n_to_g_interval: ss_offset {ss_offset} se_offset {se_offset} es_offset {es_offset} ee_offset {ee_offset}"
+        )
+
         # Add offset to get final genomic positions
-        grs_start = grs_start + self.gc_offset + 1
-        grs_end = grs_end + self.gc_offset + 1
-        gre_start = gre_start + self.gc_offset + 1
-        gre_end = gre_end + self.gc_offset + 1
+        if self.strand == -1:
+            gre_orig_start = gre_start
+            gre_orig_end = gre_end
+            grs_orig_start = grs_start
+            grs_orig_end = grs_end
+
+            grs_start = gre_orig_end + self.gc_offset + 1 - ee_offset
+            grs_end = gre_orig_start + self.gc_offset + 1 - es_offset
+            gre_start = grs_orig_end + self.gc_offset + 1 - se_offset
+            gre_end = grs_orig_start + self.gc_offset + 1 - ss_offset
+
+        else:
+            grs_start = grs_start + self.gc_offset + 1 - ss_offset
+            grs_end = grs_end + self.gc_offset + 1 - se_offset
+            gre_start = gre_start + self.gc_offset + 1 - es_offset
+            gre_end = gre_end + self.gc_offset + 1 - ee_offset
 
         print(
-            f"n_to_g_interval: grs_start {grs_start} {grs_start_cigar} grs_end {grs_end} {grs_end_cigar} gre_start {gre_start} {gre_start_cigar} gre_end {gre_end} {gre_end_cigar}"
+            f"n_to_g_interval: grs/gre {grs_start} _ {grs_end} | {gre_start} _ {gre_end}"
+        )
+
+        print(
+            f"n_to_g_interval: left / right boundary out of bounds: {left_boundary_out_of_bounds} {right_boundary_out_of_bounds}"
         )
 
         # For reverse strand, ensure start is less than or equal to end
@@ -1066,13 +1084,19 @@ class AlignmentMapper:
 
         rstart = hgvs.location.SimplePosition(gre_start, uncertain=end_start.uncertain)
         if right_boundary_out_of_bounds:
+            print("n_to_g_interval: right boundary out of bounds")
             rend = hgvs.location.SimplePosition(
                 base=None, uncertain=end_start.uncertain
             )
         else:
             rend = hgvs.location.SimplePosition(
-                base=grs_end, uncertain=end_start.uncertain
+                base=gre_end, uncertain=end_start.uncertain
             )
+            print(f"n_to_g_interval: right boundary in bounds {rend}")
+
+        print(
+            f"n_to_g_interval: lstart {lstart} lend {lend} rstart {rstart} rend {rend} strand {self.strand}"
+        )
 
         # Create the start interval
         g_start = hgvs.location.Interval(
@@ -1092,9 +1116,9 @@ class AlignmentMapper:
             or gre_end_cigar in "DI",
         )
 
-        # if self.strand == -1:
-        #     if g_start.end.base > g_end.start.base:
-        #         g_start, g_end = g_end, g_start
+        if self.strand == -1:
+            if g_start.end.base > g_end.start.base:
+                g_start, g_end = g_end, g_start
 
         # Return the final interval
         return hgvs.location.Interval(
