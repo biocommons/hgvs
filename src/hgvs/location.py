@@ -246,6 +246,12 @@ class BaseOffsetPosition:
         if lhs.datum == rhs.datum:
             if lhs.base == rhs.base:
                 return lhs.offset < rhs.offset
+            elif not lhs.base and not rhs.base:
+                return False
+            elif not lhs.base and rhs.base:
+                return True
+            elif lhs.base and not rhs.base:
+                return False
             else:
                 if (rhs.base - lhs.base == 1 and lhs.offset > 0 and rhs.offset < 0) or (
                     lhs.base - rhs.base == 1 and rhs.offset > 0 and lhs.offset < 0
@@ -404,6 +410,27 @@ class Interval:
         if not self.start or not self.end:
             return (ValidationLevel.VALID, None)
 
+        # Check for positions without base values
+        if hasattr(self.start, "base") and self.start.base is None:
+            return (ValidationLevel.VALID, None)
+        if hasattr(self.end, "base") and self.end.base is None:
+            return (ValidationLevel.VALID, None)
+
+        # Check for intervals where start or end interval has no base
+        if hasattr(self.start, "start") and hasattr(self.start, "end"):
+            # start is an interval
+            if (
+                hasattr(self.start.start, "base") and self.start.start.base is None
+            ) or (hasattr(self.start.end, "base") and self.start.end.base is None):
+                return (ValidationLevel.VALID, None)
+
+        if hasattr(self.end, "start") and hasattr(self.end, "end"):
+            # end is an interval
+            if (hasattr(self.end.start, "base") and self.end.start.base is None) or (
+                hasattr(self.end.end, "base") and self.end.end.base is None
+            ):
+                return (ValidationLevel.VALID, None)
+
         try:
             if self.start <= self.end:
                 return (ValidationLevel.VALID, None)
@@ -465,12 +492,12 @@ class BaseOffsetInterval(Interval):
             return self.start.format(conf)
 
         s = self.start._format_pos()
-        if self.start.is_uncertain:
+        if self.start.is_uncertain and self.start.base:
             s_str = f"(?_{s})"
         else:
             s_str = s
         e = self.end._format_pos()
-        if self.end.is_uncertain:
+        if self.end.is_uncertain and self.end.base:
             e_str = f"({e}_?)"
         else:
             e_str = e

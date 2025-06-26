@@ -239,9 +239,9 @@ class ExtrinsicValidator:
 
         s, e = self._get_start_end(var)
 
-        if s.datum == Datum.SEQ_START and s.base <= 0:
+        if s.datum == Datum.SEQ_START and s.base and s.base <= 0:
             return (ValidationLevel.ERROR, TX_BOUND_ERROR_MSG.format())
-        if e.datum == Datum.SEQ_START and e.base > tx_len:
+        if e.datum == Datum.SEQ_START and e.base and e.base > tx_len:
             return (ValidationLevel.ERROR, TX_BOUND_ERROR_MSG.format())
         return (ValidationLevel.VALID, None)
 
