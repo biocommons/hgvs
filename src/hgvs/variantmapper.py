@@ -18,9 +18,8 @@ import hgvs.sequencevariant
 import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
 import hgvs.utils.altseqbuilder as altseqbuilder
 import hgvs.validator
-from hgvs import global_config
 from hgvs.decorators.lru_cache import lru_cache
-from hgvs.enums import PrevalidationLevel
+from hgvs.enums import PrevalidationLevel, ShiftOverBoundaryPreference
 from hgvs.exceptions import HGVSInvalidVariantError, HGVSUnsupportedOperationError, HGVSInvalidIntervalError
 from hgvs.utils.reftranscriptdata import RefTranscriptData
 
@@ -72,6 +71,8 @@ class VariantMapper:
         replace_reference=hgvs.global_config.mapping.replace_reference,
         prevalidation_level=hgvs.global_config.mapping.prevalidation_level,
         add_gene_symbol=hgvs.global_config.mapping.add_gene_symbol,
+        shift_over_boundary=hgvs.global_config.mapping.shift_over_boundary,
+        shift_over_boundary_preference=hgvs.global_config.mapping.shift_over_boundary_preference,
     ):
         """
         :param bool replace_reference: replace reference (entails additional network access)
@@ -94,6 +95,11 @@ class VariantMapper:
         self.left_normalizer = hgvs.normalizer.Normalizer(
             hdp, shuffle_direction=5, variantmapper=self
         )
+        self.shift_over_boundary = shift_over_boundary
+        if shift_over_boundary_preference is None:
+            self.shift_over_boundary_preference = ShiftOverBoundaryPreference.DEFAULT
+        else:
+            self.shift_over_boundary_preference = ShiftOverBoundaryPreference[shift_over_boundary_preference.upper()]
 
     # ############################################################################
     # g⟷t
@@ -438,21 +444,31 @@ class VariantMapper:
         builder = altseqbuilder.AltSeqBuilder(var_c, reference_data)
 
         # attempt to shift ins/dup variants from the intron into the exon or vice versa
-        is_shifted = False
-        if (
-            var_c.posedit.edit.type in ['ins', 'dup']
-            and self._var_c_needs_shifting(builder)
-        ):
-            if alt_ac is None:
-                raise HGVSUnsupportedOperationError(f'mapping specific variant {var_c} requires alt_ac')
-            for shifted_var_c in self._var_c_shifts(var_c, alt_ac, alt_aln_method):
-                shifted_reference_data = RefTranscriptData(self.hdp, shifted_var_c.ac, pro_ac)
-                shifted_builder = altseqbuilder.AltSeqBuilder(shifted_var_c, shifted_reference_data)
-                if not self._var_c_needs_shifting(shifted_builder):
-                    is_shifted = True
-                    reference_data = shifted_reference_data
-                    builder = shifted_builder
-                    break
+        if self.shift_over_boundary:
+            shifts_into_exon_and_intron = False
+            is_shifted = False
+            original_region = builder.get_variant_region()
+            if (
+                var_c.posedit.edit.type in ['ins', 'dup']
+                and original_region in [builder.INTRON, builder.EXON]
+            ):
+                if alt_ac is None:
+                    raise HGVSUnsupportedOperationError(f'mapping specific variant {var_c} requires alt_ac')
+                for shifted_var_c in self._var_c_shifts(var_c, alt_ac, alt_aln_method):
+                    shifted_reference_data = RefTranscriptData(self.hdp, shifted_var_c.ac, pro_ac)
+                    shifted_builder = altseqbuilder.AltSeqBuilder(shifted_var_c, shifted_reference_data)
+                    shifted_region = shifted_builder.get_variant_region()
+                    if shifted_region not in [shifted_builder.INTRON, shifted_builder.EXON]:
+                        continue
+                    if original_region != shifted_region:
+                        # a shift is posible
+                        shifts_into_exon_and_intron = True
+                        if self.shift_over_boundary_preference.name.lower() == shifted_region:
+                            # and that shift is preferred
+                            is_shifted = True
+                            reference_data = shifted_reference_data
+                            builder = shifted_builder
+                        break
 
         # TODO: handle case where you get 2+ alt sequences back;
         # currently get list of 1 element loop structure implemented
@@ -469,10 +485,11 @@ class VariantMapper:
 
         if self.add_gene_symbol:
             self._update_gene_symbol(var_p, var_c.gene)
-        if var_p.posedit and is_shifted:
-            var_p.posedit.is_shifted = True
-        if var_p.posedit and builder.at_boundary:
-            var_p.posedit.at_boundary = True
+        if var_p.posedit:
+            var_p.posedit.at_boundary = builder.at_boundary
+        if var_p.posedit and self.shift_over_boundary:
+            var_p.posedit.shifts_into_exon_and_intron = shifts_into_exon_and_intron
+            var_p.posedit.is_shifted = is_shifted
 
         return var_p
 
@@ -647,19 +664,18 @@ class VariantMapper:
         var.gene = symbol
         return var
 
-    def _var_c_needs_shifting(self, builder):
-        if global_config.mapping.shift_over_boundary_is_intronic:
-            return builder.is_exonic()
-        return builder.is_intronic()
-
     def _var_c_shifts(self, var_c, alt_ac, alt_aln_method):
         """Try to shift ins/dup variants to find a protein representation."""
+        prev_var_c_strs = [str(var_c)]
         strand = self._fetch_AlignmentMapper(tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method).strand
         var_g = VariantMapper.c_to_g(self, var_c, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         for shuffle_direction in [3, 5]:
             try:
                 shifted_var_g = self._var_g_shift_with_rewrite(var_g, shuffle_direction, strand, alt_aln_method)
                 shifted_var_c = VariantMapper.g_to_c(self, shifted_var_g, tx_ac=var_c.ac, alt_aln_method=alt_aln_method)
+                if str(shifted_var_c) in prev_var_c_strs:
+                    continue
+                prev_var_c_strs.append(str(shifted_var_c))
                 yield shifted_var_c
             except (HGVSInvalidVariantError, HGVSInvalidIntervalError, HGVSUnsupportedOperationError):
                 pass

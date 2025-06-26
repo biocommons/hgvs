@@ -131,7 +131,7 @@ class AltSeqBuilder:
         # should loop over each allele rather than assume only 1 variant; return a list for now
         alt_data = []
 
-        variant_location = self._get_variant_region()
+        variant_location = self.get_variant_region()
 
         if variant_location == self.EXON:
             edit_type = type(self._var_c.posedit.edit)
@@ -175,7 +175,7 @@ class AltSeqBuilder:
 
         return alt_data
 
-    def _get_variant_region(self):
+    def get_variant_region(self):
         """Categorize variant by location in transcript (5'utr, exon, intron, 3'utr)
 
         :return "exon", "intron", "five_utr", "three_utr", "whole_gene"
@@ -242,12 +242,6 @@ class AltSeqBuilder:
         else:  # anything else that contains an exon
             result = self.EXON
         return result
-
-    def is_intronic(self):
-        return self._get_variant_region() == self.INTRON
-
-    def is_exonic(self):
-        return self._get_variant_region() == self.EXON
 
     # def _is_intron_only(self):
     #     """Checks if variant is entirely intronic"""

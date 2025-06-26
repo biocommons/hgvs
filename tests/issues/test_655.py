@@ -1,7 +1,7 @@
 import os
-from contextlib import contextmanager
 
 import hgvs
+from hgvs.enums import ShiftOverBoundaryPreference
 from hgvs.exceptions import HGVSError
 import pytest
 import support.mock_input_source as mock_input_data_source
@@ -274,7 +274,6 @@ real_cases = [
         "var_c": "NM_004799.2:c.71-7048_71-7047insATAT",
         "exonic":{
             "var_p": "NP_004790.2:p.?",
-            "exc": HGVSError,
         },
         "intronic":{
             "var_p": "NP_004790.2:p.?",
@@ -309,7 +308,7 @@ def test_sanity_c_to_p(case, parser, mock_vm, monkeypatch):
     var_c = parser.parse(case["var_c"])
 
     monkeypatch.setattr(hgvs.global_config.mapping, 'ins_at_boundary_is_intronic', False)
-    monkeypatch.setattr(hgvs.global_config.mapping, 'shift_over_boundary_is_intronic', False)
+    mock_vm.shift_over_boundary_preference = ShiftOverBoundaryPreference.EXON
 
     if "exc" in case["exonic"]:
         with pytest.raises(case["exonic"]["exc"]):
@@ -318,7 +317,7 @@ def test_sanity_c_to_p(case, parser, mock_vm, monkeypatch):
         assert str(mock_vm.c_to_p(var_c, "MOCK")) == case["exonic"]["var_p"]
 
     monkeypatch.setattr(hgvs.global_config.mapping, 'ins_at_boundary_is_intronic', True)
-    monkeypatch.setattr(hgvs.global_config.mapping, 'shift_over_boundary_is_intronic', True)
+    mock_vm.shift_over_boundary_preference = ShiftOverBoundaryPreference.INTRON
 
     if "exc" in case["intronic"]:
         with pytest.raises(case["intronic"]["exc"]):
@@ -330,7 +329,8 @@ def test_sanity_c_to_p(case, parser, mock_vm, monkeypatch):
 @pytest.mark.parametrize("case", real_cases)
 def test_real_c_to_p(case, parser, vm, am37, monkeypatch):
     monkeypatch.setattr(hgvs.global_config.mapping, 'ins_at_boundary_is_intronic', False)
-    monkeypatch.setattr(hgvs.global_config.mapping, 'shift_over_boundary_is_intronic', False)
+    vm.shift_over_boundary_preference = ShiftOverBoundaryPreference.EXON
+    am37.shift_over_boundary_preference = ShiftOverBoundaryPreference.EXON
 
     var_c = parser.parse(case["var_c"])
     if "exc" in case["exonic"]:
@@ -341,7 +341,8 @@ def test_real_c_to_p(case, parser, vm, am37, monkeypatch):
     assert str(am37.c_to_p(var_c)) == case["exonic"]["var_p"]
 
     monkeypatch.setattr(hgvs.global_config.mapping, 'ins_at_boundary_is_intronic', True)
-    monkeypatch.setattr(hgvs.global_config.mapping, 'shift_over_boundary_is_intronic', True)
+    vm.shift_over_boundary_preference = ShiftOverBoundaryPreference.INTRON
+    am37.shift_over_boundary_preference = ShiftOverBoundaryPreference.INTRON
 
     var_c = parser.parse(case["var_c"])
     if "exc" in case["intronic"]:
