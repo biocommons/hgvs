@@ -1098,26 +1098,32 @@ class AlignmentMapper:
             if gre_start:
                 gre_orig_start = gre_start + self.gc_offset + 1 - es_offset
             else:
-                gre_orig_start = None
+                gre_orig_start = -1
 
             if gre_end:
                 gre_orig_end = gre_end + self.gc_offset + 1 - ee_offset
             else:
-                gre_orig_end = None
+                gre_orig_end = -1
             if grs_start:
                 grs_orig_start = grs_start + self.gc_offset + 1 - se_offset
             else:
-                grs_orig_start = None
+                grs_orig_start = 248387328  # chr 1 in T2T assembly size
             if grs_end:
                 grs_orig_end = grs_end + self.gc_offset + 1 - ss_offset
             else:
-                grs_orig_end = None
+                grs_orig_end = 248387329
 
             # Sort the four values from smallest to largest
             all_positions = [gre_orig_start, gre_orig_end, grs_orig_start, grs_orig_end]
             print(f"n_to_g_interval: all_positions {all_positions}")
             all_positions.sort()
             print(f"n_to_g_interval: sorted all_positions {all_positions}")
+
+            # Convert sentinel values back to None
+            all_positions = [
+                None if x == -1 or x == 248387328 else x for x in all_positions
+            ]
+
             grs_start, grs_end, gre_start, gre_end = all_positions
 
         else:
@@ -1183,7 +1189,11 @@ class AlignmentMapper:
         )
 
         if self.strand == -1:
-            if g_start.end.base > g_end.start.base:
+            if (
+                g_start.end.base
+                and g_end.start.base
+                and g_start.end.base > g_end.start.base
+            ):
                 g_start, g_end = g_end, g_start
 
         # Return the final interval
