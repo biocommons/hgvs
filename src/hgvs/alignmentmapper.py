@@ -60,6 +60,9 @@ def _hgvs_to_zbc(i: int):
     return i
 
 
+MAX_CHR_SIZE = 248387328  # chr 1 in T2T assembly size
+
+
 class AlignmentMapper:
     """Maps hgvs location objects between genomic (g), non-coding (n) and
     cds (c) coordinates according to a CIGAR string.
@@ -944,8 +947,10 @@ class AlignmentMapper:
         self, c_interval, strict_bounds=None, imprecise_inner_interval_only=None
     ):
         """convert a transcript CDS (c.) interval to a genomic (g.) interval"""
+
+        var_n = self.c_to_n(c_interval)
         return self.n_to_g(
-            self.c_to_n(c_interval),
+            var_n,
             strict_bounds=strict_bounds,
             imprecise_inner_interval_only=imprecise_inner_interval_only,
         )
@@ -1061,12 +1066,8 @@ class AlignmentMapper:
             f"n_to_g_interval: before reverse: frs_start {frs_start} _ {frs_end} | {fre_start} _ {fre_end}"
         )
 
-        print(
-            f"n_to_g_interval: after sort: frs_start {frs_start} frs_end {frs_end} fre_start {fre_start} fre_end {fre_end}"
-        )
-
         # Map transcript positions to genomic positions
-        if frs_start:
+        if frs_start is not None:
             grs_start, _, grs_start_cigar = self.cigarmapper.map_tgt_to_ref(
                 pos=frs_start, end="start", strict_bounds=strict_bounds
             )
@@ -1074,7 +1075,7 @@ class AlignmentMapper:
             grs_start = None
             grs_start_cigar = None
 
-        if frs_end:
+        if frs_end is not None:
             grs_end, _, grs_end_cigar = self.cigarmapper.map_tgt_to_ref(
                 pos=frs_end, end="end", strict_bounds=strict_bounds
             )
@@ -1082,10 +1083,11 @@ class AlignmentMapper:
             grs_end = None
             grs_end_cigar = None
 
+        # is gre_start ever None?
         gre_start, _, gre_start_cigar = self.cigarmapper.map_tgt_to_ref(
             pos=fre_start, end="start", strict_bounds=strict_bounds
         )
-        if fre_end:
+        if fre_end is not None:
             gre_end, _, gre_end_cigar = self.cigarmapper.map_tgt_to_ref(
                 pos=fre_end, end="end", strict_bounds=strict_bounds
             )
@@ -1095,23 +1097,23 @@ class AlignmentMapper:
 
         # Add offset to get final genomic positions
         if self.strand == -1:
-            if gre_start:
+            if gre_start is not None:
                 gre_orig_start = gre_start + self.gc_offset + 1 - es_offset
             else:
                 gre_orig_start = -1
 
-            if gre_end:
+            if gre_end is not None:
                 gre_orig_end = gre_end + self.gc_offset + 1 - ee_offset
             else:
                 gre_orig_end = -1
-            if grs_start:
+            if grs_start is not None:
                 grs_orig_start = grs_start + self.gc_offset + 1 - se_offset
             else:
-                grs_orig_start = 248387328  # chr 1 in T2T assembly size
-            if grs_end:
+                grs_orig_start = MAX_CHR_SIZE
+            if grs_end is not None:
                 grs_orig_end = grs_end + self.gc_offset + 1 - ss_offset
             else:
-                grs_orig_end = 248387329
+                grs_orig_end = MAX_CHR_SIZE + 1
 
             # Sort the four values from smallest to largest
             all_positions = [gre_orig_start, gre_orig_end, grs_orig_start, grs_orig_end]
@@ -1121,7 +1123,7 @@ class AlignmentMapper:
 
             # Convert sentinel values back to None
             all_positions = [
-                None if x == -1 or x == 248387328 else x for x in all_positions
+                None if x == -1 or x >= MAX_CHR_SIZE else x for x in all_positions
             ]
 
             grs_start, grs_end, gre_start, gre_end = all_positions

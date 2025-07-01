@@ -9,6 +9,7 @@ import hgvs.parser
 import hgvs.variantmapper
 from hgvs.enums import Datum, ValidationLevel
 from hgvs.exceptions import HGVSInvalidVariantError
+from hgvs.utils.position import get_start_end
 
 SEQ_ERROR_MSG = "Variant reference ({var_ref_seq}) does not agree with reference sequence ({ref_seq})"
 CDS_BOUND_ERROR_MSG = "Variant is outside CDS bounds (CDS length : {cds_length})"
@@ -103,7 +104,7 @@ class ExtrinsicValidator:
         return True
 
     def _ref_is_valid(self, var):
-        s, e = self._get_start_end(var)
+        s, e = get_start_end(var)
 
         # use reference sequence of original variant, even if later converted (eg c_to_n)
         if (
@@ -179,28 +180,6 @@ class ExtrinsicValidator:
 
         return (ValidationLevel.VALID, None)
 
-    def _get_start_end(self, var):
-        if isinstance(var.posedit.pos, hgvs.location.BaseOffsetInterval):
-            s = var.posedit.pos.start
-        elif isinstance(var.posedit.pos, hgvs.location.SimplePosition):
-            s = var.posedit.pos
-        elif isinstance(var.posedit.pos, hgvs.location.Interval):
-            s = var.posedit.pos.start
-            if isinstance(s, hgvs.location.SimplePosition):
-                if not s.base:
-                    s = var.posedit.pos.end
-            else:
-                s = s.start
-                if not s.base:
-                    s = var.posedit.pos.start.end
-        else:
-            s = var.posedit.pos.start
-        if isinstance(var.posedit.pos.end, hgvs.location.Interval):
-            e = var.posedit.pos.end.end
-        else:
-            e = var.posedit.pos.end
-        return s, e
-
     def _c_within_cds_bound(self, var):
         if var.type != "c":
             return (ValidationLevel.VALID, None)
@@ -212,9 +191,9 @@ class ExtrinsicValidator:
             )
         cds_length = tx_info["cds_end_i"] - tx_info["cds_start_i"]
 
-        s, e = self._get_start_end(var)
+        s, e = get_start_end(var)
 
-        if s.datum == Datum.CDS_START and s.base > cds_length:
+        if s.datum == Datum.CDS_START and s.base and s.base > cds_length:
             return (
                 ValidationLevel.ERROR,
                 CDS_BOUND_ERROR_MSG.format(cds_length=cds_length),
@@ -237,7 +216,7 @@ class ExtrinsicValidator:
                 "No transcript data for accession: {ac}".format(ac=var.ac),
             )
 
-        s, e = self._get_start_end(var)
+        s, e = get_start_end(var)
 
         if s.datum == Datum.SEQ_START and s.base and s.base <= 0:
             return (ValidationLevel.ERROR, TX_BOUND_ERROR_MSG.format())

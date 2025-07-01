@@ -102,7 +102,7 @@ class Normalizer:
         if type == "c":
             var = self.vm.c_to_n(var)
 
-        s, e = get_start_end(var)
+        s, e = get_start_end(var, outer_confidence=False)
         if var.type in "nr":
             if s.offset != 0 or e.offset != 0:
                 raise HGVSUnsupportedOperationError(
@@ -386,10 +386,13 @@ class Normalizer:
         elif var.posedit.edit.type == "del":
             alt = ""
         elif var.posedit.edit.type == "dup":
+            start, end = get_start_end(var, outer_confidence=False)
             alt = var.posedit.edit.ref or self._fetch_bounded_seq(
                 var,
-                var.posedit.pos.start.base - 1,
-                var.posedit.pos.end.base,
+                start,
+                end,
+                # var.posedit.pos.start.base - 1,
+                # var.posedit.pos.end.base,
                 0,
                 boundary,
             )

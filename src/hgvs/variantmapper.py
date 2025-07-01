@@ -21,9 +21,8 @@ import hgvs.validator
 from hgvs.decorators.lru_cache import lru_cache
 from hgvs.enums import PrevalidationLevel
 from hgvs.exceptions import HGVSInvalidVariantError, HGVSUnsupportedOperationError
-from hgvs.location import Interval
 from hgvs.utils.reftranscriptdata import RefTranscriptData
-from hgvs.utils.position import get_start_end
+from hgvs.utils.position import get_start_end, get_start_end_interbase
 
 _logger = logging.getLogger(__name__)
 
@@ -139,17 +138,6 @@ class VariantMapper:
             )
         return var_out
 
-    def _get_start_end(self, var):
-        """Get start and end positions from the variant.
-
-        Args:
-            var: A variant object with posedit.pos attribute
-
-        Returns:
-            tuple: (start_position, end_position) where positions can be SimplePosition or BaseOffsetPosition
-        """
-        return get_start_end(var)
-
     # ############################################################################
     # g⟷n
     def g_to_n(
@@ -210,9 +198,16 @@ class VariantMapper:
         )
 
         print(f"g_to_n var_n: {var_n} uncertain: {var_n.posedit.pos.uncertain}")
-        s, e = self._get_start_end(var_n)
+        s, e = get_start_end(var_n, outer_confidence=False)
 
-        if self.replace_reference and s.base >= 0 and e.base < mapper.tgt_len:
+        print(f"g_to_n s: {s} e: {e} mapper.tgt_len: {mapper.tgt_len}")
+        if (
+            self.replace_reference
+            and s is not None
+            and s.base >= 0
+            and e is not None
+            and e.base < mapper.tgt_len
+        ):
             self._replace_reference(var_n)
         if self.add_gene_symbol:
             self._update_gene_symbol(var_n, var_g.gene)
@@ -302,7 +297,7 @@ class VariantMapper:
             var_g.posedit.pos,
             imprecise_inner_interval_only=imprecise_inner_interval_only,
         )
-        print(f"{pos_c} uncertain: {pos_c.uncertain}")
+        print(f"g_to_c:{pos_c} uncertain: {pos_c.uncertain}")
         if not pos_c.uncertain:
             edit_c = self._convert_edit_check_strand(mapper.strand, var_g.posedit.edit)
             if (
@@ -549,33 +544,13 @@ class VariantMapper:
             pos = var.posedit.pos
 
         print(f"pos: replace ref {pos} {pos.start} {pos.start.uncertain} ")
-        if pos.start.uncertain:
-            # pos can be either a BaseOffsetPosition or an Interval
-            if isinstance(pos.start, Interval):
-                seq_start = pos.start.end.base - 1
-            else:
-                seq_start = pos.start.base - 1
-        else:
-            if isinstance(pos.start, Interval):
-                seq_start = pos.start.start.base - 1
-            else:
-                seq_start = pos.start.base - 1
 
-        if pos.end.uncertain:
-            if isinstance(pos.end, Interval):
-                seq_end = pos.end.start.base
-            else:
-                seq_end = pos.end.base
-        else:
-            if isinstance(pos.end, Interval):
-                seq_end = pos.end.end.base
-            else:
-                seq_end = pos.end.base
+        seq_start, seq_end = get_start_end_interbase(pos, outer_confidence=True)
 
         # When strict_bounds is False and an error occurs, return
         # variant as-is
 
-        if seq_start < 0:
+        if seq_start is None or seq_end is None or seq_start < 0:
             # this is an out-of-bounds variant
             return var
 
