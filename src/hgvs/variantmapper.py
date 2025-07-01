@@ -8,6 +8,8 @@ from bioutils.sequences import reverse_complement
 
 import hgvs
 import hgvs.alignmentmapper
+import hgvs.dataproviders
+import hgvs.dataproviders.interface
 import hgvs.edit
 import hgvs.location
 import hgvs.normalizer
@@ -19,8 +21,8 @@ import hgvs.validator
 from hgvs.decorators.lru_cache import lru_cache
 from hgvs.enums import PrevalidationLevel
 from hgvs.exceptions import HGVSInvalidVariantError, HGVSUnsupportedOperationError
-from hgvs.location import Interval
 from hgvs.utils.reftranscriptdata import RefTranscriptData
+from hgvs.utils.position import get_start_end, get_start_end_interbase
 
 _logger = logging.getLogger(__name__)
 
@@ -66,7 +68,7 @@ class VariantMapper:
 
     def __init__(
         self,
-        hdp,
+        hdp: hgvs.dataproviders.interface.Interface,
         replace_reference=hgvs.global_config.mapping.replace_reference,
         prevalidation_level=hgvs.global_config.mapping.prevalidation_level,
         add_gene_symbol=hgvs.global_config.mapping.add_gene_symbol,
@@ -194,10 +196,17 @@ class VariantMapper:
         var_n = hgvs.sequencevariant.SequenceVariant(
             ac=tx_ac, type="n", posedit=hgvs.posedit.PosEdit(pos_n, edit_n)
         )
+
+        print(f"g_to_n var_n: {var_n} uncertain: {var_n.posedit.pos.uncertain}")
+        s, e = get_start_end(var_n, outer_confidence=False)
+
+        print(f"g_to_n s: {s} e: {e} mapper.tgt_len: {mapper.tgt_len}")
         if (
             self.replace_reference
-            and var_n.posedit.pos.start.base >= 0
-            and var_n.posedit.pos.end.base < mapper.tgt_len
+            and s is not None
+            and s.base >= 0
+            and e is not None
+            and e.base < mapper.tgt_len
         ):
             self._replace_reference(var_n)
         if self.add_gene_symbol:
@@ -228,6 +237,7 @@ class VariantMapper:
             tx_ac=var_n.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method
         )
         pos_g = mapper.n_to_g(var_n.posedit.pos)
+        print(f"n_to_g pos_g: {pos_g} uncertain: {pos_g.uncertain}")
         if not pos_g.uncertain:
             edit_g = self._convert_edit_check_strand(mapper.strand, var_n.posedit.edit)
             if edit_g.type == "ins" and pos_g.end - pos_g.start > 1:
@@ -252,7 +262,11 @@ class VariantMapper:
     # ############################################################################
     # g⟷c
     def g_to_c(
-        self, var_g, tx_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method
+        self,
+        var_g,
+        tx_ac,
+        alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
+        imprecise_inner_interval_only: bool | None = None,
     ):
         """Given a parsed g. variant, return a c. variant on the specified
         transcript using the specified alignment method (default is
@@ -270,11 +284,20 @@ class VariantMapper:
             raise HGVSInvalidVariantError("Expected a g. variant; got " + str(var_g))
         if self._validator:
             self._validator.validate(var_g)
+        if not imprecise_inner_interval_only:
+            imprecise_inner_interval_only = (
+                hgvs.global_config.g_to_c.imprecise_inner_interval_only
+            )
+
         var_g.fill_ref(self.hdp)
         mapper = self._fetch_AlignmentMapper(
             tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method
         )
-        pos_c = mapper.g_to_c(var_g.posedit.pos)
+        pos_c = mapper.g_to_c(
+            var_g.posedit.pos,
+            imprecise_inner_interval_only=imprecise_inner_interval_only,
+        )
+        print(f"g_to_c:{pos_c} uncertain: {pos_c.uncertain}")
         if not pos_c.uncertain:
             edit_c = self._convert_edit_check_strand(mapper.strand, var_g.posedit.edit)
             if (
@@ -288,8 +311,10 @@ class VariantMapper:
                 pos_c.end.base -= 1
                 edit_c.ref = ""
         else:
+            print("g_to_c: pos_c.uncertain")
             # variant at alignment gap
             pos_g = mapper.c_to_g(pos_c)
+            print("g_to_c: pos_g")
             edit_c = hgvs.edit.NARefAlt(
                 ref="", alt=self._get_altered_sequence(mapper.strand, pos_g, var_g)
             )
@@ -297,6 +322,7 @@ class VariantMapper:
         var_c = hgvs.sequencevariant.SequenceVariant(
             ac=tx_ac, type="c", posedit=hgvs.posedit.PosEdit(pos_c, edit_c)
         )
+        print(f" final var_c: {var_c}")
         if self.replace_reference:
             self._replace_reference(var_c)
         if self.add_gene_symbol:
@@ -304,7 +330,11 @@ class VariantMapper:
         return var_c
 
     def c_to_g(
-        self, var_c, alt_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method
+        self,
+        var_c,
+        alt_ac,
+        alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
+        imprecise_inner_interval_only: bool | None = None,
     ):
         """Given a parsed c. variant, return a g. variant on the specified
         transcript using the specified alignment method (default is
@@ -326,7 +356,13 @@ class VariantMapper:
         mapper = self._fetch_AlignmentMapper(
             tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method
         )
-        pos_g = mapper.c_to_g(var_c.posedit.pos)
+        print(f"c_to_g: var_c: {var_c}")
+        pos_g = mapper.c_to_g(
+            var_c.posedit.pos,
+            imprecise_inner_interval_only=imprecise_inner_interval_only,
+        )
+
+        print(f"vm.c_to_g pos_g: {pos_g} uncertain: {pos_g.uncertain}")
         if not pos_g.uncertain:
             edit_g = self._convert_edit_check_strand(mapper.strand, var_c.posedit.edit)
             if edit_g.type == "ins" and pos_g.end - pos_g.start > 1:
@@ -507,33 +543,14 @@ class VariantMapper:
         else:
             pos = var.posedit.pos
 
-        if pos.start.uncertain:
-            # pos can be either a BaseOffsetPosition or an Interval
-            if isinstance(pos.start, Interval):
-                seq_start = pos.start.end.base - 1
-            else:
-                seq_start = pos.start.base - 1
-        else:
-            if isinstance(pos.start, Interval):
-                seq_start = pos.start.start.base - 1
-            else:
-                seq_start = pos.start.base - 1
+        print(f"pos: replace ref {pos} {pos.start} {pos.start.uncertain} ")
 
-        if pos.end.uncertain:
-            if isinstance(pos.end, Interval):
-                seq_end = pos.end.start.base
-            else:
-                seq_end = pos.end.base
-        else:
-            if isinstance(pos.end, Interval):
-                seq_end = pos.end.end.base
-            else:
-                seq_end = pos.end.base
+        seq_start, seq_end = get_start_end_interbase(pos, outer_confidence=True)
 
         # When strict_bounds is False and an error occurs, return
         # variant as-is
 
-        if seq_start < 0:
+        if seq_start is None or seq_end is None or seq_start < 0:
             # this is an out-of-bounds variant
             return var
 
