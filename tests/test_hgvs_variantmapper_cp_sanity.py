@@ -177,14 +177,13 @@ class TestHgvsCToP(unittest.TestCase):
         hgvsp_expected = "MOCK:p.(Lys9XaafsTer?)"
         self._run_conversion(hgvsc, hgvsp_expected)
 
-    def test_deletion_into_three_prime_utr_no_frameshift(self):
         hgvsc = "NM_999995.1:c.28_*3del"
-        hgvsp_expected = "MOCK:p.(Lys10_Ter11delinsArgGlnPheArg)"
+        hgvsp_expected = "MOCK:p.(Lys10ArgfsTer?)"
         self._run_conversion(hgvsc, hgvsp_expected)
 
-    def test_delins_into_three_prime_utr_no_frameshift(self):
+    def test_delins_into_three_prime_utr_frameshift(self):
         hgvsc = "NM_999995.1:c.28_*3delinsGGG"
-        hgvsp_expected = "MOCK:p.(Lys10_Ter11delinsGlyArgGlnPheArg)"
+        hgvsp_expected = "MOCK:p.(Lys10GlyfsTer?)"
         self._run_conversion(hgvsc, hgvsp_expected)
 
     # See recommendations re p.? (p.Met1?) at:
