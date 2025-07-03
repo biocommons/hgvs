@@ -287,6 +287,11 @@ class AltSeqBuilder:
         if DBG:
             print("net base change: {}".format(net_base_change))
         is_frameshift = net_base_change % 3 != 0
+        if (
+            self._var_c.posedit.pos.start.datum == Datum.CDS_START
+            and self._var_c.posedit.pos.end.datum == Datum.CDS_END
+        ):
+            is_frameshift = True
         # use max of mod 3 value and 1 (in event that indel starts in the 5'utr range)
         variant_start_aa = max(int(math.ceil((self._var_c.posedit.pos.start.base) / 3.0)), 1)
 
