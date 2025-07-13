@@ -72,31 +72,45 @@ jobs:
           make test
 
   deploy:
+    # See https://github.com/pypa/gh-action-pypi-publish/tree/release/v1?tab=readme-ov-file#usage
     needs:
-      # - codechecks # skip for now
-      - test
+    # - cqa
+    - test
     runs-on: ubuntu-latest
 
+    environment:
+      name: pypi
+      url: https://pypi.org/p/biocommons.seqrepo
+    permissions:
+      id-token: write  # mandatory for trusted publishing
+
     steps:
-      - uses: actions/checkout@v3
+    - name: Environment
+      run: |
+        echo "::group::Environment info"
+        echo github.event_name = ${{ github.event_name }}
+        echo refs = ${{ github.ref }}
+        echo tags = ${{ startsWith(github.ref, 'refs/tags') }}
+        echo "::endgroup::"
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-          cache: pip
-          cache-dependency-path: "**/setup.cfg"
+    - uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: |
-          pip install --upgrade pip
-          pip install build pytest pytest-cov twine
-      - name: Build package
-        run: python -m build
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+        cache: pip
+        cache-dependency-path: '**/setup.cfg'
 
-      - name: Publish package
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build twine
+
+    - name: Build package
+      run: python -m build
+
+    - name: Upload release to PyPI
+      # Depends on trusted publishing configuration at pypi
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+      uses: pypa/gh-action-pypi-publish@release/v1
