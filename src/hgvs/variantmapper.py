@@ -6,7 +6,7 @@
 import copy
 import logging
 
-from bioutils.sequences import reverse_complement
+from bioutils.sequences import reverse_complement, TranslationTable
 
 import hgvs
 import hgvs.alignmentmapper
@@ -97,8 +97,8 @@ class VariantMapper:
     # ############################################################################
     # g⟷t
     def g_to_t(self, var_g, tx_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
-        if not (var_g.type == "g"):
-            raise HGVSInvalidVariantError("Expected a g. variant; got " + str(var_g))
+        if var_g.type not in "gm":
+            raise HGVSInvalidVariantError("Expected a g. or m. variant; got " + str(var_g))
         if self._validator:
             self._validator.validate(var_g)
         var_g.fill_ref(self.hdp)
@@ -146,8 +146,8 @@ class VariantMapper:
 
         """
 
-        if not (var_g.type == "g"):
-            raise HGVSInvalidVariantError("Expected a g. variant; got " + str(var_g))
+        if var_g.type not in "gm":
+            raise HGVSInvalidVariantError("Expected a g. or m. variant; got " + str(var_g))
         if self._validator:
             self._validator.validate(var_g)
         mapper = self._fetch_AlignmentMapper(
@@ -253,8 +253,8 @@ class VariantMapper:
 
         """
 
-        if not (var_g.type == "g"):
-            raise HGVSInvalidVariantError("Expected a g. variant; got " + str(var_g))
+        if var_g.type not in "gm":
+            raise HGVSInvalidVariantError("Expected a g. or m. variant; got " + str(var_g))
         if self._validator:
             self._validator.validate(var_g)
         var_g.fill_ref(self.hdp)
@@ -417,7 +417,7 @@ class VariantMapper:
 
     # ############################################################################
     # c ⟶ p
-    def c_to_p(self, var_c, pro_ac=None, alt_ac=None, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
+    def c_to_p(self, var_c, pro_ac=None, alt_ac=None, alt_aln_method=hgvs.global_config.mapping.alt_aln_method, translation_table=TranslationTable.standard):
         """
         Converts a c. SequenceVariant to a p. SequenceVariant on the specified protein accession
         Author: Rudy Rico
@@ -433,8 +433,8 @@ class VariantMapper:
         if self._validator:
             self._validator.validate(var_c)
         var_c.fill_ref(self.hdp, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
-        reference_data = RefTranscriptData(self.hdp, var_c.ac, pro_ac)
-        builder = altseqbuilder.AltSeqBuilder(var_c, reference_data)
+        reference_data = RefTranscriptData(self.hdp, var_c.ac, pro_ac, translation_table=translation_table)
+        builder = altseqbuilder.AltSeqBuilder(var_c, reference_data, translation_table=translation_table)
 
         # TODO: handle case where you get 2+ alt sequences back;
         # currently get list of 1 element loop structure implemented

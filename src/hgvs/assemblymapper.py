@@ -2,6 +2,8 @@
 
 import logging
 
+from bioutils.sequences import TranslationTable
+
 import hgvs
 import hgvs.normalizer
 from hgvs.exceptions import (
@@ -177,10 +179,10 @@ class AssemblyMapper(VariantMapper):
         )
         return self._maybe_normalize(var_out)
 
-    def c_to_p(self, var_c):
+    def c_to_p(self, var_c, translation_table=TranslationTable.standard):
         alt_ac = self._alt_ac_for_tx_ac(var_c.ac)
         var_out = super(AssemblyMapper, self).c_to_p(
-            var_c, alt_ac=alt_ac, alt_aln_method=self.alt_aln_method
+            var_c, alt_ac=alt_ac, alt_aln_method=self.alt_aln_method, translation_table=translation_table
         )
         return self._maybe_normalize(var_out)
 

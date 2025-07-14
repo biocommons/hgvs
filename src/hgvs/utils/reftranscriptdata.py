@@ -1,10 +1,10 @@
-from bioutils.sequences import translate_cds
+from bioutils.sequences import translate_cds, TranslationTable
 
 from hgvs.exceptions import HGVSDataNotAvailableError
 
 
 class RefTranscriptData:
-    def __init__(self, hdp, tx_ac, pro_ac):
+    def __init__(self, hdp, tx_ac, pro_ac, translation_table=TranslationTable.standard):
         """helper for generating RefTranscriptData from for c_to_p"""
         tx_info = hdp.get_tx_identity_info(tx_ac)
         tx_seq = hdp.get_seq(tx_ac)
@@ -20,6 +20,13 @@ class RefTranscriptData:
 
         # coding sequences that are not divisable by 3 are not yet supported
         tx_seq_to_translate = tx_seq[cds_start - 1 : cds_stop]
+        if translation_table == TranslationTable.vertebrate_mitochondrial:
+            if len(tx_seq_to_translate) % 3 == 1 and tx_seq_to_translate[-1] == "T":
+                tx_seq = tx_seq[:cds_stop] + "AA" + tx_seq[cds_stop:]
+                tx_seq_to_translate += "AA"
+            if len(tx_seq_to_translate) % 3 == 2 and tx_seq_to_translate[-2:] == "TA":
+                tx_seq = tx_seq[:cds_stop] + "A" + tx_seq[cds_stop:]
+                tx_seq_to_translate += "A"
         if len(tx_seq_to_translate) % 3 != 0:
             raise NotImplementedError(
                 "Transcript {} is not supported because its sequence length of {} is not divisible by 3.".format(
@@ -27,7 +34,7 @@ class RefTranscriptData:
                 )
             )
 
-        protein_seq = translate_cds(tx_seq_to_translate)
+        protein_seq = translate_cds(tx_seq_to_translate, translation_table=translation_table)
 
         if pro_ac is None:
             # get_acs... will always return at least the MD5_ accession
