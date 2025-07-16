@@ -32,7 +32,6 @@ dependencies = [
   "importlib_resources",
   "ipython",
   "parsley",
-  "pre-commit ~= 3.4",
   "psycopg2"
 ]
 description = "HGVS Parser, Formatter, Mapper, Validator"
@@ -58,6 +57,7 @@ dev = [
   "ipython",
   "isort",
   "jupyter",
+  "pre-commit ~= 3.4",
   "pyright",
   "pytest",
   "pytest-cov",
@@ -136,7 +136,7 @@ max-line-length = "120"
 
 # https://docs.pytest.org/en/6.2.x/customize.html#pyproject-toml
 [tool.pytest.ini_options]
-addopts = "-s -v -x --strict-markers -m 'not extra' --cov=src"  # --doctest-modules 
+addopts = "-s -v -x --strict-markers -m 'not extra' --cov=src"  # --doctest-modules
 # addopts = [
 #   "-rsvx",
 #   "-m 'not extra'",
