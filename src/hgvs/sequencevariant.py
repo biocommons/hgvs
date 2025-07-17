@@ -20,6 +20,9 @@ class SequenceVariant:
     type = attr.ib()
     posedit = attr.ib()
     gene = attr.ib(default=None)
+    shifts_into_exon_and_intron = attr.ib(default=False)
+    is_shifted = attr.ib(default=False)
+    at_boundary = attr.ib(default=False)
 
     def format(self, conf=None):
         """Formatting the stringification of sequence variants
