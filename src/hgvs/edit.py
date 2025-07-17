@@ -183,9 +183,6 @@ class AARefAlt(Edit):
     alt = attr.ib(default=None)
     uncertain = attr.ib(default=False)
     init_met = attr.ib(default=False)
-    shifts_into_exon_and_intron = attr.ib(default=False)
-    is_shifted = attr.ib(default=False)
-    at_boundary = attr.ib(default=False)
 
     def __attrs_post_init__(self):
         self.ref = aa_to_aa1(self.ref)

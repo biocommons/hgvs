@@ -485,11 +485,10 @@ class VariantMapper:
 
         if self.add_gene_symbol:
             self._update_gene_symbol(var_p, var_c.gene)
-        if var_p.posedit:
-            var_p.posedit.at_boundary = builder.at_boundary
-        if var_p.posedit and self.shift_over_boundary:
-            var_p.posedit.shifts_into_exon_and_intron = shifts_into_exon_and_intron
-            var_p.posedit.is_shifted = is_shifted
+        var_p.at_boundary = builder.at_boundary
+        if self.shift_over_boundary:
+            var_p.shifts_into_exon_and_intron = shifts_into_exon_and_intron
+            var_p.is_shifted = is_shifted
 
         return var_p
 

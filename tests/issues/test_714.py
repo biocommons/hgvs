@@ -77,12 +77,12 @@ cases = [
         "var_c": "NM_182758.2:c.2953-31_2953-26dup",
         "exonic":{
             "var_p": "NP_877435.2:p.?",
-            "shifts_into_exon_and_intron": True,
+            "shifts_into_exon_and_intron": False,
             "is_shifted": False,
         },
         "intronic": {
             "var_p": "NP_877435.2:p.?",
-            "shifts_into_exon_and_intron": True,
+            "shifts_into_exon_and_intron": False,
             "is_shifted": False,
         },
     },
@@ -91,12 +91,12 @@ cases = [
         "var_c": "NM_000267.3:c.8315-290_8457dup",
         "exonic":{
             "var_p": "NP_000258.1:p.?",
-            "shifts_into_exon_and_intron": True,
+            "shifts_into_exon_and_intron": False,
             "is_shifted": False,
         },
         "intronic": {
             "var_p": "NP_000258.1:p.?",
-            "shifts_into_exon_and_intron": True,
+            "shifts_into_exon_and_intron": False,
             "is_shifted": False,
         },
     }
@@ -111,15 +111,13 @@ def test_real_c_to_p(case, parser, am37):
     var_c = parser.parse(case["var_c"])
     var_p = am37.c_to_p(var_c)
     assert str(var_p) == case["exonic"]["var_p"]
-    if var_p.posedit:
-        assert var_p.posedit.shifts_into_exon_and_intron == case["exonic"]["shifts_into_exon_and_intron"]
-        assert var_p.posedit.is_shifted == case["exonic"]["is_shifted"]
+    assert var_p.shifts_into_exon_and_intron == case["exonic"]["shifts_into_exon_and_intron"]
+    assert var_p.is_shifted == case["exonic"]["is_shifted"]
 
     am37.shift_over_boundary_preference = ShiftOverBoundaryPreference.INTRON
 
     var_c = parser.parse(case["var_c"])
     var_p = am37.c_to_p(var_c)
     assert str(var_p) == case["intronic"]["var_p"]
-    if var_p.posedit:
-        assert var_p.posedit.shifts_into_exon_and_intron == case["intronic"]["shifts_into_exon_and_intron"]
-        assert var_p.posedit.is_shifted == case["intronic"]["is_shifted"]
+    assert var_p.shifts_into_exon_and_intron == case["intronic"]["shifts_into_exon_and_intron"]
+    assert var_p.is_shifted == case["intronic"]["is_shifted"]
