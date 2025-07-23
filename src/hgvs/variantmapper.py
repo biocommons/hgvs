@@ -664,18 +664,26 @@ class VariantMapper:
         return var
 
     def _var_c_shifts(self, var_c, alt_ac, alt_aln_method):
-        """Try to shift ins/dup variants to find a protein representation."""
-        prev_var_c_strs = [str(var_c)]
+        """Try to shift c. variants to find alternative representations."""
         strand = self._fetch_AlignmentMapper(tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method).strand
         var_g = VariantMapper.c_to_g(self, var_c, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
+        for shifted_var_g in self._var_g_shifts(var_g, strand=strand, alt_aln_method=alt_aln_method):
+            try:
+                shifted_var_c = VariantMapper.g_to_c(self, shifted_var_g, tx_ac=var_c.ac, alt_aln_method=alt_aln_method)
+                yield shifted_var_c
+            except (HGVSInvalidVariantError, HGVSInvalidIntervalError, HGVSUnsupportedOperationError):
+                pass
+
+    def _var_g_shifts(self, var_g, strand, alt_aln_method):
+        """Try to shift g. variants to find alternative representations."""
+        prev_var_g_strs = [str(var_g)]
         for shuffle_direction in [3, 5]:
             try:
                 shifted_var_g = self._var_g_shift_with_rewrite(var_g, shuffle_direction, strand, alt_aln_method)
-                shifted_var_c = VariantMapper.g_to_c(self, shifted_var_g, tx_ac=var_c.ac, alt_aln_method=alt_aln_method)
-                if str(shifted_var_c) in prev_var_c_strs:
+                if str(shifted_var_g) in prev_var_g_strs:
                     continue
-                prev_var_c_strs.append(str(shifted_var_c))
-                yield shifted_var_c
+                prev_var_g_strs.append(str(shifted_var_g))
+                yield shifted_var_g
             except (HGVSInvalidVariantError, HGVSInvalidIntervalError, HGVSUnsupportedOperationError):
                 pass
 
@@ -683,29 +691,30 @@ class VariantMapper:
         """Attempt to shift a variant all the way left or right. Rewrite
         duplications as insertions so that the variant is shifted farther
         than would normally be possible using the HGVS notation."""
+        var_g = copy.deepcopy(var_g)
         normalizer = hgvs.normalizer.Normalizer(
             self.hdp, alt_aln_method=alt_aln_method, validate=False, shuffle_direction=shuffle_direction
         )
-        shifted_var_g = normalizer.normalize(var_g)
-        if shifted_var_g.posedit.edit.type == 'dup':
-            self._replace_reference(shifted_var_g)
+        var_g = normalizer.normalize(var_g)
+        if var_g.posedit.edit.type == 'dup':
+            self._replace_reference(var_g)
             if (strand == 1 and shuffle_direction == 3) or (strand == -1 and shuffle_direction == 5):
-                shifted_var_g.posedit = hgvs.posedit.PosEdit(
+                var_g.posedit = hgvs.posedit.PosEdit(
                     pos=hgvs.location.Interval(
-                        start=hgvs.location.SimplePosition(base=shifted_var_g.posedit.pos.start.base-1),
-                        end=hgvs.location.SimplePosition(base=shifted_var_g.posedit.pos.start.base),
+                        start=hgvs.location.SimplePosition(base=var_g.posedit.pos.start.base-1),
+                        end=hgvs.location.SimplePosition(base=var_g.posedit.pos.start.base),
                     ),
-                    edit=hgvs.edit.NARefAlt(ref=None, alt=shifted_var_g.posedit.edit.ref)
+                    edit=hgvs.edit.NARefAlt(ref=None, alt=var_g.posedit.edit.ref)
                 )
             else:
-                shifted_var_g.posedit = hgvs.posedit.PosEdit(
+                var_g.posedit = hgvs.posedit.PosEdit(
                     pos=hgvs.location.Interval(
-                        start=hgvs.location.SimplePosition(base=shifted_var_g.posedit.pos.end.base),
-                        end=hgvs.location.SimplePosition(base=shifted_var_g.posedit.pos.end.base+1),
+                        start=hgvs.location.SimplePosition(base=var_g.posedit.pos.end.base),
+                        end=hgvs.location.SimplePosition(base=var_g.posedit.pos.end.base+1),
                     ),
-                    edit=hgvs.edit.NARefAlt(ref=None, alt=shifted_var_g.posedit.edit.ref)
+                    edit=hgvs.edit.NARefAlt(ref=None, alt=var_g.posedit.edit.ref)
                 )
-        return shifted_var_g
+        return var_g
 
 
 # <LICENSE>
