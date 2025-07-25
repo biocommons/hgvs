@@ -18,8 +18,8 @@ class RefTranscriptData:
         cds_start = tx_info["cds_start_i"] + 1
         cds_stop = tx_info["cds_end_i"]
 
-        # coding sequences that are not divisable by 3 are not yet supported
         tx_seq_to_translate = tx_seq[cds_start - 1 : cds_stop]
+        # add poly(A) tail to mitochondrial transcripts to complete partial stop codons
         if translation_table == TranslationTable.vertebrate_mitochondrial:
             if len(tx_seq_to_translate) % 3 == 1 and tx_seq_to_translate[-1] == "T":
                 tx_seq = tx_seq[:cds_stop] + "AA" + tx_seq[cds_stop:]
@@ -27,6 +27,7 @@ class RefTranscriptData:
             if len(tx_seq_to_translate) % 3 == 2 and tx_seq_to_translate[-2:] == "TA":
                 tx_seq = tx_seq[:cds_stop] + "A" + tx_seq[cds_stop:]
                 tx_seq_to_translate += "A"
+        # coding sequences that are not divisable by 3 are not yet supported
         if len(tx_seq_to_translate) % 3 != 0:
             raise NotImplementedError(
                 "Transcript {} is not supported because its sequence length of {} is not divisible by 3.".format(
