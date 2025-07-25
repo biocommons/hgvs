@@ -12,7 +12,7 @@ import math
 from hgvs import global_config
 from hgvs.exceptions import HGVSError
 
-from bioutils.sequences import reverse_complement, translate_cds
+from bioutils.sequences import reverse_complement, translate_cds, TranslationTable
 
 from ..edit import Dup, Inv, NARefAlt, Repeat
 from ..enums import Datum
@@ -33,6 +33,7 @@ class AltTranscriptData:
         accession,
         is_substitution=False,
         is_ambiguous=False,
+        translation_table=TranslationTable.standard
     ):
         """Create a variant sequence using inputs from VariantInserter
         :param seq: DNA sequence wiith variant incorporated
@@ -60,7 +61,7 @@ class AltTranscriptData:
                 seq = list(seq)
             seq_cds = seq[cds_start - 1 :]
             seq_cds = "".join(seq_cds)
-            seq_aa = translate_cds(seq_cds, full_codons=False, ter_symbol="X")
+            seq_aa = translate_cds(seq_cds, full_codons=False, ter_symbol="X", translation_table=translation_table)
             stop_pos = seq_aa[: (cds_stop - cds_start + 1) // 3].rfind("*")
             if stop_pos == -1:
                 stop_pos = seq_aa.find("*")
@@ -88,7 +89,7 @@ class AltSeqBuilder:
     T_UTR = "three utr"
     WHOLE_GENE = "whole gene"
 
-    def __init__(self, var_c, transcript_data):
+    def __init__(self, var_c, transcript_data, translation_table=TranslationTable.standard):
         """Constructor
 
         :param var_c: representation of hgvs variant
@@ -104,6 +105,7 @@ class AltSeqBuilder:
 
         # check reference for special characteristics
         self._ref_has_multiple_stops = self._transcript_data.aa_sequence.count("*") > 1
+        self._translation_table = translation_table
 
     def build_altseq(self):
         """given a variant and a sequence, incorporate the variant and return the new sequence
@@ -297,6 +299,7 @@ class AltSeqBuilder:
             self._transcript_data.protein_accession,
             is_substitution=is_substitution,
             is_ambiguous=self._ref_has_multiple_stops,
+            translation_table=self._translation_table,
         )
         return alt_data
 
@@ -321,6 +324,7 @@ class AltSeqBuilder:
             variant_start_aa,
             self._transcript_data.protein_accession,
             is_ambiguous=self._ref_has_multiple_stops,
+            translation_table=self._translation_table,
         )
         return alt_data
 
@@ -341,6 +345,7 @@ class AltSeqBuilder:
             variant_start_aa,
             self._transcript_data.protein_accession,
             is_ambiguous=self._ref_has_multiple_stops,
+            translation_table=self._translation_table,
         )
         return alt_data
 
@@ -401,13 +406,14 @@ class AltSeqBuilder:
             None,
             self._transcript_data.protein_accession,
             is_ambiguous=True,
+            translation_table=self._translation_table,
         )
         return alt_data
 
     def _create_no_protein(self):
         """Create a no-protein result"""
         alt_data = AltTranscriptData(
-            [], None, None, False, None, self._transcript_data.protein_accession, is_ambiguous=False
+            [], None, None, False, None, self._transcript_data.protein_accession, is_ambiguous=False, translation_table=self._translation_table
         )
         return alt_data
 
