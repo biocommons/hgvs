@@ -313,6 +313,14 @@ class AssemblyMapper(VariantMapper):
                 # fall through to return unnormalized variant
         return var
 
+    def _var_c_shifts(self, var_c):
+        """Try to shift c. variants to find alternative representations."""
+        alt_ac = self._alt_ac_for_tx_ac(var_c.ac)
+        yield from super(AssemblyMapper, self)._var_c_shifts(
+            var_c, alt_ac, alt_aln_method=self.alt_aln_method
+        )
+
+
 
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)

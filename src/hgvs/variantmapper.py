@@ -509,7 +509,7 @@ class VariantMapper:
             ):
                 if alt_ac is None:
                     raise HGVSUnsupportedOperationError(f'mapping specific variant {var_c} requires alt_ac')
-                for shifted_var_c in self._var_c_shifts(var_c, alt_ac, alt_aln_method):
+                for shifted_var_c in VariantMapper._var_c_shifts(self, var_c, alt_ac, alt_aln_method):
                     shifted_reference_data = RefTranscriptData(self.hdp, shifted_var_c.ac, pro_ac)
                     shifted_builder = altseqbuilder.AltSeqBuilder(shifted_var_c, shifted_reference_data)
                     shifted_region = shifted_builder.get_variant_region()
@@ -740,6 +740,8 @@ class VariantMapper:
 
     def _var_c_shifts(self, var_c, alt_ac, alt_aln_method):
         """Try to shift c. variants to find alternative representations."""
+        if not var_c.posedit or var_c.posedit.edit.type not in ("ins", "dup"):
+            return
         strand = self._fetch_AlignmentMapper(tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method).strand
         var_g = VariantMapper.c_to_g(self, var_c, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         for shifted_var_g in self._var_g_shifts(var_g, strand=strand, alt_aln_method=alt_aln_method):
