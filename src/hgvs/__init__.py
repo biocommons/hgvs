@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """hgvs is a package to parse, format, and manipulate biological sequence
 variants.  See https://github.com/biocommons/hgvs/ for details.
 
@@ -27,9 +26,9 @@ SimplePosition(base=36561662, uncertain=False)
 
 # initialize the mapper for GRCh37 with splign-based alignments
 >>> hdp = hgvs.dataproviders.uta.connect()
->>> am = hgvs.assemblymapper.AssemblyMapper(hdp,
-...          assembly_name="GRCh37", alt_aln_method="splign",
-...          replace_reference=True)
+>>> am = hgvs.assemblymapper.AssemblyMapper(
+...     hdp, assembly_name="GRCh37", alt_aln_method="splign", replace_reference=True
+... )
 
 # identify transcripts that overlap this genomic variant
 >>> transcripts = am.relevant_transcripts(var_g)

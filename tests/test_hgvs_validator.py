@@ -1,15 +1,14 @@
-# -*- coding: utf-8 -*-
 import os
 import unittest
 
 import pytest
-from support import CACHE
 
 import hgvs.dataproviders.uta
 import hgvs.parser
 import hgvs.validator
 import hgvs.variantmapper
 from hgvs.exceptions import HGVSInvalidVariantError
+from support import CACHE
 
 hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
 

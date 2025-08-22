@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-"""provides sequencing fetching from NCBI and Ensembl
-
-"""
+"""provides sequencing fetching from NCBI and Ensembl"""
 
 import logging
 import os
@@ -42,7 +39,7 @@ class SeqFetcher:
                 return self.sr.fetch(ac, start_i, end_i)
 
             self.fetcher = _fetch_seq_seqrepo
-            self.source = "SeqRepo ({})".format(seqrepo_dir)
+            self.source = f"SeqRepo ({seqrepo_dir})"
         elif seqrepo_url:
             from biocommons.seqrepo.dataproxy import SeqRepoRESTDataProxy
 
@@ -62,7 +59,7 @@ class SeqFetcher:
             return self.fetcher(ac, start_i, end_i)
         except Exception as ex:
             raise HGVSDataNotAvailableError(
-                "Failed to fetch {ac} from {self.source} ({ex})".format(ac=ac, ex=ex, self=self)
+                f"Failed to fetch {ac} from {self.source} ({ex})"
             )
 
 

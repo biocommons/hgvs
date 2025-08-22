@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Mapping positions between pairs of sequence alignments
 
 The AlignmentMapper class is at the heart of mapping between aligned sequences.
@@ -25,7 +24,6 @@ The AlignmentMapper class is at the heart of mapping between aligned sequences.
 #    n.        -2    -1  !  1     2     3     4     5     6     7     8     9
 #    g.   ... 123   124   125   126   127   128   129   130   131   132   133 ...
 #
-
 
 from bioutils.coordinates import strand_int_to_pm
 
@@ -68,18 +66,18 @@ class AlignmentMapper:
     """
 
     __slots__ = (
-        "tx_ac",
         "alt_ac",
         "alt_aln_method",
-        "strand",
-        "gc_offset",
-        "cds_start_i",
         "cds_end_i",
-        "tgt_len",
-        "cigarmapper",
-        "ref_pos",
-        "tgt_pos",
+        "cds_start_i",
         "cigar_op",
+        "cigarmapper",
+        "gc_offset",
+        "ref_pos",
+        "strand",
+        "tgt_len",
+        "tgt_pos",
+        "tx_ac",
     )
 
     def __init__(self, hdp, tx_ac, alt_ac, alt_aln_method):
@@ -91,17 +89,17 @@ class AlignmentMapper:
             tx_info = hdp.get_tx_info(self.tx_ac, self.alt_ac, self.alt_aln_method)
             if tx_info is None:
                 raise HGVSDataNotAvailableError(
-                    "AlignmentMapper(tx_ac={self.tx_ac}, "
-                    "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
-                    "No transcript info".format(self=self)
+                    f"AlignmentMapper(tx_ac={self.tx_ac}, "
+                    f"alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
+                    "No transcript info"
                 )
 
             tx_exons = hdp.get_tx_exons(self.tx_ac, self.alt_ac, self.alt_aln_method)
             if tx_exons is None:
                 raise HGVSDataNotAvailableError(
-                    "AlignmentMapper(tx_ac={self.tx_ac}, "
-                    "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
-                    "No transcript exons".format(self=self)
+                    f"AlignmentMapper(tx_ac={self.tx_ac}, "
+                    f"alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
+                    "No transcript exons"
                 )
 
             # hgvs-386: An assumption when building the cigar string
@@ -110,9 +108,9 @@ class AlignmentMapper:
             for i in range(1, len(sorted_tx_exons)):
                 if sorted_tx_exons[i - 1]["tx_end_i"] != sorted_tx_exons[i]["tx_start_i"]:
                     raise HGVSDataNotAvailableError(
-                        "AlignmentMapper(tx_ac={self.tx_ac}, "
-                        "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
-                        "Exons {a} and {b} are not adjacent".format(self=self, a=i, b=i + 1)
+                        f"AlignmentMapper(tx_ac={self.tx_ac}, "
+                        f"alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
+                        f"Exons {i} and {i + 1} are not adjacent"
                     )
 
             self.strand = tx_exons[0]["alt_strand"]
@@ -129,30 +127,27 @@ class AlignmentMapper:
             tx_identity_info = hdp.get_tx_identity_info(self.tx_ac)
             if tx_identity_info is None:
                 raise HGVSDataNotAvailableError(
-                    "AlignmentMapper(tx_ac={self.tx_ac}, "
-                    "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
-                    "No transcript info".format(self=self)
+                    f"AlignmentMapper(tx_ac={self.tx_ac}, "
+                    f"alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
+                    "No transcript info"
                 )
             self.cds_start_i = tx_identity_info["cds_start_i"]
             self.cds_end_i = tx_identity_info["cds_end_i"]
             self.tgt_len = sum(tx_identity_info["lengths"])
             self.cigarmapper = None
 
-        assert not (
-            (self.cds_start_i is None) ^ (self.cds_end_i is None)
-        ), "CDS start and end must both be defined or neither defined"
+        assert not ((self.cds_start_i is None) ^ (self.cds_end_i is None)), (
+            "CDS start and end must both be defined or neither defined"
+        )
 
     def __str__(self):
         return (
-            "{self.__class__.__name__}: {self.tx_ac} ~ {self.alt_ac} ~ {self.alt_aln_method}; "
-            "{strand_pm} strand; offset={self.gc_offset}".format(
-                self=self, strand_pm=strand_int_to_pm(self.strand)
-            )
+            f"{self.__class__.__name__}: {self.tx_ac} ~ {self.alt_ac} ~ {self.alt_aln_method}; "
+            f"{strand_int_to_pm(self.strand)} strand; offset={self.gc_offset}"
         )
 
     def g_to_n(self, g_interval, strict_bounds=None):
         """convert a genomic (g.) interval to a transcript cDNA (n.) interval"""
-
         if strict_bounds is None:
             strict_bounds = global_config.mapping.strict_bounds
 
@@ -185,7 +180,6 @@ class AlignmentMapper:
 
     def n_to_g(self, n_interval, strict_bounds=None):
         """convert a transcript (n.) interval to a genomic (g.) interval"""
-
         if strict_bounds is None:
             strict_bounds = global_config.mapping.strict_bounds
 
@@ -217,7 +211,6 @@ class AlignmentMapper:
 
     def n_to_c(self, n_interval, strict_bounds=None):
         """convert a transcript cDNA (n.) interval to a transcript CDS (c.) interval"""
-
         if strict_bounds is None:
             strict_bounds = global_config.mapping.strict_bounds
 
@@ -225,9 +218,7 @@ class AlignmentMapper:
             self.cds_start_i is None
         ):  # cds_start_i defined iff cds_end_i defined; see assertion above
             raise HGVSUsageError(
-                "CDS is undefined for {self.tx_ac}; cannot map to c. coordinate (non-coding transcript?)".format(
-                    self=self
-                )
+                f"CDS is undefined for {self.tx_ac}; cannot map to c. coordinate (non-coding transcript?)"
             )
 
         if strict_bounds and (n_interval.start.base <= 0 or n_interval.end.base > self.tgt_len):
@@ -256,15 +247,12 @@ class AlignmentMapper:
 
     def c_to_n(self, c_interval, strict_bounds=None):
         """convert a transcript CDS (c.) interval to a transcript cDNA (n.) interval"""
-
         if strict_bounds is None:
             strict_bounds = global_config.mapping.strict_bounds
 
         if self.cds_start_i is None:
             raise HGVSUsageError(
-                "CDS is undefined for {self.tx_ac}; this accession appears to be for a non-coding transcript".format(
-                    self=self
-                )
+                f"CDS is undefined for {self.tx_ac}; this accession appears to be for a non-coding transcript"
             )
 
         def pos_c_to_n(pos):
@@ -302,8 +290,7 @@ class AlignmentMapper:
     def is_coding_transcript(self):
         if (self.cds_start_i is not None) ^ (self.cds_end_i is not None):
             raise HGVSError(
-                "{self.tx_ac}: CDS start_i and end_i"
-                " must be both defined or both undefined".format(self=self)
+                f"{self.tx_ac}: CDS start_i and end_i must be both defined or both undefined"
             )
         return self.cds_start_i is not None
 

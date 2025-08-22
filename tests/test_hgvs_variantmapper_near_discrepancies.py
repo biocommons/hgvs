@@ -1,26 +1,26 @@
-# -*- coding: utf-8 -*-
 import os
+from pathlib import Path
 
 import pytest
-from support import CACHE
 
 import hgvs.assemblymapper
 import hgvs.dataproviders.uta
 import hgvs.parser
+from support import CACHE
 
-tests_fn = "tests/data/proj-near-disc.tsv"
+tests_fn = Path("tests/data/proj-near-disc.tsv")
 
 
-def read_tests(fn):
+def read_tests(fn: Path):
     """read tests from tsv file, return iterator of dicts"""
-    fh = open(fn)
+    fh = fn.open()
     for line in fh:
-        line = line.strip()
-        if line == "":
+        stripped_line = line.strip()
+        if stripped_line == "":
             continue
-        if line.startswith("#"):
+        if stripped_line.startswith("#"):
             continue
-        dt, lt, var, exp = line.split()
+        dt, lt, var, exp = stripped_line.split()
         yield {"disc_type": dt, "loc_type": lt, "variant": var, "expected": exp}
 
 
@@ -33,7 +33,7 @@ tests = list(read_tests(tests_fn))
 params = [(t["variant"], t["expected"], t["loc_type"] + " " + t["disc_type"]) for t in tests]
 
 
-@pytest.mark.parametrize("variant,expected,description", params)
+@pytest.mark.parametrize(("variant", "expected", "description"), params)
 def test_projection_near_discrepancies(variant, expected, description):
     var_n = hp.parse_hgvs_variant(variant)
     var_g = am38.n_to_g(var_n)

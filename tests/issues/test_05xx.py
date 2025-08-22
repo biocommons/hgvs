@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
 import os
 import unittest
 
 import pytest
-from support import CACHE
 
 import hgvs.assemblymapper
 import hgvs.dataproviders.uta
@@ -12,6 +10,7 @@ import hgvs.parser
 import hgvs.sequencevariant
 import hgvs.validator
 import hgvs.variantmapper
+from support import CACHE
 
 
 @pytest.mark.issues
@@ -36,7 +35,6 @@ class Test_Issues(unittest.TestCase):
 
     def test_525(self):
         """https://github.com/biocommons/hgvs/issues/525"""
-
         # simple test case
         hgvs = "NM_001637.3:c.3_4insTAG"  # insert stop in phase at AA 2
         var_c = self.hp.parse_hgvs_variant(hgvs)

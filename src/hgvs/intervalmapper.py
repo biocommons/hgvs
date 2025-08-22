@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Mapping intervals between pairs of congruent segments
+"""Mapping intervals between pairs of congruent segments
 
 The IntervalMapper class is at the heart of mapping between aligned sequences.  An instance
 of :class:`uta.tools.intervalmapper.IntervalMapper` is constructed with an ordered list of
@@ -58,7 +56,7 @@ class Interval:
     coordinates (0-based, right-open).
     """
 
-    __slots__ = ("start_i", "end_i")
+    __slots__ = ("end_i", "start_i")
 
     def __init__(self, start_i, end_i):
         if not (start_i <= end_i):
@@ -71,15 +69,14 @@ class Interval:
         return self.end_i - self.start_i
 
     def __repr__(self):
-        return "{self.__class__.__name__}(start_i={self.start_i},end_i={self.end_i})".format(
-            self=self
-        )
+        return f"{self.__class__.__name__}(start_i={self.start_i},end_i={self.end_i})"
 
 
 class IntervalPair:
     """Represents a match, insertion, or deletion segment of an
     alignment. If a match, the lengths must be equal; if an insertion or
-    deletion, the length of the ref or tgt must be zero respectively."""
+    deletion, the length of the ref or tgt must be zero respectively.
+    """
 
     __slots__ = ("ref", "tgt")
 
@@ -96,18 +93,18 @@ class IntervalPair:
         self.tgt = tgt
 
     def __repr__(self):
-        return "{self.__class__.__name__}(ref={self.ref},tgt={self.tgt})".format(self=self)
+        return f"{self.__class__.__name__}(ref={self.ref},tgt={self.tgt})"
 
 
 class IntervalMapper:
     """Provides mapping between sequence coordinates according to an
-    ordered set of IntervalPairs."""
+    ordered set of IntervalPairs.
+    """
 
-    __slots__ = ("interval_pairs", "ref_intervals", "tgt_intervals", "ref_len", "tgt_len")
+    __slots__ = ("interval_pairs", "ref_intervals", "ref_len", "tgt_intervals", "tgt_len")
 
     def __init__(self, interval_pairs):
-        """
-        :param interval_pairs: an ordered list of IntervalPair instances
+        """:param interval_pairs: an ordered list of IntervalPair instances
         :type interval_pairs: list (of IntervalPair instances).
         :returns: an IntervalMapper instance
         """
@@ -129,8 +126,7 @@ class IntervalMapper:
 
     @staticmethod
     def from_cigar(cigar):
-        """
-        :param cigar: a Compact Idiosyncratic Gapped Alignment Report string
+        """:param cigar: a Compact Idiosyncratic Gapped Alignment Report string
         :type cigar: str.
         :returns: an IntervalMapper instance from the CIGAR string
         """
@@ -182,7 +178,8 @@ class IntervalMapper:
 class CIGARElement:
     """represents elements of a CIGAR string and provides methods for
     determining the number of ref and tgt bases consumed by the
-    operation"""
+    operation
+    """
 
     __slots__ = ("len", "op")
 
@@ -206,7 +203,6 @@ def cigar_to_intervalpairs(cigar):
     pairs.  The length of the returned list will be equal to the
     number of CIGAR operations
     """
-
     cigar_elem_re = re.compile(r"(?P<len>\d+)(?P<op>[=DIMNX])")
     ces = [
         CIGARElement(op=md["op"], len=int(md["len"]))

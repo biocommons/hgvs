@@ -1,13 +1,12 @@
-# -*- coding: utf-8 -*-
 import os
 import unittest
 
 import pytest
-from support import CACHE
 
 import hgvs
 import hgvs.parser
 import hgvs.sequencevariant
+from support import CACHE
 
 
 def test_gene_formatting(parser):

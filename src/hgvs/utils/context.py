@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Internal utility to display textual representation of variant context
 
 This code requires uta-align and pysam packages, which are NOT part of
@@ -27,7 +26,7 @@ import re
 
 from bioutils.sequences import complement
 
-from ..location import Interval, SimplePosition
+from hgvs.location import Interval, SimplePosition
 
 
 def full_house(am, var, tx_ac=None):
@@ -36,12 +35,10 @@ def full_house(am, var, tx_ac=None):
         if tx_ac is None:
             rtx = am.relevant_transcripts(var)
             if len(rtx) == 0:
-                raise RuntimeError("no relevant transcripts for {var.ac}".format(var=var))
+                raise RuntimeError(f"no relevant transcripts for {var.ac}")
             if len(rtx) > 1:
                 raise RuntimeError(
-                    "{n} relevant transcripts for {var.ac}; you need to pick one".format(
-                        n=len(rtx), var=var
-                    )
+                    f"{len(rtx)} relevant transcripts for {var.ac}; you need to pick one"
                 )
             tx_ac = rtx[0]
         var_n = am.g_to_n(var_g, tx_ac)
@@ -73,16 +70,16 @@ def full_house(am, var, tx_ac=None):
 
 def variant_context_w_alignment(am, var, margin=20, tx_ac=None):
     """This module is experimental. It requires the uta_align package from pypi."""
-    from uta_align.align.algorithms import align, cigar_alignment
+    from uta_align.align.algorithms import align, cigar_alignment  # noqa: PLC0415
 
     fh = full_house(am, var, tx_ac=tx_ac)
-    tm = am._fetch_AlignmentMapper(fh["n"].ac, fh["g"].ac, am.alt_aln_method)
+    tm = am._fetch_AlignmentMapper(fh["n"].ac, fh["g"].ac, am.alt_aln_method)  # noqa: SLF001
     strand = tm.strand
     span_g = _ival_to_span(fh["g"].posedit.pos)
     span_g = (span_g[0] - margin, span_g[1] + margin)
     ival_g = Interval(SimplePosition(span_g[0]), SimplePosition(span_g[1]))
     ival_n = tm.g_to_n(ival_g)
-    assert ival_n.start.offset == 0 and ival_n.end.offset == 0, "limited to coding variants"
+    assert ival_n.start.offset == 0 and ival_n.end.offset == 0, "limited to coding variants"  # noqa: S101
     span_n = _ival_to_span(ival_n)
     ival_c = tm.g_to_c(ival_g)
     span_c = _ival_to_span(ival_c)
@@ -161,7 +158,7 @@ _pre_fmt = "{ac:12s} {type:1s} {s:10d} {dir:1s}"
 _post_fmt = "{dir:1s} {e:8d}"
 
 
-def seq_line_fmt(var, span, content, dir=""):
+def seq_line_fmt(var, span, content, dir=""):  # noqa: A002
     return _line_fmt.format(
         pre=_pre_fmt.format(ac=var.ac, type=var.type, s=span[0], dir=dir),
         content=content,
@@ -174,10 +171,8 @@ def pointer_line(var, span):
     s0 = span[0]
     o = var.posedit.pos.start.base - s0
     l = var.posedit.pos.end.base - var.posedit.pos.start.base + 1  # noqa: E741
-    if var.posedit.edit.type == "ins":
-        p = " " * o + "><"
-    else:
-        p = " " * o + "*" * l
+
+    p = " " * o + "><" if var.posedit.edit.type == "ins" else " " * o + "*" * l
     return _line_fmt.format(pre="", content=p, post="", comment=str(var))
 
 
@@ -189,7 +184,6 @@ def format_sequence(seq, start=None, end=None, group_size=3):
     2001 AAA BBB CCC DDD EEE
 
     """
-
     width = 100
     loc_width = 9
     sep = " "
@@ -199,12 +193,12 @@ def format_sequence(seq, start=None, end=None, group_size=3):
     end = end or len(seq)
 
     bw = width - loc_width - len(body_sep)
-    assert group_size <= bw, "group size must be less than available line width"
+    assert group_size <= bw, "group size must be less than available line width"  # noqa: S101
     gpl = int((bw + len(sep)) / (group_size + len(sep)))  # groups per line
     gpl = int(gpl / 5) * 5 if gpl > 20 else gpl
     rpl = group_size * gpl
-    line_fmt = "{{l:>{lw}s}}{body_sep}{{body}}".format(lw=loc_width, body_sep=body_sep)
-    ge_fmt = "{{ge:>{gs}}}".format(gs=group_size)
+    line_fmt = f"{{l:>{loc_width}s}}{body_sep}{{body}}"
+    ge_fmt = f"{{ge:>{group_size}}}"
 
     blocks = []
     for ls in range(start, end, rpl):

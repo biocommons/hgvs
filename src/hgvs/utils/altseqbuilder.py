@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Utility to insert an hgvs variant into a transcript sequence.
 Generates a record corresponding to the modified transcript sequence,
 along with annotations for use in conversion to an hgvsp tag.
@@ -9,13 +8,12 @@ Used in hgvsc to hgvsp conversion.
 import logging
 import math
 
+from bioutils.sequences import TranslationTable, reverse_complement, translate_cds
+
 from hgvs import global_config
+from hgvs.edit import Dup, Inv, NARefAlt, Repeat
+from hgvs.enums import Datum
 from hgvs.exceptions import HGVSError
-
-from bioutils.sequences import reverse_complement, translate_cds, TranslationTable
-
-from ..edit import Dup, Inv, NARefAlt, Repeat
-from ..enums import Datum
 
 DBG = False
 
@@ -33,7 +31,7 @@ class AltTranscriptData:
         accession,
         is_substitution=False,
         is_ambiguous=False,
-        translation_table=TranslationTable.standard
+        translation_table=TranslationTable.standard,
     ):
         """Create a variant sequence using inputs from VariantInserter
         :param seq: DNA sequence wiith variant incorporated
@@ -55,13 +53,14 @@ class AltTranscriptData:
         :return variant sequence data
         :rtype attrs
         """
-
         if len(seq) > 0:
             if isinstance(seq, str):
                 seq = list(seq)
             seq_cds = seq[cds_start - 1 :]
             seq_cds = "".join(seq_cds)
-            seq_aa = translate_cds(seq_cds, full_codons=False, ter_symbol="X", translation_table=translation_table)
+            seq_aa = translate_cds(
+                seq_cds, full_codons=False, ter_symbol="X", translation_table=translation_table
+            )
             stop_pos = seq_aa[: (cds_stop - cds_start + 1) // 3].rfind("*")
             if stop_pos == -1:
                 stop_pos = seq_aa.find("*")
@@ -101,7 +100,7 @@ class AltSeqBuilder:
         self._var_c = var_c
         self._transcript_data = transcript_data
         if DBG:
-            print(transcript_data.transcript_sequence)
+            print(transcript_data.transcript_sequence)  # noqa: T201
 
         # check reference for special characteristics
         self._ref_has_multiple_stops = self._transcript_data.aa_sequence.count("*") > 1
@@ -136,9 +135,7 @@ class AltSeqBuilder:
 
         if variant_location == self.EXON:
             edit_type = type(self._var_c.posedit.edit)
-        elif variant_location == self.INTRON:
-            edit_type = NOT_CDS
-        elif variant_location == self.T_UTR:
+        elif variant_location in {self.INTRON, self.T_UTR}:
             edit_type = NOT_CDS
         elif variant_location == self.F_UTR:
             # TODO: handle case where variant introduces a Met (new start)
@@ -159,20 +156,20 @@ class AltSeqBuilder:
             else:
                 edit_type = NOT_CDS
         else:  # should never get here
-            raise ValueError("value_location = {}".format(variant_location))
+            raise ValueError(f"value_location = {variant_location}")
 
         try:
             this_alt_data = type_map[edit_type]()
-        except KeyError:
+        except KeyError as e:
             raise NotImplementedError(
-                "c to p translation unsupported for {} type {}".format(self._var_c, edit_type)
-            )
+                f"c to p translation unsupported for {self._var_c} type {edit_type}"
+            ) from e
 
         # get the start of the "terminal" frameshift (i.e. one never "cancelled out")
         this_alt_data = self._get_frameshift_start(this_alt_data)
         alt_data.append(this_alt_data)
         if DBG:
-            print(this_alt_data.transcript_sequence)
+            print(this_alt_data.transcript_sequence)  # noqa: T201
 
         return alt_data
 
@@ -185,9 +182,7 @@ class AltSeqBuilder:
         if (
             self._var_c.posedit.pos.start.datum == Datum.CDS_END
             and self._var_c.posedit.pos.end.datum == Datum.CDS_END
-        ):
-            result = self.T_UTR
-        elif (
+        ) or (
             self._var_c.posedit.edit.type in ["dup", "ins"]
             and self._var_c.posedit.pos.end.datum == Datum.CDS_END
         ):
@@ -203,36 +198,35 @@ class AltSeqBuilder:
             global_config.mapping.ins_at_boundary_is_intronic
             and self._var_c.posedit.edit.type == "dup"
             and self._var_c.posedit.pos.start.base in self._transcript_data.exon_start_positions
-        ):
-            result = self.INTRON
-        elif (
+        ) or (
             global_config.mapping.ins_at_boundary_is_intronic
             and self._var_c.posedit.edit.type == "dup"
             and self._var_c.posedit.pos.end.base in self._transcript_data.exon_end_positions
         ):
             result = self.INTRON
         elif (
-            not global_config.mapping.ins_at_boundary_is_intronic
-            and self._var_c.posedit.edit.type == "ins"
-            and self._var_c.posedit.pos.start.offset == -1 and self._var_c.posedit.pos.end.offset == 0
-        ):
-            result = self.EXON
-        elif (
-            not global_config.mapping.ins_at_boundary_is_intronic
-            and self._var_c.posedit.edit.type == "ins"
-            and self._var_c.posedit.pos.start.offset == 0 and self._var_c.posedit.pos.end.offset == 1
-        ):
-            result = self.EXON
-        elif (
-            not global_config.mapping.ins_at_boundary_is_intronic
-            and self._var_c.posedit.edit.type == "dup"
-            and self._var_c.posedit.pos.end.offset == -1
-        ):
-            result = self.EXON
-        elif (
-            not global_config.mapping.ins_at_boundary_is_intronic
-            and self._var_c.posedit.edit.type == "dup"
-            and self._var_c.posedit.pos.start.offset == 1
+            (
+                not global_config.mapping.ins_at_boundary_is_intronic
+                and self._var_c.posedit.edit.type == "ins"
+                and self._var_c.posedit.pos.start.offset == -1
+                and self._var_c.posedit.pos.end.offset == 0
+            )
+            or (
+                not global_config.mapping.ins_at_boundary_is_intronic
+                and self._var_c.posedit.edit.type == "ins"
+                and self._var_c.posedit.pos.start.offset == 0
+                and self._var_c.posedit.pos.end.offset == 1
+            )
+            or (
+                not global_config.mapping.ins_at_boundary_is_intronic
+                and self._var_c.posedit.edit.type == "dup"
+                and self._var_c.posedit.pos.end.offset == -1
+            )
+            or (
+                not global_config.mapping.ins_at_boundary_is_intronic
+                and self._var_c.posedit.edit.type == "dup"
+                and self._var_c.posedit.pos.start.offset == 1
+            )
         ):
             result = self.EXON
         elif self._var_c.posedit.pos.start.offset != 0 or self._var_c.posedit.pos.end.offset != 0:
@@ -285,12 +279,12 @@ class AltSeqBuilder:
             seq[start + 1 : start + 1] = list(alt)  # insertion in list before python list index
 
         if DBG:
-            print("net base change: {}".format(net_base_change))
+            print(f"net base change: {net_base_change}")  # noqa: T201
         is_frameshift = net_base_change % 3 != 0
         # use max of mod 3 value and 1 (in event that indel starts in the 5'utr range)
-        variant_start_aa = max(int(math.ceil((self._var_c.posedit.pos.start.base) / 3.0)), 1)
+        variant_start_aa = max(int(math.ceil((self._var_c.posedit.pos.start.base) / 3.0)), 1)  # noqa: RUF046
 
-        alt_data = AltTranscriptData(
+        return AltTranscriptData(
             seq,
             cds_start,
             cds_stop,
@@ -301,22 +295,21 @@ class AltSeqBuilder:
             is_ambiguous=self._ref_has_multiple_stops,
             translation_table=self._translation_table,
         )
-        return alt_data
 
     def _incorporate_dup(self):
         """Incorporate dup into sequence"""
         seq, cds_start, cds_stop, start, end = self._setup_incorporate()
 
         if not self._var_c.posedit.edit.ref:
-            raise HGVSError('Duplication variant is missing reference sequence')
+            raise HGVSError("Duplication variant is missing reference sequence")
 
         dup_seq = self._var_c.posedit.edit.ref
         seq[end:end] = dup_seq
 
         is_frameshift = len(dup_seq) % 3 != 0
-        variant_start_aa = int(math.ceil((self._var_c.posedit.pos.end.base + 1) / 3.0))
+        variant_start_aa = int(math.ceil((self._var_c.posedit.pos.end.base + 1) / 3.0))  # noqa: RUF046
 
-        alt_data = AltTranscriptData(
+        return AltTranscriptData(
             seq,
             cds_start,
             cds_stop,
@@ -326,7 +319,6 @@ class AltSeqBuilder:
             is_ambiguous=self._ref_has_multiple_stops,
             translation_table=self._translation_table,
         )
-        return alt_data
 
     def _incorporate_inv(self):
         """Incorporate inv into sequence"""
@@ -335,9 +327,9 @@ class AltSeqBuilder:
         seq[start:end] = list(reverse_complement("".join(seq[start:end])))
 
         is_frameshift = False
-        variant_start_aa = max(int(math.ceil((self._var_c.posedit.pos.start.base) / 3.0)), 1)
+        variant_start_aa = max(int(math.ceil((self._var_c.posedit.pos.start.base) / 3.0)), 1)  # noqa: RUF046
 
-        alt_data = AltTranscriptData(
+        return AltTranscriptData(
             seq,
             cds_start,
             cds_stop,
@@ -347,12 +339,11 @@ class AltSeqBuilder:
             is_ambiguous=self._ref_has_multiple_stops,
             translation_table=self._translation_table,
         )
-        return alt_data
 
     def _incorporate_repeat(self):
         """Incorporate repeat int sequence"""
         raise NotImplementedError(
-            "hgvs c to p conversion does not support {} type: repeats".format(self._var_c)
+            f"hgvs c to p conversion does not support {self._var_c} type: repeats"
         )
 
     def _setup_incorporate(self):
@@ -373,11 +364,10 @@ class AltSeqBuilder:
             if pos.datum == Datum.CDS_START:
                 if pos.base < 0:  # 5' UTR
                     result = cds_start - 1
-                else:  # cds/intron
-                    if pos.offset < 0:
-                        result = (cds_start - 1) + pos.base - 2
-                    else:
-                        result = (cds_start - 1) + pos.base - 1
+                elif pos.offset < 0:
+                    result = (cds_start - 1) + pos.base - 2
+                else:
+                    result = (cds_start - 1) + pos.base - 1
             elif pos.datum == Datum.CDS_END:  # 3' UTR
                 result = cds_stop + pos.base - 1
             else:
@@ -389,16 +379,14 @@ class AltSeqBuilder:
         end += 1
 
         if DBG:
-            print(
-                "len seq:{} cds_start:{} cds_stop:{} start:{} end:{}".format(
-                    len(seq), cds_start, cds_stop, start, end
-                )
+            print(  # noqa: T201
+                f"len seq:{len(seq)} cds_start:{cds_start} cds_stop:{cds_stop} start:{start} end:{end}"
             )
         return seq, cds_start, cds_stop, start, end
 
     def _create_alt_equals_ref_noncds(self):
         """Create an alt seq that matches the reference (for non-cds variants)"""
-        alt_data = AltTranscriptData(
+        return AltTranscriptData(
             list(self._transcript_data.transcript_sequence),
             self._transcript_data.cds_start,
             self._transcript_data.cds_stop,
@@ -408,14 +396,19 @@ class AltSeqBuilder:
             is_ambiguous=True,
             translation_table=self._translation_table,
         )
-        return alt_data
 
     def _create_no_protein(self):
         """Create a no-protein result"""
-        alt_data = AltTranscriptData(
-            [], None, None, False, None, self._transcript_data.protein_accession, is_ambiguous=False, translation_table=self._translation_table
+        return AltTranscriptData(
+            [],
+            None,
+            None,
+            False,
+            None,
+            self._transcript_data.protein_accession,
+            is_ambiguous=False,
+            translation_table=self._translation_table,
         )
-        return alt_data
 
     def _get_frameshift_start(self, variant_data):
         """Get starting position (AA ref index) of the last frameshift
@@ -425,10 +418,9 @@ class AltSeqBuilder:
         :return variant data with additional field for AA index (1-based) of the frameshift start
         :rtype attrs
         """
-
         if DBG:
-            print("is_frameshift:{}".format(variant_data.is_frameshift))
-            print("variant_start_aa:{}".format(variant_data.variant_start_aa))
+            print(f"is_frameshift:{variant_data.is_frameshift}")  # noqa: T201
+            print(f"variant_start_aa:{variant_data.variant_start_aa}")  # noqa: T201
         if variant_data.is_frameshift:
             variant_data.frameshift_start = variant_data.variant_start_aa
         return variant_data

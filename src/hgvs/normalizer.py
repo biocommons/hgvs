@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-"""hgvs.normalizer
-"""
+"""hgvs.normalizer"""
 
 import copy
 import logging
@@ -42,9 +40,9 @@ class Normalizer:
         :param validate: whether validating the input variant before normalizing
 
         """
-        assert (
-            shuffle_direction == 3 or shuffle_direction == 5
-        ), "The shuffling direction should be 3 (3' most) or 5 (5' most)."
+        assert shuffle_direction == 3 or shuffle_direction == 5, (
+            "The shuffling direction should be 3 (3' most) or 5 (5' most)."
+        )
         self.hdp = hdp
         self.shuffle_direction = shuffle_direction
         self.cross_boundaries = cross_boundaries
@@ -56,9 +54,9 @@ class Normalizer:
 
     def normalize(self, var):
         """Perform sequence variants normalization for single variant"""
-        assert isinstance(
-            var, hgvs.sequencevariant.SequenceVariant
-        ), "variant must be a parsed HGVS sequence variant object"
+        assert isinstance(var, hgvs.sequencevariant.SequenceVariant), (
+            "variant must be a parsed HGVS sequence variant object"
+        )
 
         # keep a shallow reference to the original variant, to be returned
         # as-is under certain circumstances
@@ -78,7 +76,7 @@ class Normalizer:
 
         if type == "p":
             raise HGVSUnsupportedOperationError(
-                "Unsupported normalization of protein level variants: {0}".format(var)
+                f"Unsupported normalization of protein level variants: {var}"
             )
         if var.posedit.edit.type == "con":
             raise HGVSUnsupportedOperationError(
@@ -168,15 +166,14 @@ class Normalizer:
                     ref_end = end
                     edit = hgvs.edit.NARefAlt(ref=None, alt=alt)
                 # dup
+                elif self.shuffle_direction == 3:
+                    ref_start = start - alt_len
+                    ref_end = end - 1
+                    edit = hgvs.edit.Dup(ref=alt)
                 else:
-                    if self.shuffle_direction == 3:
-                        ref_start = start - alt_len
-                        ref_end = end - 1
-                        edit = hgvs.edit.Dup(ref=alt)
-                    else:
-                        ref_start = start
-                        ref_end = start + alt_len - 1
-                        edit = hgvs.edit.Dup(ref=alt)
+                    ref_start = start
+                    ref_end = start + alt_len - 1
+                    edit = hgvs.edit.Dup(ref=alt)
             # delins
             else:
                 ref_start = start
@@ -215,105 +212,96 @@ class Normalizer:
         if var.type == "r" or var.type == "n":
             if self.cross_boundaries:
                 return 0, float("inf")
+            # Get genomic sequence access number for this transcript
+            map_info = self.hdp.get_tx_mapping_options(var.ac)
+            if not map_info:
+                raise HGVSDataNotAvailableError(
+                    f"No mapping info available for {var.ac}"
+                )
+            map_info = [
+                item for item in map_info if item["alt_aln_method"] == self.alt_aln_method
+            ]
+            alt_ac = map_info[0]["alt_ac"]
+
+            # Get tx info
+            tx_info = self.hdp.get_tx_info(var.ac, alt_ac, self.alt_aln_method)
+            cds_start = tx_info["cds_start_i"]
+            cds_end = tx_info["cds_end_i"]
+
+            # Get exon info
+            exon_info = self.hdp.get_tx_exons(var.ac, alt_ac, self.alt_aln_method)
+            exon_starts = [exon["tx_start_i"] for exon in exon_info]
+            exon_ends = [exon["tx_end_i"] for exon in exon_info]
+            exon_starts.sort()
+            exon_ends.sort()
+            exon_starts.append(exon_ends[-1])
+            exon_ends.append(float("inf"))
+
+            # Find the end pos of the exon where the var locates
+            left = 0
+            right = float("inf")
+
+            # TODO: #242: implement methods to find tx regions
+            for i, _ in enumerate(exon_starts):
+                if (
+                    var.posedit.pos.start.base - 1 >= exon_starts[i]
+                    and var.posedit.pos.start.base - 1 < exon_ends[i]
+                ):
+                    break
+
+            for j, _ in enumerate(exon_starts):
+                if (
+                    var.posedit.pos.end.base - 1 >= exon_starts[j]
+                    and var.posedit.pos.end.base - 1 < exon_ends[j]
+                ):
+                    break
+
+            if i != j:
+                raise HGVSUnsupportedOperationError(
+                    f"Unsupported normalization of variants spanning the exon-intron boundary ({var})"
+                )
+
+            left = exon_starts[i]
+            right = exon_ends[i]
+
+            if cds_start is None:
+                pass
+            elif var.posedit.pos.end.base - 1 < cds_start:
+                right = min(right, cds_start)
+            elif var.posedit.pos.start.base - 1 >= cds_start:
+                left = max(left, cds_start)
             else:
-                # Get genomic sequence access number for this transcript
-                map_info = self.hdp.get_tx_mapping_options(var.ac)
-                if not map_info:
-                    raise HGVSDataNotAvailableError(
-                        "No mapping info available for {ac}".format(ac=var.ac)
-                    )
-                map_info = [
-                    item for item in map_info if item["alt_aln_method"] == self.alt_aln_method
-                ]
-                alt_ac = map_info[0]["alt_ac"]
+                raise HGVSUnsupportedOperationError(
+                    f"Unsupported normalization of variants spanning the UTR-exon boundary ({var})"
+                )
 
-                # Get tx info
-                tx_info = self.hdp.get_tx_info(var.ac, alt_ac, self.alt_aln_method)
-                cds_start = tx_info["cds_start_i"]
-                cds_end = tx_info["cds_end_i"]
+            if cds_end is None:
+                pass
+            elif var.posedit.pos.start.base - 1 >= cds_end:
+                left = max(left, cds_end)
+            elif var.posedit.pos.end.base - 1 < cds_end:
+                right = min(right, cds_end)
+            else:
+                raise HGVSUnsupportedOperationError(
+                    f"Unsupported normalization of variants spanning the exon-UTR boundary ({var})"
+                )
 
-                # Get exon info
-                exon_info = self.hdp.get_tx_exons(var.ac, alt_ac, self.alt_aln_method)
-                exon_starts = [exon["tx_start_i"] for exon in exon_info]
-                exon_ends = [exon["tx_end_i"] for exon in exon_info]
-                exon_starts.sort()
-                exon_ends.sort()
-                exon_starts.append(exon_ends[-1])
-                exon_ends.append(float("inf"))
-
-                # Find the end pos of the exon where the var locates
-                left = 0
-                right = float("inf")
-
-                # TODO: #242: implement methods to find tx regions
-                for i, _ in enumerate(exon_starts):
-                    if (
-                        var.posedit.pos.start.base - 1 >= exon_starts[i]
-                        and var.posedit.pos.start.base - 1 < exon_ends[i]
-                    ):
-                        break
-
-                for j, _ in enumerate(exon_starts):
-                    if (
-                        var.posedit.pos.end.base - 1 >= exon_starts[j]
-                        and var.posedit.pos.end.base - 1 < exon_ends[j]
-                    ):
-                        break
-
-                if i != j:
-                    raise HGVSUnsupportedOperationError(
-                        "Unsupported normalization of variants spanning the exon-intron boundary ({var})".format(
-                            var=var
-                        )
-                    )
-
-                left = exon_starts[i]
-                right = exon_ends[i]
-
-                if cds_start is None:
-                    pass
-                elif var.posedit.pos.end.base - 1 < cds_start:
-                    right = min(right, cds_start)
-                elif var.posedit.pos.start.base - 1 >= cds_start:
-                    left = max(left, cds_start)
-                else:
-                    raise HGVSUnsupportedOperationError(
-                        "Unsupported normalization of variants spanning the UTR-exon boundary ({var})".format(
-                            var=var
-                        )
-                    )
-
-                if cds_end is None:
-                    pass
-                elif var.posedit.pos.start.base - 1 >= cds_end:
-                    left = max(left, cds_end)
-                elif var.posedit.pos.end.base - 1 < cds_end:
-                    right = min(right, cds_end)
-                else:
-                    raise HGVSUnsupportedOperationError(
-                        "Unsupported normalization of variants spanning the exon-UTR boundary ({var})".format(
-                            var=var
-                        )
-                    )
-
-                return left, right
-        else:
-            # For variant type of g and m etc.
-            return 0, float("inf")
+            return left, right
+        # For variant type of g and m etc.
+        return 0, float("inf")
 
     def _get_tgt_length(self, var):
         """Get the total length of the whole reference sequence"""
         if var.type == "g" or var.type == "m":
             return float("inf")
-        else:
-            # Get genomic sequence access number for this transcript
-            identity_info = self.hdp.get_tx_identity_info(var.ac)
-            if not identity_info:
-                raise HGVSDataNotAvailableError(
-                    "No identity info available for {ac}".format(ac=var.ac)
-                )
-            tgt_len = sum(identity_info["lengths"])
-            return tgt_len
+        # Get genomic sequence access number for this transcript
+        identity_info = self.hdp.get_tx_identity_info(var.ac)
+        if not identity_info:
+            raise HGVSDataNotAvailableError(
+                f"No identity info available for {var.ac}"
+            )
+        tgt_len = sum(identity_info["lengths"])
+        return tgt_len
 
     def _fetch_bounded_seq(self, var, start, end, window_size, boundary):
         """Fetch reference sequence from hgvs data provider.
@@ -322,8 +310,8 @@ class Normalizer:
         """
         var_len = end - start - window_size
 
-        start = start if start >= boundary[0] else boundary[0]
-        end = end if end <= boundary[1] else boundary[1]
+        start = max(start, boundary[0])
+        end = min(end, boundary[1])
         if start >= end:
             return ""
 
@@ -331,25 +319,23 @@ class Normalizer:
 
         if len(seq) < end - start and len(seq) < var_len:
             raise HGVSInvalidVariantError(
-                "Variant span is outside sequence bounds ({var})".format(var=var)
+                f"Variant span is outside sequence bounds ({var})"
             )
 
         return seq
 
     def _get_ref_alt(self, var, boundary):
         """Get reference allele and alternative allele of the variant"""
-
         # Get reference allele
         if var.posedit.edit.type == "ins" or var.posedit.edit.type == "dup":
             ref = ""
+        # For NARefAlt and Inv
+        elif var.posedit.edit.ref_s is None or var.posedit.edit.ref == "":
+            ref = self._fetch_bounded_seq(
+                var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, 0, boundary
+            )
         else:
-            # For NARefAlt and Inv
-            if var.posedit.edit.ref_s is None or var.posedit.edit.ref == "":
-                ref = self._fetch_bounded_seq(
-                    var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, 0, boundary
-                )
-            else:
-                ref = var.posedit.edit.ref
+            ref = var.posedit.edit.ref
 
         # Get alternative allele
         if (
@@ -373,7 +359,6 @@ class Normalizer:
 
     def _normalize_alleles(self, var, boundary):
         """Normalize the variant until it could not be shuffled"""
-
         ref, alt = self._get_ref_alt(var, boundary)
         win_size = hgvs.global_config.normalizer.window_size
 
@@ -442,6 +427,7 @@ class Normalizer:
                 stop = orig_stop
 
         return base + start, base + stop, (ref, alt)
+
 
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)

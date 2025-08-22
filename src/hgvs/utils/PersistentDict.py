@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 import pickle
 
@@ -13,10 +12,10 @@ class PersistentDict(dict):
         self.flag = flag  # r=readonly, c=create,write,read
         try:
             with open(self.filename, "rb") as f:
-                self.update(pickle.load(f))  # noqa: B301,BAN-B301
-        except IOError:
+                self.update(pickle.load(f))
+        except OSError:
             if self.flag == "r":
-                raise IOError("Cannot open file " + self.filename)
+                raise OSError("Cannot open file " + self.filename)
         dict.__init__(self, *args, **kwds)
 
     def sync(self):

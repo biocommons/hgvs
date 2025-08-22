@@ -1,11 +1,11 @@
-from hgvs.pretty.models import VariantData
 from hgvs.pretty.console.renderer import BasicRenderer
+from hgvs.pretty.models import VariantData
 
 
 class ChrPositionInfo(BasicRenderer):
-    """
-    ChrPositionInfo is a class that extends BasicRenderer to provide functionality
+    """ChrPositionInfo is a class that extends BasicRenderer to provide functionality
     for rendering chromosome position every 10 bases .
+
     Methods
     -------
     legend() -> str
@@ -14,6 +14,7 @@ class ChrPositionInfo(BasicRenderer):
         Takes a VariantData object and returns a formatted string representing
         the chromosome positions. Positions that are multiples of 10 are displayed
         with commas, while others are represented by spaces.
+
     """
 
     def legend(self):

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import csv
 
 # Mock test input source
@@ -31,7 +30,11 @@ class MockInputSource:
         result = None
         data = self._mock_data.get(ac)
         if data:  # interbase coordinates
-            result = {"cds_start_i": data["cds_start_i"], "cds_end_i": data["cds_end_i"], "lengths": data["lengths"]}
+            result = {
+                "cds_start_i": data["cds_start_i"],
+                "cds_end_i": data["cds_end_i"],
+                "lengths": data["lengths"],
+            }
         return result
 
     def get_tx_identity_info(self, ac):
@@ -65,8 +68,8 @@ class MockInputSource:
         :return dictionary of accession_number to sequence tags
         """
         result = {}
-        with open(in_file, "r") as f:
-            reader = csv.DictReader(f, delimiter=str("\t"))
+        with open(in_file) as f:
+            reader = csv.DictReader(f, delimiter="\t")
             for row in reader:
                 result[row["accession"]] = {
                     "transcript_sequence": row["transcript_sequence"],
@@ -76,6 +79,7 @@ class MockInputSource:
                 }
 
         return result
+
 
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)

@@ -1,14 +1,13 @@
-# -*- coding: utf-8 -*-
 import os
 import unittest
 
 import pytest
-from support import CACHE
 
 import hgvs.dataproviders.uta
 import hgvs.parser
 import hgvs.variantmapper
 from hgvs.exceptions import HGVSError, HGVSInvalidVariantError
+from support import CACHE
 
 
 @pytest.mark.vcr
@@ -18,11 +17,11 @@ def test_add_gene_symbol(am38, parser):
 
     am38.add_gene_symbol = True
     var_t = am38.g_to_t(var_g, "NM_003777.3")
-    assert "NM_003777.3(DNAH11):c.13552_*36del" == str(var_t)
+    assert str(var_t) == "NM_003777.3(DNAH11):c.13552_*36del"
 
     am38.add_gene_symbol = False
     var_t = am38.g_to_t(var_g, "NM_003777.3")
-    assert "NM_003777.3:c.13552_*36del" == str(var_t)
+    assert str(var_t) == "NM_003777.3:c.13552_*36del"
 
     am38.add_gene_symbol = ags
 
@@ -64,15 +63,15 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
         }
 
         failures = []
-        for key in cases:
+        for key, value in cases.items():
             try:
-                func, args = cases[key]
+                func, args = value
                 func(*args)
                 failures.append(key)
-            except hgvs.exceptions.HGVSInvalidVariantError:
+            except hgvs.exceptions.HGVSInvalidVariantError:  # noqa: PERF203
                 pass
 
-        self.assertFalse(failures, "conversions not failing: {}".format(failures))
+        self.assertFalse(failures, f"conversions not failing: {failures}")
 
     def test_gc_invalid_input_nm_accession(self):
         hgvs_g = "NC_000007.13:g.36561662C>T"

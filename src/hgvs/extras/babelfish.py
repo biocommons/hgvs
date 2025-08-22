@@ -1,4 +1,5 @@
 """translate between HGVS and other formats"""
+
 import os
 
 from bioutils.assemblies import make_ac_name_map, make_name_ac_map
@@ -43,9 +44,8 @@ class Babelfish:
         the given assembly_name. The chr name uses official chromosome
         name (i.e., without a "chr" prefix).
         """
-
         if var_g.type != "g":
-            raise RuntimeError("Expected g. variant, got {var_g}".format(var_g=var_g))
+            raise RuntimeError(f"Expected g. variant, got {var_g}")
 
         vleft = self.hn.normalize(var_g)
 

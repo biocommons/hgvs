@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-"""implements validation of hgvs variants
-
-"""
+"""implements validation of hgvs variants"""
 
 import logging
 
@@ -40,18 +37,14 @@ class Validator:
 
 
 class IntrinsicValidator:
-    """
-    Attempts to determine if the HGVS name is internally consistent
-
-    """
+    """Attempts to determine if the HGVS name is internally consistent"""
 
     def __init__(self, strict=hgvs.global_config.validator.strict):
         self.strict = strict
 
     def validate(self, var, strict=None):
-        assert isinstance(
-            var, hgvs.sequencevariant.SequenceVariant
-        ), "variant must be a parsed HGVS sequence variant object"
+        if not isinstance(var, hgvs.sequencevariant.SequenceVariant):
+            raise TypeError("variant must be a parsed HGVS sequence variant object")
         if strict is None:
             strict = self.strict
         fail_level = ValidationLevel.WARNING if strict else ValidationLevel.ERROR
@@ -62,9 +55,7 @@ class IntrinsicValidator:
 
 
 class ExtrinsicValidator:
-    """
-    Attempts to determine if the HGVS name validates against external data sources
-    """
+    """Attempts to determine if the HGVS name validates against external data sources"""
 
     def __init__(self, hdp, strict=hgvs.global_config.validator.strict):
         self.strict = strict
@@ -72,9 +63,8 @@ class ExtrinsicValidator:
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp, prevalidation_level=None)
 
     def validate(self, var, strict=None):
-        assert isinstance(
-            var, hgvs.sequencevariant.SequenceVariant
-        ), "variant must be a parsed HGVS sequence variant object"
+        if not isinstance(var, hgvs.sequencevariant.SequenceVariant):
+            raise TypeError("variant must be a parsed HGVS sequence variant object")
         if strict is None:
             strict = self.strict
         fail_level = ValidationLevel.WARNING if strict else ValidationLevel.ERROR
@@ -91,7 +81,7 @@ class ExtrinsicValidator:
                 if hgvs.global_config.mapping.strict_bounds:
                     raise HGVSInvalidVariantError(msg)
                 _logger.warning(
-                    "{}: Variant outside transcript bounds;" " no validation provided".format(var)
+                    "%s: Variant outside transcript bounds; no validation provided", var
                 )
                 return True  # no other checking performed
 
@@ -114,7 +104,7 @@ class ExtrinsicValidator:
         ):
             return (
                 ValidationLevel.WARNING,
-                "Cannot validate sequence of an intronic variant ({})".format(str(var)),
+                f"Cannot validate sequence of an intronic variant ({var!s})",
             )
 
         ref_checks = []
@@ -179,7 +169,7 @@ class ExtrinsicValidator:
         if tx_info is None:
             return (
                 ValidationLevel.WARNING,
-                "No transcript data for accession: {ac}".format(ac=var.ac),
+                f"No transcript data for accession: {var.ac}",
             )
         cds_length = tx_info["cds_end_i"] - tx_info["cds_start_i"]
         if (
@@ -199,7 +189,7 @@ class ExtrinsicValidator:
         if tx_info is None:
             return (
                 ValidationLevel.WARNING,
-                "No transcript data for accession: {ac}".format(ac=var.ac),
+                f"No transcript data for accession: {var.ac}",
             )
         if var.posedit.pos.start.datum == Datum.SEQ_START and var.posedit.pos.start.base <= 0:
             return (ValidationLevel.ERROR, TX_BOUND_ERROR_MSG.format())

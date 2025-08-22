@@ -1,12 +1,13 @@
 import math
-from hgvs.pretty.models import VariantData
+
 from hgvs.pretty.console.renderer import BasicRenderer
+from hgvs.pretty.models import VariantData
 
 
 class ProtSeqRenderer(BasicRenderer):
-    """
-    ProtSeqRenderer is a class that extends BasicRenderer to provide functionality for rendering protein sequences
+    """ProtSeqRenderer is a class that extends BasicRenderer to provide functionality for rendering protein sequences
     with optional color coding for specific amino acids such as the initiation methionine and stop codons.
+
     Methods
     -------
     legend():
@@ -14,12 +15,11 @@ class ProtSeqRenderer(BasicRenderer):
     display(data: VariantData) -> str:
         Takes a VariantData object and returns a string representation of the protein sequence with optional color coding.
         The sequence is constructed based on the position details and various attributes of the VariantData object.
+
     """
 
     def legend(self):
-        if self.orientation > 0:
-            arrow = "->"
-        elif self.orientation < 0 and self.config.reverse_display:
+        if self.orientation > 0 or (self.orientation < 0 and self.config.reverse_display):
             arrow = "->"
         else:
             arrow = "<-"
@@ -30,7 +30,7 @@ class ProtSeqRenderer(BasicRenderer):
         if not data.var_c_or_n:
             return ""
 
-        from hgvs.pretty.console.constants import ENDC, COLOR_MAP
+        from hgvs.pretty.console.constants import COLOR_MAP, ENDC
 
         var_str = ""
         for pdata in data.position_details:

@@ -73,7 +73,7 @@ build: %:
 
 ############################################################################
 #= TESTING
-# see test configuration in setup.cfg
+# see test configuration in pyproject.toml
 
 #=> test: execute tests
 #=> test-code: test code (including embedded doctests)
@@ -111,6 +111,13 @@ tox:
 cqa:
 	ruff format --check
 	ruff check
+
+#=> reformat: reformat code
+.PHONY: reformat
+reformat:
+	ruff check --fix
+	ruff format
+
 
 ############################################################################
 #= UTILITY TARGETS
@@ -165,9 +172,11 @@ distclean: cleanest
 ############################################################################
 #= HGVS specific
 
-#=> code-check -- check code with flake8
-code-check:
-	flake8 hgvs test --output-file=$@.txt
+#=> reformat: reformat code
+.PHONY: reformat
+reformat:
+	ruff check --fix
+	ruff format
 
 #=> docs-aux -- make generated docs for sphinx
 docs-aux:

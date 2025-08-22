@@ -1,20 +1,19 @@
-# -*- coding: utf-8 -*-
 import csv
 import os
 import re
 import unittest
+from pathlib import Path
 
 import hgvs.dataproviders.uta
 import hgvs.parser
 import hgvs.variantmapper
 from support import CACHE
 
-
 # Real data - cp tests
 
 
 def gcp_file_reader(fn):
-    rdr = csv.DictReader(open(fn, "r"), delimiter=str("\t"))
+    rdr = csv.DictReader(fn.open(), delimiter="\t")
     for rec in rdr:
         if rec["id"].startswith("#"):
             continue
@@ -34,21 +33,21 @@ class TestHgvsCToPReal(unittest.TestCase):
     def test_c_to_p_ext(self):
         infilename = "ext.tsv"
         outfilename = "ext.out"
-        infile = os.path.join(os.path.dirname(__file__), "data", infilename)
-        outfile = os.path.join(os.path.dirname(__file__), "data", outfilename)
+        infile = Path(__file__).parent / "data" / infilename
+        outfile = Path(__file__).parent / "data" / outfilename
         self._run_cp_test(infile, outfile)
 
     #
     # internal methods
     #
 
-    def _run_cp_test(self, infile, outfile):
-        with open(outfile, "w") as out:
+    def _run_cp_test(self, infile: Path, outfile: Path):
+        with outfile.open("w") as out:
             out.write("id\tHGVSg\tHGVSc\tHGVSp\tConverterResult\tError\n")
             self._dup_regex = re.compile(r"dup[0-9]+$")
             for rec in gcp_file_reader(infile):
                 self._run_comparison(rec, out)
-        msg = "# failed: {}".format(len(self._failed))
+        msg = f"# failed: {len(self._failed)}"
         self.assertTrue(len(self._failed) == 0, msg)
 
     def _run_comparison(self, rec, out):
@@ -83,11 +82,7 @@ class TestHgvsCToPReal(unittest.TestCase):
 
     def _append_fail(self, out, row_id, hgvsg, hgvsc, hgvsp_expected, hgvsp_actual, msg):
         self._failed.append((row_id, hgvsg, hgvsc, hgvsp_expected, hgvsp_actual, msg))
-        out.write(
-            "{}\t{}\t{}\t{}\t{}\t{}\n".format(
-                row_id, hgvsg, hgvsc, hgvsp_expected, hgvsp_actual, msg
-            )
-        )
+        out.write(f"{row_id}\t{hgvsg}\t{hgvsc}\t{hgvsp_expected}\t{hgvsp_actual}\t{msg}\n")
 
     def test_c_to_p_format(self):
         hgvsc = "NM_022464.4:c.3G>A"

@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
 """start IPython shell with hgvs initialized. Intended to be used for
-experimenting, debugging, and generating bug reports."""
+experimenting, debugging, and generating bug reports.
+"""
 
 import logging
 import os
@@ -45,42 +45,7 @@ def shell():
 
     from hgvs.easy import (  # noqa: F401; instances; functionalized methods
         __version__,
-        am37,
-        am38,
-        c_to_g,
-        c_to_n,
-        c_to_p,
-        g_to_c,
-        g_to_n,
-        g_to_t,
-        get_relevant_transcripts,
-        global_config,
         hdp,
-        hgvs_assembly_mapper_37,
-        hgvs_assembly_mapper_38,
-        hgvs_data_provider,
-        hgvs_normalizer,
-        hgvs_parser,
-        hgvs_validator,
-        hgvs_variant_mapper,
-        hn,
-        hp,
-        hv,
-        n_to_c,
-        n_to_g,
-        normalize,
-        normalizer,
-        parse,
-        parser,
-        pretty37,
-        pretty38,
-        projector,
-        t_to_g,
-        t_to_p,
-        validate,
-        validator,
-        variant_mapper,
-        vm,
     )
     from hgvs.utils.context import variant_context_w_alignment  # noqa
 

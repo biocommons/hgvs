@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Full-featured O(1) LRU cache backported from Python3.3. The full
 Py3.3 API is supported (thread safety, maxsize, keyword args, type
 checking, __wrapped__, and cache_info). Includes Py3.3 optimizations
@@ -37,7 +36,7 @@ class _HashedSeq(list):
         self.hashvalue = hash(tuple(self))
 
     def __repr__(self):
-        return "_HashedSeq({tuple!r})".format(tuple=tuple(self))
+        return f"_HashedSeq({tuple(self)!r})"
 
 
 def _make_key(
@@ -101,8 +100,7 @@ def lru_cache(maxsize=100, typed=False, mode=None, cache=None):
         VERIFY: always execute the function; if persistent cache value and returned value are different, raise VerifyFailedError
     :param cache: PersistentDict object or None;
 
-    """  # noqa: E501
-
+    """
     # Users should only access the lru_cache through its public API:
     #       cache_info, cache_clear, and f.__wrapped__
     # The internals of the lru_cache are encapsulated for thread safety and

@@ -1,18 +1,16 @@
-# -*- coding: utf-8 -*-
 #
 # Tests for conversion of hgvs tags
 #
-import os
 import unittest
-
-import support.mock_input_source as mock_input_data_source
+from pathlib import Path
 
 import hgvs.parser
-import hgvs.variantmapper as variantmapper
+import support.mock_input_source as mock_input_data_source
+from hgvs import variantmapper
 
 
 class TestHgvsCToP(unittest.TestCase):
-    fn = os.path.join(os.path.dirname(__file__), "data", "sanity_cp.tsv")
+    fn = Path(__file__).parent / "data" / "sanity_cp.tsv"
     _datasource = mock_input_data_source.MockInputSource(fn)
     _mapper = variantmapper.VariantMapper(_datasource, prevalidation_level="INTRINSIC")
     _parser = hgvs.parser.Parser()
@@ -257,8 +255,8 @@ class TestHgvsCToP(unittest.TestCase):
         var_c = TestHgvsCToP._parser.parse_hgvs_variant(hgvsc)
         ac_p = "MOCK"
         hgvsp_actual = str(TestHgvsCToP._mapper.c_to_p(var_c, ac_p))
-        msg = "hgvsc: {} hgvsp expected: {} actual: {}".format(hgvsc, hgvsp_expected, hgvsp_actual)
-        self.assertEqual(hgvsp_expected, hgvsp_actual, msg)
+        msg = f"hgvsc: {hgvsc} hgvsp expected: {hgvsp_expected} actual: {hgvsp_actual}"
+        assert hgvsp_expected == hgvsp_actual, msg
 
     # TODO - review other classes of hgvs tags (e.g. utr, intronic) - more use cases?
     # 5'utr

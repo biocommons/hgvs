@@ -1,4 +1,5 @@
 import pytest
+
 from hgvs.pretty.datacompiler import DataCompiler
 from hgvs.pretty.models import PrettyConfig, VariantCoords
 from hgvs.repeats import RepeatAnalyser, detect_repetitive_block_lengths, get_repeat_str
@@ -37,8 +38,7 @@ class TestHGVSExamples:
         assert ra.ref_str == "TG[18]"
         assert ra.alt_str == "TG[14]"
         assert (
-            to_hgvs_repeat(var_g.ac, fs, ra)
-            == "NC_000014.8:g.101179660_101179695TG[14]"
+            to_hgvs_repeat(var_g.ac, fs, ra) == "NC_000014.8:g.101179660_101179695TG[14]"
         )  # a valid HGVS name
 
     def test_CACNA1_repeat(self, parser, hdp, am38):
@@ -60,8 +60,7 @@ class TestHGVSExamples:
         assert ra.ref_str == "CTG[13]C[1]"
         assert ra.alt_str == "CTG[26]C[1]"
         assert (
-            to_hgvs_repeat(var_g.ac, fs, ra)
-            == "NC_000019.10:g.13207859_13207898CTG[26]C[1]"
+            to_hgvs_repeat(var_g.ac, fs, ra) == "NC_000019.10:g.13207859_13207898CTG[26]C[1]"
         )  # not valid. It is 5' shuffled and there's a C that can be shuffled which needs to get trimmed.
 
         # This repeat is shuffle-able. These are alternate representations of each other:
@@ -74,8 +73,7 @@ class TestHGVSExamples:
         assert ra2.ref_str == "C[1]TGC[13]"
         assert ra2.alt_str == "C[1]TGC[26]"
         assert (
-            to_hgvs_repeat(var_g.ac, fs, ra2)
-            == "NC_000019.10:g.13207859_13207898C[1]TGC[26]"
+            to_hgvs_repeat(var_g.ac, fs, ra2) == "NC_000019.10:g.13207859_13207898C[1]TGC[26]"
         )  # not valid, we should trim off the shuffle-able C for that.
 
     def test_ATXN7_repeat(self, parser, hdp):
@@ -94,7 +92,6 @@ class TestHGVSExamples:
         At the moment we can create the first and third representation of this repeat, but not yet the middle one. Note: the middle one is the one
         that would match the codons in the transcript, and prob make most sense from a biological perspective.
         """
-
         hgvs_g = "NC_000003.12:g.63912688_63912689insCAGCAGCAG"
         var_g = parser.parse_hgvs_variant(hgvs_g)
 
@@ -109,10 +106,7 @@ class TestHGVSExamples:
         assert ra.alt_str == "GCA[13]G[1]C[1]"
 
         # invalid HGVS, 5' aligned, and shows the two shuffle-able bases at the end.
-        assert (
-            to_hgvs_repeat(var_g.ac, fs, ra)
-            == "NC_000003.12:g.63912685_63912716GCA[13]G[1]C[1]"
-        )
+        assert to_hgvs_repeat(var_g.ac, fs, ra) == "NC_000003.12:g.63912685_63912716GCA[13]G[1]C[1]"
 
         ra2 = RepeatAnalyser(fs, reverse=True)
         assert ra2.is_repeat
@@ -121,14 +115,13 @@ class TestHGVSExamples:
 
         # invalid HGVS, due to the shuffle-able bases, but comes pretty close to what HGVS recommends.
         assert (
-            to_hgvs_repeat(var_g.ac, fs, ra2)
-            == "NC_000003.12:g.63912685_63912716G[1]C[1]AGC[13]"
+            to_hgvs_repeat(var_g.ac, fs, ra2) == "NC_000003.12:g.63912685_63912716G[1]C[1]AGC[13]"
         )
 
 
 @pytest.mark.skip(reason="would add too much caching burden.")
 @pytest.mark.parametrize(
-    "hgvs_g, is_repeat, repeat_unit, ref_count, alt_count, s",
+    ("hgvs_g", "is_repeat", "repeat_unit", "ref_count", "alt_count", "s"),
     [
         ("NC_000019.10:g.45770205del", True, "C", 6, 5, "C[6]>C[5]"),
         ("NC_000019.10:g.45770204_45770205del", True, "C", 6, 4, "C[6]>C[4]"),
@@ -168,7 +161,7 @@ class TestHomopolymerRepeats:
 
 @pytest.mark.skip(reason="would add too much caching burden.")
 @pytest.mark.parametrize(
-    "hgvs_g, is_repeat, repeat_unit, ref_count, alt_count, str_repr",
+    ("hgvs_g", "is_repeat", "repeat_unit", "ref_count", "alt_count", "str_repr"),
     [
         (
             "NC_000021.8:g.46020668_46020682del",
@@ -254,7 +247,6 @@ class TestRepeats:
 class TestLargeVariant:
     def test_large_variant(self, parser, hdp):
         """Large variants would take too much time to analyze, plus the results are not that useful."""
-
         hgvs_g = "NC_000001.11:g.9976249_9983617dup"
         var_g = parser.parse_hgvs_variant(hgvs_g)
         config = PrettyConfig(hdp, None, None)
@@ -266,7 +258,18 @@ class TestLargeVariant:
 
 class TestRepeatMethods:
     @pytest.mark.parametrize(
-        "ref, alt, ref_count, ref_repeat_unit, alt_count, alt_repeat_unit, mixed_repeat_ref, mixed_repeat_alt, expected_ref_repeat, expected_alt_repeat",
+        (
+            "ref",
+            "alt",
+            "ref_count",
+            "ref_repeat_unit",
+            "alt_count",
+            "alt_repeat_unit",
+            "mixed_repeat_ref",
+            "mixed_repeat_alt",
+            "expected_ref_repeat",
+            "expected_alt_repeat",
+        ),
         [
             ("T", "TTTTTTT", None, None, 7, "T", False, False, "T[1]", "T[7]"),
             ("TTTTTTT", "T", 7, "T", None, None, False, False, "T[7]", "T[1]"),

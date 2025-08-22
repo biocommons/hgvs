@@ -1,9 +1,8 @@
-from hgvs.pretty.models import VariantData
 from hgvs.pretty.console.renderer import BasicRenderer
+from hgvs.pretty.models import VariantData
 
 
 class ChrRuler(BasicRenderer):
-
     def legend(self):
         """returns the legend for this category of display"""
         return "chrom pos : "
@@ -13,7 +12,6 @@ class ChrRuler(BasicRenderer):
 
         seq_start/end in interbase
         """
-
         ruler = ""
 
         for pd in data.position_details:

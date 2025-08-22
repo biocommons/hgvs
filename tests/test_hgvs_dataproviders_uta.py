@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Tests uta postgresql client"""
 
 import os
@@ -8,7 +7,6 @@ from unittest.mock import patch
 
 import psycopg2
 import pytest
-from support import CACHE
 
 import hgvs.dataproviders.uta
 import hgvs.edit
@@ -17,6 +15,7 @@ import hgvs.posedit
 import hgvs.sequencevariant
 import hgvs.variantmapper
 from hgvs.exceptions import HGVSDataNotAvailableError, HGVSError
+from support import CACHE
 
 
 class UTA_Base:
@@ -120,11 +119,8 @@ class Test_hgvs_dataproviders_uta_UTA_default_with_pooling(unittest.TestCase, UT
         )
 
 
-class Test_hgvs_dataproviders_uta_with_pooling_without_cache(
-    unittest.TestCase, UTA_Base
-):
-    """
-    Currently used to test pool errors, since we need to reach out to
+class Test_hgvs_dataproviders_uta_with_pooling_without_cache(unittest.TestCase, UTA_Base):
+    """Currently used to test pool errors, since we need to reach out to
     the database and not use the cache
     """
 
@@ -149,8 +145,7 @@ class TestUTACache(Test_hgvs_dataproviders_uta_UTA_default):
         return variantmapper.g_to_c(genomic_variant, "NM_001164277.1")
 
     def test_deterministic_cache_results(self):
-        """
-        Check that identical request to the UTA yields the same results.
+        """Check that identical request to the UTA yields the same results.
         """
         var1 = self._create_cdna_variant()
         var2 = self._create_cdna_variant()
@@ -159,8 +154,7 @@ class TestUTACache(Test_hgvs_dataproviders_uta_UTA_default):
 
 class TestUTAPool(Test_hgvs_dataproviders_uta_with_pooling_without_cache):
     def test_use_putconn_on_lost_conn(self):
-        """
-        Check that it won't closeall instead of putconn for pooling
+        """Check that it won't closeall instead of putconn for pooling
         when it loses the connection
         """
 

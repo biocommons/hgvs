@@ -27,27 +27,24 @@ invalid_pairs = {
 }
 
 
-def validate_type_ac_pair(type, ac):
+def validate_type_ac_pair(variant_type, ac) -> tuple[ValidationLevel, str]:
     """validate that accession is correct for variant type AND that
     accession is fully specified.
 
     """
-
-    assert type in valid_pairs, "Unknown variant type " + type
-    if valid_pairs[type].match(ac):
+    if variant_type not in valid_pairs:
+        raise ValueError(f"Unknown variant type {variant_type}")
+    if valid_pairs[variant_type].match(ac):
         return (
             ValidationLevel.VALID,
-            "Accession ({ac}) is compatible with variant type {type}".format(ac=ac, type=type),
+            f"Accession ({ac}) is compatible with variant type {variant_type}",
         )
-    elif invalid_pairs[type].match(ac):
+    if invalid_pairs[variant_type].match(ac):
         return (
             ValidationLevel.ERROR,
-            "Accession ({ac}) is not compatible with variant type {type}".format(ac=ac, type=type),
+            f"Accession ({ac}) is not compatible with variant type {variant_type}",
         )
-    else:
-        return (
-            ValidationLevel.WARNING,
-            "Accession ({ac}) is not known to be compatible with variant type {type}".format(
-                ac=ac, type=type
-            ),
-        )
+    return (
+        ValidationLevel.WARNING,
+        f"Accession ({ac}) is not known to be compatible with variant type {variant_type}",
+    )

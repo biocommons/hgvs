@@ -1,12 +1,12 @@
-from hgvs.pretty.models import VariantData
 from hgvs.pretty.console.renderer import BasicRenderer
+from hgvs.pretty.models import VariantData
 
 
 class ChromSeqRendered(BasicRenderer):
-    """
-    ChromSeqRendered is a class that extends BasicRenderer to provide
+    """ChromSeqRendered is a class that extends BasicRenderer to provide
     functionality for rendering chromosome sequences with color coding
     for different nucleotides.
+
     Methods
     -------
     legend() -> str
@@ -16,6 +16,7 @@ class ChromSeqRendered(BasicRenderer):
         Colors the reference sequences with adenine (A, green), thymine (T, red),
         cytosine (C, yellow), and guanine (G, blue) based on the provided
         VariantData.
+
     """
 
     def legend(self) -> str:
@@ -28,7 +29,7 @@ class ChromSeqRendered(BasicRenderer):
 
     def display(self, data: VariantData) -> str:
         """colors the ref sequences with adenine (A, green), thymine (T, red), cytosine (C, yellow), and guanine (G, blue)"""
-        from hgvs.pretty.console.constants import ENDC, COLOR_MAP
+        from hgvs.pretty.console.constants import COLOR_MAP, ENDC
 
         var_seq = ""
         for p in data.position_details:

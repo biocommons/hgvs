@@ -1,12 +1,11 @@
 import math
 
-from hgvs.pretty.models import VariantData
 from hgvs.pretty.console.renderer import BasicRenderer
+from hgvs.pretty.models import VariantData
 
 
 class TxAligRenderer(BasicRenderer):
-    """
-    TxAligRenderer is a class that extends BasicRenderer to provide functionality for rendering
+    """TxAligRenderer is a class that extends BasicRenderer to provide functionality for rendering
     the transcript sequence, optional with alternating colors per codon.
     It includes methods to generate a legend and display data with the transcript sequence.
 
@@ -17,12 +16,11 @@ class TxAligRenderer(BasicRenderer):
     display(data: VariantData) -> str:
         Generates a string representation of the variant data, showing details of the transcript
         for the specified region. It uses color coding if enabled in the configuration.
+
     """
 
     def legend(self) -> str:
-        if self.orientation > 0:
-            orientation = "->"
-        elif self.orientation < 0 and self.config.reverse_display:
+        if self.orientation > 0 or (self.orientation < 0 and self.config.reverse_display):
             orientation = "->"
         else:
             orientation = "<-"
@@ -33,7 +31,7 @@ class TxAligRenderer(BasicRenderer):
         if not data.var_c_or_n:
             return ""
 
-        from hgvs.pretty.console.constants import ENDC, COLOR_MAP
+        from hgvs.pretty.console.constants import COLOR_MAP, ENDC
 
         var_str = ""
 
@@ -90,11 +88,10 @@ class TxAligRenderer(BasicRenderer):
                             var_str += COLOR_MAP["codon1"] + base + ENDC
                         else:
                             var_str += COLOR_MAP["codon2"] + base + ENDC
+                    elif c_pos is None or c_pos < 0:
+                        var_str += base.lower()
                     else:
-                        if c_pos is None or c_pos < 0:
-                            var_str += base.lower()
-                        else:
-                            var_str += base
+                        var_str += base
                     continue
 
             elif cig == "X" or cig == "D":

@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
 import os
 import unittest
 
 import pytest
-from support import CACHE
 
 import hgvs.alignmentmapper
 import hgvs.assemblymapper
@@ -19,6 +17,7 @@ from hgvs.exceptions import (
     HGVSError,
     HGVSInvalidVariantError,
 )
+from support import CACHE
 
 
 @pytest.mark.issues
@@ -70,7 +69,7 @@ class Test_Issues(unittest.TestCase):
     def test_317_improve_p_repr_of_syn_variants(self):
         # from original issue:
         v317 = self.hp.parse_hgvs_variant("NM_000059.3:c.7791A>G")
-        self.assertEqual(str("NP_000050.2:p.(Lys2597=)"), str(self.am37.c_to_p(v317)))
+        self.assertEqual("NP_000050.2:p.(Lys2597=)", str(self.am37.c_to_p(v317)))
 
     # def test_370_handle_multicodon_syn_variants(self):
     #    # Verify behavior of syn MNVs

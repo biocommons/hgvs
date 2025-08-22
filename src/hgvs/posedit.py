@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-"""implements a (position,edit) tuple that represents a localized sequence change
-
-"""
+"""implements a (position,edit) tuple that represents a localized sequence change"""
 
 import attr
 
@@ -11,8 +8,7 @@ from hgvs.exceptions import HGVSUnsupportedOperationError
 
 @attr.s(slots=True, repr=False)
 class PosEdit:
-    """
-    represents a **simple** variant, consisting of a single position and edit pair
+    """represents a **simple** variant, consisting of a single position and edit pair
     """
 
     pos = attr.ib(default=None)
@@ -24,7 +20,7 @@ class PosEdit:
         if self.pos is None:
             rv = str(self.edit.format(conf))
         else:
-            rv = "{pos}{edit}".format(pos=self.pos.format(conf), edit=self.edit.format(conf))
+            rv = f"{self.pos.format(conf)}{self.edit.format(conf)}"
 
         if self.uncertain:
             if self.edit in ["0", ""]:
@@ -76,7 +72,6 @@ class PosEdit:
         in list comprehensions to avoid dealing with exceptions.
 
         """
-
         try:
             ilen = self.pos._length()
             (del_len, ins_len) = self.edit._del_ins_lengths(ilen)

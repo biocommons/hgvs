@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
 import os
 import unittest
 
 import pytest
-from support import CACHE
 
 import hgvs.assemblymapper
 import hgvs.dataproviders.uta
@@ -13,6 +11,7 @@ import hgvs.sequencevariant
 import hgvs.validator
 import hgvs.variantmapper
 from hgvs.exceptions import HGVSInvalidVariantError
+from support import CACHE
 
 
 @pytest.mark.issues

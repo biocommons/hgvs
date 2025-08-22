@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Provides parser for HGVS strings and HGVS-related conceptual
 components, such as intronic-offset coordiates
 
@@ -94,7 +93,7 @@ class Parser:
             )
         else:
             # Still allow other grammars if you want
-            with open(grammar_fn, "r") as grammar_file:
+            with open(grammar_fn) as grammar_file:
                 self._grammar = parsley.makeGrammar(grammar_file.read(), bindings)
         self._logger = logging.getLogger(__name__)
         self._expose_rule_functions(expose_all_rules)
@@ -127,9 +126,7 @@ class Parser:
                     return self._grammar(s).__getattr__(rule_name)()
                 except ometa.runtime.ParseError as exc:
                     raise HGVSParseError(
-                        "{s}: char {exc.position}: {reason}".format(
-                            s=s, exc=exc, reason=exc.formatReason()
-                        )
+                        f"{s}: char {exc.position}: {exc.formatReason()}"
                     )
 
             rule_fxn.__doc__ = "parse string s using `%s' rule" % rule_name

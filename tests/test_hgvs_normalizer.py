@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
 import os
 import unittest
 
 import pytest
-from support import CACHE
 
 import hgvs.dataproviders.uta
 import hgvs.normalizer
@@ -14,6 +12,7 @@ from hgvs.exceptions import (
     HGVSInvalidVariantError,
     HGVSUnsupportedOperationError,
 )
+from support import CACHE
 
 hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
 

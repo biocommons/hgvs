@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import csv
 import gzip
 import io
@@ -45,11 +44,11 @@ class Test_Clinvar(unittest.TestCase, CrossChecker):
             fh=(
                 io.TextIOWrapper(gzip.open(fn), encoding="utf-8")
                 if fn.endswith(".gz")
-                else io.open(fn)
+                else open(fn)
             ),
             skip_comments=True,
         )
-        for rec in csv.DictReader(fh, delimiter=str("\t")):
+        for rec in csv.DictReader(fh, delimiter="\t"):
             if mod and fh.lines_read % mod != 0:
                 continue
             print(rec["gene"])
@@ -58,10 +57,10 @@ class Test_Clinvar(unittest.TestCase, CrossChecker):
             try:
                 msg = self.crosscheck_variant_group(list(variants))
             except Exception as e:
-                e.args = (e.args[0] + "\n  at line {fh.lines_read}: {fh.last_line}".format(fh=fh),)
+                e.args = (e.args[0] + f"\n  at line {fh.lines_read}: {fh.last_line}",)
                 raise e
             self.assertIsNone(
-                msg, lambda: msg + "\n   on line {fh.lines_read}: {fh.last_line}".format(fh=fh)
+                msg, lambda: msg + f"\n   on line {fh.lines_read}: {fh.last_line}"
             )
 
 

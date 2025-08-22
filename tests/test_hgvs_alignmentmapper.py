@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
 import os
 import unittest
 
 import pytest
-from support import CACHE
 
 import hgvs
 import hgvs.dataproviders.uta
@@ -11,6 +9,7 @@ import hgvs.location
 import hgvs.parser
 from hgvs.alignmentmapper import AlignmentMapper
 from hgvs.exceptions import HGVSDataNotAvailableError, HGVSInvalidIntervalError
+from support import CACHE
 
 
 @pytest.mark.quick
@@ -321,24 +320,24 @@ class Test_AlignmentMapper(unittest.TestCase):
     def run_cases(self, tx_ac, alt_ac, test_cases):
         am = AlignmentMapper(self.hdp, tx_ac, alt_ac, alt_aln_method="splign")
         for test_case in test_cases:
-            assert test_case["c"] == am.g_to_c(
-                test_case["g"]
-            ), f"{tx_ac}~{alt_ac} {test_case['c']} am.g_to_c failed"
-            assert test_case["c"] == am.n_to_c(
-                test_case["n"]
-            ), f"{tx_ac}~{alt_ac} {test_case['c']} am.n_to_c failed"
-            assert test_case["g"] == am.c_to_g(
-                test_case["c"]
-            ), f"{tx_ac}~{alt_ac} {test_case['g']} am.c_to_g failed"
-            assert test_case["g"] == am.n_to_g(
-                test_case["n"]
-            ), f"{tx_ac}~{alt_ac} {test_case['g']} am.n_to_g failed"
-            assert test_case["n"] == am.c_to_n(
-                test_case["c"]
-            ), f"{tx_ac}~{alt_ac} {test_case['n']} am.c_to_n failed"
-            assert test_case["n"] == am.g_to_n(
-                test_case["g"]
-            ), f"{tx_ac}~{alt_ac} {test_case['n']} am.g_to_n failed"
+            assert test_case["c"] == am.g_to_c(test_case["g"]), (
+                f"{tx_ac}~{alt_ac} {test_case['c']} am.g_to_c failed"
+            )
+            assert test_case["c"] == am.n_to_c(test_case["n"]), (
+                f"{tx_ac}~{alt_ac} {test_case['c']} am.n_to_c failed"
+            )
+            assert test_case["g"] == am.c_to_g(test_case["c"]), (
+                f"{tx_ac}~{alt_ac} {test_case['g']} am.c_to_g failed"
+            )
+            assert test_case["g"] == am.n_to_g(test_case["n"]), (
+                f"{tx_ac}~{alt_ac} {test_case['g']} am.n_to_g failed"
+            )
+            assert test_case["n"] == am.c_to_n(test_case["c"]), (
+                f"{tx_ac}~{alt_ac} {test_case['n']} am.c_to_n failed"
+            )
+            assert test_case["n"] == am.g_to_n(test_case["g"]), (
+                f"{tx_ac}~{alt_ac} {test_case['n']} am.g_to_n failed"
+            )
 
 
 if __name__ == "__main__":

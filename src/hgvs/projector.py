@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Utility class that projects variants from one transcript to another
 via a common reference sequence.
 
@@ -11,8 +10,7 @@ import hgvs.alignmentmapper
 
 
 class Projector:
-    """
-    The Projector class implements liftover between two transcripts via a
+    """The Projector class implements liftover between two transcripts via a
     common reference sequence.
 
     :param hdp: HGVS Data Provider Interface-compliant instance (see :class:`hgvs.dataproviders.interface.Interface`)
@@ -42,8 +40,7 @@ class Projector:
         self.dst_tm = hgvs.alignmentmapper.AlignmentMapper(hdp, dst_ac, alt_ac, dst_alt_aln_method)
 
     def project_interval_forward(self, c_interval):
-        """
-        project c_interval on the source transcript to the
+        """project c_interval on the source transcript to the
         destination transcript
 
         :param c_interval: an :class:`hgvs.interval.Interval` object on the source transcript
@@ -52,8 +49,7 @@ class Projector:
         return self.dst_tm.g_to_c(self.src_tm.c_to_g(c_interval))
 
     def project_interval_backward(self, c_interval):
-        """
-        project c_interval on the destination transcript to the
+        """project c_interval on the destination transcript to the
         source transcript
 
         :param c_interval: an :class:`hgvs.interval.Interval` object on the destination transcript
@@ -62,8 +58,7 @@ class Projector:
         return self.src_tm.g_to_c(self.dst_tm.c_to_g(c_interval))
 
     def project_variant_forward(self, c_variant):
-        """
-        project c_variant on the source transcript onto the destination transcript
+        """project c_variant on the source transcript onto the destination transcript
 
         :param c_variant: an :class:`hgvs.sequencevariant.SequenceVariant` object on the source transcript
         :returns: c_variant: an :class:`hgvs.sequencevariant.SequenceVariant` object on the destination transcript
@@ -78,8 +73,7 @@ class Projector:
         return new_c_variant
 
     def project_variant_backward(self, c_variant):
-        """
-        project c_variant on the source transcript onto the destination transcript
+        """project c_variant on the source transcript onto the destination transcript
 
         :param c_variant: an :class:`hgvs.sequencevariant.SequenceVariant` object on the source transcript
         :returns: c_variant: an :class:`hgvs.sequencevariant.SequenceVariant` object on the destination transcript

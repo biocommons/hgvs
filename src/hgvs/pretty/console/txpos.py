@@ -1,10 +1,10 @@
-from hgvs.pretty.models import VariantData
 from hgvs.pretty.console.renderer import BasicRenderer
+from hgvs.pretty.models import VariantData
 
 
 class TxRulerRenderer(BasicRenderer):
-    """
-    TxRulerRenderer is a class that extends BasicRenderer to provide a display of the transcript position.
+    """TxRulerRenderer is a class that extends BasicRenderer to provide a display of the transcript position.
+
     Methods
     -------
     legend() -> str:
@@ -14,6 +14,7 @@ class TxRulerRenderer(BasicRenderer):
         provided VariantData. The display method takes into account whether the data is RNA
         and adjusts the position accordingly. It marks positions at intervals of 10 and
         handles cases where positions are not mapped or are at specific intervals.
+
     """
 
     def legend(self) -> str:
@@ -51,7 +52,7 @@ class TxRulerRenderer(BasicRenderer):
                 var_str += f"{interval} "
                 continue
 
-            elif c_pos == 1:
+            if c_pos == 1:
                 var_str += f"{interval} "
                 continue
             var_str += " "

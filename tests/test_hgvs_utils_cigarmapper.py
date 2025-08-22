@@ -14,7 +14,6 @@ cm = CIGARMapper(cigar)
 
 def test_cigarmapper():
     """simple cigar test"""
-
     assert cm.ref_len == 15
     assert cm.tgt_len == 10
 
@@ -87,8 +86,8 @@ def test_cigarmapper_strict_bounds():
         cm.map_ref_to_tgt(cm.ref_len + 1, "start", strict_bounds=True)
 
     # test whether 1 base outside bounds results in correct position
-    assert (0, 0, "=") == cm.map_ref_to_tgt(0, "start", strict_bounds=True)
-    assert (-1, 0, "=") == cm.map_ref_to_tgt(-1, "start", strict_bounds=False)
+    assert cm.map_ref_to_tgt(0, "start", strict_bounds=True) == (0, 0, "=")
+    assert cm.map_ref_to_tgt(-1, "start", strict_bounds=False) == (-1, 0, "=")
     assert (cm.tgt_len, 0, "=") == cm.map_ref_to_tgt(cm.ref_len, "start", strict_bounds=True)
     assert (cm.tgt_len - 1, 0, "=") == cm.map_ref_to_tgt(
         cm.ref_len - 1, "start", strict_bounds=False

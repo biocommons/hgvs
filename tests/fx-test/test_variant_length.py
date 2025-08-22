@@ -1,13 +1,11 @@
-# -*- coding: utf-8 -*-
 import os
 import unittest
-
-from support import CACHE
 
 import hgvs.dataproviders.uta
 import hgvs.parser
 import hgvs.variantmapper
 from hgvs.exceptions import HGVSUnsupportedOperationError
+from support import CACHE
 
 
 class Test_VariantLengths(unittest.TestCase):

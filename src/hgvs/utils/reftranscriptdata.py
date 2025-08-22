@@ -1,4 +1,4 @@
-from bioutils.sequences import translate_cds, TranslationTable
+from bioutils.sequences import TranslationTable, translate_cds
 
 from hgvs.exceptions import HGVSDataNotAvailableError
 
@@ -10,9 +10,7 @@ class RefTranscriptData:
         tx_seq = hdp.get_seq(tx_ac)
 
         if tx_info is None or tx_seq is None:
-            raise HGVSDataNotAvailableError(
-                "Missing transcript data for accession: {}".format(tx_ac)
-            )
+            raise HGVSDataNotAvailableError(f"Missing transcript data for accession: {tx_ac}")
 
         # use 1-based hgvs coords
         cds_start = tx_info["cds_start_i"] + 1
@@ -30,9 +28,7 @@ class RefTranscriptData:
         # coding sequences that are not divisable by 3 are not yet supported
         if len(tx_seq_to_translate) % 3 != 0:
             raise NotImplementedError(
-                "Transcript {} is not supported because its sequence length of {} is not divisible by 3.".format(
-                    tx_ac, len(tx_seq_to_translate)
-                )
+                f"Transcript {tx_ac} is not supported because its sequence length of {len(tx_seq_to_translate)} is not divisible by 3."
             )
 
         protein_seq = translate_cds(tx_seq_to_translate, translation_table=translation_table)

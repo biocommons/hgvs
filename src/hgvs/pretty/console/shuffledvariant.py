@@ -1,11 +1,10 @@
-from hgvs.pretty.models import VariantCoords, VariantData
 from hgvs.pretty.console.renderer import BasicRenderer
+from hgvs.pretty.models import VariantCoords, VariantData
 from hgvs.sequencevariant import SequenceVariant
 
 
 class RegionImpacted(BasicRenderer):
-    """
-    A class used to represent the region impacted by a variant in a genomic sequence.
+    """A class used to represent the region impacted by a variant in a genomic sequence.
 
     Attributes
     ----------
@@ -13,17 +12,17 @@ class RegionImpacted(BasicRenderer):
         The genomic variant to be displayed.
     vc : VariantCoords
         The coordinates of the variant.
+
     Methods
     -------
     legend() -> str
         Returns a string representing the legend for the variant display.
     display(data: VariantData) -> str
         Returns a string representing the shuffled variant display based on the provided data.
+
     """
 
-    def __init__(
-        self, config, orientation: int, var_g: SequenceVariant, vc: VariantCoords
-    ) -> None:
+    def __init__(self, config, orientation: int, var_g: SequenceVariant, vc: VariantCoords) -> None:
         super().__init__(config, orientation)
 
         self.var_g = var_g
@@ -33,7 +32,7 @@ class RegionImpacted(BasicRenderer):
         return "region    : "
 
     def display(self, data: VariantData) -> str:
-        from hgvs.pretty.console.constants import ENDC, COLOR_MAP
+        from hgvs.pretty.console.constants import COLOR_MAP, ENDC
 
         seq_start = data.display_start
         seq_end = data.display_end
@@ -90,22 +89,13 @@ class RegionImpacted(BasicRenderer):
                     var_str += " "
                 continue
 
-            if not reverse_display and p == start:
+            if (not reverse_display and p == start) or (reverse_display and p == end):
                 var_str += split_char
                 in_range = True
-            elif reverse_display and p == end:
-                var_str += split_char
-                in_range = True
-            elif not reverse_display and p == end:
+            elif (not reverse_display and p == end) or (reverse_display and p == start):
                 var_str += split_char
                 in_range = False
-            elif reverse_display and p == start:
-                var_str += split_char
-                in_range = False
-            elif not reverse_display and p > end and in_range:
-                in_range = False
-                var_str += " "
-            elif reverse_display and p < start and in_range:
+            elif (not reverse_display and p > end and in_range) or (reverse_display and p < start and in_range):
                 in_range = False
                 var_str += " "
             elif in_range:

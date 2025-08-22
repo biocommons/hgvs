@@ -1,14 +1,13 @@
-# -*- coding: utf-8 -*-
 import os
 import unittest
 
 import pytest
-from support import CACHE
 
 import hgvs.dataproviders.uta
 import hgvs.location
 import hgvs.parser
 import hgvs.projector
+from support import CACHE
 
 
 class TestHgvsProjector(unittest.TestCase):

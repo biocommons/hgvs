@@ -1,13 +1,13 @@
 from bioutils.sequences import reverse_complement
 
-from hgvs.pretty.models import VariantData
 from hgvs.pretty.console.renderer import BasicRenderer
+from hgvs.pretty.models import VariantData
 
 
 class ChromReverseSeqRendered(BasicRenderer):
-    """
-    ChromReverseSeqRendered is a renderer class that extends BasicRenderer to provide
+    """ChromReverseSeqRendered is a renderer class that extends BasicRenderer to provide
     functionality for rendering reverse complement sequences with optional color coding.
+
     Methods
     -------
     legend() -> str:
@@ -16,6 +16,7 @@ class ChromReverseSeqRendered(BasicRenderer):
         Colors the reference sequences with adenine (A, green), thymine (T, red), cytosine (C, yellow),
         and guanine (G, blue) based on the provided VariantData. The sequences are displayed in reverse
         complement form.
+
     """
 
     def legend(self) -> str:
@@ -28,7 +29,7 @@ class ChromReverseSeqRendered(BasicRenderer):
 
     def display(self, data: VariantData) -> str:
         """colors the ref sequences with adenine (A, green), thymine (T, red), cytosine (C, yellow), and guanine (G, blue)"""
-        from hgvs.pretty.console.constants import ENDC, COLOR_MAP
+        from hgvs.pretty.console.constants import COLOR_MAP, ENDC
 
         var_seq = ""
         for p in data.position_details:

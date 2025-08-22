@@ -102,7 +102,6 @@ class Test437_RMRP(unittest.TestCase):
 
     def test_enforce_strict_bounds(self):
         """Ensure that an exception is raised when outside bounds"""
-
         # TODO: These exceptions are raised, but with the wrong message
         # use `match=` arg
         with pytest.raises(HGVSInvalidVariantError):

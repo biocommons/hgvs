@@ -2,12 +2,12 @@ import os
 from pathlib import Path
 
 import pytest
-from support import CACHE
 
-from hgvs.assemblymapper import AssemblyMapper
 import hgvs.easy
+from hgvs.assemblymapper import AssemblyMapper
 from hgvs.extras.babelfish import Babelfish
 from hgvs.variantmapper import VariantMapper
+from support import CACHE
 
 
 @pytest.fixture(scope="function")
@@ -17,7 +17,7 @@ def vcr_config(request):
     return {
         "cassette_library_dir": str(test_file_path.with_name("cassettes") / test_file_path.stem),
         "record_mode": os.environ.get("VCR_RECORD_MODE", "new_episodes"),
-        "cassette_name": f"{request.node.name}.yaml"
+        "cassette_name": f"{request.node.name}.yaml",
     }
 
 
@@ -66,8 +66,7 @@ def pytest_report_header(config):
 
 @pytest.fixture(scope="class")
 def kitchen_sink_setup(request, hdp, parser, am37, am38):
-    """
-    Adds common fixtures to an instance passed via request.cls.
+    """Adds common fixtures to an instance passed via request.cls.
 
     For example:
 
@@ -81,9 +80,7 @@ def kitchen_sink_setup(request, hdp, parser, am37, am38):
     See https://docs.pytest.org/en/5.3.5/unittest.html#mixing-pytest-fixtures-into-unittest-testcase-subclasses-using-marks
 
     """
-
     request.cls.hdp = hdp
     request.cls.parser = parser
     request.cls.am37 = am37
     request.cls.am38 = am38
-

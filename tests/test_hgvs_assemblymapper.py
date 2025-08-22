@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
 import os
 import unittest
 
 import pytest
-from support import CACHE
 
 import hgvs.assemblymapper
 import hgvs.dataproviders.uta
@@ -11,6 +9,7 @@ import hgvs.parser
 import hgvs.variantmapper
 from hgvs.enums import PrevalidationLevel
 from hgvs.exceptions import HGVSInvalidVariantError
+from support import CACHE
 
 
 @pytest.mark.quick
@@ -403,7 +402,6 @@ class Test_RefReplacement(unittest.TestCase):
 
     def test_replace_reference_sequence(self):
         """AssemblyMapper: Replace invalid reference sequence"""
-
         for rec in self.tests:
             for x in "cgn":
                 pv = rec["pv"][x]
@@ -469,22 +467,29 @@ class Test_AssemblyMapper(unittest.TestCase):
         self._test_mapping(hgvs_set)
 
     def test_t_to_p(self):
-        assert "non-coding" == str(self.am.t_to_p(self.hp.parse("NR_027676.1:n.3980del")))
-        assert "NP_000050.2:p.(Lys2597=)" == str(
+        assert str(self.am.t_to_p(self.hp.parse("NR_027676.1:n.3980del"))) == "non-coding"
+        assert str(
             self.am.t_to_p(self.hp.parse("NM_000059.3:c.7791A>G"))
-        )
+        ) == "NP_000050.2:p.(Lys2597=)"
 
     def test_issue_704_set_prevalidation_level(self):
         # Doesn't set prevalidation_level
 
         for prevalidation_level in PrevalidationLevel:
             am = hgvs.assemblymapper.AssemblyMapper(
-                self.hdp, replace_reference=True, assembly_name="GRCh37", alt_aln_method="splign",
-                normalize=True, prevalidation_level=prevalidation_level.name,
+                self.hdp,
+                replace_reference=True,
+                assembly_name="GRCh37",
+                alt_aln_method="splign",
+                normalize=True,
+                prevalidation_level=prevalidation_level.name,
             )
             vm = am._norm.vm
-            self.assertEqual(vm.prevalidation_level, prevalidation_level,
-                             "AssemblyMapper Normalizer has 'prevalidation_level' set")
+            self.assertEqual(
+                vm.prevalidation_level,
+                prevalidation_level,
+                "AssemblyMapper Normalizer has 'prevalidation_level' set",
+            )
 
 
 if __name__ == "__main__":

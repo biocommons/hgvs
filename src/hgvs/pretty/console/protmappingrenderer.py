@@ -1,10 +1,9 @@
-from hgvs.pretty.models import VariantData
 from hgvs.pretty.console.renderer import BasicRenderer
+from hgvs.pretty.models import VariantData
 
 
 class ProtMappingRenderer(BasicRenderer):
-    """
-    A renderer class for displaying protein position by printing a | every 10 and a . every 5 positions.
+    """A renderer class for displaying protein position by printing a | every 10 and a . every 5 positions.
 
     Methods
     -------
@@ -13,6 +12,7 @@ class ProtMappingRenderer(BasicRenderer):
 
     display(data: VariantData) -> str
         Generates a string representation of the protein mapping positions based on the provided VariantData.
+
     """
 
     def legend(self):
@@ -20,7 +20,6 @@ class ProtMappingRenderer(BasicRenderer):
 
     def display(self, data: VariantData) -> str:
         """show the position of the transcript seq"""
-
         var_str = ""
 
         count = -1
@@ -44,7 +43,7 @@ class ProtMappingRenderer(BasicRenderer):
                 var_str += "|"
                 continue
 
-            elif (aa_pos + 1) % 5 == 0:
+            if (aa_pos + 1) % 5 == 0:
                 var_str += "."
                 continue
 

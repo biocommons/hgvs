@@ -15,7 +15,6 @@ The conceptual swap occurs in the _map function.
 
 """
 
-
 import re
 
 from hgvs.exceptions import HGVSInvalidIntervalError
@@ -78,7 +77,6 @@ class CIGARMapper:
 
         Positions in this function are 0-based, base-counting.
         """
-
         if strict_bounds and (pos < 0 or pos > from_pos[-1]):
             raise HGVSInvalidIntervalError("Position is beyond the bounds of transcript record")
 
@@ -114,7 +112,6 @@ def _parse_cigar(cigar):
     aligned segment in ref and tgt, and a list of CIGAR operators.
 
     """
-
     cigar_re = re.compile(r"(?P<len>\d+)?(?P<op>[=DIMNX])")
     advance_ref_ops = "=MXIN"
     advance_tgt_ops = "=MXD"

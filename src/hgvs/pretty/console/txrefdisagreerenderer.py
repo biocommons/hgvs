@@ -1,22 +1,25 @@
-from hgvs.pretty.models import VariantData
 from hgvs.pretty.console.renderer import BasicRenderer
+from hgvs.pretty.models import VariantData
 
 
 class TxRefDisagreeRenderer(BasicRenderer):
-    """
-    TxRefDisagreeRenderer is a class that extends BasicRenderer to provide functionality for rendering
+    """TxRefDisagreeRenderer is a class that extends BasicRenderer to provide functionality for rendering
     differences between transcript (tx) and reference (ref) genome sequences aka "tx-ref-disagree".
+
     Methods:
         legend() -> str:
             Returns a string representing the legend for the renderer.
         display(data: VariantData) -> str:
             Displays differences between the transcript and reference genome sequences based on the provided
             VariantData. If there are no differences, an empty string is returned.
-            Args:
+
+    Args:
                 data (VariantData): The data containing variant information and position details.
-            Returns:
+
+    Returns:
                 str: A string representation of the differences, with optional color coding if enabled in the
                 configuration.
+
     """
 
     def legend(self) -> str:
@@ -24,11 +27,10 @@ class TxRefDisagreeRenderer(BasicRenderer):
 
     def display(self, data: VariantData) -> str:
         """show differences between tx and ref genome, if there are any"""
-
         if not data.var_c_or_n:
             return ""
 
-        from hgvs.pretty.console.constants import ENDC, COLOR_MAP
+        from hgvs.pretty.console.constants import COLOR_MAP, ENDC
 
         var_str = ""
 
@@ -44,12 +46,11 @@ class TxRefDisagreeRenderer(BasicRenderer):
             elif cig == "N" or c_offset != 0:
                 var_str += " "
                 continue
+            # an alignment issue, show cigar string
+            elif self.config.use_color:
+                var_str += COLOR_MAP["tx_ref_disagree"] + cig + ENDC
             else:
-                # an alignment issue, show cigar string
-                if self.config.use_color:
-                    var_str += COLOR_MAP["tx_ref_disagree"] + cig + ENDC
-                else:
-                    var_str += cig
+                var_str += cig
 
         if var_str.isspace():
             return ""

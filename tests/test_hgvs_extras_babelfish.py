@@ -1,6 +1,5 @@
 import pytest
 
-
 NORM_HGVS_VCF = [
     # Columns are: (normed-HGVS, non-normalized HGVS, VCF coordinates, non-norm VCF)
     # no-op
@@ -8,10 +7,12 @@ NORM_HGVS_VCF = [
         "NC_000006.12:g.49949407=",
         [],
         ("6", 49949407, "A", ".", "identity"),
-        [("6", 49949407, "A", "A", "identity"),
-         # Test case insensitivity
-         ("6", 49949407, "A", "a", "identity"),
-         ("6", 49949407, "a", "A", "identity"),]
+        [
+            ("6", 49949407, "A", "A", "identity"),
+            # Test case insensitivity
+            ("6", 49949407, "A", "a", "identity"),
+            ("6", 49949407, "a", "A", "identity"),
+        ],
     ),
     # Test multi-base identity
     (
@@ -67,8 +68,7 @@ NORM_HGVS_VCF = [
 
 @pytest.mark.vcr
 def test_hgvs_to_vcf(parser, babelfish38):
-    """
-      49949___  400       410       420
+    """49949___  400       410       420
                   |123456789|123456789|
     NC_000006.12  GACCAGAAAGAAAAATAAAAC
 

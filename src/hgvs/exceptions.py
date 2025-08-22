@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-"""defined exceptions used by the hgvs package
-
-"""
+"""defined exceptions used by the hgvs package"""
 
 
 class HGVSError(Exception):
@@ -23,7 +20,6 @@ class HGVSInvalidIntervalError(HGVSError):
 class HGVSInvalidVariantError(HGVSError):
     """Exception raised when variant is inconsistent or invalid"""
 
-    pass
 
 
 class HGVSNormalizationError(HGVSError):
@@ -41,13 +37,11 @@ class HGVSUnsupportedOperationError(HGVSError):
 class HGVSUsageError(HGVSError):
     """Exception raised when client/caller has made an invalid request"""
 
-    pass
 
 
 class HGVSVerifyFailedError(HGVSError):
     """Exception raised when the cached hdp result is not consistent with latest remote result"""
 
-    pass
 
 
 # <LICENSE>

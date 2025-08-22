@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Provides classes for dealing with the locations of HGVS variants
 
 This module provides for Representing the location of variants in HGVS nomenclature, including:
@@ -80,8 +79,7 @@ class SimplePosition:
 @attr.s(slots=True, repr=False, cmp=False)
 @total_ordering
 class BaseOffsetPosition:
-    """
-    Class for dealing with CDS coordinates in transcript variants.
+    """Class for dealing with CDS coordinates in transcript variants.
 
     This class models CDS positions using a `base` coordinate, which is
     measured relative to a specified `datum` (CDS_START or CDS_END), and
@@ -200,22 +198,18 @@ class BaseOffsetPosition:
         if lhs.datum == rhs.datum:
             if lhs.base == rhs.base:
                 return lhs.offset < rhs.offset
-            else:
-                if (rhs.base - lhs.base == 1 and lhs.offset > 0 and rhs.offset < 0) or (
-                    lhs.base - rhs.base == 1 and rhs.offset > 0 and lhs.offset < 0
-                ):
-                    raise HGVSUnsupportedOperationError(
-                        "Cannot compare coordinates in the same intron with one based on end of exon and the other based on start of next exon"  # noqa: E501
-                    )
-                else:
-                    return lhs.base < rhs.base
-        else:
-            if lhs.datum == Datum.SEQ_START or rhs.datum == Datum.SEQ_START:
+            if (rhs.base - lhs.base == 1 and lhs.offset > 0 and rhs.offset < 0) or (
+                lhs.base - rhs.base == 1 and rhs.offset > 0 and lhs.offset < 0
+            ):
                 raise HGVSUnsupportedOperationError(
-                    "Cannot compare coordinates of datum SEQ_START with CDS_START or CDS_END"
+                    "Cannot compare coordinates in the same intron with one based on end of exon and the other based on start of next exon"
                 )
-            else:
-                return lhs.datum < rhs.datum
+            return lhs.base < rhs.base
+        if lhs.datum == Datum.SEQ_START or rhs.datum == Datum.SEQ_START:
+            raise HGVSUnsupportedOperationError(
+                "Cannot compare coordinates of datum SEQ_START with CDS_START or CDS_END"
+            )
+        return lhs.datum < rhs.datum
 
 
 @attr.s(slots=True, repr=False, cmp=False)
@@ -330,8 +324,7 @@ class Interval:
         try:
             if self.start <= self.end:
                 return (ValidationLevel.VALID, None)
-            else:
-                return (ValidationLevel.ERROR, "base start position must be <= end position")
+            return (ValidationLevel.ERROR, "base start position must be <= end position")
         except HGVSUnsupportedOperationError as err:
             return (ValidationLevel.WARNING, str(err))
 

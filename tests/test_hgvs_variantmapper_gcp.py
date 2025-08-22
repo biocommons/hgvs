@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
 import csv
 import os
 import re
 import unittest
+from pathlib import Path
 
 import pytest
 
@@ -13,8 +13,9 @@ import hgvs.variantmapper
 from support import CACHE
 
 
-def gxp_file_reader(fn):
-    rdr = csv.DictReader(open(fn, "r"), delimiter=str("\t"))
+def gxp_file_reader(fn: str):
+    path = Path("tests/data/gcp") / fn
+    rdr = csv.DictReader(path.open(), delimiter="\t")
     for rec in rdr:
         if rec["id"].startswith("#"):
             continue
@@ -24,12 +25,12 @@ def gxp_file_reader(fn):
 @pytest.mark.mapping
 class Test_VariantMapper(unittest.TestCase):
     @classmethod
-    def setUpClass(self):
-        self.hdp = hgvs.dataproviders.uta.connect(
+    def setUpClass(cls):
+        cls.hdp = hgvs.dataproviders.uta.connect(
             mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
         )
-        self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
-        self.hp = hgvs.parser.Parser()
+        cls.hm = hgvs.variantmapper.VariantMapper(cls.hdp)
+        cls.hp = hgvs.parser.Parser()
 
     # ZCCHC3 -- one exon, + strand
     # reece@[local]/uta_dev=> select hgnc,alt_strand,n_exons,tx_ac,alt_ac,s_cigars,cds_start_i,cds_end_i from bermuda.bermuda_data_mv where tx_ac = "NM_033089.6";
@@ -39,7 +40,7 @@ class Test_VariantMapper(unittest.TestCase):
     # │ ZCCHC3 │          1 │       1 │ NM_033089.6 │ NC_000020.10 │ 484=3I2275= │          24 │      1236 │
     # └────────┴────────────┴─────────┴─────────────┴──────────────┴─────────────┴─────────────┴───────────┘
     def test_ZCCHC3_dbSNP(self):
-        for rec in gxp_file_reader("tests/data/gcp/ZCCHC3-dbSNP.tsv"):
+        for rec in gxp_file_reader("ZCCHC3-dbSNP.tsv"):
             self._test_gxp_mapping(rec)
 
     # ORAI1 -- two exons, + strand
@@ -50,7 +51,7 @@ class Test_VariantMapper(unittest.TestCase):
     # │ ORAI1 │          1 │       2 │ NM_032790.3 │ NC_000012.11 │ 319=6I177=;1000= │         193 │      1099 │
     # └───────┴────────────┴─────────┴─────────────┴──────────────┴──────────────────┴─────────────┴───────────┘
     def test_ORAI1_dbSNP(self):
-        for rec in gxp_file_reader("tests/data/gcp/ORAI1-dbSNP.tsv"):
+        for rec in gxp_file_reader("ORAI1-dbSNP.tsv"):
             self._test_gxp_mapping(rec)
 
     # FOLR3 -- multiple exons, + strand
@@ -62,7 +63,7 @@ class Test_VariantMapper(unittest.TestCase):
     # └───────┴────────────┴─────────┴─────────────┴─────────────┴──────────────────────────────┴─────────────┴───────────┘
     def test_FOLR3_dbSNP(self):
         # TODO: CORE-158: g-to-c mapped insertions have incorrect interval bounds
-        for rec in gxp_file_reader("tests/data/gcp/FOLR3-dbSNP.tsv"):
+        for rec in gxp_file_reader("FOLR3-dbSNP.tsv"):
             self._test_gxp_mapping(rec)
 
     # ADRA2B -- one exon, - strand
@@ -73,7 +74,7 @@ class Test_VariantMapper(unittest.TestCase):
     # │ ADRA2B │         -1 │       1 │ NM_000682.5 │ NC_000002.11 │ 891=9D2375= │           0 │      1353 │
     # └────────┴────────────┴─────────┴─────────────┴──────────────┴─────────────┴─────────────┴───────────┘
     def test_ADRA2B_dbSNP(self):
-        for rec in gxp_file_reader("tests/data/gcp/ADRA2B-dbSNP.tsv"):
+        for rec in gxp_file_reader("ADRA2B-dbSNP.tsv"):
             self._test_gxp_mapping(rec)
 
     # JRK -- multiple exons, - strand
@@ -85,41 +86,41 @@ class Test_VariantMapper(unittest.TestCase):
     # └──────┴────────────┴─────────┴────────────────┴──────────────┴───────────────────────┴─────────────┴───────────┘
     def test_JRK_dbSNP(self):
         # TODO: CORE-157: del26 on -1 strands gets reverse complemented as del62
-        for rec in gxp_file_reader("tests/data/gcp/JRK-dbSNP.tsv"):
+        for rec in gxp_file_reader("JRK-dbSNP.tsv"):
             self._test_gxp_mapping(rec)
 
     def test_NEFL_dbSNP(self):
-        for rec in gxp_file_reader("tests/data/gcp/NEFL-dbSNP.tsv"):
+        for rec in gxp_file_reader("NEFL-dbSNP.tsv"):
             self._test_gxp_mapping(rec)
 
     def test_DNAH11_hgmd(self):
-        for rec in gxp_file_reader("tests/data/gcp/DNAH11-HGMD.tsv"):
+        for rec in gxp_file_reader("DNAH11-HGMD.tsv"):
             self._test_gxp_mapping(rec)
 
     def test_DNAH11_dbSNP_NM_003777(self):
-        for rec in gxp_file_reader("tests/data/gcp/DNAH11-dbSNP-NM_003777.tsv"):
+        for rec in gxp_file_reader("DNAH11-dbSNP-NM_003777.tsv"):
             self._test_gxp_mapping(rec)
 
     def test_DNAH11_dbSNP_NM_001277115(self):
-        for rec in gxp_file_reader("tests/data/gcp/DNAH11-dbSNP-NM_001277115.tsv"):
+        for rec in gxp_file_reader("DNAH11-dbSNP-NM_001277115.tsv"):
             self._test_gxp_mapping(rec)
 
     @pytest.mark.regression
     def test_regression(self):
-        for rec in gxp_file_reader("tests/data/gcp/regression.tsv"):
+        for rec in gxp_file_reader("regression.tsv"):
             self._test_gxp_mapping(rec)
 
     @pytest.mark.extra
     def test_DNAH11_dbSNP_full(self):
-        for rec in gxp_file_reader("tests/data/gcp/DNAH11-dbSNP.tsv"):
+        for rec in gxp_file_reader("DNAH11-dbSNP.tsv"):
             self._test_gxp_mapping(rec)
 
     def test_real(self):
-        for rec in gxp_file_reader("tests/data/gcp/real.tsv"):
+        for rec in gxp_file_reader("real.tsv"):
             self._test_gxp_mapping(rec)
 
     def test_noncoding(self):
-        for rec in gxp_file_reader("tests/data/gcp/noncoding.tsv"):
+        for rec in gxp_file_reader("noncoding.tsv"):
             self._test_gxp_mapping(rec)
 
     def _test_gxp_mapping(self, rec):
@@ -144,11 +145,10 @@ class Test_VariantMapper(unittest.TestCase):
             var_x_test = self.hm.g_to_c(var_g, var_x.ac)
         elif var_x.type == "n":
             var_x_test = self.hm.g_to_n(var_g, var_x.ac)
-        self.assertEqual(
-            _rm_del_seq(str(var_x)),
-            _rm_del_seq(str(var_x_test)),
-            msg="%s != %s (g>t; %s; HGVSg=%s)"
-            % (str(var_x_test), str(var_x), rec["id"], rec["HGVSg"]),
+        else:
+            raise ValueError
+        assert _rm_del_seq(str(var_x)) == _rm_del_seq(str(var_x_test)), (
+            f"{str(var_x_test)!r} != {str(var_x)!r} (g>t; {rec['id']}; HGVSg={rec['HGVSg']})"
         )
 
         # c,n -> g
@@ -156,11 +156,10 @@ class Test_VariantMapper(unittest.TestCase):
             var_g_test = self.hm.c_to_g(var_x, var_g.ac)
         elif var_x.type == "n":
             var_g_test = self.hm.n_to_g(var_x, var_g.ac)
-        self.assertEqual(
-            _rm_del_seq(str(var_g)),
-            _rm_del_seq(str(var_g_test)),
-            msg="%s != %s (t>g; %s; HGVSc=%s)"
-            % (str(var_g_test), str(var_g), rec["id"], rec["HGVSc"]),
+        else:
+            raise ValueError
+        assert _rm_del_seq(str(var_g)) == _rm_del_seq(str(var_g_test)), (
+            f"{str(var_g_test)!r} != {str(var_g)!r} (t>g; {rec['id']}; HGVSc={rec['HGVSc']})"
         )
 
         if var_p is not None:
@@ -178,13 +177,8 @@ class Test_VariantMapper(unittest.TestCase):
                 # if expected value doesn't have a count, strip it from the test
                 hgvs_p_test = re.sub(r"Ter\d+$", "Ter", hgvs_p_test)
 
-            self.assertEqual(
-                hgvs_p_exp, hgvs_p_test, msg="%s != %s (%s)" % (hgvs_p_exp, hgvs_p_test, rec["id"])
-            )
+            assert hgvs_p_exp == hgvs_p_test, f"{hgvs_p_exp} != {hgvs_p_test} ({rec['id']})"
 
-
-if __name__ == "__main__":
-    unittest.main()
 
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Decorator factory class which returns a decorator function that
 marks a function as deprecated.
 
@@ -32,7 +31,7 @@ class deprecated:
         self.use_instead = use_instead
 
     def __call__(self, func):
-        msg = "Call to deprecated function {}".format(func.__name__)
+        msg = f"Call to deprecated function {func.__name__}"
         if self.use_instead:
             msg += "; use " + self.use_instead + " instead"
 

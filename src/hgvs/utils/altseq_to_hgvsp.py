@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Utility class for creating an hgvsp SequenceVariant object,
 given a transcript with variants applied.
 Used in hgvsc to hgvsp conversion.
@@ -6,11 +5,10 @@ Used in hgvsc to hgvsp conversion.
 """
 
 import hgvs
-
-from ..edit import AAExt, AAFs, AARefAlt, AASub, Dup
-from ..exceptions import HGVSError
-from ..location import AAPosition, Interval
-from ..posedit import PosEdit
+from hgvs.edit import AAExt, AAFs, AARefAlt, AASub, Dup
+from hgvs.exceptions import HGVSError
+from hgvs.location import AAPosition, Interval
+from hgvs.posedit import PosEdit
 
 DBG = False
 
@@ -36,13 +34,11 @@ class AltSeqToHgvsp:
         self._is_init_met = False
 
         if DBG:
-            print("len ref seq:{} len alt seq:{}".format(len(self._ref_seq), len(self._alt_seq)))
-            print(
-                "fs start:{} protein ac:{}".format(self._frameshift_start, self._protein_accession)
-            )
+            print(f"len ref seq:{len(self._ref_seq)} len alt seq:{len(self._alt_seq)}")
+            print(f"fs start:{self._frameshift_start} protein ac:{self._protein_accession}")
             print(self._ref_seq)
             print(self._alt_seq)
-            print("aa variant start: {}".format(self._alt_data.variant_start_aa))
+            print(f"aa variant start: {self._alt_data.variant_start_aa}")
             print(self._ref_data.transcript_sequence)
             print(self._alt_data.transcript_sequence)
 
@@ -52,7 +48,6 @@ class AltSeqToHgvsp:
         :return list of variants in sequence order
         :rtype list of dict
         """
-
         variants = []
 
         if not self._is_ambiguous and len(self._alt_seq) > 0:
@@ -224,67 +219,63 @@ class AltSeqToHgvsp:
 
             alt = insertion[0]
 
-        else:  # no frameshift - sub/delins/dup
-            if insertion == deletion:  # silent
-                aa_start = aa_end = AAPosition(base=start, aa=deletion)
-                ref = alt = ""
+        elif insertion == deletion:  # silent
+            aa_start = aa_end = AAPosition(base=start, aa=deletion)
+            ref = alt = ""
 
-            elif len(insertion) == len(deletion) == 1:  # substitution
-                aa_start = aa_end = AAPosition(base=start, aa=deletion)
-                ref = ""
+        elif len(insertion) == len(deletion) == 1:  # substitution
+            aa_start = aa_end = AAPosition(base=start, aa=deletion)
+            ref = ""
+            alt = insertion
+            is_sub = True
+
+        elif len(deletion) > 0:  # delins OR deletion OR stop codon at variant position
+            ref = deletion
+            end = start + len(deletion) - 1
+            if len(insertion) > 0:  # delins
+                aa_start = AAPosition(base=start, aa=deletion[0])
+                if end > start:
+                    aa_end = AAPosition(base=end, aa=deletion[-1])
+                else:
+                    aa_end = aa_start
                 alt = insertion
+
+            elif len(deletion) + start == len(self._ref_seq):  # stop codon at variant position
+                aa_start = AAPosition(base=start, aa=deletion[0])
+                aa_end = AAPosition(base=start, aa=deletion[0])
+                ref = ""
+                alt = "*"
                 is_sub = True
+            else:  # deletion
+                aa_start = AAPosition(base=start, aa=deletion[0])
+                if end > start:
+                    aa_end = AAPosition(base=end, aa=deletion[-1])
+                else:
+                    aa_end = aa_start
+                alt = None
 
-            elif len(deletion) > 0:  # delins OR deletion OR stop codon at variant position
-                ref = deletion
-                end = start + len(deletion) - 1
-                if len(insertion) > 0:  # delins
-                    aa_start = AAPosition(base=start, aa=deletion[0])
-                    if end > start:
-                        aa_end = AAPosition(base=end, aa=deletion[-1])
-                    else:
-                        aa_end = aa_start
-                    alt = insertion
+        elif len(deletion) == 0:  # insertion OR duplication OR extension
+            is_dup, dup_start = self._check_if_ins_is_dup(start, insertion)
 
-                else:  # deletion OR stop codon at variant position
-                    if len(deletion) + start == len(
-                        self._ref_seq
-                    ):  # stop codon at variant position
-                        aa_start = AAPosition(base=start, aa=deletion[0])
-                        aa_end = AAPosition(base=start, aa=deletion[0])
-                        ref = ""
-                        alt = "*"
-                        is_sub = True
-                    else:  # deletion
-                        aa_start = AAPosition(base=start, aa=deletion[0])
-                        if end > start:
-                            aa_end = AAPosition(base=end, aa=deletion[-1])
-                        else:
-                            aa_end = aa_start
-                        alt = None
+            if is_dup:  # duplication
+                dup_end = dup_start + len(insertion) - 1
+                aa_start = AAPosition(base=dup_start, aa=insertion[0])
+                aa_end = AAPosition(base=dup_end, aa=insertion[-1])
+                ref = alt = None
 
-            elif len(deletion) == 0:  # insertion OR duplication OR extension
-                is_dup, dup_start = self._check_if_ins_is_dup(start, insertion)
+            else:  # insertion
+                start -= 1
+                end = start + 1
 
-                if is_dup:  # duplication
-                    dup_end = dup_start + len(insertion) - 1
-                    aa_start = AAPosition(base=dup_start, aa=insertion[0])
-                    aa_end = AAPosition(base=dup_end, aa=insertion[-1])
-                    ref = alt = None
+                aa_start = AAPosition(base=start, aa=self._ref_seq[start - 1])
+                aa_end = AAPosition(base=end, aa=self._ref_seq[end - 1])
+                ref = None
+                alt = insertion
 
-                else:  # insertion
-                    start -= 1
-                    end = start + 1
+        else:  # should never get here
+            raise ValueError(f"unexpected variant: {variant}")
 
-                    aa_start = AAPosition(base=start, aa=self._ref_seq[start - 1])
-                    aa_end = AAPosition(base=end, aa=self._ref_seq[end - 1])
-                    ref = None
-                    alt = insertion
-
-            else:  # should never get here
-                raise ValueError("unexpected variant: {}".format(variant))
-
-        var_p = self._create_variant(
+        return self._create_variant(
             aa_start,
             aa_end,
             ref,
@@ -297,8 +288,6 @@ class AltSeqToHgvsp:
             is_ext=is_ext,
             is_init_met=self._is_init_met,
         )
-
-        return var_p
 
     def _check_if_ins_is_dup(self, start, insertion):
         """Helper to identify an insertion as a duplicate
@@ -337,7 +326,6 @@ class AltSeqToHgvsp:
         is_init_met=False,
     ):
         """Creates a SequenceVariant object"""
-
         if is_init_met:
             posedit = AARefAlt(ref=ref, alt=alt, init_met=True)
         elif is_ambiguous:
@@ -364,8 +352,7 @@ class AltSeqToHgvsp:
                 edit=edit,
                 uncertain=hgvs.global_config.mapping.inferred_p_is_uncertain,
             )
-        var_p = hgvs.sequencevariant.SequenceVariant(acc, "p", posedit)
-        return var_p
+        return hgvs.sequencevariant.SequenceVariant(acc, "p", posedit)
 
 
 # <LICENSE>

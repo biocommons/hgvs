@@ -1,17 +1,15 @@
-# -*- coding: utf-8 -*-
-import os
 import unittest
-
-import support.mock_input_source as mock_input_data_source
+from pathlib import Path
 
 import hgvs.parser
-import hgvs.utils.altseqbuilder as altseqbuilder
+import support.mock_input_source as mock_input_data_source
+from hgvs.utils import altseqbuilder
 from hgvs.utils.reftranscriptdata import RefTranscriptData
 
 
 class TestAltSeqBuilder(unittest.TestCase):
     # root sequence = ""
-    fn = os.path.join(os.path.dirname(__file__), "data", "sanity_cp.tsv")
+    fn = Path(__file__).parent / "data" / "sanity_cp.tsv"
     _datasource = mock_input_data_source.MockInputSource(fn)
     _parser = hgvs.parser.Parser()
 
@@ -122,7 +120,7 @@ class TestAltSeqBuilder(unittest.TestCase):
         builder = altseqbuilder.AltSeqBuilder(var, transcript_data)
         insert_result = builder.build_altseq()
         actual_sequence = insert_result[0].transcript_sequence
-        msg = "expected: {}\nactual  : {}".format(expected_sequence, actual_sequence)
+        msg = f"expected: {expected_sequence}\nactual  : {actual_sequence}"
         self.assertEqual(expected_sequence, actual_sequence, msg)
 
 

@@ -1,15 +1,11 @@
-# -*- coding: utf-8 -*-
-"""Represent partial HGVS tags that refer to a position without alleles
-
-"""
+"""Represent partial HGVS tags that refer to a position without alleles"""
 
 import attr
 
 
 @attr.s(slots=True, repr=False)
 class HGVSPosition:
-    """
-    HGVSPosition -- Represent partial HGVS tags that refer to a position without alleles
+    """HGVSPosition -- Represent partial HGVS tags that refer to a position without alleles
 
     :param str ac: sequence accession
     :param str type: type of sequence and coordinate
@@ -25,7 +21,7 @@ class HGVSPosition:
 
     def __str__(self):
         g = "" if not self.gene else "(" + self.gene + ")"
-        return "{self.ac}{g}:{self.type}.{self.pos}".format(self=self, g=g)
+        return f"{self.ac}{g}:{self.type}.{self.pos}"
 
     def __repr__(self):
         return "{0}({1})".format(

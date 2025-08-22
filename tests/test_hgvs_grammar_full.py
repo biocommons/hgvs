@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import csv
 import os
 import pprint
@@ -7,7 +6,6 @@ import unittest
 from importlib.resources import files as resources_files
 
 import hgvs.parser
-
 
 #
 # Tests of the grammar
@@ -41,23 +39,22 @@ class TestGrammarFull(unittest.TestCase):
 
     def test_parser_test_completeness(self):
         """ensure that all rules in grammar have tests"""
-
         grammar_rule_re = re.compile(r"^(\w+)")
         grammar_fn = resources_files("hgvs") / "_data" / "hgvs.pymeta"
-        with open(grammar_fn, "r") as f:
+        with open(grammar_fn) as f:
             grammar_rules = set(r.group(1) for r in filter(None, map(grammar_rule_re.match, f)))
 
-        with open(self._test_fn, "r") as f:
-            reader = csv.DictReader(f, delimiter=str("\t"))
+        with open(self._test_fn) as f:
+            reader = csv.DictReader(f, delimiter="\t")
             test_rules = set(row["Func"] for row in reader)
 
         untested_rules = grammar_rules - test_rules
 
-        self.assertTrue(len(untested_rules) == 0, "untested rules: {}".format(untested_rules))
+        self.assertTrue(len(untested_rules) == 0, f"untested rules: {untested_rules}")
 
     def test_parser_grammar(self):
-        with open(self._test_fn, "r") as f:
-            reader = csv.DictReader(f, delimiter=str("\t"))
+        with open(self._test_fn) as f:
+            reader = csv.DictReader(f, delimiter="\t")
 
             fail_cases = []
 
@@ -72,7 +69,7 @@ class TestGrammarFull(unittest.TestCase):
                     if row["Expected"]
                     else inputs
                 )
-                expected_map = dict(zip(inputs, expected_results))
+                expected_map = dict(zip(inputs, expected_results, strict=False))
                 # step through each item and check
                 is_valid = True if row["Valid"].lower() == "true" else False
 
@@ -85,11 +82,11 @@ class TestGrammarFull(unittest.TestCase):
                     try:
                         actual_result = str(function_to_test()).replace("u'", "'")
                         if not is_valid or (expected_result != actual_result):
-                            print("expected: {} actual:{}".format(expected_result, actual_result))
+                            print(f"expected: {expected_result} actual:{actual_result}")
                             fail_cases.append(row_str)
                     except Exception as e:
                         if is_valid:
-                            print("expected: {} Exception: {}".format(expected_result, e))
+                            print(f"expected: {expected_result} Exception: {e}")
                             fail_cases.append(row_str)
 
         # everything should have passed - report whatever failed
@@ -104,7 +101,7 @@ class TestGrammarFull(unittest.TestCase):
         elif intype == "one":
             inputs = [in_string]
         else:
-            assert False, "shouldn't be here (intype = {})".format(intype)
+            assert False, f"shouldn't be here (intype = {intype})"
         inputs = [x if x != "None" else None for x in inputs]
         return inputs
 

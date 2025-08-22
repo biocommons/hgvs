@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Utility to normalize variants.
 Code of the normalization utilities were imported from vgraph
 https://github.com/bioinformed/vgraph
@@ -7,15 +6,14 @@ https://github.com/bioinformed/vgraph
 
 from collections import namedtuple
 
-def trim_common_suffixes(strs, min_len=0):
-    """
-    trim common suffixes
 
-    >>> trim_common_suffixes('A', 1)
+def trim_common_suffixes(strs, min_len=0):
+    """trim common suffixes
+
+    >>> trim_common_suffixes("A", 1)
     (0, 'A')
 
     """
-
     if len(strs) < 2:
         return 0, strs
 
@@ -31,7 +29,6 @@ def trim_common_suffixes(strs, min_len=0):
 
 def trim_common_prefixes(strs, min_len=0):
     """trim common prefixes"""
-
     trimmed = 0
 
     if len(strs) > 1:
@@ -50,14 +47,12 @@ def trim_common_prefixes(strs, min_len=0):
 
 
 def normalize_alleles_left(ref, start, stop, alleles, bound, ref_step, shuffle=True):
-    """
-    Normalize loci by removing extraneous reference padding
+    """Normalize loci by removing extraneous reference padding
 
-    >>> normalize_alleles_left('A', 1, 2, 'A', 1, 2)
+    >>> normalize_alleles_left("A", 1, 2, "A", 1, 2)
     shuffled_alleles(start=1, stop=2, alleles='A')
 
     """
-
     normalized_alleles = namedtuple("shuffled_alleles", "start stop alleles")
 
     if len(alleles) < 2:
@@ -100,14 +95,12 @@ def normalize_alleles_left(ref, start, stop, alleles, bound, ref_step, shuffle=T
 
 
 def normalize_alleles_right(ref, start, stop, alleles, bound, ref_step, shuffle=True):
-    """
-    Normalize loci by removing extraneous reference padding
+    """Normalize loci by removing extraneous reference padding
 
-    >>> normalize_alleles_right('A', 1, 2, 'A', 1, 2)
+    >>> normalize_alleles_right("A", 1, 2, "A", 1, 2)
     shuffled_alleles(start=1, stop=2, alleles='A')
 
     """
-
     normalized_alleles = namedtuple("shuffled_alleles", "start stop alleles")
 
     if len(alleles) < 2:
@@ -152,8 +145,7 @@ def normalize_alleles_right(ref, start, stop, alleles, bound, ref_step, shuffle=
 def normalize_alleles(ref, start, stop, alleles, bound, ref_step, left, shuffle=True):
     if left:
         return normalize_alleles_left(ref, start, stop, alleles, bound, ref_step, shuffle)
-    else:
-        return normalize_alleles_right(ref, start, stop, alleles, bound, ref_step, shuffle)
+    return normalize_alleles_right(ref, start, stop, alleles, bound, ref_step, shuffle)
 
 
 # <LICENSE>

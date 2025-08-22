@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
 import hashlib
 import os
 import pprint
 import re
 import unittest
+from pathlib import Path
 
 import pytest
 
@@ -37,7 +37,6 @@ def test_parser_variants_with_gene_names(parser):
 
 def test_parser_variants_with_no_transcript_gene_names(parser):
     """Test it also works with no transcript provided"""
-
     assert parser.parse("BOGUS:c.22+1A>T")
 
     # HGNC approved symbols include non-alphanumeric:
@@ -74,7 +73,7 @@ class Test_Parser(unittest.TestCase):
 
     def test_parser_gauntlet(self):
         fn = os.path.join(os.path.dirname(__file__), "data", "gauntlet")
-        for var in open(fn, "r"):
+        for var in open(fn):
             var = var.strip()
             if var.startswith("#") or var == "":
                 continue
@@ -88,13 +87,13 @@ class Test_Parser(unittest.TestCase):
     @pytest.mark.quick
     def test_parser_reject(self):
         fn = os.path.join(os.path.dirname(__file__), "data", "reject")
-        for var in open(fn, "r"):
+        for var in open(fn):
             var, msg = var.strip().split("\t")
             if var.startswith("#") or var == "":
                 continue
             with self.assertRaises(HGVSParseError):
                 self.parser.parse_hgvs_variant(var)
-                self.assertTrue(False, msg="expected HGVSParseError: %s (%s)" % (var, msg))
+                self.assertTrue(False, msg=f"expected HGVSParseError: {var} ({msg})")
 
     @pytest.mark.quick
     def test_parser_posedit_special(self):
@@ -112,20 +111,20 @@ class Test_Parser(unittest.TestCase):
     @pytest.mark.quick
     def test_grammar_and_generated_code_in_sync(self):
         """We generate Python code from the OMeta grammar
-        This test checks that the grammar file hasn't changed since we generated the Python code"""
-
-        script_path = os.path.realpath(__file__)
-        script_dir = os.path.dirname(script_path)
-        hgvs_base_dir = os.path.dirname(script_dir)
+        This test checks that the grammar file hasn't changed since we generated the Python code
+        """
+        script_path = Path(__file__)
+        script_dir = script_path.parent
+        hgvs_base_dir = script_dir.parent
         grammar_filename = "src/hgvs/_data/hgvs.pymeta"
         generated_filename = "src/hgvs/generated/hgvs_grammar.py"
 
         # Hash the grammar file
-        with open(os.path.join(hgvs_base_dir, grammar_filename), "rb") as grammar_f:
-            grammar_hash = hashlib.md5(grammar_f.read()).hexdigest()
+        with (hgvs_base_dir / grammar_filename).open("rb") as grammar_f:
+            grammar_hash = hashlib.md5(grammar_f.read()).hexdigest()  # noqa: S324
 
         # Read the stored grammar file hash from generated file
-        with open(os.path.join(hgvs_base_dir, generated_filename), "r") as generated_f:
+        with (hgvs_base_dir / generated_filename).open() as generated_f:
             generated_hash = None
             for line in generated_f:
                 if not line.startswith("#"):
@@ -134,17 +133,13 @@ class Test_Parser(unittest.TestCase):
                 if m:
                     generated_hash = m.group(1)
 
-            msg = "Could not retrieve generated hash from {generated_hash}".format(
-                generated_hash=generated_hash
-            )
+            msg = f"Could not retrieve generated hash from {generated_hash}"
             self.assertIsNotNone(generated_hash, msg)
 
         msg = (
-            "OMeta source '{grammar_filename}' is different than the version used to generate "
-            "Python code '{generated_filename}'. You need to run "
-            "'sbin/generate_parser.py' ".format(
-                grammar_filename=grammar_filename, generated_filename=generated_filename
-            )
+            f"OMeta source '{grammar_filename}' is different than the version used to generate "
+            f"Python code '{generated_filename}'. You need to run "
+            "'sbin/generate_parser.py' "
         )
         self.assertEqual(generated_hash, grammar_hash, msg)
 

@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-""" represents simple sequence-based variants """
+"""represents simple sequence-based variants"""
 
 import attr
 
@@ -10,8 +9,7 @@ from hgvs.utils.validation import validate_type_ac_pair
 
 @attr.s(slots=True, repr=False)
 class SequenceVariant:
-    """
-    represents a basic HGVS variant.  The only requirement is that each
+    """represents a basic HGVS variant.  The only requirement is that each
     component can be stringified; for example, passing pos as either a string
     or an hgvs.location.CDSInterval (for example) are both intended uses
     """
@@ -28,7 +26,6 @@ class SequenceVariant:
 
         See :class:`hgvs.config`.
         """
-
         if self.ac:
             ref = self.ac
             if self.gene:
@@ -41,7 +38,7 @@ class SequenceVariant:
             posedit = self.posedit.format(conf)
         else:
             posedit = "?"
-        typo = "{type}.{posedit}".format(type=self.type, posedit=posedit)
+        typo = f"{self.type}.{posedit}"
 
         return ref + typo
 

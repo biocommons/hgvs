@@ -1,10 +1,9 @@
-from hgvs.pretty.models import VariantData
 from hgvs.pretty.console.renderer import BasicRenderer
+from hgvs.pretty.models import VariantData
 
 
 class TxMappingRenderer(BasicRenderer):
-    """
-    TxMappingRenderer is a class that extends BasicRenderer to provide
+    """TxMappingRenderer is a class that extends BasicRenderer to provide
     functionality for rendering transcript position information by printing a | eveery 10 bases and a . every 5 bases.
 
     Methods
@@ -16,6 +15,7 @@ class TxMappingRenderer(BasicRenderer):
         based on the provided VariantData. The output string uses specific
         characters to denote different positions and offsets within the
         transcript sequence.
+
     """
 
     def legend(self):
@@ -23,7 +23,6 @@ class TxMappingRenderer(BasicRenderer):
 
     def display(self, data: VariantData) -> str:
         """show the position of the transcript seq"""
-
         var_str = ""
 
         count = -1
@@ -58,12 +57,12 @@ class TxMappingRenderer(BasicRenderer):
                 prev_c_pos = c_pos
                 continue
 
-            elif (c_pos) % 5 == 0:
+            if (c_pos) % 5 == 0:
                 var_str += "."
                 prev_c_pos = c_pos
                 continue
 
-            elif (
+            if (
                 prev_c_pos
                 and prev_c_pos == c_pos
                 and pdata.c_offset > 0
@@ -72,7 +71,7 @@ class TxMappingRenderer(BasicRenderer):
                 var_str += "^"
                 prev_c_pos = c_pos
                 continue
-            elif (
+            if (
                 prev_c_pos
                 and prev_c_pos == c_pos
                 and pdata.c_offset > 0
@@ -82,7 +81,7 @@ class TxMappingRenderer(BasicRenderer):
                 prev_c_pos = c_pos
                 continue
 
-            elif c_pos == 1:
+            if c_pos == 1:
                 var_str += "|"
 
             var_str += " "
