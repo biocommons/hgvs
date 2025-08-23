@@ -1,5 +1,4 @@
 import hashlib
-import os
 import pprint
 import re
 import unittest
@@ -72,28 +71,30 @@ class Test_Parser(unittest.TestCase):
         assert self.parser.parse_hgvs_variant(v) == self.parser.parse(v)
 
     def test_parser_gauntlet(self):
-        fn = os.path.join(os.path.dirname(__file__), "data", "gauntlet")
-        for var in open(fn):
-            var = var.strip()
-            if var.startswith("#") or var == "":
-                continue
-            v = self.parser.parse_hgvs_variant(var)
-            self.assertEqual(
-                var,
-                v.format(conf={"max_ref_length": None}),
-                "parse-format roundtrip failed:" + pprint.pformat(v.posedit),
-            )
+        path = Path(__file__).parent / "data" / "gauntlet"
+        with path.open() as f:
+            for var in f:
+                var = var.strip()  # noqa: PLW2901
+                if var.startswith("#") or var == "":
+                    continue
+                v = self.parser.parse_hgvs_variant(var)
+                self.assertEqual(
+                    var,
+                    v.format(conf={"max_ref_length": None}),
+                    "parse-format roundtrip failed:" + pprint.pformat(v.posedit),
+                )
 
     @pytest.mark.quick
     def test_parser_reject(self):
-        fn = os.path.join(os.path.dirname(__file__), "data", "reject")
-        for var in open(fn):
-            var, msg = var.strip().split("\t")
-            if var.startswith("#") or var == "":
-                continue
-            with self.assertRaises(HGVSParseError):
-                self.parser.parse_hgvs_variant(var)
-                self.assertTrue(False, msg=f"expected HGVSParseError: {var} ({msg})")
+        path = Path(__file__).parent / "data" / "reject"
+        with path.open() as f:
+            for var in f:
+                var, msg = var.strip().split("\t")  # noqa: PLW2901
+                if var.startswith("#") or var == "":
+                    continue
+                with self.assertRaises(HGVSParseError):
+                    self.parser.parse_hgvs_variant(var)
+                    self.assertTrue(False, msg=f"expected HGVSParseError: {var} ({msg})")
 
     @pytest.mark.quick
     def test_parser_posedit_special(self):

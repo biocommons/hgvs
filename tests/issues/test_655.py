@@ -1,5 +1,5 @@
-import os
 from contextlib import contextmanager
+from pathlib import Path
 
 import pytest
 
@@ -294,8 +294,8 @@ real_cases = [
 
 @pytest.fixture(scope="module")
 def mock_hdp():
-    fn = os.path.join(os.path.dirname(__file__), "..", "data", "sanity_cp.tsv")
-    return mock_input_data_source.MockInputSource(fn)
+    path = Path(__file__).parents[1] / "data" / "sanity_cp.tsv"
+    return mock_input_data_source.MockInputSource(path)
 
 
 @pytest.fixture(scope="module")

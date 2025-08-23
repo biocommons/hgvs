@@ -147,7 +147,7 @@ class Test_BaseOffsetPosition(unittest.TestCase):
 
         var = self.hp.parse_hgvs_variant("NM_000030.2:c.680+2_681-32del")
         with self.assertRaises(HGVSUnsupportedOperationError):
-            var.posedit.pos.start < var.posedit.pos.end
+            assert var.posedit.pos.start < var.posedit.pos.end
 
 
 @pytest.mark.quick

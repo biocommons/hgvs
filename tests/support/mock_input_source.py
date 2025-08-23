@@ -1,11 +1,12 @@
 import csv
+from pathlib import Path
 
 # Mock test input source
 
 
 class MockInputSource:
-    def __init__(self, in_file):
-        self._mock_data = self._read_input(in_file)
+    def __init__(self, in_path: Path):
+        self._mock_data = self._read_input(in_path)
 
     def fetch_gene_info(self, ac):
         pass
@@ -60,22 +61,21 @@ class MockInputSource:
     # internal methods
     #
 
-    def _read_input(self, in_file):
+    def _read_input(self, in_path: Path):
         """Dummy file of inputs
 
         :param in_file: path to input file of 2 cols (tab-delim); accession_number, sequence
-        :type string
-        :return dictionary of accession_number to sequence tags
+        :return: dictionary of accession_number to sequence tags
         """
         result = {}
-        with open(in_file) as f:
+        with in_path.open() as f:  # noqa: PTH123
             reader = csv.DictReader(f, delimiter="\t")
             for row in reader:
                 result[row["accession"]] = {
                     "transcript_sequence": row["transcript_sequence"],
                     "cds_start_i": int(row["cds_start_i"]),
                     "cds_end_i": int(row["cds_end_i"]),
-                    "lengths": eval(row["lengths"]),
+                    "lengths": eval(row["lengths"]),  # noqa: S307
                 }
 
         return result

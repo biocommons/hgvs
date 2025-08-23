@@ -1,4 +1,5 @@
 import os
+import typing
 import unittest
 
 import pytest
@@ -200,7 +201,7 @@ class Test_VariantMapper(unittest.TestCase):
 
 
 class Test_RefReplacement(unittest.TestCase):
-    test_cases = [
+    test_cases: typing.ClassVar = [
         # These casese attempt to test reference update in four dimensions:
         # - variant type: n, c, g
         # - major mapping paths: c<->n, c<->g, n<->g
@@ -468,9 +469,10 @@ class Test_AssemblyMapper(unittest.TestCase):
 
     def test_t_to_p(self):
         assert str(self.am.t_to_p(self.hp.parse("NR_027676.1:n.3980del"))) == "non-coding"
-        assert str(
-            self.am.t_to_p(self.hp.parse("NM_000059.3:c.7791A>G"))
-        ) == "NP_000050.2:p.(Lys2597=)"
+        assert (
+            str(self.am.t_to_p(self.hp.parse("NM_000059.3:c.7791A>G")))
+            == "NP_000050.2:p.(Lys2597=)"
+        )
 
     def test_issue_704_set_prevalidation_level(self):
         # Doesn't set prevalidation_level

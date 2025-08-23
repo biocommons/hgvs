@@ -145,8 +145,7 @@ class TestUTACache(Test_hgvs_dataproviders_uta_UTA_default):
         return variantmapper.g_to_c(genomic_variant, "NM_001164277.1")
 
     def test_deterministic_cache_results(self):
-        """Check that identical request to the UTA yields the same results.
-        """
+        """Check that identical request to the UTA yields the same results."""
         var1 = self._create_cdna_variant()
         var2 = self._create_cdna_variant()
         self.assertEqual(str(var1), str(var2))
@@ -158,8 +157,8 @@ class TestUTAPool(Test_hgvs_dataproviders_uta_with_pooling_without_cache):
         when it loses the connection
         """
 
-        def raise_operational_error(*args, **kwargs):
-            raise psycopg2.OperationalError()
+        def raise_operational_error(*args, **kwargs):  # noqa: ARG001
+            raise psycopg2.OperationalError
 
         with patch.object(self.hdp, "_pool") as mock_pool:
             mock_getconn = mock_pool.getconn.return_value

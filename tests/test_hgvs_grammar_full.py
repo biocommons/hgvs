@@ -1,9 +1,9 @@
 import csv
-import os
 import pprint
 import re
 import unittest
 from importlib.resources import files as resources_files
+from pathlib import Path
 
 import hgvs.parser
 
@@ -35,25 +35,25 @@ class TestGrammarFull(unittest.TestCase):
     def setUpClass(cls):
         cls.p = hgvs.parser.Parser()
         cls.grammar = cls.p._grammar
-        cls._test_fn = os.path.join(os.path.dirname(__file__), "data", "grammar_test.tsv")
+        cls._test_path = Path(__file__).parent / "data" / "grammar_test.csv"
 
     def test_parser_test_completeness(self):
         """ensure that all rules in grammar have tests"""
         grammar_rule_re = re.compile(r"^(\w+)")
-        grammar_fn = resources_files("hgvs") / "_data" / "hgvs.pymeta"
-        with open(grammar_fn) as f:
-            grammar_rules = set(r.group(1) for r in filter(None, map(grammar_rule_re.match, f)))
+        grammar_fn = Path(str(resources_files("hgvs"))) / "_data" / "hgvs.pymeta"
+        with grammar_fn.open() as f:
+            grammar_rules = {r.group(1) for r in filter(None, map(grammar_rule_re.match, f))}
 
-        with open(self._test_fn) as f:
+        with self._test_fn.open() as f:
             reader = csv.DictReader(f, delimiter="\t")
-            test_rules = set(row["Func"] for row in reader)
+            test_rules = {row["Func"] for row in reader}
 
         untested_rules = grammar_rules - test_rules
 
         self.assertTrue(len(untested_rules) == 0, f"untested rules: {untested_rules}")
 
     def test_parser_grammar(self):
-        with open(self._test_fn) as f:
+        with self._test_path.open() as f:
             reader = csv.DictReader(f, delimiter="\t")
 
             fail_cases = []
@@ -71,9 +71,9 @@ class TestGrammarFull(unittest.TestCase):
                 )
                 expected_map = dict(zip(inputs, expected_results, strict=False))
                 # step through each item and check
-                is_valid = True if row["Valid"].lower() == "true" else False
+                is_valid = row["Valid"].lower() == "true"
 
-                for key in expected_map:
+                for key in expected_map:  # noqa: PLC0206
                     expected_result = str(expected_map[key]).replace("u'", "'")
                     function_to_test = getattr(self.p._grammar(key), row["Func"])
                     row_str = "{}\t{}\t{}\t{}\t{}".format(
@@ -82,15 +82,15 @@ class TestGrammarFull(unittest.TestCase):
                     try:
                         actual_result = str(function_to_test()).replace("u'", "'")
                         if not is_valid or (expected_result != actual_result):
-                            print(f"expected: {expected_result} actual:{actual_result}")
+                            print(f"expected: {expected_result} actual:{actual_result}")  # noqa: T201
                             fail_cases.append(row_str)
                     except Exception as e:
                         if is_valid:
-                            print(f"expected: {expected_result} Exception: {e}")
+                            print(f"expected: {expected_result} Exception: {e}")  # noqa: T201
                             fail_cases.append(row_str)
 
         # everything should have passed - report whatever failed
-        self.assertTrue(len(fail_cases) == 0, pprint.pprint(fail_cases))
+        assert len(fail_cases) == 0, pprint.pprint(fail_cases)  # noqa: T203
 
     def _split_inputs(self, in_string, intype):
         DELIM = "|"

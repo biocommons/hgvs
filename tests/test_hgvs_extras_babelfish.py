@@ -78,23 +78,23 @@ def test_hgvs_to_vcf(parser, babelfish38):
         return babelfish38.hgvs_to_vcf(parser.parse(h))
 
     for norm_hgvs_string, alt_hgvs, expected_variant_coordinate, _ in NORM_HGVS_VCF:
-        for hgvs_string in [norm_hgvs_string] + alt_hgvs:
+        for hgvs_string in [norm_hgvs_string, *alt_hgvs]:
             variant_coordinates = _h2v(hgvs_string)
             assert variant_coordinates == expected_variant_coordinate
 
 
-def test_vcf_to_hgvs(parser, babelfish38):
+def test_vcf_to_hgvs(babelfish38):
     def _v2h(*v):
         return babelfish38.vcf_to_g_hgvs(*v)
 
     for expected_hgvs_string, _, norm_variant_coordinate, alt_variant_coordinate in NORM_HGVS_VCF:
-        for variant_coordinate in [norm_variant_coordinate] + alt_variant_coordinate:
+        for variant_coordinate in [norm_variant_coordinate, *alt_variant_coordinate]:
             *v, typ = variant_coordinate  # last column is type ie "dup"
             hgvs_g = _v2h(*v)
             hgvs_string = hgvs_g.format()
             assert hgvs_string == expected_hgvs_string
 
 
-def test_vcf_to_hgvs_contig_chrom(parser, babelfish38):
+def test_vcf_to_hgvs_contig_chrom(babelfish38):
     hgvs_g = babelfish38.vcf_to_g_hgvs("NC_000006.12", 49949409, "GAA", "G")
     assert hgvs_g.format() == "NC_000006.12:g.49949413_49949414del"

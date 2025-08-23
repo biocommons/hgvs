@@ -116,7 +116,7 @@ source = ["hgvs"]
 
 # https://docs.pytest.org/en/6.2.x/customize.html#pyproject-toml
 [tool.pytest.ini_options]
-addopts = "-s -v -x --strict-markers -m 'not extra' --cov=src"  # --doctest-modules
+addopts = "-s -v --strict-markers -m 'not extra' --cov=src"  # --doctest-modules
 # addopts = [
 #   "-rsvx",
 #   "-m 'not extra'",
@@ -286,6 +286,7 @@ ignore = [
 # B011 - assert-false
 # INP001 - implicit-namespace-package
 # N802 -
+# SLF001 -
 "tests/*" = [
     "ANN001",
     "ANN2",
@@ -296,6 +297,7 @@ ignore = [
     "INP001",
     "N801",
     "N802",
+    "SLF001",
 ]
 "tests/test_pretty_print.py" = [
     "T201",
