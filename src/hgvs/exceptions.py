@@ -21,7 +21,6 @@ class HGVSInvalidVariantError(HGVSError):
     """Exception raised when variant is inconsistent or invalid"""
 
 
-
 class HGVSNormalizationError(HGVSError):
     pass
 
@@ -38,10 +37,8 @@ class HGVSUsageError(HGVSError):
     """Exception raised when client/caller has made an invalid request"""
 
 
-
 class HGVSVerifyFailedError(HGVSError):
     """Exception raised when the cached hdp result is not consistent with latest remote result"""
-
 
 
 # <LICENSE>

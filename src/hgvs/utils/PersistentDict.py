@@ -1,4 +1,3 @@
-
 import pickle
 
 protocol = 4

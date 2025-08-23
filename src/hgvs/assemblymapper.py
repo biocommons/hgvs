@@ -1,4 +1,3 @@
-
 import logging
 
 from bioutils.sequences import TranslationTable
@@ -223,9 +222,7 @@ class AssemblyMapper(VariantMapper):
         if len(alt_acs) > 1:
             names = set(self._assembly_map[ac] for ac in alt_acs)
             if names != set("XY"):
-                alts = ", ".join(
-                    [f"{ac} ({self._assembly_map[ac]})" for ac in alt_acs]
-                )
+                alts = ", ".join([f"{ac} ({self._assembly_map[ac]})" for ac in alt_acs])
                 raise HGVSError(
                     f"Multiple chromosomal alignments for {tx_ac} in {self.assembly_name}"
                     f" using {self.alt_aln_method} (non-pseudoautosomal region) [{alts}]"

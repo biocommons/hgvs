@@ -335,9 +335,7 @@ class NCBI_postgresql(NCBIBase):
                 break
 
             except psycopg2.OperationalError:
-                _logger.warning(
-                    f"Lost connection to {self.url}; attempting reconnect"
-                )
+                _logger.warning(f"Lost connection to {self.url}; attempting reconnect")
                 if self.pooling:
                     self._pool.closeall()
                 self._connect()
@@ -347,9 +345,7 @@ class NCBI_postgresql(NCBIBase):
 
         else:
             # N.B. Probably never reached
-            raise HGVSError(
-                f"Permanently lost connection to {self.url} ({n_retries} retries)"
-            )
+            raise HGVSError(f"Permanently lost connection to {self.url} ({n_retries} retries)")
 
 
 class ParseResult(urlparse.ParseResult):

@@ -1,4 +1,3 @@
-
 import hgvs
 from hgvs.assemblymapper import AssemblyMapper
 from hgvs.pretty.console.chromseqrenderer import ChromSeqRendered
@@ -157,9 +156,7 @@ class PrettyPrint:
             if self.config.infer_hgvs_c:
                 var_c_or_n = self._infer_hgvs_c(var_g)
 
-        return self.create_repre(
-            var_g, var_c_or_n, display_start, display_end, self.data_compiler
-        )
+        return self.create_repre(var_g, var_c_or_n, display_start, display_end, self.data_compiler)
 
     def create_repre(
         self,

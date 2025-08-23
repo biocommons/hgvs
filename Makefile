@@ -112,12 +112,6 @@ cqa:
 	ruff format --check
 	ruff check
 
-#=> reformat: reformat code
-.PHONY: reformat
-reformat:
-	ruff check --fix
-	ruff format
-
 
 ############################################################################
 #= UTILITY TARGETS

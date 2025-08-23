@@ -8,8 +8,7 @@ from hgvs.exceptions import HGVSUnsupportedOperationError
 
 @attr.s(slots=True, repr=False)
 class PosEdit:
-    """represents a **simple** variant, consisting of a single position and edit pair
-    """
+    """represents a **simple** variant, consisting of a single position and edit pair"""
 
     pos = attr.ib(default=None)
     edit = attr.ib(default=None)

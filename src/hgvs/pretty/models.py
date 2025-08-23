@@ -64,10 +64,10 @@ class PositionDetail:
     def __repr__(self) -> str:
         return (
             f"{self.alignment_pos}\t{self.c_pos}\t{self.c_offset}\t{self.c_interval}\t"
-             f"{self.cigar_ref}\t"
-             f"{self.chromosome_pos}\t{self.ref}\t{self.mapped_pos}\t{self.mapped_pos_offset}\t"
-             f"\t{self.n_pos}\t{self.tx}"
-             f"\t{self.variant_feature} {self.exon_nr}"
+            f"{self.cigar_ref}\t"
+            f"{self.chromosome_pos}\t{self.ref}\t{self.mapped_pos}\t{self.mapped_pos_offset}\t"
+            f"\t{self.n_pos}\t{self.tx}"
+            f"\t{self.variant_feature} {self.exon_nr}"
         )
 
 

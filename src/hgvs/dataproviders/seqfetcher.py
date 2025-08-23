@@ -58,9 +58,7 @@ class SeqFetcher:
         try:
             return self.fetcher(ac, start_i, end_i)
         except Exception as ex:
-            raise HGVSDataNotAvailableError(
-                f"Failed to fetch {ac} from {self.source} ({ex})"
-            )
+            raise HGVSDataNotAvailableError(f"Failed to fetch {ac} from {self.source} ({ex})")
 
 
 # <LICENSE>

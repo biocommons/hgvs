@@ -363,9 +363,7 @@ class UTABase(Interface):
         """
         rows = self._fetchall(self._queries["tx_identity_info"], [tx_ac])
         if len(rows) == 0:
-            raise HGVSDataNotAvailableError(
-                f"No transcript definition for (tx_ac={tx_ac})"
-            )
+            raise HGVSDataNotAvailableError(f"No transcript definition for (tx_ac={tx_ac})")
         return rows[0]
 
     def get_tx_info(self, tx_ac, alt_ac, alt_aln_method):
@@ -592,9 +590,7 @@ class UTA_postgresql(UTABase):
                 break
 
             except psycopg2.OperationalError:
-                _logger.warning(
-                    f"Lost connection to {self.url}; attempting reconnect"
-                )
+                _logger.warning(f"Lost connection to {self.url}; attempting reconnect")
                 if self.pooling:
                     self._pool.putconn(conn)
                     _logger.warning(f"Put away pool connection from {self.url}")
@@ -606,9 +602,7 @@ class UTA_postgresql(UTABase):
 
         else:
             # N.B. Probably never reached
-            raise HGVSError(
-                f"Permanently lost connection to {self.url} ({n_retries} retries)"
-            )
+            raise HGVSError(f"Permanently lost connection to {self.url} ({n_retries} retries)")
 
     def _set_search_path(self, cur):
         cur.execute(f"set search_path = {self.url.schema},public;")

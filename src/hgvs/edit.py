@@ -418,8 +418,7 @@ class Dup(Edit):
 
     @property
     def ref_s(self):
-        """returns a string representing the ref sequence, if it is not None and smells like a sequence
-        """
+        """returns a string representing the ref sequence, if it is not None and smells like a sequence"""
         return (
             self.ref
             if (isinstance(self.ref, str) and self.ref and self.ref[0] in "ACGTUN")

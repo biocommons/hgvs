@@ -95,7 +95,9 @@ class RegionImpacted(BasicRenderer):
             elif (not reverse_display and p == end) or (reverse_display and p == start):
                 var_str += split_char
                 in_range = False
-            elif (not reverse_display and p > end and in_range) or (reverse_display and p < start and in_range):
+            elif (not reverse_display and p > end and in_range) or (
+                reverse_display and p < start and in_range
+            ):
                 in_range = False
                 var_str += " "
             elif in_range:

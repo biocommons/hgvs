@@ -125,9 +125,7 @@ class Parser:
                 try:
                     return self._grammar(s).__getattr__(rule_name)()
                 except ometa.runtime.ParseError as exc:
-                    raise HGVSParseError(
-                        f"{s}: char {exc.position}: {exc.formatReason()}"
-                    )
+                    raise HGVSParseError(f"{s}: char {exc.position}: {exc.formatReason()}")
 
             rule_fxn.__doc__ = "parse string s using `%s' rule" % rule_name
             return rule_fxn

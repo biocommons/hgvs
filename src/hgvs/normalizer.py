@@ -215,12 +215,8 @@ class Normalizer:
             # Get genomic sequence access number for this transcript
             map_info = self.hdp.get_tx_mapping_options(var.ac)
             if not map_info:
-                raise HGVSDataNotAvailableError(
-                    f"No mapping info available for {var.ac}"
-                )
-            map_info = [
-                item for item in map_info if item["alt_aln_method"] == self.alt_aln_method
-            ]
+                raise HGVSDataNotAvailableError(f"No mapping info available for {var.ac}")
+            map_info = [item for item in map_info if item["alt_aln_method"] == self.alt_aln_method]
             alt_ac = map_info[0]["alt_ac"]
 
             # Get tx info
@@ -297,9 +293,7 @@ class Normalizer:
         # Get genomic sequence access number for this transcript
         identity_info = self.hdp.get_tx_identity_info(var.ac)
         if not identity_info:
-            raise HGVSDataNotAvailableError(
-                f"No identity info available for {var.ac}"
-            )
+            raise HGVSDataNotAvailableError(f"No identity info available for {var.ac}")
         tgt_len = sum(identity_info["lengths"])
         return tgt_len
 
@@ -318,9 +312,7 @@ class Normalizer:
         seq = self.hdp.get_seq(var.ac, start, end)
 
         if len(seq) < end - start and len(seq) < var_len:
-            raise HGVSInvalidVariantError(
-                f"Variant span is outside sequence bounds ({var})"
-            )
+            raise HGVSInvalidVariantError(f"Variant span is outside sequence bounds ({var})")
 
         return seq
 

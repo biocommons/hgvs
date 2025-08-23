@@ -1,4 +1,3 @@
-
 from bioutils.normalize import normalize
 from bioutils.sequences import aa1_to_aa3_lut
 
