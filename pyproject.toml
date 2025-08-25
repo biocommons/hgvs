@@ -56,7 +56,7 @@ dev = [
   "ruff == 0.12.8",
   "ipython",
   "jupyter",
-  "pyright",
+  "pre-commit ~= 3.4",
   "pytest",
   "pytest-cov",
   "pytest-recording",

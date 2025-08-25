@@ -1,12 +1,4 @@
 repos:
-# disabled for now due to excessive errors reported with new version
-# - repo: local
-#   hooks:
-#     -  id: pyright
-#        name: pyright
-#        entry: pyright
-#        language: system
-#        types: [python]
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v5.0.0
   hooks:
