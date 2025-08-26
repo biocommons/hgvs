@@ -56,7 +56,7 @@ def babelfish38(hdp):
     return Babelfish(hdp, assembly_name="GRCh38")
 
 
-def pytest_report_header(config):
+def pytest_report_header(config):  # noqa: ARG001
     env_vars = ["UTA_DB_URL", "HGVS_SEQREPO_URL", "HGVS_CACHE_MODE"]
     rv = [f"{ev}: {os.environ.get(ev)}" for ev in sorted(env_vars)]
     rv += [f"hgvs.easy.hdp={hgvs.easy.hdp.url}"]

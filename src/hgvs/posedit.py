@@ -16,25 +16,20 @@ class PosEdit:
 
     def format(self, conf=None):
         """Formatting the string of PosEdit"""
-        if self.pos is None:
-            rv = str(self.edit.format(conf))
-        else:
-            rv = f"{self.pos.format(conf)}{self.edit.format(conf)}"
+        rv = (
+            str(self.edit.format(conf))
+            if self.pos is None
+            else f"{self.pos.format(conf)}{self.edit.format(conf)}"
+        )
 
         if self.uncertain:
-            if self.edit in ["0", ""]:
-                rv = rv + "?"
-            else:
-                rv = "(" + rv + ")"
+            rv = rv + "?" if self.edit in ["0", ""] else "(" + rv + ")"
         return rv
 
     __str__ = format
 
     def __repr__(self):
-        return "{0}({1})".format(
-            self.__class__.__name__,
-            ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
-        )
+        return f"{self.__class__.__name__}({', '.join((a.name + '=' + str(getattr(self, a.name))) for a in self.__attrs_attrs__)})"
 
     def _set_uncertain(self):
         """sets the uncertain flag to True; used primarily by the HGVS grammar
@@ -72,8 +67,8 @@ class PosEdit:
 
         """
         try:
-            ilen = self.pos._length()
-            (del_len, ins_len) = self.edit._del_ins_lengths(ilen)
+            ilen = self.pos._length()  # noqa: SLF001
+            (del_len, ins_len) = self.edit._del_ins_lengths(ilen)  # noqa: SLF001
             return ins_len - del_len
         except HGVSUnsupportedOperationError:
             if on_error_raise:

@@ -68,7 +68,7 @@ class MockInputSource:
         :return: dictionary of accession_number to sequence tags
         """
         result = {}
-        with in_path.open() as f:  # noqa: PTH123
+        with in_path.open() as f:
             reader = csv.DictReader(f, delimiter="\t")
             for row in reader:
                 result[row["accession"]] = {

@@ -54,12 +54,12 @@ import sys
 import warnings
 from importlib import metadata
 
-from .config import global_config  # noqa (importing symbol)
+from .config import global_config  # noqa: F401
 
 _logger = logging.getLogger(__name__)
 
 
-if sys.version_info < (3, 6):
+if sys.version_info < (3, 6):  # noqa: UP036
     _logger.critical(
         """hgvs on Python 2.7 is no longer supported. The next major version
     of hgvs will require Python 3.6+. See
@@ -74,7 +74,7 @@ try:
     if re.match(r"^\d+\.\d+\.\d+$", __version__) is not None:
         _is_released_version = True
 except metadata.PackageNotFoundError:
-    warnings.warn("can't get __version__ because %s package isn't installed" % __package__, Warning)
+    warnings.warn(f"can't get __version__ because {__package__} package isn't installed", Warning)  # noqa: B028
     __version__ = None
 
 
@@ -83,7 +83,7 @@ except metadata.PackageNotFoundError:
 warnings.filterwarnings("default", "", DeprecationWarning, r".*\Wlib\W.*\Whgvs\W.*")
 
 
-_logger.info("hgvs " + __version__ + "; released: " + str(_is_released_version))
+_logger.info("hgvs %s; released: %s", __version__, _is_released_version)
 
 
 # <LICENSE>

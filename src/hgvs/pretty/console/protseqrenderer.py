@@ -30,7 +30,7 @@ class ProtSeqRenderer(BasicRenderer):
         if not data.var_c_or_n:
             return ""
 
-        from hgvs.pretty.console.constants import COLOR_MAP, ENDC
+        from hgvs.pretty.console.constants import COLOR_MAP, ENDC  # noqa: PLC0415
 
         var_str = ""
         for pdata in data.position_details:

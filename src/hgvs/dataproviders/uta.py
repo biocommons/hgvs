@@ -9,6 +9,7 @@ import logging
 import os
 import re
 import weakref
+from typing import ClassVar
 from urllib import parse as urlparse
 
 import psycopg2
@@ -93,13 +94,13 @@ def connect(
     For postgresql db_urls, pooling=True causes connect to use a
     psycopg2.pool.ThreadedConnectionPool.
     """
-    _logger.debug("connecting to " + str(db_url) + "...")
+    _logger.debug("connecting to %s...", db_url)
 
     if db_url is None:
         db_url = _get_uta_db_url()
 
     if "PYTEST_CURRENT_TEST" in os.environ and "localhost" not in db_url:
-        _logger.warning(f"You are executing tests using remote data ({db_url})")
+        _logger.warning("You are executing tests using remote data (%s)", db_url)
 
     url = _parse_url(db_url)
     if url.scheme == "postgresql":
@@ -109,14 +110,14 @@ def connect(
     else:
         # fell through connection scheme cases
         raise RuntimeError(f"{url.scheme} in {url} is not currently supported")
-    _logger.info("connected to " + str(db_url) + "...")
+    _logger.info("connected to %s...", db_url)
     return conn
 
 
 class UTABase(Interface):
     required_version = "1.1"
 
-    _queries = {
+    _queries: ClassVar = {
         "acs_for_protein_md5": """
             select ac
             from seq_anno
@@ -185,7 +186,7 @@ class UTABase(Interface):
         self.seqfetcher = SeqFetcher()
         if mode != "run":
             self._connect()
-        super(UTABase, self).__init__(mode, cache)
+        super().__init__(mode, cache)
 
     def __str__(self):
         return (
@@ -475,7 +476,7 @@ class UTABase(Interface):
         return make_ac_name_map(assembly_name)
 
 
-class UTA_postgresql(UTABase):
+class UTA_postgresql(UTABase):  # noqa: N801
     def __init__(
         self,
         url,
@@ -485,7 +486,7 @@ class UTA_postgresql(UTABase):
         cache=None,
     ):
         if url.schema is None:
-            raise Exception(f"No schema name provided in {url}")
+            raise Exception(f"No schema name provided in {url}")  # noqa: TRY002
         self.application_name = application_name
         self.pooling = pooling
         self._conn = None
@@ -495,7 +496,7 @@ class UTA_postgresql(UTABase):
         # search path. Use weak references to avoid keeping connection
         # objects alive unnecessarily.
         self._conns_seen = weakref.WeakSet()
-        super(UTA_postgresql, self).__init__(url, mode, cache)
+        super().__init__(url, mode, cache)
 
     def __del__(self):
         self.close()
@@ -511,14 +512,14 @@ class UTA_postgresql(UTABase):
         if self.application_name is None:
             st = inspect.stack()
             self.application_name = os.path.basename(st[-1][1])
-        conn_args = dict(
-            host=self.url.hostname,
-            port=self.url.port,
-            database=self.url.database,
-            user=self.url.username,
-            password=self.url.password,
-            application_name=self.application_name + "/" + hgvs.__version__,
-        )
+        conn_args = {
+            "host": self.url.hostname,
+            "port": self.url.port,
+            "database": self.url.database,
+            "user": self.url.username,
+            "password": self.url.password,
+            "application_name": f"{self.application_name}/{hgvs.__version__}",
+        }
         if self.pooling:
             _logger.info("Using UTA ThreadedConnectionPool")
             self._pool = psycopg2.pool.ThreadedConnectionPool(
@@ -573,12 +574,12 @@ class UTA_postgresql(UTABase):
                 conn.autocommit = True
 
                 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-                if self.pooling:
-                    # this might be a new connection, in which case we
-                    # need to set the search path
-                    if conn not in self._conns_seen:
-                        self._set_search_path(cur)
-                        self._conns_seen.add(conn)
+
+                # this might be a new connection, in which case we
+                # need to set the search path
+                if self.pooling and conn not in self._conns_seen:
+                    self._set_search_path(cur)
+                    self._conns_seen.add(conn)
 
                 yield cur
 
@@ -590,13 +591,13 @@ class UTA_postgresql(UTABase):
                 break
 
             except psycopg2.OperationalError:
-                _logger.warning(f"Lost connection to {self.url}; attempting reconnect")
+                _logger.warning("Lost connection to %s; attempting reconnect", self.url)
                 if self.pooling:
                     self._pool.putconn(conn)
-                    _logger.warning(f"Put away pool connection from {self.url}")
+                    _logger.warning("Put away pool connection from %s", self.url)
                 else:
                     self._connect()
-                    _logger.warning(f"Reconnected to {self.url}")
+                    _logger.warning("Reconnected to %s", {self.url})
 
             n_tries_rem -= 1
 
@@ -615,7 +616,7 @@ class ParseResult(urlparse.ParseResult):
     """
 
     def __new__(cls, pr):
-        return super(ParseResult, cls).__new__(cls, *pr)
+        return super().__new__(cls, *pr)
 
     @property
     def database(self):

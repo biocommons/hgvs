@@ -59,7 +59,7 @@ class Config:
 
     def __copy__(self):
         new_config = Config.__new__(Config)
-        new_config._cp = object.__getattribute__(self, "_cp")
+        new_config._cp = object.__getattribute__(self, "_cp")  # noqa: SLF001
         return new_config
 
     def __dir__(self):
@@ -71,8 +71,8 @@ class Config:
             return None
         try:
             return ConfigGroup(self._cp[k])
-        except KeyError:
-            raise AttributeError(k)
+        except KeyError as e:
+            raise AttributeError(k) from e
 
     __getitem__ = __getattr__
 
@@ -90,7 +90,7 @@ class ConfigGroup:
     __getitem__ = __getattr__
 
     def __setattr__(self, k, v):
-        logger.info(str(self.__class__.__name__) + f".__setattr__({k}, ...)")
+        logger.info("%s.__setattr_(%s, ...)", self.__class__.__name__, k)
         self.__dict__["_section"][k] = str(v)
 
     __setitem__ = __setattr__

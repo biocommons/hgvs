@@ -19,7 +19,7 @@ from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError
 
 @attr.s(slots=True)
 class Edit(abc.ABC):
-    def format(self, conf=None):
+    def format(self, conf=None):  # noqa: ARG002
         return str(self)
 
     def _format_config_na(self, conf=None):
@@ -41,7 +41,7 @@ class Edit(abc.ABC):
             p_init_met = conf["p_init_met"]
         return p_3_letter, p_term_asterisk, p_init_met
 
-    def _del_ins_lengths(self, ilen):
+    def _del_ins_lengths(self, ilen):  # noqa: ARG002
         raise HGVSUnsupportedOperationError(
             "internal function _del_ins_lengths not implemented for this variant type"
         )
@@ -392,7 +392,7 @@ class AAExt(Edit):
         """
         return "ext"
 
-    def _del_ins_lengths(self, ilen):
+    def _del_ins_lengths(self, ilen):  # noqa: ARG002
         """returns (del_len, ins_len).
         Unspecified ref or alt returns None for del_len or ins_len respectively.
         """
@@ -445,8 +445,8 @@ class Dup(Edit):
         """returns (del_len, ins_len).
         Unspecified ref or alt returns None for del_len or ins_len respectively.
         """
-        if self.ref is not None and self.ref != "":
-            assert len(self.ref) == ilen
+        if (self.ref is not None and self.ref != "") and (len(self.ref) != ilen):
+            raise ValueError
         return (0, ilen)
 
 

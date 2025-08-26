@@ -32,7 +32,7 @@ class RegionImpacted(BasicRenderer):
         return "region    : "
 
     def display(self, data: VariantData) -> str:
-        from hgvs.pretty.console.constants import COLOR_MAP, ENDC
+        from hgvs.pretty.console.constants import COLOR_MAP, ENDC  # noqa: PLC0415
 
         seq_start = data.display_start
         seq_end = data.display_end

@@ -31,7 +31,7 @@ class SeqFetcher:
         seqrepo_dir = os.environ.get("HGVS_SEQREPO_DIR")
         seqrepo_url = os.environ.get("HGVS_SEQREPO_URL")
         if seqrepo_dir:
-            from biocommons.seqrepo import SeqRepo
+            from biocommons.seqrepo import SeqRepo  # noqa: PLC0415
 
             self.sr = SeqRepo(seqrepo_dir)
 
@@ -41,7 +41,7 @@ class SeqFetcher:
             self.fetcher = _fetch_seq_seqrepo
             self.source = f"SeqRepo ({seqrepo_dir})"
         elif seqrepo_url:
-            from biocommons.seqrepo.dataproxy import SeqRepoRESTDataProxy
+            from biocommons.seqrepo.dataproxy import SeqRepoRESTDataProxy  # noqa: PLC0415
 
             self.sr = SeqRepoRESTDataProxy(seqrepo_url)
             self.fetcher = lambda ac, start_i=None, end_i=None: self.sr.get_sequence(
@@ -52,13 +52,15 @@ class SeqFetcher:
             self.sr = None
             self.fetcher = bioutils.seqfetcher.fetch_seq
             self.source = "bioutils.seqfetcher (network fetching)"
-        _logger.info("Fetching sequences with " + self.source)
+        _logger.info("Fetching sequences with %s", self.source)
 
     def fetch_seq(self, ac, start_i=None, end_i=None):
         try:
             return self.fetcher(ac, start_i, end_i)
         except Exception as ex:
-            raise HGVSDataNotAvailableError(f"Failed to fetch {ac} from {self.source} ({ex})")
+            raise HGVSDataNotAvailableError(
+                f"Failed to fetch {ac} from {self.source} ({ex})"
+            ) from ex
 
 
 # <LICENSE>

@@ -31,7 +31,7 @@ class TxAligRenderer(BasicRenderer):
         if not data.var_c_or_n:
             return ""
 
-        from hgvs.pretty.console.constants import COLOR_MAP, ENDC
+        from hgvs.pretty.console.constants import COLOR_MAP, ENDC  # noqa: PLC0415
 
         var_str = ""
 
@@ -94,7 +94,7 @@ class TxAligRenderer(BasicRenderer):
                         var_str += base
                     continue
 
-            elif cig == "X" or cig == "D":
+            elif cig in {"X", "D"}:
                 # for mismatches and tx-insertions show sequence
                 var_str += pdata.tx
                 continue

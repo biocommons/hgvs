@@ -114,7 +114,8 @@ class IntervalMapper:
                 # check for adjacency/non-overlap
                 # This constraint, combined with the start_i <= end_i constraint
                 # of Intervals, guarantees that intervals are ordered
-                assert ivs[i - 1].end_i == ivs[i].start_i, "intervals must be adjacent"
+                if ivs[i - 1].end_i != ivs[i].start_i:
+                    raise ValueError("intervals must be adjacent")
 
         self.interval_pairs = interval_pairs
         self.ref_intervals = [ip.ref for ip in self.interval_pairs]
@@ -140,7 +141,7 @@ class IntervalMapper:
 
     @staticmethod
     def _map(from_ivs, to_ivs, from_start_i, from_end_i, max_extent):
-        def iv_map(from_ivs, to_ivs, from_start_i, from_end_i, max_extent):
+        def iv_map(from_ivs, to_ivs, from_start_i, from_end_i, max_extent):  # noqa: ARG001
             """returns the <start,end> intervals indexes in which from_start_i and from_end_i occur"""
             # first look for 0-width interval that matches
             seil = [
@@ -163,11 +164,12 @@ class IntervalMapper:
         def clip_to_iv(iv, pos):
             return max(iv.start_i, min(iv.end_i, pos))
 
-        assert from_start_i <= from_end_i, "expected from_start_i <= from_end_i"
+        if from_start_i > from_end_i:
+            raise ValueError("expected from_start_i <= from_end_i")
         try:
             si, ei = iv_map(from_ivs, to_ivs, from_start_i, from_end_i, max_extent)
-        except ValueError:
-            raise HGVSInvalidIntervalError("start_i,end_i interval out of bounds")
+        except ValueError as e:
+            raise HGVSInvalidIntervalError("start_i,end_i interval out of bounds") from e
         to_start_i = clip_to_iv(
             to_ivs[si], to_ivs[si].start_i + (from_start_i - from_ivs[si].start_i)
         )
@@ -183,7 +185,7 @@ class CIGARElement:
 
     __slots__ = ("len", "op")
 
-    def __init__(self, len, op):
+    def __init__(self, len, op):  # noqa: A002
         self.len = len
         self.op = op
 

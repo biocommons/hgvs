@@ -24,10 +24,7 @@ class HGVSPosition:
         return f"{self.ac}{g}:{self.type}.{self.pos}"
 
     def __repr__(self):
-        return "{0}({1})".format(
-            self.__class__.__name__,
-            ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
-        )
+        return f"{self.__class__.__name__}({', '.join((a.name + '=' + str(getattr(self, a.name))) for a in self.__attrs_attrs__)})"
 
 
 # <LICENSE>

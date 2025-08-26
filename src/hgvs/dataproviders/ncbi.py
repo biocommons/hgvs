@@ -10,6 +10,7 @@ import inspect
 import logging
 import os
 import re
+from typing import ClassVar
 from urllib import parse as urlparse
 
 import psycopg2
@@ -92,7 +93,7 @@ def connect(
     For postgresql db_urls, pooling=True causes connect to use a
     psycopg2.pool.ThreadedConnectionPool.
     """
-    _logger.debug("connecting to " + str(db_url) + "...")
+    _logger.debug("connecting to %s...", db_url)
 
     if db_url is None:
         db_url = _get_ncbi_db_url()
@@ -105,14 +106,14 @@ def connect(
     else:
         # fell through connection scheme cases
         raise RuntimeError(f"{url.scheme} in {url} is not currently supported")
-    _logger.info("connected to " + str(db_url) + "...")
+    _logger.info("connected to %s...", db_url)
     return conn
 
 
 class NCBIBase:
     required_version = "1.1"
 
-    _queries = {
+    _queries: ClassVar = {
         "gene_id_for_hgnc": """
             select distinct(gene_id)
             from assocacs
@@ -149,7 +150,7 @@ class NCBIBase:
             """,
     }
 
-    def __init__(self, url, mode=None, cache=None):
+    def __init__(self, url, mode=None, cache=None):  # noqa: ARG002
         self.url = url
         if mode != "run":
             self._connect()
@@ -231,7 +232,7 @@ class NCBIBase:
         self._update(sql, [hgnc, tx_ac, gene_id, pro_ac, origin])
 
 
-class NCBI_postgresql(NCBIBase):
+class NCBI_postgresql(NCBIBase):  # noqa: N801
     def __init__(
         self,
         url,
@@ -241,11 +242,11 @@ class NCBI_postgresql(NCBIBase):
         cache=None,
     ):
         if url.schema is None:
-            raise Exception(f"No schema name provided in {url}")
+            raise Exception(f"No schema name provided in {url}")  # noqa: TRY002
         self.application_name = application_name
         self.pooling = pooling
         self._conn = None
-        super(NCBI_postgresql, self).__init__(url, mode, cache)
+        super().__init__(url, mode, cache)
 
     def __del__(self):
         self.close()
@@ -263,14 +264,14 @@ class NCBI_postgresql(NCBIBase):
         if self.application_name is None:
             st = inspect.stack()
             self.application_name = os.path.basename(st[-1][1])
-        conn_args = dict(
-            host=self.url.hostname,
-            port=self.url.port,
-            database=self.url.database,
-            user=self.url.username,
-            password=self.url.password,
-            application_name=self.application_name + "/" + hgvs.__version__,
-        )
+        conn_args = {
+            "host": self.url.hostname,
+            "port": self.url.port,
+            "database": self.url.database,
+            "user": self.url.username,
+            "password": self.url.password,
+            "application_name": self.application_name + "/" + hgvs.__version__,
+        }
         if self.pooling:
             _logger.info("Using UTA ThreadedConnectionPool")
             self._pool = psycopg2.pool.ThreadedConnectionPool(
@@ -335,11 +336,11 @@ class NCBI_postgresql(NCBIBase):
                 break
 
             except psycopg2.OperationalError:
-                _logger.warning(f"Lost connection to {self.url}; attempting reconnect")
+                _logger.warning("Lost connection to %s; attempting reconnect", self.url)
                 if self.pooling:
                     self._pool.closeall()
                 self._connect()
-                _logger.warning(f"Reconnected to {self.url}")
+                _logger.warning("Reconnected to %s", self.url)
 
             n_tries_rem -= 1
 
@@ -355,7 +356,7 @@ class ParseResult(urlparse.ParseResult):
     """
 
     def __new__(cls, pr):
-        return super(ParseResult, cls).__new__(cls, *pr)
+        return super().__new__(cls, *pr)
 
     @property
     def database(self):

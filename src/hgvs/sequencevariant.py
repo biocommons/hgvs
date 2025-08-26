@@ -34,10 +34,7 @@ class SequenceVariant:
         else:
             ref = ""
 
-        if self.posedit is not None:
-            posedit = self.posedit.format(conf)
-        else:
-            posedit = "?"
+        posedit = self.posedit.format(conf) if self.posedit is not None else "?"
         typo = f"{self.type}.{posedit}"
 
         return ref + typo
@@ -45,7 +42,7 @@ class SequenceVariant:
     __str__ = format
 
     def __repr__(self):
-        return "{0}({1})".format(
+        return "{0}({1})".format(  # noqa: UP030
             self.__class__.__name__,
             ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
         )
@@ -55,17 +52,17 @@ class SequenceVariant:
         # external resources are required
         # replace_reference should be moved outside function
         vm = hgvs.variantmapper.VariantMapper(hdp)
-        type = None
+        edit_type = None
         if isinstance(self.posedit, hgvs.posedit.PosEdit) and isinstance(
             self.posedit.edit, hgvs.edit.Edit
         ):
-            type = self.posedit.edit.type
+            edit_type = self.posedit.edit.type
         if (
-            type in ["del", "delins", "identity", "dup", "repeat"]
+            edit_type in ["del", "delins", "identity", "dup", "repeat"]
             and self.posedit.edit.ref_s is None
         ):
-            vm._replace_reference(self, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
-        if type == "identity" and isinstance(self.posedit.edit, hgvs.edit.NARefAlt):
+            vm._replace_reference(self, alt_ac=alt_ac, alt_aln_method=alt_aln_method)  # noqa: SLF001
+        if edit_type == "identity" and isinstance(self.posedit.edit, hgvs.edit.NARefAlt):
             self.posedit.edit.alt = self.posedit.edit.ref
         return self
 

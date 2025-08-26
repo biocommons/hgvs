@@ -186,6 +186,8 @@ exclude = [
     "examples",
     "misc",
     "sbin",
+    "src/hgvs/generated/hgvs_grammar.py",
+    "src/hgvs/decorators/lru_cache.py",  # this module should just be removed
 ]
 
 [tool.ruff.lint]
@@ -249,6 +251,7 @@ ignore = [
     "D",
     "ANN",
     "PT",
+    "PTH",
     "N806",
 ]
 
@@ -265,6 +268,7 @@ ignore = [
 # INP001 - implicit-namespace-package
 # N802 -
 # SLF001 -
+# BLE001 -
 "tests/*" = [
     "ANN001",
     "ANN2",
@@ -276,9 +280,16 @@ ignore = [
     "N801",
     "N802",
     "SLF001",
+    "BLE001",
 ]
 "tests/test_pretty_print.py" = [
     "T201",
+]
+"src/hgvs/utils/validation.py" = [
+    "FLY002",  # prefer joined strings for regex patterns
+]
+"src/hgvs/utils/PersistentDict.py" = [
+    "N999",  # fix this eventually
 ]
 
 [tool.ruff.lint.flake8-annotations]

@@ -34,13 +34,13 @@ class AltSeqToHgvsp:
         self._is_init_met = False
 
         if DBG:
-            print(f"len ref seq:{len(self._ref_seq)} len alt seq:{len(self._alt_seq)}")
-            print(f"fs start:{self._frameshift_start} protein ac:{self._protein_accession}")
-            print(self._ref_seq)
-            print(self._alt_seq)
-            print(f"aa variant start: {self._alt_data.variant_start_aa}")
-            print(self._ref_data.transcript_sequence)
-            print(self._alt_data.transcript_sequence)
+            print(f"len ref seq:{len(self._ref_seq)} len alt seq:{len(self._alt_seq)}")  # noqa: T201
+            print(f"fs start:{self._frameshift_start} protein ac:{self._protein_accession}")  # noqa: T201
+            print(self._ref_seq)  # noqa: T201
+            print(self._alt_seq)  # noqa: T201
+            print(f"aa variant start: {self._alt_data.variant_start_aa}")  # noqa: T201
+            print(self._ref_data.transcript_sequence)  # noqa: T201
+            print(self._alt_data.transcript_sequence)  # noqa: T201
 
     def build_hgvsp(self):
         """Compare two amino acid sequences; generate an hgvs tag from the output
@@ -123,7 +123,7 @@ class AltSeqToHgvsp:
                     variants.append({"start": start + 1, "ins": insertion, "del": deletion})
 
             if DBG:
-                print(variants)
+                print(variants)  # noqa: T201
 
         if self._is_ambiguous:
             var_ps = [
@@ -195,10 +195,8 @@ class AltSeqToHgvsp:
                 ref = ""
 
         elif start == len(self._ref_seq):  # extension
-            if self._alt_seq[-1] == "*":
-                fsext_len = len(insertion) - len(deletion)  # don't include the former stop codon
-            else:
-                fsext_len = "?"
+            # don't include the former stop codon
+            fsext_len = len(insertion) - len(deletion) if self._alt_seq[-1] == "*" else "?"
             subst_at_stop_codon = insertion[0]
 
             aa_start = aa_end = AAPosition(base=start, aa="*")
@@ -234,10 +232,7 @@ class AltSeqToHgvsp:
             end = start + len(deletion) - 1
             if len(insertion) > 0:  # delins
                 aa_start = AAPosition(base=start, aa=deletion[0])
-                if end > start:
-                    aa_end = AAPosition(base=end, aa=deletion[-1])
-                else:
-                    aa_end = aa_start
+                aa_end = AAPosition(base=end, aa=deletion[-1]) if end > start else aa_start
                 alt = insertion
 
             elif len(deletion) + start == len(self._ref_seq):  # stop codon at variant position
@@ -248,10 +243,7 @@ class AltSeqToHgvsp:
                 is_sub = True
             else:  # deletion
                 aa_start = AAPosition(base=start, aa=deletion[0])
-                if end > start:
-                    aa_end = AAPosition(base=end, aa=deletion[-1])
-                else:
-                    aa_end = aa_start
+                aa_end = AAPosition(base=end, aa=deletion[-1]) if end > start else aa_start
                 alt = None
 
         elif len(deletion) == 0:  # insertion OR duplication OR extension

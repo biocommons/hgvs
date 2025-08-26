@@ -84,9 +84,8 @@ class TranscriptMapper:
             self.cds_end_i = self.tx_identity_info["cds_end_i"]
             self.tgt_len = sum(self.tx_identity_info["lengths"])
 
-        assert not ((self.cds_start_i is None) ^ (self.cds_end_i is None)), (
-            "CDS start and end must both be defined or neither defined"
-        )
+        if (self.cds_start_i is None) ^ (self.cds_end_i is None):
+            raise ValueError("CDS start and end must both be defined or neither defined")
 
     def __str__(self):
         return (
@@ -112,7 +111,7 @@ class TranscriptMapper:
 
         def _hgvs_offset(g_position, grs, gre, strand):
             """Calculates the HGVS coordinate offset from a given genomic position"""
-            if g_position == grs or g_position == gre:
+            if g_position in {grs, gre}:
                 return 0
             mid = (grs + gre) / 2
             if g_position < mid or (g_position == mid and strand == 1):
@@ -178,7 +177,8 @@ class TranscriptMapper:
 
     def n_to_g(self, n_interval):
         """convert a transcript cDNA (n.) interval to a genomic (g.) interval"""
-        assert self.strand in [1, -1], "strand = " + str(self.strand) + "; must be 1 or -1"
+        if self.strand not in [1, -1]:
+            raise ValueError(f"strand = {self.strand}; must be 1 or -1")
 
         if self.strand == 1:
             frs, fre = _hgvs_coord_to_ci(n_interval.start.base, n_interval.end.base)
@@ -313,7 +313,8 @@ def _hgvs_coord_to_ci(s, e):
     """
 
     def _hgvs_to_ci(c):
-        assert c != 0, "received CDS coordinate 0; expected ..,-2,-1,1,1,..."
+        if c == 0:
+            raise ValueError("received CDS coordinate 0; expected ..,-2,-1,1,1,...")
         return c - 1 if c > 0 else c
 
     return (None if s is None else _hgvs_to_ci(s), None if e is None else _hgvs_to_ci(e) + 1)

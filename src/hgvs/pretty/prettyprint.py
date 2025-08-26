@@ -52,7 +52,7 @@ class PrettyPrint:
         use_color=False,
         show_legend=True,
         infer_hgvs_c=True,
-        all=False,
+        all=False,  # noqa: A002
         show_reverse_strand=False,
         alt_aln_method="splign",
         reverse_display=True,
@@ -81,7 +81,9 @@ class PrettyPrint:
 
         return transcripts
 
-    def _infer_hgvs_c(self, var_g: SequenceVariant, tx_ac: str = None) -> SequenceVariant:
+    def _infer_hgvs_c(
+        self, var_g: SequenceVariant, tx_ac: str | None = None
+    ) -> SequenceVariant | None:
         if not tx_ac:
             transcripts = self._get_all_transcripts(var_g)
             if transcripts:
@@ -109,16 +111,17 @@ class PrettyPrint:
             return am.t_to_g(sv)
         if sv.type == "r":
             return am.r
+        raise ValueError
 
     def get_hgvs_names(
-        self, sv: SequenceVariant, tx_ac: str = None
+        self, sv: SequenceVariant, tx_ac: str | None = None
     ) -> tuple[SequenceVariant, SequenceVariant]:
         var_c_or_n = None
         if sv.type == "g":
             var_g = sv
             if tx_ac is not None:
                 var_c_or_n = self._infer_hgvs_c(var_g, tx_ac=tx_ac)
-        elif sv.type == "c" or sv.type == "r":
+        elif sv.type in {"c", "r"}:
             var_g = self._map_to_chrom(sv)
             var_c_or_n = sv
         elif sv.type == "n":
@@ -131,9 +134,9 @@ class PrettyPrint:
     def display(
         self,
         sv: SequenceVariant,
-        tx_ac: str = None,
-        display_start: int = None,
-        display_end: int = None,
+        tx_ac: str | None = None,
+        display_start: int | None = None,
+        display_end: int | None = None,
     ) -> str:
         """Takes a variant and prints the genomic context around it in a string representation."""
         var_g, var_c_or_n = self.get_hgvs_names(sv, tx_ac)
@@ -145,16 +148,15 @@ class PrettyPrint:
 
             response = ""
             tx_acs = self._get_all_transcripts(var_g)
-            for tx_ac in tx_acs:
-                var_c_or_n = self._infer_hgvs_c(var_g, tx_ac)
+            for candidate_tx_ac in tx_acs:
+                var_c_or_n = self._infer_hgvs_c(var_g, candidate_tx_ac)
                 response += self.create_repre(
                     var_g, var_c_or_n, display_start, display_end, self.data_compiler
                 )
                 response += "\n---\n"
             return response
-        if not var_c_or_n:
-            if self.config.infer_hgvs_c:
-                var_c_or_n = self._infer_hgvs_c(var_g)
+        if not var_c_or_n and self.config.infer_hgvs_c:
+            var_c_or_n = self._infer_hgvs_c(var_g)
 
         return self.create_repre(var_g, var_c_or_n, display_start, display_end, self.data_compiler)
 
@@ -199,10 +201,7 @@ class PrettyPrint:
         else:
             head = head_c = head_p = refa = ""
 
-        if self.config.use_color:
-            var_g_print = colorize_hgvs(str(var_g))
-        else:
-            var_g_print = str(var_g)
+        var_g_print = colorize_hgvs(str(var_g)) if self.config.use_color else str(var_g)
 
         var_str = head + var_g_print + "\n"
         if data.var_c_or_n:
@@ -253,10 +252,7 @@ class PrettyPrint:
             self.config, data.strand, var_g, right_shuffled_var
         )
         right_shuffled_str = right_shuffled_renderer.display(data)
-        if self.config.show_legend:
-            shuffled_seq_header = left_shuffled_renderer.legend()
-        else:
-            shuffled_seq_header = ""
+        shuffled_seq_header = left_shuffled_renderer.legend() if self.config.show_legend else ""
 
         if left_shuffled_str != right_shuffled_str:
             fully_justified_renderer = RegionImpacted(

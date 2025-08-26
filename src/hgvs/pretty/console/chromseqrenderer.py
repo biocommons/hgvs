@@ -20,16 +20,13 @@ class ChromSeqRendered(BasicRenderer):
     """
 
     def legend(self) -> str:
-        if self.orientation < 0 and self.config.reverse_display:
-            arrow = "<-"
-        else:
-            arrow = "->"
+        arrow = "<-" if self.orientation < 0 and self.config.reverse_display else "->"
 
         return f"seq    {arrow} : "
 
     def display(self, data: VariantData) -> str:
         """colors the ref sequences with adenine (A, green), thymine (T, red), cytosine (C, yellow), and guanine (G, blue)"""
-        from hgvs.pretty.console.constants import COLOR_MAP, ENDC
+        from hgvs.pretty.console.constants import COLOR_MAP, ENDC  # noqa: PLC0415
 
         var_seq = ""
         for p in data.position_details:

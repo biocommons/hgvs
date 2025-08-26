@@ -7,7 +7,7 @@ import collections
 import warnings
 
 
-class deprecated:
+class deprecated:  # noqa: N801
     """Decorator factory class which returns a decorator function that
     marks a function as deprecated. It will result in a warning being
     emitted when the function is used, once per invocation point and

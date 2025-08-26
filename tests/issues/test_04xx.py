@@ -17,22 +17,22 @@ from support import CACHE
 @pytest.mark.issues
 class Test_Issues(unittest.TestCase):
     @classmethod
-    def setUpClass(self):
-        self.hdp = hgvs.dataproviders.uta.connect(
+    def setUpClass(cls):
+        cls.hdp = hgvs.dataproviders.uta.connect(
             mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
         )
-        self.vm = hgvs.variantmapper.VariantMapper(self.hdp, replace_reference=False)
-        self.vm_rr = hgvs.variantmapper.VariantMapper(self.hdp, replace_reference=True)
-        self.hp = hgvs.parser.Parser()
-        self.hn = hgvs.normalizer.Normalizer(self.hdp)
-        self.hv = hgvs.validator.IntrinsicValidator()
-        self.am37 = hgvs.assemblymapper.AssemblyMapper(
-            self.hdp, replace_reference=True, assembly_name="GRCh37", alt_aln_method="splign"
+        cls.vm = hgvs.variantmapper.VariantMapper(cls.hdp, replace_reference=False)
+        cls.vm_rr = hgvs.variantmapper.VariantMapper(cls.hdp, replace_reference=True)
+        cls.hp = hgvs.parser.Parser()
+        cls.hn = hgvs.normalizer.Normalizer(cls.hdp)
+        cls.hv = hgvs.validator.IntrinsicValidator()
+        cls.am37 = hgvs.assemblymapper.AssemblyMapper(
+            cls.hdp, replace_reference=True, assembly_name="GRCh37", alt_aln_method="splign"
         )
-        self.am38 = hgvs.assemblymapper.AssemblyMapper(
-            self.hdp, replace_reference=True, assembly_name="GRCh38", alt_aln_method="splign"
+        cls.am38 = hgvs.assemblymapper.AssemblyMapper(
+            cls.hdp, replace_reference=True, assembly_name="GRCh38", alt_aln_method="splign"
         )
-        self.vn = hgvs.normalizer.Normalizer(self.hdp, shuffle_direction=3, cross_boundaries=True)
+        cls.vn = hgvs.normalizer.Normalizer(cls.hdp, shuffle_direction=3, cross_boundaries=True)
 
     def test_424_430_nochange_parse_and_format(self):
         h = "NM_012.3:c.1="

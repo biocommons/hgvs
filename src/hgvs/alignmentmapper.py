@@ -136,9 +136,8 @@ class AlignmentMapper:
             self.tgt_len = sum(tx_identity_info["lengths"])
             self.cigarmapper = None
 
-        assert not ((self.cds_start_i is None) ^ (self.cds_end_i is None)), (
-            "CDS start and end must both be defined or neither defined"
-        )
+        if (self.cds_start_i is None) ^ (self.cds_end_i is None):
+            raise ValueError("CDS start and end must both be defined or neither defined")
 
     def __str__(self):
         return (
@@ -264,9 +263,8 @@ class AlignmentMapper:
                 n = pos.base + self.cds_end_i
             if n <= 0:  # correct for lack of n.0 coordinate
                 n -= 1
-            if n <= 0 or n > self.tgt_len:
-                if strict_bounds:
-                    raise HGVSInvalidIntervalError(f"c.{pos} coordinate is out of bounds")
+            if (n <= 0 or n > self.tgt_len) and strict_bounds:
+                raise HGVSInvalidIntervalError(f"c.{pos} coordinate is out of bounds")
             return hgvs.location.BaseOffsetPosition(
                 base=n, offset=pos.offset, datum=Datum.SEQ_START
             )

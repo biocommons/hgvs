@@ -1,5 +1,6 @@
 import os
 import unittest
+from typing import ClassVar
 
 import hgvs.dataproviders.uta
 import hgvs.parser
@@ -11,7 +12,7 @@ from support import CACHE
 class Test_VariantLengths(unittest.TestCase):
     """test length_change method for all variant types and cases"""
 
-    success_tests = [
+    success_tests: ClassVar = [
         # class AAExt(Edit),
         ("NP_000040.1:p.Ter314Trpext*45", 45),
         ("NP_000040.1:p.Met1ext-12", 12),
@@ -58,7 +59,7 @@ class Test_VariantLengths(unittest.TestCase):
         ("NM_000314.4:c.1_2delinsCC", 0),
     ]
 
-    error_tests = [
+    error_tests: ClassVar = [
         "NM_003777.3:c.13552_*36del57",
     ]
 

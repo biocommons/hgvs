@@ -1,3 +1,5 @@
+"""Provide extension of BasicRenderer to show differences between transcript and reference sequences"""
+
 from hgvs.pretty.console.renderer import BasicRenderer
 from hgvs.pretty.models import VariantData
 
@@ -30,7 +32,7 @@ class TxRefDisagreeRenderer(BasicRenderer):
         if not data.var_c_or_n:
             return ""
 
-        from hgvs.pretty.console.constants import COLOR_MAP, ENDC
+        from hgvs.pretty.console.constants import COLOR_MAP, ENDC  # noqa: PLC0415
 
         var_str = ""
 

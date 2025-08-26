@@ -125,9 +125,9 @@ class Parser:
                 try:
                     return self._grammar(s).__getattr__(rule_name)()
                 except ometa.runtime.ParseError as exc:
-                    raise HGVSParseError(f"{s}: char {exc.position}: {exc.formatReason()}")
+                    raise HGVSParseError(f"{s}: char {exc.position}: {exc.formatReason()}") from exc
 
-            rule_fxn.__doc__ = "parse string s using `%s' rule" % rule_name
+            rule_fxn.__doc__ = f"parse string s using `{rule_name}' rule"
             return rule_fxn
 
         exposed_rule_re = re.compile(
@@ -136,7 +136,7 @@ class Parser:
         )
         exposed_rules = [
             m.replace("rule_", "")
-            for m in dir(self._grammar._grammarClass)
+            for m in dir(self._grammar._grammarClass)  # noqa: SLF001
             if m.startswith("rule_")
         ]
         if not expose_all_rules:
@@ -147,11 +147,7 @@ class Parser:
             att_name = "parse_" + rule_name
             rule_fxn = make_parse_rule_function(rule_name)
             self.__setattr__(att_name, rule_fxn)
-        self._logger.debug(
-            "Exposed {n} rules ({rules})".format(
-                n=len(exposed_rules), rules=", ".join(exposed_rules)
-            )
-        )
+        self._logger.debug("Exposed %s rules (%s)", len(exposed_rules), ", ".join(exposed_rules))
 
 
 # <LICENSE>

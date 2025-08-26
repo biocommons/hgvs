@@ -11,10 +11,10 @@ class PersistentDict(dict):
         self.flag = flag  # r=readonly, c=create,write,read
         try:
             with open(self.filename, "rb") as f:
-                self.update(pickle.load(f))
-        except OSError:
+                self.update(pickle.load(f))  # noqa: S301
+        except OSError as e:
             if self.flag == "r":
-                raise OSError("Cannot open file " + self.filename)
+                raise OSError("Cannot open file {self.filename}") from e
         dict.__init__(self, *args, **kwds)
 
     def sync(self):

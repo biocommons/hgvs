@@ -43,11 +43,10 @@ and use these variables/variable names whenever possible.
 def shell():
     logging.basicConfig(level=os.environ.get("HGVS_LOGGING_LEVEL", logging.WARNING))
 
-    from hgvs.easy import (  # noqa: F401; instances; functionalized methods
+    from hgvs.easy import (  # noqa: PLC0415
         __version__,
         hdp,
     )
-    from hgvs.utils.context import variant_context_w_alignment  # noqa
 
     IPython.embed(
         header=header_string.format(

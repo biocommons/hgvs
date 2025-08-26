@@ -163,7 +163,7 @@ class DataCompiler:
         var_p = protaltseqbuilder.build_hgvsp()
 
         is_init_met = False
-        if protaltseqbuilder._is_init_met:
+        if protaltseqbuilder._is_init_met:  # noqa: SLF001
             is_init_met = True
 
         # convert to three letter code
@@ -183,9 +183,9 @@ class DataCompiler:
     def data(
         self,
         var_g: SequenceVariant,
-        var_c_or_n: SequenceVariant = None,
-        display_start: int = None,
-        display_end: int = None,
+        var_c_or_n: SequenceVariant | None = None,
+        display_start: int | None = None,
+        display_end: int | None = None,
     ) -> VariantData:
         """Takes a sequence variant and provides all the data needed for pretty printing.
 
@@ -218,10 +218,9 @@ class DataCompiler:
         else:
             seq_end = display_end
 
-        if var_c_or_n is not None:
-            tx_ac = var_c_or_n.ac
-        else:
-            tx_ac = ""  # can't show transcript , since there is none.
+        tx_ac = (
+            var_c_or_n.ac if var_c_or_n is not None else ""
+        )  # can't show transcript , since there is none.
 
         alt_ac = var_g.ac
         alt_aln_method = "splign"
@@ -238,7 +237,7 @@ class DataCompiler:
         if tx_ac:
             tx_seq = self.config.hdp.get_seq(tx_ac)
 
-            mapper = self.config.assembly_mapper._fetch_AlignmentMapper(
+            mapper = self.config.assembly_mapper._fetch_AlignmentMapper(  # noqa: SLF001
                 tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method="splign"
             )
 
@@ -335,10 +334,7 @@ class DataCompiler:
 
             try:
                 n_interval = mapper.g_to_n(g_interval)
-                if var_c_or_n.type == "c":
-                    c_interval = mapper.n_to_c(n_interval)
-                else:
-                    c_interval = None
+                c_interval = mapper.n_to_c(n_interval) if var_c_or_n.type == "c" else None
             except hgvs.exceptions.HGVSInvalidIntervalError:
                 # we are beyond the transcript space, can't set any of the other values.
                 continue
@@ -447,7 +443,7 @@ class DataCompiler:
         self,
         var_c_or_n,
         tx_seq,
-        tx_exons,
+        tx_exons,  # noqa: ARG002
         mapper,
         reference_data,
         pdata,
