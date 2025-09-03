@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.3
+      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000007.13?start=21940851&end=21940908
   response:
@@ -23,9 +23,9 @@ interactions:
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Tue, 15 Apr 2025 03:55:19 GMT
+      - Wed, 03 Sep 2025 19:04:36 GMT
       Server:
-      - Werkzeug/2.2.3 Python/3.10.12
+      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -39,7 +39,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.3
+      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NM_003777.3?start=13582&end=13639
   response:
@@ -53,9 +53,9 @@ interactions:
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Tue, 15 Apr 2025 03:55:19 GMT
+      - Wed, 03 Sep 2025 19:04:36 GMT
       Server:
-      - Werkzeug/2.2.3 Python/3.10.12
+      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -69,7 +69,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.3
+      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NM_003777.3?start=13638&end=13639
   response:
@@ -83,9 +83,9 @@ interactions:
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Tue, 15 Apr 2025 03:55:19 GMT
+      - Wed, 03 Sep 2025 19:04:36 GMT
       Server:
-      - Werkzeug/2.2.3 Python/3.10.12
+      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
