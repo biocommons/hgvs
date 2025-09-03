@@ -1,9 +1,24 @@
-# Creates a stack of data services for hgvs and vr-python
+# Creates a stack of data services for hgvs, seqrepo, and uta
+#
+#
+# This is not used for production. It is used for development.
+# For production the recommendation is to e.g. host the seqrepo volume on AWS EFS.
+#
+# The seqrepo service is used to provide sequence data for the hgvs package.
+# The uta service is used to provide the UTA database for the hgvs package.
+#
+# The seqrepo-rest-service is used to provide a REST interface to the seqrepo service.
+# For production it is always better to use local seqrepo.
+# seqrepo-rest-service is useful, e.g. for CI/CD pipelines, where mounting the seqrepo 
+# volume might not easily be possible.
 #
 # ```
+# install biocommons.seqrepo (https://github.com/biocommons/biocommons.seqrepo)
+# run command:
+# seqrepo pull -i 2024-12-20 to install in /usr/local/share/seqrepo
 # docker volume create --name=uta_vol
-# docker volume create --name=seqrepo_vol
 # docker compose up
+# export UTA_DB_URL="postgresql://anonymous:anonymous@uta.biocommons.org:5432/uta/uta_20241220"                                                               
 # ```
 
 
@@ -13,15 +28,18 @@ services:
     # and exits when done. 
     image: biocommons/seqrepo:2024-12-20
     volumes:
-      - seqrepo_vol:/usr/local/share/seqrepo
+      - /usr/local/share/seqrepo:/usr/local/share/seqrepo
     
   seqrepo-rest-service:    
     # Test: curl http://localhost:5000/seqrepo/1/sequence/refseq:NM_000551.3
     image: biocommons/seqrepo-rest-service:latest
     volumes:
-      - seqrepo_vol:/usr/local/share/seqrepo
+      - /usr/local/share/seqrepo:/usr/local/share/seqrepo
     network_mode: host
     command: seqrepo-rest-service /usr/local/share/seqrepo/2024-12-20
+    depends_on:
+      seqrepo:
+        condition: service_completed_successfully
     
   uta:
     # Test:
@@ -34,8 +52,6 @@ services:
       - uta_vol:/var/lib/postgresql/data
     network_mode: host
     
-  # vr-rest-interface:
 
 volumes:
-  seqrepo_vol:
   uta_vol:

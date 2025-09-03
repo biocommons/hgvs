@@ -46,18 +46,21 @@ from hgvs.utils import build_tx_cigar
 from hgvs.utils.cigarmapper import CIGARMapper
 
 
-def _zbc_to_hgvs(i):
+def _zbc_to_hgvs(i: int):
     """Convert zero-based coordinate to hgvs (1 based, missing zero)"""
     if i >= 0:
         i += 1
     return i
 
 
-def _hgvs_to_zbc(i):
+def _hgvs_to_zbc(i: int):
     """Convert hgvs (1 based, missing zero)"""
     if i >= 1:
         i -= 1
     return i
+
+
+MAX_CHR_SIZE = 248387328  # chr 1 in T2T assembly size
 
 
 class AlignmentMapper:
@@ -159,96 +162,510 @@ class AlignmentMapper:
             )
         )
 
-    def g_to_n(
+    def _extract_genomic_position(
+        self, interval_part, is_start: bool, imprecise_inner_interval_only: bool
+    ) -> int | Interval:
+        """Extract genomic position from an interval part (start or end).
+
+        Args:
+            interval_part: The start or end part of an interval
+            is_start: True if this is the start part, False if end part
+            imprecise_inner_interval_only: Whether to use only inner interval for imprecise positions
+
+        Returns:
+            int: The genomic position (zero-based relative to alignment)
+        """
+        if imprecise_inner_interval_only and interval_part.uncertain:
+            # For imprecise positions, use the more confident inner boundary
+            if self.strand == -1:
+                # Reverse strand: use end for start, start for end
+                if is_start:
+                    return interval_part.end.base - 1 - self.gc_offset
+                else:
+                    return interval_part.start.base - 1 - self.gc_offset
+            else:
+                # Forward strand: use start for start, end for end
+                if is_start:
+                    return interval_part.end.base - 1 - self.gc_offset
+                else:
+                    return interval_part.start.base - 1 - self.gc_offset
+        elif isinstance(interval_part, Interval):
+            # For interval parts, use the appropriate boundary based on strand
+            if self.strand == -1:
+                # Reverse strand: use start for start, end for end
+                if is_start:
+                    return interval_part.start.base - 1 - self.gc_offset
+                else:
+                    return interval_part.end.base - 1 - self.gc_offset
+            else:
+                # Forward strand: use end for start, start for end
+                if is_start:
+                    return interval_part.end.base - 1 - self.gc_offset
+                else:
+                    return interval_part.start.base - 1 - self.gc_offset
+        elif hasattr(interval_part, "start") and hasattr(interval_part, "end"):
+            # Handle case where interval_part itself is an interval (like in _g_to_n_interval)
+            # Extract start and end positions using _get_start_end
+            start_pos, end_pos = self._get_start_end(interval_part)
+            if is_start:
+                return start_pos.base - 1 - self.gc_offset
+            else:
+                return end_pos.base - 1 - self.gc_offset
+
+        else:
+            # Simple position
+            return interval_part.base - 1 - self.gc_offset
+
+    def _get_start_end(self, var):
+        """Get start and end positions from the variant.
+
+        Args:
+            var: A variant object with posedit.pos attribute
+
+        Returns:
+            tuple: (start_position, end_position) where positions can be SimplePosition or BaseOffsetPosition
+        """
+        from hgvs.utils.position import get_start_end
+
+        return get_start_end(var)
+
+    def _transform_coordinates_for_reverse_strand(self, positions, offsets, cigars):
+        """Transform coordinates, offsets, and cigar operations for reverse strand.
+
+        Args:
+            positions: List of 4 position values [start_start, start_end, end_start, end_end]
+            offsets: List of 4 offset values [start_start, start_end, end_start, end_end]
+            cigars: List of 4 cigar operations [start_start, start_end, end_start, end_end]
+
+        Returns:
+            tuple: (transformed_positions, transformed_offsets, transformed_cigars)
+        """
+        # Store original values
+        orig_positions = positions.copy()
+        orig_offsets = offsets.copy()
+        orig_cigars = cigars.copy()
+
+        # Transform positions
+        positions[0] = self.tgt_len - 1 - orig_positions[1]  # start_start
+        positions[1] = self.tgt_len - 1 - orig_positions[0]  # start_end
+        positions[2] = self.tgt_len - 1 - orig_positions[3]  # end_start
+        positions[3] = self.tgt_len - 1 - orig_positions[2]  # end_end
+
+        # Transform offsets
+        offsets[0], offsets[1] = -orig_offsets[1], -orig_offsets[0]
+        offsets[2], offsets[3] = -orig_offsets[3], -orig_offsets[2]
+
+        # Swap cigar operations
+        cigars[0], cigars[1] = orig_cigars[1], orig_cigars[0]
+        cigars[2], cigars[3] = orig_cigars[3], orig_cigars[2]
+
+        return positions, offsets, cigars
+
+    def _transform_two_positions_for_reverse_strand(self, pos1, pos2, offset1, offset2):
+        """Transform two positions and their offsets for reverse strand.
+
+        Args:
+            pos1: First position value
+            pos2: Second position value
+            offset1: First offset value
+            offset2: Second offset value
+
+        Returns:
+            tuple: (transformed_pos1, transformed_pos2, transformed_offset1, transformed_offset2)
+        """
+        # Transform positions
+        new_pos1 = self.tgt_len - 1 - pos2
+        new_pos2 = self.tgt_len - 1 - pos1
+
+        # Transform offsets
+        new_offset1 = -offset2
+        new_offset2 = -offset1
+
+        return new_pos1, new_pos2, new_offset1, new_offset2
+
+    def _create_base_offset_interval(
+        self,
+        start_pos,
+        start_offset,
+        start_cigar,
+        end_pos,
+        end_offset,
+        end_cigar,
+        uncertain,
+    ):
+        """Create a BaseOffsetInterval from position data.
+
+        Args:
+            start_pos: Start position value
+            start_offset: Start offset value
+            start_cigar: Start cigar operation
+            end_pos: End position value
+            end_offset: End offset value
+            end_cigar: End cigar operation
+            uncertain: Whether the interval is uncertain
+
+        Returns:
+            BaseOffsetInterval: The created interval
+        """
+
+        if start_pos:
+            start = hgvs.location.BaseOffsetPosition(
+                base=_zbc_to_hgvs(start_pos),
+                offset=start_offset,
+                datum=Datum.SEQ_START,
+                uncertain=start_cigar in "DI",
+            )
+        else:
+            start = hgvs.location.BaseOffsetPosition(
+                base=None,
+                offset=0,
+                datum=Datum.SEQ_START,
+                uncertain=False,
+            )
+
+        if end_pos:
+            end = hgvs.location.BaseOffsetPosition(
+                base=_zbc_to_hgvs(end_pos),
+                offset=end_offset,
+                datum=Datum.SEQ_START,
+                uncertain=end_cigar in "DI",
+            )
+        else:
+            end = hgvs.location.BaseOffsetPosition(
+                base=None,
+                offset=0,
+                datum=Datum.SEQ_START,
+                uncertain=False,
+            )
+
+        return hgvs.location.BaseOffsetInterval(
+            start=start,
+            end=end,
+            uncertain=uncertain,
+        )
+
+    def _g_to_n_interval(
         self, g_interval: Interval, strict_bounds: Optional[bool] = None
+    ) -> BaseOffsetInterval:
+        """Convert a genomic (g.) interval to a transcript cDNA (n.) interval.
+
+        This method handles cases where both start and end of the input interval are themselves intervals.
+        The returned interval is corrected based on the strand direction.
+
+        Args:
+            g_interval: A genomic interval where both start and end are intervals
+            strict_bounds: Whether to enforce strict bounds checking
+
+        Returns:
+            A transcript cDNA interval with proper strand correction
+        """
+        # Get start and end positions from the genomic interval
+        start_start, start_end = self._get_start_end(g_interval.start)
+        end_start, end_end = self._get_start_end(g_interval.end)
+
+        # Convert to zero-based coordinates relative to the alignment
+        if not start_start.base:
+            grs_start = None
+        else:
+            grs_start = start_start.base - 1 - self.gc_offset
+        grs_end = start_end.base - 1 - self.gc_offset
+        gre_start = end_start.base - 1 - self.gc_offset
+        if not end_end.base:
+            gre_end = None
+        else:
+            gre_end = end_end.base - 1 - self.gc_offset
+
+        # Map genomic positions to transcript positions
+        if grs_start:
+            (
+                n_start_start,
+                n_start_start_offset,
+                n_start_start_cigar,
+            ) = self.cigarmapper.map_ref_to_tgt(
+                pos=grs_start, end="start", strict_bounds=strict_bounds
+            )
+        else:
+            n_start_start = None
+            n_start_start_offset = 0
+            n_start_start_cigar = None
+
+        (
+            n_start_end,
+            n_start_end_offset,
+            n_start_end_cigar,
+        ) = self.cigarmapper.map_ref_to_tgt(
+            pos=grs_end, end="end", strict_bounds=strict_bounds
+        )
+        (
+            n_end_start,
+            n_end_start_offset,
+            n_end_start_cigar,
+        ) = self.cigarmapper.map_ref_to_tgt(
+            pos=gre_start, end="start", strict_bounds=strict_bounds
+        )
+        if gre_end:
+            (
+                n_end_end,
+                n_end_end_offset,
+                n_end_end_cigar,
+            ) = self.cigarmapper.map_ref_to_tgt(
+                pos=gre_end, end="end", strict_bounds=strict_bounds
+            )
+        else:
+            n_end_end = None
+            n_end_end_offset = 0
+            n_end_end_cigar = None
+
+        # For reverse strand, transform coordinates
+        if self.strand == -1:
+            # Store original values
+            orig_n_start_start = n_start_start
+            orig_n_start_end = n_start_end
+            orig_n_end_start = n_end_start
+            orig_n_end_end = n_end_end
+
+            # Transform positions
+            n_start_start = self.tgt_len - 1 - orig_n_start_end
+            if orig_n_start_start:
+                n_start_end = self.tgt_len - 1 - orig_n_start_start
+            else:
+                n_start_end = None
+            if orig_n_end_end:
+                n_end_start = self.tgt_len - 1 - orig_n_end_end
+            else:
+                n_end_start = None
+            n_end_end = self.tgt_len - 1 - orig_n_end_start
+
+            # Transform offsets
+            n_start_start_offset, n_start_end_offset = (
+                -n_start_end_offset,
+                -n_start_start_offset,
+            )
+            n_end_start_offset, n_end_end_offset = (
+                -n_end_end_offset,
+                -n_end_start_offset,
+            )
+
+            # Swap cigar operations
+            n_start_start_cigar, n_start_end_cigar = (
+                n_start_end_cigar,
+                n_start_start_cigar,
+            )
+            n_end_start_cigar, n_end_end_cigar = n_end_end_cigar, n_end_start_cigar
+
+        # Create the start interval
+        start_interval = self._create_base_offset_interval(
+            n_start_start,
+            n_start_start_offset,
+            n_start_start_cigar,
+            n_start_end,
+            n_start_end_offset,
+            n_start_end_cigar,
+            g_interval.start.uncertain,
+        )
+
+        # Create the end interval
+        end_interval = self._create_base_offset_interval(
+            n_end_start,
+            n_end_start_offset,
+            n_end_start_cigar,
+            n_end_end,
+            n_end_end_offset,
+            n_end_end_cigar,
+            g_interval.end.uncertain,
+        )
+
+        # For reverse strand, ensure start is less than or equal to end
+        if self.strand == -1:
+            if (
+                start_interval.end.base
+                and end_interval.start.base
+                and start_interval.end.base > end_interval.start.base
+            ):
+                start_interval, end_interval = end_interval, start_interval
+            elif (
+                start_interval.start.base
+                and end_interval.end.base
+                and start_interval.start.base > end_interval.end.base
+            ):
+                start_interval, end_interval = end_interval, start_interval
+
+        # Return the final interval
+        return hgvs.location.Interval(
+            start=start_interval,
+            end=end_interval,
+            uncertain=g_interval.uncertain,
+        )
+
+    def g_to_n(
+        self,
+        g_interval: Interval,
+        strict_bounds: Optional[bool] = None,
+        imprecise_inner_interval_only: bool | None = None,
     ) -> BaseOffsetInterval:
         """convert a genomic (g.) interval to a transcript cDNA (n.) interval"""
 
         if strict_bounds is None:
             strict_bounds = global_config.mapping.strict_bounds
 
+        if imprecise_inner_interval_only is None:
+            imprecise_inner_interval_only = (
+                global_config.g_to_c.imprecise_inner_interval_only
+            )
+
+        if (
+            not imprecise_inner_interval_only
+            and isinstance(g_interval.start, Interval)
+            # and g_interval.start.start.base
+            and isinstance(g_interval.end, Interval)
+            # and g_interval.end.end.base
+        ):
+            return self._g_to_n_interval(g_interval, strict_bounds)
+
         # in case of uncertain ranges, we fall back to the inner (more confident) interval
-        if g_interval.start.uncertain:
-            grs = g_interval.start.end.base - 1 - self.gc_offset
-        else:
-            if isinstance(g_interval.start, Interval):
-                grs = g_interval.start.start.base - 1 - self.gc_offset
-            else:
-                grs = g_interval.start.base - 1 - self.gc_offset
-
-        if g_interval.end.uncertain:
-            gre = g_interval.end.start.base - 1 - self.gc_offset
-        else:
-            if isinstance(g_interval.end, Interval):
-                gre = g_interval.end.end.base - 1 - self.gc_offset
-            else:
-                gre = g_interval.end.base - 1 - self.gc_offset
-
-        # frs, fre = (f)orward (r)na (s)tart & (e)nd; forward w.r.t. genome
-        frs, frs_offset, frs_cigar = self.cigarmapper.map_ref_to_tgt(
-            pos=grs, end="start", strict_bounds=strict_bounds
+        grs = self._extract_genomic_position(
+            g_interval.start, True, imprecise_inner_interval_only
         )
-        fre, fre_offset, fre_cigar = self.cigarmapper.map_ref_to_tgt(
-            pos=gre, end="end", strict_bounds=strict_bounds
+        gre = self._extract_genomic_position(
+            g_interval.end, False, imprecise_inner_interval_only
+        )
+
+        forward_rna_start, forward_rna_start_offset, forward_rna_start_cigar = (
+            self.cigarmapper.map_ref_to_tgt(
+                pos=grs, end="start", strict_bounds=strict_bounds
+            )
+        )
+        forward_rna_end, forward_rna_end_offset, forward_rna_end_cigar = (
+            self.cigarmapper.map_ref_to_tgt(
+                pos=gre, end="end", strict_bounds=strict_bounds
+            )
         )
 
         if self.strand == -1:
-            frs, fre = self.tgt_len - 1 - fre, self.tgt_len - 1 - frs
-            frs_offset, fre_offset = -fre_offset, -frs_offset
+            # Store original values before transformation
+            orig_start = forward_rna_start
+            orig_end = forward_rna_end
+
+            # Transform coordinates for reverse strand
+            forward_rna_start = self.tgt_len - 1 - orig_end
+            forward_rna_end = self.tgt_len - 1 - orig_start
+
+            orig_offset_start = forward_rna_start_offset
+            orig_offset_end = forward_rna_end_offset
+            forward_rna_start_offset = -orig_offset_end
+            forward_rna_end_offset = -orig_offset_start
+
+        start = hgvs.location.BaseOffsetPosition(
+            base=_zbc_to_hgvs(forward_rna_start),
+            offset=forward_rna_start_offset,
+            datum=Datum.SEQ_START,
+            uncertain=g_interval.start.uncertain,
+        )
+        end = hgvs.location.BaseOffsetPosition(
+            base=_zbc_to_hgvs(forward_rna_end),
+            offset=forward_rna_end_offset,
+            datum=Datum.SEQ_START,
+            uncertain=g_interval.end.uncertain,
+        )
 
         # The returned interval would be uncertain when locating at alignment gaps
         # of if the initial interval was uncertain
-        return hgvs.location.BaseOffsetInterval(
-            start=hgvs.location.BaseOffsetPosition(
-                base=_zbc_to_hgvs(frs),
-                offset=frs_offset,
-                datum=Datum.SEQ_START,
-                uncertain=g_interval.start.uncertain,
-            ),
-            end=hgvs.location.BaseOffsetPosition(
-                base=_zbc_to_hgvs(fre),
-                offset=fre_offset,
-                datum=Datum.SEQ_START,
-                uncertain=g_interval.end.uncertain,
-            ),
-            uncertain=frs_cigar in "DI" or fre_cigar in "DI",
+        final_interval = hgvs.location.BaseOffsetInterval(
+            start=start,
+            end=end,
+            uncertain=forward_rna_start_cigar in "DI" or forward_rna_end_cigar in "DI",
         )
+        return final_interval
 
-    def n_to_g(self, n_interval, strict_bounds=None) -> Interval:
-        """convert a transcript (n.) interval to a genomic (g.) interval"""
+    def n_to_g(
+        self,
+        n_interval: Interval,
+        strict_bounds: Optional[bool] = None,
+        imprecise_inner_interval_only: bool | None = None,
+    ) -> Interval:
+        """Convert a transcript (n.) interval to a genomic (g.) interval.
 
+        Args:
+            n_interval: A transcript interval
+            strict_bounds: Whether to enforce strict bounds checking
+            imprecise_inner_interval_only: Whether to use only the inner (more confident) interval
+                                         for imprecise positions
+
+        Returns:
+            A genomic interval
+        """
         if strict_bounds is None:
             strict_bounds = global_config.mapping.strict_bounds
+        if imprecise_inner_interval_only is None:
+            imprecise_inner_interval_only = (
+                global_config.g_to_c.imprecise_inner_interval_only
+            )
 
-        frs = _hgvs_to_zbc(n_interval.start.base)
-        start_offset = n_interval.start.offset
-        fre = _hgvs_to_zbc(n_interval.end.base)
-        end_offset = n_interval.end.offset
+        if isinstance(n_interval.start, Interval) and isinstance(
+            n_interval.end, Interval
+        ):
+            return self._n_to_g_interval(
+                n_interval, strict_bounds, imprecise_inner_interval_only
+            )
 
+        # Get start and end positions
+        s, e = self._get_start_end(n_interval)
+
+        # Convert to zero-based coordinates
+        frs = _hgvs_to_zbc(s.base)
+        start_offset = s.offset
+        fre = _hgvs_to_zbc(e.base)
+        end_offset = e.offset
+
+        # For reverse strand, transform coordinates before mapping
         if self.strand == -1:
-            fre, frs = self.tgt_len - 1 - frs, self.tgt_len - 1 - fre
-            start_offset, end_offset = -end_offset, -start_offset
+            # Store original values
+            orig_frs = frs
+            orig_fre = fre
+            orig_start_offset = start_offset
+            orig_end_offset = end_offset
 
-        # returns the genomic range start (grs) and end (gre)
+            # Transform coordinates
+            frs = self.tgt_len - 1 - orig_fre
+            fre = self.tgt_len - 1 - orig_frs
+            start_offset = -orig_end_offset
+            end_offset = -orig_start_offset
+
+        # Map transcript positions to genomic positions
         grs, _, grs_cigar = self.cigarmapper.map_tgt_to_ref(
             pos=frs, end="start", strict_bounds=strict_bounds
         )
         gre, _, gre_cigar = self.cigarmapper.map_tgt_to_ref(
             pos=fre, end="end", strict_bounds=strict_bounds
         )
-        grs, gre = grs + self.gc_offset + 1, gre + self.gc_offset + 1
-        gs, ge = grs + start_offset, gre + end_offset
 
-        if n_interval.start.uncertain:
+        # Add offset to get final genomic positions
+        grs = grs + self.gc_offset + 1
+        gre = gre + self.gc_offset + 1
+        gs = grs + start_offset
+        ge = gre + end_offset
+
+        # Handle uncertain positions
+        if imprecise_inner_interval_only and n_interval.start.uncertain:
+            if self.strand == -1:
+                start = hgvs.location.SimplePosition(gs, uncertain=False)
+            else:
+                start = hgvs.location.SimplePosition(gs, uncertain=False)
+        elif isinstance(n_interval.start, Interval):
             start = hgvs.location.Interval(
-                start=hgvs.location.SimplePosition(uncertain=False),
-                end=hgvs.location.SimplePosition(gs, uncertain=False),
+                start=hgvs.location.SimplePosition(gs, uncertain=False),
+                end=hgvs.location.SimplePosition(uncertain=False),
                 uncertain=True,
             )
         else:
             start = hgvs.location.SimplePosition(gs, uncertain=False)
 
-        if n_interval.end.uncertain:
+        if imprecise_inner_interval_only and n_interval.end.uncertain:
+            if self.strand == -1:
+                end = hgvs.location.SimplePosition(ge, uncertain=False)
+            else:
+                end = hgvs.location.SimplePosition(ge, uncertain=False)
+        elif isinstance(n_interval.end, Interval):
             end = hgvs.location.Interval(
                 start=hgvs.location.SimplePosition(ge, uncertain=False),
                 end=hgvs.location.SimplePosition(uncertain=False),
@@ -257,6 +674,22 @@ class AlignmentMapper:
         else:
             end = hgvs.location.SimplePosition(ge, uncertain=False)
 
+        if (
+            not imprecise_inner_interval_only
+            and isinstance(start, Interval)
+            and isinstance(end, Interval)
+        ):
+            return hgvs.location.Interval(
+                start=start,
+                end=end,
+                uncertain=grs_cigar in "DI" or gre_cigar in "DI",
+            )
+
+        # For reverse strand, ensure start is less than or equal to end
+        if self.strand == -1:
+            if start.base > end.base:
+                start, end = end, start
+
         # The returned interval would be uncertain when locating at alignment gaps
         return hgvs.location.Interval(
             start=start,
@@ -264,11 +697,20 @@ class AlignmentMapper:
             uncertain=grs_cigar in "DI" or gre_cigar in "DI",
         )
 
-    def n_to_c(self, n_interval: Interval, strict_bounds: Optional[bool] = None):
+    def n_to_c(
+        self,
+        n_interval: Interval,
+        strict_bounds: bool | None = None,
+        imprecise_inner_interval_only: bool | None = None,
+    ):
         """convert a transcript cDNA (n.) interval to a transcript CDS (c.) interval"""
 
         if strict_bounds is None:
             strict_bounds = global_config.mapping.strict_bounds
+        if imprecise_inner_interval_only is None:
+            imprecise_inner_interval_only = (
+                global_config.g_to_c.imprecise_inner_interval_only
+            )
 
         if (
             self.cds_start_i is None
@@ -279,14 +721,22 @@ class AlignmentMapper:
                 )
             )
 
-        if strict_bounds and (
-            n_interval.start.base <= 0 or n_interval.end.base > self.tgt_len
-        ):
+        if isinstance(n_interval, BaseOffsetInterval):
+            start = n_interval.start.base
+            end = n_interval.end.base
+        elif isinstance(n_interval, Interval):
+            start = n_interval.start.start.base
+            end = n_interval.end.end.base
+
+        if not start:
+            start = 1
+
+        if strict_bounds and (start <= 0 or (end and end > self.tgt_len)):
             raise HGVSInvalidIntervalError(
                 "The given coordinate is outside the bounds of the reference sequence."
             )
 
-        def pos_n_to_c(pos):
+        def pos_n_to_c(pos) -> hgvs.location.BaseOffsetPosition:
             if pos.base <= self.cds_start_i:
                 c = pos.base - self.cds_start_i - (1 if pos.base > 0 else 0)
                 c_datum = Datum.CDS_START
@@ -300,11 +750,57 @@ class AlignmentMapper:
                 base=c, offset=pos.offset, datum=c_datum, uncertain=pos.uncertain
             )
 
-        c_interval = hgvs.location.BaseOffsetInterval(
-            start=pos_n_to_c(n_interval.start),
-            end=pos_n_to_c(n_interval.end),
-            uncertain=n_interval.uncertain,
-        )
+        def interval_n_to_c(interval: Interval) -> hgvs.location.BaseOffsetInterval:
+            istart = interval.start
+            if istart and istart.base:
+                c_start = pos_n_to_c(istart)
+            else:
+                c_start = hgvs.location.BaseOffsetPosition(
+                    base=None, datum=Datum.CDS_START
+                )
+                if not interval.end or not interval.end.base:
+                    raise HGVSInvalidIntervalError(
+                        "n_to_c: interval start is None and end is None"
+                    )
+
+            iend = interval.end
+            if iend and iend.base:
+                c_end = pos_n_to_c(iend)
+            else:
+                c_end = hgvs.location.BaseOffsetPosition(base=None, datum=Datum.CDS_END)
+
+            return hgvs.location.BaseOffsetInterval(
+                start=c_start,
+                end=c_end,
+                uncertain=interval.uncertain,
+            )
+
+        baseoffset = True
+        if isinstance(n_interval.start, Interval):
+            c_start = interval_n_to_c(n_interval.start)
+            baseoffset = False
+        else:
+            c_start = pos_n_to_c(n_interval.start)
+
+        if isinstance(n_interval.end, Interval):
+            c_end = interval_n_to_c(n_interval.end)
+            baseoffset = False
+        else:
+            # pos
+            c_end = pos_n_to_c(n_interval.end)
+
+        if baseoffset:
+            c_interval = hgvs.location.BaseOffsetInterval(
+                start=c_start,
+                end=c_end,
+                uncertain=n_interval.uncertain,
+            )
+        else:
+            c_interval = hgvs.location.Interval(
+                start=c_start,
+                end=c_end,
+                uncertain=n_interval.uncertain,
+            )
         return c_interval
 
     def c_to_n(self, c_interval, strict_bounds=None):
@@ -321,6 +817,11 @@ class AlignmentMapper:
             )
 
         def pos_c_to_n(pos):
+            if not pos or not pos.base:
+                return hgvs.location.BaseOffsetPosition(
+                    base=None, datum=Datum.SEQ_START
+                )
+
             if pos.datum == Datum.CDS_START:
                 n = pos.base + self.cds_start_i
                 if pos.base < 0:  # correct for lack of c.0 coordinate
@@ -342,21 +843,73 @@ class AlignmentMapper:
                 uncertain=pos.uncertain,
             )
 
-        n_interval = hgvs.location.BaseOffsetInterval(
-            start=pos_c_to_n(c_interval.start),
-            end=pos_c_to_n(c_interval.end),
-            uncertain=c_interval.uncertain,
-        )
+        def interval_c_to_n(interval: Interval) -> hgvs.location.BaseOffsetInterval:
+            istart = interval.start
+            n_start = pos_c_to_n(istart)
 
+            iend = interval.end
+            n_end = pos_c_to_n(iend)
+
+            return hgvs.location.BaseOffsetInterval(
+                start=n_start,
+                end=n_end,
+                uncertain=interval.uncertain,
+            )
+
+        baseoffset = True
+        if isinstance(c_interval.start, Interval):
+            n_start = interval_c_to_n(c_interval.start)
+            baseoffset = False
+        else:
+            n_start = pos_c_to_n(c_interval.start)
+
+        if isinstance(c_interval.end, Interval):
+            n_end = interval_c_to_n(c_interval.end)
+            baseoffset = False
+        else:
+            n_end = pos_c_to_n(c_interval.end)
+
+        if baseoffset:
+            n_interval = hgvs.location.BaseOffsetInterval(
+                start=n_start,
+                end=n_end,
+                uncertain=c_interval.uncertain,
+            )
+        else:
+            n_interval = hgvs.location.Interval(
+                start=n_start,
+                end=n_end,
+                uncertain=c_interval.uncertain,
+            )
         return n_interval
 
-    def g_to_c(self, g_interval, strict_bounds=None):
+    def g_to_c(
+        self,
+        g_interval,
+        strict_bounds: bool | None = None,
+        imprecise_inner_interval_only: bool | None = None,
+    ):
         """convert a genomic (g.) interval to a transcript CDS (c.) interval"""
-        return self.n_to_c(self.g_to_n(g_interval), strict_bounds=strict_bounds)
+        var_n = self.g_to_n(
+            g_interval, imprecise_inner_interval_only=imprecise_inner_interval_only
+        )
+        return self.n_to_c(
+            var_n,
+            strict_bounds=strict_bounds,
+            imprecise_inner_interval_only=imprecise_inner_interval_only,
+        )
 
-    def c_to_g(self, c_interval, strict_bounds=None):
+    def c_to_g(
+        self, c_interval, strict_bounds=None, imprecise_inner_interval_only=None
+    ):
         """convert a transcript CDS (c.) interval to a genomic (g.) interval"""
-        return self.n_to_g(self.c_to_n(c_interval), strict_bounds=strict_bounds)
+
+        var_n = self.c_to_n(c_interval)
+        return self.n_to_g(
+            var_n,
+            strict_bounds=strict_bounds,
+            imprecise_inner_interval_only=imprecise_inner_interval_only,
+        )
 
     @property
     def is_coding_transcript(self):
@@ -371,6 +924,209 @@ class AlignmentMapper:
         grs = ival.start.base - 1 - self.gc_offset
         gre = ival.end.base - 1 - self.gc_offset
         return grs >= 0 and gre <= self.cigarmapper.ref_len
+
+    def fix_offset(self, pos):
+        if isinstance(pos, int):
+            return pos
+        if not pos.base:
+            return None
+
+        return _hgvs_to_zbc(pos.base)
+
+    def _n_to_g_interval(
+        self,
+        n_interval: Interval,
+        strict_bounds: Optional[bool] = None,
+        imprecise_inner_interval_only: bool | None = None,
+    ) -> Interval:
+        """Convert transcript (n.) intervals to a genomic (g.) interval.
+
+        This method handles cases where both start and end of the input interval are themselves intervals.
+        The returned interval is corrected based on the strand direction.
+
+        Args:
+            n_interval: A transcript interval where both start and end are intervals
+            strict_bounds: Whether to enforce strict bounds checking
+
+        Returns:
+            A genomic interval with proper strand correction
+        """
+        # Get start and end positions from the intervals
+        start_start, start_end = self._get_start_end(n_interval.start)
+        end_start, end_end = self._get_start_end(n_interval.end)
+
+        # Convert to zero-based coordinates
+        frs_start = self.fix_offset(start_start)
+        frs_end = self.fix_offset(start_end)
+        fre_start = self.fix_offset(end_start)
+        fre_end = self.fix_offset(end_end)
+
+        ss_offset = start_start.offset
+        se_offset = start_end.offset
+        es_offset = end_start.offset
+        ee_offset = end_end.offset
+        # For reverse strand, transform coordinates before mapping
+        if self.strand == -1:
+            # Store original values
+            orig_frs_start = frs_start
+            orig_frs_end = frs_end
+            orig_fre_start = fre_start
+            orig_fre_end = fre_end
+            orig_ss_offset = ss_offset
+            orig_se_offset = se_offset
+            orig_es_offset = es_offset
+            orig_ee_offset = ee_offset
+
+            # Transform coordinates
+            frs_start = self.tgt_len - 1 - orig_frs_end
+            if orig_frs_start:
+                frs_end = self.tgt_len - 1 - orig_frs_start
+            else:
+                frs_end = None
+            fre_start = self.tgt_len - 1 - orig_fre_start
+            if orig_fre_end:
+                fre_end = self.tgt_len - 1 - orig_fre_end
+            else:
+                fre_end = None
+            ss_offset = orig_ss_offset
+            se_offset = orig_se_offset
+            es_offset = orig_es_offset
+            ee_offset = orig_ee_offset
+
+        if imprecise_inner_interval_only and start_start.offset != 0:
+            left_boundary_out_of_bounds = True
+        else:
+            left_boundary_out_of_bounds = False
+        if imprecise_inner_interval_only and end_end.offset != 0:
+            right_boundary_out_of_bounds = True
+        else:
+            right_boundary_out_of_bounds = False
+
+        # Map transcript positions to genomic positions
+        if frs_start is not None:
+            grs_start, _, grs_start_cigar = self.cigarmapper.map_tgt_to_ref(
+                pos=frs_start, end="start", strict_bounds=strict_bounds
+            )
+        else:
+            grs_start = None
+            grs_start_cigar = None
+
+        if frs_end is not None:
+            grs_end, _, grs_end_cigar = self.cigarmapper.map_tgt_to_ref(
+                pos=frs_end, end="end", strict_bounds=strict_bounds
+            )
+        else:
+            grs_end = None
+            grs_end_cigar = None
+
+        # is gre_start ever None?
+        gre_start, _, gre_start_cigar = self.cigarmapper.map_tgt_to_ref(
+            pos=fre_start, end="start", strict_bounds=strict_bounds
+        )
+        if fre_end is not None:
+            gre_end, _, gre_end_cigar = self.cigarmapper.map_tgt_to_ref(
+                pos=fre_end, end="end", strict_bounds=strict_bounds
+            )
+        else:
+            gre_end = None
+            gre_end_cigar = None
+
+        # Add offset to get final genomic positions
+        if self.strand == -1:
+            if gre_start is not None:
+                gre_orig_start = gre_start + self.gc_offset + 1 - es_offset
+            else:
+                gre_orig_start = -1
+
+            if gre_end is not None:
+                gre_orig_end = gre_end + self.gc_offset + 1 - ee_offset
+            else:
+                gre_orig_end = -1
+            if grs_start is not None:
+                grs_orig_start = grs_start + self.gc_offset + 1 - se_offset
+            else:
+                grs_orig_start = MAX_CHR_SIZE
+            if grs_end is not None:
+                grs_orig_end = grs_end + self.gc_offset + 1 - ss_offset
+            else:
+                grs_orig_end = MAX_CHR_SIZE + 1
+
+            # Sort the four values from smallest to largest
+            all_positions = [gre_orig_start, gre_orig_end, grs_orig_start, grs_orig_end]
+            all_positions.sort()
+
+            # Convert sentinel values back to None
+            all_positions = [
+                None if x == -1 or x >= MAX_CHR_SIZE else x for x in all_positions
+            ]
+
+            grs_start, grs_end, gre_start, gre_end = all_positions
+
+        else:
+            if grs_start:
+                grs_start = grs_start + self.gc_offset + 1 + ss_offset
+            if grs_end:
+                grs_end = grs_end + self.gc_offset + 1 + se_offset
+            if gre_start:
+                gre_start = gre_start + self.gc_offset + 1 + es_offset
+            if gre_end:
+                gre_end = gre_end + self.gc_offset + 1 + ee_offset
+
+        # For reverse strand, ensure start is less than or equal to end
+
+        if left_boundary_out_of_bounds:
+            lstart = hgvs.location.SimplePosition(
+                base=None, uncertain=start_start.uncertain
+            )
+        else:
+            lstart = hgvs.location.SimplePosition(
+                base=grs_start, uncertain=start_start.uncertain
+            )
+
+        lend = hgvs.location.SimplePosition(grs_end, uncertain=start_end.uncertain)
+
+        rstart = hgvs.location.SimplePosition(gre_start, uncertain=end_start.uncertain)
+        if right_boundary_out_of_bounds:
+            rend = hgvs.location.SimplePosition(
+                base=None, uncertain=end_start.uncertain
+            )
+        else:
+            rend = hgvs.location.SimplePosition(
+                base=gre_end, uncertain=end_start.uncertain
+            )
+
+        # Create the start interval
+        g_start = hgvs.location.Interval(
+            start=lstart,
+            end=lend,
+            uncertain=n_interval.start.uncertain
+            or grs_start_cigar in "DI"
+            or grs_end_cigar in "DI",
+        )
+
+        # Create the end interval
+        g_end = hgvs.location.Interval(
+            start=rstart,
+            end=rend,
+            uncertain=n_interval.end.uncertain
+            or gre_start_cigar in "DI"
+            or gre_end_cigar in "DI",
+        )
+
+        if self.strand == -1:
+            if (
+                g_start.end.base
+                and g_end.start.base
+                and g_start.end.base > g_end.start.base
+            ):
+                g_start, g_end = g_end, g_start
+
+        # Return the final interval
+        return hgvs.location.Interval(
+            start=g_start,
+            end=g_end,
+            uncertain=n_interval.uncertain,
+        )
 
 
 # <LICENSE>

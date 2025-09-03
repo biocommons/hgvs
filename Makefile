@@ -23,8 +23,9 @@ DOC_TESTS:=docs hgvs ./README.rst
 export HGVS_CACHE_MODE=
 _UTAPW=anonymous
 export UTA_DB_URL=postgresql://anonymous:${_UTAPW}@uta.biocommons.org:5432/uta/uta_20241220
-export HGVS_SEQREPO_URL=http://localhost:5000/seqrepo
 
+# This will match the cassettes key for unit tests:
+export HGVS_SEQREPO_URL=http://localhost:5000/seqrepo
 
 ############################################################################
 #= BASIC USAGE
@@ -90,8 +91,8 @@ stest:
 test-%:
 	pytest -m '$*' ${TEST_DIRS}
 
-#=> test-learn: add new data to test data cache
-test-learn:
+#=> test-learn: add new data to test data cache - this is how test-learn should work
+test-learn-how-it-should-work:
 	HGVS_CACHE_MODE=learn pytest -s
 #=> test-relearn: destroy and rebuild test data cache
 # tip: make test-relearn UTA_DB_URL=postgresql://anonymous@localhost:5432/uta_dev/uta_20241220 HGVS_SEQREPO_URL=http://localhost:5000/seqrepo
@@ -100,7 +101,9 @@ test-relearn:
 	HGVS_CACHE_MODE=learn pytest -s
 #=> test-relearn-iteratively: destroy and rebuild test data cache (biocommons/hgvs#760)
 # temporary workaround for https://github.com/biocommons/hgvs/issues/760
-test-relearn-iteratively:
+# this is actually a test-relearn-iteratively, but we made it the default for now
+# TODO: fix and rename the test targets again.
+test-learn:
 	rm -fr tests/data/cache-py3.hdp tests/cassettes
 	find tests/ -name 'test*.py' | HGVS_CACHE_MODE=learn xargs -tn1 -- pytest --no-cov -x -s
 

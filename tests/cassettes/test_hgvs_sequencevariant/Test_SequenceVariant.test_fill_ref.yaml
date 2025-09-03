@@ -11,19 +11,19 @@ interactions:
       User-Agent:
       - python-requests/2.32.4
     method: GET
-    uri: http://localhost:5000/seqrepo/1/sequence/NC_000007.13?start=21940851&end=21940908
+    uri: http://localhost:5000/seqrepo/1/sequence/NM_001166478.1?start=30&end=32
   response:
     body:
-      string: GCTCTGCTTCTAGAAGCGTAAGGTAACACTGGCATTCCTCTAGCCTCTGCTGGAGTG
+      string: TT
     headers:
       Connection:
       - close
       Content-Length:
-      - '57'
+      - '2'
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Wed, 03 Sep 2025 19:04:36 GMT
+      - Wed, 03 Sep 2025 19:04:18 GMT
       Server:
       - Werkzeug/2.2.2 Python/3.10.4
     status:
@@ -41,19 +41,19 @@ interactions:
       User-Agent:
       - python-requests/2.32.4
     method: GET
-    uri: http://localhost:5000/seqrepo/1/sequence/NM_003777.3?start=13582&end=13639
+    uri: http://localhost:5000/seqrepo/1/sequence/NM_001166478.1?start=1&end=7
   response:
     body:
-      string: GCTCTGCTTCTAGAAGCGTAAGGTAACACTGGCATTCCTCTAGCCTCTGCTGGAGTG
+      string: TGAAGA
     headers:
       Connection:
       - close
       Content-Length:
-      - '57'
+      - '6'
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Wed, 03 Sep 2025 19:04:36 GMT
+      - Wed, 03 Sep 2025 19:04:18 GMT
       Server:
       - Werkzeug/2.2.2 Python/3.10.4
     status:
@@ -71,10 +71,40 @@ interactions:
       User-Agent:
       - python-requests/2.32.4
     method: GET
-    uri: http://localhost:5000/seqrepo/1/sequence/NM_003777.3?start=13638&end=13639
+    uri: http://localhost:5000/seqrepo/1/sequence/NM_001166478.1?start=34&end=36
   response:
     body:
-      string: G
+      string: TC
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '2'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Wed, 03 Sep 2025 19:04:18 GMT
+      Server:
+      - Werkzeug/2.2.2 Python/3.10.4
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NM_001166478.1?start=30&end=31
+  response:
+    body:
+      string: T
     headers:
       Connection:
       - close
@@ -83,7 +113,7 @@ interactions:
       Content-Type:
       - text/plain; charset=utf-8
       Date:
-      - Wed, 03 Sep 2025 19:04:36 GMT
+      - Wed, 03 Sep 2025 19:04:18 GMT
       Server:
       - Werkzeug/2.2.2 Python/3.10.4
     status:
