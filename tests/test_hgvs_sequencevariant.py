@@ -14,6 +14,7 @@ def test_gene_formatting(parser):
     assert str(v) == "NM_01234.5:c.65A>C"
 
 
+@pytest.mark.vcr
 @pytest.mark.quick
 @pytest.mark.models
 class Test_SequenceVariant:
