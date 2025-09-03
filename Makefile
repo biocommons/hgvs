@@ -23,8 +23,9 @@ DOC_TESTS:=docs hgvs ./README.rst
 export HGVS_CACHE_MODE=
 _UTAPW=anonymous
 export UTA_DB_URL=postgresql://anonymous:${_UTAPW}@uta.biocommons.org:5432/uta/uta_20241220
-export HGVS_SEQREPO_URL=http://localhost:5000/seqrepo
 
+# This will match the cassettes key for unit tests:
+export HGVS_SEQREPO_URL=http://localhost:5000/seqrepo
 
 ############################################################################
 #= BASIC USAGE

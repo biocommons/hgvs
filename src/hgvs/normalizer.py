@@ -122,7 +122,6 @@ class Normalizer:
                 # was invalid.
                 return "Bad Request" not in str(e)
 
-        print(f"normalizer: s: {s}, e: {e}")
         if s.base < 0 or not is_valid_pos(var.ac, e.base):
             if hgvs.global_config.mapping.strict_bounds:
                 raise HGVSInvalidVariantError(f"{var}: coordinates are out-of-bounds")

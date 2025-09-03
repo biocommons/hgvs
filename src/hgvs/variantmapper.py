@@ -197,10 +197,8 @@ class VariantMapper:
             ac=tx_ac, type="n", posedit=hgvs.posedit.PosEdit(pos_n, edit_n)
         )
 
-        print(f"g_to_n var_n: {var_n} uncertain: {var_n.posedit.pos.uncertain}")
         s, e = get_start_end(var_n, outer_confidence=False)
 
-        print(f"g_to_n s: {s} e: {e} mapper.tgt_len: {mapper.tgt_len}")
         if (
             self.replace_reference
             and s is not None
@@ -237,7 +235,6 @@ class VariantMapper:
             tx_ac=var_n.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method
         )
         pos_g = mapper.n_to_g(var_n.posedit.pos)
-        print(f"n_to_g pos_g: {pos_g} uncertain: {pos_g.uncertain}")
         if not pos_g.uncertain:
             edit_g = self._convert_edit_check_strand(mapper.strand, var_n.posedit.edit)
             if edit_g.type == "ins" and pos_g.end - pos_g.start > 1:
@@ -297,7 +294,6 @@ class VariantMapper:
             var_g.posedit.pos,
             imprecise_inner_interval_only=imprecise_inner_interval_only,
         )
-        print(f"g_to_c:{pos_c} uncertain: {pos_c.uncertain}")
         if not pos_c.uncertain:
             edit_c = self._convert_edit_check_strand(mapper.strand, var_g.posedit.edit)
             if (
@@ -311,10 +307,8 @@ class VariantMapper:
                 pos_c.end.base -= 1
                 edit_c.ref = ""
         else:
-            print("g_to_c: pos_c.uncertain")
             # variant at alignment gap
             pos_g = mapper.c_to_g(pos_c)
-            print("g_to_c: pos_g")
             edit_c = hgvs.edit.NARefAlt(
                 ref="", alt=self._get_altered_sequence(mapper.strand, pos_g, var_g)
             )
@@ -322,7 +316,6 @@ class VariantMapper:
         var_c = hgvs.sequencevariant.SequenceVariant(
             ac=tx_ac, type="c", posedit=hgvs.posedit.PosEdit(pos_c, edit_c)
         )
-        print(f" final var_c: {var_c}")
         if self.replace_reference:
             self._replace_reference(var_c)
         if self.add_gene_symbol:
@@ -356,13 +349,11 @@ class VariantMapper:
         mapper = self._fetch_AlignmentMapper(
             tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method
         )
-        print(f"c_to_g: var_c: {var_c}")
         pos_g = mapper.c_to_g(
             var_c.posedit.pos,
             imprecise_inner_interval_only=imprecise_inner_interval_only,
         )
 
-        print(f"vm.c_to_g pos_g: {pos_g} uncertain: {pos_g.uncertain}")
         if not pos_g.uncertain:
             edit_g = self._convert_edit_check_strand(mapper.strand, var_c.posedit.edit)
             if edit_g.type == "ins" and pos_g.end - pos_g.start > 1:
@@ -542,8 +533,6 @@ class VariantMapper:
             pos = mapper.c_to_n(var.posedit.pos)
         else:
             pos = var.posedit.pos
-
-        print(f"pos: replace ref {pos} {pos.start} {pos.start.uncertain} ")
 
         seq_start, seq_end = get_start_end_interbase(pos, outer_confidence=True)
 

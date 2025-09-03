@@ -316,7 +316,6 @@ class AlignmentMapper:
                 uncertain=start_cigar in "DI",
             )
         else:
-            print("create_base_offset_interval: start_pos is None")
             start = hgvs.location.BaseOffsetPosition(
                 base=None,
                 offset=0,
@@ -338,8 +337,6 @@ class AlignmentMapper:
                 datum=Datum.SEQ_START,
                 uncertain=False,
             )
-
-        print(f"create_base_offset_interval: start {start} end {end}")
 
         return hgvs.location.BaseOffsetInterval(
             start=start,
@@ -365,10 +362,6 @@ class AlignmentMapper:
         # Get start and end positions from the genomic interval
         start_start, start_end = self._get_start_end(g_interval.start)
         end_start, end_end = self._get_start_end(g_interval.end)
-
-        print(
-            f"g_to_n_interval: strand {self.strand} start_start {start_start} start_end {start_end} end_start {end_start} end_end {end_end.base}"
-        )
 
         # Convert to zero-based coordinates relative to the alignment
         if not start_start.base:
@@ -470,7 +463,6 @@ class AlignmentMapper:
             n_start_end_cigar,
             g_interval.start.uncertain,
         )
-        print(f"g_to_n_interval: start_interval {start_interval}")
 
         # Create the end interval
         end_interval = self._create_base_offset_interval(
@@ -498,10 +490,6 @@ class AlignmentMapper:
             ):
                 start_interval, end_interval = end_interval, start_interval
 
-        print(
-            f"g_to_n_interval: start_interval {start_interval} end_interval {end_interval}"
-        )
-
         # Return the final interval
         return hgvs.location.Interval(
             start=start_interval,
@@ -525,10 +513,6 @@ class AlignmentMapper:
                 global_config.g_to_c.imprecise_inner_interval_only
             )
 
-        print(
-            f"check ranges {self.strand} gc offset: {self.gc_offset} {g_interval.start}-{g_interval.end} start uncertain:{g_interval.start.uncertain} imprecise inner: {imprecise_inner_interval_only}"
-        )
-
         if (
             not imprecise_inner_interval_only
             and isinstance(g_interval.start, Interval)
@@ -538,9 +522,6 @@ class AlignmentMapper:
         ):
             return self._g_to_n_interval(g_interval, strict_bounds)
 
-        print(
-            f"g_to_n: not using interval:g_interval.start {g_interval.start} g_interval.end {g_interval.end}"
-        )
         # in case of uncertain ranges, we fall back to the inner (more confident) interval
         grs = self._extract_genomic_position(
             g_interval.start, True, imprecise_inner_interval_only
@@ -548,8 +529,6 @@ class AlignmentMapper:
         gre = self._extract_genomic_position(
             g_interval.end, False, imprecise_inner_interval_only
         )
-
-        print(f"g_to_n: grs {grs} gre {gre}")
 
         forward_rna_start, forward_rna_start_offset, forward_rna_start_cigar = (
             self.cigarmapper.map_ref_to_tgt(
@@ -562,10 +541,6 @@ class AlignmentMapper:
             )
         )
 
-        print(
-            f"g_to_n: forward_rna_start {forward_rna_start} forward_rna_end {forward_rna_end} strand: {self.strand}"
-        )
-        print(f"g_to_n: offsets:{forward_rna_start_offset} {forward_rna_end_offset}")
         if self.strand == -1:
             # Store original values before transformation
             orig_start = forward_rna_start
@@ -592,7 +567,6 @@ class AlignmentMapper:
             datum=Datum.SEQ_START,
             uncertain=g_interval.end.uncertain,
         )
-        print(f"g_to_n: start {start} end {end}")
 
         # The returned interval would be uncertain when locating at alignment gaps
         # of if the initial interval was uncertain
@@ -601,7 +575,6 @@ class AlignmentMapper:
             end=end,
             uncertain=forward_rna_start_cigar in "DI" or forward_rna_end_cigar in "DI",
         )
-        print(f"g_to_n final interval: {final_interval}")
         return final_interval
 
     def n_to_g(
@@ -628,8 +601,6 @@ class AlignmentMapper:
                 global_config.g_to_c.imprecise_inner_interval_only
             )
 
-        print(f"n_to_g: n_interval: {n_interval}")
-
         if isinstance(n_interval.start, Interval) and isinstance(
             n_interval.end, Interval
         ):
@@ -640,7 +611,6 @@ class AlignmentMapper:
         # Get start and end positions
         s, e = self._get_start_end(n_interval)
 
-        print(f"n_to_g: s {s} e {e}")
         # Convert to zero-based coordinates
         frs = _hgvs_to_zbc(s.base)
         start_offset = s.offset
@@ -886,24 +856,11 @@ class AlignmentMapper:
                 uncertain=interval.uncertain,
             )
 
-        print(f"c_to_n {type(c_interval)}")
-        print(f"c_to_n {c_interval}")
-
         baseoffset = True
         if isinstance(c_interval.start, Interval):
             n_start = interval_c_to_n(c_interval.start)
             baseoffset = False
-            print(
-                f"c to n: I c_interval start {c_interval.start} c_interval end {c_interval.end}"
-            )
-            print(f"c to n: I start {n_start}")
         else:
-            print(
-                f"c to n: c_interval start {c_interval.start} c_interval end {c_interval.end}"
-            )
-            print(
-                f"c to n: start {pos_c_to_n(c_interval.start)} end {pos_c_to_n(c_interval.end)}"
-            )
             n_start = pos_c_to_n(c_interval.start)
 
         if isinstance(c_interval.end, Interval):
@@ -924,7 +881,6 @@ class AlignmentMapper:
                 end=n_end,
                 uncertain=c_interval.uncertain,
             )
-        print(f"c_to_n:final n_interval: {n_interval}")
         return n_interval
 
     def g_to_c(
@@ -999,10 +955,6 @@ class AlignmentMapper:
         start_start, start_end = self._get_start_end(n_interval.start)
         end_start, end_end = self._get_start_end(n_interval.end)
 
-        print(
-            f"n_to_g_interval: start_start {start_start} start_end {start_end} end_start {end_start} end_end {end_end}"
-        )
-
         # Convert to zero-based coordinates
         frs_start = self.fix_offset(start_start)
         frs_end = self.fix_offset(start_end)
@@ -1013,14 +965,6 @@ class AlignmentMapper:
         se_offset = start_end.offset
         es_offset = end_start.offset
         ee_offset = end_end.offset
-
-        print(f"n_to_g_interval: {start_start} {start_end} {end_start} {end_end}")
-        print(f"n_to_g_interval: {ss_offset} {se_offset} {es_offset} {ee_offset}")
-        print(
-            f"n_to_g_interval: U frs_start {frs_start} _ {frs_end} | {fre_start} _ {fre_end}"
-        )
-        print(f"n_to_g_interval: tgt_len {self.tgt_len} strand {self.strand}")
-
         # For reverse strand, transform coordinates before mapping
         if self.strand == -1:
             # Store original values
@@ -1049,10 +993,6 @@ class AlignmentMapper:
             es_offset = orig_es_offset
             ee_offset = orig_ee_offset
 
-        print(
-            f"n_to_g_interval:  L frs_start {frs_start} _ {frs_end} | {fre_start} _ {fre_end}"
-        )
-
         if imprecise_inner_interval_only and start_start.offset != 0:
             left_boundary_out_of_bounds = True
         else:
@@ -1061,10 +1001,6 @@ class AlignmentMapper:
             right_boundary_out_of_bounds = True
         else:
             right_boundary_out_of_bounds = False
-
-        print(
-            f"n_to_g_interval: before reverse: frs_start {frs_start} _ {frs_end} | {fre_start} _ {fre_end}"
-        )
 
         # Map transcript positions to genomic positions
         if frs_start is not None:
@@ -1117,9 +1053,7 @@ class AlignmentMapper:
 
             # Sort the four values from smallest to largest
             all_positions = [gre_orig_start, gre_orig_end, grs_orig_start, grs_orig_end]
-            print(f"n_to_g_interval: all_positions {all_positions}")
             all_positions.sort()
-            print(f"n_to_g_interval: sorted all_positions {all_positions}")
 
             # Convert sentinel values back to None
             all_positions = [
@@ -1138,14 +1072,9 @@ class AlignmentMapper:
             if gre_end:
                 gre_end = gre_end + self.gc_offset + 1 + ee_offset
 
-        print(
-            f"n_to_g_interval: left / right boundary out of bounds: {left_boundary_out_of_bounds} {right_boundary_out_of_bounds}"
-        )
-
         # For reverse strand, ensure start is less than or equal to end
 
         if left_boundary_out_of_bounds:
-            print("n_to_g_interval: left boundary out of bounds")
             lstart = hgvs.location.SimplePosition(
                 base=None, uncertain=start_start.uncertain
             )
@@ -1158,7 +1087,6 @@ class AlignmentMapper:
 
         rstart = hgvs.location.SimplePosition(gre_start, uncertain=end_start.uncertain)
         if right_boundary_out_of_bounds:
-            print("n_to_g_interval: right boundary out of bounds")
             rend = hgvs.location.SimplePosition(
                 base=None, uncertain=end_start.uncertain
             )
@@ -1166,11 +1094,6 @@ class AlignmentMapper:
             rend = hgvs.location.SimplePosition(
                 base=gre_end, uncertain=end_start.uncertain
             )
-            print(f"n_to_g_interval: right boundary in bounds {rend}")
-
-        print(
-            f"n_to_g_interval: lstart {lstart} lend {lend} rstart {rstart} rend {rend} strand {self.strand}"
-        )
 
         # Create the start interval
         g_start = hgvs.location.Interval(
