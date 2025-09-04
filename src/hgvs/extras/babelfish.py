@@ -11,17 +11,7 @@ from hgvs.location import Interval, SimplePosition
 from hgvs.normalizer import Normalizer
 from hgvs.posedit import PosEdit
 from hgvs.sequencevariant import SequenceVariant
-
-
-def _as_interbase(posedit):
-    if posedit.edit.type == "ins":
-        # ins coordinates (only) exclude left position
-        start_i = posedit.pos.start.base
-        end_i = posedit.pos.end.base - 1
-    else:
-        start_i = posedit.pos.start.base - 1
-        end_i = posedit.pos.end.base
-    return (start_i, end_i)
+from hgvs.utils.position import get_start_end_interbase
 
 
 class Babelfish:
@@ -49,7 +39,8 @@ class Babelfish:
 
         vleft = self.hn.normalize(var_g)
 
-        (start_i, end_i) = _as_interbase(vleft.posedit)
+        # We are taking the inner interval, but plan on implementing INFO fields in issue #788
+        start_i, end_i = get_start_end_interbase(vleft.posedit.pos, outer_confidence=False)
 
         chrom = self.ac_to_name_map[vleft.ac]
 

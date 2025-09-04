@@ -6,7 +6,6 @@ from support import CACHE
 
 from hgvs.assemblymapper import AssemblyMapper
 import hgvs.easy
-from hgvs.extras.babelfish import Babelfish
 from hgvs.variantmapper import VariantMapper
 
 
@@ -70,11 +69,6 @@ def am38(hdp):
 @pytest.fixture(scope="session")
 def hdp():
     return hgvs.easy.hdp
-
-
-@pytest.fixture(scope="session")
-def babelfish38(hdp):
-    return Babelfish(hdp, assembly_name="GRCh38")
 
 
 def pytest_report_header(config):
