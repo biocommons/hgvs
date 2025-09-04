@@ -8,10 +8,12 @@ NORM_HGVS_VCF = [
         "NC_000006.12:g.49949407=",
         [],
         ("6", 49949407, "A", ".", "identity"),
-        [("6", 49949407, "A", "A", "identity"),
-         # Test case insensitivity
-         ("6", 49949407, "A", "a", "identity"),
-         ("6", 49949407, "a", "A", "identity"),]
+        [
+            ("6", 49949407, "A", "A", "identity"),
+            # Test case insensitivity
+            ("6", 49949407, "A", "a", "identity"),
+            ("6", 49949407, "a", "A", "identity"),
+        ],
     ),
     # Test multi-base identity
     (
@@ -48,11 +50,19 @@ NORM_HGVS_VCF = [
     ("NC_000006.12:g.49949413_49949414del", [], ("6", 49949409, "GAA", "G", "del"), []),
     # ins, no shift
     ("NC_000006.12:g.49949413_49949414insC", [], ("6", 49949413, "A", "AC", "ins"), []),
-    ("NC_000006.12:g.49949414_49949415insCC", [], ("6", 49949414, "A", "ACC", "ins"), []),
+    (
+        "NC_000006.12:g.49949414_49949415insCC",
+        [],
+        ("6", 49949414, "A", "ACC", "ins"),
+        [],
+    ),
     # ins/dup, w/shift
     (
         "NC_000006.12:g.49949414dup",
-        ["NC_000006.12:g.49949413_49949414insA", "NC_000006.12:g.49949414_49949415insA"],
+        [
+            "NC_000006.12:g.49949413_49949414insA",
+            "NC_000006.12:g.49949414_49949415insA",
+        ],
         ("6", 49949409, "G", "GA", "dup"),
         [],
     ),
@@ -64,13 +74,9 @@ NORM_HGVS_VCF = [
     ),
     # Test uncertainty. We currently take inner interval
     (
-        "NC_000009.11:g.(108337300_108337304)_108337428del",
+        "NC_000006.12:g.(49949410_49949413)_49949414del",
         [],
-        ('9',
-         108337303,
-         'AGCACAGACTAATGAGTAGAATCAATAAGAACGTGGTTTTGGCCCTTTTAACGCTGACAAGTTCTGCATTTCTGCTGTTTCAGTTGTACTACTACAAGCACTATTTATCAACAAAGGTAATTTTAT',
-         'A',
-         'del'),
+        ("6", 49949409, "GAA", "G", "del"),
         [],
     ),
 ]
@@ -98,7 +104,12 @@ def test_vcf_to_hgvs(parser, babelfish38):
     def _v2h(*v):
         return babelfish38.vcf_to_g_hgvs(*v)
 
-    for expected_hgvs_string, _, norm_variant_coordinate, alt_variant_coordinate in NORM_HGVS_VCF:
+    for (
+        expected_hgvs_string,
+        _,
+        norm_variant_coordinate,
+        alt_variant_coordinate,
+    ) in NORM_HGVS_VCF:
         for variant_coordinate in [norm_variant_coordinate] + alt_variant_coordinate:
             *v, typ = variant_coordinate  # last column is type ie "dup"
             hgvs_g = _v2h(*v)
