@@ -10,13 +10,23 @@ from hgvs.extras.babelfish import Babelfish
 from hgvs.variantmapper import VariantMapper
 
 
-def remove_headers(response):
-    headers_to_remove = ["date", "server"]
+def remove_headers(headers_to_remove, request_or_response):
+    headers = getattr(request_or_response, "headers", request_or_response)
     for header in headers_to_remove:
-        response["headers"].pop(header, None)
+        headers.pop(header, None)
         # Also try capitalized versions
-        response["headers"].pop(header.capitalize(), None)
-    return response
+        headers.pop(header.title(), None)
+    return request_or_response
+
+
+def remove_request_headers(request):
+    headers_to_remove = ["user-agent"]
+    return remove_headers(headers_to_remove, request)
+
+
+def remove_response_headers(response):
+    headers_to_remove = ["date", "server"]
+    return remove_headers(headers_to_remove, response)
 
 
 @pytest.fixture(scope="function")
@@ -29,7 +39,8 @@ def vcr_config(request):
         ),
         "record_mode": os.environ.get("VCR_RECORD_MODE", "new_episodes"),
         "cassette_name": f"{request.node.name}.yaml",
-        "before_record_response": remove_headers,
+        "before_record_request": remove_request_headers,
+        "before_record_response": remove_response_headers,
     }
 
 
