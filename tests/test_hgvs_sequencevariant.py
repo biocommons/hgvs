@@ -5,6 +5,7 @@ import pytest
 import hgvs
 import hgvs.parser
 import hgvs.sequencevariant
+import hgvs.normalizer
 
 
 def test_gene_formatting(parser):
@@ -168,9 +169,10 @@ class Test_SequenceVariant:
         ],
     )
     def test_partial_uncertain_projection(
-        self, parser, vm, hgvs_g, start_uncertain, stop_uncertain, hgvs_n, hgvs_c
+        self, parser, vm, hdp, hgvs_g, start_uncertain, stop_uncertain, hgvs_n, hgvs_c
     ):
         hp = parser
+        normalizer = hgvs.normalizer.Normalizer(hdp)
         """Test partial uncertain projection from genomic to cDNA to CDS coordinates."""
         var_g = hp.parse(hgvs_g)
         assert var_g.posedit.pos.start.uncertain == start_uncertain
@@ -181,6 +183,9 @@ class Test_SequenceVariant:
         assert hgvs_n == str(var_n)
         var_c = vm.g_to_c(var_g, acc)
         assert hgvs_c == str(var_c)
+
+        var_g_norm = normalizer.normalize(var_g)
+        assert hgvs_g == str(var_g_norm)
 
     @pytest.mark.parametrize(
         "hgvs_g, hgvs_n, hgvs_c",
