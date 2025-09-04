@@ -507,6 +507,9 @@ class BaseOffsetInterval(Interval):
     __str__ = format
 
     def __attrs_post_init__(self):
+        # chain to super() for handling of end = None
+        super().__attrs_post_init__()
+
         # #330: In a post-ter interval like *87_91, the * binds only
         # to the start. This means that the start.datum is CDS_END,
         # but the end.datum is CDS_START (the default).

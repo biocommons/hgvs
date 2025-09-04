@@ -133,13 +133,13 @@ def_g_interval = (g_pos:start '_' g_pos:end -> hgvs.location.Interval(start,end)
 def_m_interval = (m_pos:start '_' m_pos:end -> hgvs.location.Interval(start,end)) | (m_pos:start -> hgvs.location.Interval(start,None))
 def_p_interval = (p_pos:start '_' p_pos:end -> hgvs.location.Interval(start,end)) | (p_pos:start -> hgvs.location.Interval(start,None))
 def_r_interval = (r_pos:start '_' r_pos:end -> hgvs.location.Interval(start,end)) | (r_pos:start -> hgvs.location.Interval(start,None))
-def_c_interval = (c_pos:start '_' c_pos:end -> hgvs.location.BaseOffsetInterval(start,end)) | (c_pos:start -> hgvs.location.BaseOffsetInterval(start,copy.deepcopy(start)))
-def_n_interval = (n_pos:start '_' n_pos:end -> hgvs.location.BaseOffsetInterval(start,end)) | (n_pos:start -> hgvs.location.BaseOffsetInterval(start,copy.deepcopy(start)))
+def_c_interval = (c_pos:start '_' c_pos:end -> hgvs.location.BaseOffsetInterval(start,end)) | (c_pos:start -> hgvs.location.BaseOffsetInterval(start,None))
+def_n_interval = (n_pos:start '_' n_pos:end -> hgvs.location.BaseOffsetInterval(start,end)) | (n_pos:start -> hgvs.location.BaseOffsetInterval(start,None))
 
 # indefinite ranges
-uncertain_g_interval = '(' def_g_interval:ivl_start ')' '_' '(' def_g_interval:ivl_end ')' -> hgvs.location.Interval(start=ivl_start._set_uncertain(), end=ivl_end._set_uncertain())
-                        | def_g_interval:ivl_start '_' '(' def_g_interval:ivl_end ')' -> hgvs.location.Interval(start=ivl_start, end=ivl_end._set_uncertain())
-                        | '(' def_g_interval:ivl_start ')' '_' def_g_interval:ivl_end -> hgvs.location.Interval(start=ivl_start._set_uncertain(), end=ivl_end) 
+uncertain_g_interval = '(' def_g_interval:iv_start ')' '_' '(' def_g_interval:iv_end ')' -> hgvs.location.Interval(start=iv_start._set_uncertain(), end=iv_end._set_uncertain())
+                        | def_g_interval:iv_start '_' '(' def_g_interval:iv_end ')' -> hgvs.location.Interval(start=iv_start, end=iv_end._set_uncertain())
+                        | '(' def_g_interval:iv_start ')' '_' def_g_interval:iv_end -> hgvs.location.Interval(start=iv_start._set_uncertain(), end=iv_end)
                         | ('(' def_g_interval:iv ')' -> iv._set_uncertain()) 
 
 
