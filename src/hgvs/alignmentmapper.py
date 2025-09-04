@@ -26,10 +26,6 @@ The AlignmentMapper class is at the heart of mapping between aligned sequences.
 #    g.   ... 123   124   125   126   127   128   129   130   131   132   133 ...
 #
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-from typing import Optional
-
 from bioutils.coordinates import strand_int_to_pm
 
 import hgvs.location
@@ -46,15 +42,14 @@ from hgvs.utils import build_tx_cigar
 from hgvs.utils.cigarmapper import CIGARMapper
 import math
 
-
-def _zbc_to_hgvs(i: int):
+def _zbc_to_hgvs(i: int) -> int:
     """Convert zero-based coordinate to hgvs (1 based, missing zero)"""
     if i >= 0:
         i += 1
     return i
 
 
-def _hgvs_to_zbc(i: int):
+def _hgvs_to_zbc(i: int) -> int:
     """Convert hgvs (1 based, missing zero)"""
     if i >= 1:
         i -= 1
@@ -87,7 +82,9 @@ class AlignmentMapper:
         "cigar_op",
     )
 
-    def __init__(self, hdp, tx_ac, alt_ac, alt_aln_method):
+    def __init__(
+        self, hdp: Interface, tx_ac: str, alt_ac: str, alt_aln_method: str
+    ) -> None:
         self.tx_ac = tx_ac
         self.alt_ac = alt_ac
         self.alt_aln_method = alt_aln_method
@@ -152,7 +149,7 @@ class AlignmentMapper:
             "CDS start and end must both be defined or neither defined"
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
             "{self.__class__.__name__}: {self.tx_ac} ~ {self.alt_ac} ~ {self.alt_aln_method}; "
             "{strand_pm} strand; offset={self.gc_offset}".format(
@@ -427,7 +424,7 @@ class AlignmentMapper:
         )
 
     def g_to_n(
-        self, g_interval: Interval, strict_bounds: Optional[bool] = None
+        self, g_interval: Interval, strict_bounds: bool | None = None
     ) -> BaseOffsetInterval:
         """convert a genomic (g.) interval to a transcript cDNA (n.) interval"""
 
@@ -689,7 +686,7 @@ class AlignmentMapper:
             )
         return c_interval
 
-    def c_to_n(self, c_interval, strict_bounds=None):
+    def c_to_n(self, c_interval: Interval, strict_bounds: bool | None = None):
         """convert a transcript CDS (c.) interval to a transcript cDNA (n.) interval"""
 
         if strict_bounds is None:
@@ -769,7 +766,9 @@ class AlignmentMapper:
             )
         return n_interval
 
-    def g_to_c(self, g_interval, strict_bounds: bool | None = None):
+    def g_to_c(
+        self, g_interval: Interval, strict_bounds: bool | None = None
+    ):
         """convert a genomic (g.) interval to a transcript CDS (c.) interval"""
         var_n = self.g_to_n(g_interval)
         return self.n_to_c(var_n, strict_bounds=strict_bounds)
@@ -781,7 +780,7 @@ class AlignmentMapper:
         return self.n_to_g(var_n, strict_bounds=strict_bounds)
 
     @property
-    def is_coding_transcript(self):
+    def is_coding_transcript(self) -> bool:
         if (self.cds_start_i is not None) ^ (self.cds_end_i is not None):
             raise HGVSError(
                 "{self.tx_ac}: CDS start_i and end_i"
@@ -789,7 +788,7 @@ class AlignmentMapper:
             )
         return self.cds_start_i is not None
 
-    def g_interval_is_inbounds(self, ival):
+    def g_interval_is_inbounds(self, ival: Interval) -> bool:
         grs = ival.start.base - 1 - self.gc_offset
         gre = ival.end.base - 1 - self.gc_offset
         return grs >= 0 and gre <= self.cigarmapper.ref_len
