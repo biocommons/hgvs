@@ -116,6 +116,7 @@ class TestAltSeqBuilder(unittest.TestCase):
     def _run_comparison(self, hgvsc, expected_sequence):
         ac_p = "DUMMY"
         var = self._parser.parse_hgvs_variant(hgvsc)
+        var.fill_ref(self._datasource)
         transcript_data = RefTranscriptData(hdp=self._datasource, tx_ac=var.ac, pro_ac=ac_p)
 
         builder = altseqbuilder.AltSeqBuilder(var, transcript_data)
