@@ -25,12 +25,18 @@ _logger = logging.getLogger(__name__)
 class Validator:
     """invoke intrinsic and extrinsic validation"""
 
-    def __init__(self, hdp, strict=hgvs.global_config.validator.strict):
+    def __init__(
+        self,
+        hdp: hgvs.dataproviders.interface.Interface,
+        strict=hgvs.global_config.validator.strict,
+    ) -> None:
         self.strict = strict
         self._ivr = IntrinsicValidator(strict)
         self._evr = ExtrinsicValidator(hdp, strict)
 
-    def validate(self, var, strict=None):
+    def validate(
+        self, var: hgvs.sequencevariant.SequenceVariant, strict: bool | None = None
+    ) -> bool:
         if strict is None:
             strict = self.strict
         return self._ivr.validate(var, strict) and self._evr.validate(var, strict)
@@ -42,10 +48,14 @@ class IntrinsicValidator:
 
     """
 
-    def __init__(self, strict=hgvs.global_config.validator.strict):
+    def __init__(self, strict=hgvs.global_config.validator.strict) -> None:
         self.strict = strict
 
-    def validate(self, var, strict=None):
+    def validate(
+        self,
+        var: hgvs.sequencevariant.SequenceVariant,
+        strict: bool | None = None,
+    ) -> bool:
         assert isinstance(var, hgvs.sequencevariant.SequenceVariant), (
             "variant must be a parsed HGVS sequence variant object"
         )
@@ -63,12 +73,20 @@ class ExtrinsicValidator:
     Attempts to determine if the HGVS name validates against external data sources
     """
 
-    def __init__(self, hdp, strict=hgvs.global_config.validator.strict):
+    def __init__(
+        self,
+        hdp: hgvs.dataproviders.interface.Interface,
+        strict: bool = hgvs.global_config.validator.strict,
+    ) -> None:
         self.strict = strict
         self.hdp = hdp
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp, prevalidation_level=None)
 
-    def validate(self, var, strict=None):
+    def validate(
+        self,
+        var: hgvs.sequencevariant.SequenceVariant,
+        strict: bool = hgvs.global_config.validator.strict,
+    ) -> bool:
         assert isinstance(var, hgvs.sequencevariant.SequenceVariant), (
             "variant must be a parsed HGVS sequence variant object"
         )
@@ -103,7 +121,9 @@ class ExtrinsicValidator:
 
         return True
 
-    def _ref_is_valid(self, var):
+    def _ref_is_valid(
+        self, var: hgvs.sequencevariant.SequenceVariant
+    ) -> tuple[str, str | None]:
         s, e = get_start_end(var)
 
         # use reference sequence of original variant, even if later converted (eg c_to_n)
@@ -180,7 +200,9 @@ class ExtrinsicValidator:
 
         return (ValidationLevel.VALID, None)
 
-    def _c_within_cds_bound(self, var):
+    def _c_within_cds_bound(
+        self, var: hgvs.sequencevariant.SequenceVariant
+    ) -> tuple[str, str | None]:
         if var.type != "c":
             return (ValidationLevel.VALID, None)
         tx_info = self.hdp.get_tx_identity_info(var.ac)
@@ -205,7 +227,9 @@ class ExtrinsicValidator:
             )
         return (ValidationLevel.VALID, None)
 
-    def _n_within_transcript_bounds(self, var):
+    def _n_within_transcript_bounds(
+        self, var: hgvs.sequencevariant.SequenceVariant
+    ) -> tuple[str, str | None]:
         if var.type != "n":
             return (ValidationLevel.VALID, None)
         tx_info = self.hdp.get_tx_identity_info(var.ac)

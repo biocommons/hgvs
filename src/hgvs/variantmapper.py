@@ -24,6 +24,11 @@ from hgvs.exceptions import HGVSInvalidVariantError, HGVSUnsupportedOperationErr
 from hgvs.utils.reftranscriptdata import RefTranscriptData
 from hgvs.utils.position import get_start_end, get_start_end_interbase
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from hgvs.sequencevariant import SequenceVariant
+
 _logger = logging.getLogger(__name__)
 
 
@@ -72,7 +77,7 @@ class VariantMapper:
         replace_reference=hgvs.global_config.mapping.replace_reference,
         prevalidation_level=hgvs.global_config.mapping.prevalidation_level,
         add_gene_symbol=hgvs.global_config.mapping.add_gene_symbol,
-    ):
+    ) -> None:
         """
         :param bool replace_reference: replace reference (entails additional network access)
         :param str prevalidation_level: None or Intrinsic or Extrinsic validation before mapping
@@ -97,10 +102,12 @@ class VariantMapper:
 
     # ############################################################################
     # g⟷t
-
     def g_to_t(
-        self, var_g, tx_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method
-    ):
+        self,
+        var_g: "SequenceVariant",
+        tx_ac: str,
+        alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
+    ) -> "SequenceVariant":
         if var_g.type not in "gm":
             raise HGVSInvalidVariantError(
                 "Expected a g. or m. variant; got " + str(var_g)
@@ -123,8 +130,11 @@ class VariantMapper:
         return var_out
 
     def t_to_g(
-        self, var_t, alt_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method
-    ):
+        self,
+        var_t: "SequenceVariant",
+        alt_ac: str,
+        alt_aln_method: str = hgvs.global_config.mapping.alt_aln_method,
+    ) -> "SequenceVariant":
         if var_t.type not in "cn":
             raise HGVSInvalidVariantError(
                 "Expected a c. or n. variant; got " + str(var_t)
@@ -145,8 +155,11 @@ class VariantMapper:
     # ############################################################################
     # g⟷n
     def g_to_n(
-        self, var_g, tx_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method
-    ):
+        self,
+        var_g: "SequenceVariant",
+        tx_ac: str,
+        alt_aln_method: str = hgvs.global_config.mapping.alt_aln_method,
+    ) -> "SequenceVariant":
         """Given a parsed g. variant, return a n. variant on the specified
         transcript using the specified alignment method (default is
         "splign" from NCBI).
@@ -218,8 +231,11 @@ class VariantMapper:
         return var_n
 
     def n_to_g(
-        self, var_n, alt_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method
-    ):
+        self,
+        var_n: "SequenceVariant",
+        alt_ac: str,
+        alt_aln_method: str = hgvs.global_config.mapping.alt_aln_method,
+    ) -> "SequenceVariant":
         """Given a parsed n. variant, return a g. variant on the specified
         transcript using the specified alignment method (default is
         "splign" from NCBI).
@@ -265,8 +281,11 @@ class VariantMapper:
     # ############################################################################
     # g⟷c
     def g_to_c(
-        self, var_g, tx_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method
-    ):
+        self,
+        var_g: "SequenceVariant",
+        tx_ac: str,
+        alt_aln_method: str = hgvs.global_config.mapping.alt_aln_method,
+    ) -> "SequenceVariant":
         """Given a parsed g. variant, return a c. variant on the specified
         transcript using the specified alignment method (default is
         "splign" from NCBI).
@@ -320,8 +339,11 @@ class VariantMapper:
         return var_c
 
     def c_to_g(
-        self, var_c, alt_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method
-    ):
+        self,
+        var_c: "SequenceVariant",
+        alt_ac: str,
+        alt_aln_method: str = hgvs.global_config.mapping.alt_aln_method,
+    ) -> "SequenceVariant":
         """Given a parsed c. variant, return a g. variant on the specified
         transcript using the specified alignment method (default is
         "splign" from NCBI).
@@ -371,10 +393,10 @@ class VariantMapper:
     # c⟷n
     def c_to_n(
         self,
-        var_c,
-        alt_ac=None,
-        alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
-    ):
+        var_c: "SequenceVariant",
+        alt_ac: str | None = None,
+        alt_aln_method: str = hgvs.global_config.mapping.alt_aln_method,
+    ) -> "SequenceVariant":
         """Given a parsed c. variant, return a n. variant on the specified
         transcript using the specified alignment method (default is
         "transcript" indicating a self alignment).
@@ -415,10 +437,10 @@ class VariantMapper:
 
     def n_to_c(
         self,
-        var_n,
-        alt_ac=None,
-        alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
-    ):
+        var_n: "SequenceVariant",
+        alt_ac: str | None = None,
+        alt_aln_method: str = hgvs.global_config.mapping.alt_aln_method,
+    ) -> "SequenceVariant":
         """Given a parsed n. variant, return a c. variant on the specified
         transcript using the specified alignment method (default is
         "transcript" indicating a self alignment).
@@ -461,12 +483,12 @@ class VariantMapper:
     # c ⟶ p
     def c_to_p(
         self,
-        var_c,
-        pro_ac=None,
-        alt_ac=None,
-        alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
+        var_c: "SequenceVariant",
+        pro_ac: str | None = None,
+        alt_ac: str | None = None,
+        alt_aln_method: str = hgvs.global_config.mapping.alt_aln_method,
         translation_table=TranslationTable.standard,
-    ):
+    ) -> "SequenceVariant":
         """
         Converts a c. SequenceVariant to a p. SequenceVariant on the specified protein accession
         Author: Rudy Rico
@@ -513,8 +535,11 @@ class VariantMapper:
     # Internal methods
 
     def _replace_reference(
-        self, var, alt_ac=None, alt_aln_method=hgvs.global_config.mapping.alt_aln_method
-    ):
+        self,
+        var: "SequenceVariant",
+        alt_ac: str | None = None,
+        alt_aln_method: str = hgvs.global_config.mapping.alt_aln_method,
+    ) -> "SequenceVariant":
         """fetch reference sequence for variant and update (in-place) if necessary"""
 
         if var.type not in "cgmnr":
@@ -608,7 +633,9 @@ class VariantMapper:
         return var
 
     @lru_cache(maxsize=hgvs.global_config.lru_cache.maxsize)
-    def _fetch_AlignmentMapper(self, tx_ac, alt_ac, alt_aln_method):
+    def _fetch_AlignmentMapper(
+        self, tx_ac: str, alt_ac: str, alt_aln_method: str
+    ) -> hgvs.alignmentmapper.AlignmentMapper:
         """
         Get a new AlignmentMapper for the given transcript accession (ac),
         possibly caching the result.
@@ -618,7 +645,9 @@ class VariantMapper:
         )
 
     @staticmethod
-    def _convert_edit_check_strand(strand, edit_in):
+    def _convert_edit_check_strand(
+        strand: int, edit_in: hgvs.edit.NARefAlt | hgvs.edit.Dup | hgvs.edit.Inv
+    ) -> hgvs.edit.NARefAlt | hgvs.edit.Dup | hgvs.edit.Inv:
         """
         Convert an edit from one type to another, based on the stand and type
         """
@@ -658,7 +687,9 @@ class VariantMapper:
             )
         return edit_out
 
-    def _get_altered_sequence(self, strand, interval, var):
+    def _get_altered_sequence(
+        self, strand: int, interval: hgvs.intervalmapper.Interval, var
+    ) -> str:
         seq = list(self.hdp.get_seq(var.ac, interval.start.base - 1, interval.end.base))
         # positions are 0-based and half-open
         pos_start = var.posedit.pos.start.base - interval.start.base
@@ -694,7 +725,9 @@ class VariantMapper:
             seq = reverse_complement(seq)
         return seq
 
-    def _update_gene_symbol(self, var, symbol):
+    def _update_gene_symbol(
+        self, var: "SequenceVariant", symbol: str
+    ) -> "SequenceVariant":
         if not symbol:
             symbol = self.hdp.get_tx_identity_info(var.ac).get("hgnc", None)
         var.gene = symbol

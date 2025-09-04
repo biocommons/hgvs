@@ -60,17 +60,19 @@ class Interval:
 
     __slots__ = ("start_i", "end_i")
 
-    def __init__(self, start_i, end_i):
+    def __init__(self, start_i: int, end_i: int) -> None:
         if not (start_i <= end_i):
-            raise HGVSInvalidIntervalError("start_i must be less than or equal to end_i")
+            raise HGVSInvalidIntervalError(
+                "start_i must be less than or equal to end_i"
+            )
         self.start_i = start_i
         self.end_i = end_i
 
     @property
-    def len(self):
+    def len(self) -> int:
         return self.end_i - self.start_i
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "{self.__class__.__name__}(start_i={self.start_i},end_i={self.end_i})".format(
             self=self
         )
@@ -83,7 +85,7 @@ class IntervalPair:
 
     __slots__ = ("ref", "tgt")
 
-    def __init__(self, ref, tgt):
+    def __init__(self, ref: Interval, tgt: Interval) -> None:
         if not (
             (ref.len == tgt.len)
             or (ref.len == 0 and tgt.len != 0)
@@ -95,17 +97,25 @@ class IntervalPair:
         self.ref = ref
         self.tgt = tgt
 
-    def __repr__(self):
-        return "{self.__class__.__name__}(ref={self.ref},tgt={self.tgt})".format(self=self)
+    def __repr__(self) -> str:
+        return "{self.__class__.__name__}(ref={self.ref},tgt={self.tgt})".format(
+            self=self
+        )
 
 
 class IntervalMapper:
     """Provides mapping between sequence coordinates according to an
     ordered set of IntervalPairs."""
 
-    __slots__ = ("interval_pairs", "ref_intervals", "tgt_intervals", "ref_len", "tgt_len")
+    __slots__ = (
+        "interval_pairs",
+        "ref_intervals",
+        "tgt_intervals",
+        "ref_len",
+        "tgt_len",
+    )
 
-    def __init__(self, interval_pairs):
+    def __init__(self, interval_pairs: list[IntervalPair]) -> None:
         """
         :param interval_pairs: an ordered list of IntervalPair instances
         :type interval_pairs: list (of IntervalPair instances).
@@ -128,7 +138,7 @@ class IntervalMapper:
         self.tgt_len = sum([iv.len for iv in self.tgt_intervals])
 
     @staticmethod
-    def from_cigar(cigar):
+    def from_cigar(cigar: str) -> "IntervalMapper":
         """
         :param cigar: a Compact Idiosyncratic Gapped Alignment Report string
         :type cigar: str.
@@ -136,14 +146,28 @@ class IntervalMapper:
         """
         return IntervalMapper(cigar_to_intervalpairs(cigar))
 
-    def map_ref_to_tgt(self, start_i, end_i, max_extent=False):
-        return self._map(self.ref_intervals, self.tgt_intervals, start_i, end_i, max_extent)
+    def map_ref_to_tgt(
+        self, start_i: int, end_i: int, max_extent: bool = False
+    ) -> tuple[int, int]:
+        return self._map(
+            self.ref_intervals, self.tgt_intervals, start_i, end_i, max_extent
+        )
 
-    def map_tgt_to_ref(self, start_i, end_i, max_extent=False):
-        return self._map(self.tgt_intervals, self.ref_intervals, start_i, end_i, max_extent)
+    def map_tgt_to_ref(
+        self, start_i: int, end_i: int, max_extent: bool = False
+    ) -> tuple[int, int]:
+        return self._map(
+            self.tgt_intervals, self.ref_intervals, start_i, end_i, max_extent
+        )
 
     @staticmethod
-    def _map(from_ivs, to_ivs, from_start_i, from_end_i, max_extent):
+    def _map(
+        from_ivs: list[Interval],
+        to_ivs: list[Interval],
+        from_start_i: int,
+        from_end_i: int,
+        max_extent: bool,
+    ) -> tuple[int, int]:
         def iv_map(from_ivs, to_ivs, from_start_i, from_end_i, max_extent):
             """returns the <start,end> intervals indexes in which from_start_i and from_end_i occur"""
             # first look for 0-width interval that matches
@@ -155,8 +179,16 @@ class IntervalMapper:
             if len(seil) > 0:
                 si = ei = seil[0]
             else:
-                sil = [i for i, iv in enumerate(from_ivs) if iv.start_i <= from_start_i <= iv.end_i]
-                eil = [i for i, iv in enumerate(from_ivs) if iv.start_i <= from_end_i <= iv.end_i]
+                sil = [
+                    i
+                    for i, iv in enumerate(from_ivs)
+                    if iv.start_i <= from_start_i <= iv.end_i
+                ]
+                eil = [
+                    i
+                    for i, iv in enumerate(from_ivs)
+                    if iv.start_i <= from_end_i <= iv.end_i
+                ]
                 if len(sil) == 0 or len(eil) == 0:
                     raise HGVSInvalidIntervalError(
                         "start or end or both are beyond the bounds of transcript record"
@@ -175,7 +207,9 @@ class IntervalMapper:
         to_start_i = clip_to_iv(
             to_ivs[si], to_ivs[si].start_i + (from_start_i - from_ivs[si].start_i)
         )
-        to_end_i = clip_to_iv(to_ivs[ei], to_ivs[ei].end_i - (from_ivs[ei].end_i - from_end_i))
+        to_end_i = clip_to_iv(
+            to_ivs[ei], to_ivs[ei].end_i - (from_ivs[ei].end_i - from_end_i)
+        )
         return to_start_i, to_end_i
 
 
@@ -186,22 +220,22 @@ class CIGARElement:
 
     __slots__ = ("len", "op")
 
-    def __init__(self, len, op):
+    def __init__(self, len: int, op: str) -> None:
         self.len = len
         self.op = op
 
     @property
-    def ref_len(self):
+    def ref_len(self) -> int:
         """returns number of nt/aa consumed in reference sequence for this edit"""
         return self.len if self.op in "=INX" else 0
 
     @property
-    def tgt_len(self):
+    def tgt_len(self) -> int:
         """returns number of nt/aa consumed in target sequence for this edit"""
         return self.len if self.op in "=DX" else 0
 
 
-def cigar_to_intervalpairs(cigar):
+def cigar_to_intervalpairs(cigar: str) -> list[IntervalPair]:
     """For a given CIGAR string, return a list of (Interval,Interval)
     pairs.  The length of the returned list will be equal to the
     number of CIGAR operations
@@ -216,7 +250,8 @@ def cigar_to_intervalpairs(cigar):
     ref_pos = tgt_pos = 0
     for i, ce in enumerate(ces):
         ips[i] = IntervalPair(
-            Interval(ref_pos, ref_pos + ce.ref_len), Interval(tgt_pos, tgt_pos + ce.tgt_len)
+            Interval(ref_pos, ref_pos + ce.ref_len),
+            Interval(tgt_pos, tgt_pos + ce.tgt_len),
         )
         ref_pos += ce.ref_len
         tgt_pos += ce.tgt_len
