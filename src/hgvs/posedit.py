@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-"""implements a (position,edit) tuple that represents a localized sequence change
-
-"""
+"""implements a (position,edit) tuple that represents a localized sequence change"""
 
 import attr
 
 from hgvs.enums import ValidationLevel
 from hgvs.exceptions import HGVSUnsupportedOperationError
+from hgvs.location import Interval
+from hgvs.edit import Edit
+from hgvs.config import Config
 
 
 @attr.s(slots=True, repr=False)
@@ -15,16 +16,18 @@ class PosEdit:
     represents a **simple** variant, consisting of a single position and edit pair
     """
 
-    pos = attr.ib(default=None)
-    edit = attr.ib(default=None)
-    uncertain = attr.ib(default=False)
+    pos: Interval | None = attr.ib(default=None)
+    edit: Edit | None = attr.ib(default=None)
+    uncertain: bool = attr.ib(default=False)
 
-    def format(self, conf=None):
+    def format(self, conf: Config | None = None) -> str:
         """Formatting the string of PosEdit"""
         if self.pos is None:
             rv = str(self.edit.format(conf))
         else:
-            rv = "{pos}{edit}".format(pos=self.pos.format(conf), edit=self.edit.format(conf))
+            rv = "{pos}{edit}".format(
+                pos=self.pos.format(conf), edit=self.edit.format(conf)
+            )
 
         if self.uncertain:
             if self.edit in ["0", ""]:
@@ -38,10 +41,13 @@ class PosEdit:
     def __repr__(self):
         return "{0}({1})".format(
             self.__class__.__name__,
-            ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
+            ", ".join(
+                (a.name + "=" + str(getattr(self, a.name)))
+                for a in self.__attrs_attrs__
+            ),
         )
 
-    def _set_uncertain(self):
+    def _set_uncertain(self) -> "PosEdit":
         """sets the uncertain flag to True; used primarily by the HGVS grammar
 
         :returns: self
@@ -49,7 +55,7 @@ class PosEdit:
         self.uncertain = True
         return self
 
-    def length_change(self, on_error_raise=True):
+    def length_change(self, on_error_raise: bool = True) -> int | None:
         """Returns the net length change for this posedit.
 
         The method for computing the net length change depends on the
@@ -86,7 +92,7 @@ class PosEdit:
                 raise
             return None
 
-    def validate(self):
+    def validate(self) -> tuple[str, str | None]:
         if self.pos:
             (res, msg) = self.pos.validate()
             if res != ValidationLevel.VALID:
@@ -98,7 +104,10 @@ class PosEdit:
                 # Check del length
                 if self.edit.type in ["del", "delins"]:
                     ref_len = self.edit.ref_n
-                    if ref_len is not None and ref_len != self.pos.end - self.pos.start + 1:
+                    if (
+                        ref_len is not None
+                        and ref_len != self.pos.end - self.pos.start + 1
+                    ):
                         return (
                             ValidationLevel.ERROR,
                             "Length implied by coordinates must equal sequence deletion length",

@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
-""" represents simple sequence-based variants """
+"""represents simple sequence-based variants"""
 
 import attr
 
 import hgvs.variantmapper
 from hgvs.enums import ValidationLevel
 from hgvs.utils.validation import validate_type_ac_pair
+from hgvs.posedit import PosEdit
+from hgvs.config import Config
 
 
 @attr.s(slots=True, repr=False)
@@ -16,12 +18,12 @@ class SequenceVariant:
     or an hgvs.location.CDSInterval (for example) are both intended uses
     """
 
-    ac = attr.ib()
-    type = attr.ib()
-    posedit = attr.ib()
-    gene = attr.ib(default=None)
+    ac: str = attr.ib()
+    type: str = attr.ib()
+    posedit: PosEdit = attr.ib()
+    gene: str | None = attr.ib(default=None)
 
-    def format(self, conf=None):
+    def format(self, conf: Config | None = None) -> str:
         """Formatting the stringification of sequence variants
 
         :param conf: a dict comprises formatting options. None is to use global settings.
@@ -47,13 +49,21 @@ class SequenceVariant:
 
     __str__ = format
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "{0}({1})".format(
             self.__class__.__name__,
-            ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
+            ", ".join(
+                (a.name + "=" + str(getattr(self, a.name)))
+                for a in self.__attrs_attrs__
+            ),
         )
 
-    def fill_ref(self, hdp, alt_ac=None, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
+    def fill_ref(
+        self,
+        hdp: hgvs.variantmapper.VariantMapper,
+        alt_ac=None,
+        alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
+    ) -> "SequenceVariant":
         # TODO: Refactor. SVs should not operate on themselves when
         # external resources are required
         # replace_reference should be moved outside function
@@ -72,7 +82,7 @@ class SequenceVariant:
             self.posedit.edit.alt = self.posedit.edit.ref
         return self
 
-    def validate(self):
+    def validate(self) -> tuple[str, str | None]:
         (res, msg) = (ValidationLevel.VALID, None)
         if self.ac and self.type:
             (res, msg) = validate_type_ac_pair(self.type, self.ac)

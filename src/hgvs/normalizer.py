@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-"""hgvs.normalizer
-"""
+"""hgvs.normalizer"""
 
 import copy
 import logging
@@ -25,13 +24,13 @@ class Normalizer:
 
     def __init__(
         self,
-        hdp,
+        hdp: hgvs.dataproviders.interface.Interface,
         cross_boundaries=hgvs.global_config.normalizer.cross_boundaries,
         shuffle_direction=hgvs.global_config.normalizer.shuffle_direction,
         alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
         validate=hgvs.global_config.normalizer.validate,
         variantmapper=None,
-    ):
+    ) -> None:
         """Initialize and configure the normalizer
 
         :param hdp: HGVS Data Provider Interface-compliant instance
@@ -42,9 +41,9 @@ class Normalizer:
         :param validate: whether validating the input variant before normalizing
 
         """
-        assert (
-            shuffle_direction == 3 or shuffle_direction == 5
-        ), "The shuffling direction should be 3 (3' most) or 5 (5' most)."
+        assert shuffle_direction == 3 or shuffle_direction == 5, (
+            "The shuffling direction should be 3 (3' most) or 5 (5' most)."
+        )
         self.hdp = hdp
         self.shuffle_direction = shuffle_direction
         self.cross_boundaries = cross_boundaries
@@ -54,11 +53,13 @@ class Normalizer:
             self.validator = hgvs.validator.IntrinsicValidator(strict=False)
         self.vm = variantmapper or hgvs.variantmapper.VariantMapper(self.hdp)
 
-    def normalize(self, var):
+    def normalize(
+        self, var: hgvs.sequencevariant.SequenceVariant
+    ) -> hgvs.sequencevariant.SequenceVariant:
         """Perform sequence variants normalization for single variant"""
-        assert isinstance(
-            var, hgvs.sequencevariant.SequenceVariant
-        ), "variant must be a parsed HGVS sequence variant object"
+        assert isinstance(var, hgvs.sequencevariant.SequenceVariant), (
+            "variant must be a parsed HGVS sequence variant object"
+        )
 
         # keep a shallow reference to the original variant, to be returned
         # as-is under certain circumstances
@@ -71,7 +72,12 @@ class Normalizer:
         if var.posedit is not None and isinstance(var.posedit, hgvs.edit.AARefAlt):
             init_met = var.posedit.init_met
 
-        if var.posedit is None or var.posedit.uncertain or init_met or var.posedit.pos is None:
+        if (
+            var.posedit is None
+            or var.posedit.uncertain
+            or init_met
+            or var.posedit.pos is None
+        ):
             return var
 
         type = var.type
@@ -116,7 +122,9 @@ class Normalizer:
                 # was invalid.
                 return "Bad Request" not in str(e)
 
-        if var.posedit.pos.start.base < 0 or not is_valid_pos(var.ac, var.posedit.pos.end.base):
+        if var.posedit.pos.start.base < 0 or not is_valid_pos(
+            var.ac, var.posedit.pos.end.base
+        ):
             if hgvs.global_config.mapping.strict_bounds:
                 raise HGVSInvalidVariantError(f"{var}: coordinates are out-of-bounds")
             _logger.warning(f"{var}: coordinates are out-of-bounds; returning as-is")
@@ -210,7 +218,9 @@ class Normalizer:
 
         return var_norm
 
-    def _get_boundary(self, var):
+    def _get_boundary(
+        self, var: hgvs.sequencevariant.SequenceVariant
+    ) -> tuple[int, int]:
         """Get the position of exon-intron boundary for current variant"""
         if var.type == "r" or var.type == "n":
             if self.cross_boundaries:
@@ -223,7 +233,9 @@ class Normalizer:
                         "No mapping info available for {ac}".format(ac=var.ac)
                     )
                 map_info = [
-                    item for item in map_info if item["alt_aln_method"] == self.alt_aln_method
+                    item
+                    for item in map_info
+                    if item["alt_aln_method"] == self.alt_aln_method
                 ]
                 alt_ac = map_info[0]["alt_ac"]
 
@@ -301,7 +313,7 @@ class Normalizer:
             # For variant type of g and m etc.
             return 0, float("inf")
 
-    def _get_tgt_length(self, var):
+    def _get_tgt_length(self, var: hgvs.sequencevariant.SequenceVariant) -> int:
         """Get the total length of the whole reference sequence"""
         if var.type == "g" or var.type == "m":
             return float("inf")
@@ -315,7 +327,14 @@ class Normalizer:
             tgt_len = sum(identity_info["lengths"])
             return tgt_len
 
-    def _fetch_bounded_seq(self, var, start, end, window_size, boundary):
+    def _fetch_bounded_seq(
+        self,
+        var: hgvs.sequencevariant.SequenceVariant,
+        start: int,
+        end: int,
+        window_size: int,
+        boundary: tuple[int, int],
+    ) -> str:
         """Fetch reference sequence from hgvs data provider.
 
         The start position is 0 and the interval is half open
@@ -336,7 +355,9 @@ class Normalizer:
 
         return seq
 
-    def _get_ref_alt(self, var, boundary):
+    def _get_ref_alt(
+        self, var: hgvs.sequencevariant.SequenceVariant, boundary: tuple[int, int]
+    ) -> tuple[str, str]:
         """Get reference allele and alternative allele of the variant"""
 
         # Get reference allele
@@ -346,7 +367,11 @@ class Normalizer:
             # For NARefAlt and Inv
             if var.posedit.edit.ref_s is None or var.posedit.edit.ref == "":
                 ref = self._fetch_bounded_seq(
-                    var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, 0, boundary
+                    var,
+                    var.posedit.pos.start.base - 1,
+                    var.posedit.pos.end.base,
+                    0,
+                    boundary,
                 )
             else:
                 ref = var.posedit.edit.ref
@@ -362,7 +387,11 @@ class Normalizer:
             alt = ""
         elif var.posedit.edit.type == "dup":
             alt = var.posedit.edit.ref or self._fetch_bounded_seq(
-                var, var.posedit.pos.start.base - 1, var.posedit.pos.end.base, 0, boundary
+                var,
+                var.posedit.pos.start.base - 1,
+                var.posedit.pos.end.base,
+                0,
+                boundary,
             )
         elif var.posedit.edit.type == "inv":
             alt = reverse_complement(ref)
@@ -371,7 +400,9 @@ class Normalizer:
 
         return ref, alt
 
-    def _normalize_alleles(self, var, boundary):
+    def _normalize_alleles(
+        self, var: hgvs.sequencevariant.SequenceVariant, boundary: tuple[int, int]
+    ) -> tuple[int, int, tuple[str, str]]:
         """Normalize the variant until it could not be shuffled"""
 
         ref, alt = self._get_ref_alt(var, boundary)
@@ -427,7 +458,9 @@ class Normalizer:
                     start -= boundary[0] + 1 - base
                     stop -= boundary[0] + 1 - base
                     base = boundary[0] + 1
-                ref_seq = self._fetch_bounded_seq(var, base - 1, base + stop - 1, start, boundary)
+                ref_seq = self._fetch_bounded_seq(
+                    var, base - 1, base + stop - 1, start, boundary
+                )
                 if ref_seq == "":
                     break
                 orig_start, orig_stop = start, stop
@@ -442,6 +475,7 @@ class Normalizer:
                 stop = orig_stop
 
         return base + start, base + stop, (ref, alt)
+
 
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)

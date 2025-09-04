@@ -2,6 +2,7 @@
 """Represent partial HGVS tags that refer to a position without alleles"""
 
 import attr
+from hgvs.location import Interval
 
 
 @attr.s(slots=True, repr=False)
@@ -16,10 +17,10 @@ class HGVSPosition:
 
     """
 
-    ac = attr.ib()
-    type = attr.ib()
-    pos = attr.ib()
-    gene = attr.ib(default=None)
+    ac: str = attr.ib()
+    type: str = attr.ib()
+    pos: Interval = attr.ib()
+    gene: str | None = attr.ib(default=None)
 
     def __str__(self) -> str:
         g = "" if not self.gene else "(" + self.gene + ")"
