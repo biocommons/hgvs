@@ -1,0 +1,50 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000023.11?start=133661674&end=133661926
+  response:
+    body:
+      string: CTCTCTCTCGGTTATTTCTACTTTTTATTATTATTATTTTTTATATTCCACATACCTGGTTAATGTGCTTCAGTTTGTCAATAATTTGACTGACCACTGGCTCAGGGCCCTTCATTTTCAGCTCATGGAGATTGAACTGGTTTTTCATTCCATTCCTTGCTGCCTTTTGGCTGTATCTGTAAAGGTGAAGGTAAAGAAAAGGTTTGTCAAAGAAAGTCCCAAACAAAGGAAAAGCTGACTGTATTTGGCATC
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '252'
+      Content-Type:
+      - text/plain; charset=utf-8
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NM_004484.3?start=1489&end=1610
+  response:
+    body:
+      string: ATACAGCCAAAAGGCAGCAAGGAATGGAATGAAAAACCAGTTCAATCTCCATGAGCTGAAAATGAAGGGCCCTGAGCCAGTGGTCAGTCAAATTATTGACAAACTGAAGCACATTAACCAG
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '121'
+      Content-Type:
+      - text/plain; charset=utf-8
+    status:
+      code: 200
+      message: OK
+version: 1
