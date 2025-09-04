@@ -51,7 +51,7 @@ class AssemblyMapper(VariantMapper):
 
     def __init__(
         self,
-        hdp,
+        hdp: hgvs.dataproviders.interface.Interface,
         assembly_name=hgvs.global_config.mapping.assembly,
         alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
         normalize=hgvs.global_config.mapping.normalize,
@@ -61,7 +61,7 @@ class AssemblyMapper(VariantMapper):
         add_gene_symbol=hgvs.global_config.mapping.add_gene_symbol,
         *args,
         **kwargs,
-    ):
+    ) -> None:
         """
         :param object hdp: instance of hgvs.dataprovider subclass
         :param bool replace_reference: replace reference (entails additional network access)
@@ -108,7 +108,7 @@ class AssemblyMapper(VariantMapper):
         }
         self._assembly_accessions = set(self._assembly_map.keys())
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             "{self.__module__}.{t.__name__}(alt_aln_method={self.alt_aln_method}, "
             "assembly_name={self.assembly_name}, normalize={self.normalize}, "
@@ -118,25 +118,25 @@ class AssemblyMapper(VariantMapper):
             )
         )
 
-    def g_to_c(self, var_g, tx_ac):
+    def g_to_c(self, var_g: SequenceVariant, tx_ac: str) -> SequenceVariant:
         var_out = super(AssemblyMapper, self).g_to_c(
             var_g, tx_ac, alt_aln_method=self.alt_aln_method
         )
         return self._maybe_normalize(var_out)
 
-    def g_to_n(self, var_g, tx_ac):
+    def g_to_n(self, var_g: SequenceVariant, tx_ac: str) -> SequenceVariant:
         var_out = super(AssemblyMapper, self).g_to_n(
             var_g, tx_ac, alt_aln_method=self.alt_aln_method
         )
         return self._maybe_normalize(var_out)
 
-    def g_to_t(self, var_g, tx_ac):
+    def g_to_t(self, var_g: SequenceVariant, tx_ac: str) -> SequenceVariant:
         var_out = super(AssemblyMapper, self).g_to_t(
             var_g, tx_ac, alt_aln_method=self.alt_aln_method
         )
         return self._maybe_normalize(var_out)
 
-    def c_to_g(self, var_c):
+    def c_to_g(self, var_c: SequenceVariant) -> SequenceVariant:
         alt_ac = self._alt_ac_for_tx_ac(var_c.ac)
         var_out = super(AssemblyMapper, self).c_to_g(
             var_c, alt_ac, alt_aln_method=self.alt_aln_method
@@ -157,7 +157,7 @@ class AssemblyMapper(VariantMapper):
         )
         return self._maybe_normalize(var_out)
 
-    def t_to_p(self, var_t):
+    def t_to_p(self, var_t: SequenceVariant) -> SequenceVariant:
         """Return a protein variant, or "non-coding" for non-coding variant types
 
         CAUTION: Unlike other x_to_y methods that always return
@@ -176,21 +176,23 @@ class AssemblyMapper(VariantMapper):
             "Expected a coding (c.) or non-coding (n.) variant; got " + str(var_t)
         )
 
-    def c_to_n(self, var_c):
+    def c_to_n(self, var_c: SequenceVariant) -> SequenceVariant:
         alt_ac = self._alt_ac_for_tx_ac(var_c.ac)
         var_out = super(AssemblyMapper, self).c_to_n(
             var_c, alt_ac=alt_ac, alt_aln_method=self.alt_aln_method
         )
         return self._maybe_normalize(var_out)
 
-    def n_to_c(self, var_n):
+    def n_to_c(self, var_n: SequenceVariant) -> SequenceVariant:
         alt_ac = self._alt_ac_for_tx_ac(var_n.ac)
         var_out = super(AssemblyMapper, self).n_to_c(
             var_n, alt_ac=alt_ac, alt_aln_method=self.alt_aln_method
         )
         return self._maybe_normalize(var_out)
 
-    def c_to_p(self, var_c, translation_table=TranslationTable.standard):
+    def c_to_p(
+        self, var_c: SequenceVariant, translation_table=TranslationTable.standard
+    ) -> SequenceVariant:
         alt_ac = self._alt_ac_for_tx_ac(var_c.ac)
         var_out = super(AssemblyMapper, self).c_to_p(
             var_c,
@@ -200,7 +202,7 @@ class AssemblyMapper(VariantMapper):
         )
         return self._maybe_normalize(var_out)
 
-    def relevant_transcripts(self, var_g):
+    def relevant_transcripts(self, var_g: SequenceVariant) -> SequenceVariant:
         """return list of transcripts accessions (strings) for given variant,
         selected by genomic overlap"""
         s, e = get_start_end(var_g)
@@ -212,7 +214,7 @@ class AssemblyMapper(VariantMapper):
         )
         return [e["tx_ac"] for e in tx]
 
-    def _alt_ac_for_tx_ac(self, tx_ac):
+    def _alt_ac_for_tx_ac(self, tx_ac: str) -> str:
         """return chromosomal accession for given transcript accession (and
         the_assembly and aln_method setting used to instantiate this
         AssemblyMapper)
@@ -279,7 +281,12 @@ class AssemblyMapper(VariantMapper):
         assert len(alt_acs) == 1, "Should have exactly one alignment at this point"
         return alt_acs[0]
 
-    def _fetch_AlignmentMapper(self, tx_ac, alt_ac=None, alt_aln_method=None):
+    def _fetch_AlignmentMapper(
+        self,
+        tx_ac: str,
+        alt_ac: str | None = None,
+        alt_aln_method: str | None = None,
+    ) -> AlignmentMapper:
         """convenience version of VariantMapper._fetch_AlignmentMapper that
         derives alt_ac from transcript, assembly, and alt_aln_method
         used to instantiate the AssemblyMapper instance
@@ -294,7 +301,7 @@ class AssemblyMapper(VariantMapper):
             tx_ac, alt_ac, alt_aln_method
         )
 
-    def _maybe_normalize(self, var):
+    def _maybe_normalize(self, var: SequenceVariant) -> SequenceVariant:
         """normalize variant if requested, and ignore HGVSUnsupportedOperationError
         This is better than checking whether the variant is intronic because
         future UTAs will support LRG, which will enable checking intronic variants.
