@@ -8,8 +8,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949406&end=49949407
   response:
@@ -22,10 +20,6 @@ interactions:
       - '1'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:57 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -38,8 +32,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949406&end=49949408
   response:
@@ -52,10 +44,6 @@ interactions:
       - '2'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:57 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -68,8 +56,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949386&end=49949407
   response:
@@ -82,10 +68,6 @@ interactions:
       - '21'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:57 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -98,8 +80,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949412&end=49949414
   response:
@@ -112,10 +92,6 @@ interactions:
       - '2'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:57 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -128,8 +104,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949413&end=49949414
   response:
@@ -142,10 +116,6 @@ interactions:
       - '1'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:57 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -158,8 +128,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949392&end=49949414
   response:
@@ -172,10 +140,6 @@ interactions:
       - '22'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:57 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -188,8 +152,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949414&end=49949415
   response:
@@ -202,10 +164,6 @@ interactions:
       - '1'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:57 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -218,8 +176,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949394&end=49949415
   response:
@@ -232,10 +188,6 @@ interactions:
       - '21'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:57 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -248,8 +200,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949413&end=49949415
   response:
@@ -262,10 +212,6 @@ interactions:
       - '2'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:57 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -278,8 +224,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949393&end=49949414
   response:
@@ -292,10 +236,6 @@ interactions:
       - '21'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:57 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -308,8 +248,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949408&end=49949410
   response:
@@ -322,10 +260,6 @@ interactions:
       - '2'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:57 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -338,8 +272,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949412&end=49949413
   response:
@@ -352,10 +284,6 @@ interactions:
       - '1'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:57 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -368,8 +296,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949392&end=49949413
   response:
@@ -382,10 +308,6 @@ interactions:
       - '21'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:57 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -398,8 +320,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949408&end=49949410
   response:
@@ -412,10 +332,6 @@ interactions:
       - '2'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:57 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -428,8 +344,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949408&end=49949411
   response:
@@ -442,10 +356,6 @@ interactions:
       - '3'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:57 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -458,8 +368,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949412&end=49949413
   response:
@@ -472,10 +380,6 @@ interactions:
       - '1'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:57 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -488,8 +392,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949414&end=49949416
   response:
@@ -502,10 +404,6 @@ interactions:
       - '2'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:57 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -518,8 +416,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949413&end=49949414
   response:
@@ -532,10 +428,6 @@ interactions:
       - '1'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:57 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -548,8 +440,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949409&end=49949410
   response:
@@ -562,10 +452,6 @@ interactions:
       - '1'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:57 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -578,8 +464,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949408&end=49949410
   response:
@@ -592,10 +476,6 @@ interactions:
       - '2'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:57 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -608,8 +488,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949408&end=49949410
   response:
@@ -622,10 +500,6 @@ interactions:
       - '2'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:57 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -638,8 +512,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949408&end=49949410
   response:
@@ -652,10 +524,6 @@ interactions:
       - '2'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:57 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -668,8 +536,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949409&end=49949411
   response:
@@ -682,10 +548,6 @@ interactions:
       - '2'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:57 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -698,8 +560,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949408&end=49949411
   response:
@@ -712,10 +572,6 @@ interactions:
       - '3'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:57 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -728,8 +584,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NC_000006.12?start=49949408&end=49949411
   response:
@@ -742,10 +596,6 @@ interactions:
       - '3'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:57 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
