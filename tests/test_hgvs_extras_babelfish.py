@@ -62,6 +62,17 @@ NORM_HGVS_VCF = [
         ("6", 49949409, "G", "GAA", "dup"),
         [],
     ),
+    # Test uncertainty. We currently take inner interval
+    (
+        "NC_000009.11:g.(108337300_108337304)_108337428del",
+        [],
+        ('9',
+         108337303,
+         'AGCACAGACTAATGAGTAGAATCAATAAGAACGTGGTTTTGGCCCTTTTAACGCTGACAAGTTCTGCATTTCTGCTGTTTCAGTTGTACTACTACAAGCACTATTTATCAACAAAGGTAATTTTAT',
+         'A',
+         'del'),
+        [],
+    ),
 ]
 
 
