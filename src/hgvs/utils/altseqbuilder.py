@@ -106,7 +106,6 @@ class AltSeqBuilder:
         # check reference for special characteristics
         self._ref_has_multiple_stops = self._transcript_data.aa_sequence.count("*") > 1
         self._translation_table = translation_table
-        self.at_boundary = False
 
     def build_altseq(self):
         """given a variant and a sequence, incorporate the variant and return the new sequence
@@ -205,38 +204,32 @@ class AltSeqBuilder:
             and self._var_c.posedit.pos.start.base in self._transcript_data.exon_start_positions
             and self._var_c.posedit.pos.start.offset == 0
         ):
-            self.at_boundary = True
             result = self.INTRON if global_config.mapping.ins_at_boundary_is_intronic else self.EXON
         elif (
             self._var_c.posedit.edit.type == "dup"
             and self._var_c.posedit.pos.end.base in self._transcript_data.exon_end_positions
             and self._var_c.posedit.pos.end.offset == 0
         ):
-            self.at_boundary = True
             result = self.INTRON if global_config.mapping.ins_at_boundary_is_intronic else self.EXON
         elif (
             self._var_c.posedit.edit.type == "ins"
             and self._var_c.posedit.pos.start.offset == -1 and self._var_c.posedit.pos.end.offset == 0
         ):
-            self.at_boundary = True
             result = self.INTRON if global_config.mapping.ins_at_boundary_is_intronic else self.EXON
         elif (
             self._var_c.posedit.edit.type == "ins"
             and self._var_c.posedit.pos.start.offset == 0 and self._var_c.posedit.pos.end.offset == 1
         ):
-            self.at_boundary = True
             result = self.INTRON if global_config.mapping.ins_at_boundary_is_intronic else self.EXON
         elif (
             self._var_c.posedit.edit.type == "dup"
             and self._var_c.posedit.pos.end.offset == -1
         ):
-            self.at_boundary = True
             result = self.INTRON if global_config.mapping.ins_at_boundary_is_intronic else self.EXON
         elif (
             self._var_c.posedit.edit.type == "dup"
             and self._var_c.posedit.pos.start.offset == 1
         ):
-            self.at_boundary = True
             result = self.INTRON if global_config.mapping.ins_at_boundary_is_intronic else self.EXON
         elif self._var_c.posedit.pos.start.offset != 0 or self._var_c.posedit.pos.end.offset != 0:
             # leave out anything else intronic for now

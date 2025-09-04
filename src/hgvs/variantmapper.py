@@ -500,8 +500,6 @@ class VariantMapper:
 
         # attempt to shift ins/dup variants from the intron into the exon or vice versa
         if self.shift_over_boundary:
-            shifts_into_exon_and_intron = False
-            is_shifted = False
             original_region = builder.get_variant_region()
             if (
                 var_c.posedit.edit.type in ['ins', 'dup']
@@ -517,10 +515,8 @@ class VariantMapper:
                         continue
                     if original_region != shifted_region:
                         # a shift is posible
-                        shifts_into_exon_and_intron = True
                         if self.shift_over_boundary_preference.name.lower() == shifted_region:
                             # and that shift is preferred
-                            is_shifted = True
                             reference_data = shifted_reference_data
                             builder = shifted_builder
                         break
@@ -540,10 +536,6 @@ class VariantMapper:
 
         if self.add_gene_symbol:
             self._update_gene_symbol(var_p, var_c.gene)
-        var_p.at_boundary = builder.at_boundary
-        if self.shift_over_boundary:
-            var_p.shifts_into_exon_and_intron = shifts_into_exon_and_intron
-            var_p.is_shifted = is_shifted
 
         return var_p
 
