@@ -160,6 +160,7 @@ markers = [
   "regression",
   "slow: slow tests that should be run infrequently",
   "validation",
+  "vcr: mark test to use pytest-vcr cassette",
 ]
 norecursedirs = [
   ".eggs",
