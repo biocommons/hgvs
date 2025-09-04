@@ -834,7 +834,6 @@ class AlignmentMapper:
         """convert a transcript CDS (c.) interval to a genomic (g.) interval"""
 
         var_n = self.c_to_n(c_interval)
-        print(f"am c_to_g var_n: {var_n}")
         return self.n_to_g(var_n, strict_bounds=strict_bounds)
 
     @property
