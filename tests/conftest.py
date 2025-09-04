@@ -9,23 +9,21 @@ import hgvs.easy
 from hgvs.variantmapper import VariantMapper
 
 
-def remove_headers(headers_to_remove, request_or_response):
-    headers = getattr(request_or_response, "headers", request_or_response)
-    for header in headers_to_remove:
-        headers.pop(header, None)
-        # Also try capitalized versions
-        headers.pop(header.title(), None)
-    return request_or_response
-
-
 def remove_request_headers(request):
     headers_to_remove = ["user-agent"]
-    return remove_headers(headers_to_remove, request)
+    headers = getattr(request, "headers", request)
+    for header in headers_to_remove:
+        headers.pop(header, None)
+        headers.pop(header.title(), None)
+    return request
 
 
 def remove_response_headers(response):
     headers_to_remove = ["date", "server"]
-    return remove_headers(headers_to_remove, response)
+    for header in headers_to_remove:
+        response["headers"].pop(header, None)
+        response["headers"].pop(header.title(), None)
+    return response
 
 
 @pytest.fixture(scope="function")

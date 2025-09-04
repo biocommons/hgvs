@@ -8,8 +8,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NM_001166478.1?start=30&end=32
   response:
@@ -22,10 +20,6 @@ interactions:
       - '2'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:29 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -38,8 +32,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NM_001166478.1?start=1&end=7
   response:
@@ -52,10 +44,6 @@ interactions:
       - '6'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:29 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -68,8 +56,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NM_001166478.1?start=34&end=36
   response:
@@ -82,10 +68,6 @@ interactions:
       - '2'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:29 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
@@ -98,8 +80,6 @@ interactions:
       - gzip, deflate
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NM_001166478.1?start=30&end=31
   response:
@@ -112,10 +92,6 @@ interactions:
       - '1'
       Content-Type:
       - text/plain; charset=utf-8
-      Date:
-      - Thu, 04 Sep 2025 01:58:29 GMT
-      Server:
-      - Werkzeug/2.2.2 Python/3.10.4
     status:
       code: 200
       message: OK
