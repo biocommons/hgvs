@@ -301,8 +301,6 @@ class Test_SequenceVariant:
         chrom_ac = var_g.ac
         tx_ac = clinvar_hgvs_c.split(":")[0]
 
-        print(f"var_g: {var_g}")
-
         var_c = vm.g_to_c(var_g, tx_ac)
         assert clinvar_hgvs_c == str(var_c)
 
@@ -311,21 +309,14 @@ class Test_SequenceVariant:
         assert var_c.posedit.pos.start.uncertain
         assert var_c.posedit.pos.end.uncertain
 
-        var_n = vm.g_to_n(var_g, tx_ac)
-        print(f"var_n: {var_n}")
+        # var_n = vm.g_to_n(var_g, tx_ac)
 
-        print(f" var_c like clinvar: {var_c}")
         var_g_reverse = vm.c_to_g(var_c, chrom_ac)
-        print(f" var_g_reverse:{var_g_reverse}")
 
         assert clinvar_hgvs_g == str(var_g_reverse)
 
         var_g_reverse_precise = vm.c_to_g(var_c, chrom_ac)
-        print(f"var_g_reverse_precise: {var_g_reverse_precise}")
         assert clinvar_hgvs_g == str(var_g_reverse_precise)
-
-        print(f"clinvar: {clinvar_hgvs_c} event: {event_type}")
-        print("--------------------------------")
 
 
 if __name__ == "__main__":

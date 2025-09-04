@@ -432,17 +432,17 @@ class Normalizer:
 
         elif self.shuffle_direction == 5:
             if var.posedit.edit.type == "ins":
-                base = max(var.posedit.pos.start.base - win_size, 1)
-                start = var.posedit.pos.end.base - base
-                stop = var.posedit.pos.end.base - base
+                base = max(s.base - win_size, 1)
+                start = e.base - base
+                stop = e.base - base
             elif var.posedit.edit.type == "dup":
-                base = max(var.posedit.pos.start.base - win_size, 1)
-                start = var.posedit.pos.end.base - base + 1
-                stop = var.posedit.pos.end.base - base + 1
+                base = max(s.base - win_size, 1)
+                start = e.base - base + 1
+                stop = e.base - base + 1
             else:
-                base = max(var.posedit.pos.start.base - win_size, 1)
-                start = var.posedit.pos.start.base - base
-                stop = var.posedit.pos.end.base - base + 1
+                base = max(s.base - win_size, 1)
+                start = s.base - base
+                stop = e.base - base + 1
 
             while True:
                 if base < boundary[0] + 1:
