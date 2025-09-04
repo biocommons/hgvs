@@ -163,33 +163,18 @@ class AlignmentMapper:
         )
 
     def _extract_genomic_position(
-        self, interval_part, is_start: bool, imprecise_inner_interval_only: bool
+        self, interval_part, is_start: bool
     ) -> int | Interval:
         """Extract genomic position from an interval part (start or end).
 
         Args:
             interval_part: The start or end part of an interval
             is_start: True if this is the start part, False if end part
-            imprecise_inner_interval_only: Whether to use only inner interval for imprecise positions
 
         Returns:
             int: The genomic position (zero-based relative to alignment)
         """
-        if imprecise_inner_interval_only and interval_part.uncertain:
-            # For imprecise positions, use the more confident inner boundary
-            if self.strand == -1:
-                # Reverse strand: use end for start, start for end
-                if is_start:
-                    return interval_part.end.base - 1 - self.gc_offset
-                else:
-                    return interval_part.start.base - 1 - self.gc_offset
-            else:
-                # Forward strand: use start for start, end for end
-                if is_start:
-                    return interval_part.end.base - 1 - self.gc_offset
-                else:
-                    return interval_part.start.base - 1 - self.gc_offset
-        elif isinstance(interval_part, Interval):
+        if isinstance(interval_part, Interval):
             # For interval parts, use the appropriate boundary based on strand
             if self.strand == -1:
                 # Reverse strand: use start for start, end for end
@@ -498,24 +483,15 @@ class AlignmentMapper:
         )
 
     def g_to_n(
-        self,
-        g_interval: Interval,
-        strict_bounds: Optional[bool] = None,
-        imprecise_inner_interval_only: bool | None = None,
+        self, g_interval: Interval, strict_bounds: Optional[bool] = None
     ) -> BaseOffsetInterval:
         """convert a genomic (g.) interval to a transcript cDNA (n.) interval"""
 
         if strict_bounds is None:
             strict_bounds = global_config.mapping.strict_bounds
 
-        if imprecise_inner_interval_only is None:
-            imprecise_inner_interval_only = (
-                global_config.g_to_c.imprecise_inner_interval_only
-            )
-
         if (
-            not imprecise_inner_interval_only
-            and isinstance(g_interval.start, Interval)
+            isinstance(g_interval.start, Interval)
             # and g_interval.start.start.base
             and isinstance(g_interval.end, Interval)
             # and g_interval.end.end.base
@@ -523,12 +499,8 @@ class AlignmentMapper:
             return self._g_to_n_interval(g_interval, strict_bounds)
 
         # in case of uncertain ranges, we fall back to the inner (more confident) interval
-        grs = self._extract_genomic_position(
-            g_interval.start, True, imprecise_inner_interval_only
-        )
-        gre = self._extract_genomic_position(
-            g_interval.end, False, imprecise_inner_interval_only
-        )
+        grs = self._extract_genomic_position(g_interval.start, True)
+        gre = self._extract_genomic_position(g_interval.end, False)
 
         forward_rna_start, forward_rna_start_offset, forward_rna_start_cigar = (
             self.cigarmapper.map_ref_to_tgt(
@@ -578,35 +550,24 @@ class AlignmentMapper:
         return final_interval
 
     def n_to_g(
-        self,
-        n_interval: Interval,
-        strict_bounds: Optional[bool] = None,
-        imprecise_inner_interval_only: bool | None = None,
+        self, n_interval: Interval, strict_bounds: Optional[bool] = None
     ) -> Interval:
         """Convert a transcript (n.) interval to a genomic (g.) interval.
 
         Args:
             n_interval: A transcript interval
             strict_bounds: Whether to enforce strict bounds checking
-            imprecise_inner_interval_only: Whether to use only the inner (more confident) interval
-                                         for imprecise positions
 
         Returns:
             A genomic interval
         """
         if strict_bounds is None:
             strict_bounds = global_config.mapping.strict_bounds
-        if imprecise_inner_interval_only is None:
-            imprecise_inner_interval_only = (
-                global_config.g_to_c.imprecise_inner_interval_only
-            )
 
         if isinstance(n_interval.start, Interval) and isinstance(
             n_interval.end, Interval
         ):
-            return self._n_to_g_interval(
-                n_interval, strict_bounds, imprecise_inner_interval_only
-            )
+            return self._n_to_g_interval(n_interval, strict_bounds)
 
         # Get start and end positions
         s, e = self._get_start_end(n_interval)
@@ -646,12 +607,7 @@ class AlignmentMapper:
         ge = gre + end_offset
 
         # Handle uncertain positions
-        if imprecise_inner_interval_only and n_interval.start.uncertain:
-            if self.strand == -1:
-                start = hgvs.location.SimplePosition(gs, uncertain=False)
-            else:
-                start = hgvs.location.SimplePosition(gs, uncertain=False)
-        elif isinstance(n_interval.start, Interval):
+        if isinstance(n_interval.start, Interval):
             start = hgvs.location.Interval(
                 start=hgvs.location.SimplePosition(gs, uncertain=False),
                 end=hgvs.location.SimplePosition(uncertain=False),
@@ -660,12 +616,7 @@ class AlignmentMapper:
         else:
             start = hgvs.location.SimplePosition(gs, uncertain=False)
 
-        if imprecise_inner_interval_only and n_interval.end.uncertain:
-            if self.strand == -1:
-                end = hgvs.location.SimplePosition(ge, uncertain=False)
-            else:
-                end = hgvs.location.SimplePosition(ge, uncertain=False)
-        elif isinstance(n_interval.end, Interval):
+        if isinstance(n_interval.end, Interval):
             end = hgvs.location.Interval(
                 start=hgvs.location.SimplePosition(ge, uncertain=False),
                 end=hgvs.location.SimplePosition(uncertain=False),
@@ -674,11 +625,7 @@ class AlignmentMapper:
         else:
             end = hgvs.location.SimplePosition(ge, uncertain=False)
 
-        if (
-            not imprecise_inner_interval_only
-            and isinstance(start, Interval)
-            and isinstance(end, Interval)
-        ):
+        if isinstance(start, Interval) and isinstance(end, Interval):
             return hgvs.location.Interval(
                 start=start,
                 end=end,
@@ -701,16 +648,11 @@ class AlignmentMapper:
         self,
         n_interval: Interval,
         strict_bounds: bool | None = None,
-        imprecise_inner_interval_only: bool | None = None,
     ):
         """convert a transcript cDNA (n.) interval to a transcript CDS (c.) interval"""
 
         if strict_bounds is None:
             strict_bounds = global_config.mapping.strict_bounds
-        if imprecise_inner_interval_only is None:
-            imprecise_inner_interval_only = (
-                global_config.g_to_c.imprecise_inner_interval_only
-            )
 
         if (
             self.cds_start_i is None
@@ -883,33 +825,17 @@ class AlignmentMapper:
             )
         return n_interval
 
-    def g_to_c(
-        self,
-        g_interval,
-        strict_bounds: bool | None = None,
-        imprecise_inner_interval_only: bool | None = None,
-    ):
+    def g_to_c(self, g_interval, strict_bounds: bool | None = None):
         """convert a genomic (g.) interval to a transcript CDS (c.) interval"""
-        var_n = self.g_to_n(
-            g_interval, imprecise_inner_interval_only=imprecise_inner_interval_only
-        )
-        return self.n_to_c(
-            var_n,
-            strict_bounds=strict_bounds,
-            imprecise_inner_interval_only=imprecise_inner_interval_only,
-        )
+        var_n = self.g_to_n(g_interval)
+        return self.n_to_c(var_n, strict_bounds=strict_bounds)
 
-    def c_to_g(
-        self, c_interval, strict_bounds=None, imprecise_inner_interval_only=None
-    ):
+    def c_to_g(self, c_interval, strict_bounds=None):
         """convert a transcript CDS (c.) interval to a genomic (g.) interval"""
 
         var_n = self.c_to_n(c_interval)
-        return self.n_to_g(
-            var_n,
-            strict_bounds=strict_bounds,
-            imprecise_inner_interval_only=imprecise_inner_interval_only,
-        )
+        print(f"am c_to_g var_n: {var_n}")
+        return self.n_to_g(var_n, strict_bounds=strict_bounds)
 
     @property
     def is_coding_transcript(self):
@@ -934,10 +860,7 @@ class AlignmentMapper:
         return _hgvs_to_zbc(pos.base)
 
     def _n_to_g_interval(
-        self,
-        n_interval: Interval,
-        strict_bounds: Optional[bool] = None,
-        imprecise_inner_interval_only: bool | None = None,
+        self, n_interval: Interval, strict_bounds: Optional[bool] = None
     ) -> Interval:
         """Convert transcript (n.) intervals to a genomic (g.) interval.
 
@@ -993,14 +916,8 @@ class AlignmentMapper:
             es_offset = orig_es_offset
             ee_offset = orig_ee_offset
 
-        if imprecise_inner_interval_only and start_start.offset != 0:
-            left_boundary_out_of_bounds = True
-        else:
-            left_boundary_out_of_bounds = False
-        if imprecise_inner_interval_only and end_end.offset != 0:
-            right_boundary_out_of_bounds = True
-        else:
-            right_boundary_out_of_bounds = False
+        left_boundary_out_of_bounds = False
+        right_boundary_out_of_bounds = False
 
         # Map transcript positions to genomic positions
         if frs_start is not None:

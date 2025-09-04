@@ -29,14 +29,14 @@ def get_start_end(
         if not isinstance(
             s, (hgvs.location.SimplePosition, hgvs.location.BaseOffsetPosition)
         ):
-            if outer_confidence:
+            if outer_confidence and not s.start.base is not None:
                 s = s.start
             else:
                 s = s.end
         if not isinstance(
             e, (hgvs.location.SimplePosition, hgvs.location.BaseOffsetPosition)
         ):
-            if outer_confidence:
+            if outer_confidence and not e.end.base is not None:
                 e = e.end
             else:
                 e = e.start
@@ -75,17 +75,26 @@ def get_start_end(
         ):
             orig_s = s
 
-            if outer_confidence:
+            if outer_confidence and not s.start.base is not None:
                 s = s.start
             else:
                 s = s.end
             if s.is_uncertain:
-                s = orig_s.start
+                s = orig_s.end
+
+            orig_e = e
+            if outer_confidence and not e.end.base is not None:
+                e = e.end
+            else:
+                e = e.start
+            if e.is_uncertain:
+                e = orig_e.start
+
         if not isinstance(
             e, (hgvs.location.SimplePosition, hgvs.location.BaseOffsetPosition)
         ):
             orig_e = e
-            if outer_confidence:
+            if outer_confidence and not e.end.base is not None:
                 e = e.end
             else:
                 e = e.start

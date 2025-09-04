@@ -102,7 +102,8 @@ class Normalizer:
         if type == "c":
             var = self.vm.c_to_n(var)
 
-        s, e = get_start_end(var, outer_confidence=False)
+        s, e = get_start_end(var)
+
         if var.type in "nr":
             if s.offset != 0 or e.offset != 0:
                 raise HGVSUnsupportedOperationError(
@@ -217,17 +218,6 @@ class Normalizer:
 
         return var_norm
 
-    def _get_start_end(self, var):
-        """Get start and end positions from the variant.
-
-        Args:
-            var: A variant object with posedit.pos attribute
-
-        Returns:
-            tuple: (start_position, end_position) where positions can be SimplePosition or BaseOffsetPosition
-        """
-        return get_start_end(var)
-
     def _get_boundary(self, var):
         """Get the position of exon-intron boundary for current variant"""
         if var.type == "r" or var.type == "n":
@@ -265,19 +255,18 @@ class Normalizer:
                 left = 0
                 right = float("inf")
 
+                start, end = get_start_end(var)
+
                 # TODO: #242: implement methods to find tx regions
                 for i, _ in enumerate(exon_starts):
                     if (
-                        var.posedit.pos.start.base - 1 >= exon_starts[i]
-                        and var.posedit.pos.start.base - 1 < exon_ends[i]
+                        start.base - 1 >= exon_starts[i]
+                        and start.base - 1 < exon_ends[i]
                     ):
                         break
 
                 for j, _ in enumerate(exon_starts):
-                    if (
-                        var.posedit.pos.end.base - 1 >= exon_starts[j]
-                        and var.posedit.pos.end.base - 1 < exon_ends[j]
-                    ):
+                    if end.base - 1 >= exon_starts[j] and end.base - 1 < exon_ends[j]:
                         break
 
                 if i != j:
@@ -292,9 +281,9 @@ class Normalizer:
 
                 if cds_start is None:
                     pass
-                elif var.posedit.pos.end.base - 1 < cds_start:
+                elif end.base - 1 < cds_start:
                     right = min(right, cds_start)
-                elif var.posedit.pos.start.base - 1 >= cds_start:
+                elif start.base - 1 >= cds_start:
                     left = max(left, cds_start)
                 else:
                     raise HGVSUnsupportedOperationError(
@@ -305,9 +294,9 @@ class Normalizer:
 
                 if cds_end is None:
                     pass
-                elif var.posedit.pos.start.base - 1 >= cds_end:
+                elif start.base - 1 >= cds_end:
                     left = max(left, cds_end)
-                elif var.posedit.pos.end.base - 1 < cds_end:
+                elif end.base - 1 < cds_end:
                     right = min(right, cds_end)
                 else:
                     raise HGVSUnsupportedOperationError(
@@ -408,7 +397,7 @@ class Normalizer:
         ref, alt = self._get_ref_alt(var, boundary)
         win_size = hgvs.global_config.normalizer.window_size
 
-        s, e = self._get_start_end(var)
+        s, e = get_start_end(var)
 
         if self.shuffle_direction == 3:
             if var.posedit.edit.type == "ins":

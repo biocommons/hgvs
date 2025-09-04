@@ -117,12 +117,9 @@ class AssemblyMapper(VariantMapper):
             )
         )
 
-    def g_to_c(self, var_g, tx_ac, imprecise_inner_interval_only: bool | None = None):
+    def g_to_c(self, var_g, tx_ac):
         var_out = super(AssemblyMapper, self).g_to_c(
-            var_g,
-            tx_ac,
-            alt_aln_method=self.alt_aln_method,
-            imprecise_inner_interval_only=imprecise_inner_interval_only,
+            var_g, tx_ac, alt_aln_method=self.alt_aln_method
         )
         return self._maybe_normalize(var_out)
 

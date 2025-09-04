@@ -216,79 +216,61 @@ class Test_SequenceVariant:
         assert hgvs_c == str(var_c)
 
     @pytest.mark.parametrize(
-        "clinvar_id, event_type, clinvar_hgvs_g, hgvs_hgvs_g, clinvar_hgvs_c, hgvs_hgvs_c",
+        "clinvar_id, event_type, clinvar_hgvs_g, clinvar_hgvs_c",
         [
             (
                 11692,
                 "DEL",
                 "NC_000023.11:g.(133661675_133661730)_(133661850_133661926)del",
-                "NC_000023.11:g.(?_133661730)_(133661850_?)del",
                 "NM_004484.3:c.(1293-76_1293)_(1413_1413+55)del",  # orig is this but it is wrong:"NM_004484.3:c.(1293_1293)-76_(1413_1413)del",
-                "NM_004484.3:c.(?_1293)_(1413_?)del",
             ),
             (
                 31562,
                 "DEL",
                 "NC_000007.14:g.(16361566_16366648)_(16369693_16391969)del",
-                "NC_000007.14:g.(?_16366648)_(16369693_?)del",
                 "NM_001101426.3:c.(534+14092_684+6399)_(684+9444_684+14526)del",  # orig is different: NM_001101426.3:c.(535_684)+6399_(535_684)+14526del
-                "NM_001101426.3:c.(?_684+6399)_(684+9444_?)del",
             ),
             (
                 425669,
                 "DEL",
                 "NC_000002.12:g.(?_202376935)_(202377551_202464808)del",
-                "NC_000002.12:g.(?_202376935)_(202377551_?)del",
                 "NM_001204.6:c.(?_-540)_(76+1_77-1)del",
-                "NM_001204.6:c.(?_-540)_(76+1_?)del",
             ),
             (
                 425698,
                 "DEL",
                 "NC_000002.12:g.(202377551_202464808)_(202559947_?)del",
-                "NC_000002.12:g.(?_202464808)_(202559947_?)del",
                 "NM_001204.6:c.(76+1_77-1)_(*1_?)del",
-                "NM_001204.6:c.(?_77-1)_(*1_?)del",
             ),
             (
                 220591,
                 "DEL",
                 "NC_000017.11:g.(?_58709859)_(58734342_?)del",
-                "NC_000017.11:g.(?_58709859)_(58734342_?)del",
                 "NM_058216.2:c.(?_706)_(*120_?)del",  # orig seems different: NM_058216.2:c.706-?_*120del
-                "NM_058216.2:c.(?_706)_(*120_?)del",
             ),
             (
                 251062,
                 "DUP",
                 "NC_000019.9:g.(11211022_11213339)_(11217364_11218067)dup",
-                "NC_000019.9:g.(?_11213339)_(11217364_?)dup",
                 "NM_000527.5:c.(190+1_191-1)_(817+1_818-1)dup",
-                "NM_000527.5:c.(?_191-1)_(817+1_?)dup",
             ),
             (
                 565301,
                 "DUP",
                 "NC_000001.11:g.(216073301_216078088)_(216327655_216364952)dup",
-                "NC_000001.11:g.(?_216078088)_(216327655_?)dup",
                 "NM_206933.2:c.(784+1_785-1)_(5572+1_5573-1)dup",
-                "NM_206933.2:c.(?_785-1)_(5572+1_?)dup",
             ),
             (
                 254064,
                 "DUP",
                 "NC_000012.11:g.(?_133248801)_(133257865_?)dup",
-                "NC_000012.11:g.(?_133248801)_(133257865_?)dup",
                 "NM_006231.3:c.(?_63)_(1794_?)dup",  # orig is different: NM_006231.3:c.63-?_1794+?dup1732
-                "NM_006231.3:c.(?_63)_(1794_?)dup",
             ),
             (
                 237630,
                 "DUP",
                 "NC_000017.10:g.(?_15133094)_(15164078_?)dup",
-                "NC_000017.10:g.(?_15133094)_(15164078_?)dup",
                 "NM_000304.3:c.(?_-34)_(*1140_?)dup",  # orig is different NM_000304.3:c.-34-?_*1140dup1657
-                "NM_000304.3:c.(?_-34)_(*1140_?)dup",
             ),
         ],
     )
@@ -300,9 +282,7 @@ class Test_SequenceVariant:
         clinvar_id,
         event_type,
         clinvar_hgvs_g,
-        hgvs_hgvs_g,
         clinvar_hgvs_c,
-        hgvs_hgvs_c,
     ):
         """This is a unit test for the clinvar uncertain ranges described in
         issue #225: https://github.com/biocommons/hgvs/issues/225.
@@ -321,17 +301,7 @@ class Test_SequenceVariant:
         chrom_ac = var_g.ac
         tx_ac = clinvar_hgvs_c.split(":")[0]
 
-        # first test only with inner intervals
-        var_c_inner = am38.g_to_c(var_g, tx_ac, imprecise_inner_interval_only=True)
-        # var_c = hgvs.sequencevariant.SequenceVariant(
-        #     ac=tx_ac, type="c", posedit=hgvs.posedit.PosEdit(pos=, var_g.posedit.edit)
-        # )
-        print(f"var_c_inner: {var_c_inner} should be: {hgvs_hgvs_c}")
-
-        # pp = PrettyPrint(self.hdp, am38)
-        # print(f"pp.display(var_c): {str(pp.display(var_c_inner, tx_ac=tx_ac))}")
-
-        assert hgvs_hgvs_c == str(var_c_inner)
+        print(f"var_g: {var_g}")
 
         var_c = vm.g_to_c(var_g, tx_ac)
         assert clinvar_hgvs_c == str(var_c)
@@ -345,17 +315,16 @@ class Test_SequenceVariant:
         print(f"var_n: {var_n}")
 
         print(f" var_c like clinvar: {var_c}")
-        var_g_reverse = vm.c_to_g(var_c, chrom_ac, imprecise_inner_interval_only=True)
+        var_g_reverse = vm.c_to_g(var_c, chrom_ac)
         print(f" var_g_reverse:{var_g_reverse}")
-        assert hgvs_hgvs_g == str(var_g_reverse)
 
-        var_g_reverse_precise = vm.c_to_g(
-            var_c, chrom_ac, imprecise_inner_interval_only=False
-        )
+        assert clinvar_hgvs_g == str(var_g_reverse)
+
+        var_g_reverse_precise = vm.c_to_g(var_c, chrom_ac)
         print(f"var_g_reverse_precise: {var_g_reverse_precise}")
         assert clinvar_hgvs_g == str(var_g_reverse_precise)
 
-        print(f"clinvar: {clinvar_hgvs_c} hgvs:{hgvs_hgvs_c} event: {event_type}")
+        print(f"clinvar: {clinvar_hgvs_c} event: {event_type}")
         print("--------------------------------")
 
 

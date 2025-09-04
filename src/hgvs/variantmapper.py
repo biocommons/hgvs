@@ -203,7 +203,7 @@ class VariantMapper:
             ac=tx_ac, type="n", posedit=hgvs.posedit.PosEdit(pos_n, edit_n)
         )
 
-        s, e = get_start_end(var_n, outer_confidence=False)
+        s, e = get_start_end(var_n)
 
         if (
             self.replace_reference
@@ -265,11 +265,7 @@ class VariantMapper:
     # ############################################################################
     # g⟷c
     def g_to_c(
-        self,
-        var_g,
-        tx_ac,
-        alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
-        imprecise_inner_interval_only: bool | None = None,
+        self, var_g, tx_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method
     ):
         """Given a parsed g. variant, return a c. variant on the specified
         transcript using the specified alignment method (default is
@@ -289,19 +285,12 @@ class VariantMapper:
             )
         if self._validator:
             self._validator.validate(var_g)
-        if not imprecise_inner_interval_only:
-            imprecise_inner_interval_only = (
-                hgvs.global_config.g_to_c.imprecise_inner_interval_only
-            )
 
         var_g.fill_ref(self.hdp)
         mapper = self._fetch_AlignmentMapper(
             tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method
         )
-        pos_c = mapper.g_to_c(
-            var_g.posedit.pos,
-            imprecise_inner_interval_only=imprecise_inner_interval_only,
-        )
+        pos_c = mapper.g_to_c(var_g.posedit.pos)
         if not pos_c.uncertain:
             edit_c = self._convert_edit_check_strand(mapper.strand, var_g.posedit.edit)
             if (
@@ -331,11 +320,7 @@ class VariantMapper:
         return var_c
 
     def c_to_g(
-        self,
-        var_c,
-        alt_ac,
-        alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
-        imprecise_inner_interval_only: bool | None = None,
+        self, var_c, alt_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method
     ):
         """Given a parsed c. variant, return a g. variant on the specified
         transcript using the specified alignment method (default is
@@ -357,10 +342,7 @@ class VariantMapper:
         mapper = self._fetch_AlignmentMapper(
             tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method
         )
-        pos_g = mapper.c_to_g(
-            var_c.posedit.pos,
-            imprecise_inner_interval_only=imprecise_inner_interval_only,
-        )
+        pos_g = mapper.c_to_g(var_c.posedit.pos)
 
         if not pos_g.uncertain:
             edit_g = self._convert_edit_check_strand(mapper.strand, var_c.posedit.edit)
