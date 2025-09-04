@@ -750,7 +750,7 @@ class AlignmentMapper:
                 base=c, offset=pos.offset, datum=c_datum, uncertain=pos.uncertain
             )
 
-        def interval_n_to_c(interval: Interval) -> hgvs.location.BaseOffsetInterval:
+        def _interval_n_to_c(interval: Interval) -> hgvs.location.BaseOffsetInterval:
             istart = interval.start
             if istart and istart.base:
                 c_start = pos_n_to_c(istart)
@@ -777,13 +777,13 @@ class AlignmentMapper:
 
         baseoffset = True
         if isinstance(n_interval.start, Interval):
-            c_start = interval_n_to_c(n_interval.start)
+            c_start = _interval_n_to_c(n_interval.start)
             baseoffset = False
         else:
             c_start = pos_n_to_c(n_interval.start)
 
         if isinstance(n_interval.end, Interval):
-            c_end = interval_n_to_c(n_interval.end)
+            c_end = _interval_n_to_c(n_interval.end)
             baseoffset = False
         else:
             # pos
@@ -843,7 +843,7 @@ class AlignmentMapper:
                 uncertain=pos.uncertain,
             )
 
-        def interval_c_to_n(interval: Interval) -> hgvs.location.BaseOffsetInterval:
+        def _interval_c_to_n(interval: Interval) -> hgvs.location.BaseOffsetInterval:
             istart = interval.start
             n_start = pos_c_to_n(istart)
 
@@ -858,13 +858,13 @@ class AlignmentMapper:
 
         baseoffset = True
         if isinstance(c_interval.start, Interval):
-            n_start = interval_c_to_n(c_interval.start)
+            n_start = _interval_c_to_n(c_interval.start)
             baseoffset = False
         else:
             n_start = pos_c_to_n(c_interval.start)
 
         if isinstance(c_interval.end, Interval):
-            n_end = interval_c_to_n(c_interval.end)
+            n_end = _interval_c_to_n(c_interval.end)
             baseoffset = False
         else:
             n_end = pos_c_to_n(c_interval.end)
