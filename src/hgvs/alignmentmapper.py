@@ -214,60 +214,6 @@ class AlignmentMapper:
 
         return get_start_end(var)
 
-    def _transform_coordinates_for_reverse_strand(self, positions, offsets, cigars):
-        """Transform coordinates, offsets, and cigar operations for reverse strand.
-
-        Args:
-            positions: List of 4 position values [start_start, start_end, end_start, end_end]
-            offsets: List of 4 offset values [start_start, start_end, end_start, end_end]
-            cigars: List of 4 cigar operations [start_start, start_end, end_start, end_end]
-
-        Returns:
-            tuple: (transformed_positions, transformed_offsets, transformed_cigars)
-        """
-        # Store original values
-        orig_positions = positions.copy()
-        orig_offsets = offsets.copy()
-        orig_cigars = cigars.copy()
-
-        # Transform positions
-        positions[0] = self.tgt_len - 1 - orig_positions[1]  # start_start
-        positions[1] = self.tgt_len - 1 - orig_positions[0]  # start_end
-        positions[2] = self.tgt_len - 1 - orig_positions[3]  # end_start
-        positions[3] = self.tgt_len - 1 - orig_positions[2]  # end_end
-
-        # Transform offsets
-        offsets[0], offsets[1] = -orig_offsets[1], -orig_offsets[0]
-        offsets[2], offsets[3] = -orig_offsets[3], -orig_offsets[2]
-
-        # Swap cigar operations
-        cigars[0], cigars[1] = orig_cigars[1], orig_cigars[0]
-        cigars[2], cigars[3] = orig_cigars[3], orig_cigars[2]
-
-        return positions, offsets, cigars
-
-    def _transform_two_positions_for_reverse_strand(self, pos1, pos2, offset1, offset2):
-        """Transform two positions and their offsets for reverse strand.
-
-        Args:
-            pos1: First position value
-            pos2: Second position value
-            offset1: First offset value
-            offset2: Second offset value
-
-        Returns:
-            tuple: (transformed_pos1, transformed_pos2, transformed_offset1, transformed_offset2)
-        """
-        # Transform positions
-        new_pos1 = self.tgt_len - 1 - pos2
-        new_pos2 = self.tgt_len - 1 - pos1
-
-        # Transform offsets
-        new_offset1 = -offset2
-        new_offset2 = -offset1
-
-        return new_pos1, new_pos2, new_offset1, new_offset2
-
     def _create_base_offset_interval(
         self,
         start_pos,
