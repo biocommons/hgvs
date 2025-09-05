@@ -300,6 +300,10 @@ class Test_SequenceVariant:
         clinvar_hgvs_g,
         clinvar_hgvs_c,
     ):
+        """This is a unit test for the clinvar uncertain ranges described in
+        issue #225: https://github.com/biocommons/hgvs/issues/225.
+
+        This test goes in a loop -> uncertain hgvs_g -> hgvs_c -> hgvs_g.
         As part of this loop we lose information about the outer confidence interval, but we retain the inner confidence interval.
         That's why the hgvs_g_hgvs_g value contains only the inner interval.
         """
