@@ -94,8 +94,10 @@ class SimplePosition:
         # imprecise positions can be on both sides of an interval
         # This is weird, but because an unknown breakpoint can be expressed on both sides
         # with a ? character we need to support that both options are true
-        if lhs.base is None or rhs.base is None:
+        if lhs.base is None:
             return True
+        if rhs.base is None:
+            return False
 
         return lhs.base < rhs.base
 
