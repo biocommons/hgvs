@@ -13,6 +13,15 @@ def get_start_end(
 
     This function handles all position types (SimplePosition, BaseOffsetPosition,
     Interval, BaseOffsetInterval) and returns the appropriate start and end positions.
+    It can be expected that the returned positions have a base and an uncertain property.
+
+    By default we return the outer confidence positions. However, if that position
+    does not have a base, we return the inner confidence positions.
+
+    TODO: add a new optional parameter that allows to define the strictness of the returned positions.
+    The current behavior is more alike to an "auto" mode, since we might fall back to the inner confidence positions
+    if the outer confidence positions do not have a base. A potential "strict" mode would only return the outer confidence positions,
+    and raise an error if the outer confidence positions do not have a base.
 
     Args:
         var: A variant object with posedit.pos attribute, or an Interval object
