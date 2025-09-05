@@ -13,6 +13,7 @@ from hgvs.exceptions import (
     HGVSUnsupportedOperationError,
 )
 from hgvs.variantmapper import VariantMapper
+from hgvs.utils.position import get_start_end
 
 _logger = logging.getLogger(__name__)
 
@@ -202,11 +203,12 @@ class AssemblyMapper(VariantMapper):
     def relevant_transcripts(self, var_g):
         """return list of transcripts accessions (strings) for given variant,
         selected by genomic overlap"""
+        s, e = get_start_end(var_g)
         tx = self.hdp.get_tx_for_region(
             var_g.ac,
             self.alt_aln_method,
-            var_g.posedit.pos.start.base,
-            var_g.posedit.pos.end.base,
+            s.base,
+            e.base,
         )
         return [e["tx_ac"] for e in tx]
 
