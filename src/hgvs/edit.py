@@ -8,6 +8,7 @@ different (e.g., the ref AA in a protein substitution is part of the
 location).
 
 """
+
 import abc
 
 import attr
@@ -15,20 +16,22 @@ from bioutils.sequences import aa1_to_aa3, aa_to_aa1
 
 import hgvs
 from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError
+from hgvs.config import Config
+from hgvs.location import Interval
 
 
 @attr.s(slots=True)
 class Edit(abc.ABC):
-    def format(self, conf=None):
+    def format(self, conf: Config | None = None) -> str:
         return str(self)
 
-    def _format_config_na(self, conf=None):
+    def _format_config_na(self, conf: Config | None = None) -> int:
         max_ref_length = hgvs.global_config.formatting.max_ref_length
         if conf and "max_ref_length" in conf:
             max_ref_length = conf["max_ref_length"]
         return max_ref_length
 
-    def _format_config_aa(self, conf=None):
+    def _format_config_aa(self, conf: Config | None = None) -> tuple[bool, bool, bool]:
         p_3_letter = hgvs.global_config.formatting.p_3_letter
         p_term_asterisk = hgvs.global_config.formatting.p_term_asterisk
         p_init_met = hgvs.global_config.formatting.p_init_met
@@ -41,15 +44,15 @@ class Edit(abc.ABC):
             p_init_met = conf["p_init_met"]
         return p_3_letter, p_term_asterisk, p_init_met
 
-    def _del_ins_lengths(self, ilen):
+    def _del_ins_lengths(self, ilen: int):
         raise HGVSUnsupportedOperationError(
             "internal function _del_ins_lengths not implemented for this variant type"
         )
 
     @property
     @abc.abstractmethod
-    def type(self):
-        """ return the type of this Edit """
+    def type(self) -> str:
+        """return the type of this Edit"""
         pass
 
 
@@ -63,12 +66,12 @@ class NARefAlt(Edit):
     :ivar uncertain: boolean indicating whether the variant is uncertain/undetermined
     """
 
-    ref = attr.ib(default=None)
-    alt = attr.ib(default=None)
-    uncertain = attr.ib(default=False)
+    ref: str | int | None = attr.ib(default=None)
+    alt: str | None = attr.ib(default=None)
+    uncertain: bool = attr.ib(default=False)
 
     @property
-    def ref_s(self):
+    def ref_s(self) -> str:
         """
         returns a string representing the ref sequence, if it is not None and smells like a sequence
 
@@ -85,7 +88,7 @@ class NARefAlt(Edit):
         )
 
     @property
-    def ref_n(self):
+    def ref_n(self) -> str | None:
         """
         returns an integer, either from the `ref` instance variable if it's a number, or the length of
         ref if it's a string, or None otherwise
@@ -103,7 +106,7 @@ class NARefAlt(Edit):
         except ValueError:
             return len(self.ref) if self.ref else None
 
-    def format(self, conf=None):
+    def format(self, conf: Config | None = None) -> str:
         if self.ref is None and self.alt is None:
             raise HGVSError("RefAlt: ref and alt sequences are both undefined")
 
@@ -138,7 +141,7 @@ class NARefAlt(Edit):
 
     __str__ = format
 
-    def _set_uncertain(self):
+    def _set_uncertain(self) -> "NARefAlt":
         """sets the uncertain flag to True; used primarily by the HGVS grammar
 
         :returns: self
@@ -147,7 +150,7 @@ class NARefAlt(Edit):
         return self
 
     @property
-    def type(self):
+    def type(self) -> str:
         """return the type of this Edit
 
         :returns: edit type (str)
@@ -165,7 +168,7 @@ class NARefAlt(Edit):
             edit_type = "ins"
         return edit_type
 
-    def _del_ins_lengths(self, ilen):
+    def _del_ins_lengths(self, ilen: int) -> tuple[int, int]:
         """returns (del_len, ins_len).
         Unspecified ref or alt returns None for del_len or ins_len respectively.
         """
@@ -179,16 +182,16 @@ class NARefAlt(Edit):
 
 @attr.s(slots=True)
 class AARefAlt(Edit):
-    ref = attr.ib(default=None)
-    alt = attr.ib(default=None)
-    uncertain = attr.ib(default=False)
-    init_met = attr.ib(default=False)
+    ref: str | None = attr.ib(default=None)
+    alt: str | None = attr.ib(default=None)
+    uncertain: bool = attr.ib(default=False)
+    init_met: bool = attr.ib(default=False)
 
-    def __attrs_post_init__(self):
+    def __attrs_post_init__(self) -> None:
         self.ref = aa_to_aa1(self.ref)
         self.alt = aa_to_aa1(self.alt)
 
-    def format(self, conf=None):
+    def format(self, conf: Config | None = None) -> str:
         if self.ref is None and self.alt is None:
             # raise HGVSError("RefAlt: ref and alt sequences are both undefined")
             return "="
@@ -243,7 +246,7 @@ class AARefAlt(Edit):
 
     __str__ = format
 
-    def _set_uncertain(self):
+    def _set_uncertain(self) -> "AARefAlt":
         """sets the uncertain flag to True; used primarily by the HGVS grammar
 
         :returns: self
@@ -252,7 +255,7 @@ class AARefAlt(Edit):
         return self
 
     @property
-    def type(self):
+    def type(self) -> str:
         """return the type of this Edit
 
         :returns: edit type (str)
@@ -270,7 +273,7 @@ class AARefAlt(Edit):
             edit_type = "ins"
         return edit_type
 
-    def _del_ins_lengths(self, ilen):
+    def _del_ins_lengths(self, ilen: int) -> tuple[int, int]:
         """returns (del_len, ins_len).
         Unspecified ref or alt returns None for del_len or ins_len respectively.
         """
@@ -284,7 +287,7 @@ class AARefAlt(Edit):
 
 @attr.s(slots=True)
 class AASub(AARefAlt):
-    def format(self, conf=None):
+    def format(self, conf: Config | None = None) -> str:
         p_3_letter, p_term_asterisk, p_init_met = self._format_config_aa(conf)
 
         if p_3_letter:
@@ -298,7 +301,7 @@ class AASub(AARefAlt):
     __str__ = format
 
     @property
-    def type(self):
+    def type(self) -> str:
         """return the type of this Edit
 
         :returns: edit type (str)
@@ -308,31 +311,35 @@ class AASub(AARefAlt):
 
 @attr.s(slots=True)
 class AAFs(Edit):
-    ref = attr.ib(default=None)
-    alt = attr.ib(default=None)
+    ref: str | None = attr.ib(default=None)
+    alt: str | None = attr.ib(default=None)
     length = attr.ib(default=None)
     uncertain = attr.ib(default=False)
 
-    def __attrs_post_init__(self):
+    def __attrs_post_init__(self) -> None:
         self.ref = aa_to_aa1(self.ref)
         self.alt = aa_to_aa1(self.alt)
 
-    def format(self, conf=None):
+    def format(self, conf: Config | None = None) -> str:
         p_3_letter, p_term_asterisk, p_init_met = self._format_config_aa(conf)
 
         st_length = self.length or ""
         if p_3_letter:
             if p_term_asterisk:
-                s = "{alt}fs*{length}".format(alt=aa1_to_aa3(self.alt), length=st_length)
+                s = "{alt}fs*{length}".format(
+                    alt=aa1_to_aa3(self.alt), length=st_length
+                )
             else:
-                s = "{alt}fsTer{length}".format(alt=aa1_to_aa3(self.alt), length=st_length)
+                s = "{alt}fsTer{length}".format(
+                    alt=aa1_to_aa3(self.alt), length=st_length
+                )
         else:
             s = "{alt}fs*{length}".format(alt=self.alt, length=st_length)
         return "(" + s + ")" if self.uncertain else s
 
     __str__ = format
 
-    def _set_uncertain(self):
+    def _set_uncertain(self) -> "AAFs":
         """sets the uncertain flag to True; used primarily by the HGVS grammar
 
         :returns: self
@@ -341,7 +348,7 @@ class AAFs(Edit):
         return self
 
     @property
-    def type(self):
+    def type(self) -> str:
         """return the type of this Edit
 
         :returns: edit type (str)
@@ -351,18 +358,18 @@ class AAFs(Edit):
 
 @attr.s(slots=True)
 class AAExt(Edit):
-    ref = attr.ib(default=None)
-    alt = attr.ib(default=None)
-    aaterm = attr.ib(default=None)
-    length = attr.ib(default=None)
+    ref: str | None = attr.ib(default=None)
+    alt: str | None = attr.ib(default=None)
+    aaterm: str | None = attr.ib(default=None)
+    length: int | None = attr.ib(default=None)
     uncertain = attr.ib(default=False)
 
-    def __attrs_post_init__(self):
+    def __attrs_post_init__(self) -> None:
         self.ref = aa_to_aa1(self.ref)
         self.alt = aa_to_aa1(self.alt)
         self.aaterm = aa_to_aa1(self.aaterm)
 
-    def format(self, conf=None):
+    def format(self, conf: Config | None = None) -> str:
         p_3_letter, p_term_asterisk, p_init_met = self._format_config_aa(conf)
 
         st_alt = self.alt or ""
@@ -376,12 +383,14 @@ class AAExt(Edit):
             if p_term_asterisk and st_aaterm == "Ter":
                 st_aaterm = "*"
 
-        s = "{alt}ext{term}{length}".format(alt=st_alt, term=st_aaterm, length=st_length)
+        s = "{alt}ext{term}{length}".format(
+            alt=st_alt, term=st_aaterm, length=st_length
+        )
         return "(" + s + ")" if self.uncertain else s
 
     __str__ = format
 
-    def _set_uncertain(self):
+    def _set_uncertain(self) -> "AAExt":
         """sets the uncertain flag to True; used primarily by the HGVS grammar
 
         :returns: self
@@ -390,14 +399,14 @@ class AAExt(Edit):
         return self
 
     @property
-    def type(self):
+    def type(self) -> str:
         """return the type of this Edit
 
         :returns: edit type (str)
         """
         return "ext"
 
-    def _del_ins_lengths(self, ilen):
+    def _del_ins_lengths(self, ilen: int) -> tuple[int, int]:
         """returns (del_len, ins_len).
         Unspecified ref or alt returns None for del_len or ins_len respectively.
         """
@@ -406,10 +415,10 @@ class AAExt(Edit):
 
 @attr.s(slots=True)
 class Dup(Edit):
-    ref = attr.ib(default=None)
-    uncertain = attr.ib(default=False)
+    ref: str | None = attr.ib(default=None)
+    uncertain: bool = attr.ib(default=False)
 
-    def format(self, conf=None):
+    def format(self, conf: Config | None = None) -> str:
         max_ref_length = self._format_config_na(conf)
         if max_ref_length is not None:
             ref = self.ref_s
@@ -422,7 +431,7 @@ class Dup(Edit):
     __str__ = format
 
     @property
-    def ref_s(self):
+    def ref_s(self) -> str | None:
         """
         returns a string representing the ref sequence, if it is not None and smells like a sequence
         """
@@ -432,7 +441,7 @@ class Dup(Edit):
             else None
         )
 
-    def _set_uncertain(self):
+    def _set_uncertain(self) -> "Dup":
         """sets the uncertain flag to True; used primarily by the HGVS grammar
 
         :returns: self
@@ -441,14 +450,14 @@ class Dup(Edit):
         return self
 
     @property
-    def type(self):
+    def type(self) -> str:
         """return the type of this Edit
 
         :returns: edit type (str)
         """
         return "dup"
 
-    def _del_ins_lengths(self, ilen):
+    def _del_ins_lengths(self, ilen: int) -> tuple[int, int]:
         """returns (del_len, ins_len).
         Unspecified ref or alt returns None for del_len or ins_len respectively.
         """
@@ -459,12 +468,12 @@ class Dup(Edit):
 
 @attr.s(slots=True)
 class Repeat(Edit):
-    ref = attr.ib(default=None)
-    min = attr.ib(default=None)
-    max = attr.ib(default=None)
-    uncertain = attr.ib(default=False)
+    ref: str | None = attr.ib(default=None)
+    min: int | None = attr.ib(default=None)
+    max: int | None = attr.ib(default=None)
+    uncertain: bool = attr.ib(default=False)
 
-    def format(self, conf=None):
+    def format(self, conf: Config | None = None) -> str:
         if self.min > self.max:
             raise HGVSError("Repeat min count must be less than or equal to max count")
         max_ref_length = self._format_config_na(conf)
@@ -477,7 +486,7 @@ class Repeat(Edit):
 
     __str__ = format
 
-    def _set_uncertain(self):
+    def _set_uncertain(self) -> "Repeat":
         """sets the uncertain flag to True; used primarily by the HGVS grammar
 
         :returns: self
@@ -486,7 +495,7 @@ class Repeat(Edit):
         return self
 
     @property
-    def type(self):
+    def type(self) -> str:
         """return the type of this Edit
 
         :returns: edit type (str)
@@ -505,13 +514,13 @@ class NACopy(Edit):
     """
 
     copy = attr.ib(default=None)
-    uncertain = attr.ib(default=False)
+    uncertain: bool = attr.ib(default=False)
 
-    def __str__(self):
+    def __str__(self) -> str:
         s = "copy{}".format(self.copy)
         return "(" + s + ")" if self.uncertain else s
 
-    def _set_uncertain(self):
+    def _set_uncertain(self) -> "NACopy":
         """sets the uncertain flag to True; used primarily by the HGVS grammar
 
         :returns: self
@@ -520,14 +529,14 @@ class NACopy(Edit):
         return self
 
     @property
-    def type(self):
+    def type(self) -> str:
         """return the type of this Edit
 
         :returns: edit type (str)
         """
         return "copy"
 
-    def _del_ins_lengths(self, ilen):
+    def _del_ins_lengths(self, ilen: int) -> tuple[int, int]:
         """returns (del_len, ins_len).
         Unspecified ref or alt returns None for del_len or ins_len respectively.
         """
@@ -538,13 +547,13 @@ class NACopy(Edit):
 class Inv(Edit):
     """Inversion"""
 
-    ref = attr.ib(default=None)
-    uncertain = attr.ib(default=False)
+    ref: str | int | None = attr.ib(default=None)
+    uncertain: bool = attr.ib(default=False)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "inv"
 
-    def _set_uncertain(self):
+    def _set_uncertain(self) -> "Inv":
         """sets the uncertain flag to True; used primarily by the HGVS grammar
 
         :returns: self
@@ -553,7 +562,7 @@ class Inv(Edit):
         return self
 
     @property
-    def ref_s(self):
+    def ref_s(self) -> str | None:
         return (
             self.ref
             if (isinstance(self.ref, str) and self.ref and self.ref[0] in "ACGTUN")
@@ -561,7 +570,7 @@ class Inv(Edit):
         )
 
     @property
-    def ref_n(self):
+    def ref_n(self) -> int | None:
         """
         returns an integer, either from the `seq` instance variable if it's a number,
         or None otherwise
@@ -572,14 +581,14 @@ class Inv(Edit):
             return None
 
     @property
-    def type(self):
+    def type(self) -> str:
         """return the type of this Edit
 
         :returns: edit type (str)
         """
         return "inv"
 
-    def _del_ins_lengths(self, ilen):
+    def _del_ins_lengths(self, ilen: int) -> tuple[int, int]:
         """returns (del_len, ins_len).
         Unspecified ref or alt returns None for del_len or ins_len respectively.
         """
@@ -590,19 +599,19 @@ class Inv(Edit):
 class Conv(Edit):
     """Conversion"""
 
-    from_ac = attr.ib(default=None)
-    from_type = attr.ib(default=None)
-    from_pos = attr.ib(default=None)
-    uncertain = attr.ib(default=False)
+    from_ac: str | None = attr.ib(default=None)
+    from_type: str | None = attr.ib(default=None)
+    from_pos: Interval | None = attr.ib(default=None)
+    uncertain: bool = attr.ib(default=False)
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self.from_ac and self.from_type and self.from_pos:
             s = "con{self.from_ac}:{self.from_type}.{self.from_pos}".format(self=self)
         else:
             s = "con"
         return "(" + s + ")" if self.uncertain else s
 
-    def _set_uncertain(self):
+    def _set_uncertain(self) -> "Conv":
         """sets the uncertain flag to True; used primarily by the HGVS grammar
 
         :returns: self
@@ -611,7 +620,7 @@ class Conv(Edit):
         return self
 
     @property
-    def type(self):
+    def type(self) -> str:
         """return the type of this Edit
 
         :returns: edit type (str)

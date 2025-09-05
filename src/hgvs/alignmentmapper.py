@@ -26,7 +26,6 @@ The AlignmentMapper class is at the heart of mapping between aligned sequences.
 #    g.   ... 123   124   125   126   127   128   129   130   131   132   133 ...
 #
 
-
 from bioutils.coordinates import strand_int_to_pm
 
 import hgvs.location
@@ -41,15 +40,18 @@ from hgvs.exceptions import (
 from hgvs.utils import build_tx_cigar
 from hgvs.utils.cigarmapper import CIGARMapper
 
+from hgvs.dataproviders.interface import Interface
+from hgvs.location import BaseOffsetInterval, Interval
 
-def _zbc_to_hgvs(i):
+
+def _zbc_to_hgvs(i: int) -> int:
     """Convert zero-based coordinate to hgvs (1 based, missing zero)"""
     if i >= 0:
         i += 1
     return i
 
 
-def _hgvs_to_zbc(i):
+def _hgvs_to_zbc(i: int) -> int:
     """Convert hgvs (1 based, missing zero)"""
     if i >= 1:
         i -= 1
@@ -82,7 +84,9 @@ class AlignmentMapper:
         "cigar_op",
     )
 
-    def __init__(self, hdp, tx_ac, alt_ac, alt_aln_method):
+    def __init__(
+        self, hdp: Interface, tx_ac: str, alt_ac: str, alt_aln_method: str
+    ) -> None:
         self.tx_ac = tx_ac
         self.alt_ac = alt_ac
         self.alt_aln_method = alt_aln_method
@@ -108,11 +112,16 @@ class AlignmentMapper:
             # is that exons are adjacent. Assert that here.
             sorted_tx_exons = sorted(tx_exons, key=lambda e: e["ord"])
             for i in range(1, len(sorted_tx_exons)):
-                if sorted_tx_exons[i - 1]["tx_end_i"] != sorted_tx_exons[i]["tx_start_i"]:
+                if (
+                    sorted_tx_exons[i - 1]["tx_end_i"]
+                    != sorted_tx_exons[i]["tx_start_i"]
+                ):
                     raise HGVSDataNotAvailableError(
                         "AlignmentMapper(tx_ac={self.tx_ac}, "
                         "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
-                        "Exons {a} and {b} are not adjacent".format(self=self, a=i, b=i + 1)
+                        "Exons {a} and {b} are not adjacent".format(
+                            self=self, a=i, b=i + 1
+                        )
                     )
 
             self.strand = tx_exons[0]["alt_strand"]
@@ -138,11 +147,11 @@ class AlignmentMapper:
             self.tgt_len = sum(tx_identity_info["lengths"])
             self.cigarmapper = None
 
-        assert not (
-            (self.cds_start_i is None) ^ (self.cds_end_i is None)
-        ), "CDS start and end must both be defined or neither defined"
+        assert not ((self.cds_start_i is None) ^ (self.cds_end_i is None)), (
+            "CDS start and end must both be defined or neither defined"
+        )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
             "{self.__class__.__name__}: {self.tx_ac} ~ {self.alt_ac} ~ {self.alt_aln_method}; "
             "{strand_pm} strand; offset={self.gc_offset}".format(
@@ -150,7 +159,9 @@ class AlignmentMapper:
             )
         )
 
-    def g_to_n(self, g_interval, strict_bounds=None):
+    def g_to_n(
+        self, g_interval: Interval, strict_bounds: bool | None = None
+    ) -> BaseOffsetInterval:
         """convert a genomic (g.) interval to a transcript cDNA (n.) interval"""
 
         if strict_bounds is None:
@@ -183,7 +194,9 @@ class AlignmentMapper:
             uncertain=frs_cigar in "DI" or fre_cigar in "DI",
         )
 
-    def n_to_g(self, n_interval, strict_bounds=None):
+    def n_to_g(
+        self, n_interval: BaseOffsetInterval, strict_bounds: bool | None = None
+    ) -> Interval:
         """convert a transcript (n.) interval to a genomic (g.) interval"""
 
         if strict_bounds is None:
@@ -210,12 +223,16 @@ class AlignmentMapper:
 
         # The returned interval would be uncertain when locating at alignment gaps
         return hgvs.location.Interval(
-            start=hgvs.location.SimplePosition(gs, uncertain=n_interval.start.uncertain),
+            start=hgvs.location.SimplePosition(
+                gs, uncertain=n_interval.start.uncertain
+            ),
             end=hgvs.location.SimplePosition(ge, uncertain=n_interval.end.uncertain),
             uncertain=grs_cigar in "DI" or gre_cigar in "DI",
         )
 
-    def n_to_c(self, n_interval, strict_bounds=None):
+    def n_to_c(
+        self, n_interval: BaseOffsetInterval, strict_bounds: bool | None = None
+    ) -> BaseOffsetInterval:
         """convert a transcript cDNA (n.) interval to a transcript CDS (c.) interval"""
 
         if strict_bounds is None:
@@ -230,7 +247,9 @@ class AlignmentMapper:
                 )
             )
 
-        if strict_bounds and (n_interval.start.base <= 0 or n_interval.end.base > self.tgt_len):
+        if strict_bounds and (
+            n_interval.start.base <= 0 or n_interval.end.base > self.tgt_len
+        ):
             raise HGVSInvalidIntervalError(
                 "The given coordinate is outside the bounds of the reference sequence."
             )
@@ -245,7 +264,9 @@ class AlignmentMapper:
             else:
                 c = pos.base - self.cds_end_i
                 c_datum = Datum.CDS_END
-            return hgvs.location.BaseOffsetPosition(base=c, offset=pos.offset, datum=c_datum)
+            return hgvs.location.BaseOffsetPosition(
+                base=c, offset=pos.offset, datum=c_datum
+            )
 
         c_interval = hgvs.location.BaseOffsetInterval(
             start=pos_n_to_c(n_interval.start),
@@ -254,7 +275,9 @@ class AlignmentMapper:
         )
         return c_interval
 
-    def c_to_n(self, c_interval, strict_bounds=None):
+    def c_to_n(
+        self, c_interval: BaseOffsetInterval, strict_bounds: bool | None = None
+    ) -> BaseOffsetInterval:
         """convert a transcript CDS (c.) interval to a transcript cDNA (n.) interval"""
 
         if strict_bounds is None:
@@ -278,7 +301,9 @@ class AlignmentMapper:
                 n -= 1
             if n <= 0 or n > self.tgt_len:
                 if strict_bounds:
-                    raise HGVSInvalidIntervalError(f"c.{pos} coordinate is out of bounds")
+                    raise HGVSInvalidIntervalError(
+                        f"c.{pos} coordinate is out of bounds"
+                    )
             return hgvs.location.BaseOffsetPosition(
                 base=n, offset=pos.offset, datum=Datum.SEQ_START
             )
@@ -290,16 +315,20 @@ class AlignmentMapper:
         )
         return n_interval
 
-    def g_to_c(self, g_interval, strict_bounds=None):
+    def g_to_c(
+        self, g_interval: Interval, strict_bounds: bool | None = None
+    ) -> BaseOffsetInterval:
         """convert a genomic (g.) interval to a transcript CDS (c.) interval"""
         return self.n_to_c(self.g_to_n(g_interval), strict_bounds=strict_bounds)
 
-    def c_to_g(self, c_interval, strict_bounds=None):
+    def c_to_g(
+        self, c_interval: BaseOffsetInterval, strict_bounds: bool | None = None
+    ) -> Interval:
         """convert a transcript CDS (c.) interval to a genomic (g.) interval"""
         return self.n_to_g(self.c_to_n(c_interval), strict_bounds=strict_bounds)
 
     @property
-    def is_coding_transcript(self):
+    def is_coding_transcript(self) -> bool:
         if (self.cds_start_i is not None) ^ (self.cds_end_i is not None):
             raise HGVSError(
                 "{self.tx_ac}: CDS start_i and end_i"
@@ -307,7 +336,7 @@ class AlignmentMapper:
             )
         return self.cds_start_i is not None
 
-    def g_interval_is_inbounds(self, ival):
+    def g_interval_is_inbounds(self, ival: Interval) -> bool:
         grs = ival.start.base - 1 - self.gc_offset
         gre = ival.end.base - 1 - self.gc_offset
         return grs >= 0 and gre <= self.cigarmapper.ref_len

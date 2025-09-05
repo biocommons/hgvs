@@ -16,6 +16,7 @@ Classes:
 """
 
 from functools import total_ordering
+from hgvs.config import Config
 
 import attr
 from bioutils.sequences import aa1_to_aa3
@@ -28,25 +29,28 @@ from hgvs.exceptions import HGVSInvalidIntervalError, HGVSUnsupportedOperationEr
 @attr.s(slots=True, repr=False, cmp=False)
 @total_ordering
 class SimplePosition:
-    base = attr.ib(default=None)
-    uncertain = attr.ib(default=False)
+    base: int | None = attr.ib(default=None)
+    uncertain: bool = attr.ib(default=False)
 
-    def __str__(self):
+    def __str__(self) -> str:
         self.validate()
         s = "?" if self.base is None else str(self.base)
         return "(" + s + ")" if self.uncertain else s
 
-    def format(self, conf):
+    def format(self, conf: Config) -> str:
         return str(self)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "{0}({1})".format(
             self.__class__.__name__,
-            ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
+            ", ".join(
+                (a.name + "=" + str(getattr(self, a.name)))
+                for a in self.__attrs_attrs__
+            ),
         )
 
     @property
-    def is_uncertain(self):
+    def is_uncertain(self) -> bool:
         """return True if the position is marked uncertain or undefined"""
         return self.uncertain or self.base is None
 
@@ -55,25 +59,35 @@ class SimplePosition:
         self.uncertain = True
         return self
 
-    def validate(self):
+    def validate(self) -> tuple[ValidationLevel, str | None]:
         if self.base is not None and self.base < 1:
             return (ValidationLevel.ERROR, "Position base must be >= 1")
         return (ValidationLevel.VALID, None)
 
-    def __sub__(lhs, rhs):
-        assert type(lhs) == type(rhs), "Cannot substract coordinates of different representations"
+    def __sub__(lhs: "SimplePosition", rhs: "SimplePosition") -> int:
+        assert type(lhs) is type(rhs), (
+            "Cannot substract coordinates of different representations"
+        )
         return lhs.base - rhs.base
 
-    def __eq__(lhs, rhs):
-        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+    def __eq__(lhs: "SimplePosition", rhs: "SimplePosition") -> bool:
+        assert type(lhs) is type(rhs), (
+            "Cannot compare coordinates of different representations"
+        )
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            raise HGVSUnsupportedOperationError(
+                "Cannot compare coordinates of uncertain positions"
+            )
         return lhs.base == rhs.base
 
-    def __lt__(lhs, rhs):
-        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+    def __lt__(lhs: "SimplePosition", rhs: "SimplePosition") -> bool:
+        assert type(lhs) is type(rhs), (
+            "Cannot compare coordinates of different representations"
+        )
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            raise HGVSUnsupportedOperationError(
+                "Cannot compare coordinates of uncertain positions"
+            )
         return lhs.base < rhs.base
 
 
@@ -113,12 +127,12 @@ class BaseOffsetPosition:
     +----------+------------+-------+---------+------------------------------------------+
     """
 
-    base = attr.ib(default=None)
-    offset = attr.ib(default=0)
-    datum = attr.ib(default=Datum.SEQ_START)
-    uncertain = attr.ib(default=False)
+    base: int | None = attr.ib(default=None)
+    offset: int = attr.ib(default=0)
+    datum: Datum = attr.ib(default=Datum.SEQ_START)
+    uncertain: bool = attr.ib(default=False)
 
-    def validate(self):
+    def validate(self) -> tuple[ValidationLevel, str | None]:
         if self.base is not None and self.base == 0:
             return (ValidationLevel.ERROR, "BaseOffsetPosition base may not be 0")
         if (
@@ -133,7 +147,7 @@ class BaseOffsetPosition:
             )
         return (ValidationLevel.VALID, None)
 
-    def __str__(self):
+    def __str__(self) -> str:
         self.validate()
         base_str = (
             "?"
@@ -143,37 +157,46 @@ class BaseOffsetPosition:
             else str(self.base)
         )
         offset_str = (
-            "+?" if self.offset is None else "" if self.offset == 0 else "%+d" % self.offset
+            "+?"
+            if self.offset is None
+            else ""
+            if self.offset == 0
+            else "%+d" % self.offset
         )
         pos = base_str + offset_str
         return "(" + pos + ")" if self.uncertain else pos
 
-    def format(self, conf):
+    def format(self, conf: Config) -> str:
         return str(self)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "{0}({1})".format(
             self.__class__.__name__,
-            ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
+            ", ".join(
+                (a.name + "=" + str(getattr(self, a.name)))
+                for a in self.__attrs_attrs__
+            ),
         )
 
-    def _set_uncertain(self):
+    def _set_uncertain(self) -> "BaseOffsetPosition":
         "mark this location as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"
         self.uncertain = True
         return self
 
     @property
-    def is_uncertain(self):
+    def is_uncertain(self) -> bool:
         """return True if the position is marked uncertain or undefined"""
         return self.uncertain or self.base is None or self.offset is None
 
     @property
-    def is_intronic(self):
+    def is_intronic(self) -> bool:
         """returns True if the variant is intronic (if the offset is None or non-zero)"""
         return self.offset is None or self.offset != 0
 
-    def __sub__(lhs, rhs):
-        assert type(lhs) == type(rhs), "Cannot substract coordinates of different representations"
+    def __sub__(lhs: "BaseOffsetPosition", rhs: "BaseOffsetPosition") -> int:
+        assert type(lhs) is type(rhs), (
+            "Cannot substract coordinates of different representations"
+        )
         if lhs.datum != rhs.datum:
             raise HGVSUnsupportedOperationError(
                 "Interval length measured from different datums is ill-defined"
@@ -187,16 +210,26 @@ class BaseOffsetPosition:
         straddles_zero = 1 if (lhs.base > 0 and rhs.base < 0) else 0
         return lhs.base - rhs.base - straddles_zero
 
-    def __eq__(lhs, rhs):
-        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+    def __eq__(lhs: "BaseOffsetPosition", rhs: "BaseOffsetPosition") -> bool:
+        assert type(lhs) is type(rhs), (
+            "Cannot compare coordinates of different representations"
+        )
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
-        return lhs.datum == rhs.datum and lhs.base == rhs.base and lhs.offset == rhs.offset
+            raise HGVSUnsupportedOperationError(
+                "Cannot compare coordinates of uncertain positions"
+            )
+        return (
+            lhs.datum == rhs.datum and lhs.base == rhs.base and lhs.offset == rhs.offset
+        )
 
-    def __lt__(lhs, rhs):
-        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+    def __lt__(lhs: "BaseOffsetPosition", rhs: "BaseOffsetPosition") -> bool:
+        assert type(lhs) is type(rhs), (
+            "Cannot compare coordinates of different representations"
+        )
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            raise HGVSUnsupportedOperationError(
+                "Cannot compare coordinates of uncertain positions"
+            )
         if lhs.datum == rhs.datum:
             if lhs.base == rhs.base:
                 return lhs.offset < rhs.offset
@@ -220,18 +253,18 @@ class BaseOffsetPosition:
 
 @attr.s(slots=True, repr=False, cmp=False)
 class AAPosition:
-    base = attr.ib(default=None)
-    aa = attr.ib(default=None)
-    uncertain = attr.ib(default=False)
+    base: int | None = attr.ib(default=None)
+    aa: str | None = attr.ib(default=None)
+    uncertain: bool = attr.ib(default=False)
 
-    def validate(self):
+    def validate(self) -> tuple[ValidationLevel, str | None]:
         if self.base is not None and self.base != "" and self.base < 1:
             return (ValidationLevel.ERROR, "AAPosition location must be >=1")
         if self.aa is not None and len(self.aa) > 1:
             return (ValidationLevel.ERROR, "More than 1 AA associated with position")
         return (ValidationLevel.VALID, None)
 
-    def format(self, conf=None):
+    def format(self, conf: Config | None = None) -> str:
         self.validate()
 
         p_3_letter = hgvs.global_config.formatting.p_3_letter
@@ -253,69 +286,94 @@ class AAPosition:
 
     __str__ = format
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "{0}({1})".format(
             self.__class__.__name__,
-            ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
+            ", ".join(
+                (a.name + "=" + str(getattr(self, a.name)))
+                for a in self.__attrs_attrs__
+            ),
         )
 
     @property
-    def pos(self):
+    def pos(self) -> int | None:
         """return base, for backward compatibility"""
         return self.base
 
-    def _set_uncertain(self):
+    def _set_uncertain(self) -> "AAPosition":
         "mark this location as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"
         self.uncertain = True
         return self
 
     @property
-    def is_uncertain(self):
+    def is_uncertain(self) -> bool:
         """return True if the position is marked uncertain or undefined"""
         return self.uncertain or self.base is None or self.aa is None
 
-    def __sub__(lhs, rhs):
-        assert type(lhs) == type(rhs), "Cannot substract coordinates of different representations"
+    def __sub__(lhs: "AAPosition", rhs: "AAPosition") -> int:
+        assert type(lhs) is type(rhs), (
+            "Cannot substract coordinates of different representations"
+        )
         return lhs.base - rhs.base
 
-    def __eq__(lhs, rhs):
-        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+    def __eq__(lhs: "AAPosition", rhs: "AAPosition") -> bool:
+        assert type(lhs) is type(rhs), (
+            "Cannot compare coordinates of different representations"
+        )
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            raise HGVSUnsupportedOperationError(
+                "Cannot compare coordinates of uncertain positions"
+            )
         return lhs.base == rhs.base and lhs.aa == rhs.aa
 
-    def __lt__(lhs, rhs):
-        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+    def __lt__(lhs: "AAPosition", rhs: "AAPosition") -> bool:
+        assert type(lhs) is type(rhs), (
+            "Cannot compare coordinates of different representations"
+        )
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            raise HGVSUnsupportedOperationError(
+                "Cannot compare coordinates of uncertain positions"
+            )
         return lhs.base < rhs.base
 
-    def __gt__(lhs, rhs):
-        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+    def __gt__(lhs: "AAPosition", rhs: "AAPosition") -> bool:
+        assert type(lhs) is type(rhs), (
+            "Cannot compare coordinates of different representations"
+        )
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            raise HGVSUnsupportedOperationError(
+                "Cannot compare coordinates of uncertain positions"
+            )
         return lhs.base > rhs.base
 
-    def __le__(lhs, rhs):
-        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+    def __le__(lhs: "AAPosition", rhs: "AAPosition") -> bool:
+        assert type(lhs) is type(rhs), (
+            "Cannot compare coordinates of different representations"
+        )
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            raise HGVSUnsupportedOperationError(
+                "Cannot compare coordinates of uncertain positions"
+            )
         return lhs.base <= rhs.base
 
-    def __ge__(lhs, rhs):
-        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+    def __ge__(lhs: "AAPosition", rhs: "AAPosition") -> bool:
+        assert type(lhs) is type(rhs), (
+            "Cannot compare coordinates of different representations"
+        )
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            raise HGVSUnsupportedOperationError(
+                "Cannot compare coordinates of uncertain positions"
+            )
         return lhs.base >= rhs.base
 
 
 @attr.s(slots=True, repr=False)
 class Interval:
-    start = attr.ib(default=None)
-    end = attr.ib(default=None)
-    uncertain = attr.ib(default=False)
+    start: SimplePosition | None = attr.ib(default=None)
+    end: SimplePosition | None = attr.ib(default=None)
+    uncertain: bool = attr.ib(default=False)
 
-    def validate(self):
+    def validate(self) -> tuple[ValidationLevel, str | None]:
         if self.start:
             (res, msg) = self.start.validate()
             if res != ValidationLevel.VALID:
@@ -331,11 +389,14 @@ class Interval:
             if self.start <= self.end:
                 return (ValidationLevel.VALID, None)
             else:
-                return (ValidationLevel.ERROR, "base start position must be <= end position")
+                return (
+                    ValidationLevel.ERROR,
+                    "base start position must be <= end position",
+                )
         except HGVSUnsupportedOperationError as err:
             return (ValidationLevel.WARNING, str(err))
 
-    def format(self, conf=None):
+    def format(self, conf: Config = None) -> str:
         if self.start is None:
             return ""
         if self.end is None or self.start == self.end:
@@ -345,22 +406,25 @@ class Interval:
 
     __str__ = format
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "{0}({1})".format(
             self.__class__.__name__,
-            ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
+            ", ".join(
+                (a.name + "=" + str(getattr(self, a.name)))
+                for a in self.__attrs_attrs__
+            ),
         )
 
-    def _set_uncertain(self):
+    def _set_uncertain(self) -> "Interval":
         "mark this interval as uncertain and return reference to self; this is called during parsing (see hgvs.ometa)"
         self.uncertain = True
         return self
 
-    def _length(self):
+    def _length(self) -> int:
         return 1 if self.end is None else self.end - self.start + 1
 
     @property
-    def is_uncertain(self):
+    def is_uncertain(self) -> bool:
         """return True if the position is marked uncertain or undefined"""
         return self.uncertain or self.start.is_uncertain or self.end.is_uncertain
 
@@ -373,7 +437,7 @@ class BaseOffsetInterval(Interval):
 
     """
 
-    def __attrs_post_init__(self):
+    def __attrs_post_init__(self) -> None:
         # #330: In a post-ter interval like *87_91, the * binds only
         # to the start. This means that the start.datum is CDS_END,
         # but the end.datum is CDS_START (the default).
@@ -381,7 +445,7 @@ class BaseOffsetInterval(Interval):
             self.end.datum = Datum.CDS_END
         self.check_datum()
 
-    def check_datum(self):
+    def check_datum(self) -> None:
         # check for valid combinations of start and end datums
         if (self.start.datum, self.end.datum) not in [
             (Datum.SEQ_START, Datum.SEQ_START),
