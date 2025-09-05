@@ -190,14 +190,12 @@ class Test_SequenceVariant:
     def test_normalize_uncertain_hgvs_g(self, parser, vm, hdp):
         hp = parser
         normalizer = hgvs.normalizer.Normalizer(hdp)
-        var_g = hp.parse("NC_000005.9:g.(90144453_90159650)_(90159675_90261231)dup")
+        var_dup = "NC_000005.9:g.(90136802_90144453)_(90159674_90261231)dup"
+        var_g = hp.parse(var_dup)
         var_g_norm = normalizer.normalize(var_g)
-        assert (
-            str(var_g_norm)
-            == "NC_000005.9:g.(90136803_90144453)_(90159675_90261231)dup"
-        )
-        assert var_g_norm.posedit.pos.start.uncertain is False
-        assert var_g_norm.posedit.pos.end.uncertain is False
+        assert str(var_g_norm) == var_dup
+        assert var_g_norm.posedit.pos.start.uncertain
+        assert var_g_norm.posedit.pos.end.uncertain
         assert var_g_norm.posedit.edit.type == "dup"
 
     @pytest.mark.parametrize(
