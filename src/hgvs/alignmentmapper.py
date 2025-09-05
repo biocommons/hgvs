@@ -44,6 +44,7 @@ from hgvs.exceptions import (
 from hgvs.location import Interval, BaseOffsetInterval
 from hgvs.utils import build_tx_cigar
 from hgvs.utils.cigarmapper import CIGARMapper
+import math
 
 
 def _zbc_to_hgvs(i: int):
@@ -58,9 +59,6 @@ def _hgvs_to_zbc(i: int):
     if i >= 1:
         i -= 1
     return i
-
-
-MAX_CHR_SIZE = 248387328  # chr 1 in T2T assembly size
 
 
 class AlignmentMapper:
@@ -907,11 +905,11 @@ class AlignmentMapper:
             if grs_start is not None:
                 grs_orig_start = grs_start + self.gc_offset + 1 - se_offset
             else:
-                grs_orig_start = MAX_CHR_SIZE
+                grs_orig_start = math.inf
             if grs_end is not None:
                 grs_orig_end = grs_end + self.gc_offset + 1 - ss_offset
             else:
-                grs_orig_end = MAX_CHR_SIZE + 1
+                grs_orig_end = math.inf + 1
 
             # Sort the four values from smallest to largest
             all_positions = [gre_orig_start, gre_orig_end, grs_orig_start, grs_orig_end]
@@ -919,7 +917,7 @@ class AlignmentMapper:
 
             # Convert sentinel values back to None
             all_positions = [
-                None if x == -1 or x >= MAX_CHR_SIZE else x for x in all_positions
+                None if x == -1 or x >= math.inf else x for x in all_positions
             ]
 
             grs_start, grs_end, gre_start, gre_end = all_positions
