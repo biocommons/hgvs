@@ -1,4 +1,5 @@
 """translate between HGVS and other formats"""
+
 import os
 
 from bioutils.assemblies import make_ac_name_map, make_name_ac_map
@@ -11,17 +12,7 @@ from hgvs.location import Interval, SimplePosition
 from hgvs.normalizer import Normalizer
 from hgvs.posedit import PosEdit
 from hgvs.sequencevariant import SequenceVariant
-
-
-def _as_interbase(posedit):
-    if posedit.edit.type == "ins":
-        # ins coordinates (only) exclude left position
-        start_i = posedit.pos.start.base
-        end_i = posedit.pos.end.base - 1
-    else:
-        start_i = posedit.pos.start.base - 1
-        end_i = posedit.pos.end.base
-    return (start_i, end_i)
+from hgvs.utils.position import get_start_end_interbase
 
 
 class Babelfish:
@@ -49,7 +40,10 @@ class Babelfish:
 
         vleft = self.hn.normalize(var_g)
 
-        (start_i, end_i) = _as_interbase(vleft.posedit)
+        # We are taking the inner interval, but plan on implementing INFO fields in issue #788
+        start_i, end_i = get_start_end_interbase(
+            vleft.posedit.pos, outer_confidence=False
+        )
 
         chrom = self.ac_to_name_map[vleft.ac]
 
@@ -65,7 +59,12 @@ class Babelfish:
         else:
             alt = vleft.posedit.edit.alt or ""
 
-            if typ in ("del", "ins"):  # Left anchored
+            if typ in ("del", "ins"):
+                if typ == "ins":
+                    # ins coordinates (only) exclude left position
+                    start_i += 1
+                    end_i -= 1
+                # Left anchored
                 start_i -= 1
                 ref = self.hdp.seqfetcher.fetch_seq(vleft.ac, start_i, end_i)
                 alt = ref[0] + alt
@@ -107,7 +106,11 @@ class Babelfish:
             ac=ac,
             type="g",
             posedit=PosEdit(
-                Interval(start=SimplePosition(start), end=SimplePosition(end), uncertain=False),
+                Interval(
+                    start=SimplePosition(start),
+                    end=SimplePosition(end),
+                    uncertain=False,
+                ),
                 NARefAlt(ref=ref or None, alt=alt or None, uncertain=False),
             ),
         )
