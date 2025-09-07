@@ -10,14 +10,35 @@ from hgvs.extras.babelfish import Babelfish
 from hgvs.variantmapper import VariantMapper
 
 
+def remove_request_headers(request):
+    headers_to_remove = ["user-agent"]
+    headers = getattr(request, "headers", request)
+    for header in headers_to_remove:
+        headers.pop(header, None)
+        headers.pop(header.title(), None)
+    return request
+
+
+def remove_response_headers(response):
+    headers_to_remove = ["date", "server"]
+    for header in headers_to_remove:
+        response["headers"].pop(header, None)
+        response["headers"].pop(header.title(), None)
+    return response
+
+
 @pytest.fixture(scope="function")
 def vcr_config(request):
     """See https://pytest-vcr.readthedocs.io/en/latest/configuration/"""
     test_file_path = Path(request.node.fspath)
     return {
-        "cassette_library_dir": str(test_file_path.with_name("cassettes") / test_file_path.stem),
+        "cassette_library_dir": str(
+            test_file_path.with_name("cassettes") / test_file_path.stem
+        ),
         "record_mode": os.environ.get("VCR_RECORD_MODE", "new_episodes"),
-        "cassette_name": f"{request.node.name}.yaml"
+        "cassette_name": f"{request.node.name}.yaml",
+        "before_record_request": remove_request_headers,
+        "before_record_response": remove_response_headers,
     }
 
 
@@ -86,4 +107,3 @@ def kitchen_sink_setup(request, hdp, parser, am37, am38):
     request.cls.parser = parser
     request.cls.am37 = am37
     request.cls.am38 = am38
-
