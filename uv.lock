@@ -437,15 +437,6 @@ wheels = [
 ]
 
 [[package]]
-name = "configparser"
-version = "7.2.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/8b/ac/ea19242153b5e8be412a726a70e82c7b5c1537c83f61b20995b2eda3dcd7/configparser-7.2.0.tar.gz", hash = "sha256:b629cc8ae916e3afbd36d1b3d093f34193d851e11998920fdcfc4552218b7b70", size = 51273, upload-time = "2025-03-08T16:04:09.339Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/09/fe/f61e7129e9e689d9e40bbf8a36fb90f04eceb477f4617c02c6a18463e81f/configparser-7.2.0-py3-none-any.whl", hash = "sha256:fee5e1f3db4156dcd0ed95bc4edfa3580475537711f67a819c966b389d09ce62", size = 17232, upload-time = "2025-03-08T16:04:07.743Z" },
-]
-
-[[package]]
 name = "coverage"
 version = "7.10.6"
 source = { registry = "https://pypi.org/simple" }
@@ -680,11 +671,11 @@ dependencies = [
     { name = "attrs" },
     { name = "biocommons-seqrepo" },
     { name = "bioutils" },
-    { name = "configparser" },
     { name = "importlib-resources" },
     { name = "ipython" },
     { name = "parsley" },
     { name = "psycopg2" },
+    { name = "uta-align" },
 ]
 
 [package.dev-dependencies]
@@ -715,11 +706,11 @@ requires-dist = [
     { name = "attrs", specifier = ">=17.4.0" },
     { name = "biocommons-seqrepo", specifier = ">=0.6.10" },
     { name = "bioutils", specifier = ">=0.4.0,<1.0" },
-    { name = "configparser", specifier = ">=3.3.0" },
     { name = "importlib-resources" },
     { name = "ipython" },
     { name = "parsley" },
     { name = "psycopg2" },
+    { name = "uta-align", specifier = ">=0.3.0" },
 ]
 
 [package.metadata.requires-dev]
@@ -2897,6 +2888,17 @@ sdist = { url = "https://files.pythonhosted.org/packages/e4/e8/6ff5e6bc22095cfc5
 wheels = [
     { url = "https://files.pythonhosted.org/packages/33/cf/8435d5a7159e2a9c83a95896ed596f68cf798005fe107cc655b5c5c14704/urllib3-1.26.20-py2.py3-none-any.whl", hash = "sha256:0ed14ccfbf1c30a9072c7ca157e4319b70d65f623e91e7b32fadb2853431016e", size = 144225, upload-time = "2024-08-29T15:43:08.921Z" },
 ]
+
+[[package]]
+name = "uta-align"
+version = "0.3.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "coloredlogs" },
+    { name = "pysam" },
+    { name = "pyyaml" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d6/b5/00fdbe4f2fb1b734bc5bbc0ae26ae7562b5c202fdd72457d8cf3bdd36b79/uta-align-0.3.0.tar.gz", hash = "sha256:3b51b0b85ea8da5d7b5a23bdb9c29566304ec7c5ab3e3954a2f461c7f6abfa6c", size = 340099, upload-time = "2024-03-19T19:54:35.309Z" }
 
 [[package]]
 name = "uv"

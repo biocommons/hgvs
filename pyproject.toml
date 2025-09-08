@@ -45,11 +45,11 @@ dependencies = [
   "attrs >= 17.4.0", # https://github.com/biocommons/hgvs/issues/473
   "biocommons.seqrepo >= 0.6.10",
   "bioutils >= 0.4.0,<1.0",
-  "configparser >= 3.3.0",
   "importlib_resources",
   "ipython",
   "parsley",
-  "psycopg2"
+  "psycopg2",
+  "uta-align>=0.3.0",
 ]
 description = "HGVS Parser, Formatter, Mapper, Validator"
 dynamic = ["version"]
