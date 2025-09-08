@@ -23,4 +23,52 @@ interactions:
     status:
       code: 200
       message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000007.13?start=21940851&end=21940908
+  response:
+    body:
+      string: GCTCTGCTTCTAGAAGCGTAAGGTAACACTGGCATTCCTCTAGCCTCTGCTGGAGTG
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '57'
+      Content-Type:
+      - text/plain; charset=utf-8
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NM_003777.3?start=13582&end=13639
+  response:
+    body:
+      string: GCTCTGCTTCTAGAAGCGTAAGGTAACACTGGCATTCCTCTAGCCTCTGCTGGAGTG
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '57'
+      Content-Type:
+      - text/plain; charset=utf-8
+    status:
+      code: 200
+      message: OK
 version: 1

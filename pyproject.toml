@@ -1,28 +1,45 @@
 [build-system]
 build-backend = "setuptools.build_meta"
-requires = [
-  "setuptools >= 69.0.2",
-  "setuptools_scm[toml] >= 8.0"
+requires = ["setuptools >= 70.1", "setuptools_scm[toml] ~= 8.1"]
+
+[dependency-groups]
+dev = [
+  "deptry>=0.23",
+  "ipython",
+  "jupyter",
+  "mkdocs-awesome-nav>=3.1.2",
+  "mkdocs-material>=9.6",
+  "mkdocs>=1.6",
+  "mkdocstrings[python]>=0.30",
+  "mypy>=1.17",
+  "pre-commit>=3.8",
+  "pytest-cov>=4.1",
+  "pytest-recording",
+  "pytest>=7.4",
+  "ruff>=0.12",
+  "sphinx",
+  "sphinx_rtd_theme",
+  "sphinxcontrib-fulltoc >= 1.1",
+  "toml-sort",
+  "tox-uv>=1.28",
+  "vcrpy"
 ]
 
 [project]
 authors = [
-  {name = "HGVS Contributors", email = "biocommons-dev@googlegroups.com"}
+  {email = "biocommons-dev@googlegroups.com", name = "biocommons contributors"}
 ]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
-  "Intended Audience :: Healthcare Industry",
-  "Intended Audience :: Science/Research",
-  "License :: OSI Approved :: Apache Software License",
-  "Operating System :: OS Independent",
-  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.13",
   "Programming Language :: Python",
   "Topic :: Scientific/Engineering :: Bio-Informatics",
-  "Topic :: Scientific/Engineering :: Medical Science Apps."
+  "Topic :: Scientific/Engineering :: Medical Science Apps.",
+  "Topic :: Software Development :: Libraries :: Python Modules"
 ]
 dependencies = [
   "attrs >= 17.4.0", # https://github.com/biocommons/hgvs/issues/473
@@ -45,57 +62,42 @@ keywords = [
   "hgvs",
   "variation"
 ]
-license = {file = "LICENSE.txt"}
+license = "Apache-2.0"
 name = "hgvs"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 
 [project.optional-dependencies]
-dev = [
-  "black",
-  "flake8",
-  "ipython",
-  "isort",
-  "jupyter",
-  "pre-commit ~= 3.4",
-  "pytest",
-  "pytest-cov",
-  "pytest-recording",
-  "restview",
-  "setuptools",
-  "sphinx",
-  "sphinx_rtd_theme",
-  "sphinxcontrib-fulltoc >= 1.1",
-  "toml-sort",
-  "tox",
-  "vcrpy",
-  "yapf"
-]
 
 [project.scripts]
 "hgvs-shell" = "hgvs.shell:shell"
 
 [project.urls]
-"Bug Tracker" = "https://github.com/biocommons/hgvs/issues"
-"Homepage" = "https://github.com/biocommons/hgvs"
+Documentation = "https://hgvs.readthedocs.io/"
+Issues = "https://github.com/biocommons/hgvs/issues"
+Homepage = "https://github.com/biocommons/hgvs"
+Repository = "https://github.com/biocommons/hgvs/"
 
-[tool.black]
-line-length = 100
+[tool.coverage]
 
 [tool.coverage.report]
 exclude_lines = [
-  # Have to re-enable the standard pragma
-  "pragma: no cover",
-  # Don't complain about missing debug-only code:
-  "def __repr__",
-  "if self.debug",
-  # Don't complain if tests don't hit defensive assertion code:
-  "raise AssertionError",
-  "raise NotImplementedError",
-  # Don't complain if non-runnable code isn't run:
-  "if __name__ == .__main__.:"
+    # Have to re-enable the standard pragma
+    "pragma: no cover",
+
+    # Don't complain about missing debug-only code:
+    "def __repr__",
+    "if self.debug",
+
+    # Don't complain if tests don't hit defensive assertion code:
+    "raise AssertionError",
+    "raise NotImplementedError",
+
+    # Don't complain if non-runnable code isn't run:
+    "if __name__ == .__main__.:",
 ]
 show_missing = true
+skip_empty = true
 
 [tool.coverage.run]
 branch = true
@@ -114,34 +116,28 @@ omit = [
   "hgvs/utils/context.py",
   "hgvs/utils/orderedenum.py"
 ]
-source = ["hgvs"]
+source = ["src"]
 
-[tool.flake8]
-exclude = ["tests/*"]
-ignore = ["E129", "E221", "E241", "E251", "E303", "W291"]
-max-complexity = 10
-max-line-length = 120
+[tool.deptry]
 
-[tool.isort]
-profile = "black"
+[tool.deptry.package_module_name_map]
+# map package name to import name
+# Making this explicit suppresses deptry notices
+coloredlogs = "coloredlogs"
+mkdocs = "mkdocs"
+mkdocs-material = "mkdocs_material"
+mkdocstrings = "mkdocstrings"
+mypy = "mypy"
+pre-commit = "pre_commit"
+pytest = "pytest"
+pytest-cov = "pytest_cov"
+pyyaml = "yaml"
+ruff = "ruff"
+tox-uv = "tox_uv"
+ty = "ty"
 
-[tool.pylint]
-
-[tool.pylint.'MESSAGES CONTROL']
-disable = "R0913"
-
-[tool.pylint.format]
-max-line-length = "120"
-
-# https://docs.pytest.org/en/6.2.x/customize.html#pyproject-toml
 [tool.pytest.ini_options]
-addopts = "-s -v -x --strict-markers -m 'not extra' --cov=src"  # --doctest-modules
-# addopts = [
-#   "-rsvx",
-#   "-m 'not extra'",
-#   "--cov=src",
-#   "--ignore=hgvs/dataproviders/ncbi.py"
-# ]
+addopts = "-s -v -x --strict-markers -m 'not extra' --doctest-modules --cov=src"
 doctest_optionflags = [
   "ALLOW_BYTES",
   "ALLOW_UNICODE",
@@ -161,21 +157,78 @@ markers = [
   "slow: slow tests that should be run infrequently",
   "validation",
 ]
-norecursedirs = [
-  ".eggs",
-  "archive",
-  "build",
-  "cover",
-  "dist",
-  "etc",
-  "examples",
-  "hgvs.egg-info",
-  "misc",
-  "prof",
-  "sbin",
-  "tmp",
-  "venv"
+testpaths = ["tests"]
+
+[tool.ruff]
+fix = true
+line-length = 100
+src = ["src", "tests"]
+target-version = "py39"
+
+[tool.ruff.format]
+docstring-code-format = true
+preview = true
+quote-style = "double"
+
+[tool.ruff.lint]
+fixable = [
+  "B",
+  "C4",
+  "D",
+  "EM",
+  "F401",
+  "F541",
+  "I",
+  "PERF",
+  "PIE",
+  "PT",
+  "RET",
+  "RSE",
+  "RUF",
+  "SIM",
+  "UP"
 ]
+ignore = [
+  "E111",
+  "E114",
+  "E117",
+  "E501",
+  "E731",
+  "PLR0913",
+  "S321",
+  "W191"
+]
+select = [
+  "A", # https://docs.astral.sh/ruff/rules/#flake8-builtins-a
+  "ARG", # https://docs.astral.sh/ruff/rules/#flake8-unused-arguments-arg
+  "B", # https://docs.astral.sh/ruff/rules/#flake8-bugbear-b
+  "C4", # https://docs.astral.sh/ruff/rules/#flake8-comprehensions-c4
+  "DTZ", # https://docs.astral.sh/ruff/rules/#flake8-datetimez-dtz
+  "E",
+  "EM", # https://docs.astral.sh/ruff/rules/#flake8-errmsg-em
+  "F", # https://docs.astral.sh/ruff/rules/#pyflakes-f
+  "G", # https://docs.astral.sh/ruff/rules/#flake8-logging-format-g
+  "I", # https://docs.astral.sh/ruff/rules/#isort-i
+  "LOG", # https://docs.astral.sh/ruff/rules/#flake8-logging-log
+  "N", # https://docs.astral.sh/ruff/rules/#pep8-naming-n
+  "PERF", # https://docs.astral.sh/ruff/rules/#perflint-perf
+  "PIE", # https://docs.astral.sh/ruff/rules/#flake8-pie-pie
+  "PL", # https://docs.astral.sh/ruff/rules/#pylint-pl
+  "PT", # https://docs.astral.sh/ruff/rules/#flake8-pytest-style-pt
+  "PTH", # https://docs.astral.sh/ruff/rules/#flake8-use-pathlib-pth
+  "RET", # https://docs.astral.sh/ruff/rules/#flake8-return-ret
+  "RSE", # https://docs.astral.sh/ruff/rules/#flake8-raise-rse
+  "RUF", # https://docs.astral.sh/ruff/rules/#ruff-specific-rules-ruf
+  "S", # https://docs.astral.sh/ruff/rules/#flake8-bandit-s
+  "SIM", # https://docs.astral.sh/ruff/rules/#flake8-simplify-sim
+  "TRY", # https://docs.astral.sh/ruff/rules/#tryceratops-try
+  "UP", # https://docs.astral.sh/ruff/rules/#pyupgrade-up
+  "W", # https://docs.astral.sh/ruff/rules/#pycodestyle-e-w
+  "YTT" # https://docs.astral.sh/ruff/rules/#flake8-2020-ytt
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]
 
 [tool.setuptools]
 include-package-data = true
@@ -183,9 +236,13 @@ package-dir = {"" = "src"}
 zip-safe = true
 
 [tool.setuptools.package-data]
+# "*" = ["_data/*/*.json.gz"]
+# "*" = ["*.gz", "*.json", "*.yaml"]
 hgvs = ["_data/*"]
 
 [tool.setuptools.packages.find]
+exclude = ["*.pyc", "__pycache__"]
+# namespaces = true
 where = ["src"]
 
 [tool.setuptools_scm]

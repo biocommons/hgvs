@@ -1,0 +1,21 @@
+name: Python CI/CD
+permissions:
+  contents: write
+  id-token: write
+
+on:
+  push:
+    branches: ["*"]
+    tags: ["*"]
+
+jobs:
+  python-ci-cd:
+    name: Python CI/CD
+    permissions:
+      contents: write
+      id-token: write
+    uses: biocommons/.github/.github/workflows/python-ci-cd.yml@main
+    with:
+      publish: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
+    secrets:
+      pypi-token: ${{ secrets.UV_PUBLISH_TOKEN }}
