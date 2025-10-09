@@ -30,6 +30,7 @@ from bioutils.coordinates import strand_int_to_pm
 
 import hgvs.location
 from hgvs import global_config
+from hgvs.dataproviders.interface import Interface
 from hgvs.enums import Datum
 from hgvs.exceptions import (
     HGVSDataNotAvailableError,
@@ -41,6 +42,7 @@ from hgvs.location import Interval, BaseOffsetInterval
 from hgvs.utils import build_tx_cigar
 from hgvs.utils.cigarmapper import CIGARMapper
 import math
+
 
 def _zbc_to_hgvs(i: int) -> int:
     """Convert zero-based coordinate to hgvs (1 based, missing zero)"""
@@ -271,7 +273,7 @@ class AlignmentMapper:
         )
 
     def _g_to_n_interval(
-        self, g_interval: Interval, strict_bounds: Optional[bool] = None
+        self, g_interval: Interval, strict_bounds: bool | None = None
     ) -> BaseOffsetInterval:
         """Convert a genomic (g.) interval to a transcript cDNA (n.) interval.
 
@@ -491,7 +493,7 @@ class AlignmentMapper:
         return final_interval
 
     def n_to_g(
-        self, n_interval: Interval, strict_bounds: Optional[bool] = None
+        self, n_interval: Interval, strict_bounds: bool | None = None
     ) -> Interval:
         """Convert a transcript (n.) interval to a genomic (g.) interval.
 
@@ -766,9 +768,7 @@ class AlignmentMapper:
             )
         return n_interval
 
-    def g_to_c(
-        self, g_interval: Interval, strict_bounds: bool | None = None
-    ):
+    def g_to_c(self, g_interval: Interval, strict_bounds: bool | None = None):
         """convert a genomic (g.) interval to a transcript CDS (c.) interval"""
         var_n = self.g_to_n(g_interval)
         return self.n_to_c(var_n, strict_bounds=strict_bounds)
@@ -802,7 +802,7 @@ class AlignmentMapper:
         return _hgvs_to_zbc(pos.base)
 
     def _n_to_g_interval(
-        self, n_interval: Interval, strict_bounds: Optional[bool] = None
+        self, n_interval: Interval, strict_bounds: bool | None = None
     ) -> Interval:
         """Convert transcript (n.) intervals to a genomic (g.) interval.
 

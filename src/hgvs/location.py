@@ -22,6 +22,7 @@ import attr
 from bioutils.sequences import aa1_to_aa3
 
 import hgvs
+from hgvs.config import Config
 from hgvs.enums import Datum, ValidationLevel
 from hgvs.exceptions import HGVSInvalidIntervalError, HGVSUnsupportedOperationError
 

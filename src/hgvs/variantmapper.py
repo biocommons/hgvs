@@ -687,9 +687,7 @@ class VariantMapper:
             )
         return edit_out
 
-    def _get_altered_sequence(
-        self, strand: int, interval: hgvs.intervalmapper.Interval, var
-    ) -> str:
+    def _get_altered_sequence(self, strand: int, interval, var) -> str:
         seq = list(self.hdp.get_seq(var.ac, interval.start.base - 1, interval.end.base))
         # positions are 0-based and half-open
         pos_start = var.posedit.pos.start.base - interval.start.base

@@ -12,7 +12,9 @@ from hgvs.exceptions import (
     HGVSInvalidVariantError,
     HGVSUnsupportedOperationError,
 )
+from hgvs.alignmentmapper import AlignmentMapper
 from hgvs.variantmapper import VariantMapper
+from hgvs.sequencevariant import SequenceVariant
 from hgvs.utils.position import get_start_end
 
 _logger = logging.getLogger(__name__)

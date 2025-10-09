@@ -3,6 +3,8 @@
 
 import attr
 
+from hgvs.config import Config
+from hgvs.edit import Edit
 from hgvs.enums import ValidationLevel
 from hgvs.exceptions import HGVSUnsupportedOperationError
 from hgvs.location import Interval
@@ -23,7 +25,9 @@ class PosEdit:
         if self.pos is None:
             rv = str(self.edit.format(conf))
         else:
-            rv = "{pos}{edit}".format(pos=self.pos.format(conf), edit=self.edit.format(conf))
+            rv = "{pos}{edit}".format(
+                pos=self.pos.format(conf), edit=self.edit.format(conf)
+            )
 
         if self.uncertain:
             if self.edit in ["0", ""]:
@@ -37,7 +41,10 @@ class PosEdit:
     def __repr__(self):
         return "{0}({1})".format(
             self.__class__.__name__,
-            ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
+            ", ".join(
+                (a.name + "=" + str(getattr(self, a.name)))
+                for a in self.__attrs_attrs__
+            ),
         )
 
     def _set_uncertain(self) -> "PosEdit":
@@ -97,11 +104,14 @@ class PosEdit:
                 # Check del length
                 if self.edit.type in ["del", "delins"]:
                     ref_len = self.edit.ref_n
-                    if (ref_len is not None and
-                            not ( isinstance(self.pos.start, Interval) or
-                                isinstance(self.pos.end, Interval)
-                            ) and
-                            ref_len != self.pos.end - self.pos.start + 1):
+                    if (
+                        ref_len is not None
+                        and not (
+                            isinstance(self.pos.start, Interval)
+                            or isinstance(self.pos.end, Interval)
+                        )
+                        and ref_len != self.pos.end - self.pos.start + 1
+                    ):
                         return (
                             ValidationLevel.ERROR,
                             "Length implied by coordinates must equal sequence deletion length",
