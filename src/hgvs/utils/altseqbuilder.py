@@ -132,7 +132,7 @@ class AltSeqBuilder:
         # should loop over each allele rather than assume only 1 variant; return a list for now
         alt_data = []
 
-        variant_location = self._get_variant_region()
+        variant_location = self.get_variant_region()
 
         if variant_location == self.EXON:
             edit_type = type(self._var_c.posedit.edit)
@@ -176,7 +176,7 @@ class AltSeqBuilder:
 
         return alt_data
 
-    def _get_variant_region(self):
+    def get_variant_region(self):
         """Categorize variant by location in transcript (5'utr, exon, intron, 3'utr)
 
         :return "exon", "intron", "five_utr", "three_utr", "whole_gene"
@@ -200,41 +200,37 @@ class AltSeqBuilder:
         ):
             result = self.WHOLE_GENE
         elif (
-            global_config.mapping.ins_at_boundary_is_intronic
-            and self._var_c.posedit.edit.type == "dup"
+            self._var_c.posedit.edit.type == "dup"
             and self._var_c.posedit.pos.start.base in self._transcript_data.exon_start_positions
+            and self._var_c.posedit.pos.start.offset == 0
         ):
-            result = self.INTRON
+            result = self.INTRON if global_config.mapping.ins_at_boundary_is_intronic else self.EXON
         elif (
-            global_config.mapping.ins_at_boundary_is_intronic
-            and self._var_c.posedit.edit.type == "dup"
+            self._var_c.posedit.edit.type == "dup"
             and self._var_c.posedit.pos.end.base in self._transcript_data.exon_end_positions
+            and self._var_c.posedit.pos.end.offset == 0
         ):
-            result = self.INTRON
+            result = self.INTRON if global_config.mapping.ins_at_boundary_is_intronic else self.EXON
         elif (
-            not global_config.mapping.ins_at_boundary_is_intronic
-            and self._var_c.posedit.edit.type == "ins"
+            self._var_c.posedit.edit.type == "ins"
             and self._var_c.posedit.pos.start.offset == -1 and self._var_c.posedit.pos.end.offset == 0
         ):
-            result = self.EXON
+            result = self.INTRON if global_config.mapping.ins_at_boundary_is_intronic else self.EXON
         elif (
-            not global_config.mapping.ins_at_boundary_is_intronic
-            and self._var_c.posedit.edit.type == "ins"
+            self._var_c.posedit.edit.type == "ins"
             and self._var_c.posedit.pos.start.offset == 0 and self._var_c.posedit.pos.end.offset == 1
         ):
-            result = self.EXON
+            result = self.INTRON if global_config.mapping.ins_at_boundary_is_intronic else self.EXON
         elif (
-            not global_config.mapping.ins_at_boundary_is_intronic
-            and self._var_c.posedit.edit.type == "dup"
+            self._var_c.posedit.edit.type == "dup"
             and self._var_c.posedit.pos.end.offset == -1
         ):
-            result = self.EXON
+            result = self.INTRON if global_config.mapping.ins_at_boundary_is_intronic else self.EXON
         elif (
-            not global_config.mapping.ins_at_boundary_is_intronic
-            and self._var_c.posedit.edit.type == "dup"
+            self._var_c.posedit.edit.type == "dup"
             and self._var_c.posedit.pos.start.offset == 1
         ):
-            result = self.EXON
+            result = self.INTRON if global_config.mapping.ins_at_boundary_is_intronic else self.EXON
         elif self._var_c.posedit.pos.start.offset != 0 or self._var_c.posedit.pos.end.offset != 0:
             # leave out anything else intronic for now
             result = self.INTRON
