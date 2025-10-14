@@ -1,0 +1,98 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000009.11?start=108337303&end=108337428
+  response:
+    body:
+      string: GCACAGACTAATGAGTAGAATCAATAAGAACGTGGTTTTGGCCCTTTTAACGCTGACAAGTTCTGCATTTCTGCTGTTTCAGTTGTACTACTACAAGCACTATTTATCAACAAAGGTAATTTTAT
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '125'
+      Content-Type:
+      - text/plain; charset=utf-8
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NM_001079802.1?start=206&end=321
+  response:
+    body:
+      string: GCACAGACTAATGAGTAGAATCAATAAGAACGTGGTTTTGGCCCTTTTAACGCTGACAAGTTCTGCATTTCTGCTGTTTCAGTTGTACTACTACAAGCACTATTTATCAACAAAG
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '115'
+      Content-Type:
+      - text/plain; charset=utf-8
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000009.11?start=108337427&end=108337428
+  response:
+    body:
+      string: T
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '1'
+      Content-Type:
+      - text/plain; charset=utf-8
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NC_000009.11?start=108337303&end=108337448
+  response:
+    body:
+      string: GCACAGACTAATGAGTAGAATCAATAAGAACGTGGTTTTGGCCCTTTTAACGCTGACAAGTTCTGCATTTCTGCTGTTTCAGTTGTACTACTACAAGCACTATTTATCAACAAAGGTAATTTTATTCCTTCTTTCTTATCATTCC
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '145'
+      Content-Type:
+      - text/plain; charset=utf-8
+    status:
+      code: 200
+      message: OK
+version: 1

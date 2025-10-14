@@ -53,7 +53,7 @@ class SequenceVariant:
             ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
         )
 
-    def fill_ref(self, hdp):
+    def fill_ref(self, hdp, alt_ac=None, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
         # TODO: Refactor. SVs should not operate on themselves when
         # external resources are required
         # replace_reference should be moved outside function
@@ -67,7 +67,7 @@ class SequenceVariant:
             type in ["del", "delins", "identity", "dup", "repeat"]
             and self.posedit.edit.ref_s is None
         ):
-            vm._replace_reference(self)
+            vm._replace_reference(self, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
         if type == "identity" and isinstance(self.posedit.edit, hgvs.edit.NARefAlt):
             self.posedit.edit.alt = self.posedit.edit.ref
         return self
