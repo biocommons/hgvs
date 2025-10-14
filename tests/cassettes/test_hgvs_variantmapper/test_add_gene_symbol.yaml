@@ -1,25 +1,13 @@
 interactions:
 - request:
     body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
-      Connection:
-      - keep-alive
+    headers: {}
     method: GET
     uri: http://localhost:5000/seqrepo/1/sequence/NM_003777.3?start=13638&end=13639
   response:
     body:
       string: G
-    headers:
-      Connection:
-      - close
-      Content-Length:
-      - '1'
-      Content-Type:
-      - text/plain; charset=utf-8
+    headers: {}
     status:
       code: 200
       message: OK
