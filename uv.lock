@@ -675,10 +675,12 @@ dependencies = [
     { name = "ipython" },
     { name = "parsley" },
     { name = "psycopg2" },
-    { name = "uta-align" },
 ]
 
 [package.dev-dependencies]
+align = [
+    { name = "uta-align" },
+]
 dev = [
     { name = "deptry" },
     { name = "ipython" },
@@ -710,10 +712,10 @@ requires-dist = [
     { name = "ipython" },
     { name = "parsley" },
     { name = "psycopg2" },
-    { name = "uta-align", specifier = ">=0.3.0" },
 ]
 
 [package.metadata.requires-dev]
+align = [{ name = "uta-align", specifier = "~=0.3" }]
 dev = [
     { name = "deptry", specifier = ">=0.23" },
     { name = "ipython" },
@@ -724,7 +726,7 @@ dev = [
     { name = "mkdocstrings", extras = ["python"], specifier = ">=0.30" },
     { name = "mypy", specifier = ">=1.17" },
     { name = "pre-commit", specifier = ">=3.8" },
-    { name = "pytest", specifier = ">=7.4" },
+    { name = "pytest", specifier = "~=7.4" },
     { name = "pytest-cov", specifier = ">=4.1" },
     { name = "pytest-recording" },
     { name = "ruff", specifier = ">=0.12" },
@@ -2066,18 +2068,17 @@ wheels = [
 
 [[package]]
 name = "pytest"
-version = "8.4.2"
+version = "7.4.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "colorama", marker = "sys_platform == 'win32'" },
     { name = "iniconfig" },
     { name = "packaging" },
     { name = "pluggy" },
-    { name = "pygments" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a3/5c/00a0e072241553e1a7496d638deababa67c5058571567b92a7eaa258397c/pytest-8.4.2.tar.gz", hash = "sha256:86c0d0b93306b961d58d62a4db4879f27fe25513d4b969df351abdddb3c30e01", size = 1519618, upload-time = "2025-09-04T14:34:22.711Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/80/1f/9d8e98e4133ffb16c90f3b405c43e38d3abb715bb5d7a63a5a684f7e46a3/pytest-7.4.4.tar.gz", hash = "sha256:2cf0005922c6ace4a3e2ec8b4080eb0d9753fdc93107415332f50ce9e7994280", size = 1357116, upload-time = "2023-12-31T12:00:18.035Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a8/a4/20da314d277121d6534b3a980b29035dcd51e6744bd79075a6ce8fa4eb8d/pytest-8.4.2-py3-none-any.whl", hash = "sha256:872f880de3fc3a5bdc88a11b39c9710c3497a547cfa9320bc3c5e62fbf272e79", size = 365750, upload-time = "2025-09-04T14:34:20.226Z" },
+    { url = "https://files.pythonhosted.org/packages/51/ff/f6e8b8f39e08547faece4bd80f89d5a8de68a38b2d179cc1c4490ffa3286/pytest-7.4.4-py3-none-any.whl", hash = "sha256:b090cdf5ed60bf4c45261be03239c2c1c22df034fbffe691abe93cd80cea01d8", size = 325287, upload-time = "2023-12-31T12:00:13.963Z" },
 ]
 
 [[package]]

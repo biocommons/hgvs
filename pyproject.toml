@@ -15,7 +15,7 @@ dev = [
   "pre-commit>=3.8",
   "pytest-cov>=4.1",
   "pytest-recording",
-  "pytest>=7.4",
+  "pytest~=7.4",
   "ruff>=0.12",
   "sphinx",
   "sphinx_rtd_theme",
@@ -49,7 +49,6 @@ dependencies = [
   "ipython",
   "parsley",
   "psycopg2",
-  "uta-align>=0.3.0",
 ]
 description = "HGVS Parser, Formatter, Mapper, Validator"
 dynamic = ["version"]
@@ -68,6 +67,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 
 [project.optional-dependencies]
+align = ["uta-align~=0.3"]
 
 [project.scripts]
 "hgvs-shell" = "hgvs.shell:shell"
