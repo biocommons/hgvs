@@ -1,0 +1,17 @@
+name: Validate Codecov Config
+
+on:
+  pull_request:
+    paths: [codecov.yaml]
+  push:
+    branches: [main]
+
+jobs:
+  validate-codecov-config:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate codecov configuration
+        run: curl -sSL --fail-with-body --data-binary @codecov.yaml https://codecov.io/validate
