@@ -21,8 +21,8 @@
 .idea
 .installed.cfg
 .ipynb_checkpoints
-.python-version
 .pytest_cache
+.python-version
 .tags
 .tags.mk
 .tox
@@ -32,6 +32,7 @@ archive
 bdist
 build
 cover
+coverage.xml
 dist
 doc/build
 examples/*_files
