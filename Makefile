@@ -101,7 +101,7 @@ test-relearn:
 # temporary workaround for https://github.com/biocommons/hgvs/issues/760
 test-relearn-iteratively:
 	rm -fr tests/data/cache-py3.hdp tests/cassettes
-	find tests/ -name 'test*.py' | HGVS_CACHE_MODE=learn xargs -tn1 -- pytest --no-cov -x -s
+	find tests/ -name 'test*.py' -print0 | HGVS_CACHE_MODE=learn xargs -0rtn1 -- pytest --no-cov -x -s
 
 #=> tox -- run all tox tests
 tox:

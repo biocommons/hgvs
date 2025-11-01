@@ -58,7 +58,7 @@ dev = [
   "isort",
   "jupyter",
   "pre-commit ~= 3.4",
-  "pytest",
+  "pytest ~= 7.4",
   "pytest-cov",
   "pytest-recording",
   "restview",
