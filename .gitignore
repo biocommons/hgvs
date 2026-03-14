@@ -117,3 +117,7 @@ var/
 venv.bak/
 venv/
 wheels/
+
+# Dolt database files (added by bd init)
+.dolt/
+*.db
