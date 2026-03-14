@@ -179,9 +179,12 @@ class VariantMapper:
         else:
             # variant at alignment gap
             pos_g = mapper.n_to_g(pos_n)
-            edit_n = hgvs.edit.NARefAlt(
-                ref="", alt=self._get_altered_sequence(mapper.strand, pos_g, var_g)
-            )
+            if self._variant_spans_i_segment(mapper, var_g):
+                edit_n, pos_n = self._get_altered_tx_sequence(mapper.strand, mapper, pos_g, var_g, pos_n)
+            else:
+                edit_n = hgvs.edit.NARefAlt(
+                    ref="", alt=self._get_altered_sequence(mapper.strand, pos_g, var_g)
+                )
         pos_n.uncertain = var_g.posedit.pos.uncertain
         var_n = hgvs.sequencevariant.SequenceVariant(
             ac=tx_ac, type="n", posedit=hgvs.posedit.PosEdit(pos_n, edit_n)
@@ -281,12 +284,22 @@ class VariantMapper:
                 pos_c.start.base += 1
                 pos_c.end.base -= 1
                 edit_c.ref = ""
+            elif self._variant_has_internal_gap(mapper, var_g):
+                # Gap segment lies inside the variant interval; both endpoints are in = regions
+                # so pos_c.uncertain is False, but the transcript length differs from genomic length.
+                # Recalculate the transcript edit from sequences to absorb the gap.
+                edit_c, pos_c = self._get_altered_tx_sequence(
+                    mapper.strand, mapper, var_g.posedit.pos, var_g, pos_c
+                )
         else:
             # variant at alignment gap
             pos_g = mapper.c_to_g(pos_c)
-            edit_c = hgvs.edit.NARefAlt(
-                ref="", alt=self._get_altered_sequence(mapper.strand, pos_g, var_g)
-            )
+            if self._variant_spans_i_segment(mapper, var_g):
+                edit_c, pos_c = self._get_altered_tx_sequence(mapper.strand, mapper, pos_g, var_g, pos_c)
+            else:
+                edit_c = hgvs.edit.NARefAlt(
+                    ref="", alt=self._get_altered_sequence(mapper.strand, pos_g, var_g)
+                )
         pos_c.uncertain = var_g.posedit.pos.uncertain
         var_c = hgvs.sequencevariant.SequenceVariant(
             ac=tx_ac, type="c", posedit=hgvs.posedit.PosEdit(pos_c, edit_c)
@@ -638,6 +651,165 @@ class VariantMapper:
         if strand == -1:
             seq = reverse_complement(seq)
         return seq
+
+    def _variant_spans_i_segment(self, mapper, var_g):
+        """Return True if var_g straddles a normal-to-I-segment boundary in the CIGAR.
+
+        I-segments are genomic positions with no transcript equivalent. The fix is needed
+        only when the variant spans *across* an I-segment boundary (one endpoint in a matching
+        "=" region, the other landing in an I-segment). When the entire variant lies within an
+        I-segment, the existing uncertain-path logic handles it correctly.
+        """
+        gc_offset = mapper.gc_offset
+        ref_pos = mapper.cigarmapper.ref_pos
+        cigar_op = mapper.cigarmapper.cigar_op
+        # Use interbase convention: start is 0-based (base-1), end is open (base-gc_offset, no -1)
+        start_offset = var_g.posedit.pos.start.base - 1 - gc_offset
+        end_offset = var_g.posedit.pos.end.base - gc_offset
+
+        # Determine the CIGAR op at each endpoint
+        start_op = end_op = None
+        for i, op in enumerate(cigar_op):
+            if start_op is None and start_offset < ref_pos[i + 1]:
+                start_op = op
+            if end_op is None and end_offset < ref_pos[i + 1]:
+                end_op = op
+            if start_op is not None and end_op is not None:
+                break
+
+        # Apply fix only when at least one endpoint is in "I" and at least one is not
+        ops = {start_op, end_op}
+        return "I" in ops and ops != {"I"}
+
+    def _gap_segments_within_pos_g(self, mapper, pos_g):
+        """Return gap segments (I and D CIGAR ops) that fall within genomic interval pos_g.
+
+        I-segments: genomic bases with no transcript equivalent.
+        D-segments: transcript-only positions at an interbase genomic location.
+
+        Returns:
+            dict with keys:
+              "I": set of 0-based offsets (relative to pos_g.start.base) for I-segment bases
+              "D": list of (interbase_offset, tgt_start, tgt_end) for each D-segment
+                   where interbase_offset is 0-based relative to pos_g.start.base,
+                   tgt_start/tgt_end are 0-based transcript positions of the D-segment bases
+        """
+        i_offsets = set()
+        d_segments = []
+        cigar_ops = mapper.cigarmapper.cigar_op
+        ref_pos = mapper.cigarmapper.ref_pos
+        tgt_pos = mapper.cigarmapper.tgt_pos
+        gc_offset = mapper.gc_offset
+
+        for i, op in enumerate(cigar_ops):
+            if op == "I":
+                # I advances genome/ref only — absolute genomic positions (1-based, inclusive)
+                abs_start = ref_pos[i] + gc_offset + 1
+                abs_end = ref_pos[i + 1] + gc_offset  # inclusive
+                overlap_start = max(abs_start, pos_g.start.base)
+                overlap_end = min(abs_end, pos_g.end.base)
+                for p in range(overlap_start, overlap_end + 1):
+                    i_offsets.add(p - pos_g.start.base)
+            elif op == "D":
+                # D advances transcript/tgt only — genomic interbase position is ref_pos[i] (same as ref_pos[i+1])
+                # The D-segment sits at interbase position gc_offset + ref_pos[i]
+                # It is "inside" pos_g if its genomic interbase position falls strictly between start and end
+                genomic_interbase = ref_pos[i] + gc_offset  # 0-based interbase genomic position
+                # pos_g uses 1-based inclusive; interbase is between pos_g.start.base-1 and pos_g.start.base
+                # A D-segment is inside pos_g if: pos_g.start.base <= genomic_interbase+1 <= pos_g.end.base
+                # i.e., it sits between two bases both within pos_g
+                if pos_g.start.base <= genomic_interbase < pos_g.end.base:
+                    interbase_offset = genomic_interbase - (pos_g.start.base - 1)  # offset relative to pos_g start
+                    d_segments.append((interbase_offset, tgt_pos[i], tgt_pos[i + 1]))
+
+        return {"I": i_offsets, "D": d_segments}
+
+    def _variant_has_internal_gap(self, mapper, var_g):
+        """Return True if any I or D CIGAR segment falls strictly inside var_g's interval.
+
+        This is distinct from _variant_spans_i_segment which checks endpoint CIGAR ops.
+        Internal gaps occur when both endpoints are in normal (=) segments but a gap
+        segment lies between them.
+        """
+        gaps = self._gap_segments_within_pos_g(mapper, var_g.posedit.pos)
+        return bool(gaps["I"] or gaps["D"])
+
+    def _get_altered_tx_sequence(self, strand, mapper, pos_g, var_g, tx_pos):
+        """Compute transcript-level edit for variants at alignment gaps (uncertain path).
+
+        Correctly handles I-segment positions (genomic bases with no transcript equivalent)
+        by filtering them out when building the transcript reference and alt sequences.
+
+        Returns (NARefAlt, adjusted_tx_pos).
+        """
+        # Fetch genomic reference for pos_g
+        seq = list(self.hdp.get_seq(var_g.ac, pos_g.start.base - 1, pos_g.end.base))
+
+        # Find gap segment positions (0-based offsets into seq)
+        gaps = self._gap_segments_within_pos_g(mapper, pos_g)
+        i_offsets = gaps["I"]
+
+        # Variant boundaries within seq (0-based)
+        var_start = var_g.posedit.pos.start.base - pos_g.start.base
+        var_end = var_g.posedit.pos.end.base - pos_g.start.base + 1
+        edit = var_g.posedit.edit
+
+        # Build transcript ref = all genomic bases excluding I-segment positions
+        tx_ref_str = "".join(seq[j] for j in range(len(seq)) if j not in i_offsets)
+
+        # Build transcript alt by applying variant to prefix/suffix (filtered of I-bases)
+        if edit.type == "ins":
+            # Insertion between two positions: prefix includes var_start base
+            prefix_tx = [seq[j] for j in range(var_start + 1) if j not in i_offsets]
+            suffix_tx = [seq[j] for j in range(var_start + 1, len(seq)) if j not in i_offsets]
+            tx_alt_str = "".join(prefix_tx) + (edit.alt or "") + "".join(suffix_tx)
+        elif edit.type == "sub":
+            prefix_tx = [seq[j] for j in range(var_start) if j not in i_offsets]
+            suffix_tx = [seq[j] for j in range(var_start + 1, len(seq)) if j not in i_offsets]
+            tx_alt_str = "".join(prefix_tx) + (edit.alt or "") + "".join(suffix_tx)
+        elif edit.type == "del":
+            prefix_tx = [seq[j] for j in range(var_start) if j not in i_offsets]
+            suffix_tx = [seq[j] for j in range(var_end, len(seq)) if j not in i_offsets]
+            tx_alt_str = "".join(prefix_tx) + "".join(suffix_tx)
+        elif edit.type in ("delins", "dup", "inv", "identity"):
+            prefix_tx = [seq[j] for j in range(var_start) if j not in i_offsets]
+            suffix_tx = [seq[j] for j in range(var_end, len(seq)) if j not in i_offsets]
+            if edit.type == "delins":
+                ins_seq = edit.alt or ""
+            elif edit.type == "dup":
+                ins_seq = "".join(seq[var_start:var_end]) * 2
+            elif edit.type == "inv":
+                ins_seq = reverse_complement("".join(seq[var_start:var_end]))
+            else:  # identity
+                ins_seq = "".join(seq[var_start:var_end])
+            tx_alt_str = "".join(prefix_tx) + ins_seq + "".join(suffix_tx)
+        else:
+            msg = f"_get_altered_tx_sequence: unsupported edit type {edit.type!r}"
+            raise HGVSUnsupportedOperationError(msg)
+
+        # Apply strand: convert from genomic order to transcript order
+        if strand == -1:
+            tx_ref_str = reverse_complement(tx_ref_str)
+            tx_alt_str = reverse_complement(tx_alt_str)
+
+        # Trim common prefix and suffix to find the minimal edit
+        n_prefix = 0
+        while n_prefix < len(tx_ref_str) and n_prefix < len(tx_alt_str) and tx_ref_str[n_prefix] == tx_alt_str[n_prefix]:
+            n_prefix += 1
+
+        n_suffix = 0
+        max_suffix = min(len(tx_ref_str) - n_prefix, len(tx_alt_str) - n_prefix)
+        while n_suffix < max_suffix and tx_ref_str[-(n_suffix + 1)] == tx_alt_str[-(n_suffix + 1)]:
+            n_suffix += 1
+
+        ref_trimmed = tx_ref_str[n_prefix: len(tx_ref_str) - n_suffix if n_suffix else None]
+        alt_trimmed = tx_alt_str[n_prefix: len(tx_alt_str) - n_suffix if n_suffix else None]
+
+        adjusted_pos = copy.deepcopy(tx_pos)
+        adjusted_pos.start.base += n_prefix
+        adjusted_pos.end.base -= n_suffix
+
+        return hgvs.edit.NARefAlt(ref=ref_trimmed, alt=alt_trimmed), adjusted_pos
 
     def _update_gene_symbol(self, var, symbol):
         if not symbol:
