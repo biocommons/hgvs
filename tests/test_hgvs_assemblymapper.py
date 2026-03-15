@@ -192,9 +192,9 @@ class Test_VariantMapper(unittest.TestCase):
         assert str(var_g2) == hgvs_g2
         assert str(var_c2) == hgvs_c2
 
-        # deletion spanning a 'D' (transcript deletion) in the CIGAR alignment
-        # NM_015120.4 exon 1 CIGAR: 146=3D289= (genome has 3 extra bases not in transcript)
-        # g.73385901_73385903del spans into the 3D region → maps to c.34_36del
+        # deletion spanning a 'D' segment in the CIGAR alignment
+        # NM_015120.4 exon 1 CIGAR: 146=3D289= (transcript has 3 extra bases not in genome)
+        # g.73385901_73385903del spans across the 3D boundary → maps to c.34_36del
         hgvs_g = "NC_000002.12:g.73385901_73385903del"
         hgvs_c = "NM_015120.4:c.34_36del"
 
