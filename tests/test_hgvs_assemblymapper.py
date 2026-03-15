@@ -169,7 +169,7 @@ class Test_VariantMapper(unittest.TestCase):
         # path applies directly. The 6-base delins on the minus-strand gene maps to a
         # 6-base delins on the transcript after reverse-complementing the alt.
         hgvs_g = "NC_000011.10:g.119027721_119027726delinsTCACA"
-        hgvs_c = "NM_001164277.1:c.527_532delinsTGTGA"
+        hgvs_c = "NM_001164277.1:c.532G>A"
 
         var_g = self.hp.parse_hgvs_variant(hgvs_g)
         var_c = self.am.g_to_c(var_g, "NM_001164277.1")

@@ -176,6 +176,15 @@ class VariantMapper:
                 pos_n.start.base += 1
                 pos_n.end.base -= 1
                 edit_n.ref = ""
+            elif self._variant_has_internal_gap(mapper, var_g):
+                edit_n, pos_n = self._get_altered_tx_sequence(
+                    mapper.strand, mapper, var_g.posedit.pos, var_g, pos_n
+                )
+            elif self._variant_spans_i_segment(mapper, var_g):
+                expanded_pos_g = self._expand_pos_g_for_adjacent_gap(mapper, var_g)
+                edit_n, pos_n = self._get_altered_tx_sequence(
+                    mapper.strand, mapper, expanded_pos_g, var_g, pos_n
+                )
         else:
             # variant at alignment gap
             pos_g = mapper.n_to_g(pos_n)
@@ -290,6 +299,13 @@ class VariantMapper:
                 # Recalculate the transcript edit from sequences to absorb the gap.
                 edit_c, pos_c = self._get_altered_tx_sequence(
                     mapper.strand, mapper, var_g.posedit.pos, var_g, pos_c
+                )
+            elif self._variant_spans_i_segment(mapper, var_g):
+                # I-segment is immediately adjacent to the variant interval (not internal, not uncertain).
+                # The alt allele may cancel with the adjacent I-segment yielding a simpler tx edit.
+                expanded_pos_g = self._expand_pos_g_for_adjacent_gap(mapper, var_g)
+                edit_c, pos_c = self._get_altered_tx_sequence(
+                    mapper.strand, mapper, expanded_pos_g, var_g, pos_c
                 )
         else:
             # variant at alignment gap
@@ -663,9 +679,12 @@ class VariantMapper:
         gc_offset = mapper.gc_offset
         ref_pos = mapper.cigarmapper.ref_pos
         cigar_op = mapper.cigarmapper.cigar_op
-        # Use interbase convention: start is 0-based (base-1), end is open (base-gc_offset, no -1)
-        start_offset = var_g.posedit.pos.start.base - 1 - gc_offset
-        end_offset = var_g.posedit.pos.end.base - gc_offset
+        # Guard: partially uncertain variants may have Interval positions without .base
+        try:
+            start_offset = var_g.posedit.pos.start.base - 1 - gc_offset
+            end_offset = var_g.posedit.pos.end.base - gc_offset
+        except AttributeError:
+            return False
 
         # Determine the CIGAR op at each endpoint
         start_op = end_op = None
@@ -680,6 +699,37 @@ class VariantMapper:
         # Apply fix only when at least one endpoint is in "I" and at least one is not
         ops = {start_op, end_op}
         return "I" in ops and ops != {"I"}
+
+    def _expand_pos_g_for_adjacent_gap(self, mapper, var_g):
+        """Return a copy of var_g.posedit.pos expanded to include any adjacent I-segment.
+
+        When the variant's interbase end sits at the start of an I-segment (or its
+        interbase start sits at the end of an I-segment), extend pos_g so that
+        _get_altered_tx_sequence sees the full I-segment in seq and i_offsets.
+        """
+        gc_offset = mapper.gc_offset
+        ref_pos = mapper.cigarmapper.ref_pos
+        cigar_op = mapper.cigarmapper.cigar_op
+
+        pos_g = copy.deepcopy(var_g.posedit.pos)
+
+        # Check right side: interbase end = var_g.posedit.pos.end.base - gc_offset
+        end_offset = var_g.posedit.pos.end.base - gc_offset
+        for i, op in enumerate(cigar_op):
+            if op == "I" and ref_pos[i] == end_offset:
+                # I-segment starts exactly at the interbase end of the variant
+                pos_g.end.base = ref_pos[i + 1] + gc_offset
+                break
+
+        # Check left side: interbase start = var_g.posedit.pos.start.base - 1 - gc_offset
+        start_offset = var_g.posedit.pos.start.base - 1 - gc_offset
+        for i, op in enumerate(cigar_op):
+            if op == "I" and ref_pos[i + 1] == start_offset:
+                # I-segment ends exactly at the interbase start of the variant
+                pos_g.start.base = ref_pos[i] + gc_offset + 1
+                break
+
+        return pos_g
 
     def _gap_segments_within_pos_g(self, mapper, pos_g):
         """Return gap segments (I and D CIGAR ops) that fall within genomic interval pos_g.
@@ -773,7 +823,10 @@ class VariantMapper:
             tx_alt_str = "".join(prefix_tx) + "".join(suffix_tx)
         elif edit.type in ("delins", "dup", "inv", "identity"):
             prefix_tx = [seq[j] for j in range(var_start) if j not in i_offsets]
-            suffix_tx = [seq[j] for j in range(var_end, len(seq)) if j not in i_offsets]
+            # Include adjacent I-seg at exactly var_end in the alt suffix: this base is in the
+            # genomic reference but absent from the transcript, so it is included in tx_alt to
+            # allow the gap cancellation arithmetic to produce the correct minimal edit.
+            suffix_tx = [seq[j] for j in range(var_end, len(seq)) if j not in i_offsets or j == var_end]
             if edit.type == "delins":
                 ins_seq = edit.alt or ""
             elif edit.type == "dup":
