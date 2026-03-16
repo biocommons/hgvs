@@ -104,6 +104,15 @@ def_c_interval	1_10|1|1+2_10-2	True	list
 def_c_pos	1|11+1|9-3|-1|*10	True	list	
 def_c_pos	X|11_12|10*	False	list	
 def_g_interval	2_10|2	True	list	
+uncertain_g_interval	(1_10)_(21_30)	True	one
+uncertain_g_interval	(?_10)_(21_?)	True	one
+uncertain_g_interval	(1_?)_(?_30)	True	one
+uncertain_g_interval	1_(21_30)	True	one
+uncertain_g_interval	(1_10)_21	True	one
+uncertain_g_interval	?_(21_30)	True	one
+uncertain_g_interval	(1_10)_?	True	one
+uncertain_g_interval	10_(21_?)	True	one
+uncertain_g_interval	(1_10)_(21_30)_(41_50)	False	one
 def_g_pos	2	True	list
 def_g_pos	?	True	one	
 def_g_pos	A|2?|*1|-2	False	list

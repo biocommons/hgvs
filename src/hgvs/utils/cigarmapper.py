@@ -15,7 +15,6 @@ The conceptual swap occurs in the _map function.
 
 """
 
-
 import re
 
 from hgvs.exceptions import HGVSInvalidIntervalError
@@ -80,14 +79,15 @@ class CIGARMapper:
         """
 
         if strict_bounds and (pos < 0 or pos > from_pos[-1]):
-            raise HGVSInvalidIntervalError("Position is beyond the bounds of transcript record")
+            raise HGVSInvalidIntervalError(
+                "Position is beyond the bounds of transcript record"
+            )
 
         # find aligned segment to use as basis for mapping
         # okay for pos to be before first element or after last
         for pos_i in range(len(self.cigar_op)):
             if pos < from_pos[pos_i + 1]:
                 break
-
         if self.cigar_op[pos_i] in "=MX":
             mapped_pos = to_pos[pos_i] + (pos - from_pos[pos_i])
             mapped_pos_offset = 0

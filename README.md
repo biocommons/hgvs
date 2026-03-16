@@ -78,7 +78,7 @@ MacOS :
 
     brew install libpq
     brew install python3
-    brew install postgresql@14
+    brew install postgresql
 
 Ubuntu :
 
@@ -111,28 +111,83 @@ Archive (UTA)](https://github.com/biocommons/uta/) and
 
 See [examples](https://github.com/biocommons/hgvs/tree/main/examples) and [readthedocs](https://hgvs.readthedocs.io/) for usage.
 
-## Contributing
+## Developer Setup
 
 The hgvs package is a community effort. Please see
 [Contributing](http://hgvs.readthedocs.org/en/stable/contributing.html) to get
 started in submitting source code, tests, or documentation. Thanks for getting
 involved!
 
+### Install Prerequisites
+
+These tools are required to get started:
+
+- [git](https://git-scm.com/): Version control system
+- [GNU make](https://www.gnu.org/software/make/): Current mechanism for consistent invocation of developer tools.
+- [uv](https://docs.astral.sh/uv/): An extremely fast Python package and project manager, written in Rust.
+
+#### MacOS or Linux Systems
+
+- [Install brew](https://brew.sh/)
+- `brew install git make uv`
+
+#### Linux (Debian-based systems)
+
+You may also install using distribution packages:
+
+    sudo apt install git make
+
+Then install uv using the [uv installation instructions](https://docs.astral.sh/uv/getting-started/installation/).
+
+### One-time development setup
+
+Create a Python virtual environment, install dependencies, install pre-commit hooks, and install an editable package:
+
+    make devready
+
+### Development
+
+**N.B.** Developers are expected to use `make` to invoke tools to
+ensure consistency with the CI/CD pipelines.  Type `make` to see a list of
+supported targets.  A subset are listed here:
+
+    » make
+    🌟🌟 biocommons conventional make targets 🌟🌟
+
+    Using these targets promots consistency between local development and ci/cd commands.
+
+    usage: make [target ...]
+
+    BASIC USAGE
+    help                Display help message
+
+    SETUP, INSTALLATION, PACKAGING
+    devready            Prepare local dev env: Create virtual env, install the pre-commit hooks
+    build               Build package
+    publish             publish package to PyPI
+
+    FORMATTING, TESTING, AND CODE QUALITY
+    cqa                 Run code quality assessments
+    test                Test the code with pytest
+
+    DOCUMENTATION
+    docs-serve          Build and serve the documentation
+    docs-test           Test if documentation can be built without warnings or errors
+
+    CLEANUP
+    clean               Remove temporary and backup files
+    cleaner             Remove files and directories that are easily rebuilt
+    cleanest            Remove all files that can be rebuilt
+    distclean           Remove untracked files and other detritus
+
 ### Testing
 
 Existing tests use a cache that is committed with the repo to ensure that tests do not require external networking.  To develop new tests, which requires loading the cache, you should install UTA and Seqrepo (and the rest service) locally.
 
-    docker compose --project-name biocommons -f $PWD/misc/docker-compose.yml up
+    docker compose --project-name biocommons -f ./misc/docker-compose.yml up
 
-IMPORTANT: Loading the test caches is currently hampered b
+IMPORTANT: Loading the test caches is currently hampered by
 [#551](https://github.com/biocommons/hgvs/issues/551),
 [#760](https://github.com/biocommons/hgvs/issues/760), and
 [#761](https://github.com/biocommons/hgvs/issues/761). To load reliably, use
 `make test-relearn-iteratively` for now.
-
-## See Also
-
-Other packages that manipulate HGVS variants:
-
-- [pyhgvs](https://github.com/counsyl/hgvs)
-- [Mutalyzer](https://mutalyzer.nl/)

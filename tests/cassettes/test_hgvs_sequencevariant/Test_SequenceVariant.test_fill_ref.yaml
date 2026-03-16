@@ -1,0 +1,50 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NM_001166478.1?start=30&end=32
+  response:
+    body:
+      string: TT
+    headers: {}
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NM_001166478.1?start=1&end=7
+  response:
+    body:
+      string: TGAAGA
+    headers: {}
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NM_001166478.1?start=34&end=36
+  response:
+    body:
+      string: TC
+    headers: {}
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: http://localhost:5000/seqrepo/1/sequence/NM_001166478.1?start=30&end=31
+  response:
+    body:
+      string: T
+    headers: {}
+    status:
+      code: 200
+      message: OK
+version: 1

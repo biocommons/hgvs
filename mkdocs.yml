@@ -1,0 +1,51 @@
+site_name: python-package
+repo_url: https://github.com/biocommons/python-package
+site_url: https://biocommons.github.io/python-package
+site_description: Package Description
+site_author: Biocommons Contributors
+edit_uri: edit/main/docs/
+repo_name: biocommons/python-package
+copyright: Maintained by <a href="https://biocommons.com">biocommons</a>.
+
+plugins:
+  - search
+  - awesome-nav
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: false
+theme:
+  name: material
+  feature:
+    tabs: true
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: white
+      accent: deep orange
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: deep orange
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/biocommons/python-package
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/python-package
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true

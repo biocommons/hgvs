@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-"""Projects variants between sequences using AlignmentMapper.
-
-"""
+"""Projects variants between sequences using AlignmentMapper."""
 
 import copy
 import logging
@@ -10,6 +7,8 @@ from bioutils.sequences import TranslationTable, reverse_complement
 
 import hgvs
 import hgvs.alignmentmapper
+import hgvs.dataproviders
+import hgvs.dataproviders.interface
 import hgvs.edit
 import hgvs.location
 import hgvs.normalizer
@@ -67,7 +66,7 @@ class VariantMapper:
 
     def __init__(
         self,
-        hdp,
+        hdp: hgvs.dataproviders.interface.Interface,
         replace_reference=hgvs.global_config.mapping.replace_reference,
         prevalidation_level=hgvs.global_config.mapping.prevalidation_level,
         add_gene_symbol=hgvs.global_config.mapping.add_gene_symbol,
@@ -96,9 +95,11 @@ class VariantMapper:
 
     # ############################################################################
     # g⟷t
+
     def g_to_t(self, var_g, tx_ac, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
         if var_g.type not in "gm":
             raise HGVSInvalidVariantError("Expected a g. or m. variant; got " + str(var_g))
+
         if self._validator:
             self._validator.validate(var_g)
         var_g.fill_ref(self.hdp)
@@ -185,10 +186,15 @@ class VariantMapper:
         var_n = hgvs.sequencevariant.SequenceVariant(
             ac=tx_ac, type="n", posedit=hgvs.posedit.PosEdit(pos_n, edit_n)
         )
+
+        s, e = get_start_end(var_n)
+
         if (
             self.replace_reference
-            and var_n.posedit.pos.start.base >= 0
-            and var_n.posedit.pos.end.base < mapper.tgt_len
+            and s is not None
+            and s.base >= 0
+            and e is not None
+            and e.base < mapper.tgt_len
         ):
             self._replace_reference(var_n)
         if self.add_gene_symbol:
@@ -257,6 +263,7 @@ class VariantMapper:
             raise HGVSInvalidVariantError("Expected a g. or m. variant; got " + str(var_g))
         if self._validator:
             self._validator.validate(var_g)
+
         var_g.fill_ref(self.hdp)
         mapper = self._fetch_AlignmentMapper(
             tx_ac=tx_ac, alt_ac=var_g.ac, alt_aln_method=alt_aln_method
@@ -312,6 +319,7 @@ class VariantMapper:
             tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method
         )
         pos_g = mapper.c_to_g(var_c.posedit.pos)
+
         if not pos_g.uncertain:
             edit_g = self._convert_edit_check_strand(mapper.strand, var_c.posedit.edit)
             if edit_g.type == "ins" and pos_g.end - pos_g.start > 1:
@@ -337,7 +345,12 @@ class VariantMapper:
 
     # ############################################################################
     # c⟷n
-    def c_to_n(self, var_c, alt_ac=None, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
+    def c_to_n(
+        self,
+        var_c,
+        alt_ac=None,
+        alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
+    ):
         """Given a parsed c. variant, return a n. variant on the specified
         transcript using the specified alignment method (default is
         "transcript" indicating a self alignment).
@@ -371,7 +384,12 @@ class VariantMapper:
             self._update_gene_symbol(var_n, var_c.gene)
         return var_n
 
-    def n_to_c(self, var_n, alt_ac=None, alt_aln_method=hgvs.global_config.mapping.alt_aln_method):
+    def n_to_c(
+        self,
+        var_n,
+        alt_ac=None,
+        alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
+    ):
         """Given a parsed n. variant, return a c. variant on the specified
         transcript using the specified alignment method (default is
         "transcript" indicating a self alignment).
@@ -407,7 +425,14 @@ class VariantMapper:
 
     # ############################################################################
     # c ⟶ p
-    def c_to_p(self, var_c, pro_ac=None, alt_ac=None, alt_aln_method=hgvs.global_config.mapping.alt_aln_method, translation_table=TranslationTable.standard):
+    def c_to_p(
+        self,
+        var_c,
+        pro_ac=None,
+        alt_ac=None,
+        alt_aln_method=hgvs.global_config.mapping.alt_aln_method,
+        translation_table=TranslationTable.standard,
+    ):
         """
         Converts a c. SequenceVariant to a p. SequenceVariant on the specified protein accession
         Author: Rudy Rico
@@ -473,9 +498,15 @@ class VariantMapper:
             if var.type == "r":
                 _logger.info("Can't update reference sequence for intronic variant %s", var)
                 return var
+
             if alt_ac is None:
-                _logger.info("Can't update reference sequence for intronic variant %s without alt_ac", var)
+                _logger.info(
+                    "Can't update reference sequence for intronic variant %s without alt_ac",
+                    var,
+                )
                 return var
+
+            # For c. variants, we need coords on underlying sequences
             if var.type == "c":
                 mapper = self._fetch_AlignmentMapper(
                     tx_ac=var.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method

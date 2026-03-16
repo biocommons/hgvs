@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import csv
 import os
 import re
@@ -9,12 +8,11 @@ import hgvs.parser
 import hgvs.variantmapper
 from support import CACHE
 
-
 # Real data - cp tests
 
 
 def gcp_file_reader(fn):
-    rdr = csv.DictReader(open(fn, "r"), delimiter=str("\t"))
+    rdr = csv.DictReader(open(fn), delimiter="\t")  # noqa: PTH123, SIM115
     for rec in rdr:
         if rec["id"].startswith("#"):
             continue
@@ -25,7 +23,7 @@ class TestHgvsCToPReal(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.hdp = hgvs.dataproviders.uta.connect(
-            mode=os.environ.get("HGVS_CACHE_MODE", "learn"), cache=CACHE
+            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
         )
         cls._hm = hgvs.variantmapper.VariantMapper(cls.hdp)
         cls._hp = hgvs.parser.Parser()
@@ -34,8 +32,8 @@ class TestHgvsCToPReal(unittest.TestCase):
     def test_c_to_p_ext(self):
         infilename = "ext.tsv"
         outfilename = "ext.out"
-        infile = os.path.join(os.path.dirname(__file__), "data", infilename)
-        outfile = os.path.join(os.path.dirname(__file__), "data", outfilename)
+        infile = os.path.join(os.path.dirname(__file__), "data", infilename)  # noqa: PTH118, PTH120
+        outfile = os.path.join(os.path.dirname(__file__), "data", outfilename)  # noqa: PTH118, PTH120
         self._run_cp_test(infile, outfile)
 
     #
@@ -43,13 +41,13 @@ class TestHgvsCToPReal(unittest.TestCase):
     #
 
     def _run_cp_test(self, infile, outfile):
-        with open(outfile, "w") as out:
+        with open(outfile, "w") as out:  # noqa: PTH123
             out.write("id\tHGVSg\tHGVSc\tHGVSp\tConverterResult\tError\n")
             self._dup_regex = re.compile(r"dup[0-9]+$")
             for rec in gcp_file_reader(infile):
                 self._run_comparison(rec, out)
-        msg = "# failed: {}".format(len(self._failed))
-        self.assertTrue(len(self._failed) == 0, msg)
+        msg = f"# failed: {len(self._failed)}"
+        assert len(self._failed) == 0, msg
 
     def _run_comparison(self, rec, out):
         (row_id, hgvsg, hgvsc, hgvsp_expected) = (
@@ -83,11 +81,7 @@ class TestHgvsCToPReal(unittest.TestCase):
 
     def _append_fail(self, out, row_id, hgvsg, hgvsc, hgvsp_expected, hgvsp_actual, msg):
         self._failed.append((row_id, hgvsg, hgvsc, hgvsp_expected, hgvsp_actual, msg))
-        out.write(
-            "{}\t{}\t{}\t{}\t{}\t{}\n".format(
-                row_id, hgvsg, hgvsc, hgvsp_expected, hgvsp_actual, msg
-            )
-        )
+        out.write(f"{row_id}\t{hgvsg}\t{hgvsc}\t{hgvsp_expected}\t{hgvsp_actual}\t{msg}\n")
 
     def test_c_to_p_format(self):
         hgvsc = "NM_022464.4:c.3G>A"
@@ -98,10 +92,10 @@ class TestHgvsCToPReal(unittest.TestCase):
         var_p = self._hm.c_to_p(var_c, hgvsp_expected.split(":")[0])
 
         default_format_p = var_p.format()
-        self.assertEqual(hgvsp_expected, default_format_p)
+        assert hgvsp_expected == default_format_p
 
         alt_format_p = var_p.format(conf={"p_init_met": False})
-        self.assertEqual(hgvsp_expected_alternative, alt_format_p)
+        assert hgvsp_expected_alternative == alt_format_p
 
 
 if __name__ == "__main__":
