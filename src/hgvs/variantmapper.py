@@ -696,6 +696,10 @@ class VariantMapper:
             if start_op is not None and end_op is not None:
                 break
 
+        # If either endpoint falls outside the alignment, we can't determine the op
+        if start_op is None or end_op is None:
+            return False
+
         # Apply fix only when at least one endpoint is in "I" and at least one is not
         ops = {start_op, end_op}
         return "I" in ops and ops != {"I"}
@@ -798,6 +802,11 @@ class VariantMapper:
         # Find gap segment positions (0-based offsets into seq)
         gaps = self._gap_segments_within_pos_g(mapper, pos_g)
         i_offsets = gaps["I"]
+        # NOTE: gaps["D"] (transcript-only bases with no genomic counterpart) are detected but
+        # not yet used for sequence reconstruction. Variants spanning D-segments are routed here
+        # via _variant_has_internal_gap, and the deletion/delins mapping happens to be correct
+        # because D-segment bases are not present in the fetched genomic seq. Full D-segment
+        # splicing (inserting transcript-only bases into tx_ref_str) is a future enhancement.
 
         # Variant boundaries within seq (0-based)
         var_start = var_g.posedit.pos.start.base - pos_g.start.base
@@ -823,18 +832,24 @@ class VariantMapper:
             tx_alt_str = "".join(prefix_tx) + "".join(suffix_tx)
         elif edit.type in ("delins", "dup", "inv", "identity"):
             prefix_tx = [seq[j] for j in range(var_start) if j not in i_offsets]
-            # Include adjacent I-seg at exactly var_end in the alt suffix: this base is in the
-            # genomic reference but absent from the transcript, so it is included in tx_alt to
-            # allow the gap cancellation arithmetic to produce the correct minimal edit.
-            suffix_tx = [seq[j] for j in range(var_end, len(seq)) if j not in i_offsets or j == var_end]
             if edit.type == "delins":
+                # For delins, include the adjacent I-seg base at exactly var_end in the suffix.
+                # This base is in the genomic reference but absent from the transcript; including
+                # it allows the prefix/suffix trimming step to cancel the double gap and produce
+                # the correct minimal transcript edit (e.g. 6-base delins → single SNV).
+                suffix_tx = [seq[j] for j in range(var_end, len(seq)) if j not in i_offsets or j == var_end]
                 ins_seq = edit.alt or ""
-            elif edit.type == "dup":
-                ins_seq = "".join(seq[var_start:var_end]) * 2
-            elif edit.type == "inv":
-                ins_seq = reverse_complement("".join(seq[var_start:var_end]))
-            else:  # identity
-                ins_seq = "".join(seq[var_start:var_end])
+            else:
+                # For dup/inv/identity the duplicated/inverted/copied sequence must be
+                # transcript-only bases — exclude any I-segment positions from the variant range.
+                suffix_tx = [seq[j] for j in range(var_end, len(seq)) if j not in i_offsets]
+                clean_variant_seq = "".join(seq[j] for j in range(var_start, var_end) if j not in i_offsets)
+                if edit.type == "dup":
+                    ins_seq = clean_variant_seq * 2
+                elif edit.type == "inv":
+                    ins_seq = reverse_complement(clean_variant_seq)
+                else:  # identity
+                    ins_seq = clean_variant_seq
             tx_alt_str = "".join(prefix_tx) + ins_seq + "".join(suffix_tx)
         else:
             msg = f"_get_altered_tx_sequence: unsupported edit type {edit.type!r}"
