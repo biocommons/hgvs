@@ -59,6 +59,8 @@ class AssemblyMapper(VariantMapper):
         in_par_assume=hgvs.global_config.mapping.in_par_assume,
         replace_reference=hgvs.global_config.mapping.replace_reference,
         add_gene_symbol=hgvs.global_config.mapping.add_gene_symbol,
+        shift_over_boundary=hgvs.global_config.mapping.shift_over_boundary,
+        shift_over_boundary_preference=hgvs.global_config.mapping.shift_over_boundary_preference,
         *args,
         **kwargs,
     ):
@@ -80,6 +82,8 @@ class AssemblyMapper(VariantMapper):
             replace_reference=replace_reference,
             prevalidation_level=prevalidation_level,
             add_gene_symbol=add_gene_symbol,
+            shift_over_boundary=shift_over_boundary,
+            shift_over_boundary_preference=shift_over_boundary_preference,
             *args,
             **kwargs,
         )
@@ -94,6 +98,8 @@ class AssemblyMapper(VariantMapper):
                 replace_reference=replace_reference,
                 prevalidation_level=prevalidation_level,
                 add_gene_symbol=add_gene_symbol,
+                shift_over_boundary=shift_over_boundary,
+                shift_over_boundary_preference=shift_over_boundary_preference,
             )
             self._norm = hgvs.normalizer.Normalizer(
                 hdp,
@@ -306,6 +312,14 @@ class AssemblyMapper(VariantMapper):
                 _logger.info(str(e) + "; returning unnormalized variant")
                 # fall through to return unnormalized variant
         return var
+
+    def _var_c_shifts(self, var_c):
+        """Try to shift c. variants to find alternative representations."""
+        alt_ac = self._alt_ac_for_tx_ac(var_c.ac)
+        yield from super(AssemblyMapper, self)._var_c_shifts(
+            var_c, alt_ac, alt_aln_method=self.alt_aln_method
+        )
+
 
 
 # <LICENSE>
