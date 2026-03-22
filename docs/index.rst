@@ -21,6 +21,7 @@ Contents
    installation
    key_concepts
    examples
+   shift_over_boundary
 
    reference
    privacy
