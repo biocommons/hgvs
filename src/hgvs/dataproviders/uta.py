@@ -66,7 +66,7 @@ def connect(
 ):
     """Connect to a UTA database instance and return a UTA interface instance.
 
-    :param db_url: URL for database connection
+    :param db_url: URL for database connection. Credentials must be URL-encoded if they contain special characters
     :type db_url: string
     :param pooling: whether to use connection pooling (postgresql only)
     :type pooling: bool
@@ -546,8 +546,8 @@ class UTA_postgresql(UTABase):
             host=self.url.hostname,
             port=self.url.port,
             database=self.url.database,
-            user=self.url.username,
-            password=self.url.password,
+            user=urlparse.unquote(self.url.username),
+            password=urlparse.unquote(self.url.password),
             application_name=self.application_name + "/" + hgvs.__version__,
         )
         if self.pooling:
