@@ -125,6 +125,10 @@ class AltSeqToHgvsp:
                         insertion.extend(list(alt_sub[:max_diff]))
                         deletion.extend(list(ref_sub[:max_diff]))
 
+                    if "*" in insertion:
+                        # translation halts at the inserted stop; drop anything past it
+                        insertion = insertion[: insertion.index("*") + 1]
+
                     variants.append({"start": start + 1, "ins": insertion, "del": deletion})
 
             if DBG:

@@ -292,6 +292,15 @@ class AltSeqBuilder:
             and self._var_c.posedit.pos.end.datum == Datum.CDS_END
         ):
             is_frameshift = True
+        if alt and ref is None:
+            insert_seq_idx = start + 1
+            if insert_seq_idx >= cds_start - 1:
+                stop_end = self._insert_stop_seq_end(alt, insert_seq_idx, cds_start)
+                if stop_end is not None:
+                    is_frameshift = False
+                    alt_end = insert_seq_idx + len(alt)
+                    del seq[stop_end:alt_end]
+                    cds_stop -= alt_end - stop_end
         # use max of mod 3 value and 1 (in event that indel starts in the 5'utr range)
         variant_start_aa = max(int(math.ceil((self._var_c.posedit.pos.start.base) / 3.0)), 1)
 
@@ -319,6 +328,13 @@ class AltSeqBuilder:
         seq[end:end] = dup_seq
 
         is_frameshift = len(dup_seq) % 3 != 0
+        if end >= cds_start - 1:
+            stop_end = self._insert_stop_seq_end(dup_seq, end, cds_start)
+            if stop_end is not None:
+                is_frameshift = False
+                dup_end = end + len(dup_seq)
+                del seq[stop_end:dup_end]
+                cds_stop -= dup_end - stop_end
         variant_start_aa = int(math.ceil((self._var_c.posedit.pos.end.base + 1) / 3.0))
 
         alt_data = AltTranscriptData(
@@ -359,6 +375,21 @@ class AltSeqBuilder:
         raise NotImplementedError(
             "hgvs c to p conversion does not support {} type: repeats".format(self._var_c)
         )
+
+    def _insert_stop_seq_end(self, insert_seq, insert_seq_idx, cds_start):
+        """If translating the inserted bases in the CDS reading frame yields a stop codon, return the
+        sequence index just past that stop codon; else None. When non-None, translation halts
+        inside the insertion, so the variant terminates there and is not a frameshift even if the
+        insertion length is not divisible by 3."""
+        frame_offset = (insert_seq_idx - (cds_start - 1)) % 3
+        framed = ("N" * frame_offset) + "".join(insert_seq)
+        ins_aa = translate_cds(
+            framed, full_codons=False, ter_symbol="X", translation_table=self._translation_table
+        )
+        stop_aa_idx = ins_aa.find("*")
+        if stop_aa_idx == -1:
+            return None
+        return insert_seq_idx + (stop_aa_idx + 1) * 3 - frame_offset
 
     def _setup_incorporate(self):
         """Helper to setup incorporate functions
