@@ -7,22 +7,66 @@ components, such as intronic-offset coordiates
 import copy
 import logging
 import re
+import warnings
 
 import bioutils.sequences
 import ometa.runtime
 import parsley
+from pyparsing import ParseException
 
 import hgvs.edit
 
 # The following imports are referenced by fully-qualified name in the
-# hgvs grammar.
+# OMeta hgvs grammar.
 import hgvs.enums
+import hgvs.grammar
 import hgvs.hgvsposition
 import hgvs.location
 import hgvs.posedit
 import hgvs.sequencevariant
 from hgvs.exceptions import HGVSParseError
 from hgvs.generated.hgvs_grammar import createParserClass
+
+#: ``grammar_fn`` value selecting the new pyparsing grammar (``src/hgvs/grammar.py``).
+PYPARSING_GRAMMAR = "__pyparsing__"
+
+#: ``grammar_fn`` value selecting the traditional OMeta/parsley grammar.
+OMETA_GRAMMAR = "__ometa__"
+
+# Sentinel used to detect whether the caller explicitly passed ``grammar_fn``.
+# We can't use ``None`` because we want to distinguish "not specified" (use the
+# default backend, no warning) from any explicitly requested value.
+_UNSET_GRAMMAR_FN = object()
+
+
+class _GrammarProxy:
+    """Mimics Parsley's grammar(input).rule() calling convention."""
+
+    def __init__(self, grammar_obj, input_string):
+        self._grammar_obj = grammar_obj
+        self._input = input_string
+
+    def __getattr__(self, rule_name):
+        def parse_fn():
+            return self._grammar_obj.parse(rule_name, self._input)
+        return parse_fn
+
+
+class _GrammarCallable:
+    """Callable that mimics Parsley's grammar API for backwards compatibility.
+
+    Supports: grammar(input).rule(), dir(grammar._grammarClass)
+    """
+
+    def __init__(self, grammar_obj):
+        self._grammar_obj = grammar_obj
+        self._grammarClass = self  # for _expose_rule_functions compatibility
+
+    def __call__(self, input_string):
+        return _GrammarProxy(self._grammar_obj, input_string)
+
+    def __dir__(self):
+        return ["rule_" + name for name in self._grammar_obj.rules]
 
 
 class Parser:
@@ -84,20 +128,57 @@ class Parser:
       >>> hp.parse_c_interval("22+1")
       BaseOffsetInterval(start=22+1, end=22+1, uncertain=False)
 
+    Two grammar implementations are available, selected via ``grammar_fn``:
+
+    * By default, the traditional OMeta/parsley grammar is used, preserving
+      historical behavior.
+    * ``Parser(grammar_fn="__pyparsing__")`` selects the newer pyparsing
+      grammar (see ``hgvs.grammar``). This is expected to become the default
+      in a future major release, at which point OMeta/parsley will be
+      deprecated and eventually removed.
+    * ``Parser(grammar_fn="__ometa__")`` explicitly selects the OMeta/parsley
+      grammar (equivalent to the current default).
+
+    Passing any other value (a path to a custom OMeta grammar file) is
+    deprecated and will be removed in a future version.
+
     """
 
-    def __init__(self, grammar_fn=None, expose_all_rules=False):
+    def __init__(self, grammar_fn=_UNSET_GRAMMAR_FN, expose_all_rules=False):
+        self._logger = logging.getLogger(__name__)
+        if grammar_fn is _UNSET_GRAMMAR_FN or grammar_fn == OMETA_GRAMMAR:
+            # Default (1.x): the traditional OMeta/parsley grammar.
+            self._grammar = self._make_ometa_grammar()
+        elif grammar_fn == PYPARSING_GRAMMAR:
+            self._grammar_obj = hgvs.grammar.HGVSGrammar()
+            self._grammar = _GrammarCallable(self._grammar_obj)
+        else:
+            # Deprecated escape hatch: a path to a custom OMeta grammar file.
+            warnings.warn(
+                "Passing a grammar filename to Parser(grammar_fn=...) is deprecated "
+                "and will be removed in a future version. Use grammar_fn='__pyparsing__' "
+                "to select the pyparsing grammar or grammar_fn='__ometa__' for the "
+                "traditional grammar.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            self._grammar = self._make_ometa_grammar(grammar_fn)
+        self._expose_rule_functions(expose_all_rules)
+
+    @staticmethod
+    def _make_ometa_grammar(grammar_fn=None):
+        """Build the traditional OMeta/parsley grammar.
+
+        With ``grammar_fn=None`` the bundled, pre-generated grammar is used.
+        Otherwise ``grammar_fn`` is read as a custom OMeta grammar file.
+        """
         bindings = {"hgvs": hgvs, "bioutils": bioutils, "copy": copy}
         if grammar_fn is None:
-            self._grammar = parsley.wrapGrammar(
+            return parsley.wrapGrammar(
                 createParserClass(ometa.runtime.OMetaGrammarBase, bindings)
             )
-        else:
-            # Still allow other grammars if you want
-            with open(grammar_fn, "r") as grammar_file:
-                self._grammar = parsley.makeGrammar(grammar_file.read(), bindings)
-        self._logger = logging.getLogger(__name__)
-        self._expose_rule_functions(expose_all_rules)
+        with open(grammar_fn, "r") as grammar_file:
+            return parsley.makeGrammar(grammar_file.read(), bindings)
 
     def parse(self, v) -> hgvs.sequencevariant.SequenceVariant:
         """parse HGVS variant `v`, returning a SequenceVariant
@@ -126,9 +207,17 @@ class Parser:
                 try:
                     return self._grammar(s).__getattr__(rule_name)()
                 except ometa.runtime.ParseError as exc:
+                    # OMeta/parsley backend
                     raise HGVSParseError(
                         "{s}: char {exc.position}: {reason}".format(
                             s=s, exc=exc, reason=exc.formatReason()
+                        )
+                    )
+                except ParseException as exc:
+                    # pyparsing backend
+                    raise HGVSParseError(
+                        "{s}: char {pos}: {msg}".format(
+                            s=s, pos=exc.loc, msg=exc.msg
                         )
                     )
 

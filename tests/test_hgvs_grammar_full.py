@@ -2,9 +2,7 @@
 import csv
 import os
 import pprint
-import re
 import unittest
-from importlib.resources import files as resources_files
 
 import hgvs.parser
 
@@ -42,10 +40,9 @@ class TestGrammarFull(unittest.TestCase):
     def test_parser_test_completeness(self):
         """ensure that all rules in grammar have tests"""
 
-        grammar_rule_re = re.compile(r"^(\w+)")
-        grammar_fn = resources_files("hgvs") / "_data" / "hgvs.pymeta"
-        with open(grammar_fn, "r") as f:
-            grammar_rules = set(r.group(1) for r in filter(None, map(grammar_rule_re.match, f)))
+        from hgvs.grammar import HGVSGrammar
+
+        grammar_rules = set(HGVSGrammar().rules.keys())
 
         with open(self._test_fn, "r") as f:
             reader = csv.DictReader(f, delimiter=str("\t"))

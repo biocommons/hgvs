@@ -9,7 +9,7 @@
 
 import io, csv, logging, sys
 
-import ometa.runtime
+from hgvs.exceptions import HGVSParseError
 
 import hgvs.dataproviders.uta
 
@@ -28,7 +28,7 @@ def read_tsv(fn):
 def parse_or_None(hgvsparser, hgvs):
     try:
         return hgvsparser.parse_hgvs_variant(hgvs)
-    except ometa.runtime.ParseError:
+    except HGVSParseError:
         return None
 
 

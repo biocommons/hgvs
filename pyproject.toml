@@ -48,6 +48,7 @@ dependencies = [
   "importlib_resources",
   "ipython",
   "parsley",
+  "pyparsing >= 3.1",
   "psycopg2",
 ]
 description = "HGVS Parser, Formatter, Mapper, Validator"
