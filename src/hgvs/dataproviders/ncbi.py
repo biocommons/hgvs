@@ -333,35 +333,31 @@ class NCBI_postgresql(NCBIBase):
                 conn.autocommit = True
 
                 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-                cur.execute("set search_path = {self.url.schema};".format(self=self))
-
-                yield cur
-
-                # contextmanager executes these when context exits
-                cur.close()
-                if self.pooling:
-                    self._pool.putconn(conn)
-
-                break
-
+                cur.execute(f"set search_path = {self.url.schema};")
             except psycopg2.OperationalError:
                 _logger.warning(
-                    "Lost connection to {url}; attempting reconnect".format(url=self.url)
+                    f"Lost connection to {self.url}; attempting reconnect"
                 )
                 if self.pooling:
                     self._pool.closeall()
                 self._connect()
-                _logger.warning("Reconnected to {url}".format(url=self.url))
+                _logger.warning(f"Reconnected to {self.url}")
 
-            n_tries_rem -= 1
-
+                n_tries_rem -= 1
+            else:
+                break
         else:
-            # N.B. Probably never reached
             raise HGVSError(
-                "Permanently lost connection to {url} ({n} retries)".format(
-                    url=self.url, n=n_retries
-                )
+                f"Unable to connect to {self.url} ({n_retries} retries)"
             )
+
+        try:
+            yield cur
+        finally:
+            # contextmanager executes these when context exits
+            cur.close()
+            if self.pooling:
+                self._pool.putconn(conn)
 
 
 class ParseResult(urlparse.ParseResult):
