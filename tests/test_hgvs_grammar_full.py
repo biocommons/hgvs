@@ -2,7 +2,9 @@
 import csv
 import os
 import pprint
+import re
 import unittest
+from importlib.resources import files as resources_files
 
 import hgvs.parser
 
@@ -30,6 +32,11 @@ import hgvs.parser
 #
 
 
+#: Both grammar backends are exercised: the OMeta/parsley grammar is the 1.x
+#: default, and pyparsing is slated to become the default in 2.x.
+BACKENDS = (hgvs.parser.OMETA_GRAMMAR, hgvs.parser.PYPARSING_GRAMMAR)
+
+
 class TestGrammarFull(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -52,7 +59,31 @@ class TestGrammarFull(unittest.TestCase):
 
         self.assertTrue(len(untested_rules) == 0, "untested rules: {}".format(untested_rules))
 
+    def test_grammar_rules_match_between_backends(self):
+        """both backends must expose exactly the same rule names"""
+
+        from hgvs.grammar import HGVSGrammar
+
+        grammar_rule_re = re.compile(r"^(\w+)")
+        grammar_fn = resources_files("hgvs") / "_data" / "hgvs.pymeta"
+        with open(grammar_fn, "r") as f:
+            ometa_rules = set(r.group(1) for r in filter(None, map(grammar_rule_re.match, f)))
+        pyparsing_rules = set(HGVSGrammar().rules.keys())
+
+        self.assertEqual(
+            ometa_rules,
+            pyparsing_rules,
+            "rules differ between backends: only in OMeta: {}; only in pyparsing: {}".format(
+                sorted(ometa_rules - pyparsing_rules), sorted(pyparsing_rules - ometa_rules)
+            ),
+        )
+
     def test_parser_grammar(self):
+        for backend in BACKENDS:
+            with self.subTest(backend=backend):
+                self._check_grammar(hgvs.parser.Parser(grammar_fn=backend))
+
+    def _check_grammar(self, parser):
         with open(self._test_fn, "r") as f:
             reader = csv.DictReader(f, delimiter=str("\t"))
 
@@ -75,7 +106,7 @@ class TestGrammarFull(unittest.TestCase):
 
                 for key in expected_map:
                     expected_result = str(expected_map[key]).replace("u'", "'")
-                    function_to_test = getattr(self.p._grammar(key), row["Func"])
+                    function_to_test = getattr(parser._grammar(key), row["Func"])
                     row_str = "{}\t{}\t{}\t{}\t{}".format(
                         row["Func"], key, row["Valid"], "one", expected_result
                     )
