@@ -8,6 +8,8 @@ as attributes of the HGVSGrammar class.
 cf. hgvs.pymeta for the original OMeta grammar and line references.
 """
 
+import contextlib
+
 import pyparsing as pp
 
 import bioutils.sequences
@@ -19,9 +21,28 @@ import hgvs.location
 import hgvs.posedit
 import hgvs.sequencevariant
 
-# CRITICAL: HGVS strings contain NO whitespace
-pp.ParserElement.set_default_whitespace_chars("")
-pp.ParserElement.enable_packrat()
+
+@contextlib.contextmanager
+def _hgvs_whitespace():
+    """Build ParserElements with HGVS whitespace rules (i.e. none at all).
+
+    CRITICAL: HGVS strings contain NO whitespace.
+
+    pyparsing bakes DEFAULT_WHITE_CHARS into each element as it is constructed,
+    so this must be in effect while the rules are built, not merely while they
+    are used.
+
+    The setting is process-global, and set_default_whitespace_chars() also
+    rewrites pyparsing's builtin expressions in place, so it is restored on exit:
+    leaving it applied would silently break unrelated pyparsing grammars in the
+    same process.
+    """
+    prev = pp.ParserElement.DEFAULT_WHITE_CHARS
+    pp.ParserElement.set_default_whitespace_chars("")
+    try:
+        yield
+    finally:
+        pp.ParserElement.set_default_whitespace_chars(prev)
 
 
 class _NoneResult:
@@ -56,22 +77,24 @@ class HGVSGrammar:
     """
 
     def __init__(self):
-        # Forward reference needed by dna_con/rna_con -> hgvs_position
-        self.hgvs_position = pp.Forward()
+        with _hgvs_whitespace():
+            # Forward reference needed by dna_con/rna_con -> hgvs_position
+            self.hgvs_position = pp.Forward()
 
-        self._build_basic_types()
-        self._build_locations()
-        self._build_edits()
-        self._build_posedits()
-        self._build_typed_posedits()
-        self._build_positions()
-        self._build_variants()
-        self._collect_rules()
+            self._build_basic_types()
+            self._build_locations()
+            self._build_edits()
+            self._build_posedits()
+            self._build_typed_posedits()
+            self._build_positions()
+            self._build_variants()
+            self._collect_rules()
+            self._anchor_rules()
 
     def parse(self, rule_name, input_string):
         """Parse *input_string* using the named rule. Returns the domain object."""
-        rule = self.rules[rule_name]
-        result = rule.parse_string(input_string, parse_all=True)
+        rule = self._anchored_rules[rule_name]
+        result = rule.parse_string(input_string)
         rv = result[0]
         return None if isinstance(rv, _NoneResult) else rv
 
@@ -645,6 +668,19 @@ class HGVSGrammar:
             obj = getattr(self, name)
             if isinstance(obj, pp.ParserElement):
                 self.rules[name] = obj
+
+    def _anchor_rules(self):
+        """Pair each rule with an end-of-string anchor for whole-input matching.
+
+        Must be called while the no-whitespace default is in effect (see
+        _hgvs_whitespace). parse_string(parse_all=True) is not used because it
+        builds its own Empty() + StringEnd() at *parse* time, which picks up
+        whatever whitespace default is globally in effect then and would let
+        trailing whitespace through.
+        """
+        self._anchored_rules = {
+            name: rule + pp.StringEnd() for name, rule in self.rules.items()
+        }
 
 
 # <LICENSE>

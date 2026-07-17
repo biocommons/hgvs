@@ -12,7 +12,7 @@ import warnings
 import bioutils.sequences
 import ometa.runtime
 import parsley
-from pyparsing import ParseException
+from pyparsing import ParseBaseException
 
 import hgvs.edit
 
@@ -60,7 +60,8 @@ class _GrammarCallable:
 
     def __init__(self, grammar_obj):
         self._grammar_obj = grammar_obj
-        self._grammarClass = self  # for _expose_rule_functions compatibility
+        # Name mirrors Parsley's API, which _expose_rule_functions introspects.
+        self._grammarClass = self  # NOSONAR: S116 - matches the Parsley attribute name
 
     def __call__(self, input_string):
         return _GrammarProxy(self._grammar_obj, input_string)
@@ -213,8 +214,10 @@ class Parser:
                             s=s, exc=exc, reason=exc.formatReason()
                         )
                     )
-                except ParseException as exc:
-                    # pyparsing backend
+                except ParseBaseException as exc:
+                    # pyparsing backend. ParseBaseException rather than
+                    # ParseException: ParseFatalException and ParseSyntaxException
+                    # are siblings of ParseException, not subclasses of it.
                     raise HGVSParseError(
                         "{s}: char {pos}: {msg}".format(
                             s=s, pos=exc.loc, msg=exc.msg
