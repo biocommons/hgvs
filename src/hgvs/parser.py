@@ -143,6 +143,15 @@ class Parser:
     Passing any other value (a path to a custom OMeta grammar file) is
     deprecated and will be removed in a future version.
 
+    The two backends are intended to be interchangeable, and are tested for
+    equivalence (see tests/test_hgvs_grammar_equivalence.py). There is one
+    deliberate difference: the OMeta grammar silently skips leading spaces and
+    tabs, so ``Parser().parse_hgvs_variant(" NM_01234.5:c.22+1A>T")`` succeeds,
+    whereas the pyparsing grammar rejects it. HGVS strings contain no
+    whitespace, so the stricter reading is intended. Both backends reject
+    trailing whitespace and leading newlines. Callers relying on the older,
+    laxer behavior should strip the input themselves.
+
     """
 
     def __init__(self, grammar_fn=_UNSET_GRAMMAR_FN, expose_all_rules=False):

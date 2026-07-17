@@ -3,7 +3,11 @@ HGVS Railroad Diagram
 
   | Generated from `hgvs (https://github.com/biocommons/hgvs) <https://github.com/biocommons/hgvs>`_
   | 1b1f788ef473+ default tip
-  | See the source code for the OMeta-based grammar
+  | See the source code for the grammar itself: ``src/hgvs/_data/hgvs.pymeta``
+    (OMeta/parsley) and ``src/hgvs/grammar.py`` (pyparsing).
+
+.. note:: These diagrams are not regenerated automatically and may lag the
+   grammar.
 
 Variants
 ~~~~~~~~
