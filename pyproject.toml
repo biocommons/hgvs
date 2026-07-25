@@ -163,6 +163,7 @@ markers = [
 testpaths = ["tests"]
 
 [tool.ruff]
+extend-exclude = ["src/hgvs/generated"]
 fix = true
 line-length = 100
 src = ["src", "tests"]
