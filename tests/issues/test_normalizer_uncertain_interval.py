@@ -26,8 +26,10 @@ of sync: the printed HGVS interval gains a spurious extra number (e.g.
 end are affected, the resulting interval fails its own start<=end
 sanity check and normalize() raises instead.
 
-These tests are expected to FAIL until the normalizer stops mutating a
-single aliased position in place. See PR discussion for #801.
+These tests are marked xfail(strict=True) until the normalizer stops
+mutating a single aliased position in place: they should fail today,
+and start failing loudly (XPASS) the moment someone fixes it, as a
+prompt to remove the marker. See PR discussion for #801.
 """
 
 import pytest
@@ -52,6 +54,11 @@ degenerate_sync_cases = [
 ]
 
 
+@pytest.mark.xfail(
+    reason="normalizer.py mutates one aliased half of a degenerate nested "
+    "position in place, leaving the other stale (follow-up to #801)",
+    strict=True,
+)
 @pytest.mark.parametrize("hgvs_str", degenerate_sync_cases)
 def test_normalize_keeps_degenerate_nested_position_in_sync(hgvs_str, parser, norm):
     """A plain (non-uncertain) side of an uncertain c./n. interval is
@@ -80,6 +87,11 @@ crash_cases = [
 ]
 
 
+@pytest.mark.xfail(
+    reason="normalizer.py mutates one aliased half of a degenerate nested "
+    "position in place, leaving the other stale (follow-up to #801)",
+    strict=True,
+)
 @pytest.mark.parametrize("hgvs_str", crash_cases)
 def test_normalize_does_not_raise_on_uncertain_interval(hgvs_str, parser, norm):
     """Normalizing a valid, parseable uncertain c./n. interval must not
