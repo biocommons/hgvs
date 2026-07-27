@@ -48,7 +48,8 @@ dependencies = [
   "importlib_resources",
   "ipython",
   "parsley",
-  "psycopg2",
+  "psycopg[binary]",
+  "psycopg-pool",
 ]
 description = "HGVS Parser, Formatter, Mapper, Validator"
 dynamic = ["version"]
@@ -234,7 +235,7 @@ select = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["S101"]
+"tests/*" = ["PLR2004", "S101"]
 
 [tool.setuptools]
 include-package-data = true
