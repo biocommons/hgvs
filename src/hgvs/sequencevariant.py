@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """represents simple sequence-based variants"""
 
 import attr
@@ -41,7 +40,7 @@ class SequenceVariant:
             posedit = self.posedit.format(conf)
         else:
             posedit = "?"
-        typo = "{type}.{posedit}".format(type=self.type, posedit=posedit)
+        typo = f"{self.type}.{posedit}"
 
         return ref + typo
 

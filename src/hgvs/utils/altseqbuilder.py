@@ -118,16 +118,16 @@ class AltSeqBuilder:
         :returns variant sequence data
         :rtype list of dictionaries
         """
-        not_cds = "not_cds_variant"
-        whole_gene_deleted = "whole_gene_deleted"
+        NOT_CDS = "not_cds_variant"
+        WHOLE_GENE_DELETED = "whole_gene_deleted"
 
         type_map = {
             NARefAlt: self._incorporate_delins,
             Dup: self._incorporate_dup,
             Inv: self._incorporate_inv,
             Repeat: self._incorporate_repeat,
-            not_cds: self._create_alt_equals_ref_noncds,
-            whole_gene_deleted: self._create_no_protein,
+            NOT_CDS: self._create_alt_equals_ref_noncds,
+            WHOLE_GENE_DELETED: self._create_no_protein,
         }
 
         # should loop over each allele rather than assume only 1 variant; return a list for now
@@ -137,26 +137,26 @@ class AltSeqBuilder:
 
         if variant_location == self.EXON:
             edit_type = type(self._var_c.posedit.edit)
-        elif variant_location in (self.INTRON, self.T_UTR):
-            edit_type = not_cds
+        elif variant_location == self.INTRON or variant_location == self.T_UTR:
+            edit_type = NOT_CDS
         elif variant_location == self.F_UTR:
             # TODO: handle case where variant introduces a Met (new start)
-            edit_type = not_cds
+            edit_type = NOT_CDS
         elif variant_location == self.WHOLE_GENE:
             if self._var_c.posedit.edit.type == "del":
-                edit_type = whole_gene_deleted
+                edit_type = WHOLE_GENE_DELETED
             elif self._var_c.posedit.edit.type == "dup":
                 _logger.warning(
                     "Whole-gene duplication; consequence assumed to not affect protein product"
                 )
-                edit_type = not_cds
+                edit_type = NOT_CDS
             elif self._var_c.posedit.edit.type == "inv":
                 _logger.warning(
                     "Whole-gene inversion; consequence assumed to not affect protein product"
                 )
-                edit_type = not_cds
+                edit_type = NOT_CDS
             else:
-                edit_type = not_cds
+                edit_type = NOT_CDS
         else:  # should never get here
             msg = f"value_location = {variant_location}"
             raise ValueError(msg)
@@ -304,8 +304,7 @@ class AltSeqBuilder:
         seq, cds_start, cds_stop, start, end = self._setup_incorporate()
 
         if not self._var_c.posedit.edit.ref:
-            msg = "Duplication variant is missing reference sequence"
-            raise HGVSError(msg)
+            raise HGVSError("Duplication variant is missing reference sequence")
 
         dup_seq = self._var_c.posedit.edit.ref
         seq[end:end] = dup_seq
@@ -355,8 +354,9 @@ class AltSeqBuilder:
 
     def _incorporate_repeat(self):
         """Incorporate repeat int sequence"""
-        msg = f"hgvs c to p conversion does not support {self._var_c} type: repeats"
-        raise NotImplementedError(msg)
+        raise NotImplementedError(
+            f"hgvs c to p conversion does not support {self._var_c} type: repeats"
+        )
 
     def _insert_stop_seq_end(self, insert_seq, insert_seq_idx, cds_start):
         """If translating the inserted bases in the CDS reading frame yields a stop codon, return the

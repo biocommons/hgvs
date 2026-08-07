@@ -60,9 +60,9 @@ def get_start_end(
 
     if isinstance(pos, hgvs.location.SimplePosition):
         return pos, pos
-    elif isinstance(pos, hgvs.location.BaseOffsetInterval):
+    if isinstance(pos, hgvs.location.BaseOffsetInterval):
         return pos.start, pos.end
-    elif isinstance(pos, hgvs.location.Interval):
+    if isinstance(pos, hgvs.location.Interval):
         s = pos.start
         e = pos.end
 
@@ -90,8 +90,8 @@ def get_start_end(
             if e.is_uncertain:
                 e = orig_e.start
         return s, e
-    else:  # BaseOffsetPosition
-        return pos, pos
+    # BaseOffsetPosition
+    return pos, pos
 
 
 def get_start_end_interbase(

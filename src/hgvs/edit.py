@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Representation of edit operations in HGVS variants
 
 NARefAlt and AARefAlt are abstractions of several major variant
@@ -51,7 +50,6 @@ class Edit(abc.ABC):
     @abc.abstractmethod
     def type(self):
         """return the type of this Edit"""
-        pass
 
 
 @attr.s(slots=True)
@@ -120,20 +118,20 @@ class NARefAlt(Edit):
         # subst and delins
         if self.ref is not None and self.alt is not None:
             if self.ref == self.alt:
-                s = "{ref}=".format(ref=ref)
+                s = f"{ref}="
             elif (
                 len(self.alt) == 1 and len(self.ref) == 1 and not self.ref.isdigit()
             ):  # don't turn del5insT into 5>T
-                s = "{self.ref}>{self.alt}".format(self=self)
+                s = f"{self.ref}>{self.alt}"
             else:
-                s = "del{ref}ins{alt}".format(ref=ref, alt=self.alt)
+                s = f"del{ref}ins{self.alt}"
         # del case
         elif self.ref is not None:
-            s = "del{ref}".format(ref=ref)
+            s = f"del{ref}"
 
         # ins case
         else:  # self.alt is not None
-            s = "ins{self.alt}".format(self=self)
+            s = f"ins{self.alt}"
 
         return "(" + s + ")" if self.uncertain else s
 
@@ -204,11 +202,11 @@ class AARefAlt(Edit):
         elif self.ref is not None and self.alt is not None:
             if self.ref == self.alt:
                 if p_3_letter:
-                    s = "{ref}=".format(ref=aa1_to_aa3(self.ref))
+                    s = f"{aa1_to_aa3(self.ref)}="
                     if p_term_asterisk and s == "Ter=":
                         s = "*="
                 else:
-                    s = "{ref}=".format(ref=self.ref)
+                    s = f"{self.ref}="
             elif len(self.ref) == 1 and len(self.alt) == 1:
                 if p_3_letter:
                     s = aa1_to_aa3(self.alt)
@@ -218,11 +216,11 @@ class AARefAlt(Edit):
                     s = self.alt
             else:
                 if p_3_letter:
-                    s = "delins{alt}".format(alt=aa1_to_aa3(self.alt))
+                    s = f"delins{aa1_to_aa3(self.alt)}"
                     if p_term_asterisk and s == "delinsTer":
                         s = "delins*"
                 else:
-                    s = "delins{alt}".format(alt=self.alt)
+                    s = f"delins{self.alt}"
 
         # del case
         elif self.ref is not None and self.alt is None:
@@ -231,11 +229,11 @@ class AARefAlt(Edit):
         # ins case
         elif self.ref is None and self.alt is not None:
             if p_3_letter:
-                s = "ins{alt}".format(alt=aa1_to_aa3(self.alt))
+                s = f"ins{aa1_to_aa3(self.alt)}"
                 if p_term_asterisk and s == "insTer":
                     s = "ins*"
             else:
-                s = "ins{alt}".format(alt=self.alt)
+                s = f"ins{self.alt}"
 
         else:
             raise RuntimeError("Should not be here")
@@ -324,11 +322,11 @@ class AAFs(Edit):
         st_length = self.length or ""
         if p_3_letter:
             if p_term_asterisk:
-                s = "{alt}fs*{length}".format(alt=aa1_to_aa3(self.alt), length=st_length)
+                s = f"{aa1_to_aa3(self.alt)}fs*{st_length}"
             else:
-                s = "{alt}fsTer{length}".format(alt=aa1_to_aa3(self.alt), length=st_length)
+                s = f"{aa1_to_aa3(self.alt)}fsTer{st_length}"
         else:
-            s = "{alt}fs*{length}".format(alt=self.alt, length=st_length)
+            s = f"{self.alt}fs*{st_length}"
         return "(" + s + ")" if self.uncertain else s
 
     __str__ = format
@@ -377,7 +375,7 @@ class AAExt(Edit):
             if p_term_asterisk and st_aaterm == "Ter":
                 st_aaterm = "*"
 
-        s = "{alt}ext{term}{length}".format(alt=st_alt, term=st_aaterm, length=st_length)
+        s = f"{st_alt}ext{st_aaterm}{st_length}"
         return "(" + s + ")" if self.uncertain else s
 
     __str__ = format
@@ -473,8 +471,8 @@ class Repeat(Edit):
         if max_ref_length is not None and (ref is None or len(ref) > max_ref_length):
             ref = ""
         if self.min == self.max:
-            return "{ref}[{min}]".format(ref=ref, min=self.min)
-        return "{ref}({min}_{max})".format(ref=ref, min=self.min, max=self.max)
+            return f"{ref}[{self.min}]"
+        return f"{ref}({self.min}_{self.max})"
 
     __str__ = format
 
@@ -509,7 +507,7 @@ class NACopy(Edit):
     uncertain = attr.ib(default=False)
 
     def __str__(self):
-        s = "copy{}".format(self.copy)
+        s = f"copy{self.copy}"
         return "(" + s + ")" if self.uncertain else s
 
     def _set_uncertain(self):
@@ -598,7 +596,7 @@ class Conv(Edit):
 
     def __str__(self):
         if self.from_ac and self.from_type and self.from_pos:
-            s = "con{self.from_ac}:{self.from_type}.{self.from_pos}".format(self=self)
+            s = f"con{self.from_ac}:{self.from_type}.{self.from_pos}"
         else:
             s = "con"
         return "(" + s + ")" if self.uncertain else s

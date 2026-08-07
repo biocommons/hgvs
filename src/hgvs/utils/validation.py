@@ -37,17 +37,14 @@ def validate_type_ac_pair(type, ac):
     if valid_pairs[type].match(ac):
         return (
             ValidationLevel.VALID,
-            "Accession ({ac}) is compatible with variant type {type}".format(ac=ac, type=type),
+            f"Accession ({ac}) is compatible with variant type {type}",
         )
-    elif invalid_pairs[type].match(ac):
+    if invalid_pairs[type].match(ac):
         return (
             ValidationLevel.ERROR,
-            "Accession ({ac}) is not compatible with variant type {type}".format(ac=ac, type=type),
+            f"Accession ({ac}) is not compatible with variant type {type}",
         )
-    else:
-        return (
-            ValidationLevel.WARNING,
-            "Accession ({ac}) is not known to be compatible with variant type {type}".format(
-                ac=ac, type=type
-            ),
-        )
+    return (
+        ValidationLevel.WARNING,
+        f"Accession ({ac}) is not known to be compatible with variant type {type}",
+    )

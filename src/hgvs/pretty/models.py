@@ -1,11 +1,10 @@
 from dataclasses import dataclass
-from typing import List
 
 from hgvs.alignmentmapper import AlignmentMapper
 from hgvs.assemblymapper import AssemblyMapper
+from hgvs.dataproviders.interface import Interface
 from hgvs.location import Interval
 from hgvs.sequencevariant import SequenceVariant
-from hgvs.dataproviders.interface import Interface
 
 
 @dataclass(eq=True, repr=True, frozen=True, order=True)
@@ -107,7 +106,7 @@ class VariantData:
     strand: int
     var_c_or_n: SequenceVariant = None
     var_p: SequenceVariant = None
-    position_details: List[PositionDetail] = None
+    position_details: list[PositionDetail] = None
     all: bool = False
     is_rna: bool = False
 

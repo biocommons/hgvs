@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """implements an hgvs data provider interface using UTA
 (https://github.com/biocommons/uta)
 
@@ -10,13 +9,13 @@ import logging
 import os
 import re
 import weakref
+from urllib import parse as urlparse
 
 import psycopg2
 import psycopg2.extras
 import psycopg2.pool
 from bioutils.assemblies import make_ac_name_map
 from bioutils.digests import seq_md5
-from urllib import parse as urlparse
 
 import hgvs
 
@@ -53,7 +52,7 @@ def _get_uta_db_url():
         url_key = os.environ["_UTA_URL_KEY"]
     else:
         sdlc = _stage_from_version(hgvs.__version__)
-        url_key = "public_{sdlc}".format(sdlc=sdlc)
+        url_key = f"public_{sdlc}"
     return hgvs.global_config["uta"][url_key]
 
 
@@ -111,7 +110,7 @@ def connect(
         )
     else:
         # fell through connection scheme cases
-        raise RuntimeError("{url.scheme} in {url} is not currently supported".format(url=url))
+        raise RuntimeError(f"{url.scheme} in {url} is not currently supported")
     _logger.info("connected to " + str(db_url) + "...")
     return conn
 
@@ -192,14 +191,8 @@ class UTABase(Interface):
 
     def __str__(self):
         return (
-            "{n} <data_version:{dv}; schema_version:{sv}; application_name={self.application_name};"
-            " url={self.url}; sequences-from={sf}>"
-        ).format(
-            n=type(self).__name__,
-            self=self,
-            dv=self.data_version(),
-            sv=self.schema_version(),
-            sf=self.sequence_source(),
+            f"{type(self).__name__} <data_version:{self.data_version()}; schema_version:{self.schema_version()}; application_name={self.application_name};"
+            f" url={self.url}; sequences-from={self.sequence_source()}>"
         )
 
     def _fetchone(self, sql, *args):
@@ -227,10 +220,9 @@ class UTABase(Interface):
         seqrepo_url = os.environ.get("HGVS_SEQREPO_URL")
         if seqrepo_dir:
             return seqrepo_dir
-        elif seqrepo_url:
+        if seqrepo_url:
             return seqrepo_url
-        else:
-            return "seqfetcher"
+        return "seqfetcher"
 
     def get_seq(self, ac, start_i=None, end_i=None):
         return self.seqfetcher.fetch_seq(ac, start_i, end_i)
@@ -310,9 +302,7 @@ class UTABase(Interface):
         rows = self._fetchall(self._queries["tx_exons"], [tx_ac, alt_ac, alt_aln_method])
         if len(rows) == 0:
             raise HGVSDataNotAvailableError(
-                "No tx_exons for (tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})".format(
-                    tx_ac=tx_ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method
-                )
+                f"No tx_exons for (tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})"
             )
 
         # TODO: Check that end == transcript sequence length (but length N/A in current hdp)
@@ -320,9 +310,7 @@ class UTABase(Interface):
         if rows[ex0]["tx_start_i"] != 0:
             raise HGVSDataNotAvailableError(
                 "Alignment is incomplete; cannot use transcript for mapping"
-                "(tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})".format(
-                    tx_ac=tx_ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method
-                )
+                f"(tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})"
             )
         return rows
 
@@ -385,9 +373,7 @@ class UTABase(Interface):
         """
         rows = self._fetchall(self._queries["tx_identity_info"], [tx_ac])
         if len(rows) == 0:
-            raise HGVSDataNotAvailableError(
-                "No transcript definition for (tx_ac={tx_ac})".format(tx_ac=tx_ac)
-            )
+            raise HGVSDataNotAvailableError(f"No transcript definition for (tx_ac={tx_ac})")
         return rows[0]
 
     def get_tx_info(self, tx_ac, alt_ac, alt_aln_method):
@@ -415,19 +401,14 @@ class UTABase(Interface):
         rows = self._fetchall(self._queries["tx_info"], [tx_ac, alt_ac, alt_aln_method])
         if len(rows) == 0:
             raise HGVSDataNotAvailableError(
-                "No tx_info for (tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})".format(
-                    tx_ac=tx_ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method
-                )
+                f"No tx_info for (tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})"
             )
-        elif len(rows) == 1:
+        if len(rows) == 1:
             return rows[0]
-        else:
-            raise HGVSError(
-                "Multiple ({n}) replies for tx_info(tx_ac="
-                "{tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})".format(
-                    n=len(rows), tx_ac=tx_ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method
-                )
-            )
+        raise HGVSError(
+            f"Multiple ({len(rows)}) replies for tx_info(tx_ac="
+            f"{tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})"
+        )
 
     def get_tx_mapping_options(self, tx_ac):
         """Return all transcript alignment sets for a given transcript
@@ -515,7 +496,7 @@ class UTA_postgresql(UTABase):
         cache=None,
     ):
         if url.schema is None:
-            raise Exception("No schema name provided in {url}".format(url=url))
+            raise Exception(f"No schema name provided in {url}")
         self.application_name = application_name
         self.pooling = pooling
         self._conn = None
@@ -574,7 +555,7 @@ class UTA_postgresql(UTABase):
         if r[0]:
             return
         raise HGVSDataNotAvailableError(
-            "specified schema ({}) does not exist (url={})".format(self.url.schema, self.url)
+            f"specified schema ({self.url.schema}) does not exist (url={self.url})"
         )
 
     @contextlib.contextmanager
@@ -622,28 +603,22 @@ class UTA_postgresql(UTABase):
                 break
 
             except psycopg2.OperationalError:
-                _logger.warning(
-                    "Lost connection to {url}; attempting reconnect".format(url=self.url)
-                )
+                _logger.warning(f"Lost connection to {self.url}; attempting reconnect")
                 if self.pooling:
                     self._pool.putconn(conn)
-                    _logger.warning("Put away pool connection from {url}".format(url=self.url))
+                    _logger.warning(f"Put away pool connection from {self.url}")
                 else:
                     self._connect()
-                    _logger.warning("Reconnected to {url}".format(url=self.url))
+                    _logger.warning(f"Reconnected to {self.url}")
 
             n_tries_rem -= 1
 
         else:
             # N.B. Probably never reached
-            raise HGVSError(
-                "Permanently lost connection to {url} ({n} retries)".format(
-                    url=self.url, n=n_retries
-                )
-            )
+            raise HGVSError(f"Permanently lost connection to {self.url} ({n_retries} retries)")
 
     def _set_search_path(self, cur):
-        cur.execute("set search_path = {self.url.schema},public;".format(self=self))
+        cur.execute(f"set search_path = {self.url.schema},public;")
 
 
 class ParseResult(urlparse.ParseResult):

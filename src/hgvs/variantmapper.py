@@ -554,7 +554,7 @@ class VariantMapper:
     ############################################################################
     # Internal methods
 
-    def _replace_reference(  # noqa: PLR0912
+    def _replace_reference(
         self, var, alt_ac=None, alt_aln_method=hgvs.global_config.mapping.alt_aln_method
     ):
         """fetch reference sequence for variant and update (in-place) if necessary"""
