@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Internal utility to display textual representation of variant context
 
 This code requires uta-align and pysam packages, which are NOT part of
@@ -36,12 +35,10 @@ def full_house(am, var, tx_ac=None):
         if tx_ac is None:
             rtx = am.relevant_transcripts(var)
             if len(rtx) == 0:
-                raise RuntimeError("no relevant transcripts for {var.ac}".format(var=var))
+                raise RuntimeError(f"no relevant transcripts for {var.ac}")
             if len(rtx) > 1:
                 raise RuntimeError(
-                    "{n} relevant transcripts for {var.ac}; you need to pick one".format(
-                        n=len(rtx), var=var
-                    )
+                    f"{len(rtx)} relevant transcripts for {var.ac}; you need to pick one"
                 )
             tx_ac = rtx[0]
         var_n = am.g_to_n(var_g, tx_ac)
@@ -203,8 +200,8 @@ def format_sequence(seq, start=None, end=None, group_size=3):
     gpl = int((bw + len(sep)) / (group_size + len(sep)))  # groups per line
     gpl = int(gpl / 5) * 5 if gpl > 20 else gpl
     rpl = group_size * gpl
-    line_fmt = "{{l:>{lw}s}}{body_sep}{{body}}".format(lw=loc_width, body_sep=body_sep)
-    ge_fmt = "{{ge:>{gs}}}".format(gs=group_size)
+    line_fmt = f"{{l:>{loc_width}s}}{body_sep}{{body}}"
+    ge_fmt = f"{{ge:>{group_size}}}"
 
     blocks = []
     for ls in range(start, end, rpl):

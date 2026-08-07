@@ -108,9 +108,8 @@ def connect(
         )
     else:
         # fell through connection scheme cases
-        msg = f"{url.scheme} in {url} is not currently supported"
-        raise RuntimeError(msg)
-    _logger.info("connected to %s...", db_url)
+        raise RuntimeError(f"{url.scheme} in {url} is not currently supported")
+    _logger.info("connected to " + str(db_url) + "...")
     return conn
 
 
@@ -154,7 +153,7 @@ class NCBIBase:
             """,
     }
 
-    def __init__(self, url, mode=None, cache=None):  # noqa: ARG002
+    def __init__(self, url, mode=None, cache=None):
         self.url = url
         if mode != "run":
             self._connect()
@@ -302,8 +301,9 @@ class NCBI_postgresql(NCBIBase):
         )
         if r["exists"]:
             return
-        msg = f"specified schema ({self.url.schema}) does not exist (url={self.url})"
-        raise HGVSDataNotAvailableError(msg)
+        raise HGVSDataNotAvailableError(
+            f"specified schema ({self.url.schema}) does not exist (url={self.url})"
+        )
 
     @contextlib.contextmanager
     def _get_cursor(self, n_retries=1):

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Defines the abstract data provider interface"""
 
 import abc
@@ -120,12 +119,7 @@ class Interface(metaclass=abc.ABCMeta):
             return
 
         raise RuntimeError(
-            "Incompatible versions: {k} requires schema version {rv}, but {self.url} provides version {av}".format(
-                k=type(self).__name__,
-                self=self,
-                rv=self.required_version,
-                av=self.schema_version(),
-            )
+            f"Incompatible versions: {type(self).__name__} requires schema version {self.required_version}, but {self.url} provides version {self.schema_version()}"
         )
 
     # required_version: what version of the remote schema is required

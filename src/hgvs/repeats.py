@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
 """A class to manage conversion of SequenceVariants to repeat representation"""
 
-from dataclasses import dataclass
 import re
+from dataclasses import dataclass
+
 import hgvs
 from hgvs.pretty.models import VariantCoords
 
@@ -17,7 +17,6 @@ class RepeatUnit:
 
 class RepeatAnalyser:
     def __init__(self, fs: VariantCoords, reverse: bool = False) -> None:
-
         self.is_repeat = False
         self.repeat_units_ref = None
         self.repeat_units_alt = None
@@ -212,7 +211,7 @@ def get_repeat_str(
         and sequence == other_repeat_unit[0].repeat_unit
     ):
         return f"{sequence}[1]"
-    elif (
+    if (
         len(primary_repeat_unit) == 0
         and len(other_repeat_unit) == 1
         and sequence != other_repeat_unit[0].repeat_unit

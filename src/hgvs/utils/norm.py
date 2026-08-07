@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Utility to normalize variants.
 Code of the normalization utilities were imported from vgraph
 https://github.com/bioinformed/vgraph
@@ -153,8 +152,7 @@ def normalize_alleles_right(ref, start, stop, alleles, bound, ref_step, shuffle=
 def normalize_alleles(ref, start, stop, alleles, bound, ref_step, left, shuffle=True):
     if left:
         return normalize_alleles_left(ref, start, stop, alleles, bound, ref_step, shuffle)
-    else:
-        return normalize_alleles_right(ref, start, stop, alleles, bound, ref_step, shuffle)
+    return normalize_alleles_right(ref, start, stop, alleles, bound, ref_step, shuffle)
 
 
 # <LICENSE>
