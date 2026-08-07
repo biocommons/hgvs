@@ -79,9 +79,7 @@ class CIGARMapper:
         """
 
         if strict_bounds and (pos < 0 or pos > from_pos[-1]):
-            raise HGVSInvalidIntervalError(
-                "Position is beyond the bounds of transcript record"
-            )
+            raise HGVSInvalidIntervalError("Position is beyond the bounds of transcript record")
 
         # find aligned segment to use as basis for mapping
         # okay for pos to be before first element or after last

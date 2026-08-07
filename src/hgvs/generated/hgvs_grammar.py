@@ -20,55 +20,41 @@ def createParserClass(GrammarBase, ruleGlobals):
 
             def _G_or_1():
                 self._trace("", (697, 707), self.input.position)
-                _G_apply_2, lastError = self._apply(
-                    self.rule_g_variant, "g_variant", []
-                )
+                _G_apply_2, lastError = self._apply(self.rule_g_variant, "g_variant", [])
                 self.considerError(lastError, None)
                 return (_G_apply_2, self.currentError)
 
             def _G_or_3():
                 self._trace("", (709, 719), self.input.position)
-                _G_apply_4, lastError = self._apply(
-                    self.rule_m_variant, "m_variant", []
-                )
+                _G_apply_4, lastError = self._apply(self.rule_m_variant, "m_variant", [])
                 self.considerError(lastError, None)
                 return (_G_apply_4, self.currentError)
 
             def _G_or_5():
                 self._trace("", (721, 731), self.input.position)
-                _G_apply_6, lastError = self._apply(
-                    self.rule_c_variant, "c_variant", []
-                )
+                _G_apply_6, lastError = self._apply(self.rule_c_variant, "c_variant", [])
                 self.considerError(lastError, None)
                 return (_G_apply_6, self.currentError)
 
             def _G_or_7():
                 self._trace("", (733, 743), self.input.position)
-                _G_apply_8, lastError = self._apply(
-                    self.rule_n_variant, "n_variant", []
-                )
+                _G_apply_8, lastError = self._apply(self.rule_n_variant, "n_variant", [])
                 self.considerError(lastError, None)
                 return (_G_apply_8, self.currentError)
 
             def _G_or_9():
                 self._trace("", (746, 756), self.input.position)
-                _G_apply_10, lastError = self._apply(
-                    self.rule_r_variant, "r_variant", []
-                )
+                _G_apply_10, lastError = self._apply(self.rule_r_variant, "r_variant", [])
                 self.considerError(lastError, None)
                 return (_G_apply_10, self.currentError)
 
             def _G_or_11():
                 self._trace("", (758, 768), self.input.position)
-                _G_apply_12, lastError = self._apply(
-                    self.rule_p_variant, "p_variant", []
-                )
+                _G_apply_12, lastError = self._apply(self.rule_p_variant, "p_variant", [])
                 self.considerError(lastError, None)
                 return (_G_apply_12, self.currentError)
 
-            _G_or_13, lastError = self._or(
-                [_G_or_1, _G_or_3, _G_or_5, _G_or_7, _G_or_9, _G_or_11]
-            )
+            _G_or_13, lastError = self._or([_G_or_1, _G_or_3, _G_or_5, _G_or_7, _G_or_9, _G_or_11])
             self.considerError(lastError, "hgvs_variant")
             return (_G_or_13, self.currentError)
 
@@ -80,9 +66,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             self.considerError(lastError, "c_variant")
             _locals["ac"] = _G_apply_14
             self._trace("", (789, 803), self.input.position)
-            _G_apply_15, lastError = self._apply(
-                self.rule_opt_gene_expr, "opt_gene_expr", []
-            )
+            _G_apply_15, lastError = self._apply(self.rule_opt_gene_expr, "opt_gene_expr", [])
             self.considerError(lastError, "c_variant")
             _locals["gene"] = _G_apply_15
             self._trace("", (808, 812), self.input.position)
@@ -111,9 +95,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             self.considerError(lastError, "g_variant")
             _locals["ac"] = _G_apply_22
             self._trace("", (949, 963), self.input.position)
-            _G_apply_23, lastError = self._apply(
-                self.rule_opt_gene_expr, "opt_gene_expr", []
-            )
+            _G_apply_23, lastError = self._apply(self.rule_opt_gene_expr, "opt_gene_expr", [])
             self.considerError(lastError, "g_variant")
             _locals["gene"] = _G_apply_23
             self._trace("", (968, 972), self.input.position)
@@ -142,9 +124,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             self.considerError(lastError, "m_variant")
             _locals["ac"] = _G_apply_29
             self._trace("", (1109, 1123), self.input.position)
-            _G_apply_30, lastError = self._apply(
-                self.rule_opt_gene_expr, "opt_gene_expr", []
-            )
+            _G_apply_30, lastError = self._apply(self.rule_opt_gene_expr, "opt_gene_expr", [])
             self.considerError(lastError, "m_variant")
             _locals["gene"] = _G_apply_30
             self._trace("", (1128, 1132), self.input.position)
@@ -173,9 +153,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             self.considerError(lastError, "n_variant")
             _locals["ac"] = _G_apply_36
             self._trace("", (1269, 1283), self.input.position)
-            _G_apply_37, lastError = self._apply(
-                self.rule_opt_gene_expr, "opt_gene_expr", []
-            )
+            _G_apply_37, lastError = self._apply(self.rule_opt_gene_expr, "opt_gene_expr", [])
             self.considerError(lastError, "n_variant")
             _locals["gene"] = _G_apply_37
             self._trace("", (1288, 1292), self.input.position)
@@ -204,9 +182,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             self.considerError(lastError, "p_variant")
             _locals["ac"] = _G_apply_43
             self._trace("", (1429, 1443), self.input.position)
-            _G_apply_44, lastError = self._apply(
-                self.rule_opt_gene_expr, "opt_gene_expr", []
-            )
+            _G_apply_44, lastError = self._apply(self.rule_opt_gene_expr, "opt_gene_expr", [])
             self.considerError(lastError, "p_variant")
             _locals["gene"] = _G_apply_44
             self._trace("", (1448, 1452), self.input.position)
@@ -235,9 +211,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             self.considerError(lastError, "r_variant")
             _locals["ac"] = _G_apply_50
             self._trace("", (1589, 1603), self.input.position)
-            _G_apply_51, lastError = self._apply(
-                self.rule_opt_gene_expr, "opt_gene_expr", []
-            )
+            _G_apply_51, lastError = self._apply(self.rule_opt_gene_expr, "opt_gene_expr", [])
             self.considerError(lastError, "r_variant")
             _locals["gene"] = _G_apply_51
             self._trace("", (1608, 1612), self.input.position)
@@ -310,9 +284,14 @@ def createParserClass(GrammarBase, ruleGlobals):
                 self.considerError(lastError, None)
                 return (_G_apply_68, self.currentError)
 
-            _G_or_69, lastError = self._or(
-                [_G_or_57, _G_or_59, _G_or_61, _G_or_63, _G_or_65, _G_or_67]
-            )
+            _G_or_69, lastError = self._or([
+                _G_or_57,
+                _G_or_59,
+                _G_or_61,
+                _G_or_63,
+                _G_or_65,
+                _G_or_67,
+            ])
             self.considerError(lastError, "hgvs_position")
             return (_G_or_69, self.currentError)
 
@@ -324,9 +303,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             self.considerError(lastError, "c_hgvs_position")
             _locals["ac"] = _G_apply_70
             self._trace("", (2052, 2066), self.input.position)
-            _G_apply_71, lastError = self._apply(
-                self.rule_opt_gene_expr, "opt_gene_expr", []
-            )
+            _G_apply_71, lastError = self._apply(self.rule_opt_gene_expr, "opt_gene_expr", [])
             self.considerError(lastError, "c_hgvs_position")
             _locals["gene"] = _G_apply_71
             self._trace("", (2071, 2075), self.input.position)
@@ -355,9 +332,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             self.considerError(lastError, "g_hgvs_position")
             _locals["ac"] = _G_apply_78
             self._trace("", (2201, 2215), self.input.position)
-            _G_apply_79, lastError = self._apply(
-                self.rule_opt_gene_expr, "opt_gene_expr", []
-            )
+            _G_apply_79, lastError = self._apply(self.rule_opt_gene_expr, "opt_gene_expr", [])
             self.considerError(lastError, "g_hgvs_position")
             _locals["gene"] = _G_apply_79
             self._trace("", (2220, 2224), self.input.position)
@@ -386,9 +361,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             self.considerError(lastError, "m_hgvs_position")
             _locals["ac"] = _G_apply_85
             self._trace("", (2350, 2364), self.input.position)
-            _G_apply_86, lastError = self._apply(
-                self.rule_opt_gene_expr, "opt_gene_expr", []
-            )
+            _G_apply_86, lastError = self._apply(self.rule_opt_gene_expr, "opt_gene_expr", [])
             self.considerError(lastError, "m_hgvs_position")
             _locals["gene"] = _G_apply_86
             self._trace("", (2369, 2373), self.input.position)
@@ -417,9 +390,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             self.considerError(lastError, "n_hgvs_position")
             _locals["ac"] = _G_apply_92
             self._trace("", (2499, 2513), self.input.position)
-            _G_apply_93, lastError = self._apply(
-                self.rule_opt_gene_expr, "opt_gene_expr", []
-            )
+            _G_apply_93, lastError = self._apply(self.rule_opt_gene_expr, "opt_gene_expr", [])
             self.considerError(lastError, "n_hgvs_position")
             _locals["gene"] = _G_apply_93
             self._trace("", (2518, 2522), self.input.position)
@@ -448,9 +419,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             self.considerError(lastError, "p_hgvs_position")
             _locals["ac"] = _G_apply_99
             self._trace("", (2648, 2662), self.input.position)
-            _G_apply_100, lastError = self._apply(
-                self.rule_opt_gene_expr, "opt_gene_expr", []
-            )
+            _G_apply_100, lastError = self._apply(self.rule_opt_gene_expr, "opt_gene_expr", [])
             self.considerError(lastError, "p_hgvs_position")
             _locals["gene"] = _G_apply_100
             self._trace("", (2667, 2671), self.input.position)
@@ -464,9 +433,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             _G_exactly_103, lastError = self.exactly(".")
             self.considerError(lastError, "p_hgvs_position")
             self._trace("", (2684, 2695), self.input.position)
-            _G_apply_104, lastError = self._apply(
-                self.rule_p_interval, "p_interval", []
-            )
+            _G_apply_104, lastError = self._apply(self.rule_p_interval, "p_interval", [])
             self.considerError(lastError, "p_hgvs_position")
             _locals["pos"] = _G_apply_104
             _G_python_105, lastError = (
@@ -484,9 +451,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             self.considerError(lastError, "r_hgvs_position")
             _locals["ac"] = _G_apply_106
             self._trace("", (2797, 2811), self.input.position)
-            _G_apply_107, lastError = self._apply(
-                self.rule_opt_gene_expr, "opt_gene_expr", []
-            )
+            _G_apply_107, lastError = self._apply(self.rule_opt_gene_expr, "opt_gene_expr", [])
             self.considerError(lastError, "r_hgvs_position")
             _locals["gene"] = _G_apply_107
             self._trace("", (2816, 2820), self.input.position)
@@ -500,9 +465,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             _G_exactly_110, lastError = self.exactly(".")
             self.considerError(lastError, "r_hgvs_position")
             self._trace("", (2833, 2844), self.input.position)
-            _G_apply_111, lastError = self._apply(
-                self.rule_r_interval, "r_interval", []
-            )
+            _G_apply_111, lastError = self._apply(self.rule_r_interval, "r_interval", [])
             self.considerError(lastError, "r_hgvs_position")
             _locals["pos"] = _G_apply_111
             _G_python_112, lastError = (
@@ -642,9 +605,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             _locals = {"self": self}
             self.locals["c_posedit"] = _locals
             self._trace("", (4009, 4020), self.input.position)
-            _G_apply_138, lastError = self._apply(
-                self.rule_c_interval, "c_interval", []
-            )
+            _G_apply_138, lastError = self._apply(self.rule_c_interval, "c_interval", [])
             self.considerError(lastError, "c_posedit")
             _locals["pos"] = _G_apply_138
             self._trace("", (4024, 4033), self.input.position)
@@ -662,9 +623,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             _locals = {"self": self}
             self.locals["g_posedit"] = _locals
             self._trace("", (4093, 4104), self.input.position)
-            _G_apply_142, lastError = self._apply(
-                self.rule_g_interval, "g_interval", []
-            )
+            _G_apply_142, lastError = self._apply(self.rule_g_interval, "g_interval", [])
             self.considerError(lastError, "g_posedit")
             _locals["pos"] = _G_apply_142
             self._trace("", (4108, 4117), self.input.position)
@@ -682,9 +641,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             _locals = {"self": self}
             self.locals["m_posedit"] = _locals
             self._trace("", (4177, 4188), self.input.position)
-            _G_apply_145, lastError = self._apply(
-                self.rule_m_interval, "m_interval", []
-            )
+            _G_apply_145, lastError = self._apply(self.rule_m_interval, "m_interval", [])
             self.considerError(lastError, "m_posedit")
             _locals["pos"] = _G_apply_145
             self._trace("", (4192, 4201), self.input.position)
@@ -702,9 +659,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             _locals = {"self": self}
             self.locals["n_posedit"] = _locals
             self._trace("", (4261, 4272), self.input.position)
-            _G_apply_148, lastError = self._apply(
-                self.rule_n_interval, "n_interval", []
-            )
+            _G_apply_148, lastError = self._apply(self.rule_n_interval, "n_interval", [])
             self.considerError(lastError, "n_posedit")
             _locals["pos"] = _G_apply_148
             self._trace("", (4276, 4285), self.input.position)
@@ -724,15 +679,11 @@ def createParserClass(GrammarBase, ruleGlobals):
 
             def _G_or_151():
                 self._trace("", (4347, 4357), self.input.position)
-                _G_apply_152, lastError = self._apply(
-                    self.rule_r_interval, "r_interval", []
-                )
+                _G_apply_152, lastError = self._apply(self.rule_r_interval, "r_interval", [])
                 self.considerError(lastError, None)
                 _locals["pos"] = _G_apply_152
                 self._trace("", (4361, 4370), self.input.position)
-                _G_apply_153, lastError = self._apply(
-                    self.rule_rna_edit, "rna_edit", []
-                )
+                _G_apply_153, lastError = self._apply(self.rule_rna_edit, "rna_edit", [])
                 self.considerError(lastError, None)
                 _locals["edit"] = _G_apply_153
                 _G_python_154, lastError = (
@@ -747,15 +698,11 @@ def createParserClass(GrammarBase, ruleGlobals):
                 _G_exactly_156, lastError = self.exactly("(")
                 self.considerError(lastError, None)
                 self._trace("", (4429, 4440), self.input.position)
-                _G_apply_157, lastError = self._apply(
-                    self.rule_r_interval, "r_interval", []
-                )
+                _G_apply_157, lastError = self._apply(self.rule_r_interval, "r_interval", [])
                 self.considerError(lastError, None)
                 _locals["pos"] = _G_apply_157
                 self._trace("", (4444, 4453), self.input.position)
-                _G_apply_158, lastError = self._apply(
-                    self.rule_rna_edit, "rna_edit", []
-                )
+                _G_apply_158, lastError = self._apply(self.rule_rna_edit, "rna_edit", [])
                 self.considerError(lastError, None)
                 _locals["edit"] = _G_apply_158
                 self._trace("", (4458, 4462), self.input.position)
@@ -778,15 +725,11 @@ def createParserClass(GrammarBase, ruleGlobals):
 
             def _G_or_163():
                 self._trace("", (4539, 4549), self.input.position)
-                _G_apply_164, lastError = self._apply(
-                    self.rule_p_interval, "p_interval", []
-                )
+                _G_apply_164, lastError = self._apply(self.rule_p_interval, "p_interval", [])
                 self.considerError(lastError, None)
                 _locals["pos"] = _G_apply_164
                 self._trace("", (4553, 4562), self.input.position)
-                _G_apply_165, lastError = self._apply(
-                    self.rule_pro_edit, "pro_edit", []
-                )
+                _G_apply_165, lastError = self._apply(self.rule_pro_edit, "pro_edit", [])
                 self.considerError(lastError, None)
                 _locals["edit"] = _G_apply_165
                 _G_python_166, lastError = (
@@ -801,15 +744,11 @@ def createParserClass(GrammarBase, ruleGlobals):
                 _G_exactly_168, lastError = self.exactly("(")
                 self.considerError(lastError, None)
                 self._trace("", (4621, 4632), self.input.position)
-                _G_apply_169, lastError = self._apply(
-                    self.rule_p_interval, "p_interval", []
-                )
+                _G_apply_169, lastError = self._apply(self.rule_p_interval, "p_interval", [])
                 self.considerError(lastError, None)
                 _locals["pos"] = _G_apply_169
                 self._trace("", (4636, 4645), self.input.position)
-                _G_apply_170, lastError = self._apply(
-                    self.rule_pro_edit, "pro_edit", []
-                )
+                _G_apply_170, lastError = self._apply(self.rule_pro_edit, "pro_edit", [])
                 self.considerError(lastError, None)
                 _locals["edit"] = _G_apply_170
                 self._trace("", (4650, 4654), self.input.position)
@@ -904,9 +843,7 @@ def createParserClass(GrammarBase, ruleGlobals):
                 self.considerError(lastError, None)
                 return (_G_python_195, self.currentError)
 
-            _G_or_196, lastError = self._or(
-                [_G_or_176, _G_or_180, _G_or_186, _G_or_190, _G_or_193]
-            )
+            _G_or_196, lastError = self._or([_G_or_176, _G_or_180, _G_or_186, _G_or_190, _G_or_193])
             self.considerError(lastError, "p_posedit_special")
             return (_G_or_196, self.currentError)
 
@@ -916,9 +853,7 @@ def createParserClass(GrammarBase, ruleGlobals):
 
             def _G_or_197():
                 self._trace("", (5392, 5401), self.input.position)
-                _G_apply_198, lastError = self._apply(
-                    self.rule_dna_edit, "dna_edit", []
-                )
+                _G_apply_198, lastError = self._apply(self.rule_dna_edit, "dna_edit", [])
                 self.considerError(lastError, None)
                 return (_G_apply_198, self.currentError)
 
@@ -927,9 +862,7 @@ def createParserClass(GrammarBase, ruleGlobals):
                 _G_exactly_200, lastError = self.exactly("(")
                 self.considerError(lastError, None)
                 self._trace("", (5407, 5416), self.input.position)
-                _G_apply_201, lastError = self._apply(
-                    self.rule_dna_edit, "dna_edit", []
-                )
+                _G_apply_201, lastError = self._apply(self.rule_dna_edit, "dna_edit", [])
                 self.considerError(lastError, None)
                 _locals["edit"] = _G_apply_201
                 self._trace("", (5421, 5425), self.input.position)
@@ -952,25 +885,19 @@ def createParserClass(GrammarBase, ruleGlobals):
 
             def _G_or_206():
                 self._trace("", (5463, 5473), self.input.position)
-                _G_apply_207, lastError = self._apply(
-                    self.rule_dna_ident, "dna_ident", []
-                )
+                _G_apply_207, lastError = self._apply(self.rule_dna_ident, "dna_ident", [])
                 self.considerError(lastError, None)
                 return (_G_apply_207, self.currentError)
 
             def _G_or_208():
                 self._trace("", (5475, 5485), self.input.position)
-                _G_apply_209, lastError = self._apply(
-                    self.rule_dna_subst, "dna_subst", []
-                )
+                _G_apply_209, lastError = self._apply(self.rule_dna_subst, "dna_subst", [])
                 self.considerError(lastError, None)
                 return (_G_apply_209, self.currentError)
 
             def _G_or_210():
                 self._trace("", (5487, 5498), self.input.position)
-                _G_apply_211, lastError = self._apply(
-                    self.rule_dna_delins, "dna_delins", []
-                )
+                _G_apply_211, lastError = self._apply(self.rule_dna_delins, "dna_delins", [])
                 self.considerError(lastError, None)
                 return (_G_apply_211, self.currentError)
 
@@ -1006,25 +933,21 @@ def createParserClass(GrammarBase, ruleGlobals):
 
             def _G_or_222():
                 self._trace("", (5550, 5559), self.input.position)
-                _G_apply_223, lastError = self._apply(
-                    self.rule_dna_copy, "dna_copy", []
-                )
+                _G_apply_223, lastError = self._apply(self.rule_dna_copy, "dna_copy", [])
                 self.considerError(lastError, None)
                 return (_G_apply_223, self.currentError)
 
-            _G_or_224, lastError = self._or(
-                [
-                    _G_or_206,
-                    _G_or_208,
-                    _G_or_210,
-                    _G_or_212,
-                    _G_or_214,
-                    _G_or_216,
-                    _G_or_218,
-                    _G_or_220,
-                    _G_or_222,
-                ]
-            )
+            _G_or_224, lastError = self._or([
+                _G_or_206,
+                _G_or_208,
+                _G_or_210,
+                _G_or_212,
+                _G_or_214,
+                _G_or_216,
+                _G_or_218,
+                _G_or_220,
+                _G_or_222,
+            ])
             self.considerError(lastError, "dna_edit")
             return (_G_or_224, self.currentError)
 
@@ -1290,9 +1213,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             _G_exactly_301, lastError = self.exactly("con")
             self.considerError(lastError, "dna_con")
             self._trace("", (6112, 6126), self.input.position)
-            _G_apply_302, lastError = self._apply(
-                self.rule_hgvs_position, "hgvs_position", []
-            )
+            _G_apply_302, lastError = self._apply(self.rule_hgvs_position, "hgvs_position", [])
             self.considerError(lastError, "dna_con")
             _locals["pos"] = _G_apply_302
             _G_python_304, lastError = (
@@ -1325,9 +1246,7 @@ def createParserClass(GrammarBase, ruleGlobals):
 
             def _G_or_309():
                 self._trace("", (6272, 6281), self.input.position)
-                _G_apply_310, lastError = self._apply(
-                    self.rule_rna_edit, "rna_edit", []
-                )
+                _G_apply_310, lastError = self._apply(self.rule_rna_edit, "rna_edit", [])
                 self.considerError(lastError, None)
                 return (_G_apply_310, self.currentError)
 
@@ -1336,9 +1255,7 @@ def createParserClass(GrammarBase, ruleGlobals):
                 _G_exactly_312, lastError = self.exactly("(")
                 self.considerError(lastError, None)
                 self._trace("", (6287, 6296), self.input.position)
-                _G_apply_313, lastError = self._apply(
-                    self.rule_rna_edit, "rna_edit", []
-                )
+                _G_apply_313, lastError = self._apply(self.rule_rna_edit, "rna_edit", [])
                 self.considerError(lastError, None)
                 _locals["edit"] = _G_apply_313
                 self._trace("", (6301, 6305), self.input.position)
@@ -1361,25 +1278,19 @@ def createParserClass(GrammarBase, ruleGlobals):
 
             def _G_or_317():
                 self._trace("", (6343, 6353), self.input.position)
-                _G_apply_318, lastError = self._apply(
-                    self.rule_rna_ident, "rna_ident", []
-                )
+                _G_apply_318, lastError = self._apply(self.rule_rna_ident, "rna_ident", [])
                 self.considerError(lastError, None)
                 return (_G_apply_318, self.currentError)
 
             def _G_or_319():
                 self._trace("", (6355, 6365), self.input.position)
-                _G_apply_320, lastError = self._apply(
-                    self.rule_rna_subst, "rna_subst", []
-                )
+                _G_apply_320, lastError = self._apply(self.rule_rna_subst, "rna_subst", [])
                 self.considerError(lastError, None)
                 return (_G_apply_320, self.currentError)
 
             def _G_or_321():
                 self._trace("", (6367, 6378), self.input.position)
-                _G_apply_322, lastError = self._apply(
-                    self.rule_rna_delins, "rna_delins", []
-                )
+                _G_apply_322, lastError = self._apply(self.rule_rna_delins, "rna_delins", [])
                 self.considerError(lastError, None)
                 return (_G_apply_322, self.currentError)
 
@@ -1413,18 +1324,16 @@ def createParserClass(GrammarBase, ruleGlobals):
                 self.considerError(lastError, None)
                 return (_G_apply_332, self.currentError)
 
-            _G_or_333, lastError = self._or(
-                [
-                    _G_or_317,
-                    _G_or_319,
-                    _G_or_321,
-                    _G_or_323,
-                    _G_or_325,
-                    _G_or_327,
-                    _G_or_329,
-                    _G_or_331,
-                ]
-            )
+            _G_or_333, lastError = self._or([
+                _G_or_317,
+                _G_or_319,
+                _G_or_321,
+                _G_or_323,
+                _G_or_325,
+                _G_or_327,
+                _G_or_329,
+                _G_or_331,
+            ])
             self.considerError(lastError, "rna_edit")
             return (_G_or_333, self.currentError)
 
@@ -1690,9 +1599,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             _G_exactly_404, lastError = self.exactly("con")
             self.considerError(lastError, "rna_con")
             self._trace("", (7023, 7037), self.input.position)
-            _G_apply_405, lastError = self._apply(
-                self.rule_hgvs_position, "hgvs_position", []
-            )
+            _G_apply_405, lastError = self._apply(self.rule_hgvs_position, "hgvs_position", [])
             self.considerError(lastError, "rna_con")
             _locals["pos"] = _G_apply_405
             _G_python_406, lastError = (
@@ -1708,9 +1615,7 @@ def createParserClass(GrammarBase, ruleGlobals):
 
             def _G_or_407():
                 self._trace("", (7136, 7145), self.input.position)
-                _G_apply_408, lastError = self._apply(
-                    self.rule_pro_edit, "pro_edit", []
-                )
+                _G_apply_408, lastError = self._apply(self.rule_pro_edit, "pro_edit", [])
                 self.considerError(lastError, None)
                 return (_G_apply_408, self.currentError)
 
@@ -1719,9 +1624,7 @@ def createParserClass(GrammarBase, ruleGlobals):
                 _G_exactly_410, lastError = self.exactly("(")
                 self.considerError(lastError, None)
                 self._trace("", (7151, 7160), self.input.position)
-                _G_apply_411, lastError = self._apply(
-                    self.rule_pro_edit, "pro_edit", []
-                )
+                _G_apply_411, lastError = self._apply(self.rule_pro_edit, "pro_edit", [])
                 self.considerError(lastError, None)
                 _locals["edit"] = _G_apply_411
                 self._trace("", (7165, 7169), self.input.position)
@@ -1756,17 +1659,13 @@ def createParserClass(GrammarBase, ruleGlobals):
 
             def _G_or_419():
                 self._trace("", (7226, 7236), self.input.position)
-                _G_apply_420, lastError = self._apply(
-                    self.rule_pro_subst, "pro_subst", []
-                )
+                _G_apply_420, lastError = self._apply(self.rule_pro_subst, "pro_subst", [])
                 self.considerError(lastError, None)
                 return (_G_apply_420, self.currentError)
 
             def _G_or_421():
                 self._trace("", (7238, 7249), self.input.position)
-                _G_apply_422, lastError = self._apply(
-                    self.rule_pro_delins, "pro_delins", []
-                )
+                _G_apply_422, lastError = self._apply(self.rule_pro_delins, "pro_delins", [])
                 self.considerError(lastError, None)
                 return (_G_apply_422, self.currentError)
 
@@ -1790,24 +1689,20 @@ def createParserClass(GrammarBase, ruleGlobals):
 
             def _G_or_429():
                 self._trace("", (7281, 7291), self.input.position)
-                _G_apply_430, lastError = self._apply(
-                    self.rule_pro_ident, "pro_ident", []
-                )
+                _G_apply_430, lastError = self._apply(self.rule_pro_ident, "pro_ident", [])
                 self.considerError(lastError, None)
                 return (_G_apply_430, self.currentError)
 
-            _G_or_431, lastError = self._or(
-                [
-                    _G_or_415,
-                    _G_or_417,
-                    _G_or_419,
-                    _G_or_421,
-                    _G_or_423,
-                    _G_or_425,
-                    _G_or_427,
-                    _G_or_429,
-                ]
-            )
+            _G_or_431, lastError = self._or([
+                _G_or_415,
+                _G_or_417,
+                _G_or_419,
+                _G_or_421,
+                _G_or_423,
+                _G_or_425,
+                _G_or_427,
+                _G_or_429,
+            ])
             self.considerError(lastError, "pro_edit")
             return (_G_or_431, self.currentError)
 
@@ -2523,9 +2418,7 @@ def createParserClass(GrammarBase, ruleGlobals):
                 self.considerError(lastError, None)
                 return (_G_python_605, self.currentError)
 
-            _G_or_606, lastError = self._or(
-                [_G_or_575, _G_or_585, _G_or_593, _G_or_601]
-            )
+            _G_or_606, lastError = self._or([_G_or_575, _G_or_585, _G_or_593, _G_or_601])
             self.considerError(lastError, "uncertain_g_interval")
             return (_G_or_606, self.currentError)
 
@@ -2779,9 +2672,7 @@ def createParserClass(GrammarBase, ruleGlobals):
 
             def _G_or_664():
                 self._trace("", (11598, 11606), self.input.position)
-                _G_apply_665, lastError = self._apply(
-                    self.rule_aa13_ext, "aa13_ext", []
-                )
+                _G_apply_665, lastError = self._apply(self.rule_aa13_ext, "aa13_ext", [])
                 self.considerError(lastError, None)
                 return (_G_apply_665, self.currentError)
 
@@ -2808,9 +2699,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             _G_apply_671, lastError = self._apply(self.rule_term13, "term13", [])
             self.considerError(lastError, "aa13_fs")
             self._trace("", (11663, 11676), self.input.position)
-            _G_apply_672, lastError = self._apply(
-                self.rule_fsext_offset, "fsext_offset", []
-            )
+            _G_apply_672, lastError = self._apply(self.rule_fsext_offset, "fsext_offset", [])
             self.considerError(lastError, "aa13_fs")
             _locals["n"] = _G_apply_672
             _G_python_673, lastError = (
@@ -2830,9 +2719,7 @@ def createParserClass(GrammarBase, ruleGlobals):
                 self.considerError(lastError, None)
                 _locals["aat"] = _G_apply_675
                 self._trace("", (11705, 11718), self.input.position)
-                _G_apply_676, lastError = self._apply(
-                    self.rule_fsext_offset, "fsext_offset", []
-                )
+                _G_apply_676, lastError = self._apply(self.rule_fsext_offset, "fsext_offset", [])
                 self.considerError(lastError, None)
                 _locals["n"] = _G_apply_676
                 _G_python_677, lastError = (
@@ -2942,9 +2829,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             def _G_or_704():
                 def _G_consumedby_705():
                     self._trace("", (11889, 11897), self.input.position)
-                    _G_apply_706, lastError = self._apply(
-                        self.rule_aat3_seq, "aat3_seq", []
-                    )
+                    _G_apply_706, lastError = self._apply(self.rule_aat3_seq, "aat3_seq", [])
                     self.considerError(lastError, None)
                     return (_G_apply_706, self.currentError)
 
@@ -2955,9 +2840,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             def _G_or_708():
                 def _G_consumedby_709():
                     self._trace("", (11902, 11910), self.input.position)
-                    _G_apply_710, lastError = self._apply(
-                        self.rule_aat1_seq, "aat1_seq", []
-                    )
+                    _G_apply_710, lastError = self._apply(self.rule_aat1_seq, "aat1_seq", [])
                     self.considerError(lastError, None)
                     return (_G_apply_710, self.currentError)
 
@@ -2997,9 +2880,7 @@ def createParserClass(GrammarBase, ruleGlobals):
 
                     def _G_optional_722():
                         self._trace("", (11938, 11944), self.input.position)
-                        _G_apply_723, lastError = self._apply(
-                            self.rule_term1, "term1", []
-                        )
+                        _G_apply_723, lastError = self._apply(self.rule_term1, "term1", [])
                         self.considerError(lastError, None)
                         return (_G_apply_723, self.currentError)
 
@@ -3046,9 +2927,7 @@ def createParserClass(GrammarBase, ruleGlobals):
 
                     def _G_optional_737():
                         self._trace("", (11973, 11979), self.input.position)
-                        _G_apply_738, lastError = self._apply(
-                            self.rule_term3, "term3", []
-                        )
+                        _G_apply_738, lastError = self._apply(self.rule_term3, "term3", [])
                         self.considerError(lastError, None)
                         return (_G_apply_738, self.currentError)
 
@@ -3074,9 +2953,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             def _G_or_743():
                 def _G_consumedby_744():
                     self._trace("", (11994, 12001), self.input.position)
-                    _G_apply_745, lastError = self._apply(
-                        self.rule_aa3_seq, "aa3_seq", []
-                    )
+                    _G_apply_745, lastError = self._apply(self.rule_aa3_seq, "aa3_seq", [])
                     self.considerError(lastError, None)
                     return (_G_apply_745, self.currentError)
 
@@ -3087,9 +2964,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             def _G_or_747():
                 def _G_consumedby_748():
                     self._trace("", (12006, 12013), self.input.position)
-                    _G_apply_749, lastError = self._apply(
-                        self.rule_aa1_seq, "aa1_seq", []
-                    )
+                    _G_apply_749, lastError = self._apply(self.rule_aa1_seq, "aa1_seq", [])
                     self.considerError(lastError, None)
                     return (_G_apply_749, self.currentError)
 
@@ -3331,34 +3206,32 @@ def createParserClass(GrammarBase, ruleGlobals):
                 self.considerError(lastError, None)
                 return (_G_exactly_821, self.currentError)
 
-            _G_or_822, lastError = self._or(
-                [
-                    _G_or_774,
-                    _G_or_776,
-                    _G_or_778,
-                    _G_or_780,
-                    _G_or_782,
-                    _G_or_784,
-                    _G_or_786,
-                    _G_or_788,
-                    _G_or_790,
-                    _G_or_792,
-                    _G_or_794,
-                    _G_or_796,
-                    _G_or_798,
-                    _G_or_800,
-                    _G_or_802,
-                    _G_or_804,
-                    _G_or_806,
-                    _G_or_808,
-                    _G_or_810,
-                    _G_or_812,
-                    _G_or_814,
-                    _G_or_816,
-                    _G_or_818,
-                    _G_or_820,
-                ]
-            )
+            _G_or_822, lastError = self._or([
+                _G_or_774,
+                _G_or_776,
+                _G_or_778,
+                _G_or_780,
+                _G_or_782,
+                _G_or_784,
+                _G_or_786,
+                _G_or_788,
+                _G_or_790,
+                _G_or_792,
+                _G_or_794,
+                _G_or_796,
+                _G_or_798,
+                _G_or_800,
+                _G_or_802,
+                _G_or_804,
+                _G_or_806,
+                _G_or_808,
+                _G_or_810,
+                _G_or_812,
+                _G_or_814,
+                _G_or_816,
+                _G_or_818,
+                _G_or_820,
+            ])
             self.considerError(lastError, "aa3")
             return (_G_or_822, self.currentError)
 
@@ -3735,9 +3608,7 @@ def createParserClass(GrammarBase, ruleGlobals):
                                 self.considerError(lastError, None)
                                 return (_G_apply_915, self.currentError)
 
-                            _G_lookahead_916, lastError = self.lookahead(
-                                _G_lookahead_914
-                            )
+                            _G_lookahead_916, lastError = self.lookahead(_G_lookahead_914)
                             self.considerError(lastError, None)
                             return (_G_lookahead_916, self.currentError)
 
@@ -3762,9 +3633,7 @@ def createParserClass(GrammarBase, ruleGlobals):
 
                     def _G_many1_923():
                         self._trace("", (13008, 13014), self.input.position)
-                        _G_apply_924, lastError = self._apply(
-                            self.rule_digit, "digit", []
-                        )
+                        _G_apply_924, lastError = self._apply(self.rule_digit, "digit", [])
                         self.considerError(lastError, None)
                         return (_G_apply_924, self.currentError)
 
@@ -3789,9 +3658,7 @@ def createParserClass(GrammarBase, ruleGlobals):
 
             def _G_or_929():
                 self._trace("", (13036, 13046), self.input.position)
-                _G_apply_930, lastError = self._apply(
-                    self.rule_paren_gene, "paren_gene", []
-                )
+                _G_apply_930, lastError = self._apply(self.rule_paren_gene, "paren_gene", [])
                 self.considerError(lastError, None)
                 return (_G_apply_930, self.currentError)
 
@@ -3817,9 +3684,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             _G_exactly_936, lastError = self.exactly("(")
             self.considerError(lastError, "paren_gene")
             self._trace("", (13086, 13098), self.input.position)
-            _G_apply_937, lastError = self._apply(
-                self.rule_gene_symbol, "gene_symbol", []
-            )
+            _G_apply_937, lastError = self._apply(self.rule_gene_symbol, "gene_symbol", [])
             self.considerError(lastError, "paren_gene")
             _locals["symbol"] = _G_apply_937
             self._trace("", (13105, 13109), self.input.position)
@@ -3905,9 +3770,7 @@ def createParserClass(GrammarBase, ruleGlobals):
             "<string>",
             "eval",
         )
-        _G_expr_140 = compile(
-            "hgvs.posedit.PosEdit(pos=pos,edit=edit)", "<string>", "eval"
-        )
+        _G_expr_140 = compile("hgvs.posedit.PosEdit(pos=pos,edit=edit)", "<string>", "eval")
         _G_expr_160 = compile(
             "hgvs.posedit.PosEdit(pos=pos,edit=edit, uncertain=True)",
             "<string>",
@@ -3922,12 +3785,8 @@ def createParserClass(GrammarBase, ruleGlobals):
         _G_expr_203 = compile("edit._set_uncertain()", "<string>", "eval")
         _G_expr_231 = compile("hgvs.edit.NARefAlt(ref=ref,alt=ref)", "<string>", "eval")
         _G_expr_236 = compile("hgvs.edit.NARefAlt(ref=ref,alt=alt)", "<string>", "eval")
-        _G_expr_269 = compile(
-            "hgvs.edit.NARefAlt(ref=ref,alt=None)", "<string>", "eval"
-        )
-        _G_expr_277 = compile(
-            "hgvs.edit.NARefAlt(ref=None,alt=alt)", "<string>", "eval"
-        )
+        _G_expr_269 = compile("hgvs.edit.NARefAlt(ref=ref,alt=None)", "<string>", "eval")
+        _G_expr_277 = compile("hgvs.edit.NARefAlt(ref=None,alt=alt)", "<string>", "eval")
         _G_expr_285 = compile("hgvs.edit.Dup(ref=ref)", "<string>", "eval")
         _G_expr_299 = compile("hgvs.edit.Inv(ref=None)", "<string>", "eval")
         _G_expr_303 = compile(
@@ -3939,13 +3798,9 @@ def createParserClass(GrammarBase, ruleGlobals):
         _G_expr_437 = compile("hgvs.edit.AASub(ref='',alt=alt)", "<string>", "eval")
         _G_expr_441 = compile("hgvs.edit.AARefAlt(ref='',alt=alt)", "<string>", "eval")
         _G_expr_444 = compile("hgvs.edit.AARefAlt(ref='',alt=None)", "<string>", "eval")
-        _G_expr_448 = compile(
-            "hgvs.edit.AARefAlt(ref=None,alt=alt)", "<string>", "eval"
-        )
+        _G_expr_448 = compile("hgvs.edit.AARefAlt(ref=None,alt=alt)", "<string>", "eval")
         _G_expr_451 = compile("hgvs.edit.Dup(ref='')", "<string>", "eval")
-        _G_expr_459 = compile(
-            "hgvs.edit.AAFs(ref='', alt=alt, length=length)", "<string>", "eval"
-        )
+        _G_expr_459 = compile("hgvs.edit.AAFs(ref='', alt=alt, length=length)", "<string>", "eval")
         _G_expr_466 = compile(
             "hgvs.edit.AAExt(ref='', alt=alt, aaterm=aaterm, length=length)",
             "<string>",
@@ -3955,12 +3810,8 @@ def createParserClass(GrammarBase, ruleGlobals):
         _G_expr_477 = compile("iv._set_uncertain()", "<string>", "eval")
         _G_expr_521 = compile("hgvs.location.Interval(start,end)", "<string>", "eval")
         _G_expr_525 = compile("hgvs.location.Interval(start,None)", "<string>", "eval")
-        _G_expr_559 = compile(
-            "hgvs.location.BaseOffsetInterval(start,end)", "<string>", "eval"
-        )
-        _G_expr_563 = compile(
-            "hgvs.location.BaseOffsetInterval(start,None)", "<string>", "eval"
-        )
+        _G_expr_559 = compile("hgvs.location.BaseOffsetInterval(start,end)", "<string>", "eval")
+        _G_expr_563 = compile("hgvs.location.BaseOffsetInterval(start,None)", "<string>", "eval")
         _G_expr_583 = compile(
             "hgvs.location.Interval(start=iv_start._set_uncertain(), end=iv_end._set_uncertain())",
             "<string>",
@@ -4001,15 +3852,9 @@ def createParserClass(GrammarBase, ruleGlobals):
         _G_expr_669 = compile("(aat, n)", "<string>", "eval")
         _G_expr_764 = compile("x in 'ACDEFGHIKLMNPQRSTVWYBZXU'", "<string>", "eval")
         _G_expr_767 = compile("x", "<string>", "eval")
-        _G_expr_841 = compile(
-            "x in 'ACGTRYMKWSBDHVNacgtrymkwsbdhvn'", "<string>", "eval"
-        )
-        _G_expr_847 = compile(
-            "x in 'ACGTURYMKWSBDHVNacgturymkwsbdhvn'", "<string>", "eval"
-        )
-        _G_expr_854 = compile(
-            "x in 'ACGURYMKWSBDHVNacgurymkwsbdhvn'", "<string>", "eval"
-        )
+        _G_expr_841 = compile("x in 'ACGTRYMKWSBDHVNacgtrymkwsbdhvn'", "<string>", "eval")
+        _G_expr_847 = compile("x in 'ACGTURYMKWSBDHVNacgturymkwsbdhvn'", "<string>", "eval")
+        _G_expr_854 = compile("x in 'ACGURYMKWSBDHVNacgurymkwsbdhvn'", "<string>", "eval")
         _G_expr_860 = compile("x in 'X*'", "<string>", "eval")
         _G_expr_875 = compile("int(x)", "<string>", "eval")
         _G_expr_890 = compile("x in '-+'", "<string>", "eval")
