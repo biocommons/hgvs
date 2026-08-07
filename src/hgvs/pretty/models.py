@@ -1,11 +1,10 @@
 from dataclasses import dataclass
-from typing import List
 
 from hgvs.alignmentmapper import AlignmentMapper
 from hgvs.assemblymapper import AssemblyMapper
+from hgvs.dataproviders.interface import Interface
 from hgvs.location import Interval
 from hgvs.sequencevariant import SequenceVariant
-from hgvs.dataproviders.interface import Interface
 
 
 @dataclass(eq=True, repr=True, frozen=True, order=True)
@@ -34,9 +33,7 @@ class ProteinData:
         return "c_pos\ttlc\taa_char\tc_pos\taa_pos"
 
     def __repr__(self) -> str:
-        return (
-            f"{self.c_pos}\t{self.tlc}\t{self.aa_char}\t{self.c_pos % 3}\t{self.aa_pos}"
-        )
+        return f"{self.c_pos}\t{self.tlc}\t{self.aa_char}\t{self.c_pos % 3}\t{self.aa_pos}"
 
 
 @dataclass(eq=True, frozen=False, order=True)
@@ -109,7 +106,7 @@ class VariantData:
     strand: int
     var_c_or_n: SequenceVariant = None
     var_p: SequenceVariant = None
-    position_details: List[PositionDetail] = None
+    position_details: list[PositionDetail] = None
     all: bool = False
     is_rna: bool = False
 
@@ -127,8 +124,6 @@ class PrettyConfig:
     show_all_shuffleable_regions = False
     infer_hgvs_c: bool = True
     all: bool = False  # print all possible hgvs_c (for all UTA transcripts)
-    show_reverse_strand: bool = (
-        False  # show the reverse strand sequence for the chromosome
-    )
+    show_reverse_strand: bool = False  # show the reverse strand sequence for the chromosome
     alt_aln_method: str = "splign"
     reverse_display: bool = True  # display reverse strand as the main strand (5'->3')

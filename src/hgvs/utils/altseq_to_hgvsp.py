@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Utility class for creating an hgvsp SequenceVariant object,
 given a transcript with variants applied.
 Used in hgvsc to hgvsp conversion.
@@ -36,13 +35,11 @@ class AltSeqToHgvsp:
         self._is_init_met = False
 
         if DBG:
-            print("len ref seq:{} len alt seq:{}".format(len(self._ref_seq), len(self._alt_seq)))
-            print(
-                "fs start:{} protein ac:{}".format(self._frameshift_start, self._protein_accession)
-            )
+            print(f"len ref seq:{len(self._ref_seq)} len alt seq:{len(self._alt_seq)}")
+            print(f"fs start:{self._frameshift_start} protein ac:{self._protein_accession}")
             print(self._ref_seq)
             print(self._alt_seq)
-            print("aa variant start: {}".format(self._alt_data.variant_start_aa))
+            print(f"aa variant start: {self._alt_data.variant_start_aa}")
             print(self._ref_data.transcript_sequence)
             print(self._alt_data.transcript_sequence)
 
@@ -286,7 +283,7 @@ class AltSeqToHgvsp:
                     alt = insertion
 
             else:  # should never get here
-                raise ValueError("unexpected variant: {}".format(variant))
+                raise ValueError(f"unexpected variant: {variant}")
 
         var_p = self._create_variant(
             aa_start,

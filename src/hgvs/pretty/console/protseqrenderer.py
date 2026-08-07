@@ -1,6 +1,7 @@
 import math
-from hgvs.pretty.models import VariantData
+
 from hgvs.pretty.console.renderer import BasicRenderer
+from hgvs.pretty.models import VariantData
 
 
 class ProtSeqRenderer(BasicRenderer):
@@ -17,9 +18,7 @@ class ProtSeqRenderer(BasicRenderer):
     """
 
     def legend(self):
-        if self.orientation > 0:
-            arrow = "->"
-        elif self.orientation < 0 and self.config.reverse_display:
+        if self.orientation > 0 or (self.orientation < 0 and self.config.reverse_display):
             arrow = "->"
         else:
             arrow = "<-"
@@ -30,7 +29,7 @@ class ProtSeqRenderer(BasicRenderer):
         if not data.var_c_or_n:
             return ""
 
-        from hgvs.pretty.console.constants import ENDC, COLOR_MAP
+        from hgvs.pretty.console.constants import COLOR_MAP, ENDC
 
         var_str = ""
         for pdata in data.position_details:

@@ -1,5 +1,5 @@
-from hgvs.pretty.models import VariantData
 from hgvs.pretty.console.renderer import BasicRenderer
+from hgvs.pretty.models import VariantData
 
 
 class ProtRulerRenderer(BasicRenderer):
@@ -50,11 +50,7 @@ class ProtRulerRenderer(BasicRenderer):
 
             prev_aa = aa_pos
 
-            if (aa_pos + 1) % 10 == 0:
-                var_str += f"{aa_pos + 1} "
-                continue
-
-            elif aa_pos == 0:
+            if (aa_pos + 1) % 10 == 0 or aa_pos == 0:
                 var_str += f"{aa_pos + 1} "
                 continue
 

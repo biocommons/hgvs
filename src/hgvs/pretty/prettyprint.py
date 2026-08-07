@@ -1,22 +1,20 @@
-from typing import List, Tuple
-
 import hgvs
 from hgvs.assemblymapper import AssemblyMapper
-from hgvs.pretty.console.renderer import colorize_hgvs
-from hgvs.pretty.datacompiler import DataCompiler
-from hgvs.pretty.models import PrettyConfig
 from hgvs.pretty.console.chromseqrenderer import ChromSeqRendered
 from hgvs.pretty.console.chromseqreverserenderer import ChromReverseSeqRendered
 from hgvs.pretty.console.posinfo import ChrPositionInfo
 from hgvs.pretty.console.protmappingrenderer import ProtMappingRenderer
 from hgvs.pretty.console.protrulerrenderer import ProtRulerRenderer
 from hgvs.pretty.console.protseqrenderer import ProtSeqRenderer
+from hgvs.pretty.console.renderer import colorize_hgvs
 from hgvs.pretty.console.ruler import ChrRuler
 from hgvs.pretty.console.shuffledvariant import RegionImpacted
 from hgvs.pretty.console.txaligrenderer import TxAligRenderer
 from hgvs.pretty.console.txmappingrenderer import TxMappingRenderer
 from hgvs.pretty.console.txpos import TxRulerRenderer
 from hgvs.pretty.console.txrefdisagreerenderer import TxRefDisagreeRenderer
+from hgvs.pretty.datacompiler import DataCompiler
+from hgvs.pretty.models import PrettyConfig
 from hgvs.repeats import RepeatAnalyser
 from hgvs.sequencevariant import SequenceVariant
 
@@ -78,14 +76,12 @@ class PrettyPrint:
             reverse_display=reverse_display,
         )
 
-    def _get_all_transcripts(self, var_g) -> List[str]:
+    def _get_all_transcripts(self, var_g) -> list[str]:
         transcripts = self.config.assembly_mapper.relevant_transcripts(var_g)
 
         return transcripts
 
-    def _infer_hgvs_c(
-        self, var_g: SequenceVariant, tx_ac: str = None
-    ) -> SequenceVariant:
+    def _infer_hgvs_c(self, var_g: SequenceVariant, tx_ac: str = None) -> SequenceVariant:
         if not tx_ac:
             transcripts = self._get_all_transcripts(var_g)
             if transcripts:
@@ -107,25 +103,22 @@ class PrettyPrint:
 
         if sv.type == "c":
             return am.c_to_g(sv)
-        elif sv.type == "n":
+        if sv.type == "n":
             return am.n_to_g(sv)
-        elif sv.type == "t":
+        if sv.type == "t":
             return am.t_to_g(sv)
-        elif sv.type == "r":
+        if sv.type == "r":
             return am.r
 
     def get_hgvs_names(
         self, sv: SequenceVariant, tx_ac: str = None
-    ) -> Tuple[SequenceVariant, SequenceVariant]:
+    ) -> tuple[SequenceVariant, SequenceVariant]:
         var_c_or_n = None
         if sv.type == "g":
             var_g = sv
             if tx_ac is not None:
                 var_c_or_n = self._infer_hgvs_c(var_g, tx_ac=tx_ac)
-        elif sv.type == "c":
-            var_g = self._map_to_chrom(sv)
-            var_c_or_n = sv
-        elif sv.type == "r":
+        elif sv.type == "c" or sv.type == "r":
             var_g = self._map_to_chrom(sv)
             var_c_or_n = sv
         elif sv.type == "n":
@@ -160,14 +153,11 @@ class PrettyPrint:
                 )
                 response += "\n---\n"
             return response
-        else:
-            if not var_c_or_n:
-                if self.config.infer_hgvs_c:
-                    var_c_or_n = self._infer_hgvs_c(var_g)
+        if not var_c_or_n:
+            if self.config.infer_hgvs_c:
+                var_c_or_n = self._infer_hgvs_c(var_g)
 
-            return self.create_repre(
-                var_g, var_c_or_n, display_start, display_end, self.data_compiler
-            )
+        return self.create_repre(var_g, var_c_or_n, display_start, display_end, self.data_compiler)
 
     def create_repre(
         self,
@@ -238,11 +228,7 @@ class PrettyPrint:
 
         # if we show reverse strand transcripts in forward facing orientation, always
         # show both forward and reverse strand sequences.
-        if (
-            self.config.show_reverse_strand
-            or self.config.reverse_display
-            and data.strand < 0
-        ):
+        if self.config.show_reverse_strand or (self.config.reverse_display and data.strand < 0):
             renderer_cls.append(ChromReverseSeqRendered)
 
         renderer_cls.append(TxRefDisagreeRenderer)
@@ -261,9 +247,7 @@ class PrettyPrint:
             if str_results:
                 var_str += d + str_results + "\n"
 
-        left_shuffled_renderer = RegionImpacted(
-            self.config, data.strand, var_g, left_shuffled_var
-        )
+        left_shuffled_renderer = RegionImpacted(self.config, data.strand, var_g, left_shuffled_var)
         left_shuffled_str = left_shuffled_renderer.display(data)
 
         right_shuffled_renderer = RegionImpacted(

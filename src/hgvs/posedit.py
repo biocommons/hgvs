@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-"""implements a (position,edit) tuple that represents a localized sequence change
-
-"""
+"""implements a (position,edit) tuple that represents a localized sequence change"""
 
 import attr
 
@@ -25,7 +22,7 @@ class PosEdit:
         if self.pos is None:
             rv = str(self.edit.format(conf))
         else:
-            rv = "{pos}{edit}".format(pos=self.pos.format(conf), edit=self.edit.format(conf))
+            rv = f"{self.pos.format(conf)}{self.edit.format(conf)}"
 
         if self.uncertain:
             if self.edit in ["0", ""]:
@@ -99,11 +96,14 @@ class PosEdit:
                 # Check del length
                 if self.edit.type in ["del", "delins"]:
                     ref_len = self.edit.ref_n
-                    if (ref_len is not None and
-                            not ( isinstance(self.pos.start, Interval) or
-                                isinstance(self.pos.end, Interval)
-                            ) and
-                            ref_len != self.pos.end - self.pos.start + 1):
+                    if (
+                        ref_len is not None
+                        and not (
+                            isinstance(self.pos.start, Interval)
+                            or isinstance(self.pos.end, Interval)
+                        )
+                        and ref_len != self.pos.end - self.pos.start + 1
+                    ):
                         return (
                             ValidationLevel.ERROR,
                             "Length implied by coordinates must equal sequence deletion length",
