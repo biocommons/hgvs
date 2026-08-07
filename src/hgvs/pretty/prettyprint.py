@@ -83,9 +83,7 @@ class PrettyPrint:
 
         return transcripts
 
-    def _infer_hgvs_c(
-        self, var_g: SequenceVariant, tx_ac: str = None
-    ) -> SequenceVariant:
+    def _infer_hgvs_c(self, var_g: SequenceVariant, tx_ac: str = None) -> SequenceVariant:
         if not tx_ac:
             transcripts = self._get_all_transcripts(var_g)
             if transcripts:
@@ -238,11 +236,7 @@ class PrettyPrint:
 
         # if we show reverse strand transcripts in forward facing orientation, always
         # show both forward and reverse strand sequences.
-        if (
-            self.config.show_reverse_strand
-            or self.config.reverse_display
-            and data.strand < 0
-        ):
+        if self.config.show_reverse_strand or self.config.reverse_display and data.strand < 0:
             renderer_cls.append(ChromReverseSeqRendered)
 
         renderer_cls.append(TxRefDisagreeRenderer)
@@ -261,9 +255,7 @@ class PrettyPrint:
             if str_results:
                 var_str += d + str_results + "\n"
 
-        left_shuffled_renderer = RegionImpacted(
-            self.config, data.strand, var_g, left_shuffled_var
-        )
+        left_shuffled_renderer = RegionImpacted(self.config, data.strand, var_g, left_shuffled_var)
         left_shuffled_str = left_shuffled_renderer.display(data)
 
         right_shuffled_renderer = RegionImpacted(

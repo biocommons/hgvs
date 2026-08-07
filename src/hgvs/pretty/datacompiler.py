@@ -45,9 +45,7 @@ class DataCompiler:
     def __init__(self, config: PrettyConfig):
         self.config = config
 
-    def get_shuffled_variant(
-        self, var_g: SequenceVariant, direction: int
-    ) -> VariantCoords:
+    def get_shuffled_variant(self, var_g: SequenceVariant, direction: int) -> VariantCoords:
         """Takes a sequence variant and returns VariantCoords that have been shuffled accordingly."""
 
         # get shuffled representation:
@@ -209,9 +207,7 @@ class DataCompiler:
         if strand < 0 and not self.config.reverse_display:
             aa_char = tlc[2 - c3]
 
-        return ProteinData(
-            c_pos, aa, tlc, aa_char, var_p, is_init_met, is_stop_codon, aa_index
-        )
+        return ProteinData(c_pos, aa, tlc, aa_char, var_p, is_init_met, is_stop_codon, aa_index)
 
     def data(
         self,

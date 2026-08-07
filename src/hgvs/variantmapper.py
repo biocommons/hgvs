@@ -189,7 +189,9 @@ class VariantMapper:
             # variant at alignment gap
             pos_g = mapper.n_to_g(pos_n)
             if self._variant_spans_i_segment(mapper, var_g):
-                edit_n, pos_n = self._get_altered_tx_sequence(mapper.strand, mapper, pos_g, var_g, pos_n)
+                edit_n, pos_n = self._get_altered_tx_sequence(
+                    mapper.strand, mapper, pos_g, var_g, pos_n
+                )
             else:
                 edit_n = hgvs.edit.NARefAlt(
                     ref="", alt=self._get_altered_sequence(mapper.strand, pos_g, var_g)
@@ -311,7 +313,9 @@ class VariantMapper:
             # variant at alignment gap
             pos_g = mapper.c_to_g(pos_c)
             if self._variant_spans_i_segment(mapper, var_g):
-                edit_c, pos_c = self._get_altered_tx_sequence(mapper.strand, mapper, pos_g, var_g, pos_c)
+                edit_c, pos_c = self._get_altered_tx_sequence(
+                    mapper.strand, mapper, pos_g, var_g, pos_c
+                )
             else:
                 edit_c = hgvs.edit.NARefAlt(
                     ref="", alt=self._get_altered_sequence(mapper.strand, pos_g, var_g)
@@ -773,7 +777,9 @@ class VariantMapper:
                 # A D-segment is inside pos_g if: pos_g.start.base <= genomic_interbase+1 <= pos_g.end.base
                 # i.e., it sits between two bases both within pos_g
                 if pos_g.start.base <= genomic_interbase < pos_g.end.base:
-                    interbase_offset = genomic_interbase - (pos_g.start.base - 1)  # offset relative to pos_g start
+                    interbase_offset = genomic_interbase - (
+                        pos_g.start.base - 1
+                    )  # offset relative to pos_g start
                     d_segments.append((interbase_offset, tgt_pos[i], tgt_pos[i + 1]))
 
         return {"I": i_offsets, "D": d_segments}
@@ -837,13 +843,17 @@ class VariantMapper:
                 # This base is in the genomic reference but absent from the transcript; including
                 # it allows the prefix/suffix trimming step to cancel the double gap and produce
                 # the correct minimal transcript edit (e.g. 6-base delins → single SNV).
-                suffix_tx = [seq[j] for j in range(var_end, len(seq)) if j not in i_offsets or j == var_end]
+                suffix_tx = [
+                    seq[j] for j in range(var_end, len(seq)) if j not in i_offsets or j == var_end
+                ]
                 ins_seq = edit.alt or ""
             else:
                 # For dup/inv/identity the duplicated/inverted/copied sequence must be
                 # transcript-only bases — exclude any I-segment positions from the variant range.
                 suffix_tx = [seq[j] for j in range(var_end, len(seq)) if j not in i_offsets]
-                clean_variant_seq = "".join(seq[j] for j in range(var_start, var_end) if j not in i_offsets)
+                clean_variant_seq = "".join(
+                    seq[j] for j in range(var_start, var_end) if j not in i_offsets
+                )
                 if edit.type == "dup":
                     ins_seq = clean_variant_seq * 2
                 elif edit.type == "inv":
@@ -862,7 +872,11 @@ class VariantMapper:
 
         # Trim common prefix and suffix to find the minimal edit
         n_prefix = 0
-        while n_prefix < len(tx_ref_str) and n_prefix < len(tx_alt_str) and tx_ref_str[n_prefix] == tx_alt_str[n_prefix]:
+        while (
+            n_prefix < len(tx_ref_str)
+            and n_prefix < len(tx_alt_str)
+            and tx_ref_str[n_prefix] == tx_alt_str[n_prefix]
+        ):
             n_prefix += 1
 
         n_suffix = 0
@@ -870,8 +884,8 @@ class VariantMapper:
         while n_suffix < max_suffix and tx_ref_str[-(n_suffix + 1)] == tx_alt_str[-(n_suffix + 1)]:
             n_suffix += 1
 
-        ref_trimmed = tx_ref_str[n_prefix: len(tx_ref_str) - n_suffix if n_suffix else None]
-        alt_trimmed = tx_alt_str[n_prefix: len(tx_alt_str) - n_suffix if n_suffix else None]
+        ref_trimmed = tx_ref_str[n_prefix : len(tx_ref_str) - n_suffix if n_suffix else None]
+        alt_trimmed = tx_alt_str[n_prefix : len(tx_alt_str) - n_suffix if n_suffix else None]
 
         adjusted_pos = copy.deepcopy(tx_pos)
         adjusted_pos.start.base += n_prefix

@@ -3,7 +3,6 @@ from hgvs.pretty.console.renderer import BasicRenderer
 
 
 class ChrRuler(BasicRenderer):
-
     def legend(self):
         """returns the legend for this category of display"""
         return "chrom pos : "

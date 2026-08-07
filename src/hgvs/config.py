@@ -31,6 +31,7 @@ import logging
 import re
 from configparser import ConfigParser, ExtendedInterpolation
 from copy import copy
+
 try:
     from importlib.resources import files as resources_files
 except ImportError:

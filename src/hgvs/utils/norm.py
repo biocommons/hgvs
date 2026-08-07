@@ -7,11 +7,12 @@ https://github.com/bioinformed/vgraph
 
 from collections import namedtuple
 
+
 def trim_common_suffixes(strs, min_len=0):
     """
     trim common suffixes
 
-    >>> trim_common_suffixes('A', 1)
+    >>> trim_common_suffixes("A", 1)
     (0, 'A')
 
     """
@@ -53,7 +54,7 @@ def normalize_alleles_left(ref, start, stop, alleles, bound, ref_step, shuffle=T
     """
     Normalize loci by removing extraneous reference padding
 
-    >>> normalize_alleles_left('A', 1, 2, 'A', 1, 2)
+    >>> normalize_alleles_left("A", 1, 2, "A", 1, 2)
     shuffled_alleles(start=1, stop=2, alleles='A')
 
     """
@@ -103,7 +104,7 @@ def normalize_alleles_right(ref, start, stop, alleles, bound, ref_step, shuffle=
     """
     Normalize loci by removing extraneous reference padding
 
-    >>> normalize_alleles_right('A', 1, 2, 'A', 1, 2)
+    >>> normalize_alleles_right("A", 1, 2, "A", 1, 2)
     shuffled_alleles(start=1, stop=2, alleles='A')
 
     """
