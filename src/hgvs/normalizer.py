@@ -71,12 +71,7 @@ class Normalizer:
         if var.posedit is not None and isinstance(var.posedit, hgvs.edit.AARefAlt):
             init_met = var.posedit.init_met
 
-        if (
-            var.posedit is None
-            or var.posedit.uncertain
-            or init_met
-            or var.posedit.pos is None
-        ):
+        if var.posedit is None or var.posedit.uncertain or init_met or var.posedit.pos is None:
             return var
 
         type = var.type
@@ -231,9 +226,7 @@ class Normalizer:
                         "No mapping info available for {ac}".format(ac=var.ac)
                     )
                 map_info = [
-                    item
-                    for item in map_info
-                    if item["alt_aln_method"] == self.alt_aln_method
+                    item for item in map_info if item["alt_aln_method"] == self.alt_aln_method
                 ]
                 alt_ac = map_info[0]["alt_ac"]
 
@@ -259,10 +252,7 @@ class Normalizer:
 
                 # TODO: #242: implement methods to find tx regions
                 for i, _ in enumerate(exon_starts):
-                    if (
-                        start.base - 1 >= exon_starts[i]
-                        and start.base - 1 < exon_ends[i]
-                    ):
+                    if start.base - 1 >= exon_starts[i] and start.base - 1 < exon_ends[i]:
                         break
 
                 for j, _ in enumerate(exon_starts):
@@ -449,9 +439,7 @@ class Normalizer:
                     start -= boundary[0] + 1 - base
                     stop -= boundary[0] + 1 - base
                     base = boundary[0] + 1
-                ref_seq = self._fetch_bounded_seq(
-                    var, base - 1, base + stop - 1, start, boundary
-                )
+                ref_seq = self._fetch_bounded_seq(var, base - 1, base + stop - 1, start, boundary)
                 if ref_seq == "":
                     break
                 orig_start, orig_stop = start, stop

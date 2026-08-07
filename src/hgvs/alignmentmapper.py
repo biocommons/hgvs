@@ -111,16 +111,11 @@ class AlignmentMapper:
             # is that exons are adjacent. Assert that here.
             sorted_tx_exons = sorted(tx_exons, key=lambda e: e["ord"])
             for i in range(1, len(sorted_tx_exons)):
-                if (
-                    sorted_tx_exons[i - 1]["tx_end_i"]
-                    != sorted_tx_exons[i]["tx_start_i"]
-                ):
+                if sorted_tx_exons[i - 1]["tx_end_i"] != sorted_tx_exons[i]["tx_start_i"]:
                     raise HGVSDataNotAvailableError(
                         "AlignmentMapper(tx_ac={self.tx_ac}, "
                         "alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
-                        "Exons {a} and {b} are not adjacent".format(
-                            self=self, a=i, b=i + 1
-                        )
+                        "Exons {a} and {b} are not adjacent".format(self=self, a=i, b=i + 1)
                     )
 
             self.strand = tx_exons[0]["alt_strand"]
@@ -158,9 +153,7 @@ class AlignmentMapper:
             )
         )
 
-    def _extract_genomic_position(
-        self, interval_part, is_start: bool
-    ) -> int | Interval:
+    def _extract_genomic_position(self, interval_part, is_start: bool) -> int | Interval:
         """Extract genomic position from an interval part (start or end).
 
         Args:
@@ -320,24 +313,18 @@ class AlignmentMapper:
             n_start_end,
             n_start_end_offset,
             n_start_end_cigar,
-        ) = self.cigarmapper.map_ref_to_tgt(
-            pos=grs_end, end="end", strict_bounds=strict_bounds
-        )
+        ) = self.cigarmapper.map_ref_to_tgt(pos=grs_end, end="end", strict_bounds=strict_bounds)
         (
             n_end_start,
             n_end_start_offset,
             n_end_start_cigar,
-        ) = self.cigarmapper.map_ref_to_tgt(
-            pos=gre_start, end="start", strict_bounds=strict_bounds
-        )
+        ) = self.cigarmapper.map_ref_to_tgt(pos=gre_start, end="start", strict_bounds=strict_bounds)
         if gre_end:
             (
                 n_end_end,
                 n_end_end_offset,
                 n_end_end_cigar,
-            ) = self.cigarmapper.map_ref_to_tgt(
-                pos=gre_end, end="end", strict_bounds=strict_bounds
-            )
+            ) = self.cigarmapper.map_ref_to_tgt(pos=gre_end, end="end", strict_bounds=strict_bounds)
         else:
             n_end_end = None
             n_end_end_offset = 0
@@ -445,14 +432,10 @@ class AlignmentMapper:
         gre = self._extract_genomic_position(g_interval.end, False)
 
         forward_rna_start, forward_rna_start_offset, forward_rna_start_cigar = (
-            self.cigarmapper.map_ref_to_tgt(
-                pos=grs, end="start", strict_bounds=strict_bounds
-            )
+            self.cigarmapper.map_ref_to_tgt(pos=grs, end="start", strict_bounds=strict_bounds)
         )
         forward_rna_end, forward_rna_end_offset, forward_rna_end_cigar = (
-            self.cigarmapper.map_ref_to_tgt(
-                pos=gre, end="end", strict_bounds=strict_bounds
-            )
+            self.cigarmapper.map_ref_to_tgt(pos=gre, end="end", strict_bounds=strict_bounds)
         )
 
         if self.strand == -1:
@@ -491,9 +474,7 @@ class AlignmentMapper:
         )
         return final_interval
 
-    def n_to_g(
-        self, n_interval: Interval, strict_bounds: Optional[bool] = None
-    ) -> Interval:
+    def n_to_g(self, n_interval: Interval, strict_bounds: Optional[bool] = None) -> Interval:
         """Convert a transcript (n.) interval to a genomic (g.) interval.
 
         Args:
@@ -506,9 +487,7 @@ class AlignmentMapper:
         if strict_bounds is None:
             strict_bounds = global_config.mapping.strict_bounds
 
-        if isinstance(n_interval.start, Interval) and isinstance(
-            n_interval.end, Interval
-        ):
+        if isinstance(n_interval.start, Interval) and isinstance(n_interval.end, Interval):
             return self._n_to_g_interval(n_interval, strict_bounds)
 
         # Get start and end positions
@@ -639,13 +618,9 @@ class AlignmentMapper:
             if istart and istart.base:
                 c_start = pos_n_to_c(istart)
             else:
-                c_start = hgvs.location.BaseOffsetPosition(
-                    base=None, datum=Datum.CDS_START
-                )
+                c_start = hgvs.location.BaseOffsetPosition(base=None, datum=Datum.CDS_START)
                 if not interval.end or not interval.end.base:
-                    raise HGVSInvalidIntervalError(
-                        "n_to_c: interval start is None and end is None"
-                    )
+                    raise HGVSInvalidIntervalError("n_to_c: interval start is None and end is None")
 
             iend = interval.end
             if iend and iend.base:
@@ -702,9 +677,7 @@ class AlignmentMapper:
 
         def pos_c_to_n(pos):
             if not pos or not pos.base:
-                return hgvs.location.BaseOffsetPosition(
-                    base=None, datum=Datum.SEQ_START
-                )
+                return hgvs.location.BaseOffsetPosition(base=None, datum=Datum.SEQ_START)
 
             if pos.datum == Datum.CDS_START:
                 n = pos.base + self.cds_start_i
@@ -716,9 +689,7 @@ class AlignmentMapper:
                 n -= 1
             if n <= 0 or n > self.tgt_len:
                 if strict_bounds:
-                    raise HGVSInvalidIntervalError(
-                        f"c.{pos} coordinate is out of bounds"
-                    )
+                    raise HGVSInvalidIntervalError(f"c.{pos} coordinate is out of bounds")
 
             return hgvs.location.BaseOffsetPosition(
                 base=n,
@@ -782,8 +753,9 @@ class AlignmentMapper:
     def is_coding_transcript(self):
         if (self.cds_start_i is not None) ^ (self.cds_end_i is not None):
             raise HGVSError(
-                "{self.tx_ac}: CDS start_i and end_i"
-                " must be both defined or both undefined".format(self=self)
+                "{self.tx_ac}: CDS start_i and end_i must be both defined or both undefined".format(
+                    self=self
+                )
             )
         return self.cds_start_i is not None
 
@@ -914,9 +886,7 @@ class AlignmentMapper:
             all_positions.sort()
 
             # Convert sentinel values back to None
-            all_positions = [
-                None if x == -1 or x >= math.inf else x for x in all_positions
-            ]
+            all_positions = [None if x == -1 or x >= math.inf else x for x in all_positions]
 
             grs_start, grs_end, gre_start, gre_end = all_positions
 
@@ -933,25 +903,17 @@ class AlignmentMapper:
         # For reverse strand, ensure start is less than or equal to end
 
         if left_boundary_out_of_bounds:
-            lstart = hgvs.location.SimplePosition(
-                base=None, uncertain=start_start.uncertain
-            )
+            lstart = hgvs.location.SimplePosition(base=None, uncertain=start_start.uncertain)
         else:
-            lstart = hgvs.location.SimplePosition(
-                base=grs_start, uncertain=start_start.uncertain
-            )
+            lstart = hgvs.location.SimplePosition(base=grs_start, uncertain=start_start.uncertain)
 
         lend = hgvs.location.SimplePosition(grs_end, uncertain=start_end.uncertain)
 
         rstart = hgvs.location.SimplePosition(gre_start, uncertain=end_start.uncertain)
         if right_boundary_out_of_bounds:
-            rend = hgvs.location.SimplePosition(
-                base=None, uncertain=end_start.uncertain
-            )
+            rend = hgvs.location.SimplePosition(base=None, uncertain=end_start.uncertain)
         else:
-            rend = hgvs.location.SimplePosition(
-                base=gre_end, uncertain=end_start.uncertain
-            )
+            rend = hgvs.location.SimplePosition(base=gre_end, uncertain=end_start.uncertain)
 
         # Create the start interval
         g_start = hgvs.location.Interval(
@@ -966,17 +928,11 @@ class AlignmentMapper:
         g_end = hgvs.location.Interval(
             start=rstart,
             end=rend,
-            uncertain=n_interval.end.uncertain
-            or gre_start_cigar in "DI"
-            or gre_end_cigar in "DI",
+            uncertain=n_interval.end.uncertain or gre_start_cigar in "DI" or gre_end_cigar in "DI",
         )
 
         if self.strand == -1:
-            if (
-                g_start.end.base
-                and g_end.start.base
-                and g_start.end.base > g_end.start.base
-            ):
+            if g_start.end.base and g_end.start.base and g_start.end.base > g_end.start.base:
                 g_start, g_end = g_end, g_start
 
         # Return the final interval

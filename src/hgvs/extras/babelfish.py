@@ -41,9 +41,7 @@ class Babelfish:
         vleft = self.hn.normalize(var_g)
 
         # We are taking the inner interval, but plan on implementing INFO fields in issue #788
-        start_i, end_i = get_start_end_interbase(
-            vleft.posedit.pos, outer_confidence=False
-        )
+        start_i, end_i = get_start_end_interbase(vleft.posedit.pos, outer_confidence=False)
 
         chrom = self.ac_to_name_map[vleft.ac]
 

@@ -33,7 +33,7 @@ class AltTranscriptData:
         accession,
         is_substitution=False,
         is_ambiguous=False,
-        translation_table=TranslationTable.standard
+        translation_table=TranslationTable.standard,
     ):
         """Create a variant sequence using inputs from VariantInserter
         :param seq: DNA sequence wiith variant incorporated
@@ -61,7 +61,9 @@ class AltTranscriptData:
                 seq = list(seq)
             seq_cds = seq[cds_start - 1 :]
             seq_cds = "".join(seq_cds)
-            seq_aa = translate_cds(seq_cds, full_codons=False, ter_symbol="X", translation_table=translation_table)
+            seq_aa = translate_cds(
+                seq_cds, full_codons=False, ter_symbol="X", translation_table=translation_table
+            )
             stop_pos = seq_aa[: (cds_stop - cds_start + 1) // 3].rfind("*")
             if stop_pos == -1:
                 stop_pos = seq_aa.find("*")
@@ -214,13 +216,15 @@ class AltSeqBuilder:
         elif (
             not global_config.mapping.ins_at_boundary_is_intronic
             and self._var_c.posedit.edit.type == "ins"
-            and self._var_c.posedit.pos.start.offset == -1 and self._var_c.posedit.pos.end.offset == 0
+            and self._var_c.posedit.pos.start.offset == -1
+            and self._var_c.posedit.pos.end.offset == 0
         ):
             result = self.EXON
         elif (
             not global_config.mapping.ins_at_boundary_is_intronic
             and self._var_c.posedit.edit.type == "ins"
-            and self._var_c.posedit.pos.start.offset == 0 and self._var_c.posedit.pos.end.offset == 1
+            and self._var_c.posedit.pos.start.offset == 0
+            and self._var_c.posedit.pos.end.offset == 1
         ):
             result = self.EXON
         elif (
@@ -322,7 +326,7 @@ class AltSeqBuilder:
         seq, cds_start, cds_stop, start, end = self._setup_incorporate()
 
         if not self._var_c.posedit.edit.ref:
-            raise HGVSError('Duplication variant is missing reference sequence')
+            raise HGVSError("Duplication variant is missing reference sequence")
 
         dup_seq = self._var_c.posedit.edit.ref
         seq[end:end] = dup_seq
@@ -449,7 +453,14 @@ class AltSeqBuilder:
     def _create_no_protein(self):
         """Create a no-protein result"""
         alt_data = AltTranscriptData(
-            [], None, None, False, None, self._transcript_data.protein_accession, is_ambiguous=False, translation_table=self._translation_table
+            [],
+            None,
+            None,
+            False,
+            None,
+            self._transcript_data.protein_accession,
+            is_ambiguous=False,
+            translation_table=self._translation_table,
         )
         return alt_data
 

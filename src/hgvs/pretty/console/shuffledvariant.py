@@ -21,9 +21,7 @@ class RegionImpacted(BasicRenderer):
         Returns a string representing the shuffled variant display based on the provided data.
     """
 
-    def __init__(
-        self, config, orientation: int, var_g: SequenceVariant, vc: VariantCoords
-    ) -> None:
+    def __init__(self, config, orientation: int, var_g: SequenceVariant, vc: VariantCoords) -> None:
         super().__init__(config, orientation)
 
         self.var_g = var_g
