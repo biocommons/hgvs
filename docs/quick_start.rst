@@ -86,7 +86,7 @@ In the ``hgvs-shell``, do::
 	  functional forms also, which are used in this quick start
 	  guide.  For example, ``parse(...)`` above actually calls
 	  ```parser.parse(...)``, where ``parser`` is an instance of
-	  the :class:`hgvs.parser.Parser` class.
+	  the :class:`hgvs.parsers.Parser` class.
 
 Parsing a variant results in objects that represent the variant. A
 SequenceVariant object is comprised of an accession (``ac``), an HGVS

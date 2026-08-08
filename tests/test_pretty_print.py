@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import unittest
 
 import pytest
@@ -16,7 +15,7 @@ from hgvs.pretty.prettyprint import PrettyPrint
 class Test_SimplePosition(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.hp = hgvs.parser.Parser()
+        cls.hp = hgvs.parsers.Parser()
         cls.hdp = hgvs.dataproviders.uta.connect(mode=None, cache=None)
         cls.assembly_mapper37 = AssemblyMapper(cls.hdp, assembly_name="GRCh37")
         cls.assembly_mapper38 = AssemblyMapper(cls.hdp, assembly_name="GRCh38")
@@ -61,7 +60,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "aa pos    :                                 ...      \n"
             + "          :                     1                    \n"
         ).split("\n")
-        for r, e in zip(result, expected_str):
+        for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
 
     def test_var_c1_reverse(self):
@@ -87,7 +86,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "aa pos    :       ...                                \n"
             + "          :                   1                      \n"
         ).split("\n")
-        for r, e in zip(result, expected_str):
+        for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
 
     def test_var_c1_reverse_flipped_display(self):
@@ -120,7 +119,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "aa pos    :                                 ...      \n"
             + "          :                     1                    \n"
         ).split("\n")
-        for r, e in zip(result, expected_str):
+        for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
 
     def test_var_g_substitution(self):
@@ -154,7 +153,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "aa pos    :       |||            ...            |||  \n"
             + "          :       500                           490  \n"
         ).split("\n")
-        for r, e in zip(result, expected_str):
+        for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
 
     def test_var_g_ins(self):
@@ -171,7 +170,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "hgvs_p    : NP_001159698.1:p.?\n"
             + self.atta_expected_results
         ).split("\n")
-        for r, e in zip(result, expected_str):
+        for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
 
     def test_atta_forward(self):
@@ -205,7 +204,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "          :                      960                        \n"
             + "ref>alt   : ATTA[2]>ATTA[3]\n"
         ).split("\n")
-        for r, e in zip(result, expected_str):
+        for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
 
     def test_var_g_dup(self):
@@ -221,7 +220,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "hgvs_p    : NP_001159698.1:p.(=)\n"
             + self.atta_expected_results
         ).split("\n")
-        for r, e in zip(result, expected_str):
+        for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
 
     def test_insertion(self):
@@ -248,7 +247,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "          :                       310                       \n"
             + "ref>alt   : TCGTCATC>TCGTCATCGTCGTCATC\n"
         ).split("\n")
-        for r, e in zip(result, expected_str):
+        for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
 
     def test_insertion_size_1(self):
@@ -274,7 +273,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "aa pos    :      |||            ...            |||  \n"
             + "          :      500                           490  \n"
         ).split("\n")
-        for r, e in zip(result, expected_str):
+        for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
 
     def test_del_2bp(self):
@@ -300,7 +299,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "aa pos    :       |||            ...            |||   \n"
             + "          :       500                           490   \n"
         ).split("\n")
-        for r, e in zip(result, expected_str):
+        for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
 
     def test_first_base(self):
@@ -324,7 +323,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "          :                                          \n"
         ).split("\n")
 
-        for r, e in zip(result, expected_str):
+        for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
 
     def test_intergenic(self):
@@ -344,7 +343,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "aa pos    :                                          \n"
             + "          :                                          "
         ).split("\n")
-        for r, e in zip(result, expected_str):
+        for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
 
     def test_del_1bp_shuffleable(self):
@@ -371,7 +370,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "          :        500                           490  \n"
             + "ref>alt   : C[2]>C[1]\n"
         ).split("\n")
-        for r, e in zip(result, expected_str):
+        for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
 
     def test_del_1bp(self):
@@ -397,7 +396,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "aa pos    :      |||            ...            |||   \n"
             + "          :      500                           490   \n"
         ).split("\n")
-        for r, e in zip(result, expected_str):
+        for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
 
     def test_dup_1bp_shuffleable(self):
@@ -424,7 +423,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "          :        500                           490  \n"
             + "ref>alt   : C[2]>C[3]\n"
         ).split("\n")
-        for r, e in zip(result, expected_str):
+        for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
 
     def test_dup_1bp(self):
@@ -451,7 +450,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "          :      500                           490   \n"
             + "ref>alt   : A>AA\n"
         ).split("\n")
-        for r, e in zip(result, expected_str):
+        for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
 
     def test_identity(self):
@@ -477,7 +476,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "aa pos    :      |||            ...            |||   \n"
             + "          :      500                           490   \n"
         ).split("\n")
-        for r, e in zip(result, expected_str):
+        for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
 
     def test_tiny(self):
@@ -515,7 +514,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "ref>alt   : ATTA[2]>ATTA[3]"
         ).split("\n")
 
-        for r, e in zip(result, expected_str):
+        for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
 
     @pytest.mark.skip(reason="CNVs not implemented yet")
@@ -562,7 +561,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "                   1                                                                                                                               \n"
             + "GGGGGCTGCCATGGGGCCGGTGGGGGC>GGGGGCTGCCATGGGGCCGGTGGGGGCTGCCATGGGGCCGGTGGGGGC"
         ).split("\n")
-        for r, e in zip(result, expected_str):
+        for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
 
     def test_ref_disagree(self):
@@ -592,7 +591,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "aa pos    :    ...            |||            ...     \n"
             + "          :                   100                    \n"
         ).split("\n")
-        for r, e in zip(result, expected_str):
+        for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
 
     def test_ref_disagree_ref_ins(self):
@@ -616,25 +615,26 @@ class Test_SimplePosition(unittest.TestCase):
         result = pp.display(var_c)
         print(result)
         result = result.split("\n")
-        expected_str = (
-            "hgvs_g    : NC_000021.8:g.46020668_46020682del\n"
-            "hgvs_c    : NM_198689.2:c.124_135=\n"
-            "hgvs_p    : NP_941962.1:p.(Cys42=)\n"
-            "          :     46,020,630          46,020,650          46,020,670          46,020,690          46,020,710\n"
-            "chrom pos :     |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |  \n"
-            "seq    -> : CGACTGCCCAGAGAGCTGCTGCGAGCCCCCCTGCTGCGCCCCCAGCTGCTGCGCCCCGGCCCCCTGCCTGAGCCTGGTCTGCACCCCAGTGAGCCGT\n"
-            "tx ref dif:                               IIIIIIIIIIIIIII                                                 XX \n"
-            "region    :                               x-------------------------x                                        \n"
-            "tx seq -> : CGACTGCCCAGAGAGCTGCTGCGAGCCCCC---------------CTGCTGCGCCCCGGCCCCCTGCCTGAGCCTGGTCTGCACCCCAGTGAGCTAT\n"
-            "tx pos    : .    |    .    |    .    |                   .    |    .    |    .    |    .    |    .    |    . \n"
-            "          :      110       120       130                      140       150       160       170       180\n"
-            "aa seq -> : pAspCysProGluSerCysCysGluProPr---------------oCysCysAlaProAlaProCysLeuSerLeuValCysThrProValSerTyr\n"
-            "aa pos    : .            |||            ..               .            |||            ...            |||      \n"
-            "          :              40                                           50                            60       \n"
-            "ref>alt   : CTGCTGCGCCCCCAGCTGCTGCGCCCC>CTGCTGCGCCCC\n"
-        ).split("\n")
+        expected_str = [
+            "hgvs_g    : NC_000021.8:g.46020668_46020682del",
+            "hgvs_c    : NM_198689.2:c.124_135=",
+            "hgvs_p    : NP_941962.1:p.(Cys42=)",
+            "          :     46,020,630          46,020,650          46,020,670          46,020,690          46,020,710",
+            "chrom pos :     |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |  ",
+            "seq    -> : CGACTGCCCAGAGAGCTGCTGCGAGCCCCCCTGCTGCGCCCCCAGCTGCTGCGCCCCGGCCCCCTGCCTGAGCCTGGTCTGCACCCCAGTGAGCCGT",
+            "tx ref dif:                               IIIIIIIIIIIIIII                                                 XX ",
+            "region    :                               x-------------------------x                                        ",
+            "tx seq -> : CGACTGCCCAGAGAGCTGCTGCGAGCCCCC---------------CTGCTGCGCCCCGGCCCCCTGCCTGAGCCTGGTCTGCACCCCAGTGAGCTAT",
+            "tx pos    : .    |    .    |    .    |                   .    |    .    |    .    |    .    |    .    |    . ",
+            "          :      110       120       130                      140       150       160       170       180",
+            "aa seq -> : pAspCysProGluSerCysCysGluProPr---------------oCysCysAlaProAlaProCysLeuSerLeuValCysThrProValSerTyr",
+            "aa pos    : .            |||            ..               .            |||            ...            |||      ",
+            "          :              40                                           50                            60       ",
+            "ref>alt   : CTGCTGCGCCCCCAGCTGCTGCGCCCC>CTGCTGCGCCCC",
+            "",
+        ]
 
-        for r, e in zip(result, expected_str):
+        for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
 
     def test_ref_disagree_del(self):
@@ -673,7 +673,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "          :             310                           300                           290                \n"
             + "ref>alt   : CTCCTCCTCTTC>C\n"
         ).split("\n")
-        for r, e in zip(result, expected_str):
+        for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
 
     def test_ref_disagree_del_reverse(self):
@@ -692,25 +692,25 @@ class Test_SimplePosition(unittest.TestCase):
         print(result)
         result = result.split("\n")
 
-        expected_str = (
-            "hgvs_g    : NC_000002.11:g.96780987_96780997del\n"
-            "hgvs_c    : NM_000682.6:c.901_911del\n"
-            "hgvs_p    : NP_000673.2:p.(Glu301GlyfsTer7)\n"
-            "          :        96,781,030          96,781,010                   96,780,990          96,780,970\n"
-            "chrom pos :   .    |    .    |    .    |    .    |  _________  .    |    .    |    .    |    .    |    \n"
-            "seq    <- : CTTCCTCCCACAAACACCCCGTAGAGGTCTCCTACTTCGA.........CTTCTCCTCCTCCTCCTCCTCCTTCTCACACTTGGGGTCCGT\n"
-            "seq    -> : GAAGGAGGGTGTTTGTGGGGCATCTCCAGAGGATGAAGCT.........GAAGAGGAGGAGGAGGAGGAGGAAGAGTGTGAACCCCAGGCA\n"
-            "tx ref dif:                                         DDDDDDDDD                                          \n"
-            "region    :                                                  x----------x                              \n"
-            "tx seq -> : GAAGGAGGGTGTTTGTGGGGCATCTCCAGAGGATGAAGCTGAAGAGGAGGAAGAGGAGGAGGAGGAGGAGGAAGAGTGTGAACCCCAGGCA\n"
-            "tx pos    :    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |  \n"
-            "          :         860       870       880       890       900       910       920       930       940\n"
-            "aa seq -> : nLysGluGlyValCysGlyAlaSerProGluAspGluAlaGluGluGluGluGluGluGluGluGluGluGluGluCysGluProGlnAla\n"
-            "aa pos    :  ...            |||            ...            |||            ...            |||            \n"
-            "          :                 290                           300                           310            \n"
-            "ref>alt   : CTCCTCCTCTTC>C"
-        ).split("\n")
-        for r, e in zip(result, expected_str):
+        expected_str = [
+            "hgvs_g    : NC_000002.11:g.96780987_96780997del",
+            "hgvs_c    : NM_000682.6:c.901_911del",
+            "hgvs_p    : NP_000673.2:p.(Glu301GlyfsTer7)",
+            "          :        96,781,030          96,781,010                   96,780,990          96,780,970",
+            "chrom pos :   .    |    .    |    .    |    .    |  _________  .    |    .    |    .    |    .    |    ",
+            "seq    <- : CTTCCTCCCACAAACACCCCGTAGAGGTCTCCTACTTCGA.........CTTCTCCTCCTCCTCCTCCTCCTTCTCACACTTGGGGTCCGT",
+            "seq    -> : GAAGGAGGGTGTTTGTGGGGCATCTCCAGAGGATGAAGCT.........GAAGAGGAGGAGGAGGAGGAGGAAGAGTGTGAACCCCAGGCA",
+            "tx ref dif:                                         DDDDDDDDD                                          ",
+            "region    :                                                  x----------x                              ",
+            "tx seq -> : GAAGGAGGGTGTTTGTGGGGCATCTCCAGAGGATGAAGCTGAAGAGGAGGAAGAGGAGGAGGAGGAGGAGGAAGAGTGTGAACCCCAGGCA",
+            "tx pos    :    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |    .    |  ",
+            "          :         860       870       880       890       900       910       920       930       940",
+            "aa seq -> : nLysGluGlyValCysGlyAlaSerProGluAspGluAlaGluGluGluGluGluGluGluGluGluGluGluGluCysGluProGlnAla",
+            "aa pos    :  ...            |||            ...            |||            ...            |||            ",
+            "          :                 290                           300                           310            ",
+            "ref>alt   : CTCCTCCTCTTC>C",
+        ]
+        for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
 
     @pytest.mark.skip(
@@ -719,9 +719,7 @@ class Test_SimplePosition(unittest.TestCase):
     def test_exon_boundary_overlap_forward_strand(self):
         hgvs_c = "NM_001283009.2:c.1228_1266+39del"
         var_c = self.hp.parse(hgvs_c)
-        pp = PrettyPrint(
-            self.hdp, self.assembly_mapper37, show_legend=True, use_color=False
-        )
+        pp = PrettyPrint(self.hdp, self.assembly_mapper37, show_legend=True, use_color=False)
 
         result = pp.display(var_c)
 
@@ -731,9 +729,7 @@ class Test_SimplePosition(unittest.TestCase):
         """Test the ruler display option turned on."""
         hgvs_c = "NM_001111.4:c.298G>A"
         var_c = self.hp.parse(hgvs_c)
-        pp = PrettyPrint(
-            self.hdp, self.assembly_mapper37, show_legend=False, reverse_display=False
-        )
+        pp = PrettyPrint(self.hdp, self.assembly_mapper37, show_legend=False, reverse_display=False)
 
         result = pp.display(var_c, "NM_001111.4")
 
@@ -758,7 +754,7 @@ class Test_SimplePosition(unittest.TestCase):
             + "   ...            |||            ...     \n"
             + "                  100                    \n"
         ).split("\n")
-        for r, e in zip(result, expected_str):
+        for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
 
     def test_rna_coding(self):
@@ -784,5 +780,5 @@ class Test_SimplePosition(unittest.TestCase):
             + "aa pos    :                                          \n"
             + "          :                                          \n"
         )
-        for r, e in zip(result, expected_str):
+        for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)

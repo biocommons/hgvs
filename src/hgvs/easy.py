@@ -36,7 +36,7 @@ from hgvs import __version__, global_config  # noqa: F401
 from hgvs.assemblymapper import AssemblyMapper
 from hgvs.dataproviders.uta import connect
 from hgvs.normalizer import Normalizer
-from hgvs.parser import Parser
+from hgvs.parsers import Parser
 from hgvs.pretty.prettyprint import PrettyPrint
 from hgvs.validator import Validator
 from hgvs.variantmapper import VariantMapper

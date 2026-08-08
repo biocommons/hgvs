@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
 import pytest
 
-
 import hgvs
-import hgvs.parser
-import hgvs.sequencevariant
 import hgvs.normalizer
+import hgvs.parsers
+import hgvs.sequencevariant
 
 
 def test_gene_formatting(parser):
@@ -20,9 +18,7 @@ def test_gene_formatting(parser):
 @pytest.mark.models
 class Test_SequenceVariant:
     def test_SequenceVariant(self):
-        var = hgvs.sequencevariant.SequenceVariant(
-            ac="AC", type="B", posedit="1234DE>FG"
-        )
+        var = hgvs.sequencevariant.SequenceVariant(ac="AC", type="B", posedit="1234DE>FG")
         assert str(var) == "AC:B.1234DE>FG"
 
     def test_fill_ref(self, parser, hdp):
@@ -35,10 +31,7 @@ class Test_SequenceVariant:
         assert var.format({"max_ref_length": None}) == "NM_001166478.1:c.31_32delTT"
 
         var = hp.parse_hgvs_variant("NM_001166478.1:c.2_7delinsTTTAGA").fill_ref(hdp)
-        assert (
-            var.format({"max_ref_length": None})
-            == "NM_001166478.1:c.2_7delTGAAGAinsTTTAGA"
-        )
+        assert var.format({"max_ref_length": None}) == "NM_001166478.1:c.2_7delTGAAGAinsTTTAGA"
 
         var = hp.parse_hgvs_variant("NM_001166478.1:c.35_36dup").fill_ref(hdp)
         assert var.format({"max_ref_length": None}) == "NM_001166478.1:c.35_36dupTC"
@@ -78,9 +71,7 @@ class Test_SequenceVariant:
         assert str(var) == "NM_001166478.1:c.31_32del"
         assert var.format(conf={"max_ref_length": 1}) == "NM_001166478.1:c.31_32del"
         assert var.format(conf={"max_ref_length": 2}) == "NM_001166478.1:c.31_32delTT"
-        assert (
-            var.format(conf={"max_ref_length": None}) == "NM_001166478.1:c.31_32delTT"
-        )
+        assert var.format(conf={"max_ref_length": None}) == "NM_001166478.1:c.31_32delTT"
 
         var = hp.parse_hgvs_variant("NM_001166478.1:c.31_32del2")
         assert str(var) == "NM_001166478.1:c.31_32del"
@@ -218,9 +209,7 @@ class Test_SequenceVariant:
             ),
         ],
     )
-    def test_uncertain_projection_g_to_c_confidence(
-        self, parser, vm, hgvs_g, hgvs_n, hgvs_c
-    ):
+    def test_uncertain_projection_g_to_c_confidence(self, parser, vm, hgvs_g, hgvs_n, hgvs_c):
         hp = parser
         """Test uncertain projection from genomic to cDNA to CDS coordinates."""
         var_g = hp.parse(hgvs_g)

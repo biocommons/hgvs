@@ -54,12 +54,12 @@ HGVS variants are represented using classes that represent elemental
 concepts of an HGVS sequence variant.  Each of the objects contains
 references to data that define the objects; those data may be Python
 built in types such as integers (int) or strings (unicode), or they
-may be other classes in the hgvs package. 
+may be other classes in the hgvs package.
 
 For example, a variant parsed like this:
 
->>> import hgvs.parser
->>> hgvsparser = hgvs.parser.Parser()
+>>> import hgvs.parsers
+>>> hgvsparser = hgvs.parsers.Parser()
 >>> var = hgvsparser.parse_hgvs_variant('NM_001197320.1:c.281C>T')
 
 will generate an object tree like the following:
