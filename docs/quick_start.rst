@@ -31,14 +31,9 @@ NR_027676.1:n.3980del     non-coding                        non-coding transcrip
 Install Prerequisites
 @@@@@@@@@@@@@@@@@@@@@
 
-`hgvs` currently requires PostgreSQL client libraries.  On Ubuntu,
-try::
-
-  apt-get install libpq-dev
-
-On a Mac with homebrew::
-
-  brew install postgresql
+`hgvs` uses `psycopg <https://www.psycopg.org/psycopg3/>`__ with its
+prebuilt ``binary`` wheels to talk to UTA, so no PostgreSQL client
+libraries or compiler are required for a standard install.
 
 
 Install hgvs

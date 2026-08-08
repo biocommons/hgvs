@@ -48,7 +48,8 @@ dependencies = [
   "importlib_resources",
   "ipython",
   "parsley",
-  "psycopg2",
+  "psycopg[binary]",
+  "psycopg-pool",
 ]
 description = "HGVS Parser, Formatter, Mapper, Validator"
 dynamic = ["version"]
@@ -236,7 +237,7 @@ select = [
 
 [tool.ruff.lint.per-file-ignores]
 # https://github.com/biocommons/hgvs/issues/838
-"tests/*" = ["S101"]
+"tests/*" = ["PLR2004", "S101"]
 "src/hgvs/__init__.py" = ["B028", "G003", "UP031", "UP036"]
 "src/hgvs/alignmentmapper.py" = ["EM101", "EM102", "PLC0415", "PLR0911", "PLR0912", "PLR0915", "S101", "SIM102", "SIM108", "TRY003"]
 "src/hgvs/assemblymapper.py" = ["B026", "C401", "EM102", "G003", "S101", "TRY003", "UP008"]
