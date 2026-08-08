@@ -238,6 +238,10 @@ select = [
 
 [tool.ruff.lint.per-file-ignores]
 # https://github.com/biocommons/hgvs/issues/838
+# S101 (assert) is a permanent exception here, not debt: pytest rewrites
+# assert for readable failures and test runs aren't executed with -O, so
+# the rule's rationale (asserts stripped in optimized production code)
+# doesn't apply. See https://github.com/biocommons/hgvs/issues/850.
 "tests/*" = ["PLR2004", "S101"]
 "src/hgvs/__init__.py" = ["B028", "G003", "UP031", "UP036"]
 "src/hgvs/alignmentmapper.py" = ["EM101", "EM102", "PLC0415", "PLR0911", "PLR0912", "PLR0915", "S101", "SIM102", "SIM108", "TRY003"]
