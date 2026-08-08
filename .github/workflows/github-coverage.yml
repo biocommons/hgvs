@@ -8,6 +8,8 @@ jobs:
   coverage-python:
     name: Coverage (Python)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Check out
         uses: actions/checkout@v7
