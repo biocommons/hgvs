@@ -16,13 +16,20 @@ import hgvs.posedit
 import hgvs.sequencevariant
 import hgvs.validator
 from hgvs.decorators.lru_cache import lru_cache
-from hgvs.enums import PrevalidationLevel
-from hgvs.exceptions import HGVSInvalidVariantError, HGVSUnsupportedOperationError
+from hgvs.enums import PrevalidationLevel, ShiftOverBoundaryPreference
+from hgvs.exceptions import (
+    HGVSInvalidIntervalError,
+    HGVSInvalidVariantError,
+    HGVSUnsupportedOperationError,
+)
 from hgvs.utils import altseq_to_hgvsp, altseqbuilder
 from hgvs.utils.position import get_start_end, get_start_end_interbase
 from hgvs.utils.reftranscriptdata import RefTranscriptData
 
 _logger = logging.getLogger(__name__)
+
+_SHUFFLE_3PRIME = 3
+_SHUFFLE_5PRIME = 5
 
 
 class VariantMapper:
@@ -70,6 +77,8 @@ class VariantMapper:
         replace_reference=hgvs.global_config.mapping.replace_reference,
         prevalidation_level=hgvs.global_config.mapping.prevalidation_level,
         add_gene_symbol=hgvs.global_config.mapping.add_gene_symbol,
+        shift_over_boundary=hgvs.global_config.mapping.shift_over_boundary,
+        shift_over_boundary_preference=hgvs.global_config.mapping.shift_over_boundary_preference,
     ):
         """
         :param bool replace_reference: replace reference (entails additional network access)
@@ -92,6 +101,13 @@ class VariantMapper:
         self.left_normalizer = hgvs.normalizer.Normalizer(
             hdp, shuffle_direction=5, variantmapper=self
         )
+        self.shift_over_boundary = shift_over_boundary
+        if shift_over_boundary_preference is None:
+            self.shift_over_boundary_preference = ShiftOverBoundaryPreference.DEFAULT
+        else:
+            self.shift_over_boundary_preference = ShiftOverBoundaryPreference[
+                shift_over_boundary_preference.upper()
+            ]
 
     # ############################################################################
     # g⟷t
@@ -489,6 +505,34 @@ class VariantMapper:
             var_c, reference_data, translation_table=reference_data.translation_table
         )
 
+        # attempt to shift ins/dup variants from the intron into the exon or vice versa
+        if self.shift_over_boundary:
+            original_region = builder.get_variant_region()
+            if var_c.posedit.edit.type in ["ins", "dup"] and original_region in [
+                builder.INTRON,
+                builder.EXON,
+            ]:
+                if alt_ac is None:
+                    msg = f"mapping specific variant {var_c} requires alt_ac"
+                    raise HGVSUnsupportedOperationError(msg)
+                for shifted_var_c in VariantMapper._var_c_shifts(
+                    self, var_c, alt_ac, alt_aln_method
+                ):
+                    shifted_reference_data = RefTranscriptData(self.hdp, shifted_var_c.ac, pro_ac)
+                    shifted_builder = altseqbuilder.AltSeqBuilder(
+                        shifted_var_c, shifted_reference_data
+                    )
+                    shifted_region = shifted_builder.get_variant_region()
+                    if shifted_region not in [shifted_builder.INTRON, shifted_builder.EXON]:
+                        continue
+                    if original_region != shifted_region:
+                        # a shift is posible
+                        if self.shift_over_boundary_preference.name.lower() == shifted_region:
+                            # and that shift is preferred
+                            reference_data = shifted_reference_data
+                            builder = shifted_builder
+                        break
+
         # TODO: handle case where you get 2+ alt sequences back;
         # currently get list of 1 element loop structure implemented
         # to handle this, but doesn't really do anything currently.
@@ -496,8 +540,8 @@ class VariantMapper:
 
         var_ps = []
         for alt_data in all_alt_data:
-            builder = altseq_to_hgvsp.AltSeqToHgvsp(reference_data, alt_data)
-            var_p = builder.build_hgvsp()
+            hgvsp_builder = altseq_to_hgvsp.AltSeqToHgvsp(reference_data, alt_data)
+            var_p = hgvsp_builder.build_hgvsp()
             var_ps.append(var_p)
 
         var_p = var_ps[0]
@@ -794,6 +838,86 @@ class VariantMapper:
         gaps = self._gap_segments_within_pos_g(mapper, var_g.posedit.pos)
         return bool(gaps["I"] or gaps["D"])
 
+    def _build_tx_ref_alt_strings(self, seq, i_offsets, var_start, var_end, edit):
+        """Build transcript-level ref/alt strings for an edit, excluding I-segment positions.
+
+        I-segment positions are genomic bases with no transcript equivalent, so they are
+        filtered out of both the reference and alternate transcript sequences.
+        """
+        tx_ref_str = "".join(seq[j] for j in range(len(seq)) if j not in i_offsets)
+
+        if edit.type == "ins":
+            # Insertion between two positions: prefix includes var_start base
+            prefix_tx = [seq[j] for j in range(var_start + 1) if j not in i_offsets]
+            suffix_tx = [seq[j] for j in range(var_start + 1, len(seq)) if j not in i_offsets]
+            tx_alt_str = "".join(prefix_tx) + (edit.alt or "") + "".join(suffix_tx)
+        elif edit.type == "sub":
+            prefix_tx = [seq[j] for j in range(var_start) if j not in i_offsets]
+            suffix_tx = [seq[j] for j in range(var_start + 1, len(seq)) if j not in i_offsets]
+            tx_alt_str = "".join(prefix_tx) + (edit.alt or "") + "".join(suffix_tx)
+        elif edit.type == "del":
+            prefix_tx = [seq[j] for j in range(var_start) if j not in i_offsets]
+            suffix_tx = [seq[j] for j in range(var_end, len(seq)) if j not in i_offsets]
+            tx_alt_str = "".join(prefix_tx) + "".join(suffix_tx)
+        elif edit.type in ("delins", "dup", "inv", "identity"):
+            tx_alt_str = self._build_tx_alt_for_delins_family(
+                seq, i_offsets, var_start, var_end, edit
+            )
+        else:
+            msg = f"_get_altered_tx_sequence: unsupported edit type {edit.type!r}"
+            raise HGVSUnsupportedOperationError(msg)
+
+        return tx_ref_str, tx_alt_str
+
+    def _build_tx_alt_for_delins_family(self, seq, i_offsets, var_start, var_end, edit):
+        """Build the transcript alt string for delins/dup/inv/identity edit types."""
+        prefix_tx = [seq[j] for j in range(var_start) if j not in i_offsets]
+        if edit.type == "delins":
+            # For delins, include the adjacent I-seg base at exactly var_end in the suffix.
+            # This base is in the genomic reference but absent from the transcript; including
+            # it allows the prefix/suffix trimming step to cancel the double gap and produce
+            # the correct minimal transcript edit (e.g. 6-base delins → single SNV).
+            suffix_tx = [
+                seq[j] for j in range(var_end, len(seq)) if j not in i_offsets or j == var_end
+            ]
+            ins_seq = edit.alt or ""
+        else:
+            # For dup/inv/identity the duplicated/inverted/copied sequence must be
+            # transcript-only bases — exclude any I-segment positions from the variant range.
+            suffix_tx = [seq[j] for j in range(var_end, len(seq)) if j not in i_offsets]
+            clean_variant_seq = "".join(
+                seq[j] for j in range(var_start, var_end) if j not in i_offsets
+            )
+            if edit.type == "dup":
+                ins_seq = clean_variant_seq * 2
+            elif edit.type == "inv":
+                ins_seq = reverse_complement(clean_variant_seq)
+            else:  # identity
+                ins_seq = clean_variant_seq
+        return "".join(prefix_tx) + ins_seq + "".join(suffix_tx)
+
+    def _trim_common_prefix_suffix(self, tx_ref_str, tx_alt_str):
+        """Trim the common prefix/suffix of two strings to find the minimal edit.
+
+        Returns (ref_trimmed, alt_trimmed, n_prefix, n_suffix).
+        """
+        n_prefix = 0
+        while (
+            n_prefix < len(tx_ref_str)
+            and n_prefix < len(tx_alt_str)
+            and tx_ref_str[n_prefix] == tx_alt_str[n_prefix]
+        ):
+            n_prefix += 1
+
+        n_suffix = 0
+        max_suffix = min(len(tx_ref_str) - n_prefix, len(tx_alt_str) - n_prefix)
+        while n_suffix < max_suffix and tx_ref_str[-(n_suffix + 1)] == tx_alt_str[-(n_suffix + 1)]:
+            n_suffix += 1
+
+        ref_trimmed = tx_ref_str[n_prefix : len(tx_ref_str) - n_suffix if n_suffix else None]
+        alt_trimmed = tx_alt_str[n_prefix : len(tx_alt_str) - n_suffix if n_suffix else None]
+        return ref_trimmed, alt_trimmed, n_prefix, n_suffix
+
     def _get_altered_tx_sequence(self, strand, mapper, pos_g, var_g, tx_pos):
         """Compute transcript-level edit for variants at alignment gaps (uncertain path).
 
@@ -819,73 +943,18 @@ class VariantMapper:
         var_end = var_g.posedit.pos.end.base - pos_g.start.base + 1
         edit = var_g.posedit.edit
 
-        # Build transcript ref = all genomic bases excluding I-segment positions
-        tx_ref_str = "".join(seq[j] for j in range(len(seq)) if j not in i_offsets)
-
-        # Build transcript alt by applying variant to prefix/suffix (filtered of I-bases)
-        if edit.type == "ins":
-            # Insertion between two positions: prefix includes var_start base
-            prefix_tx = [seq[j] for j in range(var_start + 1) if j not in i_offsets]
-            suffix_tx = [seq[j] for j in range(var_start + 1, len(seq)) if j not in i_offsets]
-            tx_alt_str = "".join(prefix_tx) + (edit.alt or "") + "".join(suffix_tx)
-        elif edit.type == "sub":
-            prefix_tx = [seq[j] for j in range(var_start) if j not in i_offsets]
-            suffix_tx = [seq[j] for j in range(var_start + 1, len(seq)) if j not in i_offsets]
-            tx_alt_str = "".join(prefix_tx) + (edit.alt or "") + "".join(suffix_tx)
-        elif edit.type == "del":
-            prefix_tx = [seq[j] for j in range(var_start) if j not in i_offsets]
-            suffix_tx = [seq[j] for j in range(var_end, len(seq)) if j not in i_offsets]
-            tx_alt_str = "".join(prefix_tx) + "".join(suffix_tx)
-        elif edit.type in ("delins", "dup", "inv", "identity"):
-            prefix_tx = [seq[j] for j in range(var_start) if j not in i_offsets]
-            if edit.type == "delins":
-                # For delins, include the adjacent I-seg base at exactly var_end in the suffix.
-                # This base is in the genomic reference but absent from the transcript; including
-                # it allows the prefix/suffix trimming step to cancel the double gap and produce
-                # the correct minimal transcript edit (e.g. 6-base delins → single SNV).
-                suffix_tx = [
-                    seq[j] for j in range(var_end, len(seq)) if j not in i_offsets or j == var_end
-                ]
-                ins_seq = edit.alt or ""
-            else:
-                # For dup/inv/identity the duplicated/inverted/copied sequence must be
-                # transcript-only bases — exclude any I-segment positions from the variant range.
-                suffix_tx = [seq[j] for j in range(var_end, len(seq)) if j not in i_offsets]
-                clean_variant_seq = "".join(
-                    seq[j] for j in range(var_start, var_end) if j not in i_offsets
-                )
-                if edit.type == "dup":
-                    ins_seq = clean_variant_seq * 2
-                elif edit.type == "inv":
-                    ins_seq = reverse_complement(clean_variant_seq)
-                else:  # identity
-                    ins_seq = clean_variant_seq
-            tx_alt_str = "".join(prefix_tx) + ins_seq + "".join(suffix_tx)
-        else:
-            msg = f"_get_altered_tx_sequence: unsupported edit type {edit.type!r}"
-            raise HGVSUnsupportedOperationError(msg)
+        tx_ref_str, tx_alt_str = self._build_tx_ref_alt_strings(
+            seq, i_offsets, var_start, var_end, edit
+        )
 
         # Apply strand: convert from genomic order to transcript order
         if strand == -1:
             tx_ref_str = reverse_complement(tx_ref_str)
             tx_alt_str = reverse_complement(tx_alt_str)
 
-        # Trim common prefix and suffix to find the minimal edit
-        n_prefix = 0
-        while (
-            n_prefix < len(tx_ref_str)
-            and n_prefix < len(tx_alt_str)
-            and tx_ref_str[n_prefix] == tx_alt_str[n_prefix]
-        ):
-            n_prefix += 1
-
-        n_suffix = 0
-        max_suffix = min(len(tx_ref_str) - n_prefix, len(tx_alt_str) - n_prefix)
-        while n_suffix < max_suffix and tx_ref_str[-(n_suffix + 1)] == tx_alt_str[-(n_suffix + 1)]:
-            n_suffix += 1
-
-        ref_trimmed = tx_ref_str[n_prefix : len(tx_ref_str) - n_suffix if n_suffix else None]
-        alt_trimmed = tx_alt_str[n_prefix : len(tx_alt_str) - n_suffix if n_suffix else None]
+        ref_trimmed, alt_trimmed, n_prefix, n_suffix = self._trim_common_prefix_suffix(
+            tx_ref_str, tx_alt_str
+        )
 
         adjusted_pos = copy.deepcopy(tx_pos)
         adjusted_pos.start.base += n_prefix
@@ -898,6 +967,82 @@ class VariantMapper:
             symbol = self.hdp.get_tx_identity_info(var.ac).get("hgnc", None)
         var.gene = symbol
         return var
+
+    def _var_c_shifts(self, var_c, alt_ac, alt_aln_method):
+        """Try to shift c. variants to find alternative representations."""
+        if not var_c.posedit or var_c.posedit.edit.type not in ("ins", "dup"):
+            return
+        strand = self._fetch_AlignmentMapper(
+            tx_ac=var_c.ac, alt_ac=alt_ac, alt_aln_method=alt_aln_method
+        ).strand
+        var_g = VariantMapper.c_to_g(self, var_c, alt_ac=alt_ac, alt_aln_method=alt_aln_method)
+        for shifted_var_g in self._var_g_shifts(
+            var_g, strand=strand, alt_aln_method=alt_aln_method
+        ):
+            try:
+                shifted_var_c = VariantMapper.g_to_c(
+                    self, shifted_var_g, tx_ac=var_c.ac, alt_aln_method=alt_aln_method
+                )
+                yield shifted_var_c
+            except (
+                HGVSInvalidVariantError,
+                HGVSInvalidIntervalError,
+                HGVSUnsupportedOperationError,
+            ):
+                pass
+
+    def _var_g_shifts(self, var_g, strand, alt_aln_method):
+        """Try to shift g. variants to find alternative representations."""
+        prev_var_g_strs = [str(var_g)]
+        for shuffle_direction in [_SHUFFLE_3PRIME, _SHUFFLE_5PRIME]:
+            try:
+                shifted_var_g = self._var_g_shift_with_rewrite(
+                    var_g, shuffle_direction, strand, alt_aln_method
+                )
+                if str(shifted_var_g) in prev_var_g_strs:
+                    continue
+                prev_var_g_strs.append(str(shifted_var_g))
+                yield shifted_var_g
+            except (
+                HGVSInvalidVariantError,
+                HGVSInvalidIntervalError,
+                HGVSUnsupportedOperationError,
+            ):
+                pass
+
+    def _var_g_shift_with_rewrite(self, var_g, shuffle_direction, strand, alt_aln_method):
+        """Attempt to shift a variant all the way left or right. Rewrite
+        duplications as insertions so that the variant is shifted farther
+        than would normally be possible using the HGVS notation."""
+        var_g = copy.deepcopy(var_g)
+        normalizer = hgvs.normalizer.Normalizer(
+            self.hdp,
+            alt_aln_method=alt_aln_method,
+            validate=False,
+            shuffle_direction=shuffle_direction,
+        )
+        var_g = normalizer.normalize(var_g)
+        if var_g.posedit.edit.type == "dup":
+            self._replace_reference(var_g)
+            if (strand == 1 and shuffle_direction == _SHUFFLE_3PRIME) or (
+                strand == -1 and shuffle_direction == _SHUFFLE_5PRIME
+            ):
+                var_g.posedit = hgvs.posedit.PosEdit(
+                    pos=hgvs.location.Interval(
+                        start=hgvs.location.SimplePosition(base=var_g.posedit.pos.start.base - 1),
+                        end=hgvs.location.SimplePosition(base=var_g.posedit.pos.start.base),
+                    ),
+                    edit=hgvs.edit.NARefAlt(ref=None, alt=var_g.posedit.edit.ref),
+                )
+            else:
+                var_g.posedit = hgvs.posedit.PosEdit(
+                    pos=hgvs.location.Interval(
+                        start=hgvs.location.SimplePosition(base=var_g.posedit.pos.end.base),
+                        end=hgvs.location.SimplePosition(base=var_g.posedit.pos.end.base + 1),
+                    ),
+                    edit=hgvs.edit.NARefAlt(ref=None, alt=var_g.posedit.edit.ref),
+                )
+        return var_g
 
 
 # <LICENSE>

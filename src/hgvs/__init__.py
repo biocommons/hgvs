@@ -4,14 +4,14 @@ variants.  See https://github.com/biocommons/hgvs/ for details.
 Example use:
 
 >>> import hgvs.dataproviders.uta
->>> import hgvs.parser
+>>> import hgvs.parsers
 >>> import hgvs.variantmapper
 
 # start with these variants as strings
 >>> hgvs_g, hgvs_c = "NC_000007.13:g.36561662C>T", "NM_001637.3:c.1582G>A"
 
 # parse the genomic variant into a Python structure
->>> hp = hgvs.parser.Parser()
+>>> hp = hgvs.parsers.Parser()
 >>> var_g = hp.parse_hgvs_variant(hgvs_g)
 >>> var_g
 SequenceVariant(ac=NC_000007.13, type=g, posedit=36561662C>T, gene=None)

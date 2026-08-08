@@ -1,16 +1,15 @@
-# -*- coding: utf-8 -*-
 import os
 import unittest
 
 import pytest
-from support import CACHE
 
 import hgvs.assemblymapper
 import hgvs.dataproviders.uta
-import hgvs.parser
+import hgvs.parsers
 import hgvs.variantmapper
 from hgvs.enums import PrevalidationLevel
 from hgvs.exceptions import HGVSInvalidVariantError
+from support import CACHE
 
 
 @pytest.mark.quick
@@ -22,7 +21,7 @@ class Test_VariantMapper(unittest.TestCase):
         )
         cls.am = hgvs.assemblymapper.AssemblyMapper(cls.hdp)
         cls.am37 = hgvs.assemblymapper.AssemblyMapper(cls.hdp, assembly_name="GRCh37")
-        cls.hp = hgvs.parser.Parser()
+        cls.hp = hgvs.parsers.Parser()
 
     def test_VariantMapper_quick(self):
         # From garcia.tsv:
@@ -156,7 +155,7 @@ class Test_VariantMapper(unittest.TestCase):
 
         self.assertEqual(str(var_g), hgvs_g)
 
-         # g_to_c next to 3' UTR
+        # g_to_c next to 3' UTR
         hgvs_g = "NC_000002.11:g.182402910_182402911insTTACT"
         hgvs_c = "NM_001030311.2:c.1677_*1insAGTAA"
         var_g = self.hp.parse_hgvs_variant(hgvs_g)
@@ -202,7 +201,6 @@ class Test_VariantMapper(unittest.TestCase):
         var_c = self.am.g_to_c(var_g, "NM_015120.4")
 
         assert str(var_c) == hgvs_c
-
 
     def test_c_to_p_with_stop_gain(self):
         # issue-474
@@ -446,7 +444,7 @@ class Test_RefReplacement(unittest.TestCase):
         cls.am = hgvs.assemblymapper.AssemblyMapper(
             cls.hdp, replace_reference=True, assembly_name="GRCh37", alt_aln_method="splign"
         )
-        cls.hp = hgvs.parser.Parser()
+        cls.hp = hgvs.parsers.Parser()
         cls.tests = [_parse_rec(rec) for rec in cls.test_cases]
 
     def test_replace_reference_sequence(self):
@@ -469,7 +467,7 @@ class Test_AssemblyMapper(unittest.TestCase):
         cls.hdp = hgvs.dataproviders.uta.connect(
             mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
         )
-        cls.hp = hgvs.parser.Parser()
+        cls.hp = hgvs.parsers.Parser()
         cls.am = hgvs.assemblymapper.AssemblyMapper(
             cls.hdp, assembly_name="GRCh37", alt_aln_method="splign"
         )
@@ -517,9 +515,10 @@ class Test_AssemblyMapper(unittest.TestCase):
         self._test_mapping(hgvs_set)
 
     def test_t_to_p(self):
-        assert "non-coding" == str(self.am.t_to_p(self.hp.parse("NR_027676.1:n.3980del")))
-        assert "NP_000050.2:p.(Lys2597=)" == str(
-            self.am.t_to_p(self.hp.parse("NM_000059.3:c.7791A>G"))
+        assert str(self.am.t_to_p(self.hp.parse("NR_027676.1:n.3980del"))) == "non-coding"
+        assert (
+            str(self.am.t_to_p(self.hp.parse("NM_000059.3:c.7791A>G")))
+            == "NP_000050.2:p.(Lys2597=)"
         )
 
     def test_issue_704_set_prevalidation_level(self):
@@ -527,12 +526,19 @@ class Test_AssemblyMapper(unittest.TestCase):
 
         for prevalidation_level in PrevalidationLevel:
             am = hgvs.assemblymapper.AssemblyMapper(
-                self.hdp, replace_reference=True, assembly_name="GRCh37", alt_aln_method="splign",
-                normalize=True, prevalidation_level=prevalidation_level.name,
+                self.hdp,
+                replace_reference=True,
+                assembly_name="GRCh37",
+                alt_aln_method="splign",
+                normalize=True,
+                prevalidation_level=prevalidation_level.name,
             )
             vm = am._norm.vm
-            self.assertEqual(vm.prevalidation_level, prevalidation_level,
-                             "AssemblyMapper Normalizer has 'prevalidation_level' set")
+            self.assertEqual(
+                vm.prevalidation_level,
+                prevalidation_level,
+                "AssemblyMapper Normalizer has 'prevalidation_level' set",
+            )
 
 
 if __name__ == "__main__":

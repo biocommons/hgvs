@@ -1,18 +1,17 @@
-# -*- coding: utf-8 -*-
 import os
 import unittest
 
 import pytest
-from support import CACHE
 
 import hgvs.assemblymapper
 import hgvs.dataproviders.uta
 import hgvs.normalizer
-import hgvs.parser
+import hgvs.parsers
 import hgvs.sequencevariant
 import hgvs.validator
 import hgvs.variantmapper
 from hgvs.exceptions import HGVSDataNotAvailableError
+from support import CACHE
 
 
 @pytest.mark.issues
@@ -24,7 +23,7 @@ class Test_Issues(unittest.TestCase):
         )
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp, replace_reference=False)
         self.vm_rr = hgvs.variantmapper.VariantMapper(self.hdp, replace_reference=True)
-        self.hp = hgvs.parser.Parser()
+        self.hp = hgvs.parsers.Parser()
         self.hn = hgvs.normalizer.Normalizer(self.hdp)
         self.hv = hgvs.validator.IntrinsicValidator()
         self.am37 = hgvs.assemblymapper.AssemblyMapper(

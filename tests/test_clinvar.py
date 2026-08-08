@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import csv
 import gzip
 import io
@@ -9,7 +8,7 @@ import pytest
 
 import hgvs
 import hgvs.dataproviders.uta
-import hgvs.parser
+import hgvs.parsers
 import hgvs.sequencevariant
 import hgvs.variantmapper
 from support import CACHE
@@ -25,7 +24,7 @@ class Test_Clinvar(unittest.TestCase, CrossChecker):
             mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
         )
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp)
-        self.hp = hgvs.parser.Parser()
+        self.hp = hgvs.parsers.Parser()
 
     @pytest.mark.extra
     def test_clinvar(self, fn=data_fn, mod=None):
@@ -45,11 +44,11 @@ class Test_Clinvar(unittest.TestCase, CrossChecker):
             fh=(
                 io.TextIOWrapper(gzip.open(fn), encoding="utf-8")
                 if fn.endswith(".gz")
-                else io.open(fn)
+                else open(fn)
             ),
             skip_comments=True,
         )
-        for rec in csv.DictReader(fh, delimiter=str("\t")):
+        for rec in csv.DictReader(fh, delimiter="\t"):
             if mod and fh.lines_read % mod != 0:
                 continue
             print(rec["gene"])
@@ -58,11 +57,9 @@ class Test_Clinvar(unittest.TestCase, CrossChecker):
             try:
                 msg = self.crosscheck_variant_group(list(variants))
             except Exception as e:
-                e.args = (e.args[0] + "\n  at line {fh.lines_read}: {fh.last_line}".format(fh=fh),)
+                e.args = (e.args[0] + f"\n  at line {fh.lines_read}: {fh.last_line}",)
                 raise e
-            self.assertIsNone(
-                msg, lambda: msg + "\n   on line {fh.lines_read}: {fh.last_line}".format(fh=fh)
-            )
+            self.assertIsNone(msg, lambda: msg + f"\n   on line {fh.lines_read}: {fh.last_line}")
 
 
 if __name__ == "__main__":

@@ -35,20 +35,14 @@ def get_start_end(
     if isinstance(var, hgvs.location.Interval):
         s = var.start
         e = var.end
-        if not isinstance(s, (hgvs.location.SimplePosition, hgvs.location.BaseOffsetPosition)):
-            if outer_confidence and not s.start.base is not None:
-                s = s.start
-            else:
-                s = s.end
-        if not isinstance(e, (hgvs.location.SimplePosition, hgvs.location.BaseOffsetPosition)):
-            if outer_confidence and not e.end.base is not None:
-                e = e.end
-            else:
-                e = e.start
+        if not isinstance(s, hgvs.location.SimplePosition | hgvs.location.BaseOffsetPosition):
+            s = s.start if outer_confidence and not s.start.base is not None else s.end
+        if not isinstance(e, hgvs.location.SimplePosition | hgvs.location.BaseOffsetPosition):
+            e = e.end if outer_confidence and not e.end.base is not None else e.start
         return s, e
 
     # Handle position objects directly
-    if isinstance(var, (hgvs.location.SimplePosition, hgvs.location.BaseOffsetPosition)):
+    if isinstance(var, hgvs.location.SimplePosition | hgvs.location.BaseOffsetPosition):
         return var, var
 
     # if there is no posedit, return None, all steps below this would fail
@@ -60,8 +54,6 @@ def get_start_end(
 
     if isinstance(pos, hgvs.location.SimplePosition):
         return pos, pos
-    if isinstance(pos, hgvs.location.BaseOffsetInterval):
-        return pos.start, pos.end
     if isinstance(pos, hgvs.location.Interval):
         s = pos.start
         e = pos.end
@@ -71,22 +63,16 @@ def get_start_end(
             e = e.base
             return s, e
 
-        if not isinstance(s, (hgvs.location.SimplePosition, hgvs.location.BaseOffsetPosition)):
+        if not isinstance(s, hgvs.location.SimplePosition | hgvs.location.BaseOffsetPosition):
             orig_s = s
 
-            if outer_confidence and s.start.base is not None:
-                s = s.start
-            else:
-                s = s.end
+            s = s.start if outer_confidence and s.start.base is not None else s.end
             if s.is_uncertain:
                 s = orig_s.end
 
-        if not isinstance(e, (hgvs.location.SimplePosition, hgvs.location.BaseOffsetPosition)):
+        if not isinstance(e, hgvs.location.SimplePosition | hgvs.location.BaseOffsetPosition):
             orig_e = e
-            if outer_confidence and e.end.base is not None:
-                e = e.end
-            else:
-                e = e.start
+            e = e.end if outer_confidence and e.end.base is not None else e.start
             if e.is_uncertain:
                 e = orig_e.start
         return s, e
@@ -121,15 +107,11 @@ def get_start_end_interbase(
                 seq_start = pos.start.end.base - 1
         else:
             seq_start = pos.start.base - 1
-    else:
+    elif isinstance(pos.start, hgvs.location.Interval):
         # For certain start, use the start boundary
-        if isinstance(pos.start, hgvs.location.Interval):
-            if outer_confidence:
-                seq_start = pos.start.start.base - 1
-            else:
-                seq_start = pos.start.end.base - 1
-        else:
-            seq_start = pos.start.base - 1
+        seq_start = pos.start.start.base - 1 if outer_confidence else pos.start.end.base - 1
+    else:
+        seq_start = pos.start.base - 1
 
     # Handle end position
     if pos.end.uncertain:
@@ -141,14 +123,10 @@ def get_start_end_interbase(
                 seq_end = pos.end.start.base
         else:
             seq_end = pos.end.base
-    else:
+    elif isinstance(pos.end, hgvs.location.Interval):
         # For certain end, use the end boundary
-        if isinstance(pos.end, hgvs.location.Interval):
-            if outer_confidence:
-                seq_end = pos.end.end.base
-            else:
-                seq_end = pos.end.start.base
-        else:
-            seq_end = pos.end.base
+        seq_end = pos.end.end.base if outer_confidence else pos.end.start.base
+    else:
+        seq_end = pos.end.base
 
     return seq_start, seq_end
