@@ -50,21 +50,12 @@ BaseOffsetPosition(base=1582, offset=0, datum=Datum.CDS_START, uncertain=False)
 
 import logging
 import re
-import sys
 import warnings
 from importlib import metadata
 
 from .config import global_config  # noqa (importing symbol)
 
 _logger = logging.getLogger(__name__)
-
-
-if sys.version_info < (3, 6):
-    _logger.critical(
-        """hgvs on Python 2.7 is no longer supported. The next major version
-    of hgvs will require Python 3.6+. See
-    https://github.com/biocommons/org/wiki/Migrating-to-Python-3.6."""
-    )
 
 
 _is_released_version = False
@@ -74,7 +65,11 @@ try:
     if re.match(r"^\d+\.\d+\.\d+$", __version__) is not None:
         _is_released_version = True
 except metadata.PackageNotFoundError:
-    warnings.warn("can't get __version__ because %s package isn't installed" % __package__, Warning)
+    warnings.warn(
+        f"can't get __version__ because {__package__} package isn't installed",
+        Warning,
+        stacklevel=2,
+    )
     __version__ = None
 
 

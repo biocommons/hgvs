@@ -73,7 +73,7 @@ class AssemblyMapper(VariantMapper):
         :raises HGVSError subclasses: for a variety of mapping and data lookup failures
         """
 
-        super(AssemblyMapper, self).__init__(
+        super().__init__(
             hdp=hdp,
             replace_reference=replace_reference,
             prevalidation_level=prevalidation_level,
@@ -113,42 +113,30 @@ class AssemblyMapper(VariantMapper):
         )
 
     def g_to_c(self, var_g, tx_ac):
-        var_out = super(AssemblyMapper, self).g_to_c(
-            var_g, tx_ac, alt_aln_method=self.alt_aln_method
-        )
+        var_out = super().g_to_c(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
         return self._maybe_normalize(var_out)
 
     def g_to_n(self, var_g, tx_ac):
-        var_out = super(AssemblyMapper, self).g_to_n(
-            var_g, tx_ac, alt_aln_method=self.alt_aln_method
-        )
+        var_out = super().g_to_n(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
         return self._maybe_normalize(var_out)
 
     def g_to_t(self, var_g, tx_ac):
-        var_out = super(AssemblyMapper, self).g_to_t(
-            var_g, tx_ac, alt_aln_method=self.alt_aln_method
-        )
+        var_out = super().g_to_t(var_g, tx_ac, alt_aln_method=self.alt_aln_method)
         return self._maybe_normalize(var_out)
 
     def c_to_g(self, var_c):
         alt_ac = self._alt_ac_for_tx_ac(var_c.ac)
-        var_out = super(AssemblyMapper, self).c_to_g(
-            var_c, alt_ac, alt_aln_method=self.alt_aln_method
-        )
+        var_out = super().c_to_g(var_c, alt_ac, alt_aln_method=self.alt_aln_method)
         return self._maybe_normalize(var_out)
 
     def n_to_g(self, var_n):
         alt_ac = self._alt_ac_for_tx_ac(var_n.ac)
-        var_out = super(AssemblyMapper, self).n_to_g(
-            var_n, alt_ac, alt_aln_method=self.alt_aln_method
-        )
+        var_out = super().n_to_g(var_n, alt_ac, alt_aln_method=self.alt_aln_method)
         return self._maybe_normalize(var_out)
 
     def t_to_g(self, var_t):
         alt_ac = self._alt_ac_for_tx_ac(var_t.ac)
-        var_out = super(AssemblyMapper, self).t_to_g(
-            var_t, alt_ac, alt_aln_method=self.alt_aln_method
-        )
+        var_out = super().t_to_g(var_t, alt_ac, alt_aln_method=self.alt_aln_method)
         return self._maybe_normalize(var_out)
 
     def t_to_p(self, var_t):
@@ -172,21 +160,17 @@ class AssemblyMapper(VariantMapper):
 
     def c_to_n(self, var_c):
         alt_ac = self._alt_ac_for_tx_ac(var_c.ac)
-        var_out = super(AssemblyMapper, self).c_to_n(
-            var_c, alt_ac=alt_ac, alt_aln_method=self.alt_aln_method
-        )
+        var_out = super().c_to_n(var_c, alt_ac=alt_ac, alt_aln_method=self.alt_aln_method)
         return self._maybe_normalize(var_out)
 
     def n_to_c(self, var_n):
         alt_ac = self._alt_ac_for_tx_ac(var_n.ac)
-        var_out = super(AssemblyMapper, self).n_to_c(
-            var_n, alt_ac=alt_ac, alt_aln_method=self.alt_aln_method
-        )
+        var_out = super().n_to_c(var_n, alt_ac=alt_ac, alt_aln_method=self.alt_aln_method)
         return self._maybe_normalize(var_out)
 
     def c_to_p(self, var_c, translation_table=TranslationTable.standard):
         alt_ac = self._alt_ac_for_tx_ac(var_c.ac)
-        var_out = super(AssemblyMapper, self).c_to_p(
+        var_out = super().c_to_p(
             var_c,
             alt_ac=alt_ac,
             alt_aln_method=self.alt_aln_method,
@@ -226,7 +210,7 @@ class AssemblyMapper(VariantMapper):
 
         # TODO: conditional is unnecessary; remove
         if len(alt_acs) > 1:
-            names = set(self._assembly_map[ac] for ac in alt_acs)
+            names = {self._assembly_map[ac] for ac in alt_acs}
             if names != set("XY"):
                 alts = ", ".join([f"{ac} ({self._assembly_map[ac]})" for ac in alt_acs])
                 raise HGVSError(
@@ -262,7 +246,7 @@ class AssemblyMapper(VariantMapper):
             alt_ac = self._alt_ac_for_tx_ac(tx_ac)
         if alt_aln_method is None:
             alt_aln_method = self.alt_aln_method
-        return super(AssemblyMapper, self)._fetch_AlignmentMapper(tx_ac, alt_ac, alt_aln_method)
+        return super()._fetch_AlignmentMapper(tx_ac, alt_ac, alt_aln_method)
 
     def _maybe_normalize(self, var):
         """normalize variant if requested, and ignore HGVSUnsupportedOperationError

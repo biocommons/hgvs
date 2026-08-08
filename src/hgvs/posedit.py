@@ -34,7 +34,7 @@ class PosEdit:
     __str__ = format
 
     def __repr__(self):
-        return "{0}({1})".format(
+        return "{}({})".format(
             self.__class__.__name__,
             ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
         )

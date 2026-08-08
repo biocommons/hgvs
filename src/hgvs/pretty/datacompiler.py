@@ -2,8 +2,6 @@ from bioutils.normalize import normalize
 from bioutils.sequences import aa1_to_aa3_lut
 
 import hgvs
-import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
-import hgvs.utils.altseqbuilder as altseqbuilder
 from hgvs.exceptions import HGVSInvalidIntervalError
 from hgvs.pretty.models import (
     PositionDetail,
@@ -13,6 +11,7 @@ from hgvs.pretty.models import (
     VariantData,
 )
 from hgvs.sequencevariant import SequenceVariant
+from hgvs.utils import altseq_to_hgvsp, altseqbuilder
 from hgvs.utils.reftranscriptdata import RefTranscriptData
 
 

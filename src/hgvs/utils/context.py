@@ -79,7 +79,8 @@ def variant_context_w_alignment(am, var, margin=20, tx_ac=None):
     span_g = (span_g[0] - margin, span_g[1] + margin)
     ival_g = Interval(SimplePosition(span_g[0]), SimplePosition(span_g[1]))
     ival_n = tm.g_to_n(ival_g)
-    assert ival_n.start.offset == 0 and ival_n.end.offset == 0, "limited to coding variants"
+    assert ival_n.start.offset == 0, "limited to coding variants"
+    assert ival_n.end.offset == 0, "limited to coding variants"
     span_n = _ival_to_span(ival_n)
     ival_c = tm.g_to_c(ival_g)
     span_c = _ival_to_span(ival_c)

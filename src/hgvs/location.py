@@ -40,7 +40,7 @@ class SimplePosition:
         return str(self)
 
     def __repr__(self):
-        return "{0}({1})".format(
+        return "{}({})".format(
             self.__class__.__name__,
             ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
         )
@@ -154,7 +154,7 @@ class BaseOffsetPosition:
             else str(self.base)
         )
         offset_str = (
-            "+?" if self.offset is None else "" if self.offset == 0 else "%+d" % self.offset
+            "+?" if self.offset is None else "" if self.offset == 0 else f"{self.offset:+d}"
         )
         pos = base_str + offset_str
         return pos
@@ -167,7 +167,7 @@ class BaseOffsetPosition:
         return str(self)
 
     def __repr__(self):
-        return "{0}({1})".format(
+        return "{}({})".format(
             self.__class__.__name__,
             ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
         )
@@ -275,7 +275,7 @@ class AAPosition:
     __str__ = format
 
     def __repr__(self):
-        return "{0}({1})".format(
+        return "{}({})".format(
             self.__class__.__name__,
             ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
         )
@@ -398,7 +398,7 @@ class Interval:
     __str__ = format
 
     def __repr__(self):
-        return "{0}({1})".format(
+        return "{}({})".format(
             self.__class__.__name__,
             ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
         )

@@ -179,7 +179,7 @@ class Parser:
                 except self._parse_error_cls as exc:
                     raise self._translate_parse_error(s, exc) from exc
 
-            rule_fxn.__doc__ = "parse string s using `%s' rule" % rule_name
+            rule_fxn.__doc__ = f"parse string s using `{rule_name}' rule"
             return rule_fxn
 
         exposed_rules = [
