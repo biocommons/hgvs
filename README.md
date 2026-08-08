@@ -68,21 +68,11 @@ instructions, see the [HGVS readthedocs](https://hgvs.readthedocs.io/)
 
 ### Prerequisites
 
-    libpq
     python3
-    postgresql
 
-Examples for installation:
-
-MacOS :
-
-    brew install libpq
-    brew install python3
-    brew install postgresql
-
-Ubuntu :
-
-    sudo apt install gcc libpq-dev python3-dev
+`hgvs` uses [psycopg](https://www.psycopg.org/psycopg3/) with its
+prebuilt `binary` wheels to talk to UTA, so no PostgreSQL client
+libraries or compiler are required for a standard install.
 
 ### Installation Steps
 

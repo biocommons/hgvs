@@ -10,11 +10,13 @@ import inspect
 import logging
 import os
 import re
+from pathlib import Path
+from typing import ClassVar
 from urllib import parse as urlparse
 
-import psycopg2
-import psycopg2.extras
-import psycopg2.pool
+import psycopg
+import psycopg.rows
+from psycopg_pool import ConnectionPool
 
 import hgvs
 from hgvs.exceptions import HGVSDataNotAvailableError, HGVSError
@@ -91,10 +93,10 @@ def connect(
       sqlite:////tmp/uta-0.0.6.db
 
     For postgresql db_urls, pooling=True causes connect to use a
-    psycopg2.pool.ThreadedConnectionPool.
+    psycopg_pool.ConnectionPool.
     """
 
-    _logger.debug("connecting to " + str(db_url) + "...")
+    _logger.debug("connecting to %s...", db_url)
 
     if db_url is None:
         db_url = _get_ncbi_db_url()
@@ -114,7 +116,7 @@ def connect(
 class NCBIBase:
     required_version = "1.1"
 
-    _queries = {
+    _queries: ClassVar[dict] = {
         "gene_id_for_hgnc": """
             select distinct(gene_id)
             from assocacs
@@ -243,11 +245,12 @@ class NCBI_postgresql(NCBIBase):
         cache=None,
     ):
         if url.schema is None:
-            raise Exception(f"No schema name provided in {url}")
+            msg = f"No schema name provided in {url}"
+            raise HGVSError(msg)
         self.application_name = application_name
         self.pooling = pooling
         self._conn = None
-        super(NCBI_postgresql, self).__init__(url, mode, cache)
+        super().__init__(url, mode, cache)
 
     def __del__(self):
         self.close()
@@ -255,7 +258,7 @@ class NCBI_postgresql(NCBIBase):
     def close(self):
         if self.pooling:
             _logger.warning("Closing pool; future mapping and validation will fail.")
-            self._pool.closeall()
+            self._pool.close()
         else:
             _logger.warning("Closing connection; future mapping and validation will fail.")
             if self._conn is not None:
@@ -264,27 +267,31 @@ class NCBI_postgresql(NCBIBase):
     def _connect(self):
         if self.application_name is None:
             st = inspect.stack()
-            self.application_name = os.path.basename(st[-1][1])
-        conn_args = dict(
-            host=self.url.hostname,
-            port=self.url.port,
-            database=self.url.database,
-            user=self.url.username,
-            password=self.url.password,
-            application_name=self.application_name + "/" + hgvs.__version__,
-        )
+            self.application_name = Path(st[-1][1]).name
+        conn_args = {
+            "host": self.url.hostname,
+            "port": self.url.port,
+            "dbname": self.url.database,
+            "user": self.url.username,
+            "password": self.url.password,
+            "application_name": self.application_name + "/" + hgvs.__version__,
+        }
         if self.pooling:
-            _logger.info("Using UTA ThreadedConnectionPool")
-            self._pool = psycopg2.pool.ThreadedConnectionPool(
-                hgvs.global_config.uta.pool_min, hgvs.global_config.uta.pool_max, **conn_args
+            _logger.info("Using UTA ConnectionPool")
+            self._pool = ConnectionPool(
+                min_size=hgvs.global_config.uta.pool_min,
+                max_size=hgvs.global_config.uta.pool_max,
+                kwargs=conn_args,
+                open=False,
             )
+            self._pool.open()
         else:
-            self._conn = psycopg2.connect(**conn_args)
+            self._conn = psycopg.connect(**conn_args)
             self._conn.autocommit = True
 
         self._ensure_schema_exists()
 
-        # remap sqlite's ? placeholders to psycopg2's %s
+        # remap sqlite's ? placeholders to psycopg's %s
         self._queries = {k: v.replace("?", "%s") for k, v in self._queries.items()}
 
     def _ensure_schema_exists(self):
@@ -292,7 +299,7 @@ class NCBI_postgresql(NCBIBase):
         r = self._fetchone(
             "select exists(SELECT 1 FROM pg_namespace WHERE nspname = %s)", [self.url.schema]
         )
-        if r[0]:
+        if r["exists"]:
             return
         raise HGVSDataNotAvailableError(
             f"specified schema ({self.url.schema}) does not exist (url={self.url})"
@@ -325,7 +332,7 @@ class NCBI_postgresql(NCBIBase):
                 # autocommit=True obviates closing explicitly
                 conn.autocommit = True
 
-                cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+                cur = conn.cursor(row_factory=psycopg.rows.dict_row)
                 cur.execute(f"set search_path = {self.url.schema};")
 
                 yield cur
@@ -337,18 +344,22 @@ class NCBI_postgresql(NCBIBase):
 
                 break
 
-            except psycopg2.OperationalError:
-                _logger.warning(f"Lost connection to {self.url}; attempting reconnect")
+            except psycopg.OperationalError:
+                _logger.warning("Lost connection to %s; attempting reconnect", self.url)
                 if self.pooling:
-                    self._pool.closeall()
+                    self._pool.close()
                 self._connect()
-                _logger.warning(f"Reconnected to {self.url}")
+                _logger.warning("Reconnected to %s", self.url)
 
             n_tries_rem -= 1
 
         else:
             # N.B. Probably never reached
-            raise HGVSError(f"Permanently lost connection to {self.url} ({n_retries} retries)")
+            msg = f"Permanently lost connection to {self.url} ({n_retries} retries)"
+            raise HGVSError(msg)
+
+
+_SCHEMA_PATH_ELEM_COUNT = 2
 
 
 class ParseResult(urlparse.ParseResult):
@@ -358,7 +369,7 @@ class ParseResult(urlparse.ParseResult):
     """
 
     def __new__(cls, pr):
-        return super(ParseResult, cls).__new__(cls, *pr)
+        return super().__new__(cls, *pr)
 
     @property
     def database(self):
@@ -368,7 +379,7 @@ class ParseResult(urlparse.ParseResult):
     @property
     def schema(self):
         path_elems = self.path.split("/")
-        return path_elems[2] if len(path_elems) > 2 else None
+        return path_elems[2] if len(path_elems) > _SCHEMA_PATH_ELEM_COUNT else None
 
     def __str__(self):
         return self.geturl()

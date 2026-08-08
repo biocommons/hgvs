@@ -9,13 +9,15 @@ import logging
 import os
 import re
 import weakref
+from pathlib import Path
+from typing import ClassVar
 from urllib import parse as urlparse
 
-import psycopg2
-import psycopg2.extras
-import psycopg2.pool
+import psycopg
+import psycopg.rows
 from bioutils.assemblies import make_ac_name_map
 from bioutils.digests import seq_md5
+from psycopg_pool import ConnectionPool
 
 import hgvs
 
@@ -92,16 +94,16 @@ def connect(
         postgresql://localhost/uta_dev/uta_20170707
 
     For postgresql db_urls, pooling=True causes connect to use a
-    psycopg2.pool.ThreadedConnectionPool.
+    psycopg_pool.ConnectionPool.
     """
 
-    _logger.debug("connecting to " + str(db_url) + "...")
+    _logger.debug("connecting to %s...", db_url)
 
     if db_url is None:
         db_url = _get_uta_db_url()
 
     if "PYTEST_CURRENT_TEST" in os.environ and "localhost" not in db_url:
-        _logger.warning(f"You are executing tests using remote data ({db_url})")
+        _logger.warning("You are executing tests using remote data (%s)", db_url)
 
     url = _parse_url(db_url)
     if url.scheme == "postgresql":
@@ -118,7 +120,7 @@ def connect(
 class UTABase(Interface):
     required_version = "1.1"
 
-    _queries = {
+    _queries: ClassVar[dict] = {
         "acs_for_protein_md5": """
             select ac
             from seq_anno
@@ -187,7 +189,7 @@ class UTABase(Interface):
         self.seqfetcher = SeqFetcher()
         if mode != "run":
             self._connect()
-        super(UTABase, self).__init__(mode, cache)
+        super().__init__(mode, cache)
 
     def __str__(self):
         return (
@@ -308,10 +310,11 @@ class UTABase(Interface):
         # TODO: Check that end == transcript sequence length (but length N/A in current hdp)
         ex0 = 0 if (rows[0]["alt_strand"] == 1) else -1
         if rows[ex0]["tx_start_i"] != 0:
-            raise HGVSDataNotAvailableError(
+            msg = (
                 "Alignment is incomplete; cannot use transcript for mapping"
                 f"(tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})"
             )
+            raise HGVSDataNotAvailableError(msg)
         return rows
 
     def get_tx_for_gene(self, gene):
@@ -496,7 +499,8 @@ class UTA_postgresql(UTABase):
         cache=None,
     ):
         if url.schema is None:
-            raise Exception(f"No schema name provided in {url}")
+            msg = f"No schema name provided in {url}"
+            raise HGVSError(msg)
         self.application_name = application_name
         self.pooling = pooling
         self._conn = None
@@ -506,7 +510,7 @@ class UTA_postgresql(UTABase):
         # search path. Use weak references to avoid keeping connection
         # objects alive unnecessarily.
         self._conns_seen = weakref.WeakSet()
-        super(UTA_postgresql, self).__init__(url, mode, cache)
+        super().__init__(url, mode, cache)
 
     def __del__(self):
         self.close()
@@ -514,37 +518,40 @@ class UTA_postgresql(UTABase):
     def close(self):
         if self.pooling:
             if self._pool is not None:
-                self._pool.closeall()
-        else:
-            if self._conn is not None:
-                self._conn.close()
+                self._pool.close()
+        elif self._conn is not None:
+            self._conn.close()
 
     def _connect(self):
         if self.application_name is None:
             st = inspect.stack()
-            self.application_name = os.path.basename(st[-1][1])
-        conn_args = dict(
-            host=self.url.hostname,
-            port=self.url.port,
-            database=self.url.database,
-            user=urlparse.unquote(self.url.username),
-            password=urlparse.unquote(self.url.password),
-            application_name=self.application_name + "/" + hgvs.__version__,
-        )
+            self.application_name = Path(st[-1][1]).name
+        conn_args = {
+            "host": self.url.hostname,
+            "port": self.url.port,
+            "dbname": self.url.database,
+            "user": urlparse.unquote(self.url.username),
+            "password": urlparse.unquote(self.url.password),
+            "application_name": self.application_name + "/" + hgvs.__version__,
+        }
         if self.pooling:
-            _logger.info("Using UTA ThreadedConnectionPool")
-            self._pool = psycopg2.pool.ThreadedConnectionPool(
-                hgvs.global_config.uta.pool_min, hgvs.global_config.uta.pool_max, **conn_args
+            _logger.info("Using UTA ConnectionPool")
+            self._pool = ConnectionPool(
+                min_size=hgvs.global_config.uta.pool_min,
+                max_size=hgvs.global_config.uta.pool_max,
+                kwargs=conn_args,
+                open=False,
             )
+            self._pool.open()
         else:
-            self._conn = psycopg2.connect(**conn_args)
+            self._conn = psycopg.connect(**conn_args)
             self._conn.autocommit = True
             with self._get_cursor() as cur:
                 self._set_search_path(cur)
 
         self._ensure_schema_exists()
 
-        # remap sqlite's ? placeholders to psycopg2's %s
+        # remap sqlite's ? placeholders to psycopg's %s
         self._queries = {k: v.replace("?", "%s") for k, v in self._queries.items()}
 
     def _ensure_schema_exists(self):
@@ -552,7 +559,7 @@ class UTA_postgresql(UTABase):
         r = self._fetchone(
             "select exists(SELECT 1 FROM pg_namespace WHERE nspname = %s)", [self.url.schema]
         )
-        if r[0]:
+        if r["exists"]:
             return
         raise HGVSDataNotAvailableError(
             f"specified schema ({self.url.schema}) does not exist (url={self.url})"
@@ -585,13 +592,12 @@ class UTA_postgresql(UTABase):
                 # autocommit=True obviates closing explicitly
                 conn.autocommit = True
 
-                cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-                if self.pooling:
+                cur = conn.cursor(row_factory=psycopg.rows.dict_row)
+                if self.pooling and conn not in self._conns_seen:
                     # this might be a new connection, in which case we
                     # need to set the search path
-                    if conn not in self._conns_seen:
-                        self._set_search_path(cur)
-                        self._conns_seen.add(conn)
+                    self._set_search_path(cur)
+                    self._conns_seen.add(conn)
 
                 yield cur
 
@@ -602,23 +608,27 @@ class UTA_postgresql(UTABase):
 
                 break
 
-            except psycopg2.OperationalError:
-                _logger.warning(f"Lost connection to {self.url}; attempting reconnect")
+            except psycopg.OperationalError:
+                _logger.warning("Lost connection to %s; attempting reconnect", self.url)
                 if self.pooling:
                     self._pool.putconn(conn)
-                    _logger.warning(f"Put away pool connection from {self.url}")
+                    _logger.warning("Put away pool connection from %s", self.url)
                 else:
                     self._connect()
-                    _logger.warning(f"Reconnected to {self.url}")
+                    _logger.warning("Reconnected to %s", self.url)
 
             n_tries_rem -= 1
 
         else:
             # N.B. Probably never reached
-            raise HGVSError(f"Permanently lost connection to {self.url} ({n_retries} retries)")
+            msg = f"Permanently lost connection to {self.url} ({n_retries} retries)"
+            raise HGVSError(msg)
 
     def _set_search_path(self, cur):
         cur.execute(f"set search_path = {self.url.schema},public;")
+
+
+_SCHEMA_PATH_ELEM_COUNT = 2
 
 
 class ParseResult(urlparse.ParseResult):
@@ -628,7 +638,7 @@ class ParseResult(urlparse.ParseResult):
     """
 
     def __new__(cls, pr):
-        return super(ParseResult, cls).__new__(cls, *pr)
+        return super().__new__(cls, *pr)
 
     @property
     def database(self):
@@ -638,7 +648,7 @@ class ParseResult(urlparse.ParseResult):
     @property
     def schema(self):
         path_elems = self.path.split("/")
-        return path_elems[2] if len(path_elems) > 2 else None
+        return path_elems[2] if len(path_elems) > _SCHEMA_PATH_ELEM_COUNT else None
 
     def __str__(self):
         return self.geturl()
