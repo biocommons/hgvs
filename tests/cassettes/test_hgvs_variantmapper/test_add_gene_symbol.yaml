@@ -3,10 +3,13 @@ interactions:
     body: null
     headers: {}
     method: GET
-    uri: http://localhost:5000/seqrepo/1/sequence/NM_003777.3?start=13638&end=13639
+    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000007.13&rettype=fasta&seq_start=21940852&seq_stop=21940908&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: G
+      string: !!binary |
+        H4sIAAAAAAAAACyKwQqDMBBE737FfkAriWmJ9lBY9rCepJTciy0BBdNI9uTfd5XO4THDm/tAL7PH
+        19bdGttdTHttzkfpTAt9ThlkXOf4FfhMRafkFMGfgJ80OV+v1sGjzGksG6BITO9lq5gCBYUSGZGJ
+        g3IHoQomVEWHpf+VGTlw9QMAAP//4gIAAAD//wMAgcqFPJIAAAA=
     headers: {}
     status:
       code: 200
@@ -15,10 +18,13 @@ interactions:
     body: null
     headers: {}
     method: GET
-    uri: http://localhost:5000/seqrepo/1/sequence/NC_000007.13?start=21940851&end=21940908
+    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NM_003777.3&rettype=fasta&seq_start=13583&seq_stop=13639&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: GCTCTGCTTCTAGAAGCGTAAGGTAACACTGGCATTCCTCTAGCCTCTGCTGGAGTG
+      string: !!binary |
+        H4sIAAAAAAAAACzKsQoCMQyA4f2eIqNClQtBqw5CiJBb7CDdpWjhCrYVDsR7e6u4fMv/H9352vdk
+        rV3TAWmzoxXSlvYw1FxhCs8UywT3ucRUDIR3LTGHh4ExhtcMtzGkAoiwODkeEJcG8sVxp+LFN5qs
+        zCrqm1+EW1DhluRX5b+qsnrtPgAAAP//4gIAAAD//wMAvVGMaZEAAAA=
     headers: {}
     status:
       code: 200
@@ -27,10 +33,13 @@ interactions:
     body: null
     headers: {}
     method: GET
-    uri: http://localhost:5000/seqrepo/1/sequence/NM_003777.3?start=13582&end=13639
+    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NM_003777.3&rettype=fasta&seq_start=13639&seq_stop=13639&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: GCTCTGCTTCTAGAAGCGTAAGGTAACACTGGCATTCCTCTAGCCTCTGCTGGAGTG
+      string: !!binary |
+        H4sIAAAAAAAAALLz8403MDA2NzfXM7YyNDYzttQFkwoe+bn5CsWJBZmpecUKKZV5qZl5OgqJFfl5
+        qbmJOToKGamJZZUKyRmJmXkKhoYKGi5+jh6Ghpo6CrlBfo5c7lwAAAAA///iAgAAAP//AwDevCrB
+        WQAAAA==
     headers: {}
     status:
       code: 200

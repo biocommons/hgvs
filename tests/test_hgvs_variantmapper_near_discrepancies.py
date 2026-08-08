@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 import os
 
 import pytest
-from support import CACHE
 
 import hgvs.assemblymapper
 import hgvs.dataproviders.uta
-import hgvs.parser
+import hgvs.parsers
+from support import CACHE
 
 tests_fn = "tests/data/proj-near-disc.tsv"
 
@@ -24,7 +23,7 @@ def read_tests(fn):
         yield {"disc_type": dt, "loc_type": lt, "variant": var, "expected": exp}
 
 
-hp = hgvs.parser.Parser()
+hp = hgvs.parsers.Parser()
 hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
 # TODO: Use variantmapper instead of assemblymapper
 am38 = hgvs.assemblymapper.AssemblyMapper(hdp, assembly_name="GRCh38", normalize=False)

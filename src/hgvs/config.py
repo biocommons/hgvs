@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The hgvs package uses a single, package-wide configuration instance
 to control package behavior.  The hgvs.config module provides that
 configuration instance, via the `hgvs.global_config` variable.
@@ -31,6 +30,7 @@ import logging
 import re
 from configparser import ConfigParser, ExtendedInterpolation
 from copy import copy
+
 try:
     from importlib.resources import files as resources_files
 except ImportError:
@@ -68,7 +68,7 @@ class Config:
     def __getattr__(self, k):
         # Work around PyCharm bug https://youtrack.jetbrains.com/issue/PY-4213
         if k == "_cp":
-            return
+            return None
         try:
             return ConfigGroup(self._cp[k])
         except KeyError:
@@ -90,7 +90,7 @@ class ConfigGroup:
     __getitem__ = __getattr__
 
     def __setattr__(self, k, v):
-        logger.info(str(self.__class__.__name__) + ".__setattr__({k}, ...)".format(k=k))
+        logger.info(str(self.__class__.__name__) + f".__setattr__({k}, ...)")
         self.__dict__["_section"][k] = str(v)
 
     __setitem__ = __setattr__

@@ -1,14 +1,13 @@
-# -*- coding: utf-8 -*-
 import os
 import unittest
 
 import pytest
-from support import CACHE
 
 import hgvs.dataproviders.uta
-import hgvs.parser
+import hgvs.parsers
 import hgvs.variantmapper
 from hgvs.exceptions import HGVSError, HGVSInvalidVariantError
+from support import CACHE
 
 
 @pytest.mark.vcr
@@ -18,11 +17,11 @@ def test_add_gene_symbol(am38, parser):
 
     am38.add_gene_symbol = True
     var_t = am38.g_to_t(var_g, "NM_003777.3")
-    assert "NM_003777.3(DNAH11):c.13552_*36del" == str(var_t)
+    assert str(var_t) == "NM_003777.3(DNAH11):c.13552_*36del"
 
     am38.add_gene_symbol = False
     var_t = am38.g_to_t(var_g, "NM_003777.3")
-    assert "NM_003777.3:c.13552_*36del" == str(var_t)
+    assert str(var_t) == "NM_003777.3:c.13552_*36del"
 
     am38.add_gene_symbol = ags
 
@@ -35,7 +34,7 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
             mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
         )
         cls.vm = hgvs.variantmapper.VariantMapper(cls.hdp)
-        cls.hp = hgvs.parser.Parser()
+        cls.hp = hgvs.parsers.Parser()
 
     def test_map_stop_retained(self):
         hgvs_c = "NM_001253909.2:c.416_417insGTG"
@@ -72,7 +71,7 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
             except hgvs.exceptions.HGVSInvalidVariantError:
                 pass
 
-        self.assertFalse(failures, "conversions not failing: {}".format(failures))
+        self.assertFalse(failures, f"conversions not failing: {failures}")
 
     def test_gc_invalid_input_nm_accession(self):
         hgvs_g = "NC_000007.13:g.36561662C>T"

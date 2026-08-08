@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Defines the abstract data provider interface"""
 
 import abc
@@ -66,45 +65,43 @@ class Interface(metaclass=abc.ABCMeta):
             maxsize = None
             _logger.info(f"{__file__}: Using unlimited cache size")
 
-        self.data_version = lru_cache(
-            maxsize=maxsize, mode=self.mode, cache=self.cache
-        )(self.data_version)
-        self.schema_version = lru_cache(
-            maxsize=maxsize, mode=self.mode, cache=self.cache
-        )(self.schema_version)
-        self.get_acs_for_protein_seq = lru_cache(
-            maxsize=maxsize, mode=self.mode, cache=self.cache
-        )(self.get_acs_for_protein_seq)
-        self.get_gene_info = lru_cache(
-            maxsize=maxsize, mode=self.mode, cache=self.cache
-        )(self.get_gene_info)
-        self.get_pro_ac_for_tx_ac = lru_cache(
-            maxsize=maxsize, mode=self.mode, cache=self.cache
-        )(self.get_pro_ac_for_tx_ac)
-        self.get_seq = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
-            self.get_seq
+        self.data_version = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
+            self.data_version
         )
-        self.get_similar_transcripts = lru_cache(
-            maxsize=maxsize, mode=self.mode, cache=self.cache
-        )(self.get_similar_transcripts)
-        self.get_tx_exons = lru_cache(
-            maxsize=maxsize, mode=self.mode, cache=self.cache
-        )(self.get_tx_exons)
-        self.get_tx_for_gene = lru_cache(
-            maxsize=maxsize, mode=self.mode, cache=self.cache
-        )(self.get_tx_for_gene)
-        self.get_tx_for_region = lru_cache(
-            maxsize=maxsize, mode=self.mode, cache=self.cache
-        )(self.get_tx_for_region)
-        self.get_tx_identity_info = lru_cache(
-            maxsize=maxsize, mode=self.mode, cache=self.cache
-        )(self.get_tx_identity_info)
+        self.schema_version = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
+            self.schema_version
+        )
+        self.get_acs_for_protein_seq = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
+            self.get_acs_for_protein_seq
+        )
+        self.get_gene_info = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
+            self.get_gene_info
+        )
+        self.get_pro_ac_for_tx_ac = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
+            self.get_pro_ac_for_tx_ac
+        )
+        self.get_seq = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(self.get_seq)
+        self.get_similar_transcripts = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
+            self.get_similar_transcripts
+        )
+        self.get_tx_exons = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
+            self.get_tx_exons
+        )
+        self.get_tx_for_gene = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
+            self.get_tx_for_gene
+        )
+        self.get_tx_for_region = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
+            self.get_tx_for_region
+        )
+        self.get_tx_identity_info = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
+            self.get_tx_identity_info
+        )
         self.get_tx_info = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
             self.get_tx_info
         )
-        self.get_tx_mapping_options = lru_cache(
-            maxsize=maxsize, mode=self.mode, cache=self.cache
-        )(self.get_tx_mapping_options)
+        self.get_tx_mapping_options = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
+            self.get_tx_mapping_options
+        )
 
         def _split_version_string(v):
             versions = list(map(int, v.split(".")))
@@ -122,12 +119,7 @@ class Interface(metaclass=abc.ABCMeta):
             return
 
         raise RuntimeError(
-            "Incompatible versions: {k} requires schema version {rv}, but {self.url} provides version {av}".format(
-                k=type(self).__name__,
-                self=self,
-                rv=self.required_version,
-                av=self.schema_version(),
-            )
+            f"Incompatible versions: {type(self).__name__} requires schema version {self.required_version}, but {self.url} provides version {self.schema_version()}"
         )
 
     # required_version: what version of the remote schema is required

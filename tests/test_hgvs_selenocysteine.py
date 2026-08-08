@@ -12,7 +12,7 @@ import pytest
 
 import hgvs.assemblymapper
 import hgvs.dataproviders.uta
-import hgvs.parser
+import hgvs.parsers
 import hgvs.variantmapper
 from support import CACHE
 
@@ -27,7 +27,7 @@ class TestSelenocysteineTranslations(unittest.TestCase):
             mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
         )
         cls.vm = hgvs.variantmapper.VariantMapper(cls.hdp)
-        cls.hp = hgvs.parser.Parser()
+        cls.hp = hgvs.parsers.Parser()
         cls.am38 = hgvs.assemblymapper.AssemblyMapper(
             cls.hdp, assembly_name="GRCh38", alt_aln_method="splign"
         )

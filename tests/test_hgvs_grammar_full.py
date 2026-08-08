@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import csv
 import os
 import pprint
@@ -6,8 +5,7 @@ import re
 import unittest
 from importlib.resources import files as resources_files
 
-import hgvs.parser
-
+import hgvs.parsers
 
 #
 # Tests of the grammar
@@ -32,32 +30,58 @@ import hgvs.parser
 #
 
 
+#: Both grammar backends are exercised: the OMeta/parsley grammar is the 1.x
+#: default, and pyparsing is slated to become the default in 2.x.
+BACKENDS = (hgvs.parsers.OMETA_GRAMMAR, hgvs.parsers.PYPARSING_GRAMMAR)
+
+
 class TestGrammarFull(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.p = hgvs.parser.Parser()
+        cls.p = hgvs.parsers.Parser()
         cls.grammar = cls.p._grammar
         cls._test_fn = os.path.join(os.path.dirname(__file__), "data", "grammar_test.tsv")
 
     def test_parser_test_completeness(self):
         """ensure that all rules in grammar have tests"""
 
-        grammar_rule_re = re.compile(r"^(\w+)")
-        grammar_fn = resources_files("hgvs") / "_data" / "hgvs.pymeta"
-        with open(grammar_fn, "r") as f:
-            grammar_rules = set(r.group(1) for r in filter(None, map(grammar_rule_re.match, f)))
+        from hgvs.parsers.pyparsing_grammar import HGVSGrammar
 
-        with open(self._test_fn, "r") as f:
-            reader = csv.DictReader(f, delimiter=str("\t"))
+        grammar_rules = set(HGVSGrammar().rules.keys())
+
+        with open(self._test_fn) as f:
+            reader = csv.DictReader(f, delimiter="\t")
             test_rules = set(row["Func"] for row in reader)
 
         untested_rules = grammar_rules - test_rules
 
-        self.assertTrue(len(untested_rules) == 0, "untested rules: {}".format(untested_rules))
+        self.assertTrue(len(untested_rules) == 0, f"untested rules: {untested_rules}")
+
+    def test_grammar_rules_match_between_backends(self):
+        """both backends must expose exactly the same rule names"""
+
+        from hgvs.parsers.pyparsing_grammar import HGVSGrammar
+
+        grammar_rule_re = re.compile(r"^(\w+)")
+        grammar_fn = resources_files("hgvs.parsers") / "_data" / "hgvs.pymeta"
+        with open(grammar_fn) as f:
+            ometa_rules = set(r.group(1) for r in filter(None, map(grammar_rule_re.match, f)))
+        pyparsing_rules = set(HGVSGrammar().rules.keys())
+
+        self.assertEqual(
+            ometa_rules,
+            pyparsing_rules,
+            f"rules differ between backends: only in OMeta: {sorted(ometa_rules - pyparsing_rules)}; only in pyparsing: {sorted(pyparsing_rules - ometa_rules)}",
+        )
 
     def test_parser_grammar(self):
-        with open(self._test_fn, "r") as f:
-            reader = csv.DictReader(f, delimiter=str("\t"))
+        for backend in BACKENDS:
+            with self.subTest(backend=backend):
+                self._check_grammar(hgvs.parsers.Parser(grammar_fn=backend))
+
+    def _check_grammar(self, parser):
+        with open(self._test_fn) as f:
+            reader = csv.DictReader(f, delimiter="\t")
 
             fail_cases = []
 
@@ -72,24 +96,24 @@ class TestGrammarFull(unittest.TestCase):
                     if row["Expected"]
                     else inputs
                 )
-                expected_map = dict(zip(inputs, expected_results))
+                expected_map = dict(zip(inputs, expected_results, strict=False))
                 # step through each item and check
                 is_valid = True if row["Valid"].lower() == "true" else False
 
                 for key in expected_map:
                     expected_result = str(expected_map[key]).replace("u'", "'")
-                    function_to_test = getattr(self.p._grammar(key), row["Func"])
+                    function_to_test = getattr(parser._grammar(key), row["Func"])
                     row_str = "{}\t{}\t{}\t{}\t{}".format(
                         row["Func"], key, row["Valid"], "one", expected_result
                     )
                     try:
                         actual_result = str(function_to_test()).replace("u'", "'")
                         if not is_valid or (expected_result != actual_result):
-                            print("expected: {} actual:{}".format(expected_result, actual_result))
+                            print(f"expected: {expected_result} actual:{actual_result}")
                             fail_cases.append(row_str)
                     except Exception as e:
                         if is_valid:
-                            print("expected: {} Exception: {}".format(expected_result, e))
+                            print(f"expected: {expected_result} Exception: {e}")
                             fail_cases.append(row_str)
 
         # everything should have passed - report whatever failed
@@ -104,7 +128,7 @@ class TestGrammarFull(unittest.TestCase):
         elif intype == "one":
             inputs = [in_string]
         else:
-            assert False, "shouldn't be here (intype = {})".format(intype)
+            assert False, f"shouldn't be here (intype = {intype})"
         inputs = [x if x != "None" else None for x in inputs]
         return inputs
 

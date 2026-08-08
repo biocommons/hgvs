@@ -36,7 +36,7 @@ from hgvs import __version__, global_config  # noqa: F401
 from hgvs.assemblymapper import AssemblyMapper
 from hgvs.dataproviders.uta import connect
 from hgvs.normalizer import Normalizer
-from hgvs.parser import Parser
+from hgvs.parsers import Parser
 from hgvs.pretty.prettyprint import PrettyPrint
 from hgvs.validator import Validator
 from hgvs.variantmapper import VariantMapper
@@ -45,9 +45,7 @@ from hgvs.variantmapper import VariantMapper
 hp = parser = hgvs_parser = Parser()
 hdp = hgvs_data_provider = connect()
 vm = variant_mapper = hgvs_variant_mapper = VariantMapper(hgvs_data_provider)
-am37 = hgvs_assembly_mapper_37 = AssemblyMapper(
-    hgvs_data_provider, assembly_name="GRCh37"
-)
+am37 = hgvs_assembly_mapper_37 = AssemblyMapper(hgvs_data_provider, assembly_name="GRCh37")
 am38 = projector = hgvs_assembly_mapper_38 = AssemblyMapper(
     hgvs_data_provider, assembly_name="GRCh38"
 )

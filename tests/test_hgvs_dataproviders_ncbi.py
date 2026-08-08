@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 
-import psycopg2
+import psycopg
 import pytest
 
 import hgvs.dataproviders.ncbi
@@ -59,7 +59,7 @@ class TestNCBIGetCursorContextManager:
         """OperationalError while acquiring the cursor triggers reconnect
         and, once retries are exhausted, raises HGVSError."""
         hdp, conn, _cur = _make_ncbi_stub(pooling=False)
-        conn.cursor.side_effect = psycopg2.OperationalError("lost")
+        conn.cursor.side_effect = psycopg.OperationalError("lost")
 
         with pytest.raises(HGVSError), hdp._get_cursor(n_retries=1):
             pass
@@ -73,11 +73,12 @@ class TestNCBIGetCursorContextManager:
         "generator didn't stop")."""
         hdp, _conn, cur = _make_ncbi_stub(pooling=False)
 
-        with pytest.raises(psycopg2.OperationalError), hdp._get_cursor():
-            raise psycopg2.OperationalError("query failed")
+        with pytest.raises(psycopg.OperationalError), hdp._get_cursor():
+            raise psycopg.OperationalError("query failed")
 
         hdp._connect.assert_not_called()
         cur.close.assert_called_once_with()
+
 
 # <LICENSE>
 # Copyright 2026 HGVS Contributors (https://github.com/biocommons/hgvs)

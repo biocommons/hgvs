@@ -1,5 +1,5 @@
-from hgvs.pretty.models import VariantData
 from hgvs.pretty.console.renderer import BasicRenderer
+from hgvs.pretty.models import VariantData
 
 
 class ProtMappingRenderer(BasicRenderer):
@@ -44,7 +44,7 @@ class ProtMappingRenderer(BasicRenderer):
                 var_str += "|"
                 continue
 
-            elif (aa_pos + 1) % 5 == 0:
+            if (aa_pos + 1) % 5 == 0:
                 var_str += "."
                 continue
 

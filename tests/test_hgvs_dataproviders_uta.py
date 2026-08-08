@@ -5,7 +5,7 @@ import re
 import unittest
 from unittest.mock import MagicMock, patch
 
-import psycopg2
+import psycopg
 import pytest
 
 import hgvs.dataproviders.uta
@@ -28,7 +28,7 @@ class UTA_Base:
         """
 
         s = re.sub(r"\s+", "", s.upper())
-        self.assertEqual(sorted(self.hdp.get_acs_for_protein_seq(s)), sorted(exp))
+        assert sorted(self.hdp.get_acs_for_protein_seq(s)) == sorted(exp)
 
         exp = ["NP_071928.2", "MD5_ffb0d4adbd5e0b5d71678228b3696984"]
         s = """
@@ -39,28 +39,28 @@ class UTA_Base:
         """
 
         s = re.sub(r"\s+", "", s.upper())
-        self.assertEqual(sorted(self.hdp.get_acs_for_protein_seq(s)), sorted(exp))
+        assert sorted(self.hdp.get_acs_for_protein_seq(s)) == sorted(exp)
 
     def test_get_gene_info(self):
         gene_info = self.hdp.get_gene_info("VHL")
-        self.assertEqual("VHL", gene_info["hgnc"])
-        self.assertEqual("3p25.3", gene_info["maploc"])
-        self.assertEqual(10, len(gene_info))
+        assert gene_info["hgnc"] == "VHL"
+        assert gene_info["maploc"] == "3p25.3"
+        assert len(gene_info) == 10
 
     def test_get_tx_exons(self):
         tx_exons = self.hdp.get_tx_exons("NM_000551.3", "NC_000003.11", "splign")
-        self.assertEqual(3, len(tx_exons))
+        assert len(tx_exons) == 3
 
     def test_get_tx_exons_invalid_tx_ac(self):
-        with self.assertRaises(HGVSDataNotAvailableError):
+        with pytest.raises(HGVSDataNotAvailableError):
             self.hdp.get_tx_exons("NM_999999.9", "NC_000003.11", "splign")
 
     def test_get_tx_exons_invalid_alt_ac(self):
-        with self.assertRaises(HGVSDataNotAvailableError):
+        with pytest.raises(HGVSDataNotAvailableError):
             self.hdp.get_tx_exons("NM_000551.3", "NC_000999.9", "splign")
 
     def test_get_tx_exons_invalid_alt_aln_method(self):
-        with self.assertRaises(HGVSDataNotAvailableError):
+        with pytest.raises(HGVSDataNotAvailableError):
             self.hdp.get_tx_exons("NM_000551.3", "NC_000999.9", "best")
 
     def test_get_tx_for_gene(self):
@@ -72,35 +72,43 @@ class UTA_Base:
             ("ENST00000345392", "NC_000003.11"),
         ]
         found = 0
-        for _, _, _, tx_ac, alt_ac, _ in tig:
+        for row in tig:
             for t_tx_ac, t_alt_ac in expected_data:
-                if t_tx_ac == tx_ac and t_alt_ac == alt_ac:
+                if t_tx_ac == row["tx_ac"] and t_alt_ac == row["alt_ac"]:
                     found += 1
 
-        self.assertEqual(found, 3)
+        assert found == 3
 
     def test_get_tx_for_gene_invalid_gene(self):
         tig = self.hdp.get_tx_for_gene("GENE")
-        self.assertEqual(0, len(tig))
+        assert len(tig) == 0
 
     def test_get_tx_info(self):
         tx_info = self.hdp.get_tx_info("NM_000051.3", "AC_000143.1", "splign")
-        self.assertEqual(385, tx_info["cds_start_i"])
-        self.assertEqual(9556, tx_info["cds_end_i"])
-        self.assertEqual("AC_000143.1", tx_info["alt_ac"])
+        assert tx_info["cds_start_i"] == 385
+        assert tx_info["cds_end_i"] == 9556
+        assert tx_info["alt_ac"] == "AC_000143.1"
 
     def test_get_tx_info_invalid_tx_ac(self):
-        with self.assertRaises(HGVSDataNotAvailableError):
+        with pytest.raises(HGVSDataNotAvailableError):
             self.hdp.get_tx_info("NM_999999.9", "AC_000143.1", "splign")
 
     def test_get_tx_mapping_options(self):
         tx_mapping_options = self.hdp.get_tx_mapping_options("NM_000551.3")
-        self.assertIn(["NM_000551.3", "NC_000003.11", "splign"], tx_mapping_options)
-        self.assertIn(["NM_000551.3", "NC_000003.11", "blat"], tx_mapping_options)
+        assert {
+            "tx_ac": "NM_000551.3",
+            "alt_ac": "NC_000003.11",
+            "alt_aln_method": "splign",
+        } in tx_mapping_options
+        assert {
+            "tx_ac": "NM_000551.3",
+            "alt_ac": "NC_000003.11",
+            "alt_aln_method": "blat",
+        } in tx_mapping_options
 
     def test_get_tx_mapping_options_invalid(self):
         tx_info_options = self.hdp.get_tx_mapping_options("NM_999999.9")
-        self.assertEqual(tx_info_options, [])
+        assert tx_info_options == []
 
 
 class Test_hgvs_dataproviders_uta_UTA_default(unittest.TestCase, UTA_Base):
@@ -119,9 +127,7 @@ class Test_hgvs_dataproviders_uta_UTA_default_with_pooling(unittest.TestCase, UT
         )
 
 
-class Test_hgvs_dataproviders_uta_with_pooling_without_cache(
-    unittest.TestCase, UTA_Base
-):
+class Test_hgvs_dataproviders_uta_with_pooling_without_cache(unittest.TestCase, UTA_Base):
     """
     Currently used to test pool errors, since we need to reach out to
     the database and not use the cache
@@ -153,7 +159,7 @@ class TestUTACache(Test_hgvs_dataproviders_uta_UTA_default):
         """
         var1 = self._create_cdna_variant()
         var2 = self._create_cdna_variant()
-        self.assertEqual(str(var1), str(var2))
+        assert str(var1) == str(var2)
 
 
 class TestUTAPool(Test_hgvs_dataproviders_uta_with_pooling_without_cache):
@@ -163,8 +169,8 @@ class TestUTAPool(Test_hgvs_dataproviders_uta_with_pooling_without_cache):
         when it loses the connection
         """
 
-        def raise_operational_error(*args, **kwargs):
-            raise psycopg2.OperationalError()
+        def raise_operational_error(*_args, **_kwargs):
+            raise psycopg.OperationalError
 
         with patch.object(self.hdp, "_pool") as mock_pool:
             mock_getconn = mock_pool.getconn.return_value
@@ -228,7 +234,7 @@ class TestUTAGetCursorContextManager:
         """OperationalError while acquiring the cursor triggers reconnect
         and, once retries are exhausted, raises HGVSError."""
         hdp, conn, cur = _make_uta_stub(pooling=False)
-        conn.cursor.side_effect = psycopg2.OperationalError("lost")
+        conn.cursor.side_effect = psycopg.OperationalError("lost")
 
         with pytest.raises(HGVSError), hdp._get_cursor(n_retries=1):
             pass
@@ -242,12 +248,11 @@ class TestUTAGetCursorContextManager:
         "generator didn't stop")."""
         hdp, _conn, cur = _make_uta_stub(pooling=False)
 
-        with pytest.raises(psycopg2.OperationalError), hdp._get_cursor():
-            raise psycopg2.OperationalError("query failed")
+        with pytest.raises(psycopg.OperationalError), hdp._get_cursor():
+            raise psycopg.OperationalError("query failed")
 
         hdp._connect.assert_not_called()
         cur.close.assert_called_once_with()
-
 
 
 if __name__ == "__main__":

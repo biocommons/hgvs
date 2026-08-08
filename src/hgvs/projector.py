@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Utility class that projects variants from one transcript to another
 via a common reference sequence.
 

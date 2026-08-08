@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# This generates the hgvs.parser.Parser Python code from the OMeta grammar file
+# This generates the hgvs.parsers.Parser Python code from the OMeta grammar file
 # We generate it offline then keep the statically generated file to reduce startup time
 # @see https://github.com/biocommons/hgvs/issues/661
 
@@ -8,17 +8,17 @@ import os
 import sys
 
 import parsley
-from ometa.grammar import OMeta
 from ometa.builder import writePython
+from ometa.grammar import OMeta
 
 if __name__ == "__main__":
     script_path = os.path.realpath(__file__)
     script_dir = os.path.dirname(script_path)
     hgvs_base_dir = os.path.dirname(script_dir)
-    grammar_file = os.path.join(hgvs_base_dir, "src/hgvs/_data/hgvs.pymeta")
-    generated_code_dir = os.path.join(hgvs_base_dir, "src/hgvs/generated")
+    grammar_file = os.path.join(hgvs_base_dir, "src/hgvs/parsers/_data/hgvs.pymeta")
+    generated_code_dir = os.path.join(hgvs_base_dir, "src/hgvs/parsers/generated")
 
-    grammar_hash = hashlib.md5(open(grammar_file, 'rb').read()).hexdigest()
+    grammar_hash = hashlib.md5(open(grammar_file, "rb").read()).hexdigest()
     prefix_length = len(hgvs_base_dir) + 1  # extra to also remove slash
 
     header_template = """# --------------------------------------------------
@@ -31,11 +31,13 @@ if __name__ == "__main__":
 #  Python version: {python_version}
 # --------------------------------------------------
 """
-    header = header_template.format(generate_script=script_path[prefix_length:],
-                                    grammar_file=grammar_file[prefix_length:],
-                                    grammar_hash=grammar_hash,
-                                    parsley_version=parsley.__version__,
-                                    python_version=sys.version)
+    header = header_template.format(
+        generate_script=script_path[prefix_length:],
+        grammar_file=grammar_file[prefix_length:],
+        grammar_hash=grammar_hash,
+        parsley_version=parsley.__version__,
+        python_version=sys.version,
+    )
 
     g = OMeta(open(grammar_file).read(), name="Grammar")
     tree = g.parseGrammar("Grammar")

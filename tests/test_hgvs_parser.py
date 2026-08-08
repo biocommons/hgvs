@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import hashlib
 import os
 import pprint
@@ -7,7 +6,7 @@ import unittest
 
 import pytest
 
-import hgvs.parser
+import hgvs.parsers
 from hgvs.exceptions import HGVSParseError
 
 
@@ -66,7 +65,7 @@ class Test_Parser(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.parser = hgvs.parser.Parser()
+        cls.parser = hgvs.parsers.Parser()
 
     def test_parser_parse_shorthand(self):
         v = "NM_01234.5:c.22+1A>T"
@@ -74,7 +73,7 @@ class Test_Parser(unittest.TestCase):
 
     def test_parser_gauntlet(self):
         fn = os.path.join(os.path.dirname(__file__), "data", "gauntlet")
-        for var in open(fn, "r"):
+        for var in open(fn):
             var = var.strip()
             if var.startswith("#") or var == "":
                 continue
@@ -88,7 +87,7 @@ class Test_Parser(unittest.TestCase):
     @pytest.mark.quick
     def test_parser_reject(self):
         fn = os.path.join(os.path.dirname(__file__), "data", "reject")
-        for var in open(fn, "r"):
+        for var in open(fn):
             var, msg = var.strip().split("\t")
             if var.startswith("#") or var == "":
                 continue
@@ -117,15 +116,15 @@ class Test_Parser(unittest.TestCase):
         script_path = os.path.realpath(__file__)
         script_dir = os.path.dirname(script_path)
         hgvs_base_dir = os.path.dirname(script_dir)
-        grammar_filename = "src/hgvs/_data/hgvs.pymeta"
-        generated_filename = "src/hgvs/generated/hgvs_grammar.py"
+        grammar_filename = "src/hgvs/parsers/_data/hgvs.pymeta"
+        generated_filename = "src/hgvs/parsers/generated/hgvs_grammar.py"
 
         # Hash the grammar file
         with open(os.path.join(hgvs_base_dir, grammar_filename), "rb") as grammar_f:
             grammar_hash = hashlib.md5(grammar_f.read()).hexdigest()
 
         # Read the stored grammar file hash from generated file
-        with open(os.path.join(hgvs_base_dir, generated_filename), "r") as generated_f:
+        with open(os.path.join(hgvs_base_dir, generated_filename)) as generated_f:
             generated_hash = None
             for line in generated_f:
                 if not line.startswith("#"):
@@ -134,17 +133,13 @@ class Test_Parser(unittest.TestCase):
                 if m:
                     generated_hash = m.group(1)
 
-            msg = "Could not retrieve generated hash from {generated_hash}".format(
-                generated_hash=generated_hash
-            )
+            msg = f"Could not retrieve generated hash from {generated_hash}"
             self.assertIsNotNone(generated_hash, msg)
 
         msg = (
-            "OMeta source '{grammar_filename}' is different than the version used to generate "
-            "Python code '{generated_filename}'. You need to run "
-            "'sbin/generate_parser.py' ".format(
-                grammar_filename=grammar_filename, generated_filename=generated_filename
-            )
+            f"OMeta source '{grammar_filename}' is different than the version used to generate "
+            f"Python code '{generated_filename}'. You need to run "
+            "'sbin/generate_parser.py' "
         )
         self.assertEqual(generated_hash, grammar_hash, msg)
 

@@ -2,7 +2,7 @@
 Manuscript Example
 ==================
 
-.. code:: 
+.. code::
 
     import hgvs
     hgvs.__version__
@@ -19,9 +19,9 @@ Manuscript Example
 Parse an HGVS string into a Python structure
 --------------------------------------------
 
-.. code:: 
+.. code::
 
-    import hgvs.parser 
+    import hgvs.parser
     hp = hgvs.parser.Parser()
     var_c1 = hp.parse_hgvs_variant('NM_182763.2:c.688+403C>T')
     var_c1, var_c1.posedit.pos.start
@@ -39,7 +39,7 @@ Parse an HGVS string into a Python structure
 Open the UTA public data source for mapping and validation
 ----------------------------------------------------------
 
-.. code:: 
+.. code::
 
     import hgvs.dataproviders.uta
     hdp = hgvs.dataproviders.uta.connect()
@@ -47,9 +47,9 @@ Open the UTA public data source for mapping and validation
 Project transcript variant NM_182763.2:c.688+403C>T to GRCh37 primary assembly using splign alignments
 ------------------------------------------------------------------------------------------------------
 
-.. code:: 
+.. code::
 
-    import hgvs.variantmapper
+    import hgvs.assemblymapper
     vm = hgvs.assemblymapper.AssemblyMapper(
         hdp, assembly_name='GRCh37', alt_aln_method='splign')
     var_g = vm.c_to_g(var_c1)
@@ -67,7 +67,7 @@ Project transcript variant NM_182763.2:c.688+403C>T to GRCh37 primary assembly u
 Project genomic variant to a new transcript
 -------------------------------------------
 
-.. code:: 
+.. code::
 
     vm.relevant_transcripts(var_g)
 
@@ -80,7 +80,7 @@ Project genomic variant to a new transcript
 
 
 
-.. code:: 
+.. code::
 
     var_c2 = vm.g_to_c(var_g,'NM_001197320.1')
     var_c2
@@ -97,7 +97,7 @@ Project genomic variant to a new transcript
 Infer protein changes for these transcript variants
 ---------------------------------------------------
 
-.. code:: 
+.. code::
 
     var_p1 = vm.c_to_p(var_c1)
     var_p2 = vm.c_to_p(var_c2)
@@ -116,7 +116,7 @@ Infer protein changes for these transcript variants
 Format the results by “stringification”
 ---------------------------------------
 
-.. code:: 
+.. code::
 
     print("""mapped {var_c1} ({var_p1})
         to {var_c2} ({var_p2})
@@ -136,7 +136,7 @@ Format the results by “stringification”
 Validate a variant
 ------------------
 
-.. code:: 
+.. code::
 
     import hgvs.validator
     import hgvs.exceptions
@@ -151,4 +151,3 @@ Validate a variant
 .. parsed-literal::
 
     NM_001197320.1:c.281A>T: Variant reference does not agree with reference sequence
-

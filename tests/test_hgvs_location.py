@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 import unittest
 
 import pytest
 
 import hgvs.location
-import hgvs.parser
+import hgvs.parsers
 from hgvs.enums import Datum
 from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError
 
@@ -14,7 +13,7 @@ from hgvs.exceptions import HGVSError, HGVSUnsupportedOperationError
 class Test_SimplePosition(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.hp = hgvs.parser.Parser()
+        cls.hp = hgvs.parsers.Parser()
 
     def test_success(self):
         self.assertEqual(str(hgvs.location.SimplePosition(5)), "5")
@@ -48,7 +47,7 @@ class Test_SimplePosition(unittest.TestCase):
 class Test_BaseOffsetPosition(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.hp = hgvs.parser.Parser()
+        cls.hp = hgvs.parsers.Parser()
 
     def test_success(self):
         # r.5
@@ -155,7 +154,7 @@ class Test_BaseOffsetPosition(unittest.TestCase):
 class Test_AAPosition(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.hp = hgvs.parser.Parser()
+        cls.hp = hgvs.parsers.Parser()
 
     def test_AAPosition(self):
         ap = hgvs.location.AAPosition(15, "S")
@@ -198,39 +197,42 @@ class Test_Interval(unittest.TestCase):
         self.assertEqual(ival._length(), 39)
 
     def test_uncertain(self):
-        def sp(i): return hgvs.location.SimplePosition(i)
+        def sp(i):
+            return hgvs.location.SimplePosition(i)
+
         ival = hgvs.location.Interval(
             hgvs.location.Interval(sp(10), sp(20), uncertain=True),
-            hgvs.location.Interval(sp(30), sp(40), uncertain=True)
+            hgvs.location.Interval(sp(30), sp(40), uncertain=True),
         )
         self.assertEqual("(10_20)_(30_40)", str(ival))
 
         with self.assertRaises(AssertionError):
-            str(hgvs.location.Interval(
-                sp(10),
-                hgvs.location.Interval(sp(30), sp(40), uncertain=True)
-            ))
+            str(
+                hgvs.location.Interval(
+                    sp(10), hgvs.location.Interval(sp(30), sp(40), uncertain=True)
+                )
+            )
         ival3 = hgvs.location.Interval(
             hgvs.location.Interval(sp(10), sp(10), uncertain=True),
-            hgvs.location.Interval(sp(30), sp(40), uncertain=True)
+            hgvs.location.Interval(sp(30), sp(40), uncertain=True),
         )
         self.assertEqual("(10)_(30_40)", str(ival3))
 
         ival4 = hgvs.location.Interval(
             hgvs.location.Interval(sp(10), sp(10), uncertain=False),
-            hgvs.location.Interval(sp(30), sp(40), uncertain=True)
+            hgvs.location.Interval(sp(30), sp(40), uncertain=True),
         )
         self.assertEqual("10_(30_40)", str(ival4))
 
         ival5 = hgvs.location.Interval(
             hgvs.location.Interval(sp(10), sp(20), uncertain=True),
-            hgvs.location.Interval(sp(30), sp(30), uncertain=True)
+            hgvs.location.Interval(sp(30), sp(30), uncertain=True),
         )
         self.assertEqual("(10_20)_(30)", str(ival5))
 
         ival6 = hgvs.location.Interval(
             hgvs.location.Interval(sp(10), sp(20), uncertain=True),
-            hgvs.location.Interval(sp(30), sp(30), uncertain=False)
+            hgvs.location.Interval(sp(30), sp(30), uncertain=False),
         )
         self.assertEqual("(10_20)_30", str(ival6))
 
