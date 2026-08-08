@@ -97,12 +97,12 @@ term3	ter	False	one
 
 ############################################################
 ## Locations
-c_interval	1_10|(1_10)	True	list	
-c_pos	11+1	True	one	
-def_c_interval	1-10	True	one	
-def_c_interval	1_10|1|1+2_10-2	True	list	
-def_c_pos	1|11+1|9-3|-1|*10	True	list	
-def_c_pos	X|11_12|10*	False	list	
+c_interval	1_10|(1_10)|(4_6)_246|4_(245_246)|(4_6)_(245_246)|(?_6)_245|4_(245_?)|(?_6)_(245_?)	True	list
+c_pos	11+1	True	one
+def_c_interval	1-10	True	one
+def_c_interval	1_10|1|1+2_10-2	True	list
+def_c_pos	1|11+1|9-3|-1|*10|?	True	list
+def_c_pos	X|11_12|10*	False	list
 def_g_interval	2_10|2	True	list	
 uncertain_g_interval	(1_10)_(21_30)	True	one
 uncertain_g_interval	(?_10)_(21_?)	True	one
@@ -113,6 +113,24 @@ uncertain_g_interval	?_(21_30)	True	one
 uncertain_g_interval	(1_10)_?	True	one
 uncertain_g_interval	10_(21_?)	True	one
 uncertain_g_interval	(1_10)_(21_30)_(41_50)	False	one
+uncertain_c_interval	(1_10)_(21_30)	True	one
+uncertain_c_interval	(?_10)_(21_?)	True	one
+uncertain_c_interval	(1_?)_(?_30)	True	one
+uncertain_c_interval	1_(21_30)	True	one
+uncertain_c_interval	(1_10)_21	True	one
+uncertain_c_interval	?_(21_30)	True	one
+uncertain_c_interval	(1_10)_?	True	one
+uncertain_c_interval	10_(21_?)	True	one
+uncertain_c_interval	(1_10)_(21_30)_(41_50)	False	one
+uncertain_n_interval	(1_10)_(21_30)	True	one
+uncertain_n_interval	(?_10)_(21_?)	True	one
+uncertain_n_interval	(1_?)_(?_30)	True	one
+uncertain_n_interval	1_(21_30)	True	one
+uncertain_n_interval	(1_10)_21	True	one
+uncertain_n_interval	?_(21_30)	True	one
+uncertain_n_interval	(1_10)_?	True	one
+uncertain_n_interval	10_(21_?)	True	one
+uncertain_n_interval	(1_10)_(21_30)_(41_50)	False	one
 def_g_pos	2	True	list
 def_g_pos	?	True	one	
 def_g_pos	A|2?|*1|-2	False	list
@@ -123,7 +141,7 @@ def_m_pos	A|2?|*1|-2	False	list
 def_n_interval	1-10	True	one	
 def_n_interval	1_10|1|1+2_10-2	True	list	
 def_n_interval	2_10|2	True	list	
-def_n_pos	1|11+1|9-3	True	list	
+def_n_pos	1|11+1|9-3|?	True	list
 def_n_pos	2	True	list
 def_n_pos	A|2?|*1	False	list
 def_n_pos	X|11_12|10*	False	list	
@@ -140,7 +158,7 @@ g_interval	2_10|(2_10)	True	list
 g_pos	2	True	one	
 m_interval	2_10|(2_10)	True	list	
 m_pos	2	True	one	
-n_interval	1_10|(1_10)	True	list	
+n_interval	1_10|(1_10)|(4_6)_246|4_(245_246)|(4_6)_(245_246)|(?_6)_245|4_(245_?)|(?_6)_(245_?)	True	list
 n_interval	2_10|(2_10)	True	list	
 n_pos	11+1	True	one	
 n_pos	2	True	one	

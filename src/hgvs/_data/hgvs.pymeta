@@ -121,10 +121,10 @@ pro_ident  = '='                             -> hgvs.edit.AARefAlt(ref='',alt=''
 # location syntax and uncertainty
 
 # potentially indefinite/uncertain intervals
-c_interval = def_c_interval | '(' def_c_interval:iv ')' -> iv._set_uncertain()
+c_interval = uncertain_c_interval:iv | def_c_interval
 g_interval = uncertain_g_interval:iv |  def_g_interval
 m_interval = def_m_interval | '(' def_m_interval:iv ')' -> iv._set_uncertain()
-n_interval = def_n_interval | '(' def_n_interval:iv ')' -> iv._set_uncertain()
+n_interval = uncertain_n_interval:iv | def_n_interval
 p_interval = def_p_interval | '(' def_p_interval:iv ')' -> iv._set_uncertain()
 r_interval = def_r_interval | '(' def_r_interval:iv ')' -> iv._set_uncertain()
 
@@ -140,7 +140,17 @@ def_n_interval = (n_pos:start '_' n_pos:end -> hgvs.location.BaseOffsetInterval(
 uncertain_g_interval = '(' def_g_interval:iv_start ')' '_' '(' def_g_interval:iv_end ')' -> hgvs.location.Interval(start=iv_start._set_uncertain(), end=iv_end._set_uncertain())
                         | def_g_interval:iv_start '_' '(' def_g_interval:iv_end ')' -> hgvs.location.Interval(start=iv_start, end=iv_end._set_uncertain())
                         | '(' def_g_interval:iv_start ')' '_' def_g_interval:iv_end -> hgvs.location.Interval(start=iv_start._set_uncertain(), end=iv_end)
-                        | ('(' def_g_interval:iv ')' -> iv._set_uncertain()) 
+                        | ('(' def_g_interval:iv ')' -> iv._set_uncertain())
+
+uncertain_c_interval = '(' def_c_interval:iv_start ')' '_' '(' def_c_interval:iv_end ')' -> hgvs.location.BaseOffsetInterval(start=iv_start._set_uncertain(), end=iv_end._set_uncertain())
+                        | def_c_interval:iv_start '_' '(' def_c_interval:iv_end ')' -> hgvs.location.BaseOffsetInterval(start=iv_start, end=iv_end._set_uncertain())
+                        | '(' def_c_interval:iv_start ')' '_' def_c_interval:iv_end -> hgvs.location.BaseOffsetInterval(start=iv_start._set_uncertain(), end=iv_end)
+                        | ('(' def_c_interval:iv ')' -> iv._set_uncertain())
+
+uncertain_n_interval = '(' def_n_interval:iv_start ')' '_' '(' def_n_interval:iv_end ')' -> hgvs.location.BaseOffsetInterval(start=iv_start._set_uncertain(), end=iv_end._set_uncertain())
+                        | def_n_interval:iv_start '_' '(' def_n_interval:iv_end ')' -> hgvs.location.BaseOffsetInterval(start=iv_start, end=iv_end._set_uncertain())
+                        | '(' def_n_interval:iv_start ')' '_' def_n_interval:iv_end -> hgvs.location.BaseOffsetInterval(start=iv_start._set_uncertain(), end=iv_end)
+                        | ('(' def_n_interval:iv ')' -> iv._set_uncertain())
 
 
 # positions
@@ -154,9 +164,11 @@ r_pos = def_r_pos #| '(' def_r_pos:pos ')' -> pos._set_uncertain()
 # definite positions
 def_c_pos = base:b offset:o -> hgvs.location.BaseOffsetPosition(b,o,datum=hgvs.enums.Datum.CDS_START)
        | '*' num:b offset:o -> hgvs.location.BaseOffsetPosition(b,o,datum=hgvs.enums.Datum.CDS_END)
+       | '?' -> hgvs.location.BaseOffsetPosition(None,0,datum=hgvs.enums.Datum.CDS_START)
 def_g_pos = (num|'?'->None):pos -> hgvs.location.SimplePosition(pos)
 def_m_pos = (num|'?'->None):pos -> hgvs.location.SimplePosition(pos)
 def_n_pos = base:b offset:o -> hgvs.location.BaseOffsetPosition(b,o,datum=hgvs.enums.Datum.SEQ_START)
+       | '?' -> hgvs.location.BaseOffsetPosition(None,0,datum=hgvs.enums.Datum.SEQ_START)
 def_p_pos = (term13|aa13):aa num:pos -> hgvs.location.AAPosition(pos,bioutils.sequences.aa_to_aa1(aa))
 def_r_pos = base:b offset:o -> hgvs.location.BaseOffsetPosition(b,o,datum=hgvs.enums.Datum.SEQ_START)
 
