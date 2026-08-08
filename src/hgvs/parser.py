@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Provides parser for HGVS strings and HGVS-related conceptual
 components, such as intronic-offset coordiates
 
@@ -49,6 +48,7 @@ class _GrammarProxy:
     def __getattr__(self, rule_name):
         def parse_fn():
             return self._grammar_obj.parse(rule_name, self._input)
+
         return parse_fn
 
 
@@ -184,10 +184,8 @@ class Parser:
         """
         bindings = {"hgvs": hgvs, "bioutils": bioutils, "copy": copy}
         if grammar_fn is None:
-            return parsley.wrapGrammar(
-                createParserClass(ometa.runtime.OMetaGrammarBase, bindings)
-            )
-        with open(grammar_fn, "r") as grammar_file:
+            return parsley.wrapGrammar(createParserClass(ometa.runtime.OMetaGrammarBase, bindings))
+        with open(grammar_fn) as grammar_file:
             return parsley.makeGrammar(grammar_file.read(), bindings)
 
     def parse(self, v) -> hgvs.sequencevariant.SequenceVariant:
@@ -218,20 +216,12 @@ class Parser:
                     return self._grammar(s).__getattr__(rule_name)()
                 except ometa.runtime.ParseError as exc:
                     # OMeta/parsley backend
-                    raise HGVSParseError(
-                        "{s}: char {exc.position}: {reason}".format(
-                            s=s, exc=exc, reason=exc.formatReason()
-                        )
-                    )
+                    raise HGVSParseError(f"{s}: char {exc.position}: {exc.formatReason()}")
                 except ParseBaseException as exc:
                     # pyparsing backend. ParseBaseException rather than
                     # ParseException: ParseFatalException and ParseSyntaxException
                     # are siblings of ParseException, not subclasses of it.
-                    raise HGVSParseError(
-                        "{s}: char {pos}: {msg}".format(
-                            s=s, pos=exc.loc, msg=exc.msg
-                        )
-                    )
+                    raise HGVSParseError(f"{s}: char {exc.loc}: {exc.msg}")
 
             rule_fxn.__doc__ = "parse string s using `%s' rule" % rule_name
             return rule_fxn

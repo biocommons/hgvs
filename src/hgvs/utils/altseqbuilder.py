@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Utility to insert an hgvs variant into a transcript sequence.
 Generates a record corresponding to the modified transcript sequence,
 along with annotations for use in conversion to an hgvsp tag.
@@ -9,10 +8,10 @@ Used in hgvsc to hgvsp conversion.
 import logging
 import math
 
+from bioutils.sequences import TranslationTable, reverse_complement, translate_cds
+
 from hgvs import global_config
 from hgvs.exceptions import HGVSError
-
-from bioutils.sequences import reverse_complement, translate_cds, TranslationTable
 
 from ..edit import Dup, Inv, NARefAlt, Repeat
 from ..enums import Datum
@@ -33,7 +32,7 @@ class AltTranscriptData:
         accession,
         is_substitution=False,
         is_ambiguous=False,
-        translation_table=TranslationTable.standard
+        translation_table=TranslationTable.standard,
     ):
         """Create a variant sequence using inputs from VariantInserter
         :param seq: DNA sequence wiith variant incorporated
@@ -61,7 +60,9 @@ class AltTranscriptData:
                 seq = list(seq)
             seq_cds = seq[cds_start - 1 :]
             seq_cds = "".join(seq_cds)
-            seq_aa = translate_cds(seq_cds, full_codons=False, ter_symbol="X", translation_table=translation_table)
+            seq_aa = translate_cds(
+                seq_cds, full_codons=False, ter_symbol="X", translation_table=translation_table
+            )
             stop_pos = seq_aa[: (cds_stop - cds_start + 1) // 3].rfind("*")
             if stop_pos == -1:
                 stop_pos = seq_aa.find("*")
@@ -136,9 +137,7 @@ class AltSeqBuilder:
 
         if variant_location == self.EXON:
             edit_type = type(self._var_c.posedit.edit)
-        elif variant_location == self.INTRON:
-            edit_type = NOT_CDS
-        elif variant_location == self.T_UTR:
+        elif variant_location == self.INTRON or variant_location == self.T_UTR:
             edit_type = NOT_CDS
         elif variant_location == self.F_UTR:
             # TODO: handle case where variant introduces a Met (new start)
@@ -159,13 +158,13 @@ class AltSeqBuilder:
             else:
                 edit_type = NOT_CDS
         else:  # should never get here
-            raise ValueError("value_location = {}".format(variant_location))
+            raise ValueError(f"value_location = {variant_location}")
 
         try:
             this_alt_data = type_map[edit_type]()
         except KeyError:
             raise NotImplementedError(
-                "c to p translation unsupported for {} type {}".format(self._var_c, edit_type)
+                f"c to p translation unsupported for {self._var_c} type {edit_type}"
             )
 
         # get the start of the "terminal" frameshift (i.e. one never "cancelled out")
@@ -185,9 +184,7 @@ class AltSeqBuilder:
         if (
             self._var_c.posedit.pos.start.datum == Datum.CDS_END
             and self._var_c.posedit.pos.end.datum == Datum.CDS_END
-        ):
-            result = self.T_UTR
-        elif (
+        ) or (
             self._var_c.posedit.edit.type in ["dup", "ins"]
             and self._var_c.posedit.pos.end.datum == Datum.CDS_END
         ):
@@ -203,36 +200,35 @@ class AltSeqBuilder:
             global_config.mapping.ins_at_boundary_is_intronic
             and self._var_c.posedit.edit.type == "dup"
             and self._var_c.posedit.pos.start.base in self._transcript_data.exon_start_positions
-        ):
-            result = self.INTRON
-        elif (
+        ) or (
             global_config.mapping.ins_at_boundary_is_intronic
             and self._var_c.posedit.edit.type == "dup"
             and self._var_c.posedit.pos.end.base in self._transcript_data.exon_end_positions
         ):
             result = self.INTRON
         elif (
-            not global_config.mapping.ins_at_boundary_is_intronic
-            and self._var_c.posedit.edit.type == "ins"
-            and self._var_c.posedit.pos.start.offset == -1 and self._var_c.posedit.pos.end.offset == 0
-        ):
-            result = self.EXON
-        elif (
-            not global_config.mapping.ins_at_boundary_is_intronic
-            and self._var_c.posedit.edit.type == "ins"
-            and self._var_c.posedit.pos.start.offset == 0 and self._var_c.posedit.pos.end.offset == 1
-        ):
-            result = self.EXON
-        elif (
-            not global_config.mapping.ins_at_boundary_is_intronic
-            and self._var_c.posedit.edit.type == "dup"
-            and self._var_c.posedit.pos.end.offset == -1
-        ):
-            result = self.EXON
-        elif (
-            not global_config.mapping.ins_at_boundary_is_intronic
-            and self._var_c.posedit.edit.type == "dup"
-            and self._var_c.posedit.pos.start.offset == 1
+            (
+                not global_config.mapping.ins_at_boundary_is_intronic
+                and self._var_c.posedit.edit.type == "ins"
+                and self._var_c.posedit.pos.start.offset == -1
+                and self._var_c.posedit.pos.end.offset == 0
+            )
+            or (
+                not global_config.mapping.ins_at_boundary_is_intronic
+                and self._var_c.posedit.edit.type == "ins"
+                and self._var_c.posedit.pos.start.offset == 0
+                and self._var_c.posedit.pos.end.offset == 1
+            )
+            or (
+                not global_config.mapping.ins_at_boundary_is_intronic
+                and self._var_c.posedit.edit.type == "dup"
+                and self._var_c.posedit.pos.end.offset == -1
+            )
+            or (
+                not global_config.mapping.ins_at_boundary_is_intronic
+                and self._var_c.posedit.edit.type == "dup"
+                and self._var_c.posedit.pos.start.offset == 1
+            )
         ):
             result = self.EXON
         elif self._var_c.posedit.pos.start.offset != 0 or self._var_c.posedit.pos.end.offset != 0:
@@ -285,7 +281,7 @@ class AltSeqBuilder:
             seq[start + 1 : start + 1] = list(alt)  # insertion in list before python list index
 
         if DBG:
-            print("net base change: {}".format(net_base_change))
+            print(f"net base change: {net_base_change}")
         is_frameshift = net_base_change % 3 != 0
         if (
             self._var_c.posedit.pos.start.datum == Datum.CDS_START
@@ -322,7 +318,7 @@ class AltSeqBuilder:
         seq, cds_start, cds_stop, start, end = self._setup_incorporate()
 
         if not self._var_c.posedit.edit.ref:
-            raise HGVSError('Duplication variant is missing reference sequence')
+            raise HGVSError("Duplication variant is missing reference sequence")
 
         dup_seq = self._var_c.posedit.edit.ref
         seq[end:end] = dup_seq
@@ -373,7 +369,7 @@ class AltSeqBuilder:
     def _incorporate_repeat(self):
         """Incorporate repeat int sequence"""
         raise NotImplementedError(
-            "hgvs c to p conversion does not support {} type: repeats".format(self._var_c)
+            f"hgvs c to p conversion does not support {self._var_c} type: repeats"
         )
 
     def _insert_stop_seq_end(self, insert_seq, insert_seq_idx, cds_start):
@@ -426,9 +422,7 @@ class AltSeqBuilder:
 
         if DBG:
             print(
-                "len seq:{} cds_start:{} cds_stop:{} start:{} end:{}".format(
-                    len(seq), cds_start, cds_stop, start, end
-                )
+                f"len seq:{len(seq)} cds_start:{cds_start} cds_stop:{cds_stop} start:{start} end:{end}"
             )
         return seq, cds_start, cds_stop, start, end
 
@@ -449,7 +443,14 @@ class AltSeqBuilder:
     def _create_no_protein(self):
         """Create a no-protein result"""
         alt_data = AltTranscriptData(
-            [], None, None, False, None, self._transcript_data.protein_accession, is_ambiguous=False, translation_table=self._translation_table
+            [],
+            None,
+            None,
+            False,
+            None,
+            self._transcript_data.protein_accession,
+            is_ambiguous=False,
+            translation_table=self._translation_table,
         )
         return alt_data
 
@@ -463,8 +464,8 @@ class AltSeqBuilder:
         """
 
         if DBG:
-            print("is_frameshift:{}".format(variant_data.is_frameshift))
-            print("variant_start_aa:{}".format(variant_data.variant_start_aa))
+            print(f"is_frameshift:{variant_data.is_frameshift}")
+            print(f"variant_start_aa:{variant_data.variant_start_aa}")
         if variant_data.is_frameshift:
             variant_data.frameshift_start = variant_data.variant_start_aa
         return variant_data

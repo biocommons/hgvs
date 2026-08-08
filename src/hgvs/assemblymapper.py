@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import logging
 
 from bioutils.sequences import TranslationTable
@@ -12,8 +10,8 @@ from hgvs.exceptions import (
     HGVSInvalidVariantError,
     HGVSUnsupportedOperationError,
 )
-from hgvs.variantmapper import VariantMapper
 from hgvs.utils.position import get_start_end
+from hgvs.variantmapper import VariantMapper
 
 _logger = logging.getLogger(__name__)
 
@@ -102,20 +100,16 @@ class AssemblyMapper(VariantMapper):
                 variantmapper=vm,
             )
         self._assembly_map = {
-            k: v
-            for k, v in hdp.get_assembly_map(self.assembly_name).items()
-            if k.startswith("NC_")
+            k: v for k, v in hdp.get_assembly_map(self.assembly_name).items() if k.startswith("NC_")
         }
         self._assembly_accessions = set(self._assembly_map.keys())
 
     def __repr__(self):
         return (
-            "{self.__module__}.{t.__name__}(alt_aln_method={self.alt_aln_method}, "
-            "assembly_name={self.assembly_name}, normalize={self.normalize}, "
-            "prevalidation_level={self.prevalidation_level}, "
-            "replace_reference={self.replace_reference})".format(
-                self=self, t=type(self)
-            )
+            f"{self.__module__}.{type(self).__name__}(alt_aln_method={self.alt_aln_method}, "
+            f"assembly_name={self.assembly_name}, normalize={self.normalize}, "
+            f"prevalidation_level={self.prevalidation_level}, "
+            f"replace_reference={self.replace_reference})"
         )
 
     def g_to_c(self, var_g, tx_ac):
@@ -227,53 +221,31 @@ class AssemblyMapper(VariantMapper):
 
         if not alt_acs:
             raise HGVSDataNotAvailableError(
-                "No alignments for {tx_ac} in {an} using {am}".format(
-                    tx_ac=tx_ac, an=self.assembly_name, am=self.alt_aln_method
-                )
+                f"No alignments for {tx_ac} in {self.assembly_name} using {self.alt_aln_method}"
             )
 
         # TODO: conditional is unnecessary; remove
         if len(alt_acs) > 1:
             names = set(self._assembly_map[ac] for ac in alt_acs)
             if names != set("XY"):
-                alts = ", ".join(
-                    [
-                        "{ac} ({n})".format(ac=ac, n=self._assembly_map[ac])
-                        for ac in alt_acs
-                    ]
-                )
+                alts = ", ".join([f"{ac} ({self._assembly_map[ac]})" for ac in alt_acs])
                 raise HGVSError(
-                    "Multiple chromosomal alignments for {tx_ac} in {an}"
-                    " using {am} (non-pseudoautosomal region) [{alts}]".format(
-                        tx_ac=tx_ac,
-                        an=self.assembly_name,
-                        am=self.alt_aln_method,
-                        alts=alts,
-                    )
+                    f"Multiple chromosomal alignments for {tx_ac} in {self.assembly_name}"
+                    f" using {self.alt_aln_method} (non-pseudoautosomal region) [{alts}]"
                 )
 
             # assume PAR
             if self.in_par_assume is None:
                 raise HGVSError(
-                    "Multiple chromosomal alignments for {tx_ac} in {an}"
-                    " using {am} (likely pseudoautosomal region)".format(
-                        tx_ac=tx_ac, an=self.assembly_name, am=self.alt_aln_method
-                    )
+                    f"Multiple chromosomal alignments for {tx_ac} in {self.assembly_name}"
+                    f" using {self.alt_aln_method} (likely pseudoautosomal region)"
                 )
 
-            alt_acs = [
-                ac for ac in alt_acs if self._assembly_map[ac] == self.in_par_assume
-            ]
+            alt_acs = [ac for ac in alt_acs if self._assembly_map[ac] == self.in_par_assume]
             if len(alt_acs) != 1:
                 raise HGVSError(
-                    "Multiple chromosomal alignments for {tx_ac} in {an}"
-                    " using {am}; in_par_assume={ipa} selected {n} of them".format(
-                        tx_ac=tx_ac,
-                        an=self.assembly_name,
-                        am=self.alt_aln_method,
-                        ipa=self.in_par_assume,
-                        n=len(alt_acs),
-                    )
+                    f"Multiple chromosomal alignments for {tx_ac} in {self.assembly_name}"
+                    f" using {self.alt_aln_method}; in_par_assume={self.in_par_assume} selected {len(alt_acs)} of them"
                 )
 
         assert len(alt_acs) == 1, "Should have exactly one alignment at this point"
@@ -290,9 +262,7 @@ class AssemblyMapper(VariantMapper):
             alt_ac = self._alt_ac_for_tx_ac(tx_ac)
         if alt_aln_method is None:
             alt_aln_method = self.alt_aln_method
-        return super(AssemblyMapper, self)._fetch_AlignmentMapper(
-            tx_ac, alt_ac, alt_aln_method
-        )
+        return super(AssemblyMapper, self)._fetch_AlignmentMapper(tx_ac, alt_ac, alt_aln_method)
 
     def _maybe_normalize(self, var):
         """normalize variant if requested, and ignore HGVSUnsupportedOperationError

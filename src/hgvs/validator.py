@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """implements validation of hgvs variants"""
 
 import logging
@@ -11,7 +10,9 @@ from hgvs.enums import Datum, ValidationLevel
 from hgvs.exceptions import HGVSInvalidVariantError
 from hgvs.utils.position import get_start_end
 
-SEQ_ERROR_MSG = "Variant reference ({var_ref_seq}) does not agree with reference sequence ({ref_seq})"
+SEQ_ERROR_MSG = (
+    "Variant reference ({var_ref_seq}) does not agree with reference sequence ({ref_seq})"
+)
 CDS_BOUND_ERROR_MSG = "Variant is outside CDS bounds (CDS length : {cds_length})"
 TX_BOUND_ERROR_MSG = "Variant is outside the transcript bounds"
 
@@ -87,10 +88,7 @@ class ExtrinsicValidator:
             if res != ValidationLevel.VALID:
                 if hgvs.global_config.mapping.strict_bounds:
                     raise HGVSInvalidVariantError(msg)
-                _logger.warning(
-                    "{}: Variant outside transcript bounds;"
-                    " no validation provided".format(var)
-                )
+                _logger.warning(f"{var}: Variant outside transcript bounds; no validation provided")
                 return True  # no other checking performed
 
         res, msg = self._c_within_cds_bound(var)
@@ -114,7 +112,7 @@ class ExtrinsicValidator:
         ):
             return (
                 ValidationLevel.WARNING,
-                "Cannot validate sequence of an intronic variant ({})".format(str(var)),
+                f"Cannot validate sequence of an intronic variant ({var!s})",
             )
 
         ref_checks = []
@@ -126,37 +124,31 @@ class ExtrinsicValidator:
                 or not var.posedit.pos.end
             ):
                 return (ValidationLevel.VALID, None)
-            ref_checks.append(
-                (
-                    var.ac,
-                    var.posedit.pos.start.pos,
-                    var.posedit.pos.start.pos,
-                    var.posedit.pos.start.aa,
-                )
-            )
+            ref_checks.append((
+                var.ac,
+                var.posedit.pos.start.pos,
+                var.posedit.pos.start.pos,
+                var.posedit.pos.start.aa,
+            ))
             if var.posedit.pos.start.pos != var.posedit.pos.end.pos:
-                ref_checks.append(
-                    (
-                        var.ac,
-                        var.posedit.pos.end.pos,
-                        var.posedit.pos.end.pos,
-                        var.posedit.pos.end.aa,
-                    )
-                )
+                ref_checks.append((
+                    var.ac,
+                    var.posedit.pos.end.pos,
+                    var.posedit.pos.end.pos,
+                    var.posedit.pos.end.aa,
+                ))
         else:
             var_ref_seq = getattr(var.posedit.edit, "ref", None) or None
             var_n = self.vm.c_to_n(var) if var.type == "c" else var
             if var_n.posedit.pos.start.uncertain or var_n.posedit.pos.end.uncertain:
                 ref_checks.append((var_n.ac, None, None, var_ref_seq))
             else:
-                ref_checks.append(
-                    (
-                        var_n.ac,
-                        var_n.posedit.pos.start.base,
-                        var_n.posedit.pos.end.base,
-                        var_ref_seq,
-                    )
-                )
+                ref_checks.append((
+                    var_n.ac,
+                    var_n.posedit.pos.start.base,
+                    var_n.posedit.pos.end.base,
+                    var_ref_seq,
+                ))
 
         for ac, var_ref_start, var_ref_end, var_ref_seq in ref_checks:
             if var_ref_start is None or var_ref_end is None or not var_ref_seq:
@@ -187,7 +179,7 @@ class ExtrinsicValidator:
         if tx_info is None:
             return (
                 ValidationLevel.WARNING,
-                "No transcript data for accession: {ac}".format(ac=var.ac),
+                f"No transcript data for accession: {var.ac}",
             )
         cds_length = tx_info["cds_end_i"] - tx_info["cds_start_i"]
 
@@ -213,7 +205,7 @@ class ExtrinsicValidator:
         if tx_info is None:
             return (
                 ValidationLevel.WARNING,
-                "No transcript data for accession: {ac}".format(ac=var.ac),
+                f"No transcript data for accession: {var.ac}",
             )
 
         s, e = get_start_end(var)

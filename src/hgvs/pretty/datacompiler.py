@@ -1,5 +1,3 @@
-from typing import List, Tuple
-
 from bioutils.normalize import normalize
 from bioutils.sequences import aa1_to_aa3_lut
 
@@ -45,9 +43,7 @@ class DataCompiler:
     def __init__(self, config: PrettyConfig):
         self.config = config
 
-    def get_shuffled_variant(
-        self, var_g: SequenceVariant, direction: int
-    ) -> VariantCoords:
+    def get_shuffled_variant(self, var_g: SequenceVariant, direction: int) -> VariantCoords:
         """Takes a sequence variant and returns VariantCoords that have been shuffled accordingly."""
 
         # get shuffled representation:
@@ -101,7 +97,7 @@ class DataCompiler:
 
     def get_position_and_state(
         self, sv: hgvs.sequencevariant.SequenceVariant
-    ) -> Tuple[int, int, str, str]:
+    ) -> tuple[int, int, str, str]:
         """
         Get the details of a sequence variant.
 
@@ -147,7 +143,7 @@ class DataCompiler:
 
         return start, end, ref, alt
 
-    def _get_exon_nr(self, tx_exons, genomic_pos) -> Tuple[int, str]:
+    def _get_exon_nr(self, tx_exons, genomic_pos) -> tuple[int, str]:
         i = -1
         for ex in tx_exons:
             i += 1
@@ -209,9 +205,7 @@ class DataCompiler:
         if strand < 0 and not self.config.reverse_display:
             aa_char = tlc[2 - c3]
 
-        return ProteinData(
-            c_pos, aa, tlc, aa_char, var_p, is_init_met, is_stop_codon, aa_index
-        )
+        return ProteinData(c_pos, aa, tlc, aa_char, var_p, is_init_met, is_stop_codon, aa_index)
 
     def data(
         self,
@@ -289,7 +283,7 @@ class DataCompiler:
             var_p = None
             reference_data = None
 
-        position_details: List[PositionDetail] = []
+        position_details: list[PositionDetail] = []
         prev_mapped_pos = None
         prev_c_pos = -1
         prev_n_pos = -1

@@ -156,6 +156,54 @@ class Test_VariantMapper(unittest.TestCase):
 
         self.assertEqual(str(var_g), hgvs_g)
 
+         # g_to_c next to 3' UTR
+        hgvs_g = "NC_000002.11:g.182402910_182402911insTTACT"
+        hgvs_c = "NM_001030311.2:c.1677_*1insAGTAA"
+        var_g = self.hp.parse_hgvs_variant(hgvs_g)
+        var_c = self.am37.g_to_c(var_g, "NM_001030311.2")
+        assert str(var_c) == hgvs_c
+
+        # g_to_c for a variant adjacent to a CIGAR I-segment (genome has extra base at
+        # position 119027727 with no transcript equivalent). The variant covers only "="
+        # territory (119027721-119027726), so pos_c.uncertain=False and the strand-flip
+        # path applies directly. The 6-base delins on the minus-strand gene maps to a
+        # 6-base delins on the transcript after reverse-complementing the alt.
+        hgvs_g = "NC_000011.10:g.119027721_119027726delinsTCACA"
+        hgvs_c = "NM_001164277.1:c.532G>A"
+
+        var_g = self.hp.parse_hgvs_variant(hgvs_g)
+        var_c = self.am.g_to_c(var_g, "NM_001164277.1")
+
+        assert str(var_g) == hgvs_g
+        assert str(var_c) == hgvs_c
+
+        # g_to_c for a variant with a CIGAR I-segment strictly inside the interval.
+        # g.119027726 maps to c.527 (=), g.119027727 is the I-segment (no transcript
+        # equivalent), g.119027728 maps to c.526 (=). Both endpoints are in = segments
+        # so pos_c.uncertain=False, but the genomic span (3 bases) is wider than the
+        # transcript span (2 bases). The fix routes this through sequence reconstruction
+        # so the I-segment base is excluded from the transcript edit.
+        hgvs_g2 = "NC_000011.10:g.119027726_119027728delinsTT"
+        hgvs_c2 = "NM_001164277.1:c.526_527delinsAA"
+
+        var_g2 = self.hp.parse_hgvs_variant(hgvs_g2)
+        var_c2 = self.am.g_to_c(var_g2, "NM_001164277.1")
+
+        assert str(var_g2) == hgvs_g2
+        assert str(var_c2) == hgvs_c2
+
+        # deletion spanning a 'D' segment in the CIGAR alignment
+        # NM_015120.4 exon 1 CIGAR: 146=3D289= (transcript has 3 extra bases not in genome)
+        # g.73385901_73385903del spans across the 3D boundary → maps to c.34_36del
+        hgvs_g = "NC_000002.12:g.73385901_73385903del"
+        hgvs_c = "NM_015120.4:c.34_36del"
+
+        var_g = self.hp.parse_hgvs_variant(hgvs_g)
+        var_c = self.am.g_to_c(var_g, "NM_015120.4")
+
+        assert str(var_c) == hgvs_c
+
+
     def test_c_to_p_with_stop_gain(self):
         # issue-474
         hgvs_c = "NM_080877.2:c.1733_1735delinsTTT"
