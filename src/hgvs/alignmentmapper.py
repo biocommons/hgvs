@@ -91,30 +91,33 @@ class AlignmentMapper:
         if self.alt_aln_method != "transcript":
             tx_info = hdp.get_tx_info(self.tx_ac, self.alt_ac, self.alt_aln_method)
             if tx_info is None:
-                raise HGVSDataNotAvailableError(
+                msg = (
                     f"AlignmentMapper(tx_ac={self.tx_ac}, "
                     f"alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
                     "No transcript info"
                 )
+                raise HGVSDataNotAvailableError(msg)
 
             tx_exons = hdp.get_tx_exons(self.tx_ac, self.alt_ac, self.alt_aln_method)
             if tx_exons is None:
-                raise HGVSDataNotAvailableError(
+                msg = (
                     f"AlignmentMapper(tx_ac={self.tx_ac}, "
                     f"alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
                     "No transcript exons"
                 )
+                raise HGVSDataNotAvailableError(msg)
 
             # hgvs-386: An assumption when building the cigar string
             # is that exons are adjacent. Assert that here.
             sorted_tx_exons = sorted(tx_exons, key=lambda e: e["ord"])
             for i in range(1, len(sorted_tx_exons)):
                 if sorted_tx_exons[i - 1]["tx_end_i"] != sorted_tx_exons[i]["tx_start_i"]:
-                    raise HGVSDataNotAvailableError(
+                    msg = (
                         f"AlignmentMapper(tx_ac={self.tx_ac}, "
                         f"alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
                         f"Exons {i} and {i + 1} are not adjacent"
                     )
+                    raise HGVSDataNotAvailableError(msg)
 
             self.strand = tx_exons[0]["alt_strand"]
             self.gc_offset = tx_exons[0]["alt_start_i"]
@@ -129,11 +132,12 @@ class AlignmentMapper:
             # this covers the identity cases n <-> c
             tx_identity_info = hdp.get_tx_identity_info(self.tx_ac)
             if tx_identity_info is None:
-                raise HGVSDataNotAvailableError(
+                msg = (
                     f"AlignmentMapper(tx_ac={self.tx_ac}, "
                     f"alt_ac={self.alt_ac}, alt_aln_method={self.alt_aln_method}): "
                     "No transcript info"
                 )
+                raise HGVSDataNotAvailableError(msg)
             self.cds_start_i = tx_identity_info["cds_start_i"]
             self.cds_end_i = tx_identity_info["cds_end_i"]
             self.tgt_len = sum(tx_identity_info["lengths"])
@@ -554,9 +558,8 @@ class AlignmentMapper:
         if (
             self.cds_start_i is None
         ):  # cds_start_i defined iff cds_end_i defined; see assertion above
-            raise HGVSUsageError(
-                f"CDS is undefined for {self.tx_ac}; cannot map to c. coordinate (non-coding transcript?)"
-            )
+            msg = f"CDS is undefined for {self.tx_ac}; cannot map to c. coordinate (non-coding transcript?)"
+            raise HGVSUsageError(msg)
 
         if isinstance(n_interval, BaseOffsetInterval):
             start = n_interval.start.base
@@ -569,9 +572,8 @@ class AlignmentMapper:
             start = 1
 
         if strict_bounds and (start <= 0 or (end and end > self.tgt_len)):
-            raise HGVSInvalidIntervalError(
-                "The given coordinate is outside the bounds of the reference sequence."
-            )
+            msg = "The given coordinate is outside the bounds of the reference sequence."
+            raise HGVSInvalidIntervalError(msg)
 
         def pos_n_to_c(pos) -> hgvs.location.BaseOffsetPosition:
             if pos.base <= self.cds_start_i:
@@ -594,7 +596,8 @@ class AlignmentMapper:
             else:
                 c_start = hgvs.location.BaseOffsetPosition(base=None, datum=Datum.CDS_START)
                 if not interval.end or not interval.end.base:
-                    raise HGVSInvalidIntervalError("n_to_c: interval start is None and end is None")
+                    msg = "n_to_c: interval start is None and end is None"
+                    raise HGVSInvalidIntervalError(msg)
 
             iend = interval.end
             if iend and iend.base:
@@ -643,9 +646,8 @@ class AlignmentMapper:
             strict_bounds = global_config.mapping.strict_bounds
 
         if self.cds_start_i is None:
-            raise HGVSUsageError(
-                f"CDS is undefined for {self.tx_ac}; this accession appears to be for a non-coding transcript"
-            )
+            msg = f"CDS is undefined for {self.tx_ac}; this accession appears to be for a non-coding transcript"
+            raise HGVSUsageError(msg)
 
         def pos_c_to_n(pos):
             if not pos or not pos.base:
@@ -660,7 +662,8 @@ class AlignmentMapper:
             if n <= 0:  # correct for lack of n.0 coordinate
                 n -= 1
             if (n <= 0 or n > self.tgt_len) and strict_bounds:
-                raise HGVSInvalidIntervalError(f"c.{pos} coordinate is out of bounds")
+                msg = f"c.{pos} coordinate is out of bounds"
+                raise HGVSInvalidIntervalError(msg)
 
             return hgvs.location.BaseOffsetPosition(
                 base=n,
@@ -723,9 +726,8 @@ class AlignmentMapper:
     @property
     def is_coding_transcript(self):
         if (self.cds_start_i is not None) ^ (self.cds_end_i is not None):
-            raise HGVSError(
-                f"{self.tx_ac}: CDS start_i and end_i must be both defined or both undefined"
-            )
+            msg = f"{self.tx_ac}: CDS start_i and end_i must be both defined or both undefined"
+            raise HGVSError(msg)
         return self.cds_start_i is not None
 
     def g_interval_is_inbounds(self, ival):

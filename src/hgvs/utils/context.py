@@ -35,11 +35,11 @@ def full_house(am, var, tx_ac=None):
         if tx_ac is None:
             rtx = am.relevant_transcripts(var)
             if len(rtx) == 0:
-                raise RuntimeError(f"no relevant transcripts for {var.ac}")
+                msg = f"no relevant transcripts for {var.ac}"
+                raise RuntimeError(msg)
             if len(rtx) > 1:
-                raise RuntimeError(
-                    f"{len(rtx)} relevant transcripts for {var.ac}; you need to pick one"
-                )
+                msg = f"{len(rtx)} relevant transcripts for {var.ac}; you need to pick one"
+                raise RuntimeError(msg)
             tx_ac = rtx[0]
         var_n = am.g_to_n(var_g, tx_ac)
         var_c = am.n_to_c(var_n)

@@ -72,10 +72,12 @@ class SimplePosition:
     def __lt__(lhs, rhs):
         assert type(lhs) is type(rhs), "Cannot compare coordinates of different representations"
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            msg = "Cannot compare coordinates of uncertain positions"
+            raise HGVSUnsupportedOperationError(msg)
 
         if lhs.base is None and rhs.base is None:
-            raise HGVSUnsupportedOperationError("Cannot compare two positions without bases")
+            msg = "Cannot compare two positions without bases"
+            raise HGVSUnsupportedOperationError(msg)
 
         # imprecise positions can be on both sides of an interval
         # This is weird, but because an unknown breakpoint can be expressed on both sides
@@ -190,15 +192,13 @@ class BaseOffsetPosition:
     def __sub__(lhs, rhs):
         assert type(lhs) is type(rhs), "Cannot substract coordinates of different representations"
         if lhs.datum != rhs.datum:
-            raise HGVSUnsupportedOperationError(
-                "Interval length measured from different datums is ill-defined"
-            )
+            msg = "Interval length measured from different datums is ill-defined"
+            raise HGVSUnsupportedOperationError(msg)
         if lhs.base == rhs.base:
             return lhs.offset - rhs.offset
         if lhs.offset != 0 or rhs.offset != 0:
-            raise HGVSUnsupportedOperationError(
-                "Interval length with intronic offsets is ill-defined"
-            )
+            msg = "Interval length with intronic offsets is ill-defined"
+            raise HGVSUnsupportedOperationError(msg)
         straddles_zero = 1 if (lhs.base > 0 and rhs.base < 0) else 0
         return lhs.base - rhs.base - straddles_zero
 
@@ -215,7 +215,8 @@ class BaseOffsetPosition:
     def __lt__(lhs, rhs):
         assert type(lhs) is type(rhs), "Cannot compare coordinates of different representations"
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            msg = "Cannot compare coordinates of uncertain positions"
+            raise HGVSUnsupportedOperationError(msg)
         if lhs.datum == rhs.datum:
             if lhs.base == rhs.base:
                 return lhs.offset < rhs.offset
@@ -228,14 +229,12 @@ class BaseOffsetPosition:
             if (rhs.base - lhs.base == 1 and lhs.offset > 0 and rhs.offset < 0) or (
                 lhs.base - rhs.base == 1 and rhs.offset > 0 and lhs.offset < 0
             ):
-                raise HGVSUnsupportedOperationError(
-                    "Cannot compare coordinates in the same intron with one based on end of exon and the other based on start of next exon"
-                )
+                msg = "Cannot compare coordinates in the same intron with one based on end of exon and the other based on start of next exon"
+                raise HGVSUnsupportedOperationError(msg)
             return lhs.base < rhs.base
         if lhs.datum == Datum.SEQ_START or rhs.datum == Datum.SEQ_START:
-            raise HGVSUnsupportedOperationError(
-                "Cannot compare coordinates of datum SEQ_START with CDS_START or CDS_END"
-            )
+            msg = "Cannot compare coordinates of datum SEQ_START with CDS_START or CDS_END"
+            raise HGVSUnsupportedOperationError(msg)
         return lhs.datum < rhs.datum
 
 
@@ -302,31 +301,36 @@ class AAPosition:
     def __eq__(lhs, rhs):
         assert type(lhs) is type(rhs), "Cannot compare coordinates of different representations"
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            msg = "Cannot compare coordinates of uncertain positions"
+            raise HGVSUnsupportedOperationError(msg)
         return lhs.base == rhs.base and lhs.aa == rhs.aa
 
     def __lt__(lhs, rhs):
         assert type(lhs) is type(rhs), "Cannot compare coordinates of different representations"
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            msg = "Cannot compare coordinates of uncertain positions"
+            raise HGVSUnsupportedOperationError(msg)
         return lhs.base < rhs.base
 
     def __gt__(lhs, rhs):
         assert type(lhs) is type(rhs), "Cannot compare coordinates of different representations"
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            msg = "Cannot compare coordinates of uncertain positions"
+            raise HGVSUnsupportedOperationError(msg)
         return lhs.base > rhs.base
 
     def __le__(lhs, rhs):
         assert type(lhs) is type(rhs), "Cannot compare coordinates of different representations"
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            msg = "Cannot compare coordinates of uncertain positions"
+            raise HGVSUnsupportedOperationError(msg)
         return lhs.base <= rhs.base
 
     def __ge__(lhs, rhs):
         assert type(lhs) is type(rhs), "Cannot compare coordinates of different representations"
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            msg = "Cannot compare coordinates of uncertain positions"
+            raise HGVSUnsupportedOperationError(msg)
         return lhs.base >= rhs.base
 
 
@@ -501,9 +505,8 @@ class BaseOffsetInterval(Interval):
             (Datum.CDS_START, Datum.CDS_END),
             (Datum.CDS_END, Datum.CDS_END),
         ]:
-            raise HGVSInvalidIntervalError(
-                "BaseOffsetInterval start datum and end datum are incompatible"
-            )
+            msg = "BaseOffsetInterval start datum and end datum are incompatible"
+            raise HGVSInvalidIntervalError(msg)
 
 
 # <LICENSE>

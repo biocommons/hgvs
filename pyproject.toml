@@ -243,24 +243,24 @@ select = [
 # the rule's rationale (asserts stripped in optimized production code)
 # doesn't apply. See https://github.com/biocommons/hgvs/issues/850.
 "tests/*" = ["PLR2004", "S101"]
-"src/hgvs/alignmentmapper.py" = ["EM101", "EM102", "PLC0415", "PLR0911", "PLR0912", "PLR0915", "S101", "TRY003"]
-"src/hgvs/assemblymapper.py" = ["B026", "EM102", "S101", "TRY003"]
+"src/hgvs/alignmentmapper.py" = ["PLC0415", "PLR0911", "PLR0912", "PLR0915", "S101"]
+"src/hgvs/assemblymapper.py" = ["B026", "S101"]
 "src/hgvs/config.py" = ["B904"]
-"src/hgvs/dataproviders/interface.py" = ["EM102", "PLR2004", "S101", "TRY003"]
-"src/hgvs/dataproviders/ncbi.py" = ["ARG002", "EM102", "PLR2004", "RUF012", "TRY002", "TRY003"]
-"src/hgvs/dataproviders/seqfetcher.py" = ["B904", "EM102", "PLC0415", "TRY003"]
-"src/hgvs/dataproviders/uta.py" = ["EM102", "PLR2004", "PLR5501", "RUF012", "TRY002", "TRY003"]
+"src/hgvs/dataproviders/interface.py" = ["PLR2004", "S101"]
+"src/hgvs/dataproviders/ncbi.py" = ["ARG002", "PLR2004", "RUF012"]
+"src/hgvs/dataproviders/seqfetcher.py" = ["B904", "PLC0415"]
+"src/hgvs/dataproviders/uta.py" = ["PLR2004", "PLR5501", "RUF012"]
 # A002/B006/B008/N806 here are a verbatim port of CPython's lru_cache
 # backport recipe (see module docstring); the builtin-shadowing default
 # args (sorted=sorted, etc.) and UPPERCASE tuple-unpacked names are a
 # deliberate perf idiom from the reference implementation, not sloppiness.
 # Permanent exception, not debt. See #850.
 "src/hgvs/decorators/lru_cache.py" = ["A002", "B006", "B008", "N806", "PLR0915"]
-"src/hgvs/edit.py" = ["ARG002", "EM101", "PLR0912", "PLR5501", "S101", "TRY003"]
-"src/hgvs/extras/babelfish.py" = ["EM102", "TRY003"]
-"src/hgvs/location.py" = ["ARG002", "EM101", "N805", "PLR0911", "PLR0912", "PLR1714", "PLW1641", "S101", "TRY003", "TRY300"]
-"src/hgvs/normalizer.py" = ["EM101", "EM102", "PLR0912", "PLR0915", "PLR1714", "PLR2004", "PLR5501", "S101", "TRY003", "TRY300"]
-"src/hgvs/parser.py" = ["B904", "EM102", "TRY003"]
+"src/hgvs/edit.py" = ["ARG002", "PLR0912", "PLR5501", "S101"]
+# REMOVED: "src/hgvs/extras/babelfish.py"
+"src/hgvs/location.py" = ["ARG002", "N805", "PLR0911", "PLR0912", "PLR1714", "PLW1641", "S101", "TRY300"]
+"src/hgvs/normalizer.py" = ["PLR0912", "PLR0915", "PLR1714", "PLR2004", "PLR5501", "S101", "TRY300"]
+"src/hgvs/parser.py" = ["B904"]
 "src/hgvs/parsers/base.py" = ["ARG004", "PLC0415"]
 "src/hgvs/parsers/parsley_parser.py" = ["PLC0415"]
 "src/hgvs/parsers/pyparsing_parser.py" = ["ARG002"]
@@ -270,17 +270,17 @@ select = [
 "src/hgvs/pretty/console/shuffledvariant.py" = ["PLC0415", "PLR0912", "PLR0915"]
 "src/hgvs/pretty/console/txaligrenderer.py" = ["PLC0415", "PLR0912", "PLR0915", "PLR1714", "PLR5501"]
 "src/hgvs/pretty/console/txrefdisagreerenderer.py" = ["PLC0415", "PLR5501"]
-"src/hgvs/pretty/datacompiler.py" = ["ARG002", "EM102", "PLR0912", "PLR0915", "PLR1730", "PLR2004", "PLR5501", "RUF013", "TRY003"]
+"src/hgvs/pretty/datacompiler.py" = ["ARG002", "PLR0912", "PLR0915", "PLR1730", "PLR2004", "PLR5501", "RUF013"]
 "src/hgvs/pretty/prettyprint.py" = ["PLR0912", "PLR0915", "PLR1704", "PLR1714", "RUF013"]
 "src/hgvs/repeats.py" = ["PLR0912", "PLR0915"]
 "src/hgvs/shell.py" = ["PLC0415"]
 # S301 (pickle) fix is blocked on #849's planned rethink of hdp caching
 # for 2.0; not fixing here to avoid throwaway work. B904/N999 remain.
 "src/hgvs/utils/PersistentDict.py" = ["B904", "N999", "S301"]
-"src/hgvs/utils/altseq_to_hgvsp.py" = ["EM101", "EM102", "PLR0912", "PLR0915", "PLR5501", "TRY003"]
-"src/hgvs/utils/altseqbuilder.py" = ["B904", "EM101", "EM102", "PLR1714", "PLR5501", "TRY003"]
-"src/hgvs/utils/cigarmapper.py" = ["EM101", "TRY003"]
-"src/hgvs/utils/context.py" = ["EM102", "PLC0415", "PLR2004", "S101", "TRY003"]
+"src/hgvs/utils/altseq_to_hgvsp.py" = ["PLR0912", "PLR0915", "PLR5501"]
+"src/hgvs/utils/altseqbuilder.py" = ["B904", "PLR1714", "PLR5501"]
+# REMOVED: "src/hgvs/utils/cigarmapper.py"
+"src/hgvs/utils/context.py" = ["PLC0415", "PLR2004", "S101"]
 "src/hgvs/utils/norm.py" = ["PLR2004"]
 "src/hgvs/utils/orderedenum.py" = ["S101"]
 "src/hgvs/utils/position.py" = ["PLR0911", "PLR0912", "PLR5501"]

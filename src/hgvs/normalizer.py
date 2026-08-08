@@ -76,13 +76,11 @@ class Normalizer:
         var_type = var.type
 
         if var_type == "p":
-            raise HGVSUnsupportedOperationError(
-                f"Unsupported normalization of protein level variants: {var}"
-            )
+            msg = f"Unsupported normalization of protein level variants: {var}"
+            raise HGVSUnsupportedOperationError(msg)
         if var.posedit.edit.type == "con":
-            raise HGVSUnsupportedOperationError(
-                "Unsupported normalization of conversion variants: {0}", format(var)
-            )
+            msg = f"Unsupported normalization of conversion variants: {var}"
+            raise HGVSUnsupportedOperationError(msg)
 
         var.fill_ref(self.hdp)
 
@@ -99,9 +97,8 @@ class Normalizer:
         s, e = get_start_end(var)
 
         if var.type in "nr" and (s.offset != 0 or e.offset != 0):
-            raise HGVSUnsupportedOperationError(
-                "Normalization of intronic variants is not supported"
-            )
+            msg = "Normalization of intronic variants is not supported"
+            raise HGVSUnsupportedOperationError(msg)
 
         def is_valid_pos(ac, pos):
             # tests whether the sequence position actually exists
@@ -118,7 +115,8 @@ class Normalizer:
 
         if s.base < 0 or not is_valid_pos(var.ac, e.base):
             if hgvs.global_config.mapping.strict_bounds:
-                raise HGVSInvalidVariantError(f"{var}: coordinates are out-of-bounds")
+                msg = f"{var}: coordinates are out-of-bounds"
+                raise HGVSInvalidVariantError(msg)
             _logger.warning("%s: coordinates are out-of-bounds; returning as-is", var)
             return orig_var
 
@@ -219,7 +217,8 @@ class Normalizer:
             # Get genomic sequence access number for this transcript
             map_info = self.hdp.get_tx_mapping_options(var.ac)
             if not map_info:
-                raise HGVSDataNotAvailableError(f"No mapping info available for {var.ac}")
+                msg = f"No mapping info available for {var.ac}"
+                raise HGVSDataNotAvailableError(msg)
             map_info = [item for item in map_info if item["alt_aln_method"] == self.alt_aln_method]
             alt_ac = map_info[0]["alt_ac"]
 
@@ -253,9 +252,8 @@ class Normalizer:
                     break
 
             if i != j:
-                raise HGVSUnsupportedOperationError(
-                    f"Unsupported normalization of variants spanning the exon-intron boundary ({var})"
-                )
+                msg = f"Unsupported normalization of variants spanning the exon-intron boundary ({var})"
+                raise HGVSUnsupportedOperationError(msg)
 
             left = exon_starts[i]
             right = exon_ends[i]
@@ -267,9 +265,10 @@ class Normalizer:
             elif start.base - 1 >= cds_start:
                 left = max(left, cds_start)
             else:
-                raise HGVSUnsupportedOperationError(
+                msg = (
                     f"Unsupported normalization of variants spanning the UTR-exon boundary ({var})"
                 )
+                raise HGVSUnsupportedOperationError(msg)
 
             if cds_end is None:
                 pass
@@ -278,9 +277,10 @@ class Normalizer:
             elif end.base - 1 < cds_end:
                 right = min(right, cds_end)
             else:
-                raise HGVSUnsupportedOperationError(
+                msg = (
                     f"Unsupported normalization of variants spanning the exon-UTR boundary ({var})"
                 )
+                raise HGVSUnsupportedOperationError(msg)
 
             return left, right
         # For variant type of g and m etc.
@@ -293,7 +293,8 @@ class Normalizer:
         # Get genomic sequence access number for this transcript
         identity_info = self.hdp.get_tx_identity_info(var.ac)
         if not identity_info:
-            raise HGVSDataNotAvailableError(f"No identity info available for {var.ac}")
+            msg = f"No identity info available for {var.ac}"
+            raise HGVSDataNotAvailableError(msg)
         tgt_len = sum(identity_info["lengths"])
         return tgt_len
 
@@ -312,7 +313,8 @@ class Normalizer:
         seq = self.hdp.get_seq(var.ac, start, end)
 
         if len(seq) < end - start and len(seq) < var_len:
-            raise HGVSInvalidVariantError(f"Variant span is outside sequence bounds ({var})")
+            msg = f"Variant span is outside sequence bounds ({var})"
+            raise HGVSInvalidVariantError(msg)
 
         return seq
 

@@ -112,7 +112,8 @@ def connect(
         )
     else:
         # fell through connection scheme cases
-        raise RuntimeError(f"{url.scheme} in {url} is not currently supported")
+        msg = f"{url.scheme} in {url} is not currently supported"
+        raise RuntimeError(msg)
     _logger.info("connected to %s...", db_url)
     return conn
 
@@ -303,9 +304,8 @@ class UTABase(Interface):
         """
         rows = self._fetchall(self._queries["tx_exons"], [tx_ac, alt_ac, alt_aln_method])
         if len(rows) == 0:
-            raise HGVSDataNotAvailableError(
-                f"No tx_exons for (tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})"
-            )
+            msg = f"No tx_exons for (tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})"
+            raise HGVSDataNotAvailableError(msg)
 
         # TODO: Check that end == transcript sequence length (but length N/A in current hdp)
         ex0 = 0 if (rows[0]["alt_strand"] == 1) else -1
@@ -376,7 +376,8 @@ class UTABase(Interface):
         """
         rows = self._fetchall(self._queries["tx_identity_info"], [tx_ac])
         if len(rows) == 0:
-            raise HGVSDataNotAvailableError(f"No transcript definition for (tx_ac={tx_ac})")
+            msg = f"No transcript definition for (tx_ac={tx_ac})"
+            raise HGVSDataNotAvailableError(msg)
         return rows[0]
 
     def get_tx_info(self, tx_ac, alt_ac, alt_aln_method):
@@ -403,15 +404,15 @@ class UTABase(Interface):
         """
         rows = self._fetchall(self._queries["tx_info"], [tx_ac, alt_ac, alt_aln_method])
         if len(rows) == 0:
-            raise HGVSDataNotAvailableError(
-                f"No tx_info for (tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})"
-            )
+            msg = f"No tx_info for (tx_ac={tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})"
+            raise HGVSDataNotAvailableError(msg)
         if len(rows) == 1:
             return rows[0]
-        raise HGVSError(
+        msg = (
             f"Multiple ({len(rows)}) replies for tx_info(tx_ac="
             f"{tx_ac},alt_ac={alt_ac},alt_aln_method={alt_aln_method})"
         )
+        raise HGVSError(msg)
 
     def get_tx_mapping_options(self, tx_ac):
         """Return all transcript alignment sets for a given transcript
@@ -561,9 +562,8 @@ class UTA_postgresql(UTABase):
         )
         if r["exists"]:
             return
-        raise HGVSDataNotAvailableError(
-            f"specified schema ({self.url.schema}) does not exist (url={self.url})"
-        )
+        msg = f"specified schema ({self.url.schema}) does not exist (url={self.url})"
+        raise HGVSDataNotAvailableError(msg)
 
     @contextlib.contextmanager
     def _get_cursor(self, n_retries=1):

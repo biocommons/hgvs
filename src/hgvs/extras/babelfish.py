@@ -36,7 +36,8 @@ class Babelfish:
         """
 
         if var_g.type != "g":
-            raise RuntimeError(f"Expected g. variant, got {var_g}")
+            msg = f"Expected g. variant, got {var_g}"
+            raise RuntimeError(msg)
 
         vleft = self.hn.normalize(var_g)
 

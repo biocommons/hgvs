@@ -138,7 +138,8 @@ class DataCompiler:
             alt = ref + ref
 
         else:
-            raise ValueError(f"HGVS variant type {sv.posedit.edit.type} is unsupported")
+            msg = f"HGVS variant type {sv.posedit.edit.type} is unsupported"
+            raise ValueError(msg)
 
         return start, end, ref, alt
 

@@ -118,9 +118,8 @@ class Interface(metaclass=abc.ABCMeta):
         if av[0] == rv[0] and av[1] >= rv[1]:
             return
 
-        raise RuntimeError(
-            f"Incompatible versions: {type(self).__name__} requires schema version {self.required_version}, but {self.url} provides version {self.schema_version()}"
-        )
+        msg = f"Incompatible versions: {type(self).__name__} requires schema version {self.required_version}, but {self.url} provides version {self.schema_version()}"
+        raise RuntimeError(msg)
 
     # required_version: what version of the remote schema is required
     # by the subclass? This value is compared to the result of

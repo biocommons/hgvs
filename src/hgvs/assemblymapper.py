@@ -204,33 +204,35 @@ class AssemblyMapper(VariantMapper):
         ]
 
         if not alt_acs:
-            raise HGVSDataNotAvailableError(
-                f"No alignments for {tx_ac} in {self.assembly_name} using {self.alt_aln_method}"
-            )
+            msg = f"No alignments for {tx_ac} in {self.assembly_name} using {self.alt_aln_method}"
+            raise HGVSDataNotAvailableError(msg)
 
         # TODO: conditional is unnecessary; remove
         if len(alt_acs) > 1:
             names = {self._assembly_map[ac] for ac in alt_acs}
             if names != set("XY"):
                 alts = ", ".join([f"{ac} ({self._assembly_map[ac]})" for ac in alt_acs])
-                raise HGVSError(
+                msg = (
                     f"Multiple chromosomal alignments for {tx_ac} in {self.assembly_name}"
                     f" using {self.alt_aln_method} (non-pseudoautosomal region) [{alts}]"
                 )
+                raise HGVSError(msg)
 
             # assume PAR
             if self.in_par_assume is None:
-                raise HGVSError(
+                msg = (
                     f"Multiple chromosomal alignments for {tx_ac} in {self.assembly_name}"
                     f" using {self.alt_aln_method} (likely pseudoautosomal region)"
                 )
+                raise HGVSError(msg)
 
             alt_acs = [ac for ac in alt_acs if self._assembly_map[ac] == self.in_par_assume]
             if len(alt_acs) != 1:
-                raise HGVSError(
+                msg = (
                     f"Multiple chromosomal alignments for {tx_ac} in {self.assembly_name}"
                     f" using {self.alt_aln_method}; in_par_assume={self.in_par_assume} selected {len(alt_acs)} of them"
                 )
+                raise HGVSError(msg)
 
         assert len(alt_acs) == 1, "Should have exactly one alignment at this point"
         return alt_acs[0]

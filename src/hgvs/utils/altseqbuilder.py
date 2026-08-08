@@ -304,7 +304,8 @@ class AltSeqBuilder:
         seq, cds_start, cds_stop, start, end = self._setup_incorporate()
 
         if not self._var_c.posedit.edit.ref:
-            raise HGVSError("Duplication variant is missing reference sequence")
+            msg = "Duplication variant is missing reference sequence"
+            raise HGVSError(msg)
 
         dup_seq = self._var_c.posedit.edit.ref
         seq[end:end] = dup_seq
@@ -354,9 +355,8 @@ class AltSeqBuilder:
 
     def _incorporate_repeat(self):
         """Incorporate repeat int sequence"""
-        raise NotImplementedError(
-            f"hgvs c to p conversion does not support {self._var_c} type: repeats"
-        )
+        msg = f"hgvs c to p conversion does not support {self._var_c} type: repeats"
+        raise NotImplementedError(msg)
 
     def _insert_stop_seq_end(self, insert_seq, insert_seq_idx, cds_start):
         """If translating the inserted bases in the CDS reading frame yields a stop codon, return the

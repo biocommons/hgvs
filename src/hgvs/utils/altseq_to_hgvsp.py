@@ -155,7 +155,8 @@ class AltSeqToHgvsp:
             ]
 
         if len(var_ps) > 1:
-            raise HGVSError("Got multiple AA variants - not supported")
+            msg = "Got multiple AA variants - not supported"
+            raise HGVSError(msg)
         return var_ps[0]
 
     #
@@ -275,7 +276,8 @@ class AltSeqToHgvsp:
                     alt = insertion
 
             else:  # should never get here
-                raise ValueError(f"unexpected variant: {variant}")
+                msg = f"unexpected variant: {variant}"
+                raise ValueError(msg)
 
         var_p = self._create_variant(
             aa_start,
