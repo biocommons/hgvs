@@ -165,7 +165,7 @@ markers = [
 testpaths = ["tests"]
 
 [tool.ruff]
-extend-exclude = ["src/hgvs/generated"]
+extend-exclude = ["src/hgvs/parsers/generated"]
 fix = true
 line-length = 100
 src = ["src", "tests"]
@@ -250,11 +250,14 @@ select = [
 "src/hgvs/decorators/lru_cache.py" = ["A002", "B006", "B008", "C408", "N806", "PLR0915"]
 "src/hgvs/edit.py" = ["ARG002", "EM101", "PLR0912", "PLR5501", "S101", "TRY003"]
 "src/hgvs/extras/babelfish.py" = ["EM102", "TRY003"]
-"src/hgvs/generated/hgvs_grammar.py" = ["N803", "N806", "PLR0915", "S307"]
 "src/hgvs/hgvsposition.py" = ["UP030"]
 "src/hgvs/location.py" = ["ARG002", "EM101", "N805", "PLR0911", "PLR0912", "PLR1714", "PLW1641", "S101", "SIM102", "SIM108", "TRY003", "TRY300", "UP030", "UP031"]
 "src/hgvs/normalizer.py" = ["A001", "EM101", "EM102", "G004", "PLR0912", "PLR0915", "PLR1714", "PLR2004", "PLR5501", "S101", "SIM102", "TRY003", "TRY300"]
 "src/hgvs/parser.py" = ["B904", "EM102", "G001", "PTH123", "TRY003", "UP031"]
+"src/hgvs/parsers/base.py" = ["ARG004", "G001", "PLC0415", "UP031"]
+"src/hgvs/parsers/generated/hgvs_grammar.py" = ["N803", "N806", "PLR0915", "S307"]
+"src/hgvs/parsers/parsley_parser.py" = ["PLC0415", "PTH123"]
+"src/hgvs/parsers/pyparsing_parser.py" = ["ARG002"]
 "src/hgvs/posedit.py" = ["SIM108", "UP030"]
 "src/hgvs/pretty/console/chromseqrenderer.py" = ["PLC0415", "SIM108"]
 "src/hgvs/pretty/console/chromseqreverserenderer.py" = ["PLC0415", "SIM108"]

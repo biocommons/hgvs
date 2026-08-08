@@ -1,15 +1,14 @@
-# -*- coding: utf-8 -*-
 import os
 import unittest
 
 import pytest
-from support import CACHE
 
 import hgvs.dataproviders.uta
-import hgvs.parser
+import hgvs.parsers
 import hgvs.validator
 import hgvs.variantmapper
 from hgvs.exceptions import HGVSInvalidVariantError
+from support import CACHE
 
 hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
 
@@ -19,7 +18,7 @@ class Test_HGVSValidator(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.hp = hgvs.parser.Parser()
+        cls.hp = hgvs.parsers.Parser()
         cls.vr = hgvs.validator.Validator(hdp)
 
     def test_wrapper(self):
@@ -50,7 +49,7 @@ class Test_HGVSIntrinsicValidator(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.hp = hgvs.parser.Parser()
+        cls.hp = hgvs.parsers.Parser()
         cls.validate_int = hgvs.validator.IntrinsicValidator()
 
     def test_start_lte_end(self):
@@ -184,7 +183,7 @@ class Test_HGVSExtrinsicValidator(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.hp = hgvs.parser.Parser()
+        cls.hp = hgvs.parsers.Parser()
         cls.validate_ext = hgvs.validator.ExtrinsicValidator(hdp)
 
     def test_valid_ref(self):

@@ -4,7 +4,7 @@ import re
 import unittest
 
 import hgvs.dataproviders.uta
-import hgvs.parser
+import hgvs.parsers
 import hgvs.variantmapper
 from support import CACHE
 
@@ -26,7 +26,7 @@ class TestHgvsCToPReal(unittest.TestCase):
             mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
         )
         cls._hm = hgvs.variantmapper.VariantMapper(cls.hdp)
-        cls._hp = hgvs.parser.Parser()
+        cls._hp = hgvs.parsers.Parser()
         cls._failed = []
 
     def test_c_to_p_ext(self):
