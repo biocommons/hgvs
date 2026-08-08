@@ -245,10 +245,8 @@ class DataCompiler:
         else:
             seq_end = display_end
 
-        if var_c_or_n is not None:
-            tx_ac = var_c_or_n.ac
-        else:
-            tx_ac = ""  # can't show transcript , since there is none.
+        # can't show transcript, since there is none.
+        tx_ac = var_c_or_n.ac if var_c_or_n is not None else ""
 
         alt_ac = var_g.ac
         alt_aln_method = "splign"
@@ -362,10 +360,7 @@ class DataCompiler:
 
             try:
                 n_interval = mapper.g_to_n(g_interval)
-                if var_c_or_n.type == "c":
-                    c_interval = mapper.n_to_c(n_interval)
-                else:
-                    c_interval = None
+                c_interval = mapper.n_to_c(n_interval) if var_c_or_n.type == "c" else None
             except hgvs.exceptions.HGVSInvalidIntervalError:
                 # we are beyond the transcript space, can't set any of the other values.
                 continue

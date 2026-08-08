@@ -275,16 +275,10 @@ class AlignmentMapper:
         end_start, end_end = self._get_start_end(g_interval.end)
 
         # Convert to zero-based coordinates relative to the alignment
-        if not start_start.base:
-            grs_start = None
-        else:
-            grs_start = start_start.base - 1 - self.gc_offset
+        grs_start = None if not start_start.base else start_start.base - 1 - self.gc_offset
         grs_end = start_end.base - 1 - self.gc_offset
         gre_start = end_start.base - 1 - self.gc_offset
-        if not end_end.base:
-            gre_end = None
-        else:
-            gre_end = end_end.base - 1 - self.gc_offset
+        gre_end = None if not end_end.base else end_end.base - 1 - self.gc_offset
 
         # Map genomic positions to transcript positions
         if grs_start:
@@ -331,14 +325,8 @@ class AlignmentMapper:
 
             # Transform positions
             n_start_start = self.tgt_len - 1 - orig_n_start_end
-            if orig_n_start_start:
-                n_start_end = self.tgt_len - 1 - orig_n_start_start
-            else:
-                n_start_end = None
-            if orig_n_end_end:
-                n_end_start = self.tgt_len - 1 - orig_n_end_end
-            else:
-                n_end_start = None
+            n_start_end = self.tgt_len - 1 - orig_n_start_start if orig_n_start_start else None
+            n_end_start = self.tgt_len - 1 - orig_n_end_end if orig_n_end_end else None
             n_end_end = self.tgt_len - 1 - orig_n_end_start
 
             # Transform offsets
@@ -381,17 +369,19 @@ class AlignmentMapper:
         )
 
         # For reverse strand, ensure start is less than or equal to end
-        if self.strand == -1:
-            if (
+        if self.strand == -1 and (
+            (
                 start_interval.end.base
                 and end_interval.start.base
                 and start_interval.end.base > end_interval.start.base
-            ) or (
+            )
+            or (
                 start_interval.start.base
                 and end_interval.end.base
                 and start_interval.start.base > end_interval.end.base
-            ):
-                start_interval, end_interval = end_interval, start_interval
+            )
+        ):
+            start_interval, end_interval = end_interval, start_interval
 
         # Return the final interval
         return hgvs.location.Interval(
@@ -541,9 +531,8 @@ class AlignmentMapper:
             )
 
         # For reverse strand, ensure start is less than or equal to end
-        if self.strand == -1:
-            if start.base > end.base:
-                start, end = end, start
+        if self.strand == -1 and start.base > end.base:
+            start, end = end, start
 
         # The returned interval would be uncertain when locating at alignment gaps
         return hgvs.location.Interval(
@@ -670,9 +659,8 @@ class AlignmentMapper:
                 n = pos.base + self.cds_end_i
             if n <= 0:  # correct for lack of n.0 coordinate
                 n -= 1
-            if n <= 0 or n > self.tgt_len:
-                if strict_bounds:
-                    raise HGVSInvalidIntervalError(f"c.{pos} coordinate is out of bounds")
+            if (n <= 0 or n > self.tgt_len) and strict_bounds:
+                raise HGVSInvalidIntervalError(f"c.{pos} coordinate is out of bounds")
 
             return hgvs.location.BaseOffsetPosition(
                 base=n,
@@ -794,15 +782,9 @@ class AlignmentMapper:
 
             # Transform coordinates
             frs_start = self.tgt_len - 1 - orig_frs_end
-            if orig_frs_start:
-                frs_end = self.tgt_len - 1 - orig_frs_start
-            else:
-                frs_end = None
+            frs_end = self.tgt_len - 1 - orig_frs_start if orig_frs_start else None
             fre_start = self.tgt_len - 1 - orig_fre_start
-            if orig_fre_end:
-                fre_end = self.tgt_len - 1 - orig_fre_end
-            else:
-                fre_end = None
+            fre_end = self.tgt_len - 1 - orig_fre_end if orig_fre_end else None
             ss_offset = orig_ss_offset
             se_offset = orig_se_offset
             es_offset = orig_es_offset
@@ -847,10 +829,7 @@ class AlignmentMapper:
             else:
                 gre_orig_start = -1
 
-            if gre_end is not None:
-                gre_orig_end = gre_end + self.gc_offset + 1 - ee_offset
-            else:
-                gre_orig_end = -1
+            gre_orig_end = gre_end + self.gc_offset + 1 - ee_offset if gre_end is not None else -1
             if grs_start is not None:
                 grs_orig_start = grs_start + self.gc_offset + 1 - se_offset
             else:
@@ -910,9 +889,13 @@ class AlignmentMapper:
             uncertain=n_interval.end.uncertain or gre_start_cigar in "DI" or gre_end_cigar in "DI",
         )
 
-        if self.strand == -1:
-            if g_start.end.base and g_end.start.base and g_start.end.base > g_end.start.base:
-                g_start, g_end = g_end, g_start
+        if (
+            self.strand == -1
+            and g_start.end.base
+            and g_end.start.base
+            and g_start.end.base > g_end.start.base
+        ):
+            g_start, g_end = g_end, g_start
 
         # Return the final interval
         return hgvs.location.Interval(

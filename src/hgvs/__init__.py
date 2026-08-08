@@ -78,7 +78,7 @@ except metadata.PackageNotFoundError:
 warnings.filterwarnings("default", "", DeprecationWarning, r".*\Wlib\W.*\Whgvs\W.*")
 
 
-_logger.info("hgvs " + __version__ + "; released: " + str(_is_released_version))
+_logger.info("hgvs %s; released: %s", __version__, _is_released_version)
 
 
 # <LICENSE>

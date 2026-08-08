@@ -361,19 +361,27 @@ class Interval:
             return (ValidationLevel.VALID, None)
 
         # Check for intervals where start or end interval has no base
-        if hasattr(self.start, "start") and hasattr(self.start, "end"):
+        if (
+            hasattr(self.start, "start")
+            and hasattr(self.start, "end")
+            and (
+                (hasattr(self.start.start, "base") and self.start.start.base is None)
+                or (hasattr(self.start.end, "base") and self.start.end.base is None)
+            )
+        ):
             # start is an interval
-            if (hasattr(self.start.start, "base") and self.start.start.base is None) or (
-                hasattr(self.start.end, "base") and self.start.end.base is None
-            ):
-                return (ValidationLevel.VALID, None)
+            return (ValidationLevel.VALID, None)
 
-        if hasattr(self.end, "start") and hasattr(self.end, "end"):
+        if (
+            hasattr(self.end, "start")
+            and hasattr(self.end, "end")
+            and (
+                (hasattr(self.end.start, "base") and self.end.start.base is None)
+                or (hasattr(self.end.end, "base") and self.end.end.base is None)
+            )
+        ):
             # end is an interval
-            if (hasattr(self.end.start, "base") and self.end.start.base is None) or (
-                hasattr(self.end.end, "base") and self.end.end.base is None
-            ):
-                return (ValidationLevel.VALID, None)
+            return (ValidationLevel.VALID, None)
 
         try:
             if self.start <= self.end:

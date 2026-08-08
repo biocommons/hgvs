@@ -1,4 +1,5 @@
 import pickle
+from pathlib import Path
 
 protocol = 4
 
@@ -10,7 +11,7 @@ class PersistentDict(dict):
         self.filename = filename
         self.flag = flag  # r=readonly, c=create,write,read
         try:
-            with open(self.filename, "rb") as f:
+            with Path(self.filename).open("rb") as f:
                 self.update(pickle.load(f))
         except OSError:
             if self.flag == "r":
@@ -20,7 +21,7 @@ class PersistentDict(dict):
     def sync(self):
         if self.flag == "r":
             return
-        with open(self.filename, "wb") as f:
+        with Path(self.filename).open("wb") as f:
             pickle.dump(dict(self), f, protocol)
 
     def close(self):

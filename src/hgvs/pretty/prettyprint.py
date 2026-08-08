@@ -50,7 +50,7 @@ class PrettyPrint:
         use_color=False,
         show_legend=True,
         infer_hgvs_c=True,
-        all=False,
+        all=False,  # noqa: A002 (public kwarg; renaming breaks callers using all=)
         show_reverse_strand=False,
         alt_aln_method="splign",
         reverse_display=True,
@@ -109,6 +109,7 @@ class PrettyPrint:
             return am.t_to_g(sv)
         if sv.type == "r":
             return am.r
+        return None
 
     def get_hgvs_names(
         self, sv: SequenceVariant, tx_ac: str = None
@@ -153,9 +154,8 @@ class PrettyPrint:
                 )
                 response += "\n---\n"
             return response
-        if not var_c_or_n:
-            if self.config.infer_hgvs_c:
-                var_c_or_n = self._infer_hgvs_c(var_g)
+        if not var_c_or_n and self.config.infer_hgvs_c:
+            var_c_or_n = self._infer_hgvs_c(var_g)
 
         return self.create_repre(var_g, var_c_or_n, display_start, display_end, self.data_compiler)
 
@@ -200,10 +200,7 @@ class PrettyPrint:
         else:
             head = head_c = head_p = refa = ""
 
-        if self.config.use_color:
-            var_g_print = colorize_hgvs(str(var_g))
-        else:
-            var_g_print = str(var_g)
+        var_g_print = colorize_hgvs(str(var_g)) if self.config.use_color else str(var_g)
 
         var_str = head + var_g_print + "\n"
         if data.var_c_or_n:
@@ -254,10 +251,7 @@ class PrettyPrint:
             self.config, data.strand, var_g, right_shuffled_var
         )
         right_shuffled_str = right_shuffled_renderer.display(data)
-        if self.config.show_legend:
-            shuffled_seq_header = left_shuffled_renderer.legend()
-        else:
-            shuffled_seq_header = ""
+        shuffled_seq_header = left_shuffled_renderer.legend() if self.config.show_legend else ""
 
         if left_shuffled_str != right_shuffled_str:
             fully_justified_renderer = RegionImpacted(

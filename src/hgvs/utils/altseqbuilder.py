@@ -118,16 +118,16 @@ class AltSeqBuilder:
         :returns variant sequence data
         :rtype list of dictionaries
         """
-        NOT_CDS = "not_cds_variant"
-        WHOLE_GENE_DELETED = "whole_gene_deleted"
+        not_cds = "not_cds_variant"
+        whole_gene_deleted = "whole_gene_deleted"
 
         type_map = {
             NARefAlt: self._incorporate_delins,
             Dup: self._incorporate_dup,
             Inv: self._incorporate_inv,
             Repeat: self._incorporate_repeat,
-            NOT_CDS: self._create_alt_equals_ref_noncds,
-            WHOLE_GENE_DELETED: self._create_no_protein,
+            not_cds: self._create_alt_equals_ref_noncds,
+            whole_gene_deleted: self._create_no_protein,
         }
 
         # should loop over each allele rather than assume only 1 variant; return a list for now
@@ -138,25 +138,25 @@ class AltSeqBuilder:
         if variant_location == self.EXON:
             edit_type = type(self._var_c.posedit.edit)
         elif variant_location == self.INTRON or variant_location == self.T_UTR:
-            edit_type = NOT_CDS
+            edit_type = not_cds
         elif variant_location == self.F_UTR:
             # TODO: handle case where variant introduces a Met (new start)
-            edit_type = NOT_CDS
+            edit_type = not_cds
         elif variant_location == self.WHOLE_GENE:
             if self._var_c.posedit.edit.type == "del":
-                edit_type = WHOLE_GENE_DELETED
+                edit_type = whole_gene_deleted
             elif self._var_c.posedit.edit.type == "dup":
                 _logger.warning(
                     "Whole-gene duplication; consequence assumed to not affect protein product"
                 )
-                edit_type = NOT_CDS
+                edit_type = not_cds
             elif self._var_c.posedit.edit.type == "inv":
                 _logger.warning(
                     "Whole-gene inversion; consequence assumed to not affect protein product"
                 )
-                edit_type = NOT_CDS
+                edit_type = not_cds
             else:
-                edit_type = NOT_CDS
+                edit_type = not_cds
         else:  # should never get here
             msg = f"value_location = {variant_location}"
             raise ValueError(msg)

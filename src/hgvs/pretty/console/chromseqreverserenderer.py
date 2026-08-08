@@ -19,10 +19,7 @@ class ChromReverseSeqRendered(BasicRenderer):
     """
 
     def legend(self) -> str:
-        if self.orientation < 0 and self.config.reverse_display:
-            arrow = "->"
-        else:
-            arrow = "<-"
+        arrow = "->" if self.orientation < 0 and self.config.reverse_display else "<-"
 
         return f"seq    {arrow} : "
 

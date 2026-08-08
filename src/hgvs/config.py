@@ -90,7 +90,7 @@ class ConfigGroup:
     __getitem__ = __getattr__
 
     def __setattr__(self, k, v):
-        logger.info(str(self.__class__.__name__) + f".__setattr__({k}, ...)")
+        logger.info("%s.__setattr__(%s, ...)", self.__class__.__name__, k)
         self.__dict__["_section"][k] = str(v)
 
     __setitem__ = __setattr__

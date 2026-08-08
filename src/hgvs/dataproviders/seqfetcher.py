@@ -52,7 +52,7 @@ class SeqFetcher:
             self.sr = None
             self.fetcher = bioutils.seqfetcher.fetch_seq
             self.source = "bioutils.seqfetcher (network fetching)"
-        _logger.info("Fetching sequences with " + self.source)
+        _logger.info("Fetching sequences with %s", self.source)
 
     def fetch_seq(self, ac, start_i=None, end_i=None):
         try:

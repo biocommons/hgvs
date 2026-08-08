@@ -73,9 +73,9 @@ class Normalizer:
         if var.posedit is None or var.posedit.uncertain or init_met or var.posedit.pos is None:
             return var
 
-        type = var.type
+        var_type = var.type
 
-        if type == "p":
+        if var_type == "p":
             raise HGVSUnsupportedOperationError(
                 f"Unsupported normalization of protein level variants: {var}"
             )
@@ -93,16 +93,15 @@ class Normalizer:
         # For c. variants normalization, first convert to n. variant
         # and perform normalization at the n. level, then convert the
         # normalized n. variant back to c. variant.
-        if type == "c":
+        if var_type == "c":
             var = self.vm.c_to_n(var)
 
         s, e = get_start_end(var)
 
-        if var.type in "nr":
-            if s.offset != 0 or e.offset != 0:
-                raise HGVSUnsupportedOperationError(
-                    "Normalization of intronic variants is not supported"
-                )
+        if var.type in "nr" and (s.offset != 0 or e.offset != 0):
+            raise HGVSUnsupportedOperationError(
+                "Normalization of intronic variants is not supported"
+            )
 
         def is_valid_pos(ac, pos):
             # tests whether the sequence position actually exists
@@ -120,7 +119,7 @@ class Normalizer:
         if s.base < 0 or not is_valid_pos(var.ac, e.base):
             if hgvs.global_config.mapping.strict_bounds:
                 raise HGVSInvalidVariantError(f"{var}: coordinates are out-of-bounds")
-            _logger.warning(f"{var}: coordinates are out-of-bounds; returning as-is")
+            _logger.warning("%s: coordinates are out-of-bounds; returning as-is", var)
             return orig_var
 
         # restrict var types to those that use sequence start (i.e., not c.)
@@ -207,7 +206,7 @@ class Normalizer:
         s_norm.base = ref_start
         e_norm.base = ref_end
 
-        if type == "c":
+        if var_type == "c":
             var_norm = self.vm.n_to_c(var_norm)
 
         return var_norm

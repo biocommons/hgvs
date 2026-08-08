@@ -113,7 +113,7 @@ def connect(
     else:
         # fell through connection scheme cases
         raise RuntimeError(f"{url.scheme} in {url} is not currently supported")
-    _logger.info("connected to " + str(db_url) + "...")
+    _logger.info("connected to %s...", db_url)
     return conn
 
 

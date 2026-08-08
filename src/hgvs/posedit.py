@@ -25,10 +25,7 @@ class PosEdit:
             rv = f"{self.pos.format(conf)}{self.edit.format(conf)}"
 
         if self.uncertain:
-            if self.edit in ["0", ""]:
-                rv = rv + "?"
-            else:
-                rv = "(" + rv + ")"
+            rv = rv + "?" if self.edit in ["0", ""] else "(" + rv + ")"
         return rv
 
     __str__ = format

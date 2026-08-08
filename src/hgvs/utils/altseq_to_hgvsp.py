@@ -201,10 +201,8 @@ class AltSeqToHgvsp:
                 ref = ""
 
         elif start == len(self._ref_seq):  # extension
-            if self._alt_seq[-1] == "*":
-                fsext_len = len(insertion) - len(deletion)  # don't include the former stop codon
-            else:
-                fsext_len = "?"
+            # don't include the former stop codon
+            fsext_len = len(insertion) - len(deletion) if self._alt_seq[-1] == "*" else "?"
             subst_at_stop_codon = insertion[0]
 
             aa_start = aa_end = AAPosition(base=start, aa="*")
@@ -241,10 +239,7 @@ class AltSeqToHgvsp:
                 end = start + len(deletion) - 1
                 if len(insertion) > 0:  # delins
                     aa_start = AAPosition(base=start, aa=deletion[0])
-                    if end > start:
-                        aa_end = AAPosition(base=end, aa=deletion[-1])
-                    else:
-                        aa_end = aa_start
+                    aa_end = AAPosition(base=end, aa=deletion[-1]) if end > start else aa_start
                     alt = insertion
 
                 else:  # deletion OR stop codon at variant position
@@ -258,10 +253,7 @@ class AltSeqToHgvsp:
                         is_sub = True
                     else:  # deletion
                         aa_start = AAPosition(base=start, aa=deletion[0])
-                        if end > start:
-                            aa_end = AAPosition(base=end, aa=deletion[-1])
-                        else:
-                            aa_end = aa_start
+                        aa_end = AAPosition(base=end, aa=deletion[-1]) if end > start else aa_start
                         alt = None
 
             elif len(deletion) == 0:  # insertion OR duplication OR extension

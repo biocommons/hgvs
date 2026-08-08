@@ -63,7 +63,7 @@ class Interface(metaclass=abc.ABCMeta):
         maxsize = hgvs.global_config.lru_cache.maxsize
         if "PYTEST_CURRENT_TEST" in os.environ:
             maxsize = None
-            _logger.info(f"{__file__}: Using unlimited cache size")
+            _logger.info("%s: Using unlimited cache size", __file__)
 
         self.data_version = lru_cache(maxsize=maxsize, mode=self.mode, cache=self.cache)(
             self.data_version

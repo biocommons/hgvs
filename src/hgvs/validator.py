@@ -87,7 +87,9 @@ class ExtrinsicValidator:
             if res != ValidationLevel.VALID:
                 if hgvs.global_config.mapping.strict_bounds:
                     raise HGVSInvalidVariantError(msg)
-                _logger.warning(f"{var}: Variant outside transcript bounds; no validation provided")
+                _logger.warning(
+                    "%s: Variant outside transcript bounds; no validation provided", var
+                )
                 return True  # no other checking performed
 
         res, msg = self._c_within_cds_bound(var)

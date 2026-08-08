@@ -1,6 +1,7 @@
 """OMeta/parsley backend for the HGVS parser (the historical, 1.x default)."""
 
 import copy
+from pathlib import Path
 
 import bioutils
 import ometa.runtime
@@ -43,7 +44,7 @@ class ParsleyParser(Parser):
             stacklevel=3,
         )
         bindings = {"hgvs": hgvs, "bioutils": bioutils, "copy": copy}
-        with open(grammar_fn) as grammar_file:
+        with Path(grammar_fn).open() as grammar_file:
             return parsley.makeGrammar(grammar_file.read(), bindings)
 
     def _translate_parse_error(self, s, exc):
