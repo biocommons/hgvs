@@ -3,7 +3,7 @@
 import hgvs.location
 
 
-def get_start_end(  # noqa: PLR0911
+def get_start_end(
     var, outer_confidence=True
 ) -> tuple[
     hgvs.location.SimplePosition | hgvs.location.BaseOffsetPosition,
@@ -80,7 +80,7 @@ def get_start_end(  # noqa: PLR0911
     return pos, pos
 
 
-def get_start_end_interbase(  # noqa: PLR0912
+def get_start_end_interbase(
     pos: hgvs.location.BaseOffsetPosition | hgvs.location.Interval,
     outer_confidence=True,
 ) -> tuple[int, int]:

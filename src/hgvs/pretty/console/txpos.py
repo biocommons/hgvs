@@ -1,5 +1,5 @@
-from hgvs.pretty.models import VariantData
 from hgvs.pretty.console.renderer import BasicRenderer
+from hgvs.pretty.models import VariantData
 
 
 class TxRulerRenderer(BasicRenderer):
@@ -51,7 +51,7 @@ class TxRulerRenderer(BasicRenderer):
                 var_str += f"{interval} "
                 continue
 
-            elif c_pos == 1:
+            if c_pos == 1:
                 var_str += f"{interval} "
                 continue
             var_str += " "

@@ -1,5 +1,5 @@
-from hgvs.pretty.models import VariantData
 from hgvs.pretty.console.renderer import BasicRenderer
+from hgvs.pretty.models import VariantData
 
 
 class TxRefDisagreeRenderer(BasicRenderer):
@@ -28,7 +28,7 @@ class TxRefDisagreeRenderer(BasicRenderer):
         if not data.var_c_or_n:
             return ""
 
-        from hgvs.pretty.console.constants import ENDC, COLOR_MAP
+        from hgvs.pretty.console.constants import COLOR_MAP, ENDC
 
         var_str = ""
 

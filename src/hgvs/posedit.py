@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """implements a (position,edit) tuple that represents a localized sequence change"""
 
 import attr
@@ -23,7 +22,7 @@ class PosEdit:
         if self.pos is None:
             rv = str(self.edit.format(conf))
         else:
-            rv = "{pos}{edit}".format(pos=self.pos.format(conf), edit=self.edit.format(conf))
+            rv = f"{self.pos.format(conf)}{self.edit.format(conf)}"
 
         if self.uncertain:
             if self.edit in ["0", ""]:

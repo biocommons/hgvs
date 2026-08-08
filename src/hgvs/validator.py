@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """implements validation of hgvs variants"""
 
 import logging
@@ -89,9 +88,7 @@ class ExtrinsicValidator:
             if res != ValidationLevel.VALID:
                 if hgvs.global_config.mapping.strict_bounds:
                     raise HGVSInvalidVariantError(msg)
-                _logger.warning(
-                    "{}: Variant outside transcript bounds; no validation provided".format(var)
-                )
+                _logger.warning(f"{var}: Variant outside transcript bounds; no validation provided")
                 return True  # no other checking performed
 
         res, msg = self._c_within_cds_bound(var)
@@ -115,7 +112,7 @@ class ExtrinsicValidator:
         ):
             return (
                 ValidationLevel.WARNING,
-                "Cannot validate sequence of an intronic variant ({})".format(str(var)),
+                f"Cannot validate sequence of an intronic variant ({var!s})",
             )
 
         ref_checks = []
@@ -182,7 +179,7 @@ class ExtrinsicValidator:
         if tx_info is None:
             return (
                 ValidationLevel.WARNING,
-                "No transcript data for accession: {ac}".format(ac=var.ac),
+                f"No transcript data for accession: {var.ac}",
             )
         cds_length = tx_info["cds_end_i"] - tx_info["cds_start_i"]
 
@@ -208,7 +205,7 @@ class ExtrinsicValidator:
         if tx_info is None:
             return (
                 ValidationLevel.WARNING,
-                "No transcript data for accession: {ac}".format(ac=var.ac),
+                f"No transcript data for accession: {var.ac}",
             )
 
         s, e = get_start_end(var)
