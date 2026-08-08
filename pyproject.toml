@@ -243,7 +243,6 @@ select = [
 # the rule's rationale (asserts stripped in optimized production code)
 # doesn't apply. See https://github.com/biocommons/hgvs/issues/850.
 "tests/*" = ["PLR2004", "S101"]
-# REMOVED: "src/hgvs/__init__.py"
 "src/hgvs/alignmentmapper.py" = ["EM101", "EM102", "PLC0415", "PLR0911", "PLR0912", "PLR0915", "S101", "TRY003"]
 "src/hgvs/assemblymapper.py" = ["B026", "EM102", "S101", "TRY003"]
 "src/hgvs/config.py" = ["B904"]
@@ -263,10 +262,8 @@ select = [
 "src/hgvs/normalizer.py" = ["EM101", "EM102", "PLR0912", "PLR0915", "PLR1714", "PLR2004", "PLR5501", "S101", "TRY003", "TRY300"]
 "src/hgvs/parser.py" = ["B904", "EM102", "TRY003"]
 "src/hgvs/parsers/base.py" = ["ARG004", "PLC0415"]
-"src/hgvs/parsers/generated/hgvs_grammar.py" = ["N803", "PLR0915", "S307"]
 "src/hgvs/parsers/parsley_parser.py" = ["PLC0415"]
 "src/hgvs/parsers/pyparsing_parser.py" = ["ARG002"]
-# REMOVED: "src/hgvs/posedit.py"
 "src/hgvs/pretty/console/chromseqrenderer.py" = ["PLC0415"]
 "src/hgvs/pretty/console/chromseqreverserenderer.py" = ["PLC0415"]
 "src/hgvs/pretty/console/protseqrenderer.py" = ["PLC0415", "PLR0912", "PLR0915"]
@@ -276,8 +273,9 @@ select = [
 "src/hgvs/pretty/datacompiler.py" = ["ARG002", "EM102", "PLR0912", "PLR0915", "PLR1730", "PLR2004", "PLR5501", "RUF013", "TRY003"]
 "src/hgvs/pretty/prettyprint.py" = ["PLR0912", "PLR0915", "PLR1704", "PLR1714", "RUF013"]
 "src/hgvs/repeats.py" = ["PLR0912", "PLR0915"]
-# REMOVED: "src/hgvs/sequencevariant.py"
 "src/hgvs/shell.py" = ["PLC0415"]
+# S301 (pickle) fix is blocked on #849's planned rethink of hdp caching
+# for 2.0; not fixing here to avoid throwaway work. B904/N999 remain.
 "src/hgvs/utils/PersistentDict.py" = ["B904", "N999", "S301"]
 "src/hgvs/utils/altseq_to_hgvsp.py" = ["EM101", "EM102", "PLR0912", "PLR0915", "PLR5501", "TRY003"]
 "src/hgvs/utils/altseqbuilder.py" = ["B904", "EM101", "EM102", "PLR1714", "PLR5501", "TRY003"]
