@@ -133,7 +133,7 @@ class AltSeqBuilder:
         # should loop over each allele rather than assume only 1 variant; return a list for now
         alt_data = []
 
-        variant_location = self._get_variant_region()
+        variant_location = self.get_variant_region()
 
         if variant_location == self.EXON:
             edit_type = type(self._var_c.posedit.edit)
@@ -158,14 +158,14 @@ class AltSeqBuilder:
             else:
                 edit_type = NOT_CDS
         else:  # should never get here
-            raise ValueError(f"value_location = {variant_location}")
+            msg = f"value_location = {variant_location}"
+            raise ValueError(msg)
 
         try:
             this_alt_data = type_map[edit_type]()
-        except KeyError:
-            raise NotImplementedError(
-                f"c to p translation unsupported for {self._var_c} type {edit_type}"
-            )
+        except KeyError as err:
+            msg = f"c to p translation unsupported for {self._var_c} type {edit_type}"
+            raise NotImplementedError(msg) from err
 
         # get the start of the "terminal" frameshift (i.e. one never "cancelled out")
         this_alt_data = self._get_frameshift_start(this_alt_data)
@@ -175,68 +175,54 @@ class AltSeqBuilder:
 
         return alt_data
 
-    def _get_variant_region(self):
+    @property
+    def _boundary_region(self):
+        """Region classification for variants sitting exactly at an exon/intron boundary."""
+        return self.INTRON if global_config.mapping.ins_at_boundary_is_intronic else self.EXON
+
+    def _is_at_boundary(self):
+        """Return True if this ins/dup variant lies at an exon/intron boundary."""
+        edit_type = self._var_c.posedit.edit.type
+        pos = self._var_c.posedit.pos
+        if edit_type == "dup":
+            return (
+                (
+                    pos.start.base in self._transcript_data.exon_start_positions
+                    and pos.start.offset == 0
+                )
+                or (
+                    pos.end.base in self._transcript_data.exon_end_positions and pos.end.offset == 0
+                )
+                or pos.end.offset == -1
+                or pos.start.offset == 1
+            )
+        if edit_type == "ins":
+            return (pos.start.offset == -1 and pos.end.offset == 0) or (
+                pos.start.offset == 0 and pos.end.offset == 1
+            )
+        return False
+
+    def get_variant_region(self):
         """Categorize variant by location in transcript (5'utr, exon, intron, 3'utr)
 
         :return "exon", "intron", "five_utr", "three_utr", "whole_gene"
         :rtype str
         """
-        if (
-            self._var_c.posedit.pos.start.datum == Datum.CDS_END
-            and self._var_c.posedit.pos.end.datum == Datum.CDS_END
-        ) or (
-            self._var_c.posedit.edit.type in ["dup", "ins"]
-            and self._var_c.posedit.pos.end.datum == Datum.CDS_END
+        pos = self._var_c.posedit.pos
+
+        if pos.end.datum == Datum.CDS_END and (
+            pos.start.datum == Datum.CDS_END or self._var_c.posedit.edit.type in ("dup", "ins")
         ):
-            result = self.T_UTR
-        elif self._var_c.posedit.pos.start.base < 0 and self._var_c.posedit.pos.end.base < 0:
-            result = self.F_UTR
-        elif (
-            self._var_c.posedit.pos.start.base < 0
-            and self._var_c.posedit.pos.end.datum == Datum.CDS_END
-        ):
-            result = self.WHOLE_GENE
-        elif (
-            global_config.mapping.ins_at_boundary_is_intronic
-            and self._var_c.posedit.edit.type == "dup"
-            and self._var_c.posedit.pos.start.base in self._transcript_data.exon_start_positions
-        ) or (
-            global_config.mapping.ins_at_boundary_is_intronic
-            and self._var_c.posedit.edit.type == "dup"
-            and self._var_c.posedit.pos.end.base in self._transcript_data.exon_end_positions
-        ):
-            result = self.INTRON
-        elif (
-            (
-                not global_config.mapping.ins_at_boundary_is_intronic
-                and self._var_c.posedit.edit.type == "ins"
-                and self._var_c.posedit.pos.start.offset == -1
-                and self._var_c.posedit.pos.end.offset == 0
-            )
-            or (
-                not global_config.mapping.ins_at_boundary_is_intronic
-                and self._var_c.posedit.edit.type == "ins"
-                and self._var_c.posedit.pos.start.offset == 0
-                and self._var_c.posedit.pos.end.offset == 1
-            )
-            or (
-                not global_config.mapping.ins_at_boundary_is_intronic
-                and self._var_c.posedit.edit.type == "dup"
-                and self._var_c.posedit.pos.end.offset == -1
-            )
-            or (
-                not global_config.mapping.ins_at_boundary_is_intronic
-                and self._var_c.posedit.edit.type == "dup"
-                and self._var_c.posedit.pos.start.offset == 1
-            )
-        ):
-            result = self.EXON
-        elif self._var_c.posedit.pos.start.offset != 0 or self._var_c.posedit.pos.end.offset != 0:
-            # leave out anything else intronic for now
-            result = self.INTRON
-        else:  # anything else that contains an exon
-            result = self.EXON
-        return result
+            return self.T_UTR
+        if pos.start.base < 0 and pos.end.base < 0:
+            return self.F_UTR
+        if pos.start.base < 0 and pos.end.datum == Datum.CDS_END:
+            return self.WHOLE_GENE
+        if self._is_at_boundary():
+            return self._boundary_region
+        if pos.start.offset != 0 or pos.end.offset != 0:
+            return self.INTRON
+        return self.EXON
 
     # def _is_intron_only(self):
     #     """Checks if variant is entirely intronic"""
@@ -298,7 +284,7 @@ class AltSeqBuilder:
                     del seq[stop_end:alt_end]
                     cds_stop -= alt_end - stop_end
         # use max of mod 3 value and 1 (in event that indel starts in the 5'utr range)
-        variant_start_aa = max(int(math.ceil((self._var_c.posedit.pos.start.base) / 3.0)), 1)
+        variant_start_aa = max(math.ceil(self._var_c.posedit.pos.start.base / 3.0), 1)
 
         alt_data = AltTranscriptData(
             seq,
@@ -331,7 +317,7 @@ class AltSeqBuilder:
                 dup_end = end + len(dup_seq)
                 del seq[stop_end:dup_end]
                 cds_stop -= dup_end - stop_end
-        variant_start_aa = int(math.ceil((self._var_c.posedit.pos.end.base + 1) / 3.0))
+        variant_start_aa = math.ceil((self._var_c.posedit.pos.end.base + 1) / 3.0)
 
         alt_data = AltTranscriptData(
             seq,
@@ -352,7 +338,7 @@ class AltSeqBuilder:
         seq[start:end] = list(reverse_complement("".join(seq[start:end])))
 
         is_frameshift = False
-        variant_start_aa = max(int(math.ceil((self._var_c.posedit.pos.start.base) / 3.0)), 1)
+        variant_start_aa = max(math.ceil(self._var_c.posedit.pos.start.base / 3.0), 1)
 
         alt_data = AltTranscriptData(
             seq,
@@ -405,15 +391,15 @@ class AltSeqBuilder:
             if pos.datum == Datum.CDS_START:
                 if pos.base < 0:  # 5' UTR
                     result = cds_start - 1
-                else:  # cds/intron
-                    if pos.offset < 0:
-                        result = (cds_start - 1) + pos.base - 2
-                    else:
-                        result = (cds_start - 1) + pos.base - 1
+                elif pos.offset < 0:  # cds/intron
+                    result = (cds_start - 1) + pos.base - 2
+                else:
+                    result = (cds_start - 1) + pos.base - 1
             elif pos.datum == Datum.CDS_END:  # 3' UTR
                 result = cds_stop + pos.base - 1
             else:
-                raise NotImplementedError("Unsupported/unexpected location")
+                msg = "Unsupported/unexpected location"
+                raise NotImplementedError(msg)
             start_end.append(result)
 
         # unpack; increment end by 1 (0-based exclusive)

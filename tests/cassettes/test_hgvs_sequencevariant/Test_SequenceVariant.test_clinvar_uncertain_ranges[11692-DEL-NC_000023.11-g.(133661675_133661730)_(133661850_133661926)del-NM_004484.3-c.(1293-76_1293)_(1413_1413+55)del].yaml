@@ -3,10 +3,15 @@ interactions:
     body: null
     headers: {}
     method: GET
-    uri: http://localhost:5000/seqrepo/1/sequence/NC_000023.11?start=133661674&end=133661926
+    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000023.11&rettype=fasta&seq_start=133661675&seq_stop=133661926&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: CTCTCTCTCGGTTATTTCTACTTTTTATTATTATTATTTTTTATATTCCACATACCTGGTTAATGTGCTTCAGTTTGTCAATAATTTGACTGACCACTGGCTCAGGGCCCTTCATTTTCAGCTCATGGAGATTGAACTGGTTTTTCATTCCATTCCTTGCTGCCTTTTGGCTGTATCTGTAAAGGTGAAGGTAAAGAAAAGGTTTGTCAAAGAAAGTCCCAAACAAAGGAAAAGCTGACTGTATTTGGCATC
+      string: !!binary |
+        H4sIAAAAAAAAAExPuw7CMAzc8xX5AECkhfIYkCwPZkIIeWBDgCqBRGnVTPw9Z4eBPO/s88XZHfgy
+        x6jqWUrbVNdNk5rVclrQpmrivu/6mK/Ds33neH+MoLnv2nieRDnxo17PhrSIx/HZXcdPpJzb7vb6
+        BNbfFFElVUBitUF/q3AAZmIAZnU9qahAHphAQRghsgKBCzbbBQXyuFAGZGbgFkSOhEztuqAl5+/Y
+        oeYu7A2ZjaAHPwl+ViUFUwn8OggeAIQLjD3nCi5t+Y9gB6/wBQAA///iAgAAAP//AwCDkMUBWgEA
+        AA==
     headers: {}
     status:
       code: 200
@@ -15,10 +20,14 @@ interactions:
     body: null
     headers: {}
     method: GET
-    uri: http://localhost:5000/seqrepo/1/sequence/NM_004484.3?start=1489&end=1610
+    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NM_004484.3&rettype=fasta&seq_start=1490&seq_stop=1610&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: ATACAGCCAAAAGGCAGCAAGGAATGGAATGAAAAACCAGTTCAATCTCCATGAGCTGAAAATGAAGGGCCCTGAGCCAGTGGTCAGTCAAATTATTGACAAACTGAAGCACATTAACCAG
+      string: !!binary |
+        H4sIAAAAAAAAACRMQQrCQAy89xU5KlTZtYuoByHkEC8WkdxlKSIL7ba0RfD3Jm0ImWEmM9f6/nIu
+        hFPYVxcfzm7nj97Bre96mOKQ3nmCT/sbUhMzVLDhB1XbEuYx5qkZ0zDDN44p5hkOJXTPGgsUJGQi
+        1GE2aogo6zEZ1WURNYREuapMq2WXNVYQLao9MouBNYroMhpdAlpOJi6NxR8AAP//4gIAAAD//wMA
+        tW/fUs4AAAA=
     headers: {}
     status:
       code: 200
