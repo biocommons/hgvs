@@ -1,19 +1,18 @@
-# -*- coding: utf-8 -*-
 import os
 import unittest
 
 import pytest
-from support import CACHE
 
 import hgvs.dataproviders.uta
 import hgvs.normalizer
-import hgvs.parser
+import hgvs.parsers
 import hgvs.variantmapper
 from hgvs.exceptions import (
     HGVSError,
     HGVSInvalidVariantError,
     HGVSUnsupportedOperationError,
 )
+from support import CACHE
 
 hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
 
@@ -24,7 +23,7 @@ class Test_HGVSNormalizer(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.hp = hgvs.parser.Parser()
+        cls.hp = hgvs.parsers.Parser()
         cls.norm = hgvs.normalizer.Normalizer(hdp, shuffle_direction=3, cross_boundaries=True)
         cls.norm5 = hgvs.normalizer.Normalizer(hdp, shuffle_direction=5, cross_boundaries=True)
         cls.normc = hgvs.normalizer.Normalizer(hdp, shuffle_direction=3, cross_boundaries=False)

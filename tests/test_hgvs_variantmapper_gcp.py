@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import csv
 import os
 import re
@@ -7,14 +6,14 @@ import unittest
 import pytest
 
 import hgvs.dataproviders.uta
-import hgvs.parser
+import hgvs.parsers
 import hgvs.sequencevariant
 import hgvs.variantmapper
 from support import CACHE
 
 
 def gxp_file_reader(fn):
-    rdr = csv.DictReader(open(fn, "r"), delimiter=str("\t"))
+    rdr = csv.DictReader(open(fn), delimiter="\t")
     for rec in rdr:
         if rec["id"].startswith("#"):
             continue
@@ -29,7 +28,7 @@ class Test_VariantMapper(unittest.TestCase):
             mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
         )
         self.hm = hgvs.variantmapper.VariantMapper(self.hdp)
-        self.hp = hgvs.parser.Parser()
+        self.hp = hgvs.parsers.Parser()
 
     # ZCCHC3 -- one exon, + strand
     # reece@[local]/uta_dev=> select hgnc,alt_strand,n_exons,tx_ac,alt_ac,s_cigars,cds_start_i,cds_end_i from bermuda.bermuda_data_mv where tx_ac = "NM_033089.6";

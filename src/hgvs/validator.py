@@ -4,7 +4,6 @@ import logging
 
 import hgvs
 import hgvs.edit
-import hgvs.parser
 import hgvs.variantmapper
 from hgvs.enums import Datum, ValidationLevel
 from hgvs.exceptions import HGVSInvalidVariantError

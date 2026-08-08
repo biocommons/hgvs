@@ -423,28 +423,56 @@ class BaseOffsetInterval(Interval):
     additional functionality over Interval is to ensure that the datum
     of end and start are compatible.
 
+    ``start``/``end`` are ordinarily :class:`BaseOffsetPosition` instances, but
+    for uncertain ranges like ``c.(4_6)_246`` or ``c.(?_6)_(245_?)`` either side
+    may itself be a (possibly degenerate) :class:`BaseOffsetInterval`, produced
+    by wrapping a sub-range in parentheses during parsing.
     """
 
     def format(self, conf=None):
         if self.start is None:
             return ""
-        if self.end is None or self.start == self.end:
+
+        start_is_interval = isinstance(self.start, Interval)
+        end_is_interval = isinstance(self.end, Interval)
+
+        if (
+            not start_is_interval
+            and not end_is_interval
+            and (self.end is None or self.start == self.end)
+        ):
             return self.start.format(conf)
 
-        s = self.start._format_pos()
-        if self.start.is_uncertain and self.start.base:
-            s_str = f"(?_{s})"
+        if start_is_interval:
+            s_str = self.start.format(conf)
         else:
-            s_str = s
-        e = self.end._format_pos()
-        if self.end.is_uncertain and self.end.base:
-            e_str = f"({e}_?)"
+            s = self.start._format_pos()
+            s_str = f"(?_{s})" if (self.start.is_uncertain and self.start.base) else s
+
+        if end_is_interval:
+            e_str = self.end.format(conf)
         else:
-            e_str = e
+            e = self.end._format_pos()
+            e_str = f"({e}_?)" if (self.end.is_uncertain and self.end.base) else e
+
         iv = s_str + "_" + e_str
         return "(" + iv + ")" if self.uncertain else iv
 
     __str__ = format
+
+    @staticmethod
+    def _datum_of(pos):
+        "return the datum of a position, or of the start of a nested interval"
+        return pos.start.datum if isinstance(pos, Interval) else pos.datum
+
+    @staticmethod
+    def _set_datum(pos, datum):
+        "set the datum of a BaseOffsetPosition, or of both ends of a nested BaseOffsetInterval"
+        if isinstance(pos, Interval):
+            pos.start.datum = datum
+            pos.end.datum = datum
+        else:
+            pos.datum = datum
 
     def __attrs_post_init__(self):
         # chain to super() for handling of end = None
@@ -453,13 +481,13 @@ class BaseOffsetInterval(Interval):
         # #330: In a post-ter interval like *87_91, the * binds only
         # to the start. This means that the start.datum is CDS_END,
         # but the end.datum is CDS_START (the default).
-        if self.start.datum == Datum.CDS_END:
-            self.end.datum = Datum.CDS_END
+        if self._datum_of(self.start) == Datum.CDS_END:
+            self._set_datum(self.end, Datum.CDS_END)
         self.check_datum()
 
     def check_datum(self):
         # check for valid combinations of start and end datums
-        if (self.start.datum, self.end.datum) not in [
+        if (self._datum_of(self.start), self._datum_of(self.end)) not in [
             (Datum.SEQ_START, Datum.SEQ_START),
             (Datum.CDS_START, Datum.CDS_START),
             (Datum.CDS_START, Datum.CDS_END),

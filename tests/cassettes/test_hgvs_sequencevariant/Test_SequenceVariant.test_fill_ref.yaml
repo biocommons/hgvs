@@ -3,10 +3,12 @@ interactions:
     body: null
     headers: {}
     method: GET
-    uri: http://localhost:5000/seqrepo/1/sequence/NM_001166478.1?start=30&end=32
+    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NM_001166478.1&rettype=fasta&seq_start=31&seq_stop=32&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: TT
+      string: !!binary |
+        H4sIAAAAAAAAALLz8403MDA0NDMzMbfQM7QyNtQ1NlLwyM/NVyhOLMhMzStWSElNA1KZeQpJqSWJ
+        CobGxgoaLq5uTkCGpo5CbpCfI1dICBcAAAD//+ICAAAA//8DAB+z0nxJAAAA
     headers: {}
     status:
       code: 200
@@ -15,10 +17,12 @@ interactions:
     body: null
     headers: {}
     method: GET
-    uri: http://localhost:5000/seqrepo/1/sequence/NM_001166478.1?start=1&end=7
+    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NM_001166478.1&rettype=fasta&seq_start=2&seq_stop=7&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: TGAAGA
+      string: !!binary |
+        H4sIAAAAAAAAALLz8403MDA0NDMzMbfQM7Qy0jVX8MjPzVcoTizITM0rVkhJTQNSmXkKSakliQqG
+        xsYKGi6ubk5AhqaOQm6QnyNXiLujo7sjFwAAAP//4gIAAAD//wMAmJsL40sAAAA=
     headers: {}
     status:
       code: 200
@@ -27,10 +31,12 @@ interactions:
     body: null
     headers: {}
     method: GET
-    uri: http://localhost:5000/seqrepo/1/sequence/NM_001166478.1?start=34&end=36
+    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NM_001166478.1&rettype=fasta&seq_start=35&seq_stop=36&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: TC
+      string: !!binary |
+        H4sIAAAAAAAAALLz8403MDA0NDMzMbfQM7QyNtU1NlPwyM/NVyhOLMhMzStWSElNA1KZeQpJqSWJ
+        CobGxgoaLq5uTkCGpo5CbpCfI1eIMxcAAAD//+ICAAAA//8DAPOO/DNJAAAA
     headers: {}
     status:
       code: 200
@@ -39,10 +45,12 @@ interactions:
     body: null
     headers: {}
     method: GET
-    uri: http://localhost:5000/seqrepo/1/sequence/NM_001166478.1?start=30&end=31
+    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NM_001166478.1&rettype=fasta&seq_start=31&seq_stop=31&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: T
+      string: !!binary |
+        H4sIAAAAAAAAALLz8403MDA0NDMzMbfQM7QyNtQ1NlTwyM/NVyhOLMhMzStWSElNA1KZeQpJqSWJ
+        CobGxgoaLq5uTkCGpo5CbpCfI1cIFwAAAP//4gIAAAD//wMAL6xbn0gAAAA=
     headers: {}
     status:
       code: 200

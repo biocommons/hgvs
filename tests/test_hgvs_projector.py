@@ -1,14 +1,13 @@
-# -*- coding: utf-8 -*-
 import os
 import unittest
 
 import pytest
-from support import CACHE
 
 import hgvs.dataproviders.uta
 import hgvs.location
-import hgvs.parser
+import hgvs.parsers
 import hgvs.projector
+from support import CACHE
 
 
 class TestHgvsProjector(unittest.TestCase):
@@ -19,7 +18,7 @@ class TestHgvsProjector(unittest.TestCase):
         )
         cls.alt_ac = "NC_000001.10"
         cls.alt_aln_method = "splign"
-        cls.hp = hgvs.parser.Parser()
+        cls.hp = hgvs.parsers.Parser()
 
     def tst_forward_and_backward(self, v1, v2):
         pj = hgvs.projector.Projector(

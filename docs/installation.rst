@@ -19,14 +19,9 @@ other platforms (and patches to enable this) are appreciated.
 Install Prerequisites
 @@@@@@@@@@@@@@@@@@@@@
 
-`hgvs` currently requires PostgreSQL client libraries.  On Ubuntu,
-try::
-
-  apt-get install libpq-dev
-
-On a Mac with homebrew::
-
-  brew install postgresql
+`hgvs` uses `psycopg <https://www.psycopg.org/psycopg3/>`__ with its
+prebuilt ``binary`` wheels to talk to UTA, so no PostgreSQL client
+libraries or compiler are required for a standard install.
 
 
 Use a virtual environment
@@ -169,5 +164,3 @@ stability. For example, a line like::
 in setup.py or requirements.txt indicates that version 1.0 (any patch
 level) is required, and that future 1.x-series releases are
 acceptable.
-
-

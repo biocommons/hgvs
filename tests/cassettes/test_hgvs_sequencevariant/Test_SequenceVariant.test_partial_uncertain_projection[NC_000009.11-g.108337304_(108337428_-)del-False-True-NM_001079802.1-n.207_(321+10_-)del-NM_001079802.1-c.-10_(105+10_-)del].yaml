@@ -3,10 +3,14 @@ interactions:
     body: null
     headers: {}
     method: GET
-    uri: http://localhost:5000/seqrepo/1/sequence/NC_000009.11?start=108337303&end=108337428
+    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000009.11&rettype=fasta&seq_start=108337304&seq_stop=108337428&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: GCACAGACTAATGAGTAGAATCAATAAGAACGTGGTTTTGGCCCTTTTAACGCTGACAAGTTCTGCATTTCTGCTGTTTCAGTTGTACTACTACAAGCACTATTTATCAACAAAGGTAATTTTAT
+      string: !!binary |
+        H4sIAAAAAAAAACSMwQrCQAxE7/2KfICWrlto60EIc4gnEcldqhRacG3pnvr3JjYk8DKZzOWGZ+XV
+        lSGcQ9XG2MSqPu5Un1q6zmmm3C/T8M30Hldb85wG6g4kD4yxKZcQ6b5OqV834pyH9PpshYDBwlBm
+        FRY1ZoUNO0FURK1EADi4BnOaxQ5GYFMLB3UnXLYY7G0uOPinx1qzJTL/s7T4AQAA///iAgAAAP//
+        AwBhnHc+2QAAAA==
     headers: {}
     status:
       code: 200
@@ -15,10 +19,14 @@ interactions:
     body: null
     headers: {}
     method: GET
-    uri: http://localhost:5000/seqrepo/1/sequence/NM_001079802.1?start=206&end=321
+    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NM_001079802.1&rettype=fasta&seq_start=207&seq_stop=321&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: GCACAGACTAATGAGTAGAATCAATAAGAACGTGGTTTTGGCCCTTTTAACGCTGACAAGTTCTGCATTTCTGCTGTTTCAGTTGTACTACTACAAGCACTATTTATCAACAAAG
+      string: !!binary |
+        H4sIAAAAAAAAACSMQQvCMAyF7/sVOSpMaeth6kEIASOIPUjuUkShyLqxdf5+Ewwv8PHy8k7x9nDO
+        u+6wd2Hrj8F1m13wcBn6AeY05leZ4b18lpoLrM5XiesW6pTK/JzyWOGbppxKBd9Cf4/YMCEhIwmi
+        MLIoo5AuGhELs+gwE5GBeaRJjehBiVDdxkAsSWZrDf2lKTKwT6tVITc/AAAA///iAgAAAP//AwBz
+        GrHtxgAAAA==
     headers: {}
     status:
       code: 200
@@ -27,10 +35,12 @@ interactions:
     body: null
     headers: {}
     method: GET
-    uri: http://localhost:5000/seqrepo/1/sequence/NC_000009.11?start=108337427&end=108337428
+    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000009.11&rettype=fasta&seq_start=108337428&seq_stop=108337428&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: T
+      string: !!binary |
+        H4sIAAAAAAAAALLzc443AAFLPUNDK0MDC2NjcxMjC104S8EjPzdfoTixIDM1r1ghOaMIyC3Oz01V
+        sNRRcA9yzjA21yswNFYIKMrMTSyqVHAsLk7NTcqp5ArhAgAAAP//4gIAAAD//wMADZOZD1wAAAA=
     headers: {}
     status:
       code: 200
@@ -39,10 +49,14 @@ interactions:
     body: null
     headers: {}
     method: GET
-    uri: http://localhost:5000/seqrepo/1/sequence/NC_000009.11?start=108337303&end=108337448
+    uri: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=NC_000009.11&rettype=fasta&seq_start=108337304&seq_stop=108337448&tool=bioutils&email=biocommons-dev@googlegroups.com
   response:
     body:
-      string: GCACAGACTAATGAGTAGAATCAATAAGAACGTGGTTTTGGCCCTTTTAACGCTGACAAGTTCTGCATTTCTGCTGTTTCAGTTGTACTACTACAAGCACTATTTATCAACAAAGGTAATTTTATTCCTTCTTTCTTATCATTCC
+      string: !!binary |
+        H4sIAAAAAAAAACSMwQqDQAxE7/sV+wGtKCuoPRTCHNJTKWXvxRZBoVvFPfn3nWhI4GUymesdr9Kq
+        K6rqUpVtCE0o6/NBdd3625xmn/tlGn7Zf8aVa57T4LuT1yfG0BRLFfxjnVK/bl5yHtL7uzmFQFQQ
+        RaKKRrJEcMQIGlUjSxWAgWmgkxYeSBCqziCaEyYzBkfTBQP7tFi2MFFkz6IdFrIP725X3B8AAP//
+        4gIAAAD//wMAFGKE+e4AAAA=
     headers: {}
     status:
       code: 200
