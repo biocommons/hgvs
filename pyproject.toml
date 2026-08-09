@@ -246,9 +246,9 @@ select = [
 "src/hgvs/alignmentmapper.py" = ["PLC0415", "PLR0911", "PLR0912", "PLR0915", "S101"]
 "src/hgvs/assemblymapper.py" = ["S101"]
 "src/hgvs/dataproviders/interface.py" = ["PLR2004", "S101"]
-"src/hgvs/dataproviders/ncbi.py" = ["ARG002", "PLR2004", "RUF012"]
+"src/hgvs/dataproviders/ncbi.py" = ["ARG002", "PLR2004"]
 "src/hgvs/dataproviders/seqfetcher.py" = ["PLC0415"]
-"src/hgvs/dataproviders/uta.py" = ["PLR2004", "RUF012"]
+"src/hgvs/dataproviders/uta.py" = ["PLR2004"]
 # A002/B006/B008/N806 here are a verbatim port of CPython's lru_cache
 # backport recipe (see module docstring); the builtin-shadowing default
 # args (sorted=sorted, etc.) and UPPERCASE tuple-unpacked names are a
@@ -272,8 +272,8 @@ select = [
 "src/hgvs/pretty/console/shuffledvariant.py" = ["PLC0415", "PLR0912", "PLR0915"]
 "src/hgvs/pretty/console/txaligrenderer.py" = ["PLC0415", "PLR0912", "PLR0915"]
 "src/hgvs/pretty/console/txrefdisagreerenderer.py" = ["PLC0415"]
-"src/hgvs/pretty/datacompiler.py" = ["ARG002", "PLR0912", "PLR0915", "PLR1730", "PLR2004", "RUF013"]
-"src/hgvs/pretty/prettyprint.py" = ["PLR0912", "PLR0915", "PLR1704", "RUF013"]
+"src/hgvs/pretty/datacompiler.py" = ["ARG002", "PLR0912", "PLR0915", "PLR2004"]
+"src/hgvs/pretty/prettyprint.py" = ["PLR0912", "PLR0915"]
 "src/hgvs/repeats.py" = ["PLR0912", "PLR0915"]
 "src/hgvs/shell.py" = ["PLC0415"]
 # S301 (pickle) fix is blocked on #849's planned rethink of hdp caching

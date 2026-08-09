@@ -210,8 +210,8 @@ class DataCompiler:
         self,
         var_g: SequenceVariant,
         var_c_or_n: SequenceVariant = None,
-        display_start: int = None,
-        display_end: int = None,
+        display_start: int | None = None,
+        display_end: int | None = None,
     ) -> VariantData:
         """
         Takes a sequence variant and provides all the data needed for pretty printing.
@@ -230,10 +230,8 @@ class DataCompiler:
         rs = self.get_shuffled_variant(var_g, 3)
         fs = self.get_shuffled_variant(var_g, 0)
 
-        if ls.start < start:
-            start = ls.start
-        if rs.end > end:
-            end = rs.end
+        start = min(start, ls.start)
+        end = max(end, rs.end)
 
         if not display_start or display_start > start:
             seq_start = start - self.config.padding_left

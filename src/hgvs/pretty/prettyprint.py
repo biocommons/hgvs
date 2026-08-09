@@ -81,7 +81,7 @@ class PrettyPrint:
 
         return transcripts
 
-    def _infer_hgvs_c(self, var_g: SequenceVariant, tx_ac: str = None) -> SequenceVariant:
+    def _infer_hgvs_c(self, var_g: SequenceVariant, tx_ac: str | None = None) -> SequenceVariant:
         if not tx_ac:
             transcripts = self._get_all_transcripts(var_g)
             if transcripts:
@@ -112,7 +112,7 @@ class PrettyPrint:
         return None
 
     def get_hgvs_names(
-        self, sv: SequenceVariant, tx_ac: str = None
+        self, sv: SequenceVariant, tx_ac: str | None = None
     ) -> tuple[SequenceVariant, SequenceVariant]:
         var_c_or_n = None
         if sv.type == "g":
@@ -132,9 +132,9 @@ class PrettyPrint:
     def display(
         self,
         sv: SequenceVariant,
-        tx_ac: str = None,
-        display_start: int = None,
-        display_end: int = None,
+        tx_ac: str | None = None,
+        display_start: int | None = None,
+        display_end: int | None = None,
     ) -> str:
         """Takes a variant and prints the genomic context around it in a string representation."""
 
@@ -147,8 +147,8 @@ class PrettyPrint:
 
             response = ""
             tx_acs = self._get_all_transcripts(var_g)
-            for tx_ac in tx_acs:
-                var_c_or_n = self._infer_hgvs_c(var_g, tx_ac)
+            for candidate_tx_ac in tx_acs:
+                var_c_or_n = self._infer_hgvs_c(var_g, candidate_tx_ac)
                 response += self.create_repre(
                     var_g, var_c_or_n, display_start, display_end, self.data_compiler
                 )
