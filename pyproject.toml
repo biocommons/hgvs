@@ -246,6 +246,9 @@ select = [
 "src/hgvs/alignmentmapper.py" = ["PLC0415", "PLR0911", "PLR0912", "PLR0915", "S101"]
 "src/hgvs/assemblymapper.py" = ["S101"]
 "src/hgvs/dataproviders/interface.py" = ["PLR2004", "S101"]
+# ARG002 (cache, unused in NCBIBase.__init__): required by the shared
+# dataprovider __init__(mode, cache) signature (see interface.py,
+# uta.py) so backends stay interchangeable; not dead code. See #850.
 "src/hgvs/dataproviders/ncbi.py" = ["ARG002", "PLR2004"]
 "src/hgvs/dataproviders/seqfetcher.py" = ["PLC0415"]
 "src/hgvs/dataproviders/uta.py" = ["PLR2004"]
@@ -255,7 +258,13 @@ select = [
 # deliberate perf idiom from the reference implementation, not sloppiness.
 # Permanent exception, not debt. See #850.
 "src/hgvs/decorators/lru_cache.py" = ["A002", "B006", "B008", "N806", "PLR0915"]
+# ARG002 (conf/ilen, unused in base Edit.format/_del_ins_lengths):
+# these are abstract-ish base methods with real implementations in
+# subclasses; the params must stay for signature compatibility across
+# polymorphic calls. Not dead code. See #850.
 "src/hgvs/edit.py" = ["ARG002", "PLR0912", "S101"]
+# ARG002 (conf, unused in SimplePosition/BaseOffsetPosition.format):
+# same polymorphic .format(conf) protocol as edit.py above.
 # PLW1641: SimplePosition/BaseOffsetPosition/AAPosition define __eq__ but
 # are mutable value objects (_set_uncertain mutates in place), so no
 # __hash__ is provided -- adding one on a mutable type risks silent
@@ -263,8 +272,15 @@ select = [
 # hashes these today; permanent exception, not debt. See #850.
 "src/hgvs/location.py" = ["ARG002", "N805", "PLR0911", "PLR0912", "PLW1641", "S101", "TRY300"]
 "src/hgvs/normalizer.py" = ["PLR0912", "PLR0915", "PLR2004", "S101", "TRY300"]
+# ARG004 (kwargs, unused in Parser.__new__): Python's object-construction
+# protocol calls __new__ with the same args as __init__; __new__ must
+# accept and discard kwargs meant for __init__. Not dead code. See #850.
 "src/hgvs/parsers/base.py" = ["ARG004", "PLC0415"]
 "src/hgvs/parsers/parsley_parser.py" = ["PLC0415"]
+# ARG002 (grammar_fn, unused in PyParsingParser._build_grammar):
+# overrides Parser._build_grammar(grammar_fn), called uniformly from
+# base.py regardless of backend; ParsleyParser's override does use it.
+# Not dead code. See #850.
 "src/hgvs/parsers/pyparsing_parser.py" = ["ARG002"]
 "src/hgvs/pretty/console/chromseqrenderer.py" = ["PLC0415"]
 "src/hgvs/pretty/console/chromseqreverserenderer.py" = ["PLC0415"]
@@ -272,7 +288,7 @@ select = [
 "src/hgvs/pretty/console/shuffledvariant.py" = ["PLC0415", "PLR0912", "PLR0915"]
 "src/hgvs/pretty/console/txaligrenderer.py" = ["PLC0415", "PLR0912", "PLR0915"]
 "src/hgvs/pretty/console/txrefdisagreerenderer.py" = ["PLC0415"]
-"src/hgvs/pretty/datacompiler.py" = ["ARG002", "PLR0912", "PLR0915", "PLR2004"]
+"src/hgvs/pretty/datacompiler.py" = ["PLR0912", "PLR0915", "PLR2004"]
 "src/hgvs/pretty/prettyprint.py" = ["PLR0912", "PLR0915"]
 "src/hgvs/repeats.py" = ["PLR0912", "PLR0915"]
 "src/hgvs/shell.py" = ["PLC0415"]

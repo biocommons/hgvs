@@ -33,9 +33,9 @@ class DataCompiler:
             Retrieves the protein alteration data for a given transcript and coding interval.
         data(var_g: SequenceVariant, var_c_or_n: SequenceVariant = None, display_start: int = None, display_end: int = None) -> VariantData:
             Takes a sequence variant and provides all the data needed for pretty printing. This is the main method of the class.
-        _backfill_gap_in_ref(var_c_or_n, tx_seq, tx_exons, mapper, reference_data, pdata, cig, prev_c_pos, prev_n_pos):
+        _backfill_gap_in_ref(var_c_or_n, tx_seq, mapper, reference_data, pdata, cig, prev_c_pos, prev_n_pos):
             Fills in gaps in the reference sequence for regions that have been deleted.
-        _populate_with_n_c(var_c_or_n, tx_seq, tx_exons, mapper, reference_data, pdata, cig, n_interval, c_interval):
+        _populate_with_n_c(var_c_or_n, tx_seq, mapper, reference_data, pdata, cig, n_interval, c_interval):
             Populates the PositionDetail object with nucleotide and coding information.
     """
 
@@ -318,7 +318,6 @@ class DataCompiler:
                     self._backfill_gap_in_ref(
                         var_c_or_n,
                         tx_seq,
-                        tx_exons,
                         mapper,
                         reference_data,
                         pdata,
@@ -377,7 +376,6 @@ class DataCompiler:
             self._populate_with_n_c(
                 var_c_or_n,
                 tx_seq,
-                tx_exons,
                 mapper,
                 reference_data,
                 pdata,
@@ -423,7 +421,6 @@ class DataCompiler:
         self,
         var_c_or_n,
         tx_seq,
-        tx_exons,
         mapper,
         reference_data,
         pdata,
@@ -454,7 +451,6 @@ class DataCompiler:
         self._populate_with_n_c(
             var_c_or_n,
             tx_seq,
-            tx_exons,
             mapper,
             reference_data,
             pdata,
@@ -467,7 +463,6 @@ class DataCompiler:
         self,
         var_c_or_n,
         tx_seq,
-        tx_exons,
         mapper,
         reference_data,
         pdata,
