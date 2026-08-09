@@ -41,7 +41,7 @@ class Normalizer:
         :param validate: whether validating the input variant before normalizing
 
         """
-        assert shuffle_direction == 3 or shuffle_direction == 5, (
+        assert shuffle_direction in {3, 5}, (
             "The shuffling direction should be 3 (3' most) or 5 (5' most)."
         )
         self.hdp = hdp
@@ -166,15 +166,14 @@ class Normalizer:
                     ref_end = end
                     edit = hgvs.edit.NARefAlt(ref=None, alt=alt)
                 # dup
+                elif self.shuffle_direction == 3:
+                    ref_start = start - alt_len
+                    ref_end = end - 1
+                    edit = hgvs.edit.Dup(ref=alt)
                 else:
-                    if self.shuffle_direction == 3:
-                        ref_start = start - alt_len
-                        ref_end = end - 1
-                        edit = hgvs.edit.Dup(ref=alt)
-                    else:
-                        ref_start = start
-                        ref_end = start + alt_len - 1
-                        edit = hgvs.edit.Dup(ref=alt)
+                    ref_start = start
+                    ref_end = start + alt_len - 1
+                    edit = hgvs.edit.Dup(ref=alt)
             # delins
             else:
                 ref_start = start
@@ -211,7 +210,7 @@ class Normalizer:
 
     def _get_boundary(self, var):
         """Get the position of exon-intron boundary for current variant"""
-        if var.type == "r" or var.type == "n":
+        if var.type in {"r", "n"}:
             if self.cross_boundaries:
                 return 0, float("inf")
             # Get genomic sequence access number for this transcript
@@ -288,7 +287,7 @@ class Normalizer:
 
     def _get_tgt_length(self, var):
         """Get the total length of the whole reference sequence"""
-        if var.type == "g" or var.type == "m":
+        if var.type in {"g", "m"}:
             return float("inf")
         # Get genomic sequence access number for this transcript
         identity_info = self.hdp.get_tx_identity_info(var.ac)
@@ -322,27 +321,22 @@ class Normalizer:
         """Get reference allele and alternative allele of the variant"""
 
         # Get reference allele
-        if var.posedit.edit.type == "ins" or var.posedit.edit.type == "dup":
+        if var.posedit.edit.type in {"ins", "dup"}:
             ref = ""
+        # For NARefAlt and Inv
+        elif var.posedit.edit.ref_s is None or var.posedit.edit.ref == "":
+            ref = self._fetch_bounded_seq(
+                var,
+                var.posedit.pos.start.base - 1,
+                var.posedit.pos.end.base,
+                0,
+                boundary,
+            )
         else:
-            # For NARefAlt and Inv
-            if var.posedit.edit.ref_s is None or var.posedit.edit.ref == "":
-                ref = self._fetch_bounded_seq(
-                    var,
-                    var.posedit.pos.start.base - 1,
-                    var.posedit.pos.end.base,
-                    0,
-                    boundary,
-                )
-            else:
-                ref = var.posedit.edit.ref
+            ref = var.posedit.edit.ref
 
         # Get alternative allele
-        if (
-            var.posedit.edit.type == "sub"
-            or var.posedit.edit.type == "delins"
-            or var.posedit.edit.type == "ins"
-        ):
+        if var.posedit.edit.type in {"sub", "delins", "ins"}:
             alt = var.posedit.edit.alt
         elif var.posedit.edit.type == "del":
             alt = ""

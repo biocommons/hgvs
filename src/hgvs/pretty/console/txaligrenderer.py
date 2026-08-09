@@ -88,14 +88,13 @@ class TxAligRenderer(BasicRenderer):
                             var_str += COLOR_MAP["codon1"] + base + ENDC
                         else:
                             var_str += COLOR_MAP["codon2"] + base + ENDC
+                    elif c_pos is None or c_pos < 0:
+                        var_str += base.lower()
                     else:
-                        if c_pos is None or c_pos < 0:
-                            var_str += base.lower()
-                        else:
-                            var_str += base
+                        var_str += base
                     continue
 
-            elif cig == "X" or cig == "D":
+            elif cig in {"X", "D"}:
                 # for mismatches and tx-insertions show sequence
                 var_str += pdata.tx
                 continue

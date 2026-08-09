@@ -119,7 +119,7 @@ class PrettyPrint:
             var_g = sv
             if tx_ac is not None:
                 var_c_or_n = self._infer_hgvs_c(var_g, tx_ac=tx_ac)
-        elif sv.type == "c" or sv.type == "r":
+        elif sv.type in {"c", "r"}:
             var_g = self._map_to_chrom(sv)
             var_c_or_n = sv
         elif sv.type == "n":

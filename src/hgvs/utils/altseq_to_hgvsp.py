@@ -224,60 +224,58 @@ class AltSeqToHgvsp:
 
             alt = insertion[0]
 
-        else:  # no frameshift - sub/delins/dup
-            if insertion == deletion:  # silent
-                aa_start = aa_end = AAPosition(base=start, aa=deletion)
-                ref = alt = ""
+        # no frameshift - sub/delins/dup
+        elif insertion == deletion:  # silent
+            aa_start = aa_end = AAPosition(base=start, aa=deletion)
+            ref = alt = ""
 
-            elif len(insertion) == len(deletion) == 1:  # substitution
-                aa_start = aa_end = AAPosition(base=start, aa=deletion)
-                ref = ""
+        elif len(insertion) == len(deletion) == 1:  # substitution
+            aa_start = aa_end = AAPosition(base=start, aa=deletion)
+            ref = ""
+            alt = insertion
+            is_sub = True
+
+        elif len(deletion) > 0:  # delins OR deletion OR stop codon at variant position
+            ref = deletion
+            end = start + len(deletion) - 1
+            if len(insertion) > 0:  # delins
+                aa_start = AAPosition(base=start, aa=deletion[0])
+                aa_end = AAPosition(base=end, aa=deletion[-1]) if end > start else aa_start
                 alt = insertion
+
+            # deletion OR stop codon at variant position
+            elif len(deletion) + start == len(self._ref_seq):  # stop codon at variant position
+                aa_start = AAPosition(base=start, aa=deletion[0])
+                aa_end = AAPosition(base=start, aa=deletion[0])
+                ref = ""
+                alt = "*"
                 is_sub = True
+            else:  # deletion
+                aa_start = AAPosition(base=start, aa=deletion[0])
+                aa_end = AAPosition(base=end, aa=deletion[-1]) if end > start else aa_start
+                alt = None
 
-            elif len(deletion) > 0:  # delins OR deletion OR stop codon at variant position
-                ref = deletion
-                end = start + len(deletion) - 1
-                if len(insertion) > 0:  # delins
-                    aa_start = AAPosition(base=start, aa=deletion[0])
-                    aa_end = AAPosition(base=end, aa=deletion[-1]) if end > start else aa_start
-                    alt = insertion
+        elif len(deletion) == 0:  # insertion OR duplication OR extension
+            is_dup, dup_start = self._check_if_ins_is_dup(start, insertion)
 
-                else:  # deletion OR stop codon at variant position
-                    if len(deletion) + start == len(
-                        self._ref_seq
-                    ):  # stop codon at variant position
-                        aa_start = AAPosition(base=start, aa=deletion[0])
-                        aa_end = AAPosition(base=start, aa=deletion[0])
-                        ref = ""
-                        alt = "*"
-                        is_sub = True
-                    else:  # deletion
-                        aa_start = AAPosition(base=start, aa=deletion[0])
-                        aa_end = AAPosition(base=end, aa=deletion[-1]) if end > start else aa_start
-                        alt = None
+            if is_dup:  # duplication
+                dup_end = dup_start + len(insertion) - 1
+                aa_start = AAPosition(base=dup_start, aa=insertion[0])
+                aa_end = AAPosition(base=dup_end, aa=insertion[-1])
+                ref = alt = None
 
-            elif len(deletion) == 0:  # insertion OR duplication OR extension
-                is_dup, dup_start = self._check_if_ins_is_dup(start, insertion)
+            else:  # insertion
+                start -= 1
+                end = start + 1
 
-                if is_dup:  # duplication
-                    dup_end = dup_start + len(insertion) - 1
-                    aa_start = AAPosition(base=dup_start, aa=insertion[0])
-                    aa_end = AAPosition(base=dup_end, aa=insertion[-1])
-                    ref = alt = None
+                aa_start = AAPosition(base=start, aa=self._ref_seq[start - 1])
+                aa_end = AAPosition(base=end, aa=self._ref_seq[end - 1])
+                ref = None
+                alt = insertion
 
-                else:  # insertion
-                    start -= 1
-                    end = start + 1
-
-                    aa_start = AAPosition(base=start, aa=self._ref_seq[start - 1])
-                    aa_end = AAPosition(base=end, aa=self._ref_seq[end - 1])
-                    ref = None
-                    alt = insertion
-
-            else:  # should never get here
-                msg = f"unexpected variant: {variant}"
-                raise ValueError(msg)
+        else:  # should never get here
+            msg = f"unexpected variant: {variant}"
+            raise ValueError(msg)
 
         var_p = self._create_variant(
             aa_start,

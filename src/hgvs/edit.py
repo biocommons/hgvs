@@ -214,13 +214,12 @@ class AARefAlt(Edit):
                         s = "*"
                 else:
                     s = self.alt
+            elif p_3_letter:
+                s = f"delins{aa1_to_aa3(self.alt)}"
+                if p_term_asterisk and s == "delinsTer":
+                    s = "delins*"
             else:
-                if p_3_letter:
-                    s = f"delins{aa1_to_aa3(self.alt)}"
-                    if p_term_asterisk and s == "delinsTer":
-                        s = "delins*"
-                else:
-                    s = f"delins{self.alt}"
+                s = f"delins{self.alt}"
 
         # del case
         elif self.ref is not None and self.alt is None:

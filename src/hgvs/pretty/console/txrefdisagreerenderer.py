@@ -44,12 +44,11 @@ class TxRefDisagreeRenderer(BasicRenderer):
             elif cig == "N" or c_offset != 0:
                 var_str += " "
                 continue
+            # an alignment issue, show cigar string
+            elif self.config.use_color:
+                var_str += COLOR_MAP["tx_ref_disagree"] + cig + ENDC
             else:
-                # an alignment issue, show cigar string
-                if self.config.use_color:
-                    var_str += COLOR_MAP["tx_ref_disagree"] + cig + ENDC
-                else:
-                    var_str += cig
+                var_str += cig
 
         if var_str.isspace():
             return ""

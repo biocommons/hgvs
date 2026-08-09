@@ -159,12 +159,11 @@ class DataCompiler:
                         and tx_exons[i]["alt_start_i"] >= genomic_pos
                     ):
                         return (exon_nr, "intron")
-                else:
-                    if (
-                        tx_exons[i]["alt_start_i"] < genomic_pos
-                        and tx_exons[i - 1]["alt_end_i"] >= genomic_pos
-                    ):
-                        return (i, "intron")
+                elif (
+                    tx_exons[i]["alt_start_i"] < genomic_pos
+                    and tx_exons[i - 1]["alt_end_i"] >= genomic_pos
+                ):
+                    return (i, "intron")
 
         return (-1, "no-overlap")
 

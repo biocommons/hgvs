@@ -232,7 +232,7 @@ class BaseOffsetPosition:
                 msg = "Cannot compare coordinates in the same intron with one based on end of exon and the other based on start of next exon"
                 raise HGVSUnsupportedOperationError(msg)
             return lhs.base < rhs.base
-        if lhs.datum == Datum.SEQ_START or rhs.datum == Datum.SEQ_START:
+        if Datum.SEQ_START in (lhs.datum, rhs.datum):
             msg = "Cannot compare coordinates of datum SEQ_START with CDS_START or CDS_END"
             raise HGVSUnsupportedOperationError(msg)
         return lhs.datum < rhs.datum

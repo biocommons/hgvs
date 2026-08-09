@@ -137,7 +137,7 @@ class AltSeqBuilder:
 
         if variant_location == self.EXON:
             edit_type = type(self._var_c.posedit.edit)
-        elif variant_location == self.INTRON or variant_location == self.T_UTR:
+        elif variant_location in {self.INTRON, self.T_UTR}:
             edit_type = not_cds
         elif variant_location == self.F_UTR:
             # TODO: handle case where variant introduces a Met (new start)
