@@ -107,11 +107,12 @@ class Normalizer:
             # based on capabilities of sequence backend
             try:
                 s = self.hdp.get_seq(ac, pos - 1, pos)  # 0-based!
-                return s != ""
             except HGVSDataNotAvailableError as e:
                 # Bad Request indicates that we got to NCBI, but the request
                 # was invalid.
                 return "Bad Request" not in str(e)
+            else:
+                return s != ""
 
         if s.base < 0 or not is_valid_pos(var.ac, e.base):
             if hgvs.global_config.mapping.strict_bounds:

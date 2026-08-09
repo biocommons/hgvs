@@ -260,7 +260,7 @@ select = [
 "src/hgvs/alignmentmapper.py" = ["PLR0911", "PLR0912", "PLR0915", "S101"]
 # S101: reached only after prior code has already filtered/raised to
 # force len(alt_acs) == 1; checks this function's own filtering logic,
-# not the tx_ac argument's validity.
+# not the tx_ac argument's validity. See #850.
 "src/hgvs/assemblymapper.py" = ["S101"]
 # PLR2004: _split_version_string's `2` is "a major.minor version has
 # 2 parts" -- self-evident in a 5-line helper; not worth a constant.
@@ -297,7 +297,7 @@ select = [
 # __hash__ is provided -- adding one on a mutable type risks silent
 # set/dict corruption if an instance changes after insertion. Nothing
 # hashes these today; permanent exception, not debt. See #850.
-"src/hgvs/location.py" = ["ARG002", "N805", "PLR0911", "PLR0912", "PLW1641", "TRY300"]
+"src/hgvs/location.py" = ["ARG002", "N805", "PLR0911", "PLW1641"]
 # PLR2004: shuffle_direction == 3/5 encode the HGVS 3'/5' convention
 # (see the `shuffle_direction not in {3, 5}` check and docstring in
 # __init__ below); a shared named constant would be a reasonable
@@ -309,7 +309,7 @@ select = [
 # variants are converted or rejected before this point); by here the
 # type is constrained by this function's own control flow, not raw
 # external input. See #850.
-"src/hgvs/normalizer.py" = ["PLR0912", "PLR0915", "PLR2004", "S101", "TRY300"]
+"src/hgvs/normalizer.py" = ["PLR0912", "PLR0915", "PLR2004", "S101"]
 # ARG004 (kwargs, unused in Parser.__new__): Python's object-construction
 # protocol calls __new__ with the same args as __init__; __new__ must
 # accept and discard kwargs meant for __init__.
@@ -323,7 +323,7 @@ select = [
 # base.py regardless of backend; ParsleyParser's override does use it.
 # Not dead code. See #850.
 "src/hgvs/parsers/pyparsing_parser.py" = ["ARG002"]
-"src/hgvs/pretty/console/protseqrenderer.py" = ["PLR0912", "PLR0915"]
+"src/hgvs/pretty/console/protseqrenderer.py" = ["PLR0912"]
 "src/hgvs/pretty/console/shuffledvariant.py" = ["PLR0912", "PLR0915"]
 "src/hgvs/pretty/console/txaligrenderer.py" = ["PLR0912", "PLR0915"]
 # PLR2004: direction == 3/5 is the same 3'/5' convention as
@@ -362,7 +362,7 @@ select = [
 # library's own code. Permanent exception, not debt. See #850.
 "src/hgvs/utils/orderedenum.py" = ["S101"]
 "src/hgvs/utils/position.py" = ["PLR0911", "PLR0912"]
-"src/hgvs/variantmapper.py" = ["PLR0912", "PLR0915"]
+"src/hgvs/variantmapper.py" = ["PLR0912"]
 
 [tool.setuptools]
 include-package-data = true

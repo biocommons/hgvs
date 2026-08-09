@@ -412,14 +412,16 @@ class Interval:
             return (ValidationLevel.VALID, None)
 
         try:
-            if self.start <= self.end:
+            in_order = self.start <= self.end
+        except HGVSUnsupportedOperationError as err:
+            return (ValidationLevel.WARNING, str(err))
+        else:
+            if in_order:
                 return (ValidationLevel.VALID, None)
             return (
                 ValidationLevel.ERROR,
                 "base start position must be <= end position",
             )
-        except HGVSUnsupportedOperationError as err:
-            return (ValidationLevel.WARNING, str(err))
 
     def format(self, conf=None):
         if self.start is None:
