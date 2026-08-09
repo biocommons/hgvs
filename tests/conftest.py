@@ -2,9 +2,10 @@ import os
 
 import pytest
 
-import hgvs.easy
+import hgvs.dataproviders.uta
 from hgvs.assemblymapper import AssemblyMapper
 from hgvs.extras.babelfish import Babelfish
+from hgvs.parsers import Parser
 from hgvs.variantmapper import VariantMapper
 from support import CACHE
 
@@ -30,14 +31,13 @@ def vcr_config(request):  # noqa: ARG001
     }
 
 
-hgvs.easy.hdp = hgvs.dataproviders.uta.connect(
-    mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
-)
+_hdp = hgvs.dataproviders.uta.connect(mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE)
+_parser = Parser()
 
 
 @pytest.fixture(scope="session", autouse=True)
 def parser():
-    return hgvs.easy.parser
+    return _parser
 
 
 @pytest.fixture(scope="session")
@@ -57,7 +57,7 @@ def am38(hdp):
 
 @pytest.fixture(scope="session")
 def hdp():
-    return hgvs.easy.hdp
+    return _hdp
 
 
 @pytest.fixture(scope="session")
@@ -68,8 +68,8 @@ def babelfish38(hdp):
 def pytest_report_header(config):  # noqa: ARG001
     env_vars = ["UTA_DB_URL", "HGVS_SEQREPO_URL", "HGVS_CACHE_MODE"]
     rv = [f"{ev}={os.environ.get(ev)}" for ev in sorted(env_vars)]
-    rv += [f"hgvs.easy.hdp={hgvs.easy.hdp.url}"]
-    rv += [f"{hgvs.easy.hdp.seqfetcher.source=}"]
+    rv += [f"hdp={_hdp.url}"]
+    rv += [f"{_hdp.seqfetcher.source=}"]
     return "\n".join(rv)
 
 

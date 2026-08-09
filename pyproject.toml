@@ -141,7 +141,7 @@ tox-uv = "tox_uv"
 ty = "ty"
 
 [tool.pytest.ini_options]
-addopts = "-s -v -x --strict-markers -m 'not extra' --doctest-modules --cov=src"
+addopts = "-s -v -x --strict-markers -m 'not extra and not network' --doctest-modules --cov=src"
 doctest_optionflags = [
   "ALLOW_BYTES",
   "ALLOW_UNICODE",
@@ -150,7 +150,7 @@ doctest_optionflags = [
   "NORMALIZE_WHITESPACE"
 ]
 markers = [
-  "network: tests that require network connectivity",
+  "network: uncachable tests that always require network connectivity",
   "slow: slow tests that should be run infrequently",
 
   "extra",
