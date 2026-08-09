@@ -451,8 +451,9 @@ class Dup(Edit):
         """returns (del_len, ins_len).
         Unspecified ref or alt returns None for del_len or ins_len respectively.
         """
-        if self.ref is not None and self.ref != "":
-            assert len(self.ref) == ilen
+        if self.ref is not None and self.ref != "" and len(self.ref) != ilen:
+            msg = f"Dup ref length ({len(self.ref)}) does not match interval length ({ilen})"
+            raise HGVSError(msg)
         return (0, ilen)
 
 

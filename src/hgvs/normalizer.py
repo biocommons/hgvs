@@ -41,9 +41,9 @@ class Normalizer:
         :param validate: whether validating the input variant before normalizing
 
         """
-        assert shuffle_direction in {3, 5}, (
-            "The shuffling direction should be 3 (3' most) or 5 (5' most)."
-        )
+        if shuffle_direction not in {3, 5}:
+            msg = "The shuffling direction should be 3 (3' most) or 5 (5' most)."
+            raise ValueError(msg)
         self.hdp = hdp
         self.shuffle_direction = shuffle_direction
         self.cross_boundaries = cross_boundaries
@@ -55,9 +55,9 @@ class Normalizer:
 
     def normalize(self, var):
         """Perform sequence variants normalization for single variant"""
-        assert isinstance(var, hgvs.sequencevariant.SequenceVariant), (
-            "variant must be a parsed HGVS sequence variant object"
-        )
+        if not isinstance(var, hgvs.sequencevariant.SequenceVariant):
+            msg = "variant must be a parsed HGVS sequence variant object"
+            raise TypeError(msg)
 
         # keep a shallow reference to the original variant, to be returned
         # as-is under certain circumstances

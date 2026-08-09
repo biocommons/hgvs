@@ -33,7 +33,9 @@ def validate_type_ac_pair(var_type, ac):
 
     """
 
-    assert var_type in valid_pairs, "Unknown variant type " + var_type
+    if var_type not in valid_pairs:
+        msg = "Unknown variant type " + var_type
+        raise ValueError(msg)
     if valid_pairs[var_type].match(ac):
         return (
             ValidationLevel.VALID,
