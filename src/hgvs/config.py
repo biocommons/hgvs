@@ -71,8 +71,8 @@ class Config:
             return None
         try:
             return ConfigGroup(self._cp[k])
-        except KeyError:
-            raise AttributeError(k)
+        except KeyError as err:
+            raise AttributeError(k) from err
 
     __getitem__ = __getattr__
 

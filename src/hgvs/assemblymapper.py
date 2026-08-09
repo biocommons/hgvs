@@ -57,7 +57,6 @@ class AssemblyMapper(VariantMapper):
         in_par_assume=hgvs.global_config.mapping.in_par_assume,
         replace_reference=hgvs.global_config.mapping.replace_reference,
         add_gene_symbol=hgvs.global_config.mapping.add_gene_symbol,
-        *args,
         **kwargs,
     ):
         """
@@ -78,7 +77,6 @@ class AssemblyMapper(VariantMapper):
             replace_reference=replace_reference,
             prevalidation_level=prevalidation_level,
             add_gene_symbol=add_gene_symbol,
-            *args,
             **kwargs,
         )
         self.assembly_name = assembly_name

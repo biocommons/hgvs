@@ -13,9 +13,9 @@ class PersistentDict(dict):
         try:
             with Path(self.filename).open("rb") as f:
                 self.update(pickle.load(f))
-        except OSError:
+        except OSError as err:
             if self.flag == "r":
-                raise OSError("Cannot open file " + self.filename)
+                raise OSError("Cannot open file " + self.filename) from err
         dict.__init__(self, *args, **kwds)
 
     def sync(self):
