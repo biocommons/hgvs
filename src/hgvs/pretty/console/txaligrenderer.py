@@ -1,5 +1,6 @@
 import math
 
+from hgvs.pretty.console.constants import COLOR_MAP, ENDC
 from hgvs.pretty.console.renderer import BasicRenderer
 from hgvs.pretty.models import VariantData
 
@@ -30,8 +31,6 @@ class TxAligRenderer(BasicRenderer):
         """If transcript info is available show the details of the tx for the region."""
         if not data.var_c_or_n:
             return ""
-
-        from hgvs.pretty.console.constants import COLOR_MAP, ENDC
 
         var_str = ""
 

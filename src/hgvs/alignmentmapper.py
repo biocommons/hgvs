@@ -41,6 +41,7 @@ from hgvs.exceptions import (
 from hgvs.location import BaseOffsetInterval, Interval
 from hgvs.utils import build_tx_cigar
 from hgvs.utils.cigarmapper import CIGARMapper
+from hgvs.utils.position import get_start_end
 
 
 def _zbc_to_hgvs(i: int):
@@ -194,8 +195,6 @@ class AlignmentMapper:
         Returns:
             tuple: (start_position, end_position) where positions can be SimplePosition or BaseOffsetPosition
         """
-        from hgvs.utils.position import get_start_end
-
         return get_start_end(var)
 
     def _create_base_offset_interval(

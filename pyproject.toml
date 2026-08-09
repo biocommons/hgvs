@@ -243,13 +243,16 @@ select = [
 # the rule's rationale (asserts stripped in optimized production code)
 # doesn't apply. See https://github.com/biocommons/hgvs/issues/850.
 "tests/*" = ["PLR2004", "S101"]
-"src/hgvs/alignmentmapper.py" = ["PLC0415", "PLR0911", "PLR0912", "PLR0915", "S101"]
+"src/hgvs/alignmentmapper.py" = ["PLR0911", "PLR0912", "PLR0915", "S101"]
 "src/hgvs/assemblymapper.py" = ["S101"]
 "src/hgvs/dataproviders/interface.py" = ["PLR2004", "S101"]
 # ARG002 (cache, unused in NCBIBase.__init__): required by the shared
 # dataprovider __init__(mode, cache) signature (see interface.py,
 # uta.py) so backends stay interchangeable; not dead code. See #850.
 "src/hgvs/dataproviders/ncbi.py" = ["ARG002", "PLR2004"]
+# PLC0415: SeqRepo/SeqRepoRESTDataProxy are imported inside their
+# respective HGVS_SEQREPO_DIR/HGVS_SEQREPO_URL branches so the unused
+# backend's import cost isn't paid when neither env var is set. See #850.
 "src/hgvs/dataproviders/seqfetcher.py" = ["PLC0415"]
 "src/hgvs/dataproviders/uta.py" = ["PLR2004"]
 # A002/B006/B008/N806 here are a verbatim port of CPython's lru_cache
@@ -277,29 +280,37 @@ select = [
 "src/hgvs/normalizer.py" = ["PLR0912", "PLR0915", "PLR2004", "S101", "TRY300"]
 # ARG004 (kwargs, unused in Parser.__new__): Python's object-construction
 # protocol calls __new__ with the same args as __init__; __new__ must
-# accept and discard kwargs meant for __init__. Not dead code. See #850.
+# accept and discard kwargs meant for __init__.
+# PLC0415: each backend module (parsley_parser/pyparsing_parser) is
+# imported only when that backend is actually selected in __new__, so
+# callers using only one backend don't pay the other's import cost.
+# Not dead code. See #850.
 "src/hgvs/parsers/base.py" = ["ARG004", "PLC0415"]
-"src/hgvs/parsers/parsley_parser.py" = ["PLC0415"]
 # ARG002 (grammar_fn, unused in PyParsingParser._build_grammar):
 # overrides Parser._build_grammar(grammar_fn), called uniformly from
 # base.py regardless of backend; ParsleyParser's override does use it.
 # Not dead code. See #850.
 "src/hgvs/parsers/pyparsing_parser.py" = ["ARG002"]
-"src/hgvs/pretty/console/chromseqrenderer.py" = ["PLC0415"]
-"src/hgvs/pretty/console/chromseqreverserenderer.py" = ["PLC0415"]
-"src/hgvs/pretty/console/protseqrenderer.py" = ["PLC0415", "PLR0912", "PLR0915"]
-"src/hgvs/pretty/console/shuffledvariant.py" = ["PLC0415", "PLR0912", "PLR0915"]
-"src/hgvs/pretty/console/txaligrenderer.py" = ["PLC0415", "PLR0912", "PLR0915"]
-"src/hgvs/pretty/console/txrefdisagreerenderer.py" = ["PLC0415"]
+"src/hgvs/pretty/console/protseqrenderer.py" = ["PLR0912", "PLR0915"]
+"src/hgvs/pretty/console/shuffledvariant.py" = ["PLR0912", "PLR0915"]
+"src/hgvs/pretty/console/txaligrenderer.py" = ["PLR0912", "PLR0915"]
 "src/hgvs/pretty/datacompiler.py" = ["PLR0912", "PLR0915", "PLR2004"]
 "src/hgvs/pretty/prettyprint.py" = ["PLR0912", "PLR0915"]
 "src/hgvs/repeats.py" = ["PLR0912", "PLR0915"]
+# PLC0415: hgvs.easy and hgvs.utils.context are imported inside shell()
+# specifically because importing them eagerly connects to the UTA
+# database (see #867) -- module-level imports would defeat the point
+# of deferring that connection until the shell actually starts. See #850.
 "src/hgvs/shell.py" = ["PLC0415"]
 # S301 (pickle) fix is blocked on #849's planned rethink of hdp caching
 # for 2.0; not fixing here to avoid throwaway work. N999 (module name)
 # is likewise left as-is pending that rework.
 "src/hgvs/utils/PersistentDict.py" = ["N999", "S301"]
 "src/hgvs/utils/altseq_to_hgvsp.py" = ["PLR0912", "PLR0915"]
+# PLC0415: this module's docstring says it's experimental and requires
+# uta_align, which is NOT a standard hgvs dependency (see
+# [project.optional-dependencies] align); importing it locally avoids
+# a hard import-time dependency for a module most installs never use.
 "src/hgvs/utils/context.py" = ["PLC0415", "PLR2004", "S101"]
 "src/hgvs/utils/norm.py" = ["PLR2004"]
 "src/hgvs/utils/orderedenum.py" = ["S101"]
