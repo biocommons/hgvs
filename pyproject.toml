@@ -265,6 +265,9 @@ select = [
 "src/hgvs/edit.py" = ["ARG002", "PLR0912", "S101"]
 # ARG002 (conf, unused in SimplePosition/BaseOffsetPosition.format):
 # same polymorphic .format(conf) protocol as edit.py above.
+# N805: comparison dunders (__eq__, __lt__, __sub__, etc.) use lhs/rhs
+# instead of self/other -- deliberate, since they assert both operands
+# are the same type and treat them symmetrically; lhs/rhs signals that.
 # PLW1641: SimplePosition/BaseOffsetPosition/AAPosition define __eq__ but
 # are mutable value objects (_set_uncertain mutates in place), so no
 # __hash__ is provided -- adding one on a mutable type risks silent
