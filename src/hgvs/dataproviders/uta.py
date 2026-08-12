@@ -598,16 +598,6 @@ class UTA_postgresql(UTABase):
                     # need to set the search path
                     self._set_search_path(cur)
                     self._conns_seen.add(conn)
-
-                yield cur
-
-                # contextmanager executes these when context exits
-                cur.close()
-                if self.pooling:
-                    self._pool.putconn(conn)
-
-                break
-
             except psycopg.OperationalError:
                 _logger.warning("Lost connection to %s; attempting reconnect", self.url)
                 if self.pooling:
@@ -617,12 +607,22 @@ class UTA_postgresql(UTABase):
                     self._connect()
                     _logger.warning("Reconnected to %s", self.url)
 
-            n_tries_rem -= 1
+                n_tries_rem -= 1
+            else:
+                break
 
         else:
             # N.B. Probably never reached
             msg = f"Permanently lost connection to {self.url} ({n_retries} retries)"
             raise HGVSError(msg)
+
+        try:
+            yield cur
+        finally:
+            # contextmanager executes these when context exits
+            cur.close()
+            if self.pooling:
+                self._pool.putconn(conn)
 
     def _set_search_path(self, cur):
         cur.execute(f"set search_path = {self.url.schema},public;")
