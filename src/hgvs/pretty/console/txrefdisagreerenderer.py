@@ -1,3 +1,4 @@
+from hgvs.pretty.console.constants import COLOR_MAP, ENDC
 from hgvs.pretty.console.renderer import BasicRenderer
 from hgvs.pretty.models import VariantData
 
@@ -28,8 +29,6 @@ class TxRefDisagreeRenderer(BasicRenderer):
         if not data.var_c_or_n:
             return ""
 
-        from hgvs.pretty.console.constants import COLOR_MAP, ENDC
-
         var_str = ""
 
         for pdata in data.position_details:
@@ -44,12 +43,11 @@ class TxRefDisagreeRenderer(BasicRenderer):
             elif cig == "N" or c_offset != 0:
                 var_str += " "
                 continue
+            # an alignment issue, show cigar string
+            elif self.config.use_color:
+                var_str += COLOR_MAP["tx_ref_disagree"] + cig + ENDC
             else:
-                # an alignment issue, show cigar string
-                if self.config.use_color:
-                    var_str += COLOR_MAP["tx_ref_disagree"] + cig + ENDC
-                else:
-                    var_str += cig
+                var_str += cig
 
         if var_str.isspace():
             return ""

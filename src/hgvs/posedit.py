@@ -25,16 +25,13 @@ class PosEdit:
             rv = f"{self.pos.format(conf)}{self.edit.format(conf)}"
 
         if self.uncertain:
-            if self.edit in ["0", ""]:
-                rv = rv + "?"
-            else:
-                rv = "(" + rv + ")"
+            rv = rv + "?" if self.edit in ["0", ""] else "(" + rv + ")"
         return rv
 
     __str__ = format
 
     def __repr__(self):
-        return "{0}({1})".format(
+        return "{}({})".format(
             self.__class__.__name__,
             ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
         )

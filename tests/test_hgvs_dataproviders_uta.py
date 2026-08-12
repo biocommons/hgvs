@@ -127,6 +127,7 @@ class Test_hgvs_dataproviders_uta_UTA_default_with_pooling(unittest.TestCase, UT
         )
 
 
+@pytest.mark.network
 class Test_hgvs_dataproviders_uta_with_pooling_without_cache(unittest.TestCase, UTA_Base):
     """
     Currently used to test pool errors, since we need to reach out to

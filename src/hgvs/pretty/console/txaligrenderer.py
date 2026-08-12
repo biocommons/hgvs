@@ -1,5 +1,6 @@
 import math
 
+from hgvs.pretty.console.constants import COLOR_MAP, ENDC
 from hgvs.pretty.console.renderer import BasicRenderer
 from hgvs.pretty.models import VariantData
 
@@ -30,8 +31,6 @@ class TxAligRenderer(BasicRenderer):
         """If transcript info is available show the details of the tx for the region."""
         if not data.var_c_or_n:
             return ""
-
-        from hgvs.pretty.console.constants import COLOR_MAP, ENDC
 
         var_str = ""
 
@@ -88,14 +87,13 @@ class TxAligRenderer(BasicRenderer):
                             var_str += COLOR_MAP["codon1"] + base + ENDC
                         else:
                             var_str += COLOR_MAP["codon2"] + base + ENDC
+                    elif c_pos is None or c_pos < 0:
+                        var_str += base.lower()
                     else:
-                        if c_pos is None or c_pos < 0:
-                            var_str += base.lower()
-                        else:
-                            var_str += base
+                        var_str += base
                     continue
 
-            elif cig == "X" or cig == "D":
+            elif cig in {"X", "D"}:
                 # for mismatches and tx-insertions show sequence
                 var_str += pdata.tx
                 continue

@@ -179,7 +179,7 @@ class Parser:
                 except self._parse_error_cls as exc:
                     raise self._translate_parse_error(s, exc) from exc
 
-            rule_fxn.__doc__ = "parse string s using `%s' rule" % rule_name
+            rule_fxn.__doc__ = f"parse string s using `{rule_name}' rule"
             return rule_fxn
 
         exposed_rules = [
@@ -195,11 +195,7 @@ class Parser:
             att_name = "parse_" + rule_name
             rule_fxn = make_parse_rule_function(rule_name)
             self.__setattr__(att_name, rule_fxn)
-        self._logger.debug(
-            "Exposed {n} rules ({rules})".format(
-                n=len(exposed_rules), rules=", ".join(exposed_rules)
-            )
-        )
+        self._logger.debug("Exposed %d rules (%s)", len(exposed_rules), ", ".join(exposed_rules))
 
 
 # <LICENSE>

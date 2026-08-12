@@ -1,0 +1,48 @@
+name: GitHub Coverage
+
+on:
+  push:
+    branches: ["*"]
+
+jobs:
+  coverage-python:
+    name: Coverage (Python)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out
+        uses: actions/checkout@v7
+
+      - name: Set up Python environment
+        uses: ./.github/actions/setup-python-env
+
+      - name: Run tests with coverage
+        run: make test
+        shell: bash
+
+      - name: Upload coverage artifact
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-report-python
+          path: coverage.xml
+
+  upload-coverage-python:
+    needs: coverage-python
+    if: ${{ !cancelled() && needs.coverage-python.result == 'success' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      code-quality: write
+      pull-requests: read
+    steps:
+      - name: Download coverage artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: coverage-report-python
+      - uses: actions/upload-code-coverage@v1
+        with:
+          file: coverage.xml
+          language: Python
+          label: code-coverage-agent

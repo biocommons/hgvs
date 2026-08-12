@@ -21,7 +21,7 @@ class Test_SimplePosition(unittest.TestCase):
         self.assertEqual(str(hgvs.location.SimplePosition(None)), "?")
 
     def test_failure(self):
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(TypeError):
             self.assertEqual(hgvs.location.SimplePosition(-1), "SHOULD FAIL")
 
     def test_simple_subtraction(self):
@@ -147,7 +147,7 @@ class Test_BaseOffsetPosition(unittest.TestCase):
 
         var = self.hp.parse_hgvs_variant("NM_000030.2:c.680+2_681-32del")
         with self.assertRaises(HGVSUnsupportedOperationError):
-            var.posedit.pos.start < var.posedit.pos.end
+            assert var.posedit.pos.start < var.posedit.pos.end
 
 
 @pytest.mark.quick
@@ -206,7 +206,7 @@ class Test_Interval(unittest.TestCase):
         )
         self.assertEqual("(10_20)_(30_40)", str(ival))
 
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(TypeError):
             str(
                 hgvs.location.Interval(
                     sp(10), hgvs.location.Interval(sp(30), sp(40), uncertain=True)
