@@ -52,13 +52,14 @@ class SeqFetcher:
             self.sr = None
             self.fetcher = bioutils.seqfetcher.fetch_seq
             self.source = "bioutils.seqfetcher (network fetching)"
-        _logger.info("Fetching sequences with " + self.source)
+        _logger.info("Fetching sequences with %s", self.source)
 
     def fetch_seq(self, ac, start_i=None, end_i=None):
         try:
             return self.fetcher(ac, start_i, end_i)
         except Exception as ex:
-            raise HGVSDataNotAvailableError(f"Failed to fetch {ac} from {self.source} ({ex})")
+            msg = f"Failed to fetch {ac} from {self.source} ({ex})"
+            raise HGVSDataNotAvailableError(msg) from ex
 
 
 # <LICENSE>

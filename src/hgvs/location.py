@@ -40,7 +40,7 @@ class SimplePosition:
         return str(self)
 
     def __repr__(self):
-        return "{0}({1})".format(
+        return "{}({})".format(
             self.__class__.__name__,
             ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
         )
@@ -61,21 +61,29 @@ class SimplePosition:
         return (ValidationLevel.VALID, None)
 
     def __sub__(lhs, rhs):
-        assert type(lhs) is type(rhs), "Cannot substract coordinates of different representations"
+        if type(lhs) is not type(rhs):
+            msg = "Cannot substract coordinates of different representations"
+            raise TypeError(msg)
         return lhs.base - rhs.base
 
     def __eq__(lhs, rhs):
-        assert type(lhs) is type(rhs), "Cannot compare coordinates of different representations"
+        if type(lhs) is not type(rhs):
+            msg = "Cannot compare coordinates of different representations"
+            raise TypeError(msg)
 
         return lhs.base == rhs.base and lhs.uncertain == rhs.uncertain
 
     def __lt__(lhs, rhs):
-        assert type(lhs) is type(rhs), "Cannot compare coordinates of different representations"
+        if type(lhs) is not type(rhs):
+            msg = "Cannot compare coordinates of different representations"
+            raise TypeError(msg)
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            msg = "Cannot compare coordinates of uncertain positions"
+            raise HGVSUnsupportedOperationError(msg)
 
         if lhs.base is None and rhs.base is None:
-            raise HGVSUnsupportedOperationError("Cannot compare two positions without bases")
+            msg = "Cannot compare two positions without bases"
+            raise HGVSUnsupportedOperationError(msg)
 
         # imprecise positions can be on both sides of an interval
         # This is weird, but because an unknown breakpoint can be expressed on both sides
@@ -154,7 +162,7 @@ class BaseOffsetPosition:
             else str(self.base)
         )
         offset_str = (
-            "+?" if self.offset is None else "" if self.offset == 0 else "%+d" % self.offset
+            "+?" if self.offset is None else "" if self.offset == 0 else f"{self.offset:+d}"
         )
         pos = base_str + offset_str
         return pos
@@ -167,7 +175,7 @@ class BaseOffsetPosition:
         return str(self)
 
     def __repr__(self):
-        return "{0}({1})".format(
+        return "{}({})".format(
             self.__class__.__name__,
             ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
         )
@@ -188,22 +196,24 @@ class BaseOffsetPosition:
         return self.offset is None or self.offset != 0
 
     def __sub__(lhs, rhs):
-        assert type(lhs) is type(rhs), "Cannot substract coordinates of different representations"
+        if type(lhs) is not type(rhs):
+            msg = "Cannot substract coordinates of different representations"
+            raise TypeError(msg)
         if lhs.datum != rhs.datum:
-            raise HGVSUnsupportedOperationError(
-                "Interval length measured from different datums is ill-defined"
-            )
+            msg = "Interval length measured from different datums is ill-defined"
+            raise HGVSUnsupportedOperationError(msg)
         if lhs.base == rhs.base:
             return lhs.offset - rhs.offset
         if lhs.offset != 0 or rhs.offset != 0:
-            raise HGVSUnsupportedOperationError(
-                "Interval length with intronic offsets is ill-defined"
-            )
+            msg = "Interval length with intronic offsets is ill-defined"
+            raise HGVSUnsupportedOperationError(msg)
         straddles_zero = 1 if (lhs.base > 0 and rhs.base < 0) else 0
         return lhs.base - rhs.base - straddles_zero
 
     def __eq__(lhs, rhs):
-        assert type(lhs) is type(rhs), "Cannot compare coordinates of different representations"
+        if type(lhs) is not type(rhs):
+            msg = "Cannot compare coordinates of different representations"
+            raise TypeError(msg)
 
         return (
             lhs.datum == rhs.datum
@@ -213,9 +223,12 @@ class BaseOffsetPosition:
         )
 
     def __lt__(lhs, rhs):
-        assert type(lhs) is type(rhs), "Cannot compare coordinates of different representations"
+        if type(lhs) is not type(rhs):
+            msg = "Cannot compare coordinates of different representations"
+            raise TypeError(msg)
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            msg = "Cannot compare coordinates of uncertain positions"
+            raise HGVSUnsupportedOperationError(msg)
         if lhs.datum == rhs.datum:
             if lhs.base == rhs.base:
                 return lhs.offset < rhs.offset
@@ -228,14 +241,12 @@ class BaseOffsetPosition:
             if (rhs.base - lhs.base == 1 and lhs.offset > 0 and rhs.offset < 0) or (
                 lhs.base - rhs.base == 1 and rhs.offset > 0 and lhs.offset < 0
             ):
-                raise HGVSUnsupportedOperationError(
-                    "Cannot compare coordinates in the same intron with one based on end of exon and the other based on start of next exon"
-                )
+                msg = "Cannot compare coordinates in the same intron with one based on end of exon and the other based on start of next exon"
+                raise HGVSUnsupportedOperationError(msg)
             return lhs.base < rhs.base
-        if lhs.datum == Datum.SEQ_START or rhs.datum == Datum.SEQ_START:
-            raise HGVSUnsupportedOperationError(
-                "Cannot compare coordinates of datum SEQ_START with CDS_START or CDS_END"
-            )
+        if Datum.SEQ_START in (lhs.datum, rhs.datum):
+            msg = "Cannot compare coordinates of datum SEQ_START with CDS_START or CDS_END"
+            raise HGVSUnsupportedOperationError(msg)
         return lhs.datum < rhs.datum
 
 
@@ -275,7 +286,7 @@ class AAPosition:
     __str__ = format
 
     def __repr__(self):
-        return "{0}({1})".format(
+        return "{}({})".format(
             self.__class__.__name__,
             ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
         )
@@ -296,37 +307,54 @@ class AAPosition:
         return self.uncertain or self.base is None or self.aa is None
 
     def __sub__(lhs, rhs):
-        assert type(lhs) is type(rhs), "Cannot substract coordinates of different representations"
+        if type(lhs) is not type(rhs):
+            msg = "Cannot substract coordinates of different representations"
+            raise TypeError(msg)
         return lhs.base - rhs.base
 
     def __eq__(lhs, rhs):
-        assert type(lhs) is type(rhs), "Cannot compare coordinates of different representations"
+        if type(lhs) is not type(rhs):
+            msg = "Cannot compare coordinates of different representations"
+            raise TypeError(msg)
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            msg = "Cannot compare coordinates of uncertain positions"
+            raise HGVSUnsupportedOperationError(msg)
         return lhs.base == rhs.base and lhs.aa == rhs.aa
 
     def __lt__(lhs, rhs):
-        assert type(lhs) is type(rhs), "Cannot compare coordinates of different representations"
+        if type(lhs) is not type(rhs):
+            msg = "Cannot compare coordinates of different representations"
+            raise TypeError(msg)
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            msg = "Cannot compare coordinates of uncertain positions"
+            raise HGVSUnsupportedOperationError(msg)
         return lhs.base < rhs.base
 
     def __gt__(lhs, rhs):
-        assert type(lhs) is type(rhs), "Cannot compare coordinates of different representations"
+        if type(lhs) is not type(rhs):
+            msg = "Cannot compare coordinates of different representations"
+            raise TypeError(msg)
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            msg = "Cannot compare coordinates of uncertain positions"
+            raise HGVSUnsupportedOperationError(msg)
         return lhs.base > rhs.base
 
     def __le__(lhs, rhs):
-        assert type(lhs) is type(rhs), "Cannot compare coordinates of different representations"
+        if type(lhs) is not type(rhs):
+            msg = "Cannot compare coordinates of different representations"
+            raise TypeError(msg)
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            msg = "Cannot compare coordinates of uncertain positions"
+            raise HGVSUnsupportedOperationError(msg)
         return lhs.base <= rhs.base
 
     def __ge__(lhs, rhs):
-        assert type(lhs) is type(rhs), "Cannot compare coordinates of different representations"
+        if type(lhs) is not type(rhs):
+            msg = "Cannot compare coordinates of different representations"
+            raise TypeError(msg)
         if lhs.uncertain or rhs.uncertain:
-            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+            msg = "Cannot compare coordinates of uncertain positions"
+            raise HGVSUnsupportedOperationError(msg)
         return lhs.base >= rhs.base
 
 
@@ -361,29 +389,39 @@ class Interval:
             return (ValidationLevel.VALID, None)
 
         # Check for intervals where start or end interval has no base
-        if hasattr(self.start, "start") and hasattr(self.start, "end"):
+        if (
+            hasattr(self.start, "start")
+            and hasattr(self.start, "end")
+            and (
+                (hasattr(self.start.start, "base") and self.start.start.base is None)
+                or (hasattr(self.start.end, "base") and self.start.end.base is None)
+            )
+        ):
             # start is an interval
-            if (hasattr(self.start.start, "base") and self.start.start.base is None) or (
-                hasattr(self.start.end, "base") and self.start.end.base is None
-            ):
-                return (ValidationLevel.VALID, None)
+            return (ValidationLevel.VALID, None)
 
-        if hasattr(self.end, "start") and hasattr(self.end, "end"):
+        if (
+            hasattr(self.end, "start")
+            and hasattr(self.end, "end")
+            and (
+                (hasattr(self.end.start, "base") and self.end.start.base is None)
+                or (hasattr(self.end.end, "base") and self.end.end.base is None)
+            )
+        ):
             # end is an interval
-            if (hasattr(self.end.start, "base") and self.end.start.base is None) or (
-                hasattr(self.end.end, "base") and self.end.end.base is None
-            ):
-                return (ValidationLevel.VALID, None)
+            return (ValidationLevel.VALID, None)
 
         try:
-            if self.start <= self.end:
+            in_order = self.start <= self.end
+        except HGVSUnsupportedOperationError as err:
+            return (ValidationLevel.WARNING, str(err))
+        else:
+            if in_order:
                 return (ValidationLevel.VALID, None)
             return (
                 ValidationLevel.ERROR,
                 "base start position must be <= end position",
             )
-        except HGVSUnsupportedOperationError as err:
-            return (ValidationLevel.WARNING, str(err))
 
     def format(self, conf=None):
         if self.start is None:
@@ -398,7 +436,7 @@ class Interval:
     __str__ = format
 
     def __repr__(self):
-        return "{0}({1})".format(
+        return "{}({})".format(
             self.__class__.__name__,
             ", ".join((a.name + "=" + str(getattr(self, a.name))) for a in self.__attrs_attrs__),
         )
@@ -493,9 +531,8 @@ class BaseOffsetInterval(Interval):
             (Datum.CDS_START, Datum.CDS_END),
             (Datum.CDS_END, Datum.CDS_END),
         ]:
-            raise HGVSInvalidIntervalError(
-                "BaseOffsetInterval start datum and end datum are incompatible"
-            )
+            msg = "BaseOffsetInterval start datum and end datum are incompatible"
+            raise HGVSInvalidIntervalError(msg)
 
 
 # <LICENSE>

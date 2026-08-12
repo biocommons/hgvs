@@ -4,22 +4,21 @@
 # @see https://github.com/biocommons/hgvs/issues/661
 
 import hashlib
-import os
 import sys
+from pathlib import Path
 
 import parsley
 from ometa.builder import writePython
 from ometa.grammar import OMeta
 
 if __name__ == "__main__":
-    script_path = os.path.realpath(__file__)
-    script_dir = os.path.dirname(script_path)
-    hgvs_base_dir = os.path.dirname(script_dir)
-    grammar_file = os.path.join(hgvs_base_dir, "src/hgvs/parsers/_data/hgvs.pymeta")
-    generated_code_dir = os.path.join(hgvs_base_dir, "src/hgvs/parsers/generated")
+    script_path = Path(__file__).resolve()
+    hgvs_base_dir = script_path.parent.parent
+    grammar_file = hgvs_base_dir / "src/hgvs/parsers/_data/hgvs.pymeta"
+    generated_code_dir = hgvs_base_dir / "src/hgvs/parsers/generated"
 
-    grammar_hash = hashlib.md5(open(grammar_file, "rb").read()).hexdigest()
-    prefix_length = len(hgvs_base_dir) + 1  # extra to also remove slash
+    grammar_hash = hashlib.md5(grammar_file.read_bytes(), usedforsecurity=False).hexdigest()
+    prefix_length = len(str(hgvs_base_dir)) + 1  # extra to also remove slash
 
     header_template = """# --------------------------------------------------
 # THIS IS A GENERATED FILE. DO NOT MODIFY.
@@ -32,25 +31,24 @@ if __name__ == "__main__":
 # --------------------------------------------------
 """
     header = header_template.format(
-        generate_script=script_path[prefix_length:],
-        grammar_file=grammar_file[prefix_length:],
+        generate_script=str(script_path)[prefix_length:],
+        grammar_file=str(grammar_file)[prefix_length:],
         grammar_hash=grammar_hash,
         parsley_version=parsley.__version__,
         python_version=sys.version,
     )
 
-    g = OMeta(open(grammar_file).read(), name="Grammar")
+    g = OMeta(grammar_file.read_text(), name="Grammar")
     tree = g.parseGrammar("Grammar")
     source = writePython(tree, "Grammar")
 
     # Create a package for the new file for Python2 compatability
-    if not os.path.exists(generated_code_dir):
-        os.mkdir(generated_code_dir)
-        package_filename = os.path.join(generated_code_dir, "__init__.py")
-        with open(package_filename, "w") as _:
-            pass
+    if not generated_code_dir.exists():
+        generated_code_dir.mkdir()
+        package_filename = generated_code_dir / "__init__.py"
+        package_filename.touch()
 
-    source_filename = os.path.join(generated_code_dir, "hgvs_grammar.py")
-    with open(source_filename, "w") as source_file:
+    source_filename = generated_code_dir / "hgvs_grammar.py"
+    with source_filename.open("w") as source_file:
         source_file.write(header + "\n")
         source_file.write(source)

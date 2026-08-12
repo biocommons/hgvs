@@ -75,6 +75,12 @@ test-relearn-iteratively: ## Destroy and rebuild test data cache (biocommons/hgv
 	rm -fr tests/data/cache-py3.hdp tests/cassettes
 	find tests/ -name 'test*.py' | HGVS_CACHE_MODE=learn VCR_RECORD_MODE=new_episodes xargs -tn1 -- uv run pytest --no-cov -x -s
 
+.PHONY: ruff-counts
+ruff-counts: ## Count ruff check violations by type (ignoring per-file-ignores)
+	$(call INFO_MESSAGE, "Linting code with ruff")
+	uv run ruff check --no-fix --exit-zero --config pyproject.toml --config "lint.per-file-ignores={}" --output-format=json . \
+		| jq --arg pwd "$$PWD/" 'map(.filename |= (ltrimstr($$pwd) | "./" + .))' \
+		| jq -r 'group_by(.filename)[] | "\(.[0].filename): " + (group_by(.code) | map("\(.[0].code)×\(length)") | join(", "))'
 
 
 ############################################################################
