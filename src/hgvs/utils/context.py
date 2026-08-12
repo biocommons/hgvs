@@ -35,11 +35,11 @@ def full_house(am, var, tx_ac=None):
         if tx_ac is None:
             rtx = am.relevant_transcripts(var)
             if len(rtx) == 0:
-                raise RuntimeError(f"no relevant transcripts for {var.ac}")
+                msg = f"no relevant transcripts for {var.ac}"
+                raise RuntimeError(msg)
             if len(rtx) > 1:
-                raise RuntimeError(
-                    f"{len(rtx)} relevant transcripts for {var.ac}; you need to pick one"
-                )
+                msg = f"{len(rtx)} relevant transcripts for {var.ac}; you need to pick one"
+                raise RuntimeError(msg)
             tx_ac = rtx[0]
         var_n = am.g_to_n(var_g, tx_ac)
         var_c = am.n_to_c(var_n)
@@ -79,7 +79,8 @@ def variant_context_w_alignment(am, var, margin=20, tx_ac=None):
     span_g = (span_g[0] - margin, span_g[1] + margin)
     ival_g = Interval(SimplePosition(span_g[0]), SimplePosition(span_g[1]))
     ival_n = tm.g_to_n(ival_g)
-    assert ival_n.start.offset == 0 and ival_n.end.offset == 0, "limited to coding variants"
+    assert ival_n.start.offset == 0, "limited to coding variants"
+    assert ival_n.end.offset == 0, "limited to coding variants"
     span_n = _ival_to_span(ival_n)
     ival_c = tm.g_to_c(ival_g)
     span_c = _ival_to_span(ival_c)
@@ -105,7 +106,7 @@ def variant_context_w_alignment(am, var, margin=20, tx_ac=None):
                 var=fh["c"],
                 span=span_c if strand == 1 else list(reversed(span_c)),
                 content="",
-                dir=s_dir,
+                direction=s_dir,
             ),
         ],
         [
@@ -115,7 +116,7 @@ def variant_context_w_alignment(am, var, margin=20, tx_ac=None):
                 var=fh["n"],
                 span=span_n if strand == 1 else list(reversed(span_n)),
                 content=aseq_n,
-                dir=s_dir,
+                direction=s_dir,
             ),
         ],
         [
@@ -126,12 +127,12 @@ def variant_context_w_alignment(am, var, margin=20, tx_ac=None):
         [
             4,
             1,
-            seq_line_fmt(var=fh["g"], span=span_g, content=aseq_gt, dir=">"),
+            seq_line_fmt(var=fh["g"], span=span_g, content=aseq_gt, direction=">"),
         ],
         [
             4,
             2,
-            seq_line_fmt(var=fh["g"], span=span_g, content=aseq_gb, dir="<"),
+            seq_line_fmt(var=fh["g"], span=span_g, content=aseq_gb, direction="<"),
         ],
         [
             5,
@@ -158,11 +159,11 @@ _pre_fmt = "{ac:12s} {type:1s} {s:10d} {dir:1s}"
 _post_fmt = "{dir:1s} {e:8d}"
 
 
-def seq_line_fmt(var, span, content, dir=""):
+def seq_line_fmt(var, span, content, direction=""):
     return _line_fmt.format(
-        pre=_pre_fmt.format(ac=var.ac, type=var.type, s=span[0], dir=dir),
+        pre=_pre_fmt.format(ac=var.ac, type=var.type, s=span[0], dir=direction),
         content=content,
-        post=_post_fmt.format(dir=dir, e=span[1]),
+        post=_post_fmt.format(dir=direction, e=span[1]),
         comment=str(var),
     )
 
@@ -171,10 +172,7 @@ def pointer_line(var, span):
     s0 = span[0]
     o = var.posedit.pos.start.base - s0
     l = var.posedit.pos.end.base - var.posedit.pos.start.base + 1  # noqa: E741
-    if var.posedit.edit.type == "ins":
-        p = " " * o + "><"
-    else:
-        p = " " * o + "*" * l
+    p = " " * o + "><" if var.posedit.edit.type == "ins" else " " * o + "*" * l
     return _line_fmt.format(pre="", content=p, post="", comment=str(var))
 
 

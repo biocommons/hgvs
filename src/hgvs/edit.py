@@ -42,9 +42,8 @@ class Edit(abc.ABC):
         return p_3_letter, p_term_asterisk, p_init_met
 
     def _del_ins_lengths(self, ilen):
-        raise HGVSUnsupportedOperationError(
-            "internal function _del_ins_lengths not implemented for this variant type"
-        )
+        msg = "internal function _del_ins_lengths not implemented for this variant type"
+        raise HGVSUnsupportedOperationError(msg)
 
     @property
     @abc.abstractmethod
@@ -104,7 +103,8 @@ class NARefAlt(Edit):
 
     def format(self, conf=None):
         if self.ref is None and self.alt is None:
-            raise HGVSError("RefAlt: ref and alt sequences are both undefined")
+            msg = "RefAlt: ref and alt sequences are both undefined"
+            raise HGVSError(msg)
 
         max_ref_length = self._format_config_na(conf)
 
@@ -214,13 +214,12 @@ class AARefAlt(Edit):
                         s = "*"
                 else:
                     s = self.alt
+            elif p_3_letter:
+                s = f"delins{aa1_to_aa3(self.alt)}"
+                if p_term_asterisk and s == "delinsTer":
+                    s = "delins*"
             else:
-                if p_3_letter:
-                    s = f"delins{aa1_to_aa3(self.alt)}"
-                    if p_term_asterisk and s == "delinsTer":
-                        s = "delins*"
-                else:
-                    s = f"delins{self.alt}"
+                s = f"delins{self.alt}"
 
         # del case
         elif self.ref is not None and self.alt is None:
@@ -236,7 +235,8 @@ class AARefAlt(Edit):
                 s = f"ins{self.alt}"
 
         else:
-            raise RuntimeError("Should not be here")
+            msg = "Should not be here"
+            raise RuntimeError(msg)
 
         return "(" + s + ")" if self.uncertain else s
 
@@ -451,8 +451,9 @@ class Dup(Edit):
         """returns (del_len, ins_len).
         Unspecified ref or alt returns None for del_len or ins_len respectively.
         """
-        if self.ref is not None and self.ref != "":
-            assert len(self.ref) == ilen
+        if self.ref is not None and self.ref != "" and len(self.ref) != ilen:
+            msg = f"Dup ref length ({len(self.ref)}) does not match interval length ({ilen})"
+            raise HGVSError(msg)
         return (0, ilen)
 
 
@@ -465,7 +466,8 @@ class Repeat(Edit):
 
     def format(self, conf=None):
         if self.min > self.max:
-            raise HGVSError("Repeat min count must be less than or equal to max count")
+            msg = "Repeat min count must be less than or equal to max count"
+            raise HGVSError(msg)
         max_ref_length = self._format_config_na(conf)
         ref = self.ref
         if max_ref_length is not None and (ref is None or len(ref) > max_ref_length):

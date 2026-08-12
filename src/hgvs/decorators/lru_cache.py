@@ -114,7 +114,7 @@ def lru_cache(maxsize=100, typed=False, mode=None, cache=None):
         _maxsize = maxsize
 
         if _cache is None:
-            _cache = dict()
+            _cache = {}
         elif mode is not None:
             _maxsize = None
 

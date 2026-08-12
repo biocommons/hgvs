@@ -2,8 +2,6 @@ from bioutils.normalize import normalize
 from bioutils.sequences import aa1_to_aa3_lut
 
 import hgvs
-import hgvs.utils.altseq_to_hgvsp as altseq_to_hgvsp
-import hgvs.utils.altseqbuilder as altseqbuilder
 from hgvs.exceptions import HGVSInvalidIntervalError
 from hgvs.pretty.models import (
     PositionDetail,
@@ -13,6 +11,7 @@ from hgvs.pretty.models import (
     VariantData,
 )
 from hgvs.sequencevariant import SequenceVariant
+from hgvs.utils import altseq_to_hgvsp, altseqbuilder
 from hgvs.utils.reftranscriptdata import RefTranscriptData
 
 
@@ -34,9 +33,9 @@ class DataCompiler:
             Retrieves the protein alteration data for a given transcript and coding interval.
         data(var_g: SequenceVariant, var_c_or_n: SequenceVariant = None, display_start: int = None, display_end: int = None) -> VariantData:
             Takes a sequence variant and provides all the data needed for pretty printing. This is the main method of the class.
-        _backfill_gap_in_ref(var_c_or_n, tx_seq, tx_exons, mapper, reference_data, pdata, cig, prev_c_pos, prev_n_pos):
+        _backfill_gap_in_ref(var_c_or_n, tx_seq, mapper, reference_data, pdata, cig, prev_c_pos, prev_n_pos):
             Fills in gaps in the reference sequence for regions that have been deleted.
-        _populate_with_n_c(var_c_or_n, tx_seq, tx_exons, mapper, reference_data, pdata, cig, n_interval, c_interval):
+        _populate_with_n_c(var_c_or_n, tx_seq, mapper, reference_data, pdata, cig, n_interval, c_interval):
             Populates the PositionDetail object with nucleotide and coding information.
     """
 
@@ -139,7 +138,8 @@ class DataCompiler:
             alt = ref + ref
 
         else:
-            raise ValueError(f"HGVS variant type {sv.posedit.edit.type} is unsupported")
+            msg = f"HGVS variant type {sv.posedit.edit.type} is unsupported"
+            raise ValueError(msg)
 
         return start, end, ref, alt
 
@@ -159,12 +159,11 @@ class DataCompiler:
                         and tx_exons[i]["alt_start_i"] >= genomic_pos
                     ):
                         return (exon_nr, "intron")
-                else:
-                    if (
-                        tx_exons[i]["alt_start_i"] < genomic_pos
-                        and tx_exons[i - 1]["alt_end_i"] >= genomic_pos
-                    ):
-                        return (i, "intron")
+                elif (
+                    tx_exons[i]["alt_start_i"] < genomic_pos
+                    and tx_exons[i - 1]["alt_end_i"] >= genomic_pos
+                ):
+                    return (i, "intron")
 
         return (-1, "no-overlap")
 
@@ -211,8 +210,8 @@ class DataCompiler:
         self,
         var_g: SequenceVariant,
         var_c_or_n: SequenceVariant = None,
-        display_start: int = None,
-        display_end: int = None,
+        display_start: int | None = None,
+        display_end: int | None = None,
     ) -> VariantData:
         """
         Takes a sequence variant and provides all the data needed for pretty printing.
@@ -231,10 +230,8 @@ class DataCompiler:
         rs = self.get_shuffled_variant(var_g, 3)
         fs = self.get_shuffled_variant(var_g, 0)
 
-        if ls.start < start:
-            start = ls.start
-        if rs.end > end:
-            end = rs.end
+        start = min(start, ls.start)
+        end = max(end, rs.end)
 
         if not display_start or display_start > start:
             seq_start = start - self.config.padding_left
@@ -246,10 +243,8 @@ class DataCompiler:
         else:
             seq_end = display_end
 
-        if var_c_or_n is not None:
-            tx_ac = var_c_or_n.ac
-        else:
-            tx_ac = ""  # can't show transcript , since there is none.
+        # can't show transcript, since there is none.
+        tx_ac = var_c_or_n.ac if var_c_or_n is not None else ""
 
         alt_ac = var_g.ac
         alt_aln_method = "splign"
@@ -323,7 +318,6 @@ class DataCompiler:
                     self._backfill_gap_in_ref(
                         var_c_or_n,
                         tx_seq,
-                        tx_exons,
                         mapper,
                         reference_data,
                         pdata,
@@ -363,10 +357,7 @@ class DataCompiler:
 
             try:
                 n_interval = mapper.g_to_n(g_interval)
-                if var_c_or_n.type == "c":
-                    c_interval = mapper.n_to_c(n_interval)
-                else:
-                    c_interval = None
+                c_interval = mapper.n_to_c(n_interval) if var_c_or_n.type == "c" else None
             except hgvs.exceptions.HGVSInvalidIntervalError:
                 # we are beyond the transcript space, can't set any of the other values.
                 continue
@@ -385,7 +376,6 @@ class DataCompiler:
             self._populate_with_n_c(
                 var_c_or_n,
                 tx_seq,
-                tx_exons,
                 mapper,
                 reference_data,
                 pdata,
@@ -431,7 +421,6 @@ class DataCompiler:
         self,
         var_c_or_n,
         tx_seq,
-        tx_exons,
         mapper,
         reference_data,
         pdata,
@@ -462,7 +451,6 @@ class DataCompiler:
         self._populate_with_n_c(
             var_c_or_n,
             tx_seq,
-            tx_exons,
             mapper,
             reference_data,
             pdata,
@@ -475,7 +463,6 @@ class DataCompiler:
         self,
         var_c_or_n,
         tx_seq,
-        tx_exons,
         mapper,
         reference_data,
         pdata,

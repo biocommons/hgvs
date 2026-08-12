@@ -238,49 +238,131 @@ select = [
 
 [tool.ruff.lint.per-file-ignores]
 # https://github.com/biocommons/hgvs/issues/838
-"tests/*" = ["PLR2004", "S101"]
-"src/hgvs/__init__.py" = ["B028", "G003", "UP031", "UP036"]
-"src/hgvs/alignmentmapper.py" = ["EM101", "EM102", "PLC0415", "PLR0911", "PLR0912", "PLR0915", "S101", "SIM102", "SIM108", "TRY003"]
-"src/hgvs/assemblymapper.py" = ["B026", "C401", "EM102", "G003", "S101", "TRY003", "UP008"]
-"src/hgvs/config.py" = ["B904", "G003"]
-"src/hgvs/dataproviders/interface.py" = ["EM102", "G004", "PLR2004", "S101", "TRY003"]
-"src/hgvs/dataproviders/ncbi.py" = ["ARG002", "C408", "EM102", "G003", "G004", "PLR2004", "PTH119", "RUF012", "TRY002", "TRY003", "UP008"]
-"src/hgvs/dataproviders/seqfetcher.py" = ["B904", "EM102", "G003", "PLC0415", "TRY003"]
-"src/hgvs/dataproviders/uta.py" = ["C408", "EM102", "G003", "G004", "PLR2004", "PLR5501", "PTH119", "RUF012", "SIM102", "TRY002", "TRY003", "UP008"]
-"src/hgvs/decorators/lru_cache.py" = ["A002", "B006", "B008", "C408", "N806", "PLR0915"]
-"src/hgvs/edit.py" = ["ARG002", "EM101", "PLR0912", "PLR5501", "S101", "TRY003"]
-"src/hgvs/extras/babelfish.py" = ["EM102", "TRY003"]
-"src/hgvs/hgvsposition.py" = ["UP030"]
-"src/hgvs/location.py" = ["ARG002", "EM101", "N805", "PLR0911", "PLR0912", "PLR1714", "PLW1641", "S101", "SIM102", "SIM108", "TRY003", "TRY300", "UP030", "UP031"]
-"src/hgvs/normalizer.py" = ["A001", "EM101", "EM102", "G004", "PLR0912", "PLR0915", "PLR1714", "PLR2004", "PLR5501", "S101", "SIM102", "TRY003", "TRY300"]
-"src/hgvs/parser.py" = ["B904", "EM102", "G001", "PTH123", "TRY003", "UP031"]
-"src/hgvs/parsers/base.py" = ["ARG004", "G001", "PLC0415", "UP031"]
-"src/hgvs/parsers/generated/hgvs_grammar.py" = ["N803", "N806", "PLR0915", "S307"]
-"src/hgvs/parsers/parsley_parser.py" = ["PLC0415", "PTH123"]
+# S101 (assert) is a permanent exception here, not debt: pytest rewrites
+# assert for readable failures and test runs aren't executed with -O, so
+# the rule's rationale (asserts stripped in optimized production code)
+# doesn't apply. PLR2004 (magic value comparison) is likewise permanent:
+# test assertions routinely compare against literal expected values
+# (`assert result == 5`), and that's the point of a test, not debt.
+# PT009/PT027 (unittest-style assertEqual/assertRaises instead of bare
+# assert/pytest.raises): most of this suite is written as
+# unittest.TestCase subclasses (446 sites across 23 files as of
+# 2026-08); migrating to pytest-native style is real, valuable debt,
+# but is out of scope for #850 and large enough to warrant its own
+# tracked effort rather than fixing piecemeal whenever an unrelated
+# change happens to touch one of these files.
+# See https://github.com/biocommons/hgvs/issues/850.
+"tests/*" = ["PLR2004", "PT009", "PT027", "S101"]
+# S101: cds_start_i/cds_end_i come only from hdp.get_tx_info/
+# get_tx_identity_info (data-provider dicts), never from caller-
+# supplied variant data; guards the data-provider contract's internal
+# consistency, not user input. See #850.
+"src/hgvs/alignmentmapper.py" = ["PLR0911", "PLR0912", "PLR0915", "S101"]
+# S101: reached only after prior code has already filtered/raised to
+# force len(alt_acs) == 1; checks this function's own filtering logic,
+# not the tx_ac argument's validity. See #850.
+"src/hgvs/assemblymapper.py" = ["S101"]
+# PLR2004: _split_version_string's `2` is "a major.minor version has
+# 2 parts" -- self-evident in a 5-line helper; not worth a constant.
+# S101: both asserts check self.required_version/schema_version(),
+# class-level constants and DB-queried values defined by data-provider
+# subclasses -- never caller input.
+"src/hgvs/dataproviders/interface.py" = ["PLR2004", "S101"]
+# ARG002 (cache, unused in NCBIBase.__init__): required by the shared
+# dataprovider __init__(mode, cache) signature (see interface.py,
+# uta.py) so backends stay interchangeable; not dead code. See #850.
+"src/hgvs/dataproviders/ncbi.py" = ["ARG002"]
+# PLC0415: SeqRepo/SeqRepoRESTDataProxy are imported inside their
+# respective HGVS_SEQREPO_DIR/HGVS_SEQREPO_URL branches so the unused
+# backend's import cost isn't paid when neither env var is set. See #850.
+"src/hgvs/dataproviders/seqfetcher.py" = ["PLC0415"]
+# A002/B006/B008/N806 here are a verbatim port of CPython's lru_cache
+# backport recipe (see module docstring); the builtin-shadowing default
+# args (sorted=sorted, etc.) and UPPERCASE tuple-unpacked names are a
+# deliberate perf idiom from the reference implementation, not sloppiness.
+# Permanent exception, not debt. See #850.
+"src/hgvs/decorators/lru_cache.py" = ["A002", "B006", "B008", "N806", "PLR0915"]
+# ARG002 (conf/ilen, unused in base Edit.format/_del_ins_lengths):
+# these are abstract-ish base methods with real implementations in
+# subclasses; the params must stay for signature compatibility across
+# polymorphic calls. Not dead code. See #850.
+"src/hgvs/edit.py" = ["ARG002", "PLR0912"]
+# ARG002 (conf, unused in SimplePosition/BaseOffsetPosition.format):
+# same polymorphic .format(conf) protocol as edit.py above.
+# N805: comparison dunders (__eq__, __lt__, __sub__, etc.) use lhs/rhs
+# instead of self/other -- deliberate, since they assert both operands
+# are the same type and treat them symmetrically; lhs/rhs signals that.
+# PLW1641: SimplePosition/BaseOffsetPosition/AAPosition define __eq__ but
+# are mutable value objects (_set_uncertain mutates in place), so no
+# __hash__ is provided -- adding one on a mutable type risks silent
+# set/dict corruption if an instance changes after insertion. Nothing
+# hashes these today; permanent exception, not debt. See #850.
+"src/hgvs/location.py" = ["ARG002", "N805", "PLR0911", "PLW1641"]
+# PLR2004: shuffle_direction == 3/5 encode the HGVS 3'/5' convention
+# (see the `shuffle_direction not in {3, 5}` check and docstring in
+# __init__ below); a shared named constant would be a reasonable
+# follow-up (variantmapper.py has its own private
+# _SHUFFLE_3PRIME/_SHUFFLE_5PRIME, unused elsewhere) but is left for
+# now.
+# S101: `var.type in "gmnr"` is reached only after normalize() has
+# already dispatched on var.type earlier in the same function (c/p
+# variants are converted or rejected before this point); by here the
+# type is constrained by this function's own control flow, not raw
+# external input. See #850.
+"src/hgvs/normalizer.py" = ["PLR0912", "PLR0915", "PLR2004", "S101"]
+# ARG004 (kwargs, unused in Parser.__new__): Python's object-construction
+# protocol calls __new__ with the same args as __init__; __new__ must
+# accept and discard kwargs meant for __init__.
+# PLC0415: each backend module (parsley_parser/pyparsing_parser) is
+# imported only when that backend is actually selected in __new__, so
+# callers using only one backend don't pay the other's import cost.
+# Not dead code. See #850.
+"src/hgvs/parsers/base.py" = ["ARG004", "PLC0415"]
+# ARG002 (grammar_fn, unused in PyParsingParser._build_grammar):
+# overrides Parser._build_grammar(grammar_fn), called uniformly from
+# base.py regardless of backend; ParsleyParser's override does use it.
+# Not dead code. See #850.
 "src/hgvs/parsers/pyparsing_parser.py" = ["ARG002"]
-"src/hgvs/posedit.py" = ["SIM108", "UP030"]
-"src/hgvs/pretty/console/chromseqrenderer.py" = ["PLC0415", "SIM108"]
-"src/hgvs/pretty/console/chromseqreverserenderer.py" = ["PLC0415", "SIM108"]
-"src/hgvs/pretty/console/protseqrenderer.py" = ["PLC0415", "PLR0912", "PLR0915"]
-"src/hgvs/pretty/console/shuffledvariant.py" = ["PLC0415", "PLR0912", "PLR0915"]
-"src/hgvs/pretty/console/txaligrenderer.py" = ["PLC0415", "PLR0912", "PLR0915", "PLR1714", "PLR5501"]
-"src/hgvs/pretty/console/txrefdisagreerenderer.py" = ["PLC0415", "PLR5501"]
-"src/hgvs/pretty/datacompiler.py" = ["ARG002", "EM102", "PLR0402", "PLR0912", "PLR0915", "PLR1730", "PLR2004", "PLR5501", "RUF013", "SIM108", "TRY003"]
-"src/hgvs/pretty/prettyprint.py" = ["A002", "PLR0912", "PLR0915", "PLR1704", "PLR1714", "RET503", "RUF013", "SIM102", "SIM108"]
+"src/hgvs/pretty/console/protseqrenderer.py" = ["PLR0912"]
+"src/hgvs/pretty/console/shuffledvariant.py" = ["PLR0912", "PLR0915"]
+"src/hgvs/pretty/console/txaligrenderer.py" = ["PLR0912", "PLR0915"]
+# PLR2004: direction == 3/5 is the same 3'/5' convention as
+# normalizer.py's shuffle_direction. See #850.
+"src/hgvs/pretty/datacompiler.py" = ["PLR0912", "PLR0915", "PLR2004"]
+"src/hgvs/pretty/prettyprint.py" = ["PLR0912", "PLR0915"]
 "src/hgvs/repeats.py" = ["PLR0912", "PLR0915"]
-"src/hgvs/sequencevariant.py" = ["A001", "SIM108", "UP030"]
+# PLC0415: hgvs.easy and hgvs.utils.context are imported inside shell()
+# specifically because importing them eagerly connects to the UTA
+# database (see #867) -- module-level imports would defeat the point
+# of deferring that connection until the shell actually starts. See #850.
 "src/hgvs/shell.py" = ["PLC0415"]
-"src/hgvs/utils/PersistentDict.py" = ["B904", "N999", "PTH123", "S301"]
-"src/hgvs/utils/altseq_to_hgvsp.py" = ["EM101", "EM102", "PLR0912", "PLR0915", "PLR5501", "SIM108", "TRY003"]
-"src/hgvs/utils/altseqbuilder.py" = ["B904", "EM101", "EM102", "N806", "PLR1714", "PLR5501", "RUF046", "TRY003"]
-"src/hgvs/utils/cigarmapper.py" = ["EM101", "TRY003"]
-"src/hgvs/utils/context.py" = ["A002", "EM102", "PLC0415", "PLR2004", "PT018", "S101", "SIM108", "TRY003"]
+# S301 (pickle) fix is blocked on #849's planned rethink of hdp caching
+# for 2.0; not fixing here to avoid throwaway work. N999 (module name)
+# is likewise left as-is pending that rework.
+"src/hgvs/utils/PersistentDict.py" = ["N999", "S301"]
+"src/hgvs/utils/altseq_to_hgvsp.py" = ["PLR0912", "PLR0915"]
+# PLC0415: this module's docstring says it's experimental and requires
+# uta_align, which is NOT a standard hgvs dependency (see
+# [project.optional-dependencies] align); importing it locally avoids
+# a hard import-time dependency for a module most installs never use.
+# PLR2004: format_sequence's `20` is a display line-wrapping heuristic,
+# self-contained within that one function.
+# S101: this module is explicitly experimental/not part of the
+# documented public API; ival_n's offsets are derived from internal
+# AlignmentMapper.g_to_n output, not direct user input. group_size is
+# a hardcoded default in an internal formatting helper. See #850.
+"src/hgvs/utils/context.py" = ["PLC0415", "PLR2004", "S101"]
+# PLR2004: the three `len(x) < 2` checks mean "need at least a pair to
+# compare/trim/shuffle" -- already self-evident in context; a named
+# constant would add indirection without real clarity gain. See #850.
 "src/hgvs/utils/norm.py" = ["PLR2004"]
+# S101: these dunders only ever compare against another member of the
+# same internal enum class (Datum, ValidationLevel, etc.), never a
+# caller-supplied value -- can't be false without a bug in this
+# library's own code. Permanent exception, not debt. See #850.
 "src/hgvs/utils/orderedenum.py" = ["S101"]
-"src/hgvs/utils/position.py" = ["PLR0911", "PLR0912", "PLR5501", "SIM108", "UP038"]
-"src/hgvs/utils/validation.py" = ["A002", "S101"]
-"src/hgvs/validator.py" = ["G004", "S101"]
-"src/hgvs/variantmapper.py" = ["PLR0912", "PLR0915"]
+"src/hgvs/utils/position.py" = ["PLR0911", "PLR0912"]
+"src/hgvs/variantmapper.py" = ["PLR0912"]
 
 [tool.setuptools]
 include-package-data = true

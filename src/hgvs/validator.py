@@ -46,9 +46,9 @@ class IntrinsicValidator:
         self.strict = strict
 
     def validate(self, var, strict=None):
-        assert isinstance(var, hgvs.sequencevariant.SequenceVariant), (
-            "variant must be a parsed HGVS sequence variant object"
-        )
+        if not isinstance(var, hgvs.sequencevariant.SequenceVariant):
+            type_msg = "variant must be a parsed HGVS sequence variant object"
+            raise TypeError(type_msg)
         if strict is None:
             strict = self.strict
         fail_level = ValidationLevel.WARNING if strict else ValidationLevel.ERROR
@@ -69,9 +69,9 @@ class ExtrinsicValidator:
         self.vm = hgvs.variantmapper.VariantMapper(self.hdp, prevalidation_level=None)
 
     def validate(self, var, strict=None):
-        assert isinstance(var, hgvs.sequencevariant.SequenceVariant), (
-            "variant must be a parsed HGVS sequence variant object"
-        )
+        if not isinstance(var, hgvs.sequencevariant.SequenceVariant):
+            type_msg = "variant must be a parsed HGVS sequence variant object"
+            raise TypeError(type_msg)
         if strict is None:
             strict = self.strict
         fail_level = ValidationLevel.WARNING if strict else ValidationLevel.ERROR
@@ -87,7 +87,9 @@ class ExtrinsicValidator:
             if res != ValidationLevel.VALID:
                 if hgvs.global_config.mapping.strict_bounds:
                     raise HGVSInvalidVariantError(msg)
-                _logger.warning(f"{var}: Variant outside transcript bounds; no validation provided")
+                _logger.warning(
+                    "%s: Variant outside transcript bounds; no validation provided", var
+                )
                 return True  # no other checking performed
 
         res, msg = self._c_within_cds_bound(var)
