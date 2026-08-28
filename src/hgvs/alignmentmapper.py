@@ -563,9 +563,12 @@ class AlignmentMapper:
         if isinstance(n_interval, BaseOffsetInterval):
             start = n_interval.start.base
             end = n_interval.end.base
-        elif isinstance(n_interval, Interval):
+        elif isinstance(n_interval.start, Interval):
             start = n_interval.start.start.base
             end = n_interval.end.end.base
+        else:
+            start = n_interval.start.base
+            end = n_interval.end.base
 
         if not start:
             start = 1

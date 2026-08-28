@@ -757,6 +757,37 @@ class Test_SimplePosition(unittest.TestCase):
         for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
 
+    def test_intronic_offset_near_alignment_gap(self):
+        """An intronic (offset) variant displayed near a tx/genome alignment gap
+        must not crash. Regression test for a bug where _backfill_gap_in_ref
+        built a plain hgvs.location.Interval of BaseOffsetPositions instead of
+        a BaseOffsetInterval, which AlignmentMapper.n_to_c cannot unwrap.
+        """
+        hgvs_c = "NM_000682.6:c.901+5G>A"
+        var_c = self.hp.parse(hgvs_c)
+
+        result = self.pp.display(var_c)
+        print(result)
+        result = result.split("\n")
+        expected_str = (
+            "hgvs_g    : NC_000002.11:g.96780992C>T\n"
+            + "hgvs_c    : NM_000682.6:c.901+5G>A\n"
+            + "hgvs_p    : NP_000673.2:p.?\n"
+            + "          :         96,780,980                   96,781,000\n"
+            + "chrom pos :    .    |    .    |    .  _________  |    .    |  \n"
+            + "seq    -> : TCTTCCTCCTCCTCCTCCTCCTCTTC.........AGCTTCATCCTCTGG\n"
+            + "tx ref dif:                           DDDDDDDDD               \n"
+            + "region    :                     T                             \n"
+            + "tx seq <- : AGAAGGAGGAGGAGGAGGAGGAGAAGGAGGAGAAGTCGAAGTAGGAGACC\n"
+            + "tx pos    :  .    |    .    |    .    |    .    |    .    |   \n"
+            + "          :       920       910       900       890       880\n"
+            + "aa seq <- : luGluGluGluGluGluGluGluGluGluGluGluAlaGluAspGluPro\n"
+            + "aa pos    :            ...            |||            ...      \n"
+            + "          :                           300                     \n"
+        ).split("\n")
+        for r, e in zip(result, expected_str, strict=False):
+            self.assertEqual(e, r)
+
     def test_rna_coding(self):
         """a rna coding transcript."""
         hgvs_n = "NR_146230.2:n.10G>A"
