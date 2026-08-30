@@ -55,6 +55,12 @@ class Test_Edit(unittest.TestCase):
         self.assertEqual(str(hgvs.edit.AARefAlt("", "T").type), "delins")
         self.assertEqual(str(hgvs.edit.AARefAlt("AA", "T").type), "delins")
         self.assertEqual(str(hgvs.edit.AARefAlt("A", "TT").type), "delins")
+        # ref lengths; an unspecified ref has no length (issues #573, #727)
+        self.assertEqual(hgvs.edit.AARefAlt("AA", None).ref_n, 2)
+        self.assertEqual(hgvs.edit.AARefAlt("AA", "T").ref_n, 2)
+        self.assertIsNone(hgvs.edit.AARefAlt("", None).ref_n)
+        self.assertIsNone(hgvs.edit.AARefAlt("", "T").ref_n)
+        self.assertIsNone(hgvs.edit.AARefAlt(None, "TT").ref_n)
 
     def test_AASub(self):
         self.assertEqual(str(hgvs.edit.AASub("A", "T")), "Thr")
