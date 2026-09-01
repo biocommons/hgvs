@@ -187,6 +187,22 @@ class AARefAlt(Edit):
         self.ref = aa_to_aa1(self.ref)
         self.alt = aa_to_aa1(self.alt)
 
+    @property
+    def ref_n(self):
+        """
+        returns the number of amino acids in `ref`, or None if `ref` is unspecified.
+
+        Unlike `NARefAlt.ref_n`, a numeric `ref` is not supported: protein syntax
+        has no counted deletion (e.g. `del5`), so `ref` is always a sequence.
+
+        >>> AARefAlt("KLM").ref_n
+        3
+        >>> AARefAlt("").ref_n
+        >>> AARefAlt(None).ref_n
+
+        """
+        return len(self.ref) if self.ref else None
+
     def format(self, conf=None):
         if self.ref is None and self.alt is None:
             # raise HGVSError("RefAlt: ref and alt sequences are both undefined")
