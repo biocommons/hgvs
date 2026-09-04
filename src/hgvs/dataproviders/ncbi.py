@@ -334,16 +334,6 @@ class NCBI_postgresql(NCBIBase):
 
                 cur = conn.cursor(row_factory=psycopg.rows.dict_row)
                 cur.execute(f"set search_path = {self.url.schema};")
-
-                yield cur
-
-                # contextmanager executes these when context exits
-                cur.close()
-                if self.pooling:
-                    self._pool.putconn(conn)
-
-                break
-
             except psycopg.OperationalError:
                 _logger.warning("Lost connection to %s; attempting reconnect", self.url)
                 if self.pooling:
@@ -351,12 +341,21 @@ class NCBI_postgresql(NCBIBase):
                 self._connect()
                 _logger.warning("Reconnected to %s", self.url)
 
-            n_tries_rem -= 1
-
+                n_tries_rem -= 1
+            else:
+                break
         else:
             # N.B. Probably never reached
             msg = f"Permanently lost connection to {self.url} ({n_retries} retries)"
             raise HGVSError(msg)
+
+        try:
+            yield cur
+        finally:
+            # contextmanager executes these when context exits
+            cur.close()
+            if self.pooling:
+                self._pool.putconn(conn)
 
 
 _SCHEMA_PATH_ELEM_COUNT = 2
