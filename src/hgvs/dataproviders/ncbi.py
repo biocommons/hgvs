@@ -14,9 +14,16 @@ from pathlib import Path
 from typing import ClassVar
 from urllib import parse as urlparse
 
-import psycopg
-import psycopg.rows
-from psycopg_pool import ConnectionPool
+try:
+    import psycopg
+    import psycopg.rows
+    from psycopg_pool import ConnectionPool
+except ModuleNotFoundError:
+    print(
+        "ModuleNotFoundError raised when trying to import psycopg2, if you need dataproviders support please "
+        "install system dependencies and pip install with [dataproviders] extra!"
+    )
+    raise
 
 import hgvs
 from hgvs.exceptions import HGVSDataNotAvailableError, HGVSError

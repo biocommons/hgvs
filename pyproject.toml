@@ -48,8 +48,6 @@ dependencies = [
   "importlib_resources",
   "ipython",
   "parsley",
-  "psycopg[binary]",
-  "psycopg-pool",
   "pyparsing >= 3.1",
 ]
 description = "HGVS Parser, Formatter, Mapper, Validator"
@@ -69,6 +67,10 @@ readme = "README.md"
 requires-python = ">=3.11, <3.14"  # as-of 2025-11-02, PyO3 fails to build pydantic on 3.14
 
 [project.optional-dependencies]
+dataproviders = [
+  "psycopg[binary]",
+  "psycopg-pool",
+]
 align = ["uta-align~=0.3"]
 
 [project.scripts]
