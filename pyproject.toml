@@ -33,6 +33,7 @@ classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
@@ -66,7 +67,7 @@ keywords = [
 license = "Apache-2.0"
 name = "hgvs"
 readme = "README.md"
-requires-python = ">=3.11, <3.14"  # as-of 2025-11-02, PyO3 fails to build pydantic on 3.14
+requires-python = ">=3.11"
 
 [project.optional-dependencies]
 align = ["uta-align~=0.3"]
