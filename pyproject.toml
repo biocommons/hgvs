@@ -166,7 +166,6 @@ testpaths = ["tests"]
 
 [tool.ruff]
 extend-exclude = ["src/hgvs/parsers/generated"]
-fix = true
 line-length = 100
 src = ["src", "tests"]
 target-version = "py313"
