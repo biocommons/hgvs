@@ -49,6 +49,20 @@ def trim_common_prefixes(strs, min_len=0):
     return trimmed, strs
 
 
+def _indel_allele(alleles):
+    """Index of the non-empty allele of an insertion or deletion (2 alleles, one empty),
+    otherwise None"""
+    if len(alleles) == 2 and bool(alleles[0]) != bool(alleles[1]):
+        return 0 if alleles[0] else 1
+    return None
+
+
+def _rotate_alleles(alleles, i, seq):
+    alleles = list(alleles)
+    alleles[i] = seq
+    return alleles
+
+
 def normalize_alleles_left(ref, start, stop, alleles, bound, ref_step, shuffle=True):
     """
     Normalize loci by removing extraneous reference padding
@@ -75,6 +89,21 @@ def normalize_alleles_left(ref, start, stop, alleles, bound, ref_step, shuffle=T
 
     # STEP 3: While a null allele exists, left shuffle by prepending alleles
     #         with reference and trimming common suffixes
+    if shuffle and (i := _indel_allele(alleles)) is not None:
+        # Shuffling an insertion or deletion rotates its sequence, so count the shift
+        # directly instead of rebuilding the alleles (quadratic for a large dup)
+        seq = alleles[i]
+        n = len(seq)
+        shift = 0
+        while start - shift > bound and ref[start - shift - 1].upper() == seq[-1 - shift % n]:
+            shift += 1
+        if shift:
+            k = shift % n
+            alleles = _rotate_alleles(alleles, i, seq[n - k :] + seq[: n - k])
+            start -= shift
+            stop -= shift
+        return normalized_alleles(start, stop, tuple(alleles))
+
     while shuffle and "" in alleles and start > bound:
         step = min(ref_step, start - bound)
 
@@ -125,6 +154,20 @@ def normalize_alleles_right(ref, start, stop, alleles, bound, ref_step, shuffle=
 
     # STEP 3: While a null allele exists, right shuffle by appending alleles
     #         with reference and trimming common prefixes
+    if shuffle and (i := _indel_allele(alleles)) is not None:
+        # See normalize_alleles_left
+        seq = alleles[i]
+        n = len(seq)
+        shift = 0
+        while stop + shift < bound and ref[stop + shift].upper() == seq[shift % n]:
+            shift += 1
+        if shift:
+            k = shift % n
+            alleles = _rotate_alleles(alleles, i, seq[k:] + seq[:k])
+            start += shift
+            stop += shift
+        return normalized_alleles(start, stop, tuple(alleles))
+
     while shuffle and "" in alleles and stop < bound:
         step = min(ref_step, bound - stop)
 
