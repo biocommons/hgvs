@@ -67,6 +67,11 @@ class AltSeqToHgvsp:
                     self._is_frameshift = False
                 variants.append({"start": start, "ins": insertion, "del": deletion})
                 do_delins = False
+            elif self._alt_seq[: self._alt_seq.find("*") + 1] == self._ref_seq:
+                start = len(self._ref_seq)
+                variants.append({"start": start, "ins": "*", "del": "*"})
+                self._is_frameshift = False
+                do_delins = False
             elif self._is_substitution:
                 if len(self._ref_seq) == len(self._alt_seq):
                     diff_pos = [

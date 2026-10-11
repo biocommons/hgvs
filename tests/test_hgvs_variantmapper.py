@@ -41,7 +41,7 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
         var_p = self.vm.c_to_p(var_c)
 
-        assert str(var_p) == "NP_001240838.1:p.(Ter140Ter)"
+        assert str(var_p) == "NP_001240838.1:p.(Ter139Ter)"
 
     def test_gcrp_invalid_input_type(self):
         hgvs_g = "NC_000007.13:g.36561662C>T"

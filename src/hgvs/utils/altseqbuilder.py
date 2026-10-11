@@ -277,12 +277,12 @@ class AltSeqBuilder:
         if alt and ref is None:
             insert_seq_idx = start + 1
             if insert_seq_idx >= cds_start - 1:
-                stop_end = self._insert_stop_seq_end(alt, insert_seq_idx, cds_start)
+                stop_end, frame_offset = self._find_insert_stop(cds_start, alt, insert_seq_idx)
                 if stop_end is not None:
                     is_frameshift = False
-                    alt_end = insert_seq_idx + len(alt)
-                    del seq[stop_end:alt_end]
-                    cds_stop -= alt_end - stop_end
+                    insert_end = insert_seq_idx + len(alt)
+                    seq[stop_end:insert_end] = seq[insert_seq_idx - frame_offset : insert_seq_idx]
+                    cds_stop += frame_offset - (insert_end - stop_end)
         # use max of mod 3 value and 1 (in event that indel starts in the 5'utr range)
         variant_start_aa = max(math.ceil(self._var_c.posedit.pos.start.base / 3.0), 1)
 
@@ -309,15 +309,16 @@ class AltSeqBuilder:
 
         dup_seq = self._var_c.posedit.edit.ref
         seq[end:end] = dup_seq
+        cds_stop += len(dup_seq)
 
         is_frameshift = len(dup_seq) % 3 != 0
         if end >= cds_start - 1:
-            stop_end = self._insert_stop_seq_end(dup_seq, end, cds_start)
+            stop_end, frame_offset = self._find_insert_stop(cds_start, dup_seq, end)
             if stop_end is not None:
                 is_frameshift = False
-                dup_end = end + len(dup_seq)
-                del seq[stop_end:dup_end]
-                cds_stop -= dup_end - stop_end
+                insert_end = end + len(dup_seq)
+                seq[stop_end:insert_end] = seq[end - frame_offset : end]
+                cds_stop += frame_offset - (insert_end - stop_end)
         variant_start_aa = math.ceil((self._var_c.posedit.pos.end.base + 1) / 3.0)
 
         alt_data = AltTranscriptData(
@@ -358,11 +359,20 @@ class AltSeqBuilder:
         msg = f"hgvs c to p conversion does not support {self._var_c} type: repeats"
         raise NotImplementedError(msg)
 
-    def _insert_stop_seq_end(self, insert_seq, insert_seq_idx, cds_start):
-        """If translating the inserted bases in the CDS reading frame yields a stop codon, return the
-        sequence index just past that stop codon; else None. When non-None, translation halts
-        inside the insertion, so the variant terminates there and is not a frameshift even if the
-        insertion length is not divisible by 3."""
+    def _find_insert_stop(self, cds_start, insert_seq, insert_seq_idx) -> tuple[int | None, int | None]:
+        """If translating the inserted bases in the CDS reading frame yields a
+        stop codon, return the sequence index just past that stop and the
+        frame_offset of the insertion point (0 to 2), else (None, None).
+
+        Translation halts at the inserted stop, so the bases after it are
+        never read. The caller must replace the tail of the insertion (from
+        stop_end to the end of the inserted bases) with the frame_offset
+        reference bases immediately preceding the insertion point. This keeps
+        the downstream reference in frame and rebuilds the split codon
+        unchanged right after the stop, so the protein description depends
+        only on the bases that are actually translated. Without it, leftover
+        inserted bases would combine with reference bases into an arbitrary
+        codon and decide between an ins and a delins description."""
         frame_offset = (insert_seq_idx - (cds_start - 1)) % 3
         framed = ("N" * frame_offset) + "".join(insert_seq)
         ins_aa = translate_cds(
@@ -370,8 +380,8 @@ class AltSeqBuilder:
         )
         stop_aa_idx = ins_aa.find("*")
         if stop_aa_idx == -1:
-            return None
-        return insert_seq_idx + (stop_aa_idx + 1) * 3 - frame_offset
+            return None, None
+        return insert_seq_idx + (stop_aa_idx + 1) * 3 - frame_offset, frame_offset
 
     def _setup_incorporate(self):
         """Helper to setup incorporate functions
