@@ -675,7 +675,7 @@ dev = [
 requires-dist = [
     { name = "attrs", specifier = ">=17.4.0" },
     { name = "biocommons-seqrepo", specifier = ">=0.6.10" },
-    { name = "bioutils", specifier = ">=0.4.0,<1.0" },
+    { name = "bioutils", specifier = ">=0.5.0,<1.0" },
     { name = "importlib-resources" },
     { name = "ipython" },
     { name = "parsley" },
