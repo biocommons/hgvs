@@ -5,8 +5,8 @@ permissions:
 
 on:
   push:
-    branches: ["*"]
-    tags: ["*"]
+    branches: ["**"]
+    tags: ["**"]
 
 jobs:
   python-ci-cd:
