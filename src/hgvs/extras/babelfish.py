@@ -84,8 +84,7 @@ class Babelfish:
         if ref != alt:
             # Strip common prefix
             if len(alt) > 1 and len(ref) > 1:
-                pfx = os.path.commonprefix([ref, alt])
-                lp = len(pfx)
+                lp = next((i for i, (r, a) in enumerate(zip(ref, alt)) if r != a), min(len(ref), len(alt)))
                 if lp > 0:
                     ref = ref[lp:]
                     alt = alt[lp:]
