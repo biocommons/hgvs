@@ -364,6 +364,10 @@ class Normalizer:
 
         ref, alt = self._get_ref_alt(var, boundary)
         win_size = hgvs.global_config.normalizer.window_size
+        # Sequence fetched beyond the variant when a shuffle runs off the end of the window.
+        # At least the allele length, so a large indel shuffles past itself in a pass or two
+        # rather than len / win_size passes (each re-trimming the whole allele)
+        extend_size = max(win_size, len(ref), len(alt))
 
         s, e = get_start_end(var)
 
@@ -381,9 +385,10 @@ class Normalizer:
                 start = 0
                 stop = e.base - base + 1
 
+            fetch_size = win_size
             while True:
                 ref_seq = self._fetch_bounded_seq(
-                    var, base - 1, base + stop - 1 + win_size, win_size, boundary
+                    var, base - 1, base + stop - 1 + fetch_size, fetch_size, boundary
                 )
                 if ref_seq == "":
                     break
@@ -397,6 +402,7 @@ class Normalizer:
                 base += start - orig_start
                 stop -= start - orig_start
                 start = orig_start
+                fetch_size = extend_size
 
         elif self.shuffle_direction == 5:
             if var.posedit.edit.type == "ins":
@@ -427,9 +433,10 @@ class Normalizer:
                 if start > 0 or stop == orig_stop:
                     break
                 # if stop at the end of the window, try to extend the shuffling to the left
-                base -= orig_stop - stop
-                start += orig_stop - stop
-                stop = orig_stop
+                extend = orig_stop - stop + extend_size - win_size
+                base -= extend
+                start += extend
+                stop += extend
 
         return base + start, base + stop, (ref, alt)
 

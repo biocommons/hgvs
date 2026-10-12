@@ -1,4 +1,5 @@
 import os
+import random
 import unittest
 
 import pytest
@@ -446,6 +447,34 @@ class Test_HGVSNormalizer(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class _RandomContigHDP:
+    """A random contig, so a large variant normalizes without UTA/SeqRepo"""
+
+    def __init__(self, length):
+        rng = random.Random(0)  # noqa: S311
+        self.seq = "".join(rng.choice("ACGT") for _ in range(length))
+
+    def get_seq(self, ac, start_i=None, end_i=None):  # noqa: ARG002
+        return self.seq[start_i:end_i]
+
+
+def test_normalize_large_dup():
+    """Shuffling a large dup / insertion past its copy was quadratic (minutes per Mb)"""
+    hdp = _RandomContigHDP(2_010_000)
+    hp = hgvs.parsers.Parser()
+    start, end = 1001, 1_001_000
+    dup = hp.parse(f"NC_000002.12:g.{start}_{end}dup")
+    ins = hp.parse(f"NC_000002.12:g.{start - 1}_{start}insA")
+    ins.posedit.edit.alt = hdp.seq[start - 1 : end]  # parsing 1Mb of sequence is slow
+    for shuffle_direction in (3, 5):
+        norm = hgvs.normalizer.Normalizer(
+            hdp, shuffle_direction=shuffle_direction, cross_boundaries=False, validate=False
+        )
+        assert norm.normalize(dup).posedit.edit.type == "dup"
+        assert norm.normalize(dup) == norm.normalize(ins)
+
 
 # <LICENSE>
 # Copyright 2018 HGVS Contributors (https://github.com/biocommons/hgvs)

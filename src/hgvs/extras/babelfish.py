@@ -50,7 +50,7 @@ class Babelfish:
 
         if typ == "dup":
             start_i -= 1
-            alt = self.hdp.seqfetcher.fetch_seq(vleft.ac, start_i, end_i)
+            alt = self.hdp.get_seq(vleft.ac, start_i, end_i)
             ref = alt[0]
         elif typ == "inv":
             ref = vleft.posedit.edit.ref
@@ -65,7 +65,7 @@ class Babelfish:
                     end_i -= 1
                 # Left anchored
                 start_i -= 1
-                ref = self.hdp.seqfetcher.fetch_seq(vleft.ac, start_i, end_i)
+                ref = self.hdp.get_seq(vleft.ac, start_i, end_i)
                 alt = ref[0] + alt
             else:
                 ref = vleft.posedit.edit.ref
