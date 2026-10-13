@@ -1,7 +1,5 @@
 """translate between HGVS and other formats"""
 
-import os
-
 from bioutils.assemblies import make_ac_name_map, make_name_ac_map
 from bioutils.sequences import reverse_complement
 
@@ -13,6 +11,16 @@ from hgvs.normalizer import Normalizer
 from hgvs.posedit import PosEdit
 from hgvs.sequencevariant import SequenceVariant
 from hgvs.utils.position import get_start_end_interbase
+
+
+def _common_prefix_len(a: str, b: str) -> int:
+    """Return the length of the common character prefix of two strings.
+
+    Replaces the deprecated os.path.commonprefix for sequence strings.
+    """
+    return next(
+        (i for i, (x, y) in enumerate(zip(a, b, strict=False)) if x != y), min(len(a), len(b))
+    )
 
 
 class Babelfish:
@@ -84,8 +92,8 @@ class Babelfish:
         if ref != alt:
             # Strip common prefix
             if len(alt) > 1 and len(ref) > 1:
-                pfx = os.path.commonprefix([ref, alt])
-                lp = len(pfx)
+                # Character-wise common prefix (see _common_prefix_len).
+                lp = _common_prefix_len(ref, alt)
                 if lp > 0:
                     ref = ref[lp:]
                     alt = alt[lp:]

@@ -1,5 +1,7 @@
 import pytest
 
+from hgvs.extras.babelfish import _common_prefix_len
+
 NORM_HGVS_VCF = [
     # Columns are: (normed-HGVS, non-normalized HGVS, VCF coordinates, non-norm VCF)
     # no-op
@@ -91,7 +93,7 @@ def test_vcf_to_hgvs(babelfish38):
 
     for expected_hgvs_string, _, norm_variant_coordinate, alt_variant_coordinate in NORM_HGVS_VCF:
         for variant_coordinate in [norm_variant_coordinate, *alt_variant_coordinate]:
-            *v, typ = variant_coordinate  # last column is type ie "dup"
+            *v, _typ = variant_coordinate  # last column is type ie "dup"
             hgvs_g = _v2h(*v)
             hgvs_string = hgvs_g.format()
             assert hgvs_string == expected_hgvs_string
@@ -100,3 +102,16 @@ def test_vcf_to_hgvs(babelfish38):
 def test_vcf_to_hgvs_contig_chrom(babelfish38):
     hgvs_g = babelfish38.vcf_to_g_hgvs("NC_000006.12", 49949409, "GAA", "G")
     assert hgvs_g.format() == "NC_000006.12:g.49949413_49949414del"
+
+
+def test_common_prefix_len_partial_full_empty():
+    """Cover partial, full, and empty common prefixes for sequence strings."""
+    # Partial
+    assert _common_prefix_len("ACGT", "ACTT") == 2
+    # Full (one is prefix of the other, or equal)
+    assert _common_prefix_len("ACGT", "ACGT") == 4
+    assert _common_prefix_len("AC", "ACGT") == 2
+    # Empty
+    assert _common_prefix_len("ACGT", "TGCA") == 0
+    assert _common_prefix_len("", "ACGT") == 0
+    assert _common_prefix_len("A", "") == 0
