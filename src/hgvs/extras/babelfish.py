@@ -20,7 +20,6 @@ The VCF header needs ##ALT lines for DEL/DUP/INV and ##INFO lines for SVTYPE, SV
 SVLEN follows vcf_version (default 4.3, where a deletion's SVLEN is negative).
 """
 
-import os
 from dataclasses import dataclass, field, replace
 
 from bioutils.assemblies import make_ac_name_map, make_name_ac_map
@@ -125,6 +124,16 @@ class VCFCoordinate:
 
     def __str__(self):
         return self.format()
+
+
+def _common_prefix_len(a: str, b: str) -> int:
+    """Return the length of the common character prefix of two strings.
+
+    Replaces the deprecated os.path.commonprefix for sequence strings.
+    """
+    return next(
+        (i for i, (x, y) in enumerate(zip(a, b, strict=False)) if x != y), min(len(a), len(b))
+    )
 
 
 class Babelfish:
@@ -314,8 +323,8 @@ class Babelfish:
         if ref != alt:
             # Strip common prefix
             if len(alt) > 1 and len(ref) > 1:
-                pfx = os.path.commonprefix([ref, alt])
-                lp = len(pfx)
+                # Character-wise common prefix (see _common_prefix_len).
+                lp = _common_prefix_len(ref, alt)
                 if lp > 0:
                     ref = ref[lp:]
                     alt = alt[lp:]
