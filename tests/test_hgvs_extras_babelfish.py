@@ -4,11 +4,10 @@ from types import SimpleNamespace
 import pytest
 from bioutils.sequences import reverse_complement
 
-from hgvs.extras.babelfish import SYMBOLIC_ALTS, Babelfish, VCFCoordinate
+from hgvs.extras.babelfish import SYMBOLIC_ALTS, Babelfish, VCFCoordinate, _common_prefix_len
 
 SYMBOLIC_TYPES = {v: k for k, v in SYMBOLIC_ALTS.items()}
-
-from hgvs.extras.babelfish import _common_prefix_len
+CHR2 = "NC_000002.12"
 
 NORM_HGVS_VCF = [
     # Columns are: (normed-HGVS, non-normalized HGVS, VCF coordinates, non-norm VCF)
@@ -150,11 +149,30 @@ def test_hgvs_to_vcf_symbolic(parser, symbolic_babelfish):
         var_g = parser.parse(hgvs_string)
         assert symbolic_babelfish.hgvs_to_vcf(var_g) == expected_variant_coordinate
         vc = symbolic_babelfish.hgvs_to_vcf_coordinate(var_g)
-        assert vc.as_tuple() == (*expected_variant_coordinate[:4], end)
-        assert abs(vc.svlen) == symbolic_babelfish.symbolic_alt_length(var_g)
-        svtype = expected_variant_coordinate[3][1:-1]
-        assert vc.info == {"SVTYPE": svtype, "SVLEN": vc.svlen, "END": end}
+        _chrom, position, ref, alt, _typ = expected_variant_coordinate
+        assert vc.as_tuple() == (CHR2, position, ref, alt, end)
+        assert symbolic_babelfish.vcf_chrom(vc) == "2"
+        assert vc.svlen == symbolic_babelfish.symbolic_alt_length(var_g)
+        svtype = alt[1:-1]
+        svlen = -vc.svlen if svtype == "DEL" else vc.svlen  # VCF 4.3
+        assert symbolic_babelfish.vcf_info(vc) == {"SVTYPE": svtype, "SVLEN": svlen, "END": end}
+        assert str(vc) == f"{CHR2}:{position}-{end} {alt}"
         assert symbolic_babelfish.vcf_coordinate_to_g_hgvs(vc).format() == hgvs_string
+
+
+def test_hgvs_to_vcf_chrom_style_accession(parser, hdp):
+    babelfish = _anchor_babelfish(hdp, 1000, 1000, chrom_style="accession")
+    for hgvs_string, (_chrom, *rest), _end in SYMBOLIC_HGVS_VCF:
+        var_g = parser.parse(hgvs_string)
+        assert babelfish.hgvs_to_vcf(var_g) == (CHR2, *rest)
+        assert babelfish.vcf_chrom(babelfish.hgvs_to_vcf_coordinate(var_g)) == CHR2
+    with pytest.raises(ValueError, match="chrom_style"):
+        Babelfish(hdp, "GRCh38", chrom_style="chr")
+
+
+def test_hgvs_to_vcf_requires_g(parser, symbolic_babelfish):
+    with pytest.raises(RuntimeError, match="Expected g"):
+        symbolic_babelfish.hgvs_to_vcf(parser.parse("NM_000059.4:c.100del"))
 
 
 def test_hgvs_to_vcf_symbolic_explicit_sequence(parser, symbolic_babelfish):
@@ -310,21 +328,25 @@ def test_vcf_version_svlen(parser, hdp):
     for vcf_version, svlen in (("4.3", -1000), ("4.4", 1000)):
         babelfish = _anchor_babelfish(hdp, 1000, 1000, vcf_version=vcf_version)
         vc = babelfish.hgvs_to_vcf_coordinate(var_g)
-        assert (vc.svlen, vc.info["SVLEN"]) == (svlen, svlen)
+        assert vc == VCFCoordinate(CHR2, 999999, "T", "<DEL>", end=1000999)
+        assert vc.svlen == 1000  # the coordinate doesn't know the VCF version
+        assert babelfish.vcf_info(vc)["SVLEN"] == svlen
         assert babelfish.vcf_to_g_hgvs("2", 999999, "T", "<DEL>", svlen=svlen) == var_g
-    dup = VCFCoordinate("2", 999999, "T", "<DUP>", end=1000999)
-    assert dup.svlen == 1000
-    assert dup == VCFCoordinate("2", 999999, "T", "<DUP>", end=1000999, vcf_version="4.4")
+        dup = VCFCoordinate(CHR2, 999999, "T", "<DUP>", end=1000999)
+        assert babelfish.vcf_info(dup)["SVLEN"] == 1000
     with pytest.raises(ValueError, match="vcf_version"):
         Babelfish(hdp, "GRCh38", vcf_version="4")
 
 
-def test_vcf_coordinate_explicit_end():
-    vc = VCFCoordinate("6", 49949409, "GAA", "G")
+def test_vcf_coordinate_explicit_end(babelfish38):
+    vc = VCFCoordinate("NC_000006.12", 49949409, "GAA", "G")
     assert vc.end == 49949411
-    assert vc.info == {}
+    assert vc.svlen is None
+    assert babelfish38.vcf_info(vc) == {}
+    assert str(vc) == "NC_000006.12:49949409 GAA>G"
+    assert babelfish38.vcf_coordinate("6", 49949409, "GAA", "G") == vc
     with pytest.raises(ValueError, match="ends at 49949411"):
-        VCFCoordinate("6", 49949409, "GAA", "G", end=49949412)
+        VCFCoordinate("NC_000006.12", 49949409, "GAA", "G", end=49949412)
 
 
 def test_vcf_coordinate_as_symbolic_and_explicit(synthetic_babelfish):
@@ -334,29 +356,48 @@ def test_vcf_coordinate_as_symbolic_and_explicit(synthetic_babelfish):
     span = seq[position:end]
     explicit_symbolic = [
         (
-            VCFCoordinate("2", position, pad + span, pad),
-            VCFCoordinate("2", position, pad, "<DEL>", end),
+            VCFCoordinate(CHR2, position, pad + span, pad),
+            VCFCoordinate(CHR2, position, pad, "<DEL>", end),
         ),
         (
-            VCFCoordinate("2", position, pad, pad + span),
-            VCFCoordinate("2", position, pad, "<DUP>", end),
+            VCFCoordinate(CHR2, position, pad, pad + span),
+            VCFCoordinate(CHR2, position, pad, "<DUP>", end),
         ),
         (
-            VCFCoordinate("2", position + 1, span, reverse_complement(span)),
-            VCFCoordinate("2", position, pad, "<INV>", end),
+            VCFCoordinate(CHR2, position + 1, span, reverse_complement(span)),
+            VCFCoordinate(CHR2, position, pad, "<INV>", end),
         ),
     ]
     for explicit, symbolic in explicit_symbolic:
         assert synthetic_babelfish.vcf_coordinate_as_symbolic(explicit) == symbolic
         assert synthetic_babelfish.vcf_coordinate_as_explicit(symbolic) == explicit
+        # Already in the requested form
+        assert synthetic_babelfish.vcf_coordinate_as_symbolic(symbolic) == symbolic
+        assert synthetic_babelfish.vcf_coordinate_as_explicit(explicit) == explicit
     # Copy after the original - the padding base moves to before the original
-    copy_after = VCFCoordinate("2", end, seq[end - 1], seq[end - 1] + span)
+    copy_after = VCFCoordinate(CHR2, end, seq[end - 1], seq[end - 1] + span)
     assert synthetic_babelfish.vcf_coordinate_as_symbolic(copy_after) == VCFCoordinate(
-        "2", position, pad, "<DUP>", end
+        CHR2, position, pad, "<DUP>", end
     )
     # A multi-base ref isn't a dup, however long the insertion
-    delins = VCFCoordinate("2", position, seq[position - 1 : end], pad + "GATTACA" * 20)
+    delins = VCFCoordinate(CHR2, position, seq[position - 1 : end], pad + "GATTACA" * 20)
     assert synthetic_babelfish.vcf_coordinate_as_symbolic(delins) == delins
+    # Without symbolic_alt_min_length, a min_length is needed
+    babelfish = Babelfish(synthetic_babelfish.hdp, assembly_name="GRCh38")
+    with pytest.raises(ValueError, match="min_length"):
+        babelfish.vcf_coordinate_as_symbolic(delins)
+    assert babelfish.vcf_coordinate_as_symbolic(explicit_symbolic[0][0], min_length=50).is_symbolic
+
+
+def test_hgvs_to_vcf_small_inv_explicit(parser, synthetic_babelfish):
+    """An inv below symbolic_alt_min_length is explicit ref/alt, with no padding base"""
+    seq = synthetic_babelfish.hdp.seq
+    start, end = 101, 120
+    span = seq[start - 1 : end]
+    var_g = parser.parse(f"NC_000002.12:g.{start}_{end}inv")
+    expected = ("2", start, span, reverse_complement(span), "inv")
+    assert synthetic_babelfish.hgvs_to_vcf(var_g) == expected
+    assert synthetic_babelfish.vcf_to_g_hgvs(*expected[:4]).format() == var_g.format()
 
 
 def test_symbolic_alt_min_length_boundary(parser, synthetic_babelfish):
@@ -367,9 +408,9 @@ def test_symbolic_alt_min_length_boundary(parser, synthetic_babelfish):
     for length, is_symbolic in ((50, True), (49, False)):
         span = seq[position : position + length]
         explicit = [
-            VCFCoordinate("2", position, pad + span, pad),
-            VCFCoordinate("2", position, pad, pad + span),
-            VCFCoordinate("2", position + 1, span, reverse_complement(span)),
+            VCFCoordinate(CHR2, position, pad + span, pad),
+            VCFCoordinate(CHR2, position, pad, pad + span),
+            VCFCoordinate(CHR2, position + 1, span, reverse_complement(span)),
         ]
         for vc in explicit:
             assert synthetic_babelfish.vcf_coordinate_as_symbolic(vc).is_symbolic == is_symbolic
@@ -386,7 +427,9 @@ def test_large_delins_not_symbolic(parser, hdp):
     hgvs_string = f"NC_000011.9:g.{start}_{end}delinsT"
     assert babelfish.vcf_to_g_hgvs("11", start, ref, "T").format() == hgvs_string
     vc = babelfish.hgvs_to_vcf_coordinate(parser.parse(hgvs_string))
-    assert vc == VCFCoordinate("11", start, ref, "T")
+    assert vc == VCFCoordinate("NC_000011.9", start, ref, "T")
+
+
 def test_common_prefix_len_partial_full_empty():
     """Cover partial, full, and empty common prefixes for sequence strings."""
     # Partial

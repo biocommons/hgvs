@@ -5,8 +5,9 @@ Writing VCF rows, with large del/dup/inv as symbolic alleles::
     babelfish = Babelfish(hdp, assembly_name="GRCh38", symbolic_alt_min_length=50)
     for hgvs_string in ["NC_000017.11:g.43045712_43045713del", "NC_000017.11:g.43044295_43125483dup"]:
         vc = babelfish.hgvs_to_vcf_coordinate(parser.parse(hgvs_string))
-        info = ";".join(f"{k}={v}" for k, v in vc.info.items()) or "."
-        print("\t".join([vc.chrom, str(vc.position), hgvs_string, vc.ref, vc.alt, ".", ".", info]))
+        chrom = babelfish.vcf_chrom(vc)
+        info = ";".join(f"{k}={v}" for k, v in babelfish.vcf_info(vc).items()) or "."
+        print("\t".join([chrom, str(vc.position), hgvs_string, vc.ref, vc.alt, ".", ".", info]))
 
     17  43045711  NC_000017.11:g.43045712_43045713del  GTA  G      .  .  .
     17  43044294  NC_000017.11:g.43044295_43125483dup  G    <DUP>  .  .  SVTYPE=DUP;SVLEN=81189;END=43125483
@@ -16,11 +17,13 @@ and reading them back::
     # NC_000017.11:g.43044295_43125483dup
     babelfish.vcf_to_g_hgvs("17", 43044294, "G", "<DUP>", svlen=81189)
 
-The VCF header needs ##ALT lines for DEL/DUP/INV and ##INFO lines for SVTYPE, SVLEN and END.
-SVLEN follows vcf_version (default 4.3, where a deletion's SVLEN is negative).
+A VCFCoordinate holds the sequence accession, as the rest of hgvs does. Babelfish converts it to
+and from the VCF CHROM name: the chromosome name ("17") by default, or the accession itself with
+chrom_style="accession". The VCF header needs ##ALT lines for DEL/DUP/INV and ##INFO lines for
+SVTYPE, SVLEN and END. SVLEN follows vcf_version (default 4.3, where a deletion's SVLEN is negative).
 """
 
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, replace
 
 from bioutils.assemblies import make_ac_name_map, make_name_ac_map
 from bioutils.sequences import reverse_complement
@@ -45,6 +48,8 @@ SYMBOLIC_ALT_EDITS = {SYMBOLIC_DEL: NARefAlt, SYMBOLIC_DUP: Dup, SYMBOLIC_INV: I
 DEFAULT_NORMALIZE_MAX_LENGTH = 1_000_000
 # SVLEN of a deletion is negative up to VCF 4.3, and positive from 4.4
 DEFAULT_VCF_VERSION = "4.3"
+# VCF CHROM as the chromosome name ("17") or the sequence accession ("NC_000017.11")
+CHROM_STYLES = ("name", "accession")
 
 
 def _check_vcf_version(vcf_version):
@@ -59,20 +64,18 @@ def _check_vcf_version(vcf_version):
 
 @dataclass(frozen=True)
 class VCFCoordinate:
-    """A VCF record's CHROM, POS, REF, ALT and END (VCF INFO END - the last base affected).
+    """A VCF record's POS, REF, ALT and END (VCF INFO END - the last base affected) on a
+    sequence accession (ac) rather than a CHROM name, which Babelfish.vcf_chrom provides.
     END is derived for explicit alleles, and required for a symbolic allele (eg <DEL>), whose
-    ref is the preceding (padding) base. vcf_version only sets the sign of a deletion's SVLEN,
-    so isn't compared."""
+    ref is the preceding (padding) base."""
 
-    chrom: str
+    ac: str
     position: int
     ref: str
     alt: str
     end: int | None = None
-    vcf_version: str = field(default=DEFAULT_VCF_VERSION, compare=False)
 
     def __post_init__(self):
-        _check_vcf_version(self.vcf_version)
         if self.is_symbolic:
             if self.end is None:
                 msg = f"Symbolic allele {self.alt} requires end or svlen"
@@ -85,13 +88,13 @@ class VCFCoordinate:
             if self.end is None:
                 object.__setattr__(self, "end", end)  # frozen
             elif self.end != end:
-                msg = f"{self.chrom}:{self.position} {self.ref} ends at {end}, not {self.end}"
+                msg = f"{self.ac}:{self.position} {self.ref} ends at {end}, not {self.end}"
                 raise ValueError(msg)
 
     @classmethod
-    def from_svlen(cls, chrom, position, ref, alt, svlen):
+    def from_svlen(cls, ac, position, ref, alt, svlen):
         """Either sign of SVLEN, as a record doesn't say which VCF version it follows"""
-        return cls(chrom, position, ref, alt, end=position + abs(svlen))
+        return cls(ac, position, ref, alt, end=position + abs(svlen))
 
     @property
     def is_symbolic(self):
@@ -99,28 +102,19 @@ class VCFCoordinate:
 
     @property
     def svlen(self):
-        """SVLEN of a symbolic allele (negative for a <DEL> before VCF 4.4), otherwise None"""
+        """Length of a symbolic allele, otherwise None. Always positive: Babelfish.vcf_info
+        gives SVLEN with the sign of its vcf_version"""
         if not self.is_symbolic:
             return None
-        length = self.end - self.position
-        if self.alt.upper() == SYMBOLIC_DEL and _check_vcf_version(self.vcf_version) < (4, 4):
-            return -length
-        return length
-
-    @property
-    def info(self):
-        """VCF INFO fields a symbolic allele needs (SVTYPE, SVLEN, END), empty otherwise"""
-        if not self.is_symbolic:
-            return {}
-        return {"SVTYPE": self.alt.strip("<>"), "SVLEN": self.svlen, "END": self.end}
+        return self.end - self.position
 
     def as_tuple(self):
-        return self.chrom, self.position, self.ref, self.alt, self.end
+        return self.ac, self.position, self.ref, self.alt, self.end
 
     def format(self):
         if self.is_symbolic:
-            return f"{self.chrom}:{self.position}-{self.end} {self.alt}"
-        return f"{self.chrom}:{self.position} {self.ref}>{self.alt}"
+            return f"{self.ac}:{self.position}-{self.end} {self.alt}"
+        return f"{self.ac}:{self.position} {self.ref}>{self.alt}"
 
     def __str__(self):
         return self.format()
@@ -143,7 +137,9 @@ class Babelfish:
         assembly_name,
         symbolic_alt_min_length=None,
         normalize_max_length=None,
+        *,
         vcf_version=DEFAULT_VCF_VERSION,
+        chrom_style="name",
     ):
         """symbolic_alt_min_length: a del, dup or inv spanning at least this many bases is
         written to and read from VCF as a symbolic allele (<DEL>, <DUP>, <INV>), and smaller
@@ -156,10 +152,17 @@ class Babelfish:
         either. Must be at least symbolic_alt_min_length. Defaults to the larger of
         symbolic_alt_min_length and DEFAULT_NORMALIZE_MAX_LENGTH.
 
-        vcf_version: of VCFCoordinates returned, which sets the sign of a deletion's SVLEN
+        vcf_version: of VCF written, which sets the sign of a deletion's SVLEN from vcf_info
         (negative up to VCF 4.3, positive from 4.4). SVLEN of either sign is read.
+
+        chrom_style: VCF CHROM written by hgvs_to_vcf and vcf_chrom - "name" (the default) for
+        the chromosome name without a "chr" prefix (eg "17"), or "accession" for the sequence
+        accession (eg "NC_000017.11"). Either is read.
         """
         _check_vcf_version(vcf_version)
+        if chrom_style not in CHROM_STYLES:
+            msg = f"chrom_style must be one of {CHROM_STYLES}, not {chrom_style!r}"
+            raise ValueError(msg)
         if symbolic_alt_min_length is not None:
             if normalize_max_length is None:
                 normalize_max_length = max(symbolic_alt_min_length, DEFAULT_NORMALIZE_MAX_LENGTH)
@@ -173,6 +176,7 @@ class Babelfish:
         self.symbolic_alt_min_length = symbolic_alt_min_length
         self.normalize_max_length = normalize_max_length
         self.vcf_version = vcf_version
+        self.chrom_style = chrom_style
         self.hdp = hdp
         self.hn = hgvs.normalizer.Normalizer(
             hdp, cross_boundaries=False, shuffle_direction=5, validate=False
@@ -187,12 +191,12 @@ class Babelfish:
 
         converts a single hgvs allele to (chr, pos, ref, alt, type) using
         the given assembly_name. The chr name uses official chromosome
-        name (i.e., without a "chr" prefix).
+        name (i.e., without a "chr" prefix), unless chrom_style="accession".
 
         Symbolic alleles have no END here - use hgvs_to_vcf_coordinate
         """
         vc, typ = self._hgvs_to_vcf(var_g)
-        return vc.chrom, vc.position, vc.ref, vc.alt, typ
+        return self.vcf_chrom(vc), vc.position, vc.ref, vc.alt, typ
 
     def hgvs_to_vcf_coordinate(self, var_g):
         """**EXPERIMENTAL**
@@ -201,7 +205,32 @@ class Babelfish:
         symbolic_alt_min_length bases (see __init__) is returned as a symbolic allele.
         """
         vc, _ = self._hgvs_to_vcf(var_g)
-        return replace(vc, vcf_version=self.vcf_version)
+        return vc
+
+    def vcf_chrom(self, vc):
+        """VCF CHROM for a VCFCoordinate in this Babelfish's chrom_style (see __init__)"""
+        if self.chrom_style == "accession":
+            return vc.ac
+        return self.ac_to_name_map[vc.ac]
+
+    def vcf_info(self, vc):
+        """VCF INFO fields a symbolic allele needs (SVTYPE, SVLEN, END), empty otherwise.
+        A deletion's SVLEN is negative before vcf_version 4.4"""
+        if not vc.is_symbolic:
+            return {}
+        svlen = vc.svlen
+        if vc.alt.upper() == SYMBOLIC_DEL and _check_vcf_version(self.vcf_version) < (4, 4):
+            svlen = -svlen
+        return {"SVTYPE": vc.alt.strip("<>"), "SVLEN": svlen, "END": vc.end}
+
+    def vcf_coordinate(self, chrom, position, ref, alt, *, end=None, svlen=None):
+        """VCFCoordinate from a VCF record. chrom is a chromosome name or accession. Symbolic
+        alleles <DEL>, <DUP> and <INV> require end (VCF INFO END - the last base affected) or
+        svlen (VCF INFO SVLEN, of either sign)"""
+        ac = self.name_to_ac_map[chrom]
+        if svlen is not None and end is None:
+            return VCFCoordinate.from_svlen(ac, position, ref, alt, svlen)
+        return VCFCoordinate(ac, position, ref, alt, end=end)
 
     def _hgvs_to_vcf(self, var_g):
         """(VCFCoordinate, HGVS edit type)"""
@@ -215,12 +244,12 @@ class Babelfish:
         vleft = self.hn.normalize(var_g)
         if self._is_symbolic_length(self.symbolic_alt_length(vleft)):
             return self._hgvs_to_vcf_symbolic(vleft)
+        return self._hgvs_to_vcf_explicit(vleft)
 
+    def _hgvs_to_vcf_explicit(self, vleft):
+        """(VCFCoordinate, HGVS edit type) with explicit ref/alt, for a normalized variant"""
         # We are taking the inner interval, but plan on implementing INFO fields in issue #788
         start_i, end_i = get_start_end_interbase(vleft.posedit.pos, outer_confidence=False)
-
-        chrom = self.ac_to_name_map[vleft.ac]
-
         typ = vleft.posedit.edit.type
 
         if typ == "dup":
@@ -246,7 +275,7 @@ class Babelfish:
                 ref = vleft.posedit.edit.ref
                 if ref == alt:
                     alt = "."
-        return VCFCoordinate(chrom, start_i + 1, ref, alt), typ
+        return VCFCoordinate(vleft.ac, start_i + 1, ref, alt), typ
 
     @staticmethod
     def symbolic_alt_length(var_g):
@@ -272,18 +301,15 @@ class Babelfish:
 
     def _hgvs_to_vcf_symbolic(self, var_g):
         start_i, end_i = get_start_end_interbase(var_g.posedit.pos, outer_confidence=False)
-        chrom = self.ac_to_name_map[var_g.ac]
         typ = var_g.posedit.edit.type
         ref = self.hdp.get_seq(var_g.ac, start_i - 1, start_i)
-        return VCFCoordinate(chrom, start_i, ref, SYMBOLIC_ALTS[typ], end=end_i), typ
+        return VCFCoordinate(var_g.ac, start_i, ref, SYMBOLIC_ALTS[typ], end=end_i), typ
 
     def vcf_to_g_hgvs(self, chrom, position, ref, alt, *, end=None, svlen=None):
-        """Symbolic alleles <DEL>, <DUP> and <INV> require end (VCF INFO END - the last
-        base affected) or svlen (VCF INFO SVLEN). See vcf_coordinate_to_g_hgvs"""
-        if svlen is not None and end is None:
-            vc = VCFCoordinate.from_svlen(chrom, position, ref, alt, svlen)
-        else:
-            vc = VCFCoordinate(chrom, position, ref, alt, end=end)
+        """chrom is a chromosome name or accession. Symbolic alleles <DEL>, <DUP> and <INV>
+        require end (VCF INFO END - the last base affected) or svlen (VCF INFO SVLEN).
+        See vcf_coordinate_to_g_hgvs"""
+        vc = self.vcf_coordinate(chrom, position, ref, alt, end=end, svlen=svlen)
         return self.vcf_coordinate_to_g_hgvs(vc)
 
     def vcf_coordinate_to_g_hgvs(self, vc):
@@ -293,14 +319,14 @@ class Babelfish:
         variant has one HGVS form. A del, dup or inv of at least symbolic_alt_min_length is
         returned without its sequence.
         """
-        ac = self.name_to_ac_map[vc.chrom]
+        ac = vc.ac
         # VCF spec https://samtools.github.io/hts-specs/VCFv4.1.pdf
         # says for REF/ALT "Each base must be one of A,C,G,T,N (case insensitive)"
         vc = replace(vc, ref=vc.ref.upper(), alt=vc.alt.upper())
 
         if vc.is_symbolic:
             self._check_symbolic_alt(vc.alt)
-            if self.symbolic_alt_min_length is None or self._too_big_to_normalize(abs(vc.svlen)):
+            if self.symbolic_alt_min_length is None or self._too_big_to_normalize(vc.svlen):
                 return self._symbolic_g_hgvs(ac, vc.alt, vc.position + 1, vc.end)
             vc = self.vcf_coordinate_as_explicit(vc)
         elif self.normalize_max_length is not None:
@@ -355,29 +381,22 @@ class Babelfish:
 
     def vcf_coordinate_as_explicit(self, vc):
         """Explicit ref/alt for a symbolic <DEL>, <DUP> or <INV>, otherwise vc. Not normalized"""
-        return replace(self._as_explicit(vc), vcf_version=vc.vcf_version)
-
-    def vcf_coordinate_as_symbolic(self, vc, min_length=None):
-        """<DEL>, <DUP> or <INV> for an explicit del, dup or inv of at least min_length
-        (default symbolic_alt_min_length) bases, otherwise vc. Not normalized"""
-        return replace(self._as_symbolic(vc, min_length), vcf_version=vc.vcf_version)
-
-    def _as_explicit(self, vc):
         if not vc.is_symbolic:
             return vc
         alt = vc.alt.upper()
         self._check_symbolic_alt(alt)
-        ac = self.name_to_ac_map[vc.chrom]
-        seq = self.hdp.get_seq(ac, vc.position - 1, vc.end)  # padding base onwards
+        seq = self.hdp.get_seq(vc.ac, vc.position - 1, vc.end)  # padding base onwards
         if alt == SYMBOLIC_DEL:
-            return VCFCoordinate(vc.chrom, vc.position, seq, seq[0])
+            return VCFCoordinate(vc.ac, vc.position, seq, seq[0])
         if alt == SYMBOLIC_DUP:
-            return VCFCoordinate(vc.chrom, vc.position, seq[0], seq)
+            return VCFCoordinate(vc.ac, vc.position, seq[0], seq)
         # An explicit inversion has no padding base
         inverted = seq[1:]
-        return VCFCoordinate(vc.chrom, vc.position + 1, inverted, reverse_complement(inverted))
+        return VCFCoordinate(vc.ac, vc.position + 1, inverted, reverse_complement(inverted))
 
-    def _as_symbolic(self, vc, min_length):
+    def vcf_coordinate_as_symbolic(self, vc, min_length=None):
+        """<DEL>, <DUP> or <INV> for an explicit del, dup or inv of at least min_length
+        (default symbolic_alt_min_length) bases, otherwise vc. Not normalized"""
         if min_length is None:
             min_length = self.symbolic_alt_min_length
         if min_length is None:
@@ -386,35 +405,32 @@ class Babelfish:
         if vc.is_symbolic:
             return vc
 
-        chrom, position = vc.chrom, vc.position
+        ac, position = vc.ac, vc.position
         ref, alt = vc.ref.upper(), vc.alt.upper()
         if len(alt) == 1 and len(ref) > min_length and ref[0] == alt:
-            return VCFCoordinate(chrom, position, alt, SYMBOLIC_DEL, end=position + len(ref) - 1)
+            return VCFCoordinate(ac, position, alt, SYMBOLIC_DEL, end=position + len(ref) - 1)
 
-        ac = self.name_to_ac_map[chrom]
         if len(ref) == 1 and len(alt) > min_length and alt[0] == ref:
-            return self._insertion_as_symbolic_dup(ac, vc) or vc
+            return self._insertion_as_symbolic_dup(vc) or vc
 
         if len(ref) == len(alt) >= min_length and ref == reverse_complement(alt):
             padding = self.hdp.get_seq(ac, position - 2, position - 1)
             return VCFCoordinate(
-                chrom, position - 1, padding, SYMBOLIC_INV, end=position + len(ref) - 1
+                ac, position - 1, padding, SYMBOLIC_INV, end=position + len(ref) - 1
             )
         return vc
 
-    def _insertion_as_symbolic_dup(self, ac, vc):
+    def _insertion_as_symbolic_dup(self, vc):
         """<DUP> if the inserted sequence duplicates the bases either side, otherwise None"""
-        chrom, position = vc.chrom, vc.position
+        ac, position = vc.ac, vc.position
         inserted = vc.alt[1:].upper()
         length = len(inserted)
         # Left aligned, the inserted copy precedes the bases it duplicates
         if self.hdp.get_seq(ac, position, position + length) == inserted:
-            return VCFCoordinate(
-                chrom, position, vc.ref.upper(), SYMBOLIC_DUP, end=position + length
-            )
+            return VCFCoordinate(ac, position, vc.ref.upper(), SYMBOLIC_DUP, end=position + length)
         padded = self.hdp.get_seq(ac, position - length - 1, position)
         if padded[1:] == inserted:
-            return VCFCoordinate(chrom, position - length, padded[0], SYMBOLIC_DUP, end=position)
+            return VCFCoordinate(ac, position - length, padded[0], SYMBOLIC_DUP, end=position)
         return None
 
     @staticmethod
