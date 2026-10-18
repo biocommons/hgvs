@@ -376,37 +376,37 @@ class AltSeqBuilder:
         only on the bases that are actually translated. Without it, leftover
         inserted bases would combine with reference bases into an arbitrary
         codon and decide between an ins and a delins description."""
-        stop_end, frame_offset = self._find_insert_stop(seq, cds_start, insert_seq_idx, insert_len)
+        stop_end = self._find_insert_stop(seq, cds_start, insert_seq_idx, insert_len)
         if stop_end is None:
             return None
-        through_stop = seq[insert_seq_idx:stop_end]
-        start_partial_bases = seq[insert_seq_idx - frame_offset : insert_seq_idx]
-        return through_stop + start_partial_bases
+        frame_offset = self._frame_offset(cds_start, insert_seq_idx)
+        return seq[insert_seq_idx:stop_end] + seq[insert_seq_idx - frame_offset : insert_seq_idx]
 
-    def _find_insert_stop(
-        self, seq, cds_start, insert_seq_idx, insert_len
-    ) -> tuple[int | None, int | None]:
+    def _find_insert_stop(self, seq, cds_start, insert_seq_idx, insert_len) -> int | None:
         """If translating the insert_len bases inserted into seq at
         insert_seq_idx in the CDS reading frame yields a stop codon, return the
-        sequence index just past that stop and the frame_offset of the
-        insertion point (0 to 2), else (None, None).
+        sequence index just past that stop, else None.
 
         A partial codon at the end of the insertion is completed with the
         reference bases that follow it in seq so a stop that straddles the end
-        of the insertion is found. In that case stop_end is past the end of the
-        inserted bases."""
-        frame_offset = (insert_seq_idx - (cds_start - 1)) % 3
+        of the insertion is found. In that case the returned index is past the
+        end of the inserted bases."""
+        frame_offset = self._frame_offset(cds_start, insert_seq_idx)
         insert_end = insert_seq_idx + insert_len
-        end_partial_len = (frame_offset + insert_len) % 3
-        end_padding_len = 3 - end_partial_len if end_partial_len else 0
+        end_frame_offset = self._frame_offset(cds_start, insert_end)
+        end_padding_len = 3 - end_frame_offset if end_frame_offset else 0
         framed = ("N" * frame_offset) + "".join(seq[insert_seq_idx : insert_end + end_padding_len])
         ins_aa = translate_cds(
             framed, full_codons=False, ter_symbol="X", translation_table=self._translation_table
         )
         stop_aa_idx = ins_aa.find("*")
         if stop_aa_idx == -1:
-            return None, None
-        return insert_seq_idx + (stop_aa_idx + 1) * 3 - frame_offset, frame_offset
+            return None
+        return insert_seq_idx + (stop_aa_idx + 1) * 3 - frame_offset
+
+    def _frame_offset(self, cds_start, seq_idx) -> int:
+        """Position of seq_idx within its codon in the CDS reading frame (0 to 2)."""
+        return (seq_idx - (cds_start - 1)) % 3
 
     def _setup_incorporate(self):
         """Helper to setup incorporate functions
