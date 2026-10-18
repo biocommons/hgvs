@@ -198,13 +198,8 @@ class AltSeqToHgvsp:
         if insertion and insertion.find("*") == 0:  # stop codon at variant position
             is_sub = True
             alt = "*"
-            if start == len(self._alt_seq) and not deletion:
-                # insertion of stop codon at end of sequence, a special case of "stop_retained"
-                aa_start = aa_end = AAPosition(base=start, aa="*")
-                ref = "*"
-            else:
-                aa_start = aa_end = AAPosition(base=start, aa=deletion[0])
-                ref = ""
+            aa_start = aa_end = AAPosition(base=start, aa=deletion[0])
+            ref = ""
 
         elif start == len(self._ref_seq):  # extension
             # don't include the former stop codon
