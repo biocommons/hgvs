@@ -48,6 +48,15 @@ import pytest
     ('NM_024529.5:c.1595_1596insGAT', 'NP_078805.3:p.(Ter532TrpextTer30)'),
     # Stop ends exactly at the end of the insertion, giving a nonsense variant
     ('NM_000159.4:c.1073_1074insTTAG', 'NP_000150.1:p.(Gln359Ter)'),
+    # Stop straddles the end of the insertion, completed by one reference base (TA|G)
+    ('NM_004985.5:c.24_25insGCCTA', 'NP_004976.2:p.(Val8_Val9insAlaTer)'),
+    ('NM_004985.5:c.24_25insGCCTAG', 'NP_004976.2:p.(Val8_Val9insAlaTer)'),
+    # Stop straddles the end of the insertion, completed by two reference bases (T|GA)
+    ('NM_004985.5:c.6_7insGCCT', 'NP_004976.2:p.(Thr2_Glu3insAlaTer)'),
+    ('NM_004985.5:c.6_7insGCCTGA', 'NP_004976.2:p.(Thr2_Glu3insAlaTer)'),
+    # Dup whose stop straddles the end of the duplicated bases (TGG TA|G)
+    ('NM_004985.5:c.20_24dup', 'NP_004976.2:p.(Val8_Val9insTrpTer)'),
+    ('NM_004985.5:c.24_25insTGGTA', 'NP_004976.2:p.(Val8_Val9insTrpTer)'),
 ])
 def test_c_to_p(var_c_str, var_p_str, parser, am37):
     var_c = parser.parse(var_c_str)

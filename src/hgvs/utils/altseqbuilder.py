@@ -277,12 +277,15 @@ class AltSeqBuilder:
         if alt and ref is None:
             insert_seq_idx = start + 1
             if insert_seq_idx >= cds_start - 1:
-                stop_end, frame_offset = self._find_insert_stop(cds_start, alt, insert_seq_idx)
+                stop_end, frame_offset = self._find_insert_stop(seq, cds_start, alt, insert_seq_idx)
                 if stop_end is not None:
                     is_frameshift = False
-                    insert_end = insert_seq_idx + len(alt)
-                    seq[stop_end:insert_end] = seq[insert_seq_idx - frame_offset : insert_seq_idx]
-                    cds_stop += frame_offset - (insert_end - stop_end)
+                    through_stop = seq[insert_seq_idx:stop_end]
+                    start_partial_bases = seq[insert_seq_idx - frame_offset : insert_seq_idx]
+                    seq[insert_seq_idx : insert_seq_idx + len(alt)] = (
+                        through_stop + start_partial_bases
+                    )
+                    cds_stop += len(through_stop) + frame_offset - len(alt)
         # use max of mod 3 value and 1 (in event that indel starts in the 5'utr range)
         variant_start_aa = max(math.ceil(self._var_c.posedit.pos.start.base / 3.0), 1)
 
@@ -313,12 +316,13 @@ class AltSeqBuilder:
 
         is_frameshift = len(dup_seq) % 3 != 0
         if end >= cds_start - 1:
-            stop_end, frame_offset = self._find_insert_stop(cds_start, dup_seq, end)
+            stop_end, frame_offset = self._find_insert_stop(seq, cds_start, dup_seq, end)
             if stop_end is not None:
                 is_frameshift = False
-                insert_end = end + len(dup_seq)
-                seq[stop_end:insert_end] = seq[end - frame_offset : end]
-                cds_stop += frame_offset - (insert_end - stop_end)
+                through_stop = seq[end:stop_end]
+                start_partial_bases = seq[end - frame_offset : end]
+                seq[end : end + len(dup_seq)] = through_stop + start_partial_bases
+                cds_stop += len(through_stop) + frame_offset - len(dup_seq)
         # a dup ending on the last base of the stop codon is attributed to the stop codon,
         # matching the equivalent insertion, rather than to a residue past the C-terminus
         n_codons = (self._transcript_data.cds_stop - self._transcript_data.cds_start + 1) // 3
@@ -362,22 +366,38 @@ class AltSeqBuilder:
         msg = f"hgvs c to p conversion does not support {self._var_c} type: repeats"
         raise NotImplementedError(msg)
 
-    def _find_insert_stop(self, cds_start, insert_seq, insert_seq_idx) -> tuple[int | None, int | None]:
+    def _find_insert_stop(
+        self, seq, cds_start, insert_seq, insert_seq_idx
+    ) -> tuple[int | None, int | None]:
         """If translating the inserted bases in the CDS reading frame yields a
         stop codon, return the sequence index just past that stop and the
-        frame_offset of the insertion point (0 to 2), else (None, None).
+        frame_offset of the insertion point (0 to 2), else (None, None). seq
+        must contain the inserted bases at insert_seq_idx.
 
-        Translation halts at the inserted stop, so the bases after it are
-        never read. The caller must replace the tail of the insertion (from
-        stop_end to the end of the inserted bases) with the frame_offset
-        reference bases immediately preceding the insertion point. This keeps
-        the downstream reference in frame and rebuilds the split codon
-        unchanged right after the stop, so the protein description depends
+        A partial codon at the end of the insertion is completed with the
+        reference bases that follow it in seq so a stop that straddles the end
+        of the insertion is found. In that case stop_end is past the end of the
+        inserted bases.
+
+        Translation halts at the inserted stop, so the bases after it are never
+        read. The caller must replace the inserted bases with the bases from
+        insert_seq_idx through the stop (seq[insert_seq_idx:stop_end], which
+        includes any reference bases that completed it), followed by the
+        frame_offset reference bases immediately preceding the insertion point.
+        This keeps the downstream reference in frame and rebuilds the split
+        codon unchanged right after the stop, so the protein description depends
         only on the bases that are actually translated. Without it, leftover
         inserted bases would combine with reference bases into an arbitrary
         codon and decide between an ins and a delins description."""
         frame_offset = (insert_seq_idx - (cds_start - 1)) % 3
-        framed = ("N" * frame_offset) + "".join(insert_seq)
+        insert_end = insert_seq_idx + len(insert_seq)
+        end_partial_len = (frame_offset + len(insert_seq)) % 3
+        end_padding_len = 3 - end_partial_len if end_partial_len else 0
+        framed = (
+            ("N" * frame_offset)
+            + "".join(insert_seq)
+            + "".join(seq[insert_end : insert_end + end_padding_len])
+        )
         ins_aa = translate_cds(
             framed, full_codons=False, ter_symbol="X", translation_table=self._translation_table
         )
