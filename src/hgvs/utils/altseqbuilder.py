@@ -319,7 +319,10 @@ class AltSeqBuilder:
                 insert_end = end + len(dup_seq)
                 seq[stop_end:insert_end] = seq[end - frame_offset : end]
                 cds_stop += frame_offset - (insert_end - stop_end)
-        variant_start_aa = math.ceil((self._var_c.posedit.pos.end.base + 1) / 3.0)
+        # a dup ending on the last base of the stop codon is attributed to the stop codon,
+        # matching the equivalent insertion, rather than to a residue past the C-terminus
+        n_codons = (self._transcript_data.cds_stop - self._transcript_data.cds_start + 1) // 3
+        variant_start_aa = min(math.ceil((self._var_c.posedit.pos.end.base + 1) / 3.0), n_codons)
 
         alt_data = AltTranscriptData(
             seq,

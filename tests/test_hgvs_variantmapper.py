@@ -114,7 +114,7 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
         hgvs_c = "NM_001051.2:c.1257dupG"
         var_c = self.hp.parse_hgvs_variant(hgvs_c)
         var_p = self.vm.c_to_p(var_c)
-        self.assertEqual(str(var_p), "NP_001042.1:p.(=)")
+        self.assertEqual(str(var_p), "NP_001042.1:p.(Ter419Ter)")
 
     def test_map_of_c_out_of_reference_bound(self):
         hgvs_c = "NM_000249.3:c.-73960_*46597del"

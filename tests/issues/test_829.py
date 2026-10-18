@@ -35,6 +35,11 @@ import pytest
     ('NM_024529.5:c.1594_1595insAAT', 'NP_078805.3:p.(Ter532Ter)'),
     # Dup of the stop codon, equivalent to c.1593_1594insTGA
     ('NM_024529.5:c.1594_1596dup', 'NP_078805.3:p.(Ter532Ter)'),
+    # Dups ending on the last stop base, equivalent to c.1594_1595insGA and c.1595_1596insA
+    ('NM_024529.5:c.1595_1596dup', 'NP_078805.3:p.(Ter532Ter)'),
+    ('NM_024529.5:c.1596dup', 'NP_078805.3:p.(Ter532Ter)'),
+    ('NM_024529.5:c.1594_1595insGA', 'NP_078805.3:p.(Ter532Ter)'),
+    ('NM_024529.5:c.1595_1596insA', 'NP_078805.3:p.(Ter532Ter)'),
     # Stop retained by an insertion after the first stop base (already correct before this fix)
     ('NM_024529.5:c.1595_1596insAGT', 'NP_078805.3:p.(Ter532Ter)'),
     # Residue inserted before a rebuilt stop is an extension, not stop-retained
