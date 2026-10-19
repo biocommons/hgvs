@@ -185,6 +185,8 @@ ext = 'ext' (aa13_ext | -> (None, None)):(aat, n) -> (aat, n)
 aa13_fs = term13 fsext_offset:n -> n
 aa13_ext = term13:aat fsext_offset:n -> (aat, n)
          | (aa13 | (-> None)):aat nnum:n -> (aat, n)
+         | aat13_seq:aat nnum:n -> (aat, n)
+         | aat13_seq:aat num:n -> (aat, n)
 fsext_offset = num|'?'| (-> None)
 
 # sequences of NA/AA

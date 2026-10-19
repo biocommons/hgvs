@@ -23,7 +23,7 @@ The following variables are defined:
 * am38, projector, hgvs_assembly_mapper_38 -- GRCh38 Assembly Mapper instances
 * hn, normalizer, hgvs_normalizer -- Normalizer instance
 * hv, validator, hgvs_validator) -- Validator instance
-* pretty -- PrettyPrint instance
+* pretty38 -- PrettyPrint (w/am38) display() function
 
 The following functions are available:
   * parse, normalize, validate
@@ -42,11 +42,31 @@ and use these variables/variable names whenever possible.
 def shell():
     logging.basicConfig(level=os.environ.get("HGVS_LOGGING_LEVEL", logging.WARNING))
 
-    from hgvs.easy import (  # noqa: F401; instances; functionalized methods
+    from hgvs.easy import (
         __version__,
+        am37,  # noqa: F401
+        am38,
         hdp,
+        hgvs_assembly_mapper_37,  # noqa: F401
+        hgvs_assembly_mapper_38,  # noqa: F401
+        hgvs_normalizer,  # noqa: F401
+        hgvs_parser,  # noqa: F401
+        hgvs_validator,  # noqa: F401
+        hgvs_variant_mapper,  # noqa: F401
+        hn,  # noqa: F401
+        hp,  # noqa: F401
+        hv,  # noqa: F401
+        normalizer,  # noqa: F401
+        parser,  # noqa: F401
+        projector,  # noqa: F401
+        validator,  # noqa: F401
+        variant_mapper,  # noqa: F401
+        vm,  # noqa: F401
     )
-    from hgvs.utils.context import variant_context_w_alignment  # noqa
+    from hgvs.pretty.prettyprint import PrettyPrint
+    from hgvs.utils.context import variant_context_w_alignment  # noqa: F401
+
+    pretty38 = PrettyPrint(hdp, am38).display  # noqa: F841
 
     IPython.embed(
         header=header_string.format(
