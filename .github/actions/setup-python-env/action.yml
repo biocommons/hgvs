@@ -22,6 +22,7 @@ runs:
       uses: astral-sh/setup-uv@v6
       with:
         version: ${{ inputs.uv-version }}
+        python-version: ${{ inputs.python-version }}
         enable-cache: 'true'
         cache-suffix: ${{ matrix.python-version }}
 

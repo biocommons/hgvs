@@ -1,6 +1,6 @@
 [build-system]
 build-backend = "setuptools.build_meta"
-requires = ["setuptools >= 70.1", "setuptools_scm[toml]>=8.1,<11.0"]
+requires = ["setuptools ~= 84.0.0", "setuptools_scm[toml] ~= 10.3.4"]
 
 [dependency-groups]
 dev = [
@@ -32,6 +32,7 @@ authors = [
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
@@ -77,6 +78,7 @@ align = ["uta-align~=0.3"]
 "hgvs-shell" = "hgvs.shell:shell"
 
 [project.urls]
+Changelog = "https://github.com/biocommons/hgvs/releases"
 Documentation = "https://hgvs.readthedocs.io/"
 Homepage = "https://github.com/biocommons/hgvs/"
 Issues = "https://github.com/biocommons/hgvs/issues/"
@@ -134,12 +136,10 @@ mkdocs = "mkdocs"
 mkdocs-material = "mkdocs_material"
 mkdocstrings = "mkdocstrings"
 mypy = "mypy"
-pre-commit = "pre_commit"
 pytest = "pytest"
 pytest-cov = "pytest_cov"
 pyyaml = "yaml"
 ruff = "ruff"
-tox-uv = "tox_uv"
 ty = "ty"
 
 [tool.pytest.ini_options]
@@ -168,10 +168,9 @@ testpaths = ["tests"]
 
 [tool.ruff]
 extend-exclude = ["src/hgvs/parsers/generated"]
-fix = true
 line-length = 100
 src = ["src", "tests"]
-target-version = "py313"
+target-version = "py314"
 
 [tool.ruff.format]
 docstring-code-format = true
