@@ -381,8 +381,26 @@ class AAExt(Edit):
         p_3_letter, p_term_asterisk, p_init_met = self._format_config_aa(conf)
 
         st_alt = self.alt or ""
-        st_aaterm = self.aaterm or ""
         st_length = self.length or ""
+
+        # HGVS nomenclature spec 21.1.3 (protein extension):
+        # * N-terminal extensions are described as "Met1ext-5": aaterm is not
+        #   part of the syntax (this supersedes the legacy "Met1extMet-5"
+        #   form), so it is never embedded in the description.
+        # * C-terminal extensions are described as "Ter110GlnextTer17", i.e.
+        #   {aa replacing the stop codon}extTer{extension length}.  A
+        #   multi-residue aaterm (a tail sequence such as "LG*") is therefore
+        #   reduced to its first residue (the aa replacing the stop codon,
+        #   used when alt is unset) and its last residue (the new terminator).
+        if isinstance(self.length, int) and self.length < 0:
+            st_aaterm = ""
+        else:
+            st_aaterm = self.aaterm or ""
+            if len(st_aaterm) > 1:
+                if not st_alt:
+                    st_alt = st_aaterm[0]
+                st_aaterm = st_aaterm[-1]
+
         if p_3_letter:
             st_alt = aa1_to_aa3(st_alt)
             st_aaterm = aa1_to_aa3(st_aaterm)
