@@ -187,6 +187,22 @@ class AARefAlt(Edit):
         self.ref = aa_to_aa1(self.ref)
         self.alt = aa_to_aa1(self.alt)
 
+    @property
+    def ref_n(self):
+        """
+        returns the number of amino acids in `ref`, or None if `ref` is unspecified.
+
+        Unlike `NARefAlt.ref_n`, a numeric `ref` is not supported: protein syntax
+        has no counted deletion (e.g. `del5`), so `ref` is always a sequence.
+
+        >>> AARefAlt("KLM").ref_n
+        3
+        >>> AARefAlt("").ref_n
+        >>> AARefAlt(None).ref_n
+
+        """
+        return len(self.ref) if self.ref else None
+
     def format(self, conf=None):
         if self.ref is None and self.alt is None:
             # raise HGVSError("RefAlt: ref and alt sequences are both undefined")
@@ -365,8 +381,26 @@ class AAExt(Edit):
         p_3_letter, p_term_asterisk, p_init_met = self._format_config_aa(conf)
 
         st_alt = self.alt or ""
-        st_aaterm = self.aaterm or ""
         st_length = self.length or ""
+
+        # HGVS nomenclature spec 21.1.3 (protein extension):
+        # * N-terminal extensions are described as "Met1ext-5": aaterm is not
+        #   part of the syntax (this supersedes the legacy "Met1extMet-5"
+        #   form), so it is never embedded in the description.
+        # * C-terminal extensions are described as "Ter110GlnextTer17", i.e.
+        #   {aa replacing the stop codon}extTer{extension length}.  A
+        #   multi-residue aaterm (a tail sequence such as "LG*") is therefore
+        #   reduced to its first residue (the aa replacing the stop codon,
+        #   used when alt is unset) and its last residue (the new terminator).
+        if isinstance(self.length, int) and self.length < 0:
+            st_aaterm = ""
+        else:
+            st_aaterm = self.aaterm or ""
+            if len(st_aaterm) > 1:
+                if not st_alt:
+                    st_alt = st_aaterm[0]
+                st_aaterm = st_aaterm[-1]
+
         if p_3_letter:
             st_alt = aa1_to_aa3(st_alt)
             st_aaterm = aa1_to_aa3(st_aaterm)

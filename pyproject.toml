@@ -33,9 +33,11 @@ classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.15",
   "Programming Language :: Python",
   "Topic :: Scientific/Engineering :: Bio-Informatics",
   "Topic :: Scientific/Engineering :: Medical Science Apps.",
@@ -44,7 +46,7 @@ classifiers = [
 dependencies = [
   "attrs >= 17.4.0", # https://github.com/biocommons/hgvs/issues/473
   "biocommons.seqrepo >= 0.6.10",
-  "bioutils >= 0.4.0,<1.0",
+  "bioutils >= 0.5.0,<1.0",
   "importlib_resources",
   "ipython",
   "parsley",
@@ -66,7 +68,7 @@ keywords = [
 license = "Apache-2.0"
 name = "hgvs"
 readme = "README.md"
-requires-python = ">=3.11, <3.14"  # as-of 2025-11-02, PyO3 fails to build pydantic on 3.14
+requires-python = ">=3.11"
 
 [project.optional-dependencies]
 align = ["uta-align~=0.3"]
