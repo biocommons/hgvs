@@ -4,25 +4,30 @@ requires = ["setuptools ~= 84.0.0", "setuptools_scm[toml] ~= 10.3.4"]
 
 [dependency-groups]
 dev = [
-  "deptry>=0.23",
-  "ipython",
-  "jupyter",
-  "mkdocs-awesome-nav>=3.1.2",
-  "mkdocs-material>=9.6",
-  "mkdocs>=1.6",
-  "mkdocstrings[python]>=0.30",
-  "mypy>=1.17",
-  "pre-commit>=3.8",
-  "pytest-cov>=4.1",
-  "pytest-recording",
-  "pytest>=7.4,<10.0",
-  "ruff>=0.12",
+  # code quality & formatting
+  "deptry>=0.25.1",
+  "mypy>=2.4.0",
+  "nox>=2026.8.17",
+  "prek>=0.5.5",
+  "ruff>=0.17.0",
+  "toml-sort>=0.25.0",
+  "uv-bump>=0.6.0",
+
+  # testing
+  "pytest>=9.1.1",
+  "pytest-cov>=7.1.0",
+  "pytest-recording>=0.14.0",
+  "tox-uv>=1.37.0",
+  "vcrpy>=8.3.0",
+
+  # documentation
   "sphinx",
   "sphinx_rtd_theme",
   "sphinxcontrib-fulltoc >= 1.1",
-  "toml-sort",
-  "tox-uv>=1.28",
-  "vcrpy",
+
+  # misc dev tools
+  "ipython>=9.17.1",
+  "jupyter>=1.1.1",
 ]
 
 [project]
@@ -44,6 +49,7 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Medical Science Apps.",
   "Topic :: Software Development :: Libraries :: Python Modules"
 ]
+# mandatory runtime dependencies only
 dependencies = [
   "attrs >= 17.4.0", # https://github.com/biocommons/hgvs/issues/473
   "biocommons.seqrepo >= 0.6.10",
@@ -72,6 +78,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 
 [project.optional-dependencies]
+# optional runtime dependencies only
 align = ["uta-align~=0.3"]
 
 [project.scripts]
