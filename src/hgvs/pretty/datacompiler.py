@@ -75,18 +75,14 @@ class DataCompiler:
         )
 
     def _get_start_end(self, var):
-        if isinstance(var.posedit.pos, hgvs.location.BaseOffsetInterval):
-            s = var.posedit.pos.start
-        elif isinstance(var.posedit.pos, hgvs.location.Interval):
+        if isinstance(var.posedit.pos.start, hgvs.location.Interval):
             s = var.posedit.pos.start.start
             if not s.base:
                 s = var.posedit.pos.start.end
         else:
             s = var.posedit.pos.start
 
-        if isinstance(var.posedit.pos.end, hgvs.location.BaseOffsetPosition):
-            e = var.posedit.pos.end
-        elif isinstance(var.posedit.pos.end, hgvs.location.Interval):
+        if isinstance(var.posedit.pos.end, hgvs.location.Interval):
             e = var.posedit.pos.end.end
             if not e.base:
                 e = var.posedit.pos.end.start
@@ -131,11 +127,11 @@ class DataCompiler:
                 ref = sv.posedit.edit.ref
 
         elif sv.posedit.edit.type == "dup":
-            start, end = self._get_start_end(sv)
-            # start = sv.posedit.pos.start.base - 1
-            # end = sv.posedit.pos.end.base
-            ref = self.config.hdp.get_seq(sv.ac, start.base - 1, end.base)
+            dup_start, dup_end = self._get_start_end(sv)
+            ref = self.config.hdp.get_seq(sv.ac, dup_start.base - 1, dup_end.base)
             alt = ref + ref
+            start = dup_start.base - 1
+            end = dup_end.base
 
         else:
             msg = f"HGVS variant type {sv.posedit.edit.type} is unsupported"
@@ -441,7 +437,7 @@ class DataCompiler:
         pdata.cigar_ref = "D"
         pdata.tx = tx_seq[pdata.n_pos]
 
-        n_interval = hgvs.location.Interval(
+        n_interval = hgvs.location.BaseOffsetInterval(
             start=hgvs.location.BaseOffsetPosition(base=pdata.n_pos, offset=0),
             end=hgvs.location.BaseOffsetPosition(base=pdata.n_pos, offset=0),
         )
