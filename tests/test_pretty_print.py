@@ -9,8 +9,9 @@ import hgvs.location
 import hgvs.parsers
 from hgvs.assemblymapper import AssemblyMapper
 from hgvs.pretty.datacompiler import DataCompiler
-from hgvs.pretty.models import PrettyConfig
+from hgvs.pretty.models import PositionDetail, PrettyConfig
 from hgvs.pretty.prettyprint import PrettyPrint
+from hgvs.utils.reftranscriptdata import RefTranscriptData
 from support import CACHE
 
 
@@ -78,6 +79,58 @@ class Test_DataCompilerDup(unittest.TestCase):
 
         s, e = self._get_start_end("NC_000007.13:g.36561660_(36561665_?)dup")
         self.assertEqual((s.base, e.base), (36561660, 36561665))
+
+
+@pytest.mark.quick
+class Test_DataCompilerAlignmentGap(unittest.TestCase):
+    """Offline regression test for DataCompiler._backfill_gap_in_ref()
+    (biocommons/hgvs#881): transcript bases with no genomic counterpart
+    used to be described with a plain hgvs.location.Interval of
+    BaseOffsetPositions instead of a BaseOffsetInterval, which
+    AlignmentMapper.n_to_c cannot unwrap, so displaying a variant near an
+    alignment gap crashed.
+
+    The full-display version of this check lives in
+    Test_SimplePosition.test_intronic_offset_near_alignment_gap, but it is
+    skipped because PrettyPrint.display() fetches the whole chromosome
+    sequence (hundreds of MB in the test cache). Calling the backfill
+    helper directly needs only transcript-level data.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.hp = hgvs.parsers.Parser()
+        cls.hdp = hgvs.dataproviders.uta.connect(
+            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
+        )
+        cls.am37 = AssemblyMapper(cls.hdp, assembly_name="GRCh37")
+
+    def test_backfill_gap_in_ref(self):
+        # In the splign alignment of NM_000682.6 to NC_000002.11 (minus
+        # strand), g.96780997 maps to c.901 and g.96780998 to c.891: the
+        # nine transcript bases c.892_900 (n.988_996) have no genomic
+        # counterpart, so DataCompiler.data() backfills them one by one.
+        var_c = self.hp.parse("NM_000682.6:c.901+5G>A")
+        mapper = self.am37._fetch_AlignmentMapper(var_c.ac, "NC_000002.11", "splign")
+        self.assertLess(mapper.strand, 0)
+        tx_seq = self.hdp.get_seq(var_c.ac)
+        reference_data = RefTranscriptData(self.hdp, var_c.ac, None)
+
+        config = PrettyConfig(hdp=self.hdp, assembly_mapper=self.am37)
+        dc = DataCompiler(config=config)
+        pdata = PositionDetail()
+
+        dc._backfill_gap_in_ref(
+            var_c, tx_seq, mapper, reference_data, pdata, "=", prev_c_pos=901, prev_n_pos=997
+        )
+
+        self.assertIsInstance(pdata.c_interval, hgvs.location.BaseOffsetInterval)
+        self.assertEqual((pdata.c_pos, pdata.c_offset, pdata.n_pos), (900, 0, 996))
+        self.assertEqual(pdata.cigar_ref, "D")
+        self.assertIsNone(pdata.chromosome_pos)
+        self.assertIsNone(pdata.ref)
+        self.assertEqual(pdata.tx, tx_seq[995])
+        self.assertIsNotNone(pdata.protein_data)
 
 
 @pytest.mark.skip(
