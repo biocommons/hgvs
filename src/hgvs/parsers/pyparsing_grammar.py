@@ -190,6 +190,15 @@ class HGVSGrammar:
             lambda t: (t[0], t[1])
         ) | (
             (self.aa13 | pp.Empty().add_parse_action(pp.replace_with(None))) + self.nnum
+        ).add_parse_action(lambda t: (t[0], t[1])) | (
+            # legacy multi-residue aaterm tails (as emitted by older
+            # formatters), e.g. "extLeuGlyMet-2" or "extLG*17"; reduced to
+            # spec slots on format, mirroring AAExt.format().  The C-terminal
+            # form requires an explicit numeric length, as the tail is
+            # meaningless without one (bare "extGlyTrp" remains invalid).
+            self.aat13_seq + self.nnum
+        ).add_parse_action(lambda t: (t[0], t[1])) | (
+            self.aat13_seq + self.num
         ).add_parse_action(lambda t: (t[0], t[1]))
 
         self.ext = (

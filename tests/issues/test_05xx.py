@@ -41,3 +41,14 @@ class Test_Issues(unittest.TestCase):
         var_c = self.hp.parse_hgvs_variant(hgvs)
         var_p = self.am38.c_to_p(var_c)
         assert str(var_p) == "NP_001628.1:p.(Gln2Ter)"
+
+    def test_573(self):
+        """https://github.com/biocommons/hgvs/issues/573"""
+
+        # Validating a protein deletion raised AttributeError: 'AARefAlt' object
+        # has no attribute 'ref_n'. The parser leaves ref empty for p. del and
+        # delins, so the deletion length is unspecified and the length check
+        # must be skipped rather than fail.
+        for hgvs_p in ("NP_001087241.1:p.K550_E554del", "NP_001087241.1:p.K550_E554delinsR"):
+            var_p = self.hp.parse_hgvs_variant(hgvs_p)
+            assert self.hv.validate(var_p)

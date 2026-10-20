@@ -6,6 +6,8 @@ https://github.com/bioinformed/vgraph
 
 from collections import namedtuple
 
+from bioutils.normalize import roll_left, roll_right
+
 
 def trim_common_suffixes(strs, min_len=0):
     """
@@ -49,9 +51,19 @@ def trim_common_prefixes(strs, min_len=0):
     return trimmed, strs
 
 
-def normalize_alleles_left(ref, start, stop, alleles, bound, ref_step, shuffle=True):
+def _rotate(seq, k):
+    """Rotate seq left by k bases (k may be negative or exceed len(seq))"""
+    if not seq:
+        return seq
+    k %= len(seq)
+    return seq[k:] + seq[:k]
+
+
+def normalize_alleles_left(ref, start, stop, alleles, bound, ref_step, shuffle=True):  # noqa: ARG001
     """
     Normalize loci by removing extraneous reference padding
+
+    ref_step is unused and kept for compatibility
 
     >>> normalize_alleles_left("A", 1, 2, "A", 1, 2)
     shuffled_alleles(start=1, stop=2, alleles='A')
@@ -73,35 +85,24 @@ def normalize_alleles_left(ref, start, stop, alleles, bound, ref_step, shuffle=T
 
     # assert bound <= start,'start={:d}, left bound={:d}'.format(start, bound)
 
-    # STEP 3: While a null allele exists, left shuffle by prepending alleles
-    #         with reference and trimming common suffixes
-    while shuffle and "" in alleles and start > bound:
-        step = min(ref_step, start - bound)
-
-        r = ref[start - step : start].upper()
-        new_alleles = [r + a for a in alleles]
-
-        trimmed, new_alleles = trim_common_suffixes(new_alleles)
-
-        if not trimmed:
-            break
-
-        start -= trimmed
-        stop -= trimmed
-
-        if trimmed == step:
-            alleles = new_alleles
-        else:
-            left = step - trimmed
-            alleles = [a[left:] for a in new_alleles]
-            break
+    # STEP 3: Left shuffle. Shifting an insertion or deletion one base rotates its sequence,
+    #         so bioutils counts the shift with a cyclic comparison and the alleles are
+    #         rotated once (rebuilding them every ref_step bases was quadratic for a large dup)
+    if shuffle:
+        shift = roll_left(ref.upper(), alleles, start - 1, bound)
+        if shift:
+            alleles = [_rotate(a, -shift) for a in alleles]
+            start -= shift
+            stop -= shift
 
     return normalized_alleles(start, stop, tuple(alleles))
 
 
-def normalize_alleles_right(ref, start, stop, alleles, bound, ref_step, shuffle=True):
+def normalize_alleles_right(ref, start, stop, alleles, bound, ref_step, shuffle=True):  # noqa: ARG001
     """
     Normalize loci by removing extraneous reference padding
+
+    ref_step is unused and kept for compatibility
 
     >>> normalize_alleles_right("A", 1, 2, "A", 1, 2)
     shuffled_alleles(start=1, stop=2, alleles='A')
@@ -123,28 +124,13 @@ def normalize_alleles_right(ref, start, stop, alleles, bound, ref_step, shuffle=
 
     # assert bound >= stop,'stop={:d}, right bound={:d}'.format(stop, bound)
 
-    # STEP 3: While a null allele exists, right shuffle by appending alleles
-    #         with reference and trimming common prefixes
-    while shuffle and "" in alleles and stop < bound:
-        step = min(ref_step, bound - stop)
-
-        r = ref[stop : stop + step].upper()
-        new_alleles = [a + r for a in alleles]
-
-        trimmed, new_alleles = trim_common_prefixes(new_alleles)
-
-        if not trimmed:
-            break
-
-        start += trimmed
-        stop += trimmed
-
-        if trimmed == step:
-            alleles = new_alleles
-        else:
-            left = step - trimmed
-            alleles = [a[:-left] for a in new_alleles]
-            break
+    # STEP 3: Right shuffle, see normalize_alleles_left
+    if shuffle:
+        shift = roll_right(ref.upper(), alleles, stop, bound - 1)
+        if shift:
+            alleles = [_rotate(a, shift) for a in alleles]
+            start += shift
+            stop += shift
 
     return normalized_alleles(start, stop, tuple(alleles))
 

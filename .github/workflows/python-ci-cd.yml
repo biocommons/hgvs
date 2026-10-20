@@ -5,12 +5,15 @@ permissions:
 
 on:
   push:
-    branches: ["*"]
-    tags: ["*"]
+    branches: ["**"]
+    tags: ["**"]
+  pull_request:
 
 jobs:
   python-ci-cd:
     name: Python CI/CD
+    # run on pushes to any branch in this repo and on pull requests from forks
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     permissions:
       contents: write
       id-token: write
