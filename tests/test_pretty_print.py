@@ -5,6 +5,7 @@ import pytest
 
 import hgvs
 import hgvs.dataproviders.uta
+import hgvs.location
 import hgvs.parsers
 from hgvs.assemblymapper import AssemblyMapper
 from hgvs.pretty.datacompiler import DataCompiler
@@ -47,6 +48,36 @@ class Test_DataCompilerDup(unittest.TestCase):
         self.assertIsInstance(end, int)
         self.assertEqual((start, end), (36561662, 36561663))
         self.assertEqual(alt, ref + ref)
+
+    def _get_start_end(self, hgvs_g):
+        config = PrettyConfig(hdp=self.hdp, assembly_mapper=self.am37)
+        dc = DataCompiler(config=config)
+        return dc._get_start_end(self.hp.parse(hgvs_g))
+
+    def test_get_start_end_simple_position(self):
+        s, e = self._get_start_end("NC_000007.13:g.36561662_36561663dup")
+        self.assertIsInstance(s, hgvs.location.SimplePosition)
+        self.assertIsInstance(e, hgvs.location.SimplePosition)
+        self.assertEqual((s.base, e.base), (36561662, 36561663))
+
+    def test_get_start_end_uncertain_interval(self):
+        # Both ends are nested Intervals (uncertain breakpoints): the
+        # outermost bases bound the affected region.
+        s, e = self._get_start_end("NC_000007.13:g.(36561660_36561662)_(36561665_36561670)dup")
+        self.assertEqual((s.base, e.base), (36561660, 36561670))
+
+    def test_get_start_end_uncertain_interval_unknown_bounds(self):
+        # When the outer bases are unknown ('?'), fall back to the inner
+        # (known) base of each nested Interval.
+        s, e = self._get_start_end("NC_000007.13:g.(?_36561662)_(36561665_?)dup")
+        self.assertEqual((s.base, e.base), (36561662, 36561665))
+
+    def test_get_start_end_uncertain_one_side(self):
+        s, e = self._get_start_end("NC_000007.13:g.(?_36561662)_36561670dup")
+        self.assertEqual((s.base, e.base), (36561662, 36561670))
+
+        s, e = self._get_start_end("NC_000007.13:g.36561660_(36561665_?)dup")
+        self.assertEqual((s.base, e.base), (36561660, 36561665))
 
 
 @pytest.mark.skip(
