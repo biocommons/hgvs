@@ -64,6 +64,7 @@
 .venv
 .vscode
 .webassets-cache
+/agents/
 /site
 ENV/
 MANIFEST
