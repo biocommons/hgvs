@@ -1,24 +1,23 @@
 name: Python CI/CD
-permissions:
-  contents: write
-  id-token: write
 
 on:
-  push:
-    branches: ["**"]
-    tags: ["**"]
-  pull_request:
+  push:           # branch or tag push on *this* repo
+  pull_request:   # PR on *this or forked* repo
 
 jobs:
   python-ci-cd:
     name: Python CI/CD
-    # run on pushes to any branch in this repo and on pull requests from forks
+    # run on all pushes and on PRs from forks;
+    # i.e., skip PRs on this repo because their push already triggered CI
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     permissions:
-      contents: write
-      id-token: write
-    uses: biocommons/.github/.github/workflows/python-ci-cd.yml@1
+      contents: write   # for gh-pages docs deploy
+      id-token: write   # for Codecov OIDC
+    uses: biocommons/.github/.github/workflows/python-ci-cd.yml@2
     with:
+      # tagged commits (tags) trigger publishing to PyPI and docs
       publish: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
     secrets:
+      # org-level token; PyPI trusted publishing doesn't support reusable
+      # workflows yet: https://github.com/pypi/warehouse/issues/11096
       pypi-token: ${{ secrets.UV_PUBLISH_TOKEN }}

@@ -131,7 +131,7 @@ Then install uv using the [uv installation instructions](https://docs.astral.sh/
 
 ### One-time development setup
 
-Create a Python virtual environment, install dependencies, install pre-commit hooks, and install an editable package:
+Create a Python virtual environment, install dependencies, install git hooks (prek), and install an editable package:
 
     make devready
 
@@ -152,17 +152,20 @@ supported targets.  A subset are listed here:
     help                Display help message
 
     SETUP, INSTALLATION, PACKAGING
-    devready            Prepare local dev env: Create virtual env, install the pre-commit hooks
+    devready            Prepare local dev env: Create virtual env, install the git hooks (prek)
     build               Build package
     publish             publish package to PyPI
 
     FORMATTING, TESTING, AND CODE QUALITY
     cqa                 Run code quality assessments
     test                Test the code with pytest
+    test-coverage       Test the code with pytest and generate coverage report
+    test-matrix         Test with each supported Python version (via nox)
 
     DOCUMENTATION
     docs-serve          Build and serve the documentation
-    docs-test           Test if documentation can be built without warnings or errors
+    docs-test           Test if documentation can be built without errors
+    docs-deploy         Deploy documentation (no-op: Read the Docs builds hgvs docs)
 
     CLEANUP
     clean               Remove temporary and backup files
@@ -171,6 +174,24 @@ supported targets.  A subset are listed here:
     distclean           Remove untracked files and other detritus
 
 ### Testing
+
+    make test            # tests, no coverage
+    make test-coverage   # tests with coverage; writes coverage.xml
+    make test-matrix     # `make test` on each Python version listed in pyproject.toml classifiers (nox)
+
+`make test` is the test command everywhere: locally, in each nox session, and in each CI matrix leg. One CI leg runs `make test-coverage` and uploads to Codecov instead.
+
+Known limitation: nox does not forward arguments, so `nox -- -k foo` runs the full suite. Run one version with `uv run nox -s tests-3.11`, or a subset on one version with `uv run --isolated --python 3.11 pytest -k foo` (`--isolated` leaves `.venv` untouched).
+
+#### VS Code
+
+Testing → Configure Python Tests → pytest → root directory. No other settings are needed; coverage is off by default, so breakpoints work.
+
+#### Coverage gate
+
+Codecov's `codecov/project` status fails when coverage drops more than 0.5% from the base commit. Make `codecov/project` a required status check in branch protection, or the gate does nothing.
+
+#### Test data cache
 
 Existing tests use a cache that is committed with the repo to ensure that tests do not require external networking.  To develop new tests, which requires loading the cache, you should install UTA and Seqrepo (and the rest service) locally.
 
