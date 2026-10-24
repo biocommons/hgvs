@@ -68,7 +68,7 @@ test: ## Test the code with pytest
 .PHONY: test-coverage
 test-coverage: ## Test the code with pytest and generate coverage report
 	@echo "🚀 Testing code: Running pytest with coverage"
-	uv run pytest --cov=src --cov-report=term-missing
+	uv run pytest --cov --cov-report=term-missing --cov-report=xml
 
 .PHONY: test-matrix
 test-matrix: ## Test with each supported Python version (via nox)
@@ -91,12 +91,17 @@ test-relearn-iteratively: ## Destroy and rebuild test data cache (biocommons/hgv
 .PHONY: docs-serve
 docs-serve: ## Build and serve the documentation
 	$(call INFO_MESSAGE, "Build and serve docs for local development")
-	uv run mkdocs serve
+	uv run sphinx-build -b html docs docs/_build/html
+	uv run python -m http.server -d docs/_build/html
 
 .PHONY: docs-test
-docs-test: ## Test if documentation can be built without warnings or errors
+docs-test: ## Test if documentation can be built without errors
 	$(call INFO_MESSAGE, "Testing whether docs can be build")
-	uv run mkdocs build -s
+	uv run sphinx-build -b html docs docs/_build/html
+
+.PHONY: docs-deploy
+docs-deploy: ## Deploy documentation (no-op: Read the Docs builds hgvs docs)
+	$(call INFO_MESSAGE, "Docs are built and published by Read the Docs: https://hgvs.readthedocs.io/")
 
 ############################################################################
 #= UTILITIES
@@ -143,7 +148,7 @@ cleaner: clean  ## Remove files and directories that are easily rebuilt
 .PHONY: cleanest
 cleanest: cleaner  ## Remove files and directories that can be rebuilt
 	$(call INFO_MESSAGE, "Remove files and directories that can be rebuilt")
-	rm -frv .eggs .tox .venv venv
+	rm -frv .eggs .nox .venv venv
 
 .PHONY: distclean
 distclean: cleanest  ## Remove untracked files and other detritus

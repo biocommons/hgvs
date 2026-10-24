@@ -1,6 +1,6 @@
 [build-system]
 build-backend = "setuptools.build_meta"
-requires = ["setuptools ~= 84.0.0", "setuptools_scm[toml] ~= 10.3.4"]
+requires = ["setuptools >= 80.0", "setuptools_scm[toml] >= 9.0"]
 
 [dependency-groups]
 dev = [
@@ -17,7 +17,6 @@ dev = [
   "pytest>=9.1.1",
   "pytest-cov>=7.1.0",
   "pytest-recording>=0.14.0",
-  "tox-uv>=1.37.0",
   "vcrpy>=8.3.0",
 
   # documentation
@@ -75,7 +74,7 @@ keywords = [
 license = "Apache-2.0"
 name = "hgvs"
 readme = "README.md"
-requires-python = ">=3.11,<3.15"
+requires-python = ">=3.11"
 
 [project.optional-dependencies]
 # optional runtime dependencies only
@@ -150,7 +149,7 @@ ruff = "ruff"
 ty = "ty"
 
 [tool.pytest.ini_options]
-addopts = "-s -v -x --strict-markers -m 'not extra and not network' --doctest-modules --cov=src"
+addopts = "--doctest-modules -m 'not extra and not network'"
 doctest_optionflags = [
   "ALLOW_BYTES",
   "ALLOW_UNICODE",
@@ -171,13 +170,16 @@ markers = [
   "regression",
   "validation",
 ]
+strict_markers = true
 testpaths = ["tests"]
 
 [tool.ruff]
-extend-exclude = ["src/hgvs/parsers/generated"]
+# docs/conf.py: Sphinx config conventions (e.g., `copyright`) conflict with lint rules
+extend-exclude = ["docs/conf.py", "src/hgvs/parsers/generated"]
+force-exclude = true  # honor excludes for files passed explicitly (pre-commit)
 line-length = 100
 src = ["src", "tests"]
-target-version = "py314"
+target-version = "py311"
 
 [tool.ruff.format]
 docstring-code-format = true
