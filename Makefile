@@ -33,7 +33,7 @@ install: devready
 .PHONY: devready
 devready: ## Prepare local dev env: Create virtual env, install the pre-commit hooks
 	$(call INFO_MESSAGE, Prepare local dev env: Create virtual env and install the pre-commit hooks)
-	uv sync --dev
+	uv sync --dev --all-extras
 	uv run pre-commit install
 	$(call INFO_MESSAGE, Activate the virtual env with \`source .venv/bin/activate\`)
 

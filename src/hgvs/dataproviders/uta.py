@@ -13,8 +13,15 @@ from pathlib import Path
 from typing import ClassVar
 from urllib import parse as urlparse
 
-import psycopg
-import psycopg.rows
+try:
+    import psycopg
+    import psycopg.rows
+except ModuleNotFoundError:
+    print(
+        "ModuleNotFoundError raised when trying to import psycopg2, if you need dataproviders support please "
+        "install system dependencies and pip install with [dataproviders] extra!"
+    )
+    raise
 from bioutils.assemblies import make_ac_name_map
 from bioutils.digests import seq_md5
 from psycopg_pool import ConnectionPool

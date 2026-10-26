@@ -89,7 +89,7 @@ installation easy. If you would like to use local instances of the data sources,
 
         source venv/bin/activate
         pip install --upgrade setuptools
-        pip install hgvs
+        pip install 'hgvs[dataproviders]'
 
 See [Installation
 instructions](http://hgvs.readthedocs.org/en/stable/installation.html)
