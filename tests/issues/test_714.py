@@ -76,15 +76,15 @@ cases = [
 
 
 @pytest.mark.parametrize("case", cases)
-def test_real_c_to_p(case, parser, am37):
-    am37.shift_over_boundary = True
-    am37.shift_over_boundary_preference = ShiftOverBoundaryPreference.EXON
+def test_real_c_to_p(case, parser, am37, monkeypatch):
+    monkeypatch.setattr(am37, "shift_over_boundary", True)
+    monkeypatch.setattr(am37, "shift_over_boundary_preference", ShiftOverBoundaryPreference.EXON)
 
     var_c = parser.parse(case["var_c"])
     var_p = am37.c_to_p(var_c)
     assert str(var_p) == case["exonic"]["var_p"]
 
-    am37.shift_over_boundary_preference = ShiftOverBoundaryPreference.INTRON
+    monkeypatch.setattr(am37, "shift_over_boundary_preference", ShiftOverBoundaryPreference.INTRON)
 
     var_c = parser.parse(case["var_c"])
     var_p = am37.c_to_p(var_c)
