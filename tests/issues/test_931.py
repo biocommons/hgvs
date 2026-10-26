@@ -8,8 +8,9 @@ to the stop codon:
   coding sequence is untouched, so it is classified as a 3'UTR variant and
   reported as ``p.?`` like every other UTR variant (see #715).
 * An ``ins`` or ``dup`` whose interval ends on the last base of the stop codon
-  (``c.Ndup``, ``c.N-1_Nins``) still touches the stop codon. It is reported as
-  stop-retained (``p.(TerNTer)``) so the stop-codon involvement is not missed
+  (``c.Ndup``, ``c.N-1_Nins``) is not a UTR variant. We still want a protein
+  description for variants touching the stop codon, so it is reported as
+  stop-retained (``p.(TerNTer)``) and the stop-codon involvement is not missed
   (see #895 / #896).
 
 Both rules are checked on a forward-strand transcript (NM_024529.5, stop TGA at

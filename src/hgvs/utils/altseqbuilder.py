@@ -208,9 +208,10 @@ class AltSeqBuilder:
         An ``ins`` or ``dup`` is a 3'UTR variant as soon as its end position lies
         in the 3'UTR (e.g. ``c.N_*1ins``, ``c.N_*1dup``, ``c.*1dup``): the new
         bases land after the stop codon and the coding sequence is untouched
-        (#715, #931). An ``ins``/``dup`` whose interval ends on the last CDS base
-        (``c.Ndup``, ``c.N-1_Nins``) still involves the stop codon and is treated
-        as exonic so that it is reported as stop-retained (#895).
+        (#715, #931). An ``ins``/``dup`` whose interval ends on the last base of
+        the stop codon (``c.Ndup``, ``c.N-1_Nins``) is not a UTR variant: we still
+        want a protein description for variants touching the stop codon, so it is
+        reported as stop-retained (#895).
 
         :return "exon", "intron", "five_utr", "three_utr", "whole_gene"
         :rtype str
