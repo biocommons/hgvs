@@ -205,6 +205,14 @@ class AltSeqBuilder:
     def get_variant_region(self):
         """Categorize variant by location in transcript (5'utr, exon, intron, 3'utr)
 
+        An ``ins`` or ``dup`` is a 3'UTR variant as soon as its end position lies
+        in the 3'UTR (e.g. ``c.N_*1ins``, ``c.N_*1dup``, ``c.*1dup``): the new
+        bases land after the stop codon and the coding sequence is untouched
+        (#715, #931). An ``ins``/``dup`` whose interval ends on the last base of
+        the stop codon (``c.Ndup``, ``c.N-1_Nins``) is not a UTR variant: we still
+        want a protein description for variants touching the stop codon, so it is
+        reported as stop-retained (#895).
+
         :return "exon", "intron", "five_utr", "three_utr", "whole_gene"
         :rtype str
         """
@@ -277,12 +285,11 @@ class AltSeqBuilder:
         if alt and ref is None:
             insert_seq_idx = start + 1
             if insert_seq_idx >= cds_start - 1:
-                stop_end = self._insert_stop_seq_end(alt, insert_seq_idx, cds_start)
-                if stop_end is not None:
+                replacement = self._stop_truncated_insert(seq, cds_start, insert_seq_idx, len(alt))
+                if replacement is not None:
                     is_frameshift = False
-                    alt_end = insert_seq_idx + len(alt)
-                    del seq[stop_end:alt_end]
-                    cds_stop -= alt_end - stop_end
+                    seq[insert_seq_idx : insert_seq_idx + len(alt)] = replacement
+                    cds_stop += len(replacement) - len(alt)
         # use max of mod 3 value and 1 (in event that indel starts in the 5'utr range)
         variant_start_aa = max(math.ceil(self._var_c.posedit.pos.start.base / 3.0), 1)
 
@@ -309,16 +316,19 @@ class AltSeqBuilder:
 
         dup_seq = self._var_c.posedit.edit.ref
         seq[end:end] = dup_seq
+        cds_stop += len(dup_seq)
 
         is_frameshift = len(dup_seq) % 3 != 0
         if end >= cds_start - 1:
-            stop_end = self._insert_stop_seq_end(dup_seq, end, cds_start)
-            if stop_end is not None:
+            replacement = self._stop_truncated_insert(seq, cds_start, end, len(dup_seq))
+            if replacement is not None:
                 is_frameshift = False
-                dup_end = end + len(dup_seq)
-                del seq[stop_end:dup_end]
-                cds_stop -= dup_end - stop_end
-        variant_start_aa = math.ceil((self._var_c.posedit.pos.end.base + 1) / 3.0)
+                seq[end : end + len(dup_seq)] = replacement
+                cds_stop += len(replacement) - len(dup_seq)
+        # a dup ending on the last base of the stop codon is attributed to the stop codon,
+        # matching the equivalent insertion, rather than to a residue past the C-terminus
+        n_codons = (self._transcript_data.cds_stop - self._transcript_data.cds_start + 1) // 3
+        variant_start_aa = min(math.ceil((self._var_c.posedit.pos.end.base + 1) / 3.0), n_codons)
 
         alt_data = AltTranscriptData(
             seq,
@@ -358,13 +368,42 @@ class AltSeqBuilder:
         msg = f"hgvs c to p conversion does not support {self._var_c} type: repeats"
         raise NotImplementedError(msg)
 
-    def _insert_stop_seq_end(self, insert_seq, insert_seq_idx, cds_start):
-        """If translating the inserted bases in the CDS reading frame yields a stop codon, return the
-        sequence index just past that stop codon; else None. When non-None, translation halts
-        inside the insertion, so the variant terminates there and is not a frameshift even if the
-        insertion length is not divisible by 3."""
-        frame_offset = (insert_seq_idx - (cds_start - 1)) % 3
-        framed = ("N" * frame_offset) + "".join(insert_seq)
+    def _stop_truncated_insert(
+        self, seq, cds_start, insert_seq_idx, insert_len
+    ) -> list[str] | None:
+        """If the insert_len bases inserted into seq at insert_seq_idx contain a
+        stop codon in the CDS reading frame, return the bases that should
+        replace them, else None.
+
+        Translation halts at the inserted stop, so the bases after it are never
+        read. The replacement is the bases from insert_seq_idx through the stop
+        (including any reference bases that completed it), followed by the
+        frame_offset reference bases immediately preceding the insertion point.
+        This keeps the downstream reference in frame and rebuilds the split
+        codon unchanged right after the stop, so the protein description depends
+        only on the bases that are actually translated. Without it, leftover
+        inserted bases would combine with reference bases into an arbitrary
+        codon and decide between an ins and a delins description."""
+        stop_end = self._find_insert_stop(seq, cds_start, insert_seq_idx, insert_len)
+        if stop_end is None:
+            return None
+        frame_offset = self._frame_offset(cds_start, insert_seq_idx)
+        return seq[insert_seq_idx:stop_end] + seq[insert_seq_idx - frame_offset : insert_seq_idx]
+
+    def _find_insert_stop(self, seq, cds_start, insert_seq_idx, insert_len) -> int | None:
+        """If translating the insert_len bases inserted into seq at
+        insert_seq_idx in the CDS reading frame yields a stop codon, return the
+        sequence index just past that stop, else None.
+
+        A partial codon at the end of the insertion is completed with the
+        reference bases that follow it in seq so a stop that straddles the end
+        of the insertion is found. In that case the returned index is past the
+        end of the inserted bases."""
+        frame_offset = self._frame_offset(cds_start, insert_seq_idx)
+        insert_end = insert_seq_idx + insert_len
+        end_frame_offset = self._frame_offset(cds_start, insert_end)
+        end_padding_len = 3 - end_frame_offset if end_frame_offset else 0
+        framed = ("N" * frame_offset) + "".join(seq[insert_seq_idx : insert_end + end_padding_len])
         ins_aa = translate_cds(
             framed, full_codons=False, ter_symbol="X", translation_table=self._translation_table
         )
@@ -372,6 +411,10 @@ class AltSeqBuilder:
         if stop_aa_idx == -1:
             return None
         return insert_seq_idx + (stop_aa_idx + 1) * 3 - frame_offset
+
+    def _frame_offset(self, cds_start, seq_idx) -> int:
+        """Position of seq_idx within its codon in the CDS reading frame (0 to 2)."""
+        return (seq_idx - (cds_start - 1)) % 3
 
     def _setup_incorporate(self):
         """Helper to setup incorporate functions
