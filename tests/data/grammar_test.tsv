@@ -147,7 +147,8 @@ def_n_pos	A|2?|*1	False	list
 def_n_pos	X|11_12|10*	False	list
 def_p_interval	Met1-Gly10	False	one
 def_p_interval	Met1_Gly10|Met1	True	list
-def_p_pos	Glx5|J5	False	list
+def_p_pos	Glx5	True	one
+def_p_pos	J5	False	one
 def_p_pos	M1|G10|*10	True	list	Met1|Gly10|Ter10
 def_p_pos	Met1|Gly10|Ter10	True	list
 def_r_interval	1-10	True	one
