@@ -1,6 +1,7 @@
 import os
 import random
 import unittest
+from unittest import mock
 
 import pytest
 
@@ -186,6 +187,13 @@ class Test_HGVSNormalizer(unittest.TestCase):
 
         with self.assertRaises(HGVSInvalidVariantError):
             self.norm.normalize(self.hp.parse_hgvs_variant("NM_000059.3:c.7790delAAG"))
+
+    def test_sub_normalizer_skips_window(self):
+        """A single-base substitution is returned as-is, without fetching a sequence window"""
+        var = self.hp.parse_hgvs_variant("NM_001001656.1:c.935T>C")
+        with mock.patch.object(hdp, "get_seq", wraps=hdp.get_seq) as get_seq:
+            self.assertEqual(str(self.norm.normalize(var)), "NM_001001656.1:c.935T>C")
+        self.assertTrue(all(c.args[2] - c.args[1] <= 1 for c in get_seq.call_args_list))
 
     def test_g_normalizer(self):
         """Test normalizer for variant type g."""
