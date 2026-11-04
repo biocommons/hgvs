@@ -163,6 +163,25 @@ class TestUTACache(Test_hgvs_dataproviders_uta_UTA_default):
         assert str(var1) == str(var2)
 
 
+@pytest.mark.parametrize(
+    ("db_url", "user", "password"),
+    [
+        ("postgresql://anonymous@localhost/uta/uta_20241220", "anonymous", None),
+        ("postgresql://localhost/uta/uta_20241220", None, None),
+        ("postgresql://anonymous:@localhost/uta/uta_20241220", "anonymous", ""),
+        ("postgresql://us%40er:p%40ss@localhost/uta/uta_20241220", "us@er", "p@ss"),
+    ],
+)
+def test_connect_args_from_url(db_url, user, password):
+    with (
+        patch("hgvs.dataproviders.uta.psycopg.connect", side_effect=RuntimeError) as mock_connect,
+        pytest.raises(RuntimeError),
+    ):
+        hgvs.dataproviders.uta.connect(db_url=db_url, pooling=False)
+    assert mock_connect.call_args.kwargs["user"] == user
+    assert mock_connect.call_args.kwargs["password"] == password
+
+
 class TestUTAPool(Test_hgvs_dataproviders_uta_with_pooling_without_cache):
     def test_use_putconn_on_lost_conn(self):
         """

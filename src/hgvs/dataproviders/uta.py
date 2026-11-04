@@ -531,8 +531,8 @@ class UTA_postgresql(UTABase):
             "host": self.url.hostname,
             "port": self.url.port,
             "dbname": self.url.database,
-            "user": urlparse.unquote(self.url.username),
-            "password": urlparse.unquote(self.url.password),
+            "user": None if self.url.username is None else urlparse.unquote(self.url.username),
+            "password": None if self.url.password is None else urlparse.unquote(self.url.password),
             "application_name": self.application_name + "/" + hgvs.__version__,
         }
         if self.pooling:
