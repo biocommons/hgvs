@@ -176,3 +176,40 @@ However, a docker image of UTA is also available; see
 Alternatively, users may implement their own providers that conform to
 the data providers interface. See :mod:`hgvs.dataproviders.uta` for an
 example.
+
+Sequence fetching and read-ahead
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+Reference and transcript sequences come from SeqRepo (a local
+directory via ``HGVS_SEQREPO_DIR``, or a seqrepo-rest-service via
+``HGVS_SEQREPO_URL``) or, failing those, from NCBI and Ensembl over
+the network; see :ref:`seqrepo_install`.
+
+hgvs asks for sequence in small pieces: one base to check a variant's
+reference allele and about 20 bases for the normalizer. Against a
+remote source every piece is a round trip, and those round trips
+dominate the time it takes to map a variant. hgvs therefore reads
+ahead: each miss fetches a window of sequence around the request and
+later requests inside the window are answered from memory. The window
+starts at 4 kb and doubles, up to 1 Mb, while requests keep landing in
+it, so variants sorted by position (as in a VCF) need one sequence
+request per window rather than one or two per variant, while scattered
+requests keep the window small. Results are identical either way: a
+request the window cannot answer, including one that runs past the end
+of a sequence, goes to the source exactly as before.
+
+To get the most from this, process variants sorted by reference
+sequence and position. For a batch of variants known to lie in a
+region but not sorted, ``hdp.seqfetcher.prefetch(ac, start, end)``
+fetches that region once up front. The behaviour is controlled by the
+``[seqfetcher]`` section of ``hgvs.global_config``: ``readahead``
+turns it off, and ``readahead_min_size``, ``readahead_max_size`` and
+``readahead_max_accessions`` set the window bounds and how many
+accessions keep a window.
+
+Data providers that bring their own sequence fetcher (cdot's, for
+example) get the same behaviour by wrapping it:
+``ReadAheadSeqFetcher(my_fetcher)`` from
+:mod:`hgvs.dataproviders.seqfetcher` accepts anything with
+``fetch_seq(ac, start_i, end_i)`` and drops in wherever the original
+was passed.
