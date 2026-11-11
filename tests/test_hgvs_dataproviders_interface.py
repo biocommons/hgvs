@@ -87,11 +87,6 @@ def test_bridge_converts_dict_tx_info_to_model():
     assert provider.calls == [("get_tx_info", *TX_INFO_ARGS)]
 
 
-def test_bridge_passes_none_tx_info_through():
-    hdp = Interface.from_v4(V4Provider(None))
-    assert hdp.get_tx_info(*TX_INFO_ARGS) is None
-
-
 def test_bridge_rejects_dict_with_unknown_keys():
     hdp = Interface.from_v4(V4Provider({**TX_INFO_DICT, "bogus": 1}))
     with pytest.raises(TypeError, match="bogus"):

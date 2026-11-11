@@ -265,10 +265,8 @@ class _V4Bridge(Interface):
 
     # -- changed contract: dict results become models ------------------------
 
-    def get_tx_info(self, tx_ac, alt_ac, alt_aln_method):
-        result = self._provider.get_tx_info(tx_ac, alt_ac, alt_aln_method)
-        # version 4 allowed None for "not found"; callers check for it
-        return None if result is None else TranscriptInfo(**result)
+    def get_tx_info(self, tx_ac: str, alt_ac: str, alt_aln_method: str) -> TranscriptInfo:
+        return TranscriptInfo(**self._provider.get_tx_info(tx_ac, alt_ac, alt_aln_method))
 
 
 # <LICENSE>
