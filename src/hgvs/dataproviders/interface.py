@@ -3,11 +3,13 @@
 import abc
 import logging
 import os
+from typing import ClassVar
 
 import hgvs
 
 from ..decorators.lru_cache import LEARN, RUN, VERIFY, lru_cache
 from ..utils.PersistentDict import PersistentDict
+from .models import TranscriptInfo
 
 _logger = logging.getLogger(__name__)
 
@@ -36,7 +38,23 @@ class Interface(metaclass=abc.ABCMeta):
     """
 
     def interface_version(self):
-        return 4
+        return 5
+
+    @classmethod
+    def from_v4(cls, provider):
+        """Bridge a data provider written against interface version 4.
+
+        Version 4 providers return plain dicts keyed by the UTA column
+        names.  The bridge presents such a provider through this
+        interface: methods whose contract is unchanged are delegated
+        as-is, and methods that now return models convert the dict.
+
+        >>> hdp = Interface.from_v4(legacy_provider)  # doctest: +SKIP
+
+        Caching, schema checking and any extra attributes (``url``,
+        ``seqfetcher``, ...) remain those of the wrapped provider.
+        """
+        return _V4Bridge(provider)
 
     def __init__(self, mode=None, cache=None):
         """
@@ -124,7 +142,7 @@ class Interface(metaclass=abc.ABCMeta):
     # required_version: what version of the remote schema is required
     # by the subclass? This value is compared to the result of
     # schema_version, which must be implemented by the class.
-    required_version = None
+    required_version: ClassVar[str | None] = None
 
     @abc.abstractmethod
     def data_version(self):
@@ -175,12 +193,80 @@ class Interface(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def get_tx_info(self, tx_ac, alt_ac, alt_aln_method):
+    def get_tx_info(self, tx_ac: str, alt_ac: str, alt_aln_method: str) -> TranscriptInfo:
         pass
 
     @abc.abstractmethod
     def get_tx_mapping_options(self, tx_ac):
         pass
+
+
+class _V4Bridge(Interface):
+    """Presents an interface version 4 data provider as version 5.
+
+    See :meth:`Interface.from_v4`.
+    """
+
+    def __init__(self, provider):
+        # Interface.__init__ is deliberately not called: the wrapped
+        # provider already caches its methods and has checked its schema
+        # version, and the bridge is a thin translation layer over it.
+        self._provider = provider
+
+    def __getattr__(self, name):
+        # attributes the interface does not define (url, seqfetcher, mode,
+        # ...) are the wrapped provider's
+        return getattr(self._provider, name)
+
+    @property
+    def required_version(self):
+        return self._provider.required_version
+
+    # -- unchanged contract: delegated as-is -------------------------------
+
+    def data_version(self):
+        return self._provider.data_version()
+
+    def schema_version(self):
+        return self._provider.schema_version()
+
+    def get_acs_for_protein_seq(self, seq):
+        return self._provider.get_acs_for_protein_seq(seq)
+
+    def get_assembly_map(self, assembly_name):
+        return self._provider.get_assembly_map(assembly_name)
+
+    def get_gene_info(self, gene):
+        return self._provider.get_gene_info(gene)
+
+    def get_pro_ac_for_tx_ac(self, tx_ac):
+        return self._provider.get_pro_ac_for_tx_ac(tx_ac)
+
+    def get_seq(self, ac, start_i=None, end_i=None):
+        return self._provider.get_seq(ac, start_i, end_i)
+
+    def get_similar_transcripts(self, tx_ac):
+        return self._provider.get_similar_transcripts(tx_ac)
+
+    def get_tx_exons(self, tx_ac, alt_ac, alt_aln_method):
+        return self._provider.get_tx_exons(tx_ac, alt_ac, alt_aln_method)
+
+    def get_tx_for_gene(self, gene):
+        return self._provider.get_tx_for_gene(gene)
+
+    def get_tx_for_region(self, alt_ac, alt_aln_method, start_i, end_i):
+        return self._provider.get_tx_for_region(alt_ac, alt_aln_method, start_i, end_i)
+
+    def get_tx_identity_info(self, tx_ac):
+        return self._provider.get_tx_identity_info(tx_ac)
+
+    def get_tx_mapping_options(self, tx_ac):
+        return self._provider.get_tx_mapping_options(tx_ac)
+
+    # -- changed contract: dict results become models ------------------------
+
+    def get_tx_info(self, tx_ac: str, alt_ac: str, alt_aln_method: str) -> TranscriptInfo:
+        return TranscriptInfo(**self._provider.get_tx_info(tx_ac, alt_ac, alt_aln_method))
 
 
 # <LICENSE>
