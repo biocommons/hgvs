@@ -382,7 +382,7 @@ class UTABase(Interface):
         return rows[0]
 
     def get_tx_info(self, tx_ac: str, alt_ac: str, alt_aln_method: str) -> TranscriptInfo:
-        """return a single transcript info for supplied accession (tx_ac, alt_ac, alt_aln_method), or None if not found
+        """return a single transcript info for supplied accession (tx_ac, alt_ac, alt_aln_method)
 
         :param tx_ac: transcript accession with version (e.g., 'NM_000051.3')
         :type tx_ac: str
