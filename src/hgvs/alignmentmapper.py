@@ -122,8 +122,8 @@ class AlignmentMapper:
 
             self.strand = tx_exons[0]["alt_strand"]
             self.gc_offset = tx_exons[0]["alt_start_i"]
-            self.cds_start_i = tx_info["cds_start_i"]
-            self.cds_end_i = tx_info["cds_end_i"]
+            self.cds_start_i = tx_info.cds_start_i
+            self.cds_end_i = tx_info.cds_end_i
 
             cigar = build_tx_cigar(tx_exons, self.strand)
             self.cigarmapper = CIGARMapper(cigar)

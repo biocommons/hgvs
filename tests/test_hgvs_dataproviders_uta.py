@@ -85,9 +85,9 @@ class UTA_Base:
 
     def test_get_tx_info(self):
         tx_info = self.hdp.get_tx_info("NM_000051.3", "AC_000143.1", "splign")
-        assert tx_info["cds_start_i"] == 385
-        assert tx_info["cds_end_i"] == 9556
-        assert tx_info["alt_ac"] == "AC_000143.1"
+        assert tx_info.cds_start_i == 385
+        assert tx_info.cds_end_i == 9556
+        assert tx_info.alt_ac == "AC_000143.1"
 
     def test_get_tx_info_invalid_tx_ac(self):
         with pytest.raises(HGVSDataNotAvailableError):
