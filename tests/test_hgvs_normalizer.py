@@ -30,6 +30,41 @@ class Test_HGVSNormalizer(unittest.TestCase):
         cls.normc = hgvs.normalizer.Normalizer(hdp, shuffle_direction=3, cross_boundaries=False)
         cls.norm5c = hgvs.normalizer.Normalizer(hdp, shuffle_direction=5, cross_boundaries=False)
 
+    def test_c_normalizer_utr_cds_boundary(self):
+        """Shuffling crosses the 5'UTR/CDS and CDS/3'UTR boundaries (ported from openvar/vv_hgvs).
+
+        The UTRs are part of the transcript reference sequence, so unlike introns they do not
+        bound the 3' (or 5') rule. NM_000551.3 (VHL) reads ...GGA|ATGCCC... around the CDS
+        start, so c.-1 and c.1 are both A. NM_000051.3 (ATM) reads ...TGA|TT... around the
+        CDS end.
+        """
+        for norm in (self.norm, self.normc):
+            self.assertEqual(
+                str(norm.normalize(self.hp.parse_hgvs_variant("NM_000551.3:c.-1del"))),
+                "NM_000551.3:c.1del",
+            )
+            self.assertEqual(
+                str(norm.normalize(self.hp.parse_hgvs_variant("NM_000551.3:c.-1dup"))),
+                "NM_000551.3:c.1dup",
+            )
+            self.assertEqual(
+                str(norm.normalize(self.hp.parse_hgvs_variant("NM_000551.3:c.-1_1insA"))),
+                "NM_000551.3:c.1dup",
+            )
+            self.assertEqual(
+                str(norm.normalize(self.hp.parse_hgvs_variant("NM_000051.3:c.9170_9171insAT"))),
+                "NM_000051.3:c.9171_*1dup",
+            )
+        for norm in (self.norm5, self.norm5c):
+            self.assertEqual(
+                str(norm.normalize(self.hp.parse_hgvs_variant("NM_000551.3:c.1del"))),
+                "NM_000551.3:c.-1del",
+            )
+            self.assertEqual(
+                str(norm.normalize(self.hp.parse_hgvs_variant("NM_000551.3:c.-1_1insA"))),
+                "NM_000551.3:c.-1dup",
+            )
+
     def test_c_normalizer(self):
         """Test normalizer for variant type c."""
         # 3' shuffling
@@ -152,9 +187,11 @@ class Test_HGVSNormalizer(unittest.TestCase):
             "NM_000051.3:c.-1_1dup",
         )
 
+        # shuffling across the UTR/CDS boundary is allowed even with cross_boundaries=False
+        # (only exon-intron boundaries are respected), so this is a dup, not an ins
         self.assertEqual(
             str(self.normc.normalize(self.hp.parse_hgvs_variant("NM_000051.3:c.-2_-1insCA"))),
-            "NM_000051.3:c.-1_1insAC",
+            "NM_000051.3:c.-1_1dup",
         )
 
         self.assertEqual(
