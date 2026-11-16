@@ -527,14 +527,7 @@ class UTA_postgresql(UTABase):
         if self.application_name is None:
             st = inspect.stack()
             self.application_name = Path(st[-1][1]).name
-        conn_args = {
-            "host": self.url.hostname,
-            "port": self.url.port,
-            "dbname": self.url.database,
-            "user": urlparse.unquote(self.url.username),
-            "password": urlparse.unquote(self.url.password),
-            "application_name": self.application_name + "/" + hgvs.__version__,
-        }
+        conn_args = self._connection_args()
         if self.pooling:
             _logger.info("Using UTA ConnectionPool")
             self._pool = ConnectionPool(
@@ -554,6 +547,22 @@ class UTA_postgresql(UTABase):
 
         # remap sqlite's ? placeholders to psycopg's %s
         self._queries = {k: v.replace("?", "%s") for k, v in self._queries.items()}
+
+    def _connection_args(self):
+        """Return psycopg connection keywords derived from the connection URL.
+
+        The host may be a URL-encoded UNIX socket directory, e.g.
+        ``postgresql://user@%2Fvar%2Frun%2Fpostgresql/uta/uta_20241220``, and the
+        username and password may be absent (e.g. peer authentication over a socket).
+        """
+        return {
+            "host": urlparse.unquote(self.url.hostname) if self.url.hostname else None,
+            "port": self.url.port,
+            "dbname": self.url.database,
+            "user": urlparse.unquote(self.url.username) if self.url.username else None,
+            "password": urlparse.unquote(self.url.password) if self.url.password else None,
+            "application_name": self.application_name + "/" + hgvs.__version__,
+        }
 
     def _ensure_schema_exists(self):
         # N.B. On AWS RDS, information_schema.schemata always returns zero rows
