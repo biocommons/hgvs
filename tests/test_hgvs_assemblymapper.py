@@ -155,9 +155,10 @@ class Test_VariantMapper(unittest.TestCase):
 
         self.assertEqual(str(var_g), hgvs_g)
 
-        # g_to_c next to 3' UTR
+        # g_to_c next to 3' UTR; the inserted AGTAA duplicates the last 5 bases of the CDS,
+        # and normalization is allowed across the CDS/3'UTR boundary
         hgvs_g = "NC_000002.11:g.182402910_182402911insTTACT"
-        hgvs_c = "NM_001030311.2:c.1677_*1insAGTAA"
+        hgvs_c = "NM_001030311.2:c.1673_1677dup"
         var_g = self.hp.parse_hgvs_variant(hgvs_g)
         var_c = self.am37.g_to_c(var_g, "NM_001030311.2")
         assert str(var_c) == hgvs_c
