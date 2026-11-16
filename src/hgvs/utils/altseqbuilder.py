@@ -432,8 +432,8 @@ class AltSeqBuilder:
         for pos in (self._var_c.posedit.pos.start, self._var_c.posedit.pos.end):
             # list is zero-based; seq pos is 1-based
             if pos.datum == Datum.CDS_START:
-                if pos.base < 0:  # 5' UTR
-                    result = cds_start - 1
+                if pos.base < 0:  # 5' UTR; no base 0, so c.-1 is index cds_start - 2
+                    result = (cds_start - 1) + pos.base
                 elif pos.offset < 0:  # cds/intron
                     result = (cds_start - 1) + pos.base - 2
                 else:
