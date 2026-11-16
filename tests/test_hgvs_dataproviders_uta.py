@@ -111,6 +111,39 @@ class UTA_Base:
         assert tx_info_options == []
 
 
+@pytest.mark.parametrize(
+    ("url", "host", "user", "password"),
+    [
+        (
+            "postgresql://anonymous:anonymous@uta.biocommons.org/uta/uta_20241220",
+            "uta.biocommons.org",
+            "anonymous",
+            "anonymous",
+        ),
+        # no password (e.g. a local tunnel or trust authentication)
+        ("postgresql://anonymous@localhost:5432/uta/uta_20241220", "localhost", "anonymous", None),
+        # URL-encoded characters in user/password
+        ("postgresql://us%40er:p%40ss@localhost/uta/uta_20241220", "localhost", "us@er", "p@ss"),
+        # URL-encoded UNIX socket directory as host, no credentials (peer authentication)
+        (
+            "postgresql://%2Fvar%2Frun%2Fpostgresql/uta/uta_20241220",
+            "/var/run/postgresql",
+            None,
+            None,
+        ),
+    ],
+)
+def test_connection_args(url, host, user, password):
+    hdp = hgvs.dataproviders.uta.UTA_postgresql(
+        hgvs.dataproviders.uta._parse_url(url), application_name="test", mode="run", cache=CACHE
+    )
+    conn_args = hdp._connection_args()
+    assert conn_args["host"] == host
+    assert conn_args["user"] == user
+    assert conn_args["password"] == password
+    assert conn_args["dbname"] == "uta"
+
+
 class Test_hgvs_dataproviders_uta_UTA_default(unittest.TestCase, UTA_Base):
     @classmethod
     def setUpClass(cls):
