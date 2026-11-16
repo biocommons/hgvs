@@ -25,14 +25,18 @@ class RefTranscriptData:
         cds_stop = tx_info["cds_end_i"]
 
         tx_seq_to_translate = tx_seq[cds_start - 1 : cds_stop]
-        # add poly(A) tail to mitochondrial transcripts to complete partial stop codons
-        if translation_table == TranslationTable.vertebrate_mitochondrial:
-            if len(tx_seq_to_translate) % 3 == 1 and tx_seq_to_translate[-1] == "T":
-                tx_seq = tx_seq[:cds_stop] + "AA" + tx_seq[cds_stop:]
-                tx_seq_to_translate += "AA"
-            if len(tx_seq_to_translate) % 3 == _REMAINDER_TWO and tx_seq_to_translate[-2:] == "TA":
-                tx_seq = tx_seq[:cds_stop] + "A" + tx_seq[cds_stop:]
-                tx_seq_to_translate += "A"
+        # Complete a partial stop codon (T or TA at the CDS end) with poly(A) bases.
+        # This is the norm for mitochondrial transcripts, but RefSeq also annotates
+        # nuclear transcripts whose stop codon is completed by polyadenylation
+        # (e.g. NM_001424184.1, CDS length 659); ported from openvar/vv_hgvs.
+        poly_a = self._poly_a_completion(tx_seq_to_translate)
+        if poly_a:
+            if translation_table != TranslationTable.vertebrate_mitochondrial:
+                _logger.info(
+                    "Completing partial stop codon of %s with poly(A) tail (%s)", tx_ac, poly_a
+                )
+            tx_seq = tx_seq[:cds_stop] + poly_a + tx_seq[cds_stop:]
+            tx_seq_to_translate += poly_a
         # coding sequences that are not divisable by 3 are not yet supported
         if len(tx_seq_to_translate) % 3 != 0:
             msg = f"Transcript {tx_ac} is not supported because its sequence length of {len(tx_seq_to_translate)} is not divisible by 3."
@@ -75,3 +79,15 @@ class RefTranscriptData:
         self.translation_table = actual_translation_table
         self.exon_start_positions = exon_start_positions
         self.exon_end_positions = exon_end_positions
+
+    @staticmethod
+    def _poly_a_completion(cds_seq):
+        """Return the poly(A) bases that complete a partial stop codon at the end of
+        cds_seq ("AA" for a trailing T, "A" for a trailing TA), or None if the CDS
+        is already a whole number of codons or cannot be completed to a stop."""
+        remainder = len(cds_seq) % 3
+        if remainder == 1 and cds_seq.endswith("T"):
+            return "AA"
+        if remainder == _REMAINDER_TWO and cds_seq.endswith("TA"):
+            return "A"
+        return None

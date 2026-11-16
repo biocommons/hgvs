@@ -28,11 +28,26 @@ class TestAltSeqBuilder(unittest.TestCase):
         expected_sequence = "AAAATCAAAATGAAAGCGAAAGCGTTTCGCGCGAAATACGGG"
         self._run_comparison(hgvsc, expected_sequence)
 
-    # TODO - build in support when system can handle variants in 5'utr region
-    # def test_insertion_before_start(self):
-    #     hgvsc = "NM_999999.1:c.-1_1insGGG"
-    #     expected_sequence = "AAAATCAAAGGGATGAAAGCGAAAGCGTTTCGCGCGAAATAGGGG"
-    #     self._run_comparison(hgvsc, expected_sequence)
+    def test_insertion_before_start(self):
+        hgvsc = "NM_999999.1:c.-1_1insGGG"
+        expected_sequence = "AAAATCAAAGGGATGAAAGCGAAAGCGTTTCGCGCGAAATAGGGG"
+        self._run_comparison(hgvsc, expected_sequence)
+
+    # variants spanning the 5'UTR/CDS boundary must not be clipped to the CDS start
+    def test_deletion_spanning_start(self):
+        hgvsc = "NM_999999.1:c.-3_1del"
+        expected_sequence = "AAAATCTGAAAGCGAAAGCGTTTCGCGCGAAATAGGGG"
+        self._run_comparison(hgvsc, expected_sequence)
+
+    def test_delins_spanning_start(self):
+        hgvsc = "NM_999999.1:c.-1_1delinsGA"
+        expected_sequence = "AAAATCAAGATGAAAGCGAAAGCGTTTCGCGCGAAATAGGGG"
+        self._run_comparison(hgvsc, expected_sequence)
+
+    def test_inversion_spanning_start(self):
+        hgvsc = "NM_999999.1:c.-3_3inv"
+        expected_sequence = "AAAATCCATTTTAAAGCGAAAGCGTTTCGCGCGAAATAGGGG"
+        self._run_comparison(hgvsc, expected_sequence)
 
     def test_insertion_start(self):
         hgvsc = "NM_999999.1:c.1_2insAAA"
