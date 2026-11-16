@@ -202,6 +202,10 @@ class AltSeqToHgvsp:
             ref = ""
 
         elif start == len(self._ref_seq):  # extension
+            if not insertion:
+                # the stop codon is lost but the transcript ends there (e.g. a stop codon
+                # completed by the poly(A) tail), so the new C-terminus cannot be predicted
+                return self._create_variant(None, None, "", "", acc=acc, is_ambiguous=True)
             # don't include the former stop codon
             fsext_len = len(insertion) - len(deletion) if self._alt_seq[-1] == "*" else "?"
             subst_at_stop_codon = insertion[0]
