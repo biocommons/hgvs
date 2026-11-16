@@ -211,6 +211,8 @@ class Normalizer:
 
         if var_type == "c":
             var_norm = self.vm.n_to_c(var_norm)
+            # n_to_c builds a new variant; keep the gene symbol of the input
+            var_norm.gene = orig_var.gene
 
         return var_norm
 
@@ -227,11 +229,6 @@ class Normalizer:
             map_info = [item for item in map_info if item["alt_aln_method"] == self.alt_aln_method]
             alt_ac = map_info[0]["alt_ac"]
 
-            # Get tx info
-            tx_info = self.hdp.get_tx_info(var.ac, alt_ac, self.alt_aln_method)
-            cds_start = tx_info["cds_start_i"]
-            cds_end = tx_info["cds_end_i"]
-
             # Get exon info
             exon_info = self.hdp.get_tx_exons(var.ac, alt_ac, self.alt_aln_method)
             exon_starts = [exon["tx_start_i"] for exon in exon_info]
@@ -242,9 +239,6 @@ class Normalizer:
             exon_ends.append(float("inf"))
 
             # Find the end pos of the exon where the var locates
-            left = 0
-            right = float("inf")
-
             start, end = get_start_end(var)
 
             # TODO: #242: implement methods to find tx regions
@@ -260,34 +254,11 @@ class Normalizer:
                 msg = f"Unsupported normalization of variants spanning the exon-intron boundary ({var})"
                 raise HGVSUnsupportedOperationError(msg)
 
-            left = exon_starts[i]
-            right = exon_ends[i]
-
-            if cds_start is None:
-                pass
-            elif end.base - 1 < cds_start:
-                right = min(right, cds_start)
-            elif start.base - 1 >= cds_start:
-                left = max(left, cds_start)
-            else:
-                msg = (
-                    f"Unsupported normalization of variants spanning the UTR-exon boundary ({var})"
-                )
-                raise HGVSUnsupportedOperationError(msg)
-
-            if cds_end is None:
-                pass
-            elif start.base - 1 >= cds_end:
-                left = max(left, cds_end)
-            elif end.base - 1 < cds_end:
-                right = min(right, cds_end)
-            else:
-                msg = (
-                    f"Unsupported normalization of variants spanning the exon-UTR boundary ({var})"
-                )
-                raise HGVSUnsupportedOperationError(msg)
-
-            return left, right
+            # The CDS start/end are deliberately not used as shuffling boundaries:
+            # unlike introns, the UTRs are part of the transcript reference sequence,
+            # so the 3' rule applies across the UTR/CDS boundary (ported from
+            # openvar/vv_hgvs).
+            return exon_starts[i], exon_ends[i]
         # For variant type of g and m etc.
         return 0, float("inf")
 
