@@ -303,11 +303,19 @@ def mock_vm(mock_hdp):
     return hgvs.variantmapper.VariantMapper(mock_hdp, prevalidation_level="INTRINSIC")
 
 
+@pytest.fixture
+def boundary_config():
+    mapping = hgvs.global_config.mapping
+    original = mapping.ins_at_boundary_is_intronic
+    yield mapping
+    mapping.ins_at_boundary_is_intronic = original
+
+
 @pytest.mark.parametrize("case", sanity_cases)
-def test_sanity_c_to_p(case, parser, mock_vm, monkeypatch):
+def test_sanity_c_to_p(case, parser, mock_vm, boundary_config):
     var_c = parser.parse(case["var_c"])
 
-    monkeypatch.setattr(hgvs.global_config.mapping, 'ins_at_boundary_is_intronic', False)
+    boundary_config.ins_at_boundary_is_intronic = False
     mock_vm.shift_over_boundary_preference = ShiftOverBoundaryPreference.EXON
 
     if "exc" in case["exonic"]:
@@ -316,7 +324,7 @@ def test_sanity_c_to_p(case, parser, mock_vm, monkeypatch):
     else:
         assert str(mock_vm.c_to_p(var_c, "MOCK")) == case["exonic"]["var_p"]
 
-    monkeypatch.setattr(hgvs.global_config.mapping, 'ins_at_boundary_is_intronic', True)
+    boundary_config.ins_at_boundary_is_intronic = True
     mock_vm.shift_over_boundary_preference = ShiftOverBoundaryPreference.INTRON
 
     if "exc" in case["intronic"]:
@@ -327,8 +335,8 @@ def test_sanity_c_to_p(case, parser, mock_vm, monkeypatch):
 
 
 @pytest.mark.parametrize("case", real_cases)
-def test_real_c_to_p(case, parser, vm, am37, monkeypatch):
-    monkeypatch.setattr(hgvs.global_config.mapping, 'ins_at_boundary_is_intronic', False)
+def test_real_c_to_p(case, parser, vm, am37, boundary_config):
+    boundary_config.ins_at_boundary_is_intronic = False
     vm.shift_over_boundary_preference = ShiftOverBoundaryPreference.EXON
     am37.shift_over_boundary_preference = ShiftOverBoundaryPreference.EXON
 
@@ -340,7 +348,7 @@ def test_real_c_to_p(case, parser, vm, am37, monkeypatch):
         assert str(vm.c_to_p(var_c)) == case["exonic"]["var_p"]
     assert str(am37.c_to_p(var_c)) == case["exonic"]["var_p"]
 
-    monkeypatch.setattr(hgvs.global_config.mapping, 'ins_at_boundary_is_intronic', True)
+    boundary_config.ins_at_boundary_is_intronic = True
     vm.shift_over_boundary_preference = ShiftOverBoundaryPreference.INTRON
     am37.shift_over_boundary_preference = ShiftOverBoundaryPreference.INTRON
 
