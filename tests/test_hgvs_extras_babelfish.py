@@ -249,6 +249,10 @@ class _SyntheticHDP:
         self.seq = seq[:middle] + seq[start:middle] + seq[end:]
 
     def get_seq(self, ac, start_i=None, end_i=None):  # noqa: ARG002
+        if start_i is not None and start_i < 0:
+            # As pysam's FastaFile.fetch, rather than slicing from the end
+            msg = f"start out of range ({start_i})"
+            raise ValueError(msg)
         return self.seq[start_i:end_i]
 
 
@@ -382,6 +386,22 @@ def test_vcf_coordinate_as_symbolic_and_explicit(synthetic_babelfish):
     # A multi-base ref isn't a dup, however long the insertion
     delins = VCFCoordinate(CHR2, position, seq[position - 1 : end], pad + "GATTACA" * 20)
     assert synthetic_babelfish.vcf_coordinate_as_symbolic(delins) == delins
+    # Near the start of the sequence there is no room for a copy preceding the insertion,
+    # nor a padding base before an inversion
+    near_start = VCFCoordinate(CHR2, 10, seq[9], seq[9] + span)
+    assert synthetic_babelfish.vcf_coordinate_as_symbolic(near_start) == near_start
+    inv_at_start = VCFCoordinate(CHR2, 1, span, reverse_complement(span))
+    assert synthetic_babelfish.vcf_coordinate_as_symbolic(inv_at_start) == inv_at_start
+    # The first base of the sequence can be the padding base
+    first_span = seq[1:61]
+    inv_after_first = VCFCoordinate(CHR2, 2, first_span, reverse_complement(first_span))
+    assert synthetic_babelfish.vcf_coordinate_as_symbolic(inv_after_first) == VCFCoordinate(
+        CHR2, 1, seq[0], "<INV>", 61
+    )
+    copy_after_first = VCFCoordinate(CHR2, 61, seq[60], seq[60] + first_span)
+    assert synthetic_babelfish.vcf_coordinate_as_symbolic(copy_after_first) == VCFCoordinate(
+        CHR2, 1, seq[0], "<DUP>", 61
+    )
     # Without symbolic_alt_min_length, a min_length is needed
     babelfish = Babelfish(synthetic_babelfish.hdp, assembly_name="GRCh38")
     with pytest.raises(ValueError, match="min_length"):
@@ -398,6 +418,51 @@ def test_hgvs_to_vcf_small_inv_explicit(parser, synthetic_babelfish):
     expected = ("2", start, span, reverse_complement(span), "inv")
     assert synthetic_babelfish.hgvs_to_vcf(var_g) == expected
     assert synthetic_babelfish.vcf_to_g_hgvs(*expected[:4]).format() == var_g.format()
+
+
+def test_hgvs_to_vcf_at_sequence_start(parser, synthetic_babelfish):
+    """VCF pads a del or dup at position 1 with the base after. There is no padding base for
+    a symbolic allele, so it stays explicit"""
+    seq = synthetic_babelfish.hdp.seq
+    after = seq[10]
+    explicit = [
+        ("g.1_10del", (1, seq[:11], after)),
+        ("g.1_10dup", (1, seq[0], seq[:10] + seq[0])),
+        ("g.1_10inv", (1, seq[:10], reverse_complement(seq[:10]))),
+    ]
+    for length in (60, 120):  # symbolic, and too big to normalize
+        span = seq[:length]
+        explicit += [
+            (f"g.1_{length}del", (1, seq[: length + 1], seq[length])),
+            (f"g.1_{length}dup", (1, seq[0], span + seq[0])),
+            (f"g.1_{length}inv", (1, span, reverse_complement(span))),
+        ]
+    for hgvs_string, (position, ref, alt) in explicit:
+        var_g = parser.parse(f"{CHR2}:{hgvs_string}")
+        assert synthetic_babelfish.hgvs_to_vcf_coordinate(var_g) == VCFCoordinate(
+            CHR2, position, ref, alt
+        ), hgvs_string
+    # Read back
+    for hgvs_string in ("g.1_10del", "g.1_10dup", "g.1_10inv", "g.1_60del", "g.1_60dup"):
+        var_g = parser.parse(f"{CHR2}:{hgvs_string}")
+        vc = synthetic_babelfish.hgvs_to_vcf_coordinate(var_g)
+        assert synthetic_babelfish.vcf_coordinate_to_g_hgvs(vc).format() == var_g.format()
+
+
+def test_vcf_to_hgvs_large_explicit_near_sequence_start(synthetic_babelfish):
+    """An insertion >= normalize_max_length, longer than its position, has no room for a
+    preceding copy (a symbolic <DUP>) so is an insertion. An inversion at position 1 has no
+    padding base for an <INV> so is normalized as explicit"""
+    seq = synthetic_babelfish.hdp.seq
+    inserted = seq[500:620]
+    var_g = synthetic_babelfish.vcf_to_g_hgvs("2", 10, seq[9], seq[9] + inserted)
+    assert var_g.posedit.edit.type == "ins"
+    assert str(var_g.posedit.pos) == "10_11"
+    assert var_g.posedit.edit.alt == inserted
+    span = seq[:120]
+    var_g = synthetic_babelfish.vcf_to_g_hgvs("2", 1, span, reverse_complement(span))
+    # Normalizing trims the palindromic ends
+    assert var_g.format() == f"{CHR2}:g.3_118inv"
 
 
 def test_symbolic_alt_min_length_boundary(parser, synthetic_babelfish):
