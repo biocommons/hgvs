@@ -46,6 +46,26 @@ class Test_AlignmentMapper(unittest.TestCase):
                 self.parser.parse_c_interval("99999")
             )
 
+    def test_n_to_c_plain_interval_of_base_offset_positions(self):
+        """n_to_c must accept a plain hgvs.location.Interval wrapping
+        BaseOffsetPositions directly (not nested Intervals), not just a
+        BaseOffsetInterval. Regression test: the bounds-check branch used to
+        assume any non-BaseOffsetInterval Interval had nested Interval
+        start/end (`n_interval.start.start.base`), raising AttributeError
+        for this shape instead.
+        """
+        am = AlignmentMapper(self.hdp, "NM_000348.3", "NC_000002.11", "splign")
+
+        base_offset_interval = self.parser.parse_n_interval("5")
+        plain_interval = hgvs.location.Interval(
+            start=hgvs.location.BaseOffsetPosition(base=base_offset_interval.start.base, offset=0),
+            end=hgvs.location.BaseOffsetPosition(base=base_offset_interval.end.base, offset=0),
+        )
+
+        result = am.n_to_c(plain_interval, strict_bounds=False)
+        expected = am.n_to_c(base_offset_interval, strict_bounds=False)
+        self.assertEqual(str(expected), str(result))
+
     def x_test_alignmentmapper_AlignmentMapper_LCE3C_uncertain(self):
         # ? is not yet supported
         """Use NM_178434.2 tests to test mapping with uncertain positions"""

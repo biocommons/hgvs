@@ -1,10 +1,136 @@
+import os
 import unittest
 
 import pytest
 
 import hgvs
+import hgvs.dataproviders.uta
+import hgvs.location
+import hgvs.parsers
 from hgvs.assemblymapper import AssemblyMapper
+from hgvs.pretty.datacompiler import DataCompiler
+from hgvs.pretty.models import PositionDetail, PrettyConfig
 from hgvs.pretty.prettyprint import PrettyPrint
+from hgvs.utils.reftranscriptdata import RefTranscriptData
+from support import CACHE
+
+
+@pytest.mark.quick
+class Test_DataCompilerDup(unittest.TestCase):
+    """Regression tests for the dup-handling bugs in DataCompiler
+    (biocommons/hgvs#881): a dup variant's plain (non-BaseOffset) position
+    used to crash DataCompiler._get_start_end() with
+    'SimplePosition' object has no attribute 'start', and after that was
+    fixed, get_position_and_state() returned raw Position objects instead
+    of ints for the dup branch, which callers such as
+    get_shuffled_variant()/bioutils.normalize() cannot consume.
+
+    These target DataCompiler directly (no transcript/alignment mapping
+    needed) so they stay cheap enough to run unconditionally, unlike the
+    full PrettyPrint.display() tests in Test_SimplePosition below.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.hp = hgvs.parsers.Parser()
+        cls.hdp = hgvs.dataproviders.uta.connect(
+            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
+        )
+        cls.am37 = AssemblyMapper(cls.hdp, assembly_name="GRCh37")
+
+    def test_get_position_and_state_dup(self):
+        var_g = self.hp.parse("NC_000007.13:g.36561663dup")
+        config = PrettyConfig(hdp=self.hdp, assembly_mapper=self.am37)
+        dc = DataCompiler(config=config)
+
+        start, end, ref, alt = dc.get_position_and_state(var_g)
+
+        self.assertIsInstance(start, int)
+        self.assertIsInstance(end, int)
+        self.assertEqual((start, end), (36561662, 36561663))
+        self.assertEqual(alt, ref + ref)
+
+    def _get_start_end(self, hgvs_g):
+        config = PrettyConfig(hdp=self.hdp, assembly_mapper=self.am37)
+        dc = DataCompiler(config=config)
+        return dc._get_start_end(self.hp.parse(hgvs_g))
+
+    def test_get_start_end_simple_position(self):
+        s, e = self._get_start_end("NC_000007.13:g.36561662_36561663dup")
+        self.assertIsInstance(s, hgvs.location.SimplePosition)
+        self.assertIsInstance(e, hgvs.location.SimplePosition)
+        self.assertEqual((s.base, e.base), (36561662, 36561663))
+
+    def test_get_start_end_uncertain_interval(self):
+        # Both ends are nested Intervals (uncertain breakpoints): the
+        # outermost bases bound the affected region.
+        s, e = self._get_start_end("NC_000007.13:g.(36561660_36561662)_(36561665_36561670)dup")
+        self.assertEqual((s.base, e.base), (36561660, 36561670))
+
+    def test_get_start_end_uncertain_interval_unknown_bounds(self):
+        # When the outer bases are unknown ('?'), fall back to the inner
+        # (known) base of each nested Interval.
+        s, e = self._get_start_end("NC_000007.13:g.(?_36561662)_(36561665_?)dup")
+        self.assertEqual((s.base, e.base), (36561662, 36561665))
+
+    def test_get_start_end_uncertain_one_side(self):
+        s, e = self._get_start_end("NC_000007.13:g.(?_36561662)_36561670dup")
+        self.assertEqual((s.base, e.base), (36561662, 36561670))
+
+        s, e = self._get_start_end("NC_000007.13:g.36561660_(36561665_?)dup")
+        self.assertEqual((s.base, e.base), (36561660, 36561665))
+
+
+@pytest.mark.quick
+class Test_DataCompilerAlignmentGap(unittest.TestCase):
+    """Offline regression test for DataCompiler._backfill_gap_in_ref()
+    (biocommons/hgvs#881): transcript bases with no genomic counterpart
+    used to be described with a plain hgvs.location.Interval of
+    BaseOffsetPositions instead of a BaseOffsetInterval, which
+    AlignmentMapper.n_to_c cannot unwrap, so displaying a variant near an
+    alignment gap crashed.
+
+    The full-display version of this check lives in
+    Test_SimplePosition.test_intronic_offset_near_alignment_gap, but it is
+    skipped because PrettyPrint.display() fetches the whole chromosome
+    sequence (hundreds of MB in the test cache). Calling the backfill
+    helper directly needs only transcript-level data.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.hp = hgvs.parsers.Parser()
+        cls.hdp = hgvs.dataproviders.uta.connect(
+            mode=os.environ.get("HGVS_CACHE_MODE", "run"), cache=CACHE
+        )
+        cls.am37 = AssemblyMapper(cls.hdp, assembly_name="GRCh37")
+
+    def test_backfill_gap_in_ref(self):
+        # In the splign alignment of NM_000682.6 to NC_000002.11 (minus
+        # strand), g.96780997 maps to c.901 and g.96780998 to c.891: the
+        # nine transcript bases c.892_900 (n.988_996) have no genomic
+        # counterpart, so DataCompiler.data() backfills them one by one.
+        var_c = self.hp.parse("NM_000682.6:c.901+5G>A")
+        mapper = self.am37._fetch_AlignmentMapper(var_c.ac, "NC_000002.11", "splign")
+        self.assertLess(mapper.strand, 0)
+        tx_seq = self.hdp.get_seq(var_c.ac)
+        reference_data = RefTranscriptData(self.hdp, var_c.ac, None)
+
+        config = PrettyConfig(hdp=self.hdp, assembly_mapper=self.am37)
+        dc = DataCompiler(config=config)
+        pdata = PositionDetail()
+
+        dc._backfill_gap_in_ref(
+            var_c, tx_seq, mapper, reference_data, pdata, "=", prev_c_pos=901, prev_n_pos=997
+        )
+
+        self.assertIsInstance(pdata.c_interval, hgvs.location.BaseOffsetInterval)
+        self.assertEqual((pdata.c_pos, pdata.c_offset, pdata.n_pos), (900, 0, 996))
+        self.assertEqual(pdata.cigar_ref, "D")
+        self.assertIsNone(pdata.chromosome_pos)
+        self.assertIsNone(pdata.ref)
+        self.assertEqual(pdata.tx, tx_seq[995])
+        self.assertIsNotNone(pdata.protein_data)
 
 
 @pytest.mark.skip(
@@ -753,6 +879,37 @@ class Test_SimplePosition(unittest.TestCase):
             + "ArgGlnLeuGlyGlnSerGlyLeuHisValGlyArgProVa\n"
             + "   ...            |||            ...     \n"
             + "                  100                    \n"
+        ).split("\n")
+        for r, e in zip(result, expected_str, strict=False):
+            self.assertEqual(e, r)
+
+    def test_intronic_offset_near_alignment_gap(self):
+        """An intronic (offset) variant displayed near a tx/genome alignment gap
+        must not crash. Regression test for a bug where _backfill_gap_in_ref
+        built a plain hgvs.location.Interval of BaseOffsetPositions instead of
+        a BaseOffsetInterval, which AlignmentMapper.n_to_c cannot unwrap.
+        """
+        hgvs_c = "NM_000682.6:c.901+5G>A"
+        var_c = self.hp.parse(hgvs_c)
+
+        result = self.pp.display(var_c)
+        print(result)
+        result = result.split("\n")
+        expected_str = (
+            "hgvs_g    : NC_000002.11:g.96780992C>T\n"
+            + "hgvs_c    : NM_000682.6:c.901+5G>A\n"
+            + "hgvs_p    : NP_000673.2:p.?\n"
+            + "          :         96,780,980                   96,781,000\n"
+            + "chrom pos :    .    |    .    |    .  _________  |    .    |  \n"
+            + "seq    -> : TCTTCCTCCTCCTCCTCCTCCTCTTC.........AGCTTCATCCTCTGG\n"
+            + "tx ref dif:                           DDDDDDDDD               \n"
+            + "region    :                     T                             \n"
+            + "tx seq <- : AGAAGGAGGAGGAGGAGGAGGAGAAGGAGGAGAAGTCGAAGTAGGAGACC\n"
+            + "tx pos    :  .    |    .    |    .    |    .    |    .    |   \n"
+            + "          :       920       910       900       890       880\n"
+            + "aa seq <- : luGluGluGluGluGluGluGluGluGluGluGluAlaGluAspGluPro\n"
+            + "aa pos    :            ...            |||            ...      \n"
+            + "          :                           300                     \n"
         ).split("\n")
         for r, e in zip(result, expected_str, strict=False):
             self.assertEqual(e, r)
