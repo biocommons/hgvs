@@ -44,7 +44,7 @@ html_favicon = 'static/favicon.ico'
 html_logo = 'static/hgvs-logo.png'
 html_static_path = ['static']
 html_title = '{project} {release}'.format(project=project, release=release)
-intersphinx_mapping = {'http://docs.python.org/': None, }
+intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
 master_doc = 'index'
 pygments_style = 'sphinx'
 source_suffix = '.rst'

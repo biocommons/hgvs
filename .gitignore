@@ -1,6 +1,9 @@
+
+# Dolt database files (added by bd init)
 *$py.class
 *.bak
 *.cover
+*.db
 *.egg
 *.egg-info
 *.egg-info/
@@ -11,10 +14,7 @@
 *.orig
 *.pot
 *.py.cover
-*.py[cod]
 *.py[codz]
-*.pyc
-*.pyo
 *.rej
 *.sage.py
 *.so
@@ -26,12 +26,13 @@
 .Python
 .abstra/
 .cache
-.claude
+.claude/
 .coverage
 .coverage.*
 .cursorignore
 .cursorindexingignore
 .dmypy.json
+.dolt/
 .eggs/
 .env
 .envrc
@@ -63,6 +64,7 @@
 .venv
 .vscode
 .webassets-cache
+/agents/
 /site
 ENV/
 MANIFEST
@@ -117,7 +119,3 @@ var/
 venv.bak/
 venv/
 wheels/
-
-# Dolt database files (added by bd init)
-.dolt/
-*.db

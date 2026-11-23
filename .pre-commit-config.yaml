@@ -1,7 +1,9 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: "v6.0.0"
+    rev: v6.0.0
     hooks:
+      - id: check-added-large-files
+        args: ["--maxkb=1500"]
       - id: check-case-conflict
       - id: check-merge-conflict
       - id: check-json
@@ -10,8 +12,11 @@ repos:
       - id: check-symlinks
       - id: check-toml
       - id: check-yaml
+      - id: detect-aws-credentials
+        args: [ --allow-missing-credentials ]
       - id: detect-private-key
       - id: end-of-file-fixer
+      - id: fix-byte-order-marker
       - id: mixed-line-ending
         args: [--fix=lf]
       - id: pretty-format-json
@@ -20,11 +25,16 @@ repos:
       - id: trailing-whitespace
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.12.7"
+    rev: v0.17.0
     hooks:
       - id: ruff-check
         args: [--fix, --exit-non-zero-on-fix]
       - id: ruff-format
+
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.12
+    hooks:
+      - id: actionlint
 
   - repo: local
     hooks:

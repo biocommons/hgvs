@@ -1,28 +1,32 @@
 [build-system]
 build-backend = "setuptools.build_meta"
-requires = ["setuptools >= 70.1", "setuptools_scm[toml]>=8.1,<11.0"]
+requires = ["setuptools >= 80.0", "setuptools_scm[toml] >= 9.0"]
 
 [dependency-groups]
 dev = [
-  "deptry>=0.23",
-  "ipython",
-  "jupyter",
-  "mkdocs-awesome-nav>=3.1.2",
-  "mkdocs-material>=9.6",
-  "mkdocs>=1.6",
-  "mkdocstrings[python]>=0.30",
-  "mypy>=1.17",
-  "pre-commit>=3.8",
-  "pytest-cov>=4.1",
-  "pytest-recording",
-  "pytest>=7.4,<10.0",
-  "ruff>=0.12",
+  # code quality & formatting
+  "deptry>=0.25.1",
+  "mypy>=2.4.0",
+  "nox>=2026.8.17",
+  "prek>=0.5.5",
+  "ruff>=0.17.0",
+  "toml-sort>=0.25.0",
+  "uv-bump>=0.6.0",
+
+  # testing
+  "pytest>=9.1.1",
+  "pytest-cov>=7.1.0",
+  "pytest-recording>=0.14.0",
+  "vcrpy>=8.3.0",
+
+  # documentation
   "sphinx",
   "sphinx_rtd_theme",
   "sphinxcontrib-fulltoc >= 1.1",
-  "toml-sort",
-  "tox-uv>=1.28",
-  "vcrpy",
+
+  # misc dev tools
+  "ipython>=8.0.0",
+  "jupyter>=1.1.1",
 ]
 
 [project]
@@ -32,6 +36,7 @@ authors = [
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
@@ -43,6 +48,7 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Medical Science Apps.",
   "Topic :: Software Development :: Libraries :: Python Modules"
 ]
+# mandatory runtime dependencies only
 dependencies = [
   "attrs >= 17.4.0", # https://github.com/biocommons/hgvs/issues/473
   "biocommons.seqrepo >= 0.6.10",
@@ -71,12 +77,14 @@ readme = "README.md"
 requires-python = ">=3.11"
 
 [project.optional-dependencies]
+# optional runtime dependencies only
 align = ["uta-align~=0.3"]
 
 [project.scripts]
 "hgvs-shell" = "hgvs.shell:shell"
 
 [project.urls]
+Changelog = "https://github.com/biocommons/hgvs/releases"
 Documentation = "https://hgvs.readthedocs.io/"
 Homepage = "https://github.com/biocommons/hgvs/"
 Issues = "https://github.com/biocommons/hgvs/issues/"
@@ -134,16 +142,14 @@ mkdocs = "mkdocs"
 mkdocs-material = "mkdocs_material"
 mkdocstrings = "mkdocstrings"
 mypy = "mypy"
-pre-commit = "pre_commit"
 pytest = "pytest"
 pytest-cov = "pytest_cov"
 pyyaml = "yaml"
 ruff = "ruff"
-tox-uv = "tox_uv"
 ty = "ty"
 
 [tool.pytest.ini_options]
-addopts = "-s -v -x --strict-markers -m 'not extra and not network' --doctest-modules --cov=src"
+addopts = "--doctest-modules -m 'not extra and not network'"
 doctest_optionflags = [
   "ALLOW_BYTES",
   "ALLOW_UNICODE",
@@ -164,14 +170,16 @@ markers = [
   "regression",
   "validation",
 ]
+strict_markers = true
 testpaths = ["tests"]
 
 [tool.ruff]
-extend-exclude = ["src/hgvs/parsers/generated"]
-fix = true
+# docs/conf.py: Sphinx config conventions (e.g., `copyright`) conflict with lint rules
+extend-exclude = ["docs/conf.py", "src/hgvs/parsers/generated"]
+force-exclude = true  # honor excludes for files passed explicitly (pre-commit)
 line-length = 100
 src = ["src", "tests"]
-target-version = "py313"
+target-version = "py311"
 
 [tool.ruff.format]
 docstring-code-format = true

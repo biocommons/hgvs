@@ -121,6 +121,11 @@ class Normalizer:
             _logger.warning("%s: coordinates are out-of-bounds; returning as-is", var)
             return orig_var
 
+        # A single-base substitution can't be trimmed or shuffled, so skip
+        # fetching the sequence window
+        if var.posedit.edit.type == "sub" and s.base == e.base:
+            return copy.deepcopy(orig_var)
+
         # restrict var types to those that use sequence start (i.e., not c.)
         assert var.type in "gmnr", "Internal Error: variant must be of type g, m, n, r"
 
