@@ -1,16 +1,16 @@
 #
 # Tests for conversion of hgvs tags
 #
-import os
 import unittest
+from pathlib import Path
 
 import hgvs.parsers
-import hgvs.variantmapper as variantmapper
 import support.mock_input_source as mock_input_data_source
+from hgvs import variantmapper
 
 
 class TestHgvsCToP(unittest.TestCase):
-    fn = os.path.join(os.path.dirname(__file__), "data", "sanity_cp.tsv")
+    fn = Path(__file__).parent / "data" / "sanity_cp.tsv"
     _datasource = mock_input_data_source.MockInputSource(fn)
     _mapper = variantmapper.VariantMapper(_datasource, prevalidation_level="INTRINSIC")
     _parser = hgvs.parsers.Parser()
