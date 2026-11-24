@@ -324,6 +324,7 @@ class AltSeqToHgvsp:
         end,
         ref,
         alt,
+        *,
         fsext_len=None,
         is_dup=False,
         acc=None,
