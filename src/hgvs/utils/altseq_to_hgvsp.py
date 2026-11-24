@@ -102,7 +102,16 @@ class AltSeqToHgvsp:
                         start += 1
                     offset = start + abs(delta)
 
-                    if delta > 0:  # net insertion
+                    if start < len(self._ref_seq) - 1 and self._is_stop_lost():
+                        # Residues before the stop codon change and translation reads
+                        # through to a new stop. Describe everything from the first changed
+                        # residue through both stops (e.g. Ser658_Ter659delinsLys...Ter),
+                        # so that the description says the reference stop is lost. Aligning
+                        # the new stop with the reference one would hide that (#941).
+                        insertion = list(self._alt_seq[start:])
+                        deletion = list(self._ref_seq[start:])
+                        ref_sub = alt_sub = ""
+                    elif delta > 0:  # net insertion
                         insertion = list(self._alt_seq[start:offset])
                         deletion = []
                         ref_sub = self._ref_seq[start:]
@@ -296,6 +305,27 @@ class AltSeqToHgvsp:
         )
 
         return var_p
+
+    def _is_stop_lost(self):
+        """Whether an in-frame variant loses the reference stop codon and extends the protein
+
+        True when translation of the alt transcript ends at a stop codon downstream of
+        where the reference stop codon lies in the alt transcript, and the alt protein is
+        longer than the reference protein. This is the protein consequence of a stop-loss
+        variant; a variant that hits the stop codon but leaves a protein of the same or
+        shorter length (e.g. one that rebuilds a stop in place) does not count.
+
+        :return True if the reference stop is lost and the protein is extended
+        :rtype bool
+        """
+        if not (self._ref_seq.endswith("*") and self._alt_seq.endswith("*")):
+            return False
+        if len(self._alt_seq) <= len(self._ref_seq):
+            return False
+        # 1-based transcript position of the last base of the stop codon that ends the
+        # alt protein; cds_stop is where the reference stop codon ends in the alt transcript
+        alt_stop_end = self._alt_data.cds_start - 1 + 3 * len(self._alt_seq)
+        return alt_stop_end > self._alt_data.cds_stop
 
     def _check_if_ins_is_dup(self, start, insertion):
         """Helper to identify an insertion as a duplicate
