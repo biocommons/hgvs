@@ -1,16 +1,16 @@
 #
 # Tests for conversion of hgvs tags
 #
-import os
 import unittest
+from pathlib import Path
 
 import hgvs.parsers
-import hgvs.variantmapper as variantmapper
 import support.mock_input_source as mock_input_data_source
+from hgvs import variantmapper
 
 
 class TestHgvsCToP(unittest.TestCase):
-    fn = os.path.join(os.path.dirname(__file__), "data", "sanity_cp.tsv")
+    fn = Path(__file__).parent / "data" / "sanity_cp.tsv"
     _datasource = mock_input_data_source.MockInputSource(fn)
     _mapper = variantmapper.VariantMapper(_datasource, prevalidation_level="INTRINSIC")
     _parser = hgvs.parsers.Parser()
@@ -98,6 +98,43 @@ class TestHgvsCToP(unittest.TestCase):
     def test_deletion_no_frameshift_removes_stop_plus_previous(self):
         hgvsc = "NM_999999.1:c.25_30del"
         hgvsp_expected = "MOCK:p.(Lys9_Ter10delinsGly)"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
+    def test_no_frameshift_stop_loss_changes_previous_residue(self):
+        """In-frame variants that change residues before the stop codon and read
+        through to a new stop name both stops, so the stop loss is visible (#941)"""
+        # AAA TAG -> AGG GAG, then AGG AGG TAG from the 3'UTR
+        hgvsc = "NM_999998.1:c.26_28delinsGGG"
+        hgvsp_expected = "MOCK:p.(Lys9_Ter10delinsArgGluArgArgTer)"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
+        hgvsc = "NM_999998.1:c.25_30del"
+        hgvsp_expected = "MOCK:p.(Lys9_Ter10delinsArgArgTer)"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
+        hgvsc = "NM_999998.1:c.23_28del"
+        hgvsp_expected = "MOCK:p.(Ala8_Ter10delinsGluArgArgTer)"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
+    def test_no_frameshift_near_stop_without_stop_loss(self):
+        """Descriptions that must not pick up the stop-loss delins form (#941)"""
+        # first changed residue is the stop codon itself: extension
+        hgvsc = "NM_999998.1:c.28_30del"
+        hgvsp_expected = "MOCK:p.(Ter10ArgextTer2)"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
+        # the protein gets longer, but still ends at the reference stop codon
+        hgvsc = "NM_999998.1:c.25_27delinsGGGGGG"
+        hgvsp_expected = "MOCK:p.(Lys9delinsGlyGly)"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
+        hgvsc = "NM_999998.1:c.24_25insGGG"
+        hgvsp_expected = "MOCK:p.(Ala8_Lys9insGly)"
+        self._run_conversion(hgvsc, hgvsp_expected)
+
+        # the stop codon is deleted and a 3'UTR stop is used, but the protein is not extended
+        hgvsc = "NM_999998.1:c.22_30del"
+        hgvsp_expected = "MOCK:p.(Ala8_Lys9delinsArgArg)"
         self._run_conversion(hgvsc, hgvsp_expected)
 
     def test_indel_no_frameshift(self):
