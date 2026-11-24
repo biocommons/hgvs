@@ -63,9 +63,8 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
         }
 
         failures = []
-        for key in cases:
+        for key, (func, args) in cases.items():
             try:
-                func, args = cases[key]
                 func(*args)
                 failures.append(key)
             except hgvs.exceptions.HGVSInvalidVariantError:
