@@ -43,6 +43,23 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
 
         assert str(var_p) == "NP_001240838.1:p.(Ter139Ter)"
 
+    def test_c_to_p_unchanged_protein_is_not_frameshift(self):
+        """Indels whose length is not a multiple of 3 but that rebuild the
+        displaced codons and the stop codon in place leave the protein
+        unchanged, so they must not be described as frameshifts (#960)."""
+        cases = [
+            # insertion re-creating the last codons and the stop from downstream reference bases
+            ("NM_000206.3:c.1098_1099insCCTGAAA", "NP_000197.1:p.(Lys366=)"),
+            # deletion across the stop codon; the 3'UTR supplies an identical tail and stop
+            ("NM_005356.5:c.1524_*3del", "NP_005347.3:p.(Gln508=)"),
+            # delins changing the last sense codon synonymously and restoring the stop
+            ("NM_206933.4:c.15606_15608delinsTT", "NP_996816.3:p.(Leu5202=)"),
+        ]
+        for hgvs_c, expected in cases:
+            with self.subTest(hgvs_c=hgvs_c):
+                var_p = self.vm.c_to_p(self.hp.parse_hgvs_variant(hgvs_c))
+                assert str(var_p) == expected
+
     def test_gcrp_invalid_input_type(self):
         hgvs_g = "NC_000007.13:g.36561662C>T"
         hgvs_c = "NM_001637.3:c.1582G>A"
@@ -63,9 +80,8 @@ class Test_VariantMapper_Exceptions(unittest.TestCase):
         }
 
         failures = []
-        for key in cases:
+        for key, (func, args) in cases.items():
             try:
-                func, args = cases[key]
                 func(*args)
                 failures.append(key)
             except hgvs.exceptions.HGVSInvalidVariantError:

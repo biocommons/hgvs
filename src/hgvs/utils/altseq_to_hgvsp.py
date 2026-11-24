@@ -55,7 +55,10 @@ class AltSeqToHgvsp:
         if not self._is_ambiguous and len(self._alt_seq) > 0:
             do_delins = True
             if self._ref_seq == self._alt_seq:
-                # Silent p. variant
+                # Silent p. variant. The protein is unchanged, so this is not a frameshift
+                # even when the edit length is not a multiple of 3 (e.g. an indel that
+                # rebuilds the displaced codons and the stop codon in place).
+                self._is_frameshift = False
                 start = self._alt_data.variant_start_aa
                 if start - 1 < len(self._ref_seq):
                     deletion = self._ref_seq[start - 1]
@@ -64,7 +67,6 @@ class AltSeqToHgvsp:
                     start = ""
                     deletion = ""
                     insertion = ""
-                    self._is_frameshift = False
                 variants.append({"start": start, "ins": insertion, "del": deletion})
                 do_delins = False
             elif self._alt_seq[: self._alt_seq.find("*") + 1] == self._ref_seq:
@@ -324,6 +326,7 @@ class AltSeqToHgvsp:
         end,
         ref,
         alt,
+        *,
         fsext_len=None,
         is_dup=False,
         acc=None,
