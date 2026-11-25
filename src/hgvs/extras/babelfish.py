@@ -36,6 +36,9 @@ from hgvs.normalizer import Normalizer
 from hgvs.posedit import PosEdit
 from hgvs.sequencevariant import SequenceVariant
 from hgvs.utils.position import get_start_end_interbase
+from hgvs.validator import IntrinsicValidator
+
+# Positions are 1-based, as in VCF and HGVS. An _i suffix is 0-based interbase, as hdp.get_seq takes
 
 # HGVS edit type <-> VCF symbolic ALT allele
 SYMBOLIC_DEL = "<DEL>"
@@ -152,6 +155,13 @@ class Babelfish:
         either. Must be at least symbolic_alt_min_length. Defaults to the larger of
         symbolic_alt_min_length and DEFAULT_NORMALIZE_MAX_LENGTH.
 
+        At position 1 there is no padding base before a variant, which a symbolic allele
+        requires, so a del, dup or inv there is written as explicit sequence whatever its
+        length, and writing one of at least normalize_max_length raises ValueError. An
+        explicit deletion at position 1 of at least normalize_max_length is read without
+        normalizing, so when base 1 matches the padding base after it, it is read as the
+        equivalent deletion one base right (eg g.1_120del as g.2_121del).
+
         vcf_version: of VCF written, which sets the sign of a deletion's SVLEN from vcf_info
         (negative up to VCF 4.3, positive from 4.4). SVLEN of either sign is read.
 
@@ -178,9 +188,11 @@ class Babelfish:
         self.vcf_version = vcf_version
         self.chrom_style = chrom_style
         self.hdp = hdp
+        # Validated in _hgvs_to_vcf, as variants too big to normalize skip the normalizer
         self.hn = hgvs.normalizer.Normalizer(
             hdp, cross_boundaries=False, shuffle_direction=5, validate=False
         )
+        self.validator = IntrinsicValidator(strict=False)
         self.ac_to_name_map = make_ac_name_map(assembly_name)
         self.name_to_ac_map = make_name_ac_map(assembly_name)
         # We need to accept accessions as chromosome names, so add them pointing at themselves
@@ -237,6 +249,7 @@ class Babelfish:
         if var_g.type != "g":
             msg = f"Expected g. variant, got {var_g}"
             raise RuntimeError(msg)
+        self.validator.validate(var_g)
 
         if self._too_big_to_normalize(self.symbolic_alt_length(var_g)):
             return self._hgvs_to_vcf_symbolic(var_g)
@@ -247,17 +260,23 @@ class Babelfish:
         return self._hgvs_to_vcf_explicit(vleft)
 
     def _hgvs_to_vcf_explicit(self, vleft):
-        """(VCFCoordinate, HGVS edit type) with explicit ref/alt, for a normalized variant"""
+        """(VCFCoordinate, HGVS edit type) with explicit ref/alt, for a normalized variant, or
+        one too big to normalize at the start of the sequence"""
         # We are taking the inner interval, but plan on implementing INFO fields in issue #788
         start_i, end_i = get_start_end_interbase(vleft.posedit.pos, outer_confidence=False)
         typ = vleft.posedit.edit.type
 
         if typ == "dup":
+            if start_i == 0:
+                # The copy is inserted before the original
+                copy = self.hdp.get_seq(vleft.ac, 0, end_i)
+                return self._vcf_padded_after(vleft.ac, 0, 0, copy), typ
             start_i -= 1
             alt = self.hdp.get_seq(vleft.ac, start_i, end_i)
             ref = alt[0]
         elif typ == "inv":
-            ref = vleft.posedit.edit.ref
+            # Unnormalized (see _hgvs_to_vcf_symbolic) an inv may have no ref
+            ref = vleft.posedit.edit.ref or self.hdp.get_seq(vleft.ac, start_i, end_i)
             alt = reverse_complement(ref)
         else:
             alt = vleft.posedit.edit.alt or ""
@@ -267,6 +286,9 @@ class Babelfish:
                     # ins coordinates (only) exclude left position
                     start_i += 1
                     end_i -= 1
+                elif start_i == 0:
+                    # A del at position 1. An ins can't be before position 1 (validated)
+                    return self._vcf_padded_after(vleft.ac, start_i, end_i, alt), typ
                 # Left anchored
                 start_i -= 1
                 ref = self.hdp.get_seq(vleft.ac, start_i, end_i)
@@ -277,11 +299,20 @@ class Babelfish:
                     alt = "."
         return VCFCoordinate(vleft.ac, start_i + 1, ref, alt), typ
 
+    def _vcf_padded_after(self, ac, start_i, end_i, alt):
+        """VCFCoordinate replacing start_i:end_i with alt at the start of the sequence, which
+        VCF pads with the base after rather than the base before"""
+        ref = self.hdp.get_seq(ac, start_i, end_i + 1)
+        if len(ref) != end_i + 1 - start_i:
+            msg = f"{ac}: no base after {start_i + 1}_{end_i} to pad it with (whole sequence?)"
+            raise ValueError(msg)
+        return VCFCoordinate(ac, start_i + 1, ref, alt + ref[-1])
+
     @staticmethod
     def symbolic_alt_length(var_g):
         """Length of a del, dup or inv (ie that can be represented as a symbolic allele),
         otherwise None. Also None when an explicit sequence doesn't fit the interval, which
-        is left for the normalizer to reject."""
+        the validator rejects (see _hgvs_to_vcf)."""
         edit = var_g.posedit.edit
         if edit.type not in SYMBOLIC_ALTS:
             return None
@@ -302,8 +333,20 @@ class Babelfish:
     def _hgvs_to_vcf_symbolic(self, var_g):
         start_i, end_i = get_start_end_interbase(var_g.posedit.pos, outer_confidence=False)
         typ = var_g.posedit.edit.type
-        ref = self.hdp.get_seq(var_g.ac, start_i - 1, start_i)
-        return VCFCoordinate(var_g.ac, start_i, ref, SYMBOLIC_ALTS[typ], end=end_i), typ
+        padding_i = start_i - 1  # The base before the variant
+        if padding_i < 0:
+            # No padding base before a variant at the start of the sequence, so it must be
+            # explicit - but not by fetching more than we would to normalize it
+            if self._too_big_to_normalize(end_i - start_i):
+                msg = (
+                    f"{var_g}: a symbolic allele needs a padding base before it, and at the "
+                    f"start of the sequence it is too big (normalize_max_length="
+                    f"{self.normalize_max_length}) to write as explicit sequence"
+                )
+                raise ValueError(msg)
+            return self._hgvs_to_vcf_explicit(var_g)
+        ref = self.hdp.get_seq(var_g.ac, padding_i, start_i)
+        return VCFCoordinate(var_g.ac, padding_i + 1, ref, SYMBOLIC_ALTS[typ], end=end_i), typ
 
     def vcf_to_g_hgvs(self, chrom, position, ref, alt, *, end=None, svlen=None):
         """chrom is a chromosome name or accession. Symbolic alleles <DEL>, <DUP> and <INV>
@@ -385,7 +428,8 @@ class Babelfish:
             return vc
         alt = vc.alt.upper()
         self._check_symbolic_alt(alt)
-        seq = self.hdp.get_seq(vc.ac, vc.position - 1, vc.end)  # padding base onwards
+        padding_i = vc.position - 1
+        seq = self.hdp.get_seq(vc.ac, padding_i, vc.end)  # padding base onwards
         if alt == SYMBOLIC_DEL:
             return VCFCoordinate(vc.ac, vc.position, seq, seq[0])
         if alt == SYMBOLIC_DUP:
@@ -414,9 +458,15 @@ class Babelfish:
             return self._insertion_as_symbolic_dup(vc) or vc
 
         if len(ref) == len(alt) >= min_length and ref == reverse_complement(alt):
-            padding = self.hdp.get_seq(ac, position - 2, position - 1)
+            # Symbolic alts are padded with the base before
+            padding_position = position - 1
+            padding_i = padding_position - 1
+            if padding_i < 0:
+                # No padding base before an inversion at the start of the sequence
+                return vc
+            padding = self.hdp.get_seq(ac, padding_i, padding_position)
             return VCFCoordinate(
-                ac, position - 1, padding, SYMBOLIC_INV, end=position + len(ref) - 1
+                ac, padding_position, padding, SYMBOLIC_INV, end=position + len(ref) - 1
             )
         return vc
 
@@ -425,12 +475,19 @@ class Babelfish:
         ac, position = vc.ac, vc.position
         inserted = vc.alt[1:].upper()
         length = len(inserted)
+        insertion_i = position  # Between the ref base at position and the next
         # Left aligned, the inserted copy precedes the bases it duplicates
-        if self.hdp.get_seq(ac, position, position + length) == inserted:
+        if self.hdp.get_seq(ac, insertion_i, insertion_i + length) == inserted:
             return VCFCoordinate(ac, position, vc.ref.upper(), SYMBOLIC_DUP, end=position + length)
-        padded = self.hdp.get_seq(ac, position - length - 1, position)
+        # Otherwise a preceding copy ends at position, padded by the base at padding_position
+        padding_position = position - length
+        padding_i = padding_position - 1
+        if padding_i < 0:
+            # No room for a preceding copy this close to the start of the sequence
+            return None
+        padded = self.hdp.get_seq(ac, padding_i, insertion_i)
         if padded[1:] == inserted:
-            return VCFCoordinate(ac, position - length, padded[0], SYMBOLIC_DUP, end=position)
+            return VCFCoordinate(ac, padding_position, padded[0], SYMBOLIC_DUP, end=position)
         return None
 
     @staticmethod
