@@ -36,6 +36,7 @@ from hgvs.normalizer import Normalizer
 from hgvs.posedit import PosEdit
 from hgvs.sequencevariant import SequenceVariant
 from hgvs.utils.position import get_start_end_interbase
+from hgvs.validator import IntrinsicValidator
 
 # Positions are 1-based, as in VCF and HGVS. An _i suffix is 0-based interbase, as hdp.get_seq takes
 
@@ -154,6 +155,13 @@ class Babelfish:
         either. Must be at least symbolic_alt_min_length. Defaults to the larger of
         symbolic_alt_min_length and DEFAULT_NORMALIZE_MAX_LENGTH.
 
+        At position 1 there is no padding base before a variant, which a symbolic allele
+        requires, so a del, dup or inv there is written as explicit sequence whatever its
+        length, and writing one of at least normalize_max_length raises ValueError. An
+        explicit deletion at position 1 of at least normalize_max_length is read without
+        normalizing, so when base 1 matches the padding base after it, it is read as the
+        equivalent deletion one base right (eg g.1_120del as g.2_121del).
+
         vcf_version: of VCF written, which sets the sign of a deletion's SVLEN from vcf_info
         (negative up to VCF 4.3, positive from 4.4). SVLEN of either sign is read.
 
@@ -180,9 +188,11 @@ class Babelfish:
         self.vcf_version = vcf_version
         self.chrom_style = chrom_style
         self.hdp = hdp
+        # Validated in _hgvs_to_vcf, as variants too big to normalize skip the normalizer
         self.hn = hgvs.normalizer.Normalizer(
             hdp, cross_boundaries=False, shuffle_direction=5, validate=False
         )
+        self.validator = IntrinsicValidator(strict=False)
         self.ac_to_name_map = make_ac_name_map(assembly_name)
         self.name_to_ac_map = make_name_ac_map(assembly_name)
         # We need to accept accessions as chromosome names, so add them pointing at themselves
@@ -239,6 +249,7 @@ class Babelfish:
         if var_g.type != "g":
             msg = f"Expected g. variant, got {var_g}"
             raise RuntimeError(msg)
+        self.validator.validate(var_g)
 
         if self._too_big_to_normalize(self.symbolic_alt_length(var_g)):
             return self._hgvs_to_vcf_symbolic(var_g)
@@ -275,7 +286,8 @@ class Babelfish:
                     # ins coordinates (only) exclude left position
                     start_i += 1
                     end_i -= 1
-                if start_i == 0:
+                elif start_i == 0:
+                    # A del at position 1. An ins can't be before position 1 (validated)
                     return self._vcf_padded_after(vleft.ac, start_i, end_i, alt), typ
                 # Left anchored
                 start_i -= 1
@@ -291,13 +303,16 @@ class Babelfish:
         """VCFCoordinate replacing start_i:end_i with alt at the start of the sequence, which
         VCF pads with the base after rather than the base before"""
         ref = self.hdp.get_seq(ac, start_i, end_i + 1)
+        if len(ref) != end_i + 1 - start_i:
+            msg = f"{ac}: no base after {start_i + 1}_{end_i} to pad it with (whole sequence?)"
+            raise ValueError(msg)
         return VCFCoordinate(ac, start_i + 1, ref, alt + ref[-1])
 
     @staticmethod
     def symbolic_alt_length(var_g):
         """Length of a del, dup or inv (ie that can be represented as a symbolic allele),
         otherwise None. Also None when an explicit sequence doesn't fit the interval, which
-        is left for the normalizer to reject."""
+        the validator rejects (see _hgvs_to_vcf)."""
         edit = var_g.posedit.edit
         if edit.type not in SYMBOLIC_ALTS:
             return None
@@ -320,7 +335,15 @@ class Babelfish:
         typ = var_g.posedit.edit.type
         padding_i = start_i - 1  # The base before the variant
         if padding_i < 0:
-            # No padding base before a variant at the start of the sequence
+            # No padding base before a variant at the start of the sequence, so it must be
+            # explicit - but not by fetching more than we would to normalize it
+            if self._too_big_to_normalize(end_i - start_i):
+                msg = (
+                    f"{var_g}: a symbolic allele needs a padding base before it, and at the "
+                    f"start of the sequence it is too big (normalize_max_length="
+                    f"{self.normalize_max_length}) to write as explicit sequence"
+                )
+                raise ValueError(msg)
             return self._hgvs_to_vcf_explicit(var_g)
         ref = self.hdp.get_seq(var_g.ac, padding_i, start_i)
         return VCFCoordinate(var_g.ac, padding_i + 1, ref, SYMBOLIC_ALTS[typ], end=end_i), typ

@@ -4,6 +4,7 @@ from types import SimpleNamespace
 import pytest
 from bioutils.sequences import reverse_complement
 
+from hgvs.exceptions import HGVSInvalidVariantError
 from hgvs.extras.babelfish import SYMBOLIC_ALTS, Babelfish, VCFCoordinate, _common_prefix_len
 
 SYMBOLIC_TYPES = {v: k for k, v in SYMBOLIC_ALTS.items()}
@@ -190,7 +191,6 @@ def test_hgvs_to_vcf_normalized(parser, hdp):
         ("NC_000002.12:g.1000000_1000998dup", 1000, 1000),  # below symbolic_alt_min_length
         ("NC_000002.12:g.1000000_1001999dup", 1000, 10000),  # below normalize_max_length
         ("NC_000002.12:g.1000000_1009998dup", 1000, None),  # below default normalize_max_length
-        ("NC_000002.12:g.1000000_1000003delGG", 1, 1),  # sequence doesn't fit interval
         ("NC_000002.12:g.1000000_1000003delinsA", 1, 1),
         ("NC_000002.12:g.1000000_1000998dup", None, None),  # not requested
     ]
@@ -422,7 +422,7 @@ def test_hgvs_to_vcf_small_inv_explicit(parser, synthetic_babelfish):
 
 def test_hgvs_to_vcf_at_sequence_start(parser, synthetic_babelfish):
     """VCF pads a del or dup at position 1 with the base after. There is no padding base for
-    a symbolic allele, so it stays explicit"""
+    a symbolic allele, so it stays explicit, unless too big to normalize, which raises"""
     seq = synthetic_babelfish.hdp.seq
     after = seq[10]
     explicit = [
@@ -430,13 +430,13 @@ def test_hgvs_to_vcf_at_sequence_start(parser, synthetic_babelfish):
         ("g.1_10dup", (1, seq[0], seq[:10] + seq[0])),
         ("g.1_10inv", (1, seq[:10], reverse_complement(seq[:10]))),
     ]
-    for length in (60, 120):  # symbolic, and too big to normalize
-        span = seq[:length]
-        explicit += [
-            (f"g.1_{length}del", (1, seq[: length + 1], seq[length])),
-            (f"g.1_{length}dup", (1, seq[0], span + seq[0])),
-            (f"g.1_{length}inv", (1, span, reverse_complement(span))),
-        ]
+    length = 60  # symbolic
+    span = seq[:length]
+    explicit += [
+        (f"g.1_{length}del", (1, seq[: length + 1], seq[length])),
+        (f"g.1_{length}dup", (1, seq[0], span + seq[0])),
+        (f"g.1_{length}inv", (1, span, reverse_complement(span))),
+    ]
     for hgvs_string, (position, ref, alt) in explicit:
         var_g = parser.parse(f"{CHR2}:{hgvs_string}")
         assert synthetic_babelfish.hgvs_to_vcf_coordinate(var_g) == VCFCoordinate(
@@ -447,6 +447,43 @@ def test_hgvs_to_vcf_at_sequence_start(parser, synthetic_babelfish):
         var_g = parser.parse(f"{CHR2}:{hgvs_string}")
         vc = synthetic_babelfish.hgvs_to_vcf_coordinate(var_g)
         assert synthetic_babelfish.vcf_coordinate_to_g_hgvs(vc).format() == var_g.format()
+    # Too big to normalize (normalize_max_length=100)
+    for typ in SYMBOLIC_ALTS:
+        var_g = parser.parse(f"{CHR2}:g.1_100{typ}")
+        with pytest.raises(ValueError, match="normalize_max_length=100"):
+            synthetic_babelfish.hgvs_to_vcf_coordinate(var_g)
+
+
+def test_hgvs_to_vcf_validates(parser, synthetic_babelfish):
+    """Including variants too big to normalize, which skip the normalizer"""
+    for hgvs_string in ("g.0_1insA", "g.0_200del", "g.10_12delAA", "g.10_200delAA"):
+        var_g = parser.parse(f"{CHR2}:{hgvs_string}")
+        with pytest.raises(HGVSInvalidVariantError):
+            synthetic_babelfish.hgvs_to_vcf_coordinate(var_g)
+
+
+def test_hgvs_to_vcf_whole_sequence_del(parser):
+    """Deleting the whole sequence leaves no base to pad with"""
+    babelfish = Babelfish(_SyntheticHDP(), assembly_name="GRCh38")
+    seq = babelfish.hdp.seq
+    length = len(seq)
+    var_g = parser.parse(f"{CHR2}:g.1_{length - 1}del")
+    assert babelfish.hgvs_to_vcf_coordinate(var_g) == VCFCoordinate(CHR2, 1, seq, seq[-1])
+    var_g = parser.parse(f"{CHR2}:g.1_{length}del")
+    with pytest.raises(ValueError, match="no base after"):
+        babelfish.hgvs_to_vcf_coordinate(var_g)
+
+
+def test_vcf_to_hgvs_large_del_at_sequence_start(synthetic_babelfish):
+    """An explicit del at position 1 >= normalize_max_length isn't normalized, so when base 1
+    matches the padding base after, it is read as the equivalent del one base right"""
+    seq = synthetic_babelfish.hdp.seq
+    assert seq[0] == seq[120]
+    var_g = synthetic_babelfish.vcf_to_g_hgvs("2", 1, seq[:121], seq[120])
+    assert var_g.format() == f"{CHR2}:g.2_121del"
+    assert seq[0] != seq[121]
+    var_g = synthetic_babelfish.vcf_to_g_hgvs("2", 1, seq[:122], seq[121])
+    assert var_g.format() == f"{CHR2}:g.1_121del"
 
 
 def test_vcf_to_hgvs_large_explicit_near_sequence_start(synthetic_babelfish):
