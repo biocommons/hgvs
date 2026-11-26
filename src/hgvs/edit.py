@@ -231,9 +231,10 @@ class AARefAlt(Edit):
                 else:
                     s = self.alt
             elif p_3_letter:
-                s = f"delins{aa1_to_aa3(self.alt)}"
-                if p_term_asterisk and s == "delinsTer":
-                    s = "delins*"
+                alt = aa1_to_aa3(self.alt)
+                if p_term_asterisk:
+                    alt = alt.replace("Ter", "*")
+                s = f"delins{alt}"
             else:
                 s = f"delins{self.alt}"
 
@@ -244,9 +245,10 @@ class AARefAlt(Edit):
         # ins case
         elif self.ref is None and self.alt is not None:
             if p_3_letter:
-                s = f"ins{aa1_to_aa3(self.alt)}"
-                if p_term_asterisk and s == "insTer":
-                    s = "ins*"
+                alt = aa1_to_aa3(self.alt)
+                if p_term_asterisk:
+                    alt = alt.replace("Ter", "*")
+                s = f"ins{alt}"
             else:
                 s = f"ins{self.alt}"
 
