@@ -62,6 +62,14 @@ class Test_Edit(unittest.TestCase):
         self.assertIsNone(hgvs.edit.AARefAlt("", "T").ref_n)
         self.assertIsNone(hgvs.edit.AARefAlt(None, "TT").ref_n)
 
+    def test_AARefAlt_term_asterisk(self):
+        conf = {"p_3_letter": True, "p_term_asterisk": True}
+        self.assertEqual(hgvs.edit.AARefAlt("PK", "*").format(conf), "delins*")
+        self.assertEqual(hgvs.edit.AARefAlt("PK", "L*").format(conf), "delinsLeu*")
+        self.assertEqual(hgvs.edit.AARefAlt(None, "*").format(conf), "ins*")
+        self.assertEqual(hgvs.edit.AARefAlt(None, "QS*").format(conf), "insGlnSer*")
+        self.assertEqual(str(hgvs.edit.AARefAlt("PK", "L*")), "delinsLeuTer")
+
     def test_AASub(self):
         self.assertEqual(str(hgvs.edit.AASub("A", "T")), "Thr")
         # edit types
